@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+{% block title %}{{ artifact.title }}{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('events') }}">Evidence</a>
+  {% if artifact.event_title %}
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}">
+    {{ artifact.event_title }}
+  </a>
+  {% endif %}
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ artifact.title | truncate(40) }}</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">
+    <span class="mono" style="color:var(--text-dim);">ARTIFACT #{{ artifact.artifact_id }}</span>
+    &nbsp;·&nbsp;
+    <span class="type-badge">{{ artifact.type }}</span>
+    {% if artifact.source %}
+    &nbsp;·&nbsp;
+    <span class="source-badge source-badge--{{ artifact.source }}">
+      {{ SOURCE_META[artifact.source].label if artifact.source in SOURCE_META else artifact.source }}
+    </span>
+    {% endif %}
+  </div>
+  <h1 class="page-header__title">{{ artifact.title }}</h1>
+  <p class="page-header__sub">
+    {% if artifact.date %}<span class="mono">{{ artifact.date }}</span>{% endif %}
+    {% if artifact.location %}&nbsp;·&nbsp;{{ artifact.location }}{% endif %}
+  </p>
+</div>
+
+{# ── Master layout ─────────────────────────────────────────────────────────── #}
+<div class="detail-layout">
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# LEFT: Primary content                                                    #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <div class="detail-layout__main">
+
+    {# ── Description ────────────────────────────────────────────────────── #}
+    {% if artifact.description %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">Intelligence Assessment</h2>
+      <p class="detail-body-text">{{ artifact.description }}</p>
+    </section>
+    {% endif %}
+
+    {# ── Media viewer ────────────────────────────────────────────────────── #}
+    {% if artifact.file_path %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">Evidence File</h2>
+      <div class="media-viewer">
+        {% if artifact.type == 'photo' %}
+          <img src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}"
+               alt="{{ artifact.title }}" class="media-viewer__image">
+        {% elif artifact.type == 'video' %}
+          <video controls class="media-viewer__video">
+            <source src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}">
+            Your browser does not support video playback.
+          </video>
+        {% elif artifact.type == 'audio' %}
+          <div class="media-viewer__audio-wrap">
+            <div class="media-viewer__audio-label mono">
+              ◈ Audio Recording · {{ artifact.title }}
+            </div>
+            <audio controls class="media-viewer__audio">
+              <source src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}">
+            </audio>
+          </div>
+        {% else %}
+          <div class="media-viewer__doc">
+            <div class="media-viewer__doc-icon">◫</div>
+            <div class="media-viewer__doc-name mono">{{ artifact.file_path.split('/')[-1] }}</div>
+            <a href="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}"
+               class="btn btn--primary" download>
+              ↓ Download {{ artifact.type | title }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Parent event card ───────────────────────────────────────────────── #}
+    {% if artifact.event_title %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">Source Event</h2>
+      <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}"
+         class="event-link-card">
+        <div class="event-link-card__left">
+          <div class="event-link-card__label mono">
+            {{ artifact.event_category or 'Event' }}
+            {% if artifact.event_date %}&nbsp;·&nbsp;{{ artifact.event_date }}{% endif %}
+          </div>
+          <div class="event-link-card__title">{{ artifact.event_title }}</div>
+          {% if artifact.event_location %}
+          <div class="event-link-card__location mono">
+            ⊕ {{ artifact.event_location }}
+          </div>
+          {% endif %}
+          {% if artifact.event_summary %}
+          <div class="event-link-card__summary">
+            {{ artifact.event_summary | truncate(160) }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="event-link-card__arrow">→</div>
+      </a>
+    </section>
+    {% endif %}
+
+    {# ── Circle of Evidence ──────────────────────────────────────────────── #}
+    {% if circle_of_evidence %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Circle of Evidence
+        <span class="detail-section__count">{{ circle_of_evidence | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Actors linked to the parent event — those whose actions, roles, or presence
+        intersect with this artifact's context.
+      </p>
+      <div class="circle-grid">
+        {% for ac in circle_of_evidence %}
+        <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+           class="circle-card">
+          <div class="circle-card__node">◉</div>
+          <div class="circle-card__body">
+            <div class="circle-card__type mono">{{ ac.type }}</div>
+            <div class="circle-card__name">{{ ac.name }}</div>
+            {% if ac.role %}
+            <div class="circle-card__role">
+              <span class="role-badge">{{ ac.role }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Sibling artifacts ───────────────────────────────────────────────── #}
+    {% if siblings %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Co-filed Evidence
+        <span class="detail-section__count">{{ siblings | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Other artifacts archived under the same event.
+      </p>
+      <div class="sibling-list">
+        {% for s in siblings %}
+        <a href="{{ url_for('artifact_detail', artifact_id=s.artifact_id) }}"
+           class="sibling-row">
+          <span class="sibling-row__type mono">{{ s.type }}</span>
+          <span class="sibling-row__title">{{ s.title }}</span>
+          <span class="sibling-row__meta">
+            {% if s.source %}
+            <span class="source-badge source-badge--{{ s.source }}">
+              {{ SOURCE_META[s.source].label if s.source in SOURCE_META else s.source }}
+            </span>
+            {% endif %}
+            {% if s.date %}
+            <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">{{ s.date }}</span>
+            {% endif %}
+          </span>
+          <span class="sibling-row__arrow">→</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Tag-related artifacts ───────────────────────────────────────────── #}
+    {% if tag_related %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Related Across the Archive
+        <span class="detail-section__count">{{ tag_related | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Artifacts sharing tags with this record — follow the thread.
+      </p>
+      <div class="related-grid">
+        {% for r in tag_related %}
+        <a href="{{ url_for('artifact_detail', artifact_id=r.artifact_id) }}"
+           class="related-card">
+          <div class="related-card__type mono">{{ r.type }}</div>
+          <div class="related-card__title">{{ r.title }}</div>
+          {% if r.event_title %}
+          <div class="related-card__event mono">
+            ↳ {{ r.event_title | truncate(45) }}
+          </div>
+          {% endif %}
+          {% if r.source %}
+          <div class="related-card__source">
+            <span class="source-badge source-badge--{{ r.source }}">
+              {{ SOURCE_META[r.source].label if r.source in SOURCE_META else r.source }}
+            </span>
+          </div>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# RIGHT: Metadata sidebar                                                  #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <aside class="detail-layout__sidebar">
+
+    <div class="meta-panel">
+      <div class="meta-panel__header">Intelligence Record</div>
+      <div class="meta-panel__body">
+
+        <div class="meta-field">
+          <div class="meta-field__label">Artifact ID</div>
+          <div class="meta-field__value mono">#{{ artifact.artifact_id }}</div>
+        </div>
+
+        <div class="meta-field">
+          <div class="meta-field__label">Type</div>
+          <div class="meta-field__value">
+            <span class="type-badge">{{ artifact.type }}</span>
+          </div>
+        </div>
+
+        {% if artifact.source %}
+        <div class="meta-field">
+          <div class="meta-field__label">Source Classification</div>
+          <div class="meta-field__value">
+            <span class="source-badge source-badge--{{ artifact.source }}">
+              {{ SOURCE_META[artifact.source].label if artifact.source in SOURCE_META else artifact.source }}
+            </span>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if artifact.date %}
+        <div class="meta-field">
+          <div class="meta-field__label">Date</div>
+          <div class="meta-field__value mono">{{ artifact.date }}</div>
+        </div>
+        {% endif %}
+
+        {% if artifact.location %}
+        <div class="meta-field">
+          <div class="meta-field__label">Location</div>
+          <div class="meta-field__value">{{ artifact.location }}</div>
+        </div>
+        {% endif %}
+
+        {% if artifact.latitude and artifact.longitude %}
+        <div class="meta-field">
+          <div class="meta-field__label">Coordinates</div>
+          <div class="meta-field__value mono" style="font-size:0.72rem;">
+            {{ artifact.latitude }}, {{ artifact.longitude }}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if artifact.tags %}
+        <div class="meta-field">
+          <div class="meta-field__label">Tags</div>
+          <div class="meta-field__value">
+            <div class="tag-cloud">
+              {% for tag in artifact.tags.split(',') %}
+              <a href="{{ url_for('search', q=tag.strip()) }}"
+                 class="tag-pill">{{ tag.strip() }}</a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="meta-field">
+          <div class="meta-field__label">Ingested</div>
+          <div class="meta-field__value mono" style="font-size:0.68rem; color:var(--text-dim);">
+            {{ artifact.created_at[:10] if artifact.created_at else '—' }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {# Provenance chain: artifact → event → (actor count) #}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Provenance Chain</div>
+      <div class="meta-panel__body" style="padding:var(--sp-4);">
+        <div class="chain">
+          <div class="chain__node chain__node--artifact">
+            <span class="chain__icon">◈</span>
+            <span class="chain__label">This Artifact</span>
+          </div>
+          <div class="chain__connector">│</div>
+          {% if artifact.event_title %}
+          <div class="chain__node">
+            <span class="chain__icon" style="color:var(--accent);">◎</span>
+            <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}"
+               class="chain__label chain__label--link">
+              {{ artifact.event_title | truncate(32) }}
+            </a>
+          </div>
+          <div class="chain__connector">│</div>
+          <div class="chain__node">
+            <span class="chain__icon" style="color:var(--text-secondary);">◉</span>
+            <span class="chain__label" style="color:var(--text-dim);">
+              {{ circle_of_evidence | length }} actor{{
+                's' if circle_of_evidence | length != 1 }}
+            </span>
+          </div>
+          {% else %}
+          <div class="chain__node chain__node--unlinked">
+            <span class="chain__icon">○</span>
+            <span class="chain__label" style="color:var(--text-dim);">No event linked</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+{% endblock %}

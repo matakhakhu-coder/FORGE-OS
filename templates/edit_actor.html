@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Edit: {{ actor.name }}{% endblock %}
+
+{% block content %}
+
+<nav class="breadcrumb">
+  <a href="{{ url_for('actors') }}">Actors</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}">{{ actor.name | truncate(40) }}</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">Edit</span>
+</nav>
+
+<div class="page-header">
+  <div class="page-header__eyebrow mono">ACTOR #{{ actor.actor_id }} — EDIT</div>
+  <h1 class="page-header__title">Edit Actor</h1>
+  <div class="page-header__actions">
+    <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
+  </div>
+</div>
+
+<div class="edit-form-wrap">
+  <div class="form-panel">
+    <div class="form-panel__header">
+      <span style="color:var(--accent);">◉</span>
+      <span class="form-panel__header-title">Update Actor Record</span>
+    </div>
+    <div class="form-panel__body">
+      <form method="POST" action="{{ url_for('actor_edit', actor_id=actor.actor_id) }}">
+
+        <div class="form-group">
+          <label>Admin Password *</label>
+          <input type="password" name="password" placeholder="Enter admin password" required>
+        </div>
+        <hr class="divider">
+
+        <div class="form-group">
+          <label>Full Name / Designation *</label>
+          <input type="text" name="name" value="{{ actor.name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Actor Type *</label>
+          <select name="type" required>
+            {% for atype in actor_types_list %}
+            <option value="{{ atype }}" {{ 'selected' if actor.type == atype }}>{{ atype | title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Description / Intelligence Notes</label>
+          <textarea name="description" style="min-height:100px;">{{ actor.description or '' }}</textarea>
+        </div>
+
+        <div class="edit-form-actions">
+          <button type="submit" class="btn btn--primary">◉ Save Changes</button>
+          <button type="button" class="btn btn--danger"
+                  onclick="document.getElementById('js-delete-modal').classList.add('modal--open')">
+            Delete Actor
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="js-delete-modal">
+  <div class="modal__backdrop" onclick="this.parentElement.classList.remove('modal--open')"></div>
+  <div class="modal__box modal__box--sm">
+    <div class="modal__header">
+      <span class="modal__title" style="color:var(--src-leaked);">Delete Actor</span>
+      <button class="modal__close" onclick="document.getElementById('js-delete-modal').classList.remove('modal--open')">✕</button>
+    </div>
+    <div class="modal__body">
+      <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+        Permanently delete <strong>{{ actor.name }}</strong>?
+        All actor-event relationships will be removed. Artifacts will be unaffected.
+        This action cannot be undone.
+      </p>
+      <div class="form-group" style="margin-top:var(--sp-4);">
+        <label>Admin Password *</label>
+        <input type="password" id="js-delete-pw" placeholder="Confirm with admin password">
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button type="button" class="btn btn--ghost" onclick="document.getElementById('js-delete-modal').classList.remove('modal--open')">Cancel</button>
+      <button type="button" class="btn btn--danger" onclick="submitDelete()">Delete Permanently</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function submitDelete() {
+  const pw = document.getElementById('js-delete-pw').value;
+  if (!pw) { alert('Password required.'); return; }
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '{{ url_for("actor_delete", actor_id=actor.actor_id) }}';
+  const input = document.createElement('input');
+  input.type = 'hidden'; input.name = 'password'; input.value = pw;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal--open').forEach(m => m.classList.remove('modal--open'));
+});
+</script>
+
+{% endblock %}

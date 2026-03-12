@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('events') }}">Events</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ event.title | truncate(48) }}</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">
+    <span class="mono" style="color:var(--text-dim);">EVENT #{{ event.event_id }}</span>
+    {% if event.category %}
+    &nbsp;·&nbsp;<span class="category-badge">{{ event.category }}</span>
+    {% endif %}
+  </div>
+  <h1 class="page-header__title">{{ event.title }}</h1>
+  <div class="page-header__actions">
+    <a href="{{ url_for('events') }}" class="btn btn--ghost btn--sm">
+      ← All Events
+    </a>
+    <a href="{{ url_for('event_edit', event_id=event.event_id) }}" class="btn btn--ghost btn--sm">
+      ✎ Edit
+    </a>
+    <a href="{{ url_for('dossier_event', event_id=event.event_id) }}"
+       class="btn btn--dossier" target="_blank">
+      ⎙ Generate Dossier
+    </a>
+    <div class="pin-widget" id="js-pin-widget-event">
+      <button class="pin-widget__btn" id="js-pin-toggle"
+              data-entity-type="event" data-entity-id="{{ event.event_id }}">
+        <span class="pin-widget__icon">⊟</span>
+        <span class="pin-widget__label">Pin to Case</span>
+      </button>
+      <div class="pin-widget__dropdown" id="js-pin-dropdown">
+        <div class="pin-widget__dropdown-header mono">Pin to workspace</div>
+        <div id="js-pin-cases-list" class="pin-widget__cases">
+          <div class="pin-widget__loading mono">Loading…</div>
+        </div>
+        <div class="pin-widget__dropdown-footer">
+          <a href="{{ url_for('cases') }}" class="pin-widget__manage mono">Manage workspaces →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="page-header__sub">
+    {% if event.date %}<span class="mono">{{ event.date }}</span>{% endif %}
+    {% if event.location %}&nbsp;·&nbsp;{{ event.location }}{% endif %}
+  </p>
+</div>
+
+{# ── Summary ───────────────────────────────────────────────────────────────── #}
+{% if event.summary %}
+<div class="event-summary-block">
+  <div class="event-summary-block__rule"></div>
+  <p class="event-summary-block__text">{{ event.summary }}</p>
+</div>
+{% endif %}
+
+{# ── Stat row ──────────────────────────────────────────────────────────────── #}
+<div class="event-stat-row">
+  <div class="event-stat">
+    <span class="event-stat__value">{{ artifacts | length }}</span>
+    <span class="event-stat__label mono">Evidence Items</span>
+  </div>
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value">{{ actors | length }}</span>
+    <span class="event-stat__label mono">Actors Identified</span>
+  </div>
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value">{{ related_by_actor | length }}</span>
+    <span class="event-stat__label mono">Linked Events</span>
+  </div>
+  {% if event.latitude and event.longitude %}
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value mono" style="font-size:0.75rem; line-height:1.2;">
+      {{ "%.3f"|format(event.latitude) }},<br>{{ "%.3f"|format(event.longitude) }}
+    </span>
+    <span class="event-stat__label mono">Coordinates</span>
+  </div>
+  {% endif %}
+</div>
+
+{# ── Main two-column layout ────────────────────────────────────────────────── #}
+<div class="detail-layout">
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# LEFT                                                                     #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <div class="detail-layout__main">
+
+    {# ── Actors with roles ───────────────────────────────────────────────── #}
+    {% if actors %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Actors &amp; Roles
+        <span class="detail-section__count">{{ actors | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Each actor's documented role within this specific event.
+      </p>
+      <div class="actor-role-list">
+        {% for ac in actors %}
+        <div class="actor-role-row">
+          <div class="actor-role-row__indicator actor-role-row__indicator--{{ ac.type }}">
+            {% if ac.type == 'person' %}◉
+            {% elif ac.type == 'government' %}⊞
+            {% elif ac.type == 'institution' %}◎
+            {% elif ac.type == 'movement' %}⊕
+            {% elif ac.type == 'media' %}◫
+            {% else %}○{% endif %}
+          </div>
+          <div class="actor-role-row__body">
+            <div class="actor-role-row__top">
+              <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+                 class="actor-role-row__name">{{ ac.name }}</a>
+              <span class="actor-type-badge">{{ ac.type }}</span>
+            </div>
+            {% if ac.role %}
+            <div class="actor-role-row__role">
+              <span class="role-badge role-badge--event">{{ ac.role }}</span>
+            </div>
+            {% endif %}
+            {% if ac.description %}
+            <div class="actor-role-row__desc">
+              {{ ac.description | truncate(120) }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Evidence artifacts ──────────────────────────────────────────────── #}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Evidence Record
+        <span class="detail-section__count">{{ artifacts | length }}</span>
+      </h2>
+
+      {# Source breakdown bar #}
+      {% if source_breakdown %}
+      <div class="source-breakdown">
+        {% for row in source_breakdown %}
+        <div class="source-breakdown__item">
+          <span class="source-badge source-badge--{{ row.source }}">
+            {{ SOURCE_META[row.source].label if row.source in SOURCE_META else row.source }}
+          </span>
+          <span class="source-breakdown__count mono">{{ row.cnt }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if artifacts %}
+      <div class="evidence-list">
+        {% for a in artifacts %}
+        <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+           class="evidence-row">
+          <div class="evidence-row__type-col">
+            <span class="type-badge">{{ a.type }}</span>
+          </div>
+          <div class="evidence-row__body">
+            <div class="evidence-row__title">{{ a.title }}</div>
+            {% if a.description %}
+            <div class="evidence-row__desc">{{ a.description | truncate(100) }}</div>
+            {% endif %}
+          </div>
+          <div class="evidence-row__meta">
+            {% if a.source %}
+            <span class="source-badge source-badge--{{ a.source }}">
+              {{ SOURCE_META[a.source].label if a.source in SOURCE_META else a.source }}
+            </span>
+            {% endif %}
+            {% if a.date %}
+            <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">{{ a.date }}</span>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">No artifacts have been linked to this event yet.</div>
+      {% endif %}
+    </section>
+
+    {# ── Narrative chain: related events by shared actors ───────────────── #}
+    {% if related_by_actor %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Narrative Chain
+        <span class="detail-section__count">{{ related_by_actor | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Events connected to this one through shared actors — follow the threads
+        across the timeline.
+      </p>
+      <div class="narrative-chain">
+        {% for rel in related_by_actor %}
+        <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+           class="chain-event-card">
+          <div class="chain-event-card__left">
+            <div class="chain-event-card__date mono">{{ rel.date or '—' }}</div>
+            {% if rel.category %}
+            <span class="category-badge">{{ rel.category }}</span>
+            {% endif %}
+          </div>
+          <div class="chain-event-card__body">
+            <div class="chain-event-card__title">{{ rel.title }}</div>
+            {% set shared = shared_actor_map.get(rel.event_id, []) %}
+            {% if shared %}
+            <div class="chain-event-card__shared">
+              <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">Shared actors:</span>
+              {% for name in shared[:3] %}
+              <span class="chain-shared-actor">{{ name }}</span>
+              {% endfor %}
+              {% if shared | length > 3 %}
+              <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">
+                +{{ shared | length - 3 }} more
+              </span>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if rel.location %}
+            <div class="chain-event-card__location mono">⊕ {{ rel.location }}</div>
+            {% endif %}
+          </div>
+          <div class="chain-event-card__link-count">
+            <span class="mono">{{ rel.shared_actors }}</span>
+            <span class="mono" style="font-size:0.58rem; color:var(--text-dim);">shared</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Related by category ─────────────────────────────────────────────── #}
+    {% if related_by_category %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Same Category — {{ event.category }}
+      </h2>
+      <div class="sibling-list">
+        {% for rel in related_by_category %}
+        <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+           class="sibling-row">
+          <span class="sibling-row__type mono">{{ rel.date or '—' }}</span>
+          <span class="sibling-row__title">{{ rel.title }}</span>
+          <span class="sibling-row__meta">
+            {% if rel.location %}
+            <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">
+              ⊕ {{ rel.location }}
+            </span>
+            {% endif %}
+          </span>
+          <span class="sibling-row__arrow">→</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# RIGHT sidebar                                                            #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <aside class="detail-layout__sidebar">
+
+    <div class="meta-panel">
+      <div class="meta-panel__header">Event Record</div>
+      <div class="meta-panel__body">
+
+        <div class="meta-field">
+          <div class="meta-field__label">Event ID</div>
+          <div class="meta-field__value mono">#{{ event.event_id }}</div>
+        </div>
+
+        {% if event.category %}
+        <div class="meta-field">
+          <div class="meta-field__label">Category</div>
+          <div class="meta-field__value">
+            <span class="category-badge">{{ event.category }}</span>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if event.date %}
+        <div class="meta-field">
+          <div class="meta-field__label">Date</div>
+          <div class="meta-field__value mono">{{ event.date }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.location %}
+        <div class="meta-field">
+          <div class="meta-field__label">Location</div>
+          <div class="meta-field__value">{{ event.location }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.latitude and event.longitude %}
+        <div class="meta-field">
+          <div class="meta-field__label">Coordinates</div>
+          <div class="meta-field__value mono" style="font-size:0.7rem;">
+            {{ event.latitude }}, {{ event.longitude }}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="meta-field">
+          <div class="meta-field__label">Ingested</div>
+          <div class="meta-field__value mono" style="font-size:0.68rem; color:var(--text-dim);">
+            {{ event.created_at[:10] if event.created_at else '—' }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {# Actor type breakdown #}
+    {% if actors %}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Actor Composition</div>
+      <div class="meta-panel__body" style="padding:var(--sp-4);">
+        {% set type_counts = {} %}
+        {% for ac in actors %}
+          {% if ac.type in type_counts %}
+            {% set _ = type_counts.update({ac.type: type_counts[ac.type] + 1}) %}
+          {% else %}
+            {% set _ = type_counts.update({ac.type: 1}) %}
+          {% endif %}
+        {% endfor %}
+        {% for atype, cnt in type_counts.items() %}
+        <div style="display:flex; justify-content:space-between; align-items:center;
+                    margin-bottom:var(--sp-2);">
+          <span class="actor-type-badge">{{ atype }}</span>
+          <span class="mono" style="font-size:0.7rem; color:var(--accent);">{{ cnt }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Quick links to all actors #}
+    {% if actors %}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Quick Actor Links</div>
+      <div class="meta-panel__body" style="padding:var(--sp-3) var(--sp-4);">
+        {% for ac in actors %}
+        <div style="padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dim);">
+          <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+             style="font-size:0.82rem; display:block; margin-bottom:2px;">
+            {{ ac.name | truncate(36) }}
+          </a>
+          {% if ac.role %}
+          <span class="role-badge" style="font-size:0.58rem;">{{ ac.role }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </aside>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% include "_pin_widget_js.html" %}
+{% endblock %}

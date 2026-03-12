@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Actors{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Actors</div>
+  <h1 class="page-header__title">Actor Registry</h1>
+  <p class="page-header__sub">
+    People, institutions, and movements who appear across events and artifacts in the timeline.
+  </p>
+</div>
+
+{% if actors %}
+<div class="actor-grid">
+  {% for a in actors %}
+  <a href="{{ url_for('actor_detail', actor_id=a.actor_id) }}" class="actor-card">
+    <div class="actor-card__type">{{ a.type }}</div>
+    <div class="actor-card__name">{{ a.name }}</div>
+    {% if a.description %}
+    <div class="actor-card__desc">{{ a.description }}</div>
+    {% endif %}
+    <div class="actor-card__stats">
+      <div class="actor-card__stat">
+        <strong>{{ a.event_count }}</strong>
+        Events
+      </div>
+      <div class="actor-card__stat">
+        <strong>{{ a.artifact_count }}</strong>
+        Artifacts
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">No actors in the archive yet.</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,142 @@
+<script>
+/* =============================================================================
+   FORGE — Pin Widget
+   Fetches the case list on dropdown open, renders pinned state per case,
+   and toggles pin/unpin via /api/pin without a page reload.
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  const toggle      = document.getElementById('js-pin-toggle');
+  const dropdown    = document.getElementById('js-pin-dropdown');
+  const casesList   = document.getElementById('js-pin-cases-list');
+
+  if (!toggle) return;
+
+  const entityType  = toggle.dataset.entityType;
+  const entityId    = toggle.dataset.entityId;
+
+  let loaded        = false;
+  let open          = false;
+
+  // ── Open/close ────────────────────────────────────────────────────────────
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    open = !open;
+    dropdown.classList.toggle('pin-widget__dropdown--open', open);
+    if (open && !loaded) loadCases();
+  });
+
+  document.addEventListener('click', function () {
+    open = false;
+    dropdown.classList.remove('pin-widget__dropdown--open');
+  });
+
+  dropdown.addEventListener('click', e => e.stopPropagation());
+
+  // ── Load cases + pin status ───────────────────────────────────────────────
+  function loadCases() {
+    Promise.all([
+      fetch(`/api/pin/status?entity_type=${entityType}&entity_id=${entityId}`)
+        .then(r => r.json()),
+      fetch('/cases').then(() => null),  // warm cache, ignore
+    ]).then(([status]) => {
+      renderCases(status.pinned_in || []);
+      loaded = true;
+    }).catch(() => {
+      casesList.innerHTML = '<div class="pin-widget__loading mono" style="color:var(--src-leaked);">Failed to load.</div>';
+    });
+
+    // Fetch cases via a dedicated lightweight JSON endpoint
+    fetch(`/api/cases-list`)
+      .then(r => r.json())
+      .then(data => {
+        fetch(`/api/pin/status?entity_type=${entityType}&entity_id=${entityId}`)
+          .then(r => r.json())
+          .then(status => {
+            const pinnedIds = new Set((status.pinned_in || []).map(c => c.case_id));
+            renderCaseRows(data.cases, pinnedIds);
+            updateButtonState(pinnedIds.size > 0);
+            loaded = true;
+          });
+      })
+      .catch(() => {
+        casesList.innerHTML = '<div class="pin-widget__loading mono">No workspaces found. <a href="/cases">Create one →</a></div>';
+        loaded = true;
+      });
+  }
+
+  function renderCaseRows(cases, pinnedIds) {
+    if (!cases || cases.length === 0) {
+      casesList.innerHTML = '<div class="pin-widget__loading mono">No workspaces. <a href="/cases">Create one →</a></div>';
+      return;
+    }
+    casesList.innerHTML = '';
+    cases.forEach(function (c) {
+      const pinned = pinnedIds.has(c.case_id);
+      const row = document.createElement('button');
+      row.className = 'pin-widget__case-row' + (pinned ? ' pin-widget__case-row--pinned' : '');
+      row.dataset.caseId = c.case_id;
+      row.innerHTML = `
+        <span class="pin-widget__case-icon">${pinned ? '⊠' : '⊟'}</span>
+        <span class="pin-widget__case-name">${escHtml(c.title)}</span>
+        <span class="case-status-badge case-status-badge--${c.status}">${c.status}</span>
+      `;
+      row.addEventListener('click', function () {
+        togglePin(c.case_id, row, pinnedIds);
+      });
+      casesList.appendChild(row);
+    });
+  }
+
+  function renderCases(pinnedIn) {
+    // Interim state while full list loads
+    if (pinnedIn.length > 0) {
+      casesList.innerHTML = pinnedIn.map(c =>
+        `<div class="pin-widget__loading mono" style="color:var(--accent);">⊠ ${escHtml(c.title)}</div>`
+      ).join('');
+    }
+  }
+
+  function updateButtonState(hasPins) {
+    const icon  = toggle.querySelector('.pin-widget__icon');
+    const label = toggle.querySelector('.pin-widget__label');
+    if (hasPins) {
+      toggle.classList.add('pin-widget__btn--active');
+      icon.textContent  = '⊠';
+      label.textContent = 'Pinned';
+    } else {
+      toggle.classList.remove('pin-widget__btn--active');
+      icon.textContent  = '⊟';
+      label.textContent = 'Pin to Case';
+    }
+  }
+
+  function togglePin(caseId, rowEl, pinnedIds) {
+    fetch('/api/pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ case_id: caseId, entity_type: entityType, entity_id: entityId }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.pinned) {
+        pinnedIds.add(caseId);
+        rowEl.classList.add('pin-widget__case-row--pinned');
+        rowEl.querySelector('.pin-widget__case-icon').textContent = '⊠';
+      } else {
+        pinnedIds.delete(caseId);
+        rowEl.classList.remove('pin-widget__case-row--pinned');
+        rowEl.querySelector('.pin-widget__case-icon').textContent = '⊟';
+      }
+      updateButtonState(pinnedIds.size > 0);
+      loaded = false; // force reload next open
+    })
+    .catch(console.error);
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>

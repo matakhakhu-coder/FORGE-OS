@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    FORGE DOSSIER —
+    {% if subject_type == 'actor' %}{{ subject.name }}
+    {% else %}{{ subject.title }}{% endif %}
+  </title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    /* Dossier-specific overrides — no shell chrome */
+    body { background: var(--bg-base); }
+    .dossier-body {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+  </style>
+</head>
+<body class="dossier-page">
+
+<div class="dossier-body">
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     DOSSIER HEADER — Classification banner + subject identity
+     ═══════════════════════════════════════════════════════════════════════════ #}
+
+  <header class="dossier-header">
+
+    {# Top strip: classification + archive branding #}
+    <div class="dossier-header__strip">
+      <div class="dossier-header__classification">
+        FORGE INTELLIGENCE ARCHIVE — ZA-DIVERGENT OPERATION
+      </div>
+      <div class="dossier-header__actions no-print">
+        <a href="{{ back_url }}" class="dossier-btn dossier-btn--ghost">
+          ← Back to Record
+        </a>
+        <button onclick="window.print()" class="dossier-btn dossier-btn--primary">
+          ⎙ Print / Save PDF
+        </button>
+      </div>
+    </div>
+
+    {# Subject block #}
+    <div class="dossier-header__subject">
+      <div class="dossier-header__eyebrow mono">
+        INTELLIGENCE BRIEF · {{ subject_type | upper }} DOSSIER
+        {% if subject_type == 'actor' %}
+        &nbsp;·&nbsp; ID #{{ subject.actor_id }}
+        &nbsp;·&nbsp; <span class="actor-type-badge">{{ subject.type }}</span>
+        {% else %}
+        &nbsp;·&nbsp; ID #{{ subject.event_id }}
+        {% if subject.category %}
+        &nbsp;·&nbsp; <span class="category-badge">{{ subject.category }}</span>
+        {% endif %}
+        {% endif %}
+      </div>
+
+      <h1 class="dossier-header__title">
+        {% if subject_type == 'actor' %}{{ subject.name }}
+        {% else %}{{ subject.title }}{% endif %}
+      </h1>
+
+      {% if subject_type == 'event' %}
+      <div class="dossier-header__sub mono">
+        {% if subject.date %}{{ subject.date }}{% endif %}
+        {% if subject.location %}&nbsp; · &nbsp;{{ subject.location }}{% endif %}
+        {% if subject.latitude and subject.longitude %}
+        &nbsp; · &nbsp;{{ subject.latitude }}, {{ subject.longitude }}
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {# Metadata rule row #}
+    <div class="dossier-header__meta-row">
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Generated</span>
+        <span class="dossier-header__meta-value mono">{{ generated_at }}</span>
+      </div>
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Classification</span>
+        <span class="dossier-header__meta-value mono">RESTRICTED — INTERNAL USE ONLY</span>
+      </div>
+      {% if subject_type == 'actor' %}
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Event exposure</span>
+        <span class="dossier-header__meta-value mono">{{ events | length }}</span>
+      </div>
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Artifact footprint</span>
+        <span class="dossier-header__meta-value mono">{{ artifact_footprint | length }}</span>
+      </div>
+      {% else %}
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Actors involved</span>
+        <span class="dossier-header__meta-value mono">{{ actors | length }}</span>
+      </div>
+      <div class="dossier-header__meta-item">
+        <span class="dossier-header__meta-label mono">Evidence items</span>
+        <span class="dossier-header__meta-value mono">{{ artifacts | length }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+  </header>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SECTION 1 — Executive Summary
+     ═══════════════════════════════════════════════════════════════════════════ #}
+
+  <section class="dossier-section" id="sec-summary">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">01</span>
+      <h2 class="dossier-section__title">Executive Summary</h2>
+    </div>
+
+    {% if subject_type == 'actor' and subject.description %}
+    <div class="dossier-prose">
+      {{ subject.description }}
+    </div>
+    {% elif subject_type == 'event' and subject.summary %}
+    <div class="dossier-prose">
+      {{ subject.summary }}
+    </div>
+    {% else %}
+    <p class="dossier-prose dossier-prose--empty">
+      No summary on record for this {{ subject_type }}.
+    </p>
+    {% endif %}
+
+    {# Actor: role summary table #}
+    {% if subject_type == 'actor' and role_timeline %}
+    <table class="dossier-table" style="margin-top:1.5rem;">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Documented Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rt in role_timeline %}
+        <tr>
+          <td><a href="{{ url_for('event_detail', event_id=rt.event_id) }}">{{ rt.title }}</a></td>
+          <td class="mono">{{ rt.date or '—' }}</td>
+          <td>{% if rt.category %}<span class="category-badge">{{ rt.category }}</span>{% endif %}</td>
+          <td><span class="role-badge">{{ rt.role }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {# Event: source breakdown summary #}
+    {% if subject_type == 'event' and source_breakdown %}
+    <div class="dossier-source-summary">
+      <div class="mono" style="font-size:0.65rem; letter-spacing:0.1em;
+                               text-transform:uppercase; color:var(--text-dim);
+                               margin-bottom:0.5rem;">Evidence Source Profile</div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        {% for row in source_breakdown %}
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <span class="source-badge source-badge--{{ row.source }}">{{ row.source }}</span>
+          <span class="mono" style="font-size:0.7rem; color:var(--text-dim);">×{{ row.cnt }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SECTION 2 — EVENT INVOLVEMENT (actor dossier) / ACTORS INVOLVED (event)
+     ═══════════════════════════════════════════════════════════════════════════ #}
+
+  {% if subject_type == 'actor' %}
+  <section class="dossier-section page-break-before" id="sec-events">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">02</span>
+      <h2 class="dossier-section__title">Event Involvement ({{ events | length }})</h2>
+    </div>
+
+    {% if events %}
+    <div class="dossier-timeline">
+      {% for e in events %}
+      <div class="dossier-timeline__item">
+        <div class="dossier-timeline__spine">
+          <div class="dossier-timeline__dot dossier-timeline__dot--{{ (e.category or 'other') | lower | replace(' ', '-') }}"></div>
+          {% if not loop.last %}<div class="dossier-timeline__line"></div>{% endif %}
+        </div>
+        <div class="dossier-timeline__body">
+          <div class="dossier-timeline__header">
+            <span class="mono dossier-timeline__date">{{ e.date or '—' }}</span>
+            {% if e.category %}<span class="category-badge">{{ e.category }}</span>{% endif %}
+            {% if e.role %}<span class="role-badge">{{ e.role }}</span>{% endif %}
+          </div>
+          <div class="dossier-timeline__title">
+            <a href="{{ url_for('event_detail', event_id=e.event_id) }}">{{ e.title }}</a>
+          </div>
+          {% if e.location %}
+          <div class="mono dossier-timeline__location">⊕ {{ e.location }}</div>
+          {% endif %}
+          {% if e.summary %}
+          <p class="dossier-timeline__summary">{{ e.summary | truncate(200) }}</p>
+          {% endif %}
+          {% if e.artifact_count %}
+          <div class="mono dossier-timeline__count">
+            {{ e.artifact_count }} evidence item{{ 's' if e.artifact_count != 1 }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dossier-prose dossier-prose--empty">No events recorded.</p>
+    {% endif %}
+  </section>
+
+  {% else %}{# event dossier — actors section #}
+
+  <section class="dossier-section page-break-before" id="sec-actors">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">02</span>
+      <h2 class="dossier-section__title">Actors &amp; Roles ({{ actors | length }})</h2>
+    </div>
+
+    {% if actors %}
+    <table class="dossier-table">
+      <thead>
+        <tr>
+          <th>Actor</th>
+          <th>Classification</th>
+          <th>Documented Role</th>
+          <th>Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ac in actors %}
+        <tr>
+          <td style="font-weight:500;">{{ ac.name }}</td>
+          <td><span class="actor-type-badge">{{ ac.type }}</span></td>
+          <td>{% if ac.role %}<span class="role-badge">{{ ac.role }}</span>{% else %}—{% endif %}</td>
+          <td>
+            <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+               class="dossier-link no-print">View ↗</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="dossier-prose dossier-prose--empty">No actors linked to this event.</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SECTION 3 — EVIDENCE GRID
+     Actor: full artifact footprint grouped by event
+     Event: all linked artifacts
+     ═══════════════════════════════════════════════════════════════════════════ #}
+
+  <section class="dossier-section page-break-before" id="sec-evidence">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">03</span>
+      {% if subject_type == 'actor' %}
+      <h2 class="dossier-section__title">
+        Artifact Footprint ({{ artifact_footprint | length }})
+      </h2>
+      {% else %}
+      <h2 class="dossier-section__title">
+        Evidence Record ({{ artifacts | length }})
+      </h2>
+      {% endif %}
+    </div>
+
+    {% if subject_type == 'actor' %}
+
+      {# Group by event #}
+      {% set current_eid = namespace(val=none) %}
+      {% for a in artifact_footprint %}
+        {% if a.event_id != current_eid.val %}
+          {% if not loop.first %}</tbody></table>{% endif %}
+          {% set current_eid.val = a.event_id %}
+          <div class="dossier-evidence-group-header mono">
+            ◎ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">{{ a.event_title }}</a>
+          </div>
+          <table class="dossier-table dossier-table--evidence">
+            <thead>
+              <tr><th>Title</th><th>Type</th><th>Source</th><th>Date</th><th class="no-print">Link</th></tr>
+            </thead>
+            <tbody>
+        {% endif %}
+        <tr>
+          <td>{{ a.title }}</td>
+          <td class="mono">{{ a.type }}</td>
+          <td>
+            {% if a.source %}
+            <span class="source-badge source-badge--{{ a.source }}">{{ a.source }}</span>
+            {% endif %}
+          </td>
+          <td class="mono">{{ a.date or '—' }}</td>
+          <td class="no-print">
+            <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+               class="dossier-link">View ↗</a>
+          </td>
+        </tr>
+      {% endfor %}
+      {% if artifact_footprint %}</tbody></table>{% endif %}
+
+      {% if not artifact_footprint %}
+      <p class="dossier-prose dossier-prose--empty">No artifacts in footprint.</p>
+      {% endif %}
+
+    {% else %}{# event artifacts #}
+
+      {% if artifacts %}
+      <table class="dossier-table dossier-table--evidence">
+        <thead>
+          <tr><th>Title</th><th>Type</th><th>Source</th><th>Date</th><th class="no-print">Link</th></tr>
+        </thead>
+        <tbody>
+          {% for a in artifacts %}
+          <tr>
+            <td>
+              <div style="font-weight:500; margin-bottom:2px;">{{ a.title }}</div>
+              {% if a.description %}
+              <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.4;">
+                {{ a.description | truncate(100) }}
+              </div>
+              {% endif %}
+            </td>
+            <td class="mono">{{ a.type }}</td>
+            <td>
+              {% if a.source %}
+              <span class="source-badge source-badge--{{ a.source }}">{{ a.source }}</span>
+              {% endif %}
+            </td>
+            <td class="mono">{{ a.date or '—' }}</td>
+            <td class="no-print">
+              <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+                 class="dossier-link">View ↗</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="dossier-prose dossier-prose--empty">No artifacts linked.</p>
+      {% endif %}
+
+    {% endif %}
+  </section>
+
+  {# ═══════════════════════════════════════════════════════════════════════════
+     SECTION 4 — NETWORK (co-actors / related events)
+     ═══════════════════════════════════════════════════════════════════════════ #}
+
+  {% if subject_type == 'actor' and co_actors %}
+  <section class="dossier-section page-break-before" id="sec-network">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">04</span>
+      <h2 class="dossier-section__title">Co-Actor Network ({{ co_actors | length }})</h2>
+    </div>
+    <table class="dossier-table">
+      <thead>
+        <tr><th>Actor</th><th>Classification</th><th>Shared Events</th><th class="no-print">Profile</th></tr>
+      </thead>
+      <tbody>
+        {% for ca in co_actors %}
+        <tr>
+          <td style="font-weight:500;">{{ ca.name }}</td>
+          <td><span class="actor-type-badge">{{ ca.type }}</span></td>
+          <td class="mono" style="color:var(--accent);">{{ ca.shared_events }}</td>
+          <td class="no-print">
+            <a href="{{ url_for('actor_detail', actor_id=ca.actor_id) }}"
+               class="dossier-link">View ↗</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if subject_type == 'event' and related_by_actor %}
+  <section class="dossier-section page-break-before" id="sec-related">
+    <div class="dossier-section__header">
+      <span class="dossier-section__num mono">04</span>
+      <h2 class="dossier-section__title">Narrative Chain — Related Events</h2>
+    </div>
+    <table class="dossier-table">
+      <thead>
+        <tr><th>Event</th><th>Date</th><th>Category</th><th>Shared Actors</th><th class="no-print">Link</th></tr>
+      </thead>
+      <tbody>
+        {% for rel in related_by_actor %}
+        <tr>
+          <td style="font-weight:500;">{{ rel.title }}</td>
+          <td class="mono">{{ rel.date or '—' }}</td>
+          <td>{% if rel.category %}<span class="category-badge">{{ rel.category }}</span>{% endif %}</td>
+          <td class="mono" style="color:var(--accent);">{{ rel.shared_actors }}</td>
+          <td class="no-print">
+            <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+               class="dossier-link">View ↗</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {# ── Footer ───────────────────────────────────────────────────────────────── #}
+  <footer class="dossier-footer">
+    <div class="mono dossier-footer__rule">
+      ─────────────────────────────────────────────────────────────────────────
+    </div>
+    <div class="dossier-footer__body">
+      <span class="mono">FORGE INTELLIGENCE ARCHIVE · ZA-DIVERGENT OPERATION</span>
+      <span class="mono">Generated {{ generated_at }} · {{ subject_type | upper }} #
+        {% if subject_type == 'actor' %}{{ subject.actor_id }}
+        {% else %}{{ subject.event_id }}{% endif %}
+      </span>
+    </div>
+    <div class="mono dossier-footer__disclaimer">
+      This document is automatically generated from the FORGE archive database.
+      It is intended for internal investigative use only.
+    </div>
+  </footer>
+
+</div>{# /dossier-body #}
+
+<script>
+  // Auto-trigger print dialog when ?print=1 is appended (for direct PDF export)
+  if (new URLSearchParams(window.location.search).get('print') === '1') {
+    window.addEventListener('load', () => setTimeout(() => window.print(), 400));
+  }
+</script>
+
+</body>
+</html>

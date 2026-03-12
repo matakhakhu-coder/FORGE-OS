@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Events</div>
+  <h1 class="page-header__title">Event Registry</h1>
+  <p class="page-header__sub">
+    Historical moments that anchor artifacts in time and connect actors across the timeline.
+  </p>
+</div>
+
+{# ── Filter bar ──────────────────────────────────────────────────────────── #}
+<div class="filter-bar">
+  <span class="filter-bar__label">Filter</span>
+
+  <a href="{{ url_for('events') }}"
+     class="filter-pill {{ 'active' if not current_category }}">
+    All
+  </a>
+
+  {% for cat in categories %}
+  <a href="{{ url_for('events', category=cat, sort=current_sort) }}"
+     class="filter-pill {{ 'active' if cat == current_category }}">
+    {{ cat }}
+  </a>
+  {% endfor %}
+
+  <select class="sort-select" onchange="window.location.href=this.value">
+    <option value="{{ url_for('events', category=current_category, sort='date_desc') }}"
+            {{ 'selected' if current_sort == 'date_desc' }}>
+      Date ↓
+    </option>
+    <option value="{{ url_for('events', category=current_category, sort='date_asc') }}"
+            {{ 'selected' if current_sort == 'date_asc' }}>
+      Date ↑
+    </option>
+    <option value="{{ url_for('events', category=current_category, sort='title_asc') }}"
+            {{ 'selected' if current_sort == 'title_asc' }}>
+      Title A–Z
+    </option>
+  </select>
+</div>
+
+{# ── Event list ──────────────────────────────────────────────────────────── #}
+{% if events %}
+<div class="event-list">
+  {% for e in events %}
+  <a href="{{ url_for('event_detail', event_id=e.event_id) }}" class="event-row">
+
+    <div class="event-row__date">
+      {% if e.date %}
+        {{ e.date[:4] }}<br>
+        <span style="font-size:0.65rem;">{{ e.date[5:] if e.date|length > 4 }}</span>
+      {% else %}
+        <span style="color:var(--text-dim);">—</span>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="event-row__title">{{ e.title }}</div>
+      {% if e.summary %}
+      <div class="event-row__summary">{{ e.summary }}</div>
+      {% endif %}
+      {% if e.location %}
+      <div style="font-size:0.72rem; color:var(--text-dim); font-family:var(--font-mono); margin-top:var(--space-sm);">
+        ⊕ {{ e.location }}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="event-row__meta">
+      {% if e.category %}
+        <span class="category-badge">{{ e.category }}</span>
+      {% endif %}
+      <div class="event-row__artifact-count">
+        {{ e.artifact_count }}
+        {{ 'artifact' if e.artifact_count == 1 else 'artifacts' }}
+      </div>
+    </div>
+
+  </a>
+  {% endfor %}
+</div>
+
+<div style="margin-top:var(--space-lg); font-family:var(--font-mono); font-size:0.7rem; color:var(--text-dim);">
+  {{ events|length }} event{{ 's' if events|length != 1 }}
+  {% if current_category %}in category "{{ current_category }}"{% endif %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  No events found{% if current_category %} in category "{{ current_category }}"{% endif %}.
+</div>
+{% endif %}
+
+{% endblock %}

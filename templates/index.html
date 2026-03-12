@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Archive Home{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">ZA-Divergent // Active Archive</div>
+  <h1 class="page-header__title">Intelligence Archive</h1>
+  <p class="page-header__sub">
+    Reconstructing an alternate South African timeline through primary evidence,
+    intercepted documents, and citizen media.
+  </p>
+</div>
+
+{# ── Stats ──────────────────────────────────────────────────────────────── #}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.artifacts }}</div>
+    <div class="stat-card__label">Artifacts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.events }}</div>
+    <div class="stat-card__label">Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.actors }}</div>
+    <div class="stat-card__label">Actors</div>
+  </div>
+</div>
+
+{# ── Type breakdown ─────────────────────────────────────────────────────── #}
+{% if type_breakdown %}
+<div class="type-breakdown">
+  {% for row in type_breakdown %}
+  <div class="type-item">
+    <div class="type-dot type-dot--{{ row.type }}"></div>
+    {{ row.cnt }} {{ row.type }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Recent Artifacts ────────────────────────────────────────────────────── #}
+<div class="section-heading">Recent Evidence</div>
+
+{% if recent_artifacts %}
+<div class="artifact-grid">
+  {% for a in recent_artifacts %}
+  <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+     class="artifact-card" style="text-decoration:none; color:inherit;">
+
+    <div class="artifact-card__thumb">
+      {% if a.thumbnail %}
+        <img src="{{ url_for('serve_media', filepath=a.thumbnail[6:]) }}"
+             alt="{{ a.title }}">
+      {% else %}
+        {% if a.type == 'video' %}🎞{% elif a.type == 'audio' %}🎙{% elif a.type == 'document' %}📄{% elif a.type == 'photo' %}📷{% else %}📰{% endif %}
+      {% endif %}
+      <span class="artifact-card__type-badge">{{ a.type }}</span>
+    </div>
+
+    <div class="artifact-card__body">
+      <div class="artifact-card__title">{{ a.title }}</div>
+      <div class="artifact-card__meta">
+        {% if a.date %}{{ a.date }}{% endif %}
+        {% if a.source %}
+          &nbsp;·&nbsp;
+          <span class="source-badge source-badge--{{ a.source }}">
+            {{ SOURCE_META[a.source].label if a.source in SOURCE_META else a.source }}
+          </span>
+        {% endif %}
+      </div>
+      {% if a.event_title %}
+      <div class="artifact-card__event-link">
+        ↳ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">
+          {{ a.event_title }}
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">No artifacts in the archive yet. Use the Admin panel to ingest evidence.</div>
+{% endif %}
+
+{# ── Recent Events ───────────────────────────────────────────────────────── #}
+<div class="section-heading" style="margin-top: var(--space-xl);">Recent Events</div>
+
+{% if recent_events %}
+<div class="event-list">
+  {% for e in recent_events %}
+  <a href="{{ url_for('event_detail', event_id=e.event_id) }}" class="event-row">
+    <div class="event-row__date mono">{{ e.date or '—' }}</div>
+    <div>
+      <div class="event-row__title">{{ e.title }}</div>
+      {% if e.location %}
+      <div style="font-size:0.75rem; color: var(--text-dim); font-family: var(--font-mono); margin-top:2px;">
+        ⊕ {{ e.location }}
+      </div>
+      {% endif %}
+    </div>
+    <div class="event-row__meta">
+      {% if e.category %}
+        <span class="category-badge">{{ e.category }}</span>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

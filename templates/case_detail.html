@@ -1,0 +1,1141 @@
+{% extends "base.html" %}
+{% block title %}{{ case.title }}{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+      crossorigin="anonymous">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"
+      crossorigin="anonymous">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"
+      crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ───────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('cases') }}">Workspaces</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ case.title | truncate(48) }}</span>
+</nav>
+
+{# ── Header ───────────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">
+    <span class="mono" style="color:var(--text-dim);">CASE #{{ case.case_id }}</span>
+    &nbsp;·&nbsp;
+    <span class="case-status-badge case-status-badge--{{ case.status }}">{{ case.status }}</span>
+  </div>
+  <h1 class="page-header__title">{{ case.title }}</h1>
+  {% if case.description %}
+  <p class="page-header__sub">{{ case.description }}</p>
+  {% endif %}
+  <div class="page-header__actions">
+    <a href="{{ url_for('cases') }}" class="btn btn--ghost btn--sm">← All Workspaces</a>
+    {# ── Narrative mode toggle ──────────────────────────────────────────── #}
+    <button class="btn btn--ghost btn--sm" id="js-narrative-toggle"
+            title="Switch to drag-and-drop narrative sequencing mode">
+      ⟁ Narrative Mode
+    </button>
+    <button class="btn btn--ghost btn--sm" id="js-tactical-map-open"
+            title="View pinned events on a tactical map">
+      ⊕ Tactical Map
+    </button>
+    <a href="{{ url_for('case_briefing', case_id=case.case_id) }}"
+       class="btn btn--dossier btn--sm" target="_blank">
+      ⎙ Intelligence Briefing
+    </a>
+    <button class="btn btn--dossier btn--sm"
+            onclick="document.getElementById('js-case-edit-modal').classList.add('modal--open')">
+      ✎ Edit
+    </button>
+    <button class="btn btn--danger btn--sm"
+            onclick="document.getElementById('js-case-delete-modal').classList.add('modal--open')">
+      ✕ Delete
+    </button>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════
+   NARRATIVE MODE TOOLBAR (hidden until activated)
+═══════════════════════════════════════════════════════════════════════════ #}
+<div class="narrative-toolbar" id="js-narrative-toolbar" style="display:none;">
+  <div class="narrative-toolbar__left">
+    <span class="narrative-toolbar__icon" style="color:var(--accent);">⟁</span>
+    <span class="narrative-toolbar__label mono">Narrative Mode</span>
+    <span class="narrative-toolbar__hint mono" id="js-narrative-status">
+      Drag items to reorder · Click ↕ to set position manually
+    </span>
+  </div>
+  <div class="narrative-toolbar__right">
+    <button class="btn btn--ghost btn--sm" id="js-auto-sequence">
+      ⊕ Suggest Timeline
+    </button>
+    <button class="btn btn--ghost btn--sm" id="js-clear-sequence">
+      ⊟ Clear Order
+    </button>
+    <button class="btn btn--primary btn--sm" id="js-save-sequence">
+      ✓ Save Order
+    </button>
+    <button class="btn btn--ghost btn--sm" id="js-narrative-exit">
+      Exit Narrative Mode
+    </button>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════
+   WORKSPACE LAYOUT
+═══════════════════════════════════════════════════════════════════════════ #}
+<div class="workspace-layout">
+
+  {# ── LEFT: analytics + board ──────────────────────────────────────────── #}
+  <div class="workspace-layout__main">
+
+    {# ── Analytics bar ─────────────────────────────────────────────────── #}
+    <div class="analytics-bar">
+      <div class="heat-gauge">
+        <div class="heat-gauge__ring-wrap">
+          <svg class="heat-gauge__ring" viewBox="0 0 60 60" width="60" height="60">
+            <circle class="heat-gauge__track" cx="30" cy="30" r="24"
+                    stroke-width="5" fill="none"/>
+            <circle class="heat-gauge__fill" id="js-gauge-fill" cx="30" cy="30" r="24"
+                    stroke-width="5" fill="none"
+                    stroke-dasharray="0 151"
+                    stroke-dashoffset="38"
+                    transform="rotate(-90 30 30)"/>
+          </svg>
+          <span class="heat-gauge__value mono" id="js-heat-value">—</span>
+        </div>
+        <div class="heat-gauge__labels">
+          <div class="heat-gauge__title">HEAT SCORE</div>
+          <div class="heat-gauge__label mono" id="js-heat-label">computing…</div>
+        </div>
+      </div>
+      <div class="analytics-bar__divider"></div>
+      <div class="analytics-metrics">
+        <div class="analytics-metric">
+          <div class="analytics-metric__header">
+            <span class="analytics-metric__name mono">Density</span>
+            <span class="analytics-metric__val mono" id="js-density-val">—</span>
+          </div>
+          <div class="analytics-metric__bar-track">
+            <div class="analytics-metric__bar analytics-metric__bar--density"
+                 id="js-density-bar" style="width:0%"></div>
+          </div>
+          <div class="analytics-metric__hint">artifacts ÷ actors</div>
+        </div>
+        <div class="analytics-metric">
+          <div class="analytics-metric__header">
+            <span class="analytics-metric__name mono">Volatility</span>
+            <span class="analytics-metric__val mono" id="js-volatility-val">—</span>
+          </div>
+          <div class="analytics-metric__bar-track">
+            <div class="analytics-metric__bar analytics-metric__bar--volatility"
+                 id="js-volatility-bar" style="width:0%"></div>
+          </div>
+          <div class="analytics-metric__hint">7-day event clustering</div>
+        </div>
+        <div class="analytics-metric">
+          <div class="analytics-metric__header">
+            <span class="analytics-metric__name mono">Connectivity</span>
+            <span class="analytics-metric__val mono" id="js-connectivity-val">—</span>
+          </div>
+          <div class="analytics-metric__bar-track">
+            <div class="analytics-metric__bar analytics-metric__bar--connectivity"
+                 id="js-connectivity-bar" style="width:0%"></div>
+          </div>
+          <div class="analytics-metric__hint">cross-linked ratio</div>
+        </div>
+      </div>
+      <div class="analytics-bar__divider"></div>
+      <div class="analytics-pins">
+        <div class="analytics-pin-stat">
+          <span class="analytics-pin-stat__val">{{ actors | length }}</span>
+          <span class="analytics-pin-stat__label mono">actors</span>
+        </div>
+        <div class="analytics-pin-stat">
+          <span class="analytics-pin-stat__val">{{ events | length }}</span>
+          <span class="analytics-pin-stat__label mono">events</span>
+        </div>
+        <div class="analytics-pin-stat">
+          <span class="analytics-pin-stat__val">{{ artifacts | length }}</span>
+          <span class="analytics-pin-stat__label mono">artifacts</span>
+        </div>
+      </div>
+    </div>{# /analytics-bar #}
+
+    {# ═════════════════════════════════════════════════════════════════════
+       THREE-COLUMN BOARD
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="board-layout">
+
+      {# ACTORS #}
+      <div class="board-column">
+        <div class="board-column__header">
+          <span class="board-column__icon">◉</span>
+          <h2 class="board-column__title">Actors</h2>
+          <span class="board-column__count mono">{{ actors | length }}</span>
+        </div>
+        {% if actors %}
+        <div class="board-column__items" id="js-sortable-actors">
+          {% for ac in actors %}
+          <div class="board-card board-card--actor"
+               data-entity-type="actor"
+               data-entity-id="{{ ac.actor_id }}"
+               data-sequence="{{ ac.sequence_order if ac.sequence_order is not none else '' }}">
+            {# Narrative mode drag handle + sequence badge #}
+            <div class="narrative-controls" style="display:none;">
+              <span class="narrative-drag-handle" title="Drag to reorder">⠿</span>
+              <span class="narrative-seq-badge" data-seq="{{ ac.sequence_order or '' }}">
+                {% if ac.sequence_order is not none %}#{{ ac.sequence_order }}{% else %}—{% endif %}
+              </span>
+            </div>
+            <div class="board-card__top">
+              <div class="board-card__meta">
+                <span class="actor-type-badge">{{ ac.type }}</span>
+                <span class="mono board-card__date">{{ ac.pinned_at[:10] }}</span>
+              </div>
+              <button class="board-card__unpin"
+                      data-case-id="{{ case.case_id }}"
+                      data-entity-type="actor" data-entity-id="{{ ac.actor_id }}"
+                      title="Unpin">⊠</button>
+            </div>
+            <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+               class="board-card__title">{{ ac.name }}</a>
+            {% if ac.description %}
+            <p class="board-card__desc">{{ ac.description | truncate(80) }}</p>
+            {% endif %}
+            <div class="board-card__stats mono">{{ ac.event_count }} event{{ 's' if ac.event_count != 1 }}</div>
+            {% if ac.note %}
+            <div class="board-card__note" data-note-field>
+              <span class="board-card__note-label mono">Note:</span>
+              <span class="board-card__note-text">{{ ac.note }}</span>
+            </div>
+            {% endif %}
+            <button class="board-card__note-btn mono"
+                    data-case-id="{{ case.case_id }}"
+                    data-entity-type="actor" data-entity-id="{{ ac.actor_id }}"
+                    onclick="openNoteEditor(this)">
+              {% if ac.note %}✎ Edit note{% else %}+ Add note{% endif %}
+            </button>
+            {# Transition note field (narrative mode only) #}
+            <div class="transition-note-field" style="display:none;">
+              <div class="transition-note-field__label mono">Transition → next item</div>
+              <textarea class="transition-note-field__input"
+                        data-case-id="{{ case.case_id }}"
+                        data-entity-type="actor"
+                        data-entity-id="{{ ac.actor_id }}"
+                        placeholder="What causal link connects this to the next item?">{{ ac.transition_note or '' }}</textarea>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="board-column__empty mono">No actors pinned yet.</div>
+        {% endif %}
+      </div>
+
+      {# EVENTS #}
+      <div class="board-column">
+        <div class="board-column__header">
+          <span class="board-column__icon">◎</span>
+          <h2 class="board-column__title">Events</h2>
+          <span class="board-column__count mono">{{ events | length }}</span>
+        </div>
+        {% if events %}
+        <div class="board-column__items" id="js-sortable-events">
+          {% for ev in events %}
+          <div class="board-card board-card--event"
+               data-entity-type="event"
+               data-entity-id="{{ ev.event_id }}"
+               data-sequence="{{ ev.sequence_order if ev.sequence_order is not none else '' }}">
+            <div class="narrative-controls" style="display:none;">
+              <span class="narrative-drag-handle" title="Drag to reorder">⠿</span>
+              <span class="narrative-seq-badge" data-seq="{{ ev.sequence_order or '' }}">
+                {% if ev.sequence_order is not none %}#{{ ev.sequence_order }}{% else %}—{% endif %}
+              </span>
+            </div>
+            <div class="board-card__top">
+              <div class="board-card__meta">
+                {% if ev.category %}<span class="category-badge">{{ ev.category }}</span>{% endif %}
+                <span class="mono board-card__date">{{ ev.date or '—' }}</span>
+              </div>
+              <button class="board-card__unpin"
+                      data-case-id="{{ case.case_id }}"
+                      data-entity-type="event" data-entity-id="{{ ev.event_id }}"
+                      title="Unpin">⊠</button>
+            </div>
+            <a href="{{ url_for('event_detail', event_id=ev.event_id) }}"
+               class="board-card__title">{{ ev.title }}</a>
+            {% if ev.location %}
+            <div class="mono board-card__location">⊕ {{ ev.location }}</div>
+            {% endif %}
+            {% if ev.summary %}
+            <p class="board-card__desc">{{ ev.summary | truncate(80) }}</p>
+            {% endif %}
+            <div class="board-card__stats mono">{{ ev.artifact_count }} artifact{{ 's' if ev.artifact_count != 1 }}</div>
+            {% if ev.note %}
+            <div class="board-card__note" data-note-field>
+              <span class="board-card__note-label mono">Note:</span>
+              <span class="board-card__note-text">{{ ev.note }}</span>
+            </div>
+            {% endif %}
+            <button class="board-card__note-btn mono"
+                    data-case-id="{{ case.case_id }}"
+                    data-entity-type="event" data-entity-id="{{ ev.event_id }}"
+                    onclick="openNoteEditor(this)">
+              {% if ev.note %}✎ Edit note{% else %}+ Add note{% endif %}
+            </button>
+            <div class="transition-note-field" style="display:none;">
+              <div class="transition-note-field__label mono">Transition → next item</div>
+              <textarea class="transition-note-field__input"
+                        data-case-id="{{ case.case_id }}"
+                        data-entity-type="event"
+                        data-entity-id="{{ ev.event_id }}"
+                        placeholder="What causal link connects this to the next item?">{{ ev.transition_note or '' }}</textarea>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="board-column__empty mono">No events pinned yet.</div>
+        {% endif %}
+      </div>
+
+      {# ARTIFACTS #}
+      <div class="board-column">
+        <div class="board-column__header">
+          <span class="board-column__icon">◈</span>
+          <h2 class="board-column__title">Artifacts</h2>
+          <span class="board-column__count mono">{{ artifacts | length }}</span>
+        </div>
+        {% if artifacts %}
+        <div class="board-column__items" id="js-sortable-artifacts">
+          {% for a in artifacts %}
+          <div class="board-card board-card--artifact"
+               data-entity-type="artifact"
+               data-entity-id="{{ a.artifact_id }}"
+               data-sequence="{{ a.sequence_order if a.sequence_order is not none else '' }}">
+            <div class="narrative-controls" style="display:none;">
+              <span class="narrative-drag-handle" title="Drag to reorder">⠿</span>
+              <span class="narrative-seq-badge" data-seq="{{ a.sequence_order or '' }}">
+                {% if a.sequence_order is not none %}#{{ a.sequence_order }}{% else %}—{% endif %}
+              </span>
+            </div>
+            <div class="board-card__top">
+              <div class="board-card__meta">
+                <span class="type-badge">{{ a.type }}</span>
+                {% if a.source %}
+                <span class="source-badge source-badge--{{ a.source }}">{{ a.source }}</span>
+                {% endif %}
+              </div>
+              <button class="board-card__unpin"
+                      data-case-id="{{ case.case_id }}"
+                      data-entity-type="artifact" data-entity-id="{{ a.artifact_id }}"
+                      title="Unpin">⊠</button>
+            </div>
+            <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+               class="board-card__title">{{ a.title }}</a>
+            {% if a.event_title %}
+            <div class="mono board-card__location">
+              ◎ <a href="{{ url_for('event_detail', event_id=a.event_id) }}"
+                   style="color:inherit;">{{ a.event_title | truncate(36) }}</a>
+            </div>
+            {% endif %}
+            {% if a.description %}
+            <p class="board-card__desc">{{ a.description | truncate(80) }}</p>
+            {% endif %}
+            <div class="board-card__stats mono">{{ a.date or '—' }}</div>
+            {% if a.note %}
+            <div class="board-card__note" data-note-field>
+              <span class="board-card__note-label mono">Note:</span>
+              <span class="board-card__note-text">{{ a.note }}</span>
+            </div>
+            {% endif %}
+            <button class="board-card__note-btn mono"
+                    data-case-id="{{ case.case_id }}"
+                    data-entity-type="artifact" data-entity-id="{{ a.artifact_id }}"
+                    onclick="openNoteEditor(this)">
+              {% if a.note %}✎ Edit note{% else %}+ Add note{% endif %}
+            </button>
+            <div class="transition-note-field" style="display:none;">
+              <div class="transition-note-field__label mono">Transition → next item</div>
+              <textarea class="transition-note-field__input"
+                        data-case-id="{{ case.case_id }}"
+                        data-entity-type="artifact"
+                        data-entity-id="{{ a.artifact_id }}"
+                        placeholder="What causal link connects this to the next item?">{{ a.transition_note or '' }}</textarea>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="board-column__empty mono">No artifacts pinned yet.</div>
+        {% endif %}
+      </div>
+
+    </div>{# /board-layout #}
+  </div>{# /workspace-layout__main #}
+
+  {# ── RIGHT: Discovery Sidebar ──────────────────────────────────────────── #}
+  <aside class="discovery-sidebar">
+    <div class="discovery-sidebar__header">
+      <div class="discovery-sidebar__title">
+        <span style="color:var(--accent);">⟁</span>
+        Inference Engine
+      </div>
+      <button class="discovery-sidebar__refresh" id="js-suggestions-refresh"
+              title="Refresh">↻</button>
+    </div>
+    <div class="discovery-filter" id="js-discovery-filter">
+      <button class="discovery-filter__pill discovery-filter__pill--active"
+              data-filter="ALL">All</button>
+      <button class="discovery-filter__pill" data-filter="HIGH">High</button>
+      <button class="discovery-filter__pill" data-filter="MEDIUM">Med</button>
+      <button class="discovery-filter__pill" data-filter="event">Events</button>
+      <button class="discovery-filter__pill" data-filter="actor">Actors</button>
+      <button class="discovery-filter__pill" data-filter="artifact">Evidence</button>
+    </div>
+    <div class="discovery-loading" id="js-discovery-loading">
+      <div class="discovery-loading__spinner"></div>
+      <span class="mono">Scanning relationship graph…</span>
+    </div>
+    <div class="discovery-leads" id="js-discovery-leads"></div>
+    <div class="discovery-sidebar__empty" id="js-discovery-empty" style="display:none;">
+      <span class="mono">No leads found.</span>
+    </div>
+  </aside>
+
+</div>{# /workspace-layout #}
+
+{# ── Modals ────────────────────────────────────────────────────────────────── #}
+<div class="modal" id="js-case-edit-modal">
+  <div class="modal__backdrop" onclick="this.parentElement.classList.remove('modal--open')"></div>
+  <div class="modal__box">
+    <div class="modal__header">
+      <span class="modal__title">Edit Workspace</span>
+      <button class="modal__close" onclick="document.getElementById('js-case-edit-modal').classList.remove('modal--open')">✕</button>
+    </div>
+    <form method="POST" action="{{ url_for('case_edit', case_id=case.case_id) }}">
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" name="title" value="{{ case.title }}" required>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            {% for s in ['active','closed','archived'] %}
+            <option value="{{ s }}" {{ 'selected' if case.status == s }}>{{ s | title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description">{{ case.description or '' }}</textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost"
+                onclick="document.getElementById('js-case-edit-modal').classList.remove('modal--open')">Cancel</button>
+        <button type="submit" class="btn btn--primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="js-case-delete-modal">
+  <div class="modal__backdrop" onclick="this.parentElement.classList.remove('modal--open')"></div>
+  <div class="modal__box modal__box--sm">
+    <div class="modal__header">
+      <span class="modal__title" style="color:var(--src-leaked);">Delete Workspace</span>
+      <button class="modal__close" onclick="document.getElementById('js-case-delete-modal').classList.remove('modal--open')">✕</button>
+    </div>
+    <div class="modal__body">
+      <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+        Permanently delete <strong>{{ case.title }}</strong> and all its pins? Underlying records are unaffected.
+      </p>
+    </div>
+    <div class="modal__footer">
+      <form method="POST" action="{{ url_for('case_delete', case_id=case.case_id) }}" style="display:contents;">
+        <button type="button" class="btn btn--ghost"
+                onclick="document.getElementById('js-case-delete-modal').classList.remove('modal--open')">Cancel</button>
+        <button type="submit" class="btn btn--danger">Delete Permanently</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="js-note-modal">
+  <div class="modal__backdrop" onclick="this.parentElement.classList.remove('modal--open')"></div>
+  <div class="modal__box modal__box--sm">
+    <div class="modal__header">
+      <span class="modal__title">Pin Note</span>
+      <button class="modal__close" onclick="document.getElementById('js-note-modal').classList.remove('modal--open')">✕</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-group">
+        <label>Note / Observation</label>
+        <textarea id="js-note-text" style="min-height:90px;"
+                  placeholder="Why is this pinned? What's significant?"></textarea>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button type="button" class="btn btn--ghost"
+              onclick="document.getElementById('js-note-modal').classList.remove('modal--open')">Cancel</button>
+      <button type="button" class="btn btn--primary" id="js-note-save">Save Note</button>
+    </div>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════
+   TACTICAL MAP MODAL (Phase 11)
+═══════════════════════════════════════════════════════════════════════════ #}
+<div class="modal modal--wide modal--fullscreen-map" id="js-tactical-map-modal">
+  <div class="modal__backdrop" onclick="closeTacticalMap()"></div>
+  <div class="modal__box modal__box--tactical-map">
+
+    <div class="modal__header">
+      <div class="modal__title">
+        <span style="color:var(--accent);">⊕</span>
+        Tactical Map — <span class="mono">{{ case.title | truncate(40) }}</span>
+      </div>
+      <div class="tactical-map-header__right">
+        <span class="mono tactical-map-stat" id="js-tactical-count">Loading…</span>
+        <button class="modal__close" onclick="closeTacticalMap()">✕</button>
+      </div>
+    </div>
+
+    <div class="tactical-map-body">
+      <div id="js-tactical-map"></div>
+
+      {# Legend overlay #}
+      <div class="tactical-map-legend" id="js-tactical-legend">
+        <div class="tactical-map-legend__title mono">CASE EVENTS</div>
+        <div class="tactical-map-legend__items" id="js-tactical-legend-items">
+          {# Populated by JS #}
+        </div>
+      </div>
+
+      {# No events notice #}
+      <div class="tactical-map-empty" id="js-tactical-empty" style="display:none;">
+        <span class="mono">No geo-located events pinned to this case.</span>
+        <a href="{{ url_for('events') }}" class="mono" style="color:var(--accent); display:block; margin-top:var(--sp-2);">
+          Browse events to pin →
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"
+        integrity="sha512-GK6+VuHCg5Fd+KW1kWcbwMnFBRVf88CDIQzY7fxIgUISPxb85XOLkwBxuXQLHVLQyxLwv6lDOHv+H+fE0vhQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"
+        crossorigin="anonymous"></script>
+
+{# ── Tactical Map (Phase 11) ─────────────────────────────────────────────── #}
+<script>
+/* =============================================================================
+   FORGE Phase 11 — Tactical Map
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  const CASE_ID = {{ case.case_id }};
+  const PAL = { bg: '#080d12', accent: '#c8943a', accentMuted: '#8a6420', surface: '#0c1219' };
+  const CAT_COLOURS = {
+    'Election':    '#6a4aaa', 'Security': '#c04040', 'Civil Unrest': '#c07830',
+    'Legislative': '#3a70c0', 'Economic': '#3a9060', 'Diplomatic':   '#7a5a9a',
+    'Military':    '#8a2020', 'Social':   '#4a7a6a', 'Other':        '#4a5a6a',
+  };
+  const catColour = cat => CAT_COLOURS[cat] || PAL.accentMuted;
+
+  let tacticalMap     = null;
+  let tacticalInit    = false;
+  let tacticalCluster = null;
+
+  /* ── Open / close ─────────────────────────────────────────────────────────── */
+  document.getElementById('js-tactical-map-open').addEventListener('click', function () {
+    document.getElementById('js-tactical-map-modal').classList.add('modal--open');
+    setTimeout(function () {
+      if (!tacticalInit) {
+        initTacticalMap();
+        tacticalInit = true;
+      } else {
+        tacticalMap.invalidateSize();
+      }
+    }, 80);
+  });
+
+  window.closeTacticalMap = function () {
+    document.getElementById('js-tactical-map-modal').classList.remove('modal--open');
+  };
+
+  /* ── Map init ─────────────────────────────────────────────────────────────── */
+  function initTacticalMap() {
+    tacticalMap = L.map('js-tactical-map', {
+      center:   [-29.0, 25.5],
+      zoom:     6,
+      zoomControl: true,
+    });
+
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      { attribution: '© OSM © CARTO', subdomains: 'abcd', maxZoom: 19, opacity: 0.85 }
+    ).addTo(tacticalMap);
+
+    tacticalCluster = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 50,
+      disableClusteringAtZoom: 9,
+    });
+
+    loadTacticalData();
+  }
+
+  /* ── Load case GeoJSON ───────────────────────────────────────────────────── */
+  function loadTacticalData() {
+    const countEl  = document.getElementById('js-tactical-count');
+    const emptyEl  = document.getElementById('js-tactical-empty');
+    const legendEl = document.getElementById('js-tactical-legend-items');
+
+    fetch(`/api/geo/case/${CASE_ID}`)
+      .then(r => r.json())
+      .then(function (geojson) {
+        const features = geojson.features || [];
+        countEl.textContent = `${features.length} event${features.length !== 1 ? 's' : ''} mapped`;
+
+        if (features.length === 0) {
+          emptyEl.style.display = 'flex';
+          return;
+        }
+
+        const legendEntries = {};
+
+        features.forEach(function (f, idx) {
+          const p   = f.properties;
+          const c   = f.geometry.coordinates;
+          const col = catColour(p.category);
+          const seq = p.sequence_order !== null ? `#${p.sequence_order} ` : '';
+
+          // Custom numbered marker
+          const num = p.sequence_order !== null ? String(p.sequence_order) : String(idx + 1);
+          const icon = L.divIcon({
+            html: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-20 -20 40 40">
+              <circle cx="0" cy="0" r="13" fill="${PAL.bg}" stroke="${col}" stroke-width="2"/>
+              <circle cx="0" cy="0" r="9" fill="${col}" opacity="0.45"/>
+              <text x="0" y="4" text-anchor="middle" font-family="IBM Plex Mono,monospace"
+                    font-size="${num.length > 1 ? 8 : 9}" font-weight="700" fill="${col}">${num}</text>
+              <line x1="0" y1="-14" x2="0" y2="-21" stroke="${col}" stroke-width="1.5" opacity="0.4"/>
+            </svg>`,
+            className:  'forge-marker',
+            iconSize:   [40, 40],
+            iconAnchor: [20, 20],
+          });
+
+          const marker = L.marker([c[1], c[0]], { icon });
+
+          // Rich popup
+          const dateStr = p.date     ? `<span class="mono" style="font-size:0.65rem;color:#888;">${p.date}</span>` : '';
+          const locStr  = p.location ? `<div style="font-size:0.7rem;color:#888;margin-top:3px;">⊕ ${p.location}</div>` : '';
+          const noteStr = p.pin_note ? `<div style="font-size:0.72rem;color:#aaa;margin-top:6px;font-style:italic;border-top:1px solid #222;padding-top:6px;">${p.pin_note}</div>` : '';
+
+          marker.bindPopup(`
+            <div class="tactical-popup" style="min-width:200px;font-family:IBM Plex Sans,sans-serif;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <span style="font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:${col};">${seq}${p.category}</span>
+                ${dateStr}
+              </div>
+              <div style="font-size:0.9rem;font-weight:600;color:#cfdce8;line-height:1.3;margin-bottom:4px;">${p.title}</div>
+              ${locStr}
+              ${p.summary ? `<div style="font-size:0.75rem;color:#8899aa;margin-top:6px;line-height:1.5;">${p.summary}${p.summary.length >= 160 ? '…' : ''}</div>` : ''}
+              ${noteStr}
+              <div style="margin-top:8px;">
+                <a href="${p.url}" style="font-size:0.72rem;color:${col};font-family:IBM Plex Mono,monospace;letter-spacing:0.04em;">
+                  Open Event Record →
+                </a>
+              </div>
+            </div>`, {
+            className: 'tactical-popup-wrapper',
+            maxWidth:  280,
+          });
+
+          tacticalCluster.addLayer(marker);
+          legendEntries[p.category] = col;
+        });
+
+        tacticalMap.addLayer(tacticalCluster);
+
+        // Fit map to markers
+        const bounds = L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+        tacticalMap.fitBounds(bounds.pad(0.3), { maxZoom: 12 });
+
+        // Populate legend
+        legendEl.innerHTML = Object.entries(legendEntries).map(([cat, col]) =>
+          `<div class="tactical-legend-item">
+            <span class="tactical-legend-dot" style="background:${col};border-color:${col};"></span>
+            <span class="tactical-legend-label mono">${cat}</span>
+          </div>`
+        ).join('');
+      })
+      .catch(function (err) {
+        console.error('[FORGE Tactical Map]', err);
+        countEl.textContent = 'Failed to load';
+      });
+  }
+
+})();
+</script>
+
+<script>
+/* =============================================================================
+   FORGE Phase 10 — Narrative Threader
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  const CASE_ID        = {{ case.case_id }};
+  let   narrativeMode  = false;
+  let   _sortables     = [];
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BOARD: unpin + pin note (unchanged from Phase 8/9)
+  ═══════════════════════════════════════════════════════════════════════════ */
+  document.querySelectorAll('.board-card__unpin').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const card = this.closest('.board-card');
+      fetch('/api/pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          case_id:     this.dataset.caseId,
+          entity_type: this.dataset.entityType,
+          entity_id:   this.dataset.entityId,
+        }),
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (!d.pinned) {
+          card.style.transition = 'opacity .25s, transform .25s';
+          card.style.opacity    = '0';
+          card.style.transform  = 'scale(0.95)';
+          setTimeout(() => { card.remove(); refreshInference(); }, 260);
+        }
+      }).catch(console.error);
+    });
+  });
+
+  let _noteCaseId, _noteEntityType, _noteEntityId, _noteSourceBtn;
+  window.openNoteEditor = function (btn) {
+    _noteCaseId     = btn.dataset.caseId;
+    _noteEntityType = btn.dataset.entityType;
+    _noteEntityId   = btn.dataset.entityId;
+    _noteSourceBtn  = btn;
+    const existing  = btn.closest('.board-card').querySelector('[data-note-field] .board-card__note-text');
+    document.getElementById('js-note-text').value = existing ? existing.textContent.trim() : '';
+    document.getElementById('js-note-modal').classList.add('modal--open');
+  };
+
+  document.getElementById('js-note-save').addEventListener('click', function () {
+    const note = document.getElementById('js-note-text').value.trim();
+    fetch('/api/pin/note', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ case_id: _noteCaseId, entity_type: _noteEntityType, entity_id: _noteEntityId, note }),
+    })
+    .then(r => r.json())
+    .then(() => {
+      const card = _noteSourceBtn.closest('.board-card');
+      let   nd   = card.querySelector('[data-note-field]');
+      if (note) {
+        if (!nd) {
+          nd = document.createElement('div');
+          nd.className = 'board-card__note';
+          nd.setAttribute('data-note-field', '');
+          nd.innerHTML = '<span class="board-card__note-label mono">Note:</span> <span class="board-card__note-text"></span>';
+          _noteSourceBtn.before(nd);
+        }
+        nd.querySelector('.board-card__note-text').textContent = note;
+        _noteSourceBtn.textContent = '✎ Edit note';
+      } else if (nd) {
+        nd.remove();
+        _noteSourceBtn.textContent = '+ Add note';
+      }
+      document.getElementById('js-note-modal').classList.remove('modal--open');
+    }).catch(console.error);
+  });
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     NARRATIVE MODE
+  ═══════════════════════════════════════════════════════════════════════════ */
+
+  const toggleBtn   = document.getElementById('js-narrative-toggle');
+  const toolbar     = document.getElementById('js-narrative-toolbar');
+  const statusLabel = document.getElementById('js-narrative-status');
+
+  function enterNarrativeMode() {
+    narrativeMode = true;
+    toolbar.style.display = 'flex';
+    toggleBtn.classList.add('btn--primary');
+    toggleBtn.style.borderColor = 'var(--accent-muted)';
+
+    // Show drag handles and transition fields on every board card
+    document.querySelectorAll('.board-card').forEach(card => {
+      card.querySelector('.narrative-controls').style.display = 'flex';
+      card.querySelector('.transition-note-field').style.display = 'block';
+      card.classList.add('board-card--narrative');
+    });
+
+    // Init SortableJS on each column
+    ['js-sortable-actors', 'js-sortable-events', 'js-sortable-artifacts'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const s = Sortable.create(el, {
+        animation:        150,
+        handle:           '.narrative-drag-handle',
+        ghostClass:       'board-card--dragging',
+        chosenClass:      'board-card--chosen',
+        dragClass:        'board-card--drag',
+        onEnd:            updateVisualSequence,
+      });
+      _sortables.push(s);
+    });
+
+    updateVisualSequence();
+    statusLabel.textContent = 'Drag cards to reorder · Fill transition fields · Save Order when done';
+  }
+
+  function exitNarrativeMode() {
+    narrativeMode = false;
+    toolbar.style.display = 'none';
+    toggleBtn.classList.remove('btn--primary');
+    toggleBtn.style.borderColor = '';
+
+    document.querySelectorAll('.board-card').forEach(card => {
+      card.querySelector('.narrative-controls').style.display  = 'none';
+      card.querySelector('.transition-note-field').style.display = 'none';
+      card.classList.remove('board-card--narrative');
+    });
+
+    _sortables.forEach(s => s.destroy());
+    _sortables = [];
+  }
+
+  toggleBtn.addEventListener('click', () => narrativeMode ? exitNarrativeMode() : enterNarrativeMode());
+  document.getElementById('js-narrative-exit').addEventListener('click', exitNarrativeMode);
+
+  /* ── Compute visual sequence from current DOM order ────────────────────── */
+  function updateVisualSequence() {
+    // Gather all cards across all three sortable columns in their current DOM order
+    const allCards = [
+      ...document.querySelectorAll('#js-sortable-actors   .board-card'),
+      ...document.querySelectorAll('#js-sortable-events   .board-card'),
+      ...document.querySelectorAll('#js-sortable-artifacts .board-card'),
+    ];
+
+    // Assign visual sequence numbers per column (position within column)
+    ['actors', 'events', 'artifacts'].forEach(col => {
+      const cards = document.querySelectorAll(`#js-sortable-${col} .board-card`);
+      cards.forEach((card, idx) => {
+        const badge = card.querySelector('.narrative-seq-badge');
+        if (badge) {
+          const seq = idx + 1;
+          badge.textContent = `#${seq}`;
+          card.dataset.sequence = seq;
+        }
+      });
+    });
+  }
+
+  /* ── Save Order ──────────────────────────────────────────────────────────── */
+  document.getElementById('js-save-sequence').addEventListener('click', async function () {
+    const btn = this;
+    btn.disabled    = true;
+    btn.textContent = '…Saving';
+
+    // Collect per-column sequences
+    const items = [];
+    ['actors', 'events', 'artifacts'].forEach(col => {
+      const typeMap = { actors: 'actor', events: 'event', artifacts: 'artifact' };
+      const etype   = typeMap[col];
+      document.querySelectorAll(`#js-sortable-${col} .board-card`).forEach((card, idx) => {
+        items.push({
+          entity_type:    etype,
+          entity_id:      parseInt(card.dataset.entityId),
+          sequence_order: idx + 1,
+        });
+      });
+    });
+
+    try {
+      // Save sequence orders
+      await fetch('/api/sequence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ case_id: CASE_ID, items }),
+      });
+
+      // Save transition notes
+      const noteFields = document.querySelectorAll('.transition-note-field__input');
+      const notePromises = [];
+      noteFields.forEach(field => {
+        const note = field.value.trim();
+        // Only save if value changed from initial (or save all for simplicity)
+        notePromises.push(
+          fetch('/api/transition', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              case_id:         CASE_ID,
+              entity_type:     field.dataset.entityType,
+              entity_id:       parseInt(field.dataset.entityId),
+              transition_note: note || null,
+            }),
+          })
+        );
+      });
+      await Promise.all(notePromises);
+
+      btn.textContent = '✓ Saved';
+      btn.style.background = 'var(--accent-glow)';
+      statusLabel.textContent = `Sequence saved — ${items.length} items ordered`;
+      setTimeout(() => {
+        btn.disabled    = false;
+        btn.textContent = '✓ Save Order';
+        btn.style.background = '';
+      }, 2000);
+    } catch (err) {
+      console.error('[FORGE Sequence]', err);
+      btn.disabled    = false;
+      btn.textContent = '✗ Error — Retry';
+    }
+  });
+
+  /* ── Auto-sequence (Suggest Timeline) ───────────────────────────────────── */
+  document.getElementById('js-auto-sequence').addEventListener('click', function () {
+    const btn = this;
+    btn.disabled    = true;
+    btn.textContent = '…Computing';
+
+    fetch(`/api/auto-sequence/${CASE_ID}`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.ok) { btn.disabled = false; btn.textContent = '⊕ Suggest Timeline'; return; }
+
+        // Build a lookup: entity_type + entity_id → sequence_order
+        const seqMap = {};
+        data.items.forEach(item => {
+          seqMap[`${item.entity_type}-${item.entity_id}`] = item.sequence_order;
+        });
+
+        // Apply to DOM badges
+        document.querySelectorAll('.board-card').forEach(card => {
+          const key = `${card.dataset.entityType}-${card.dataset.entityId}`;
+          const seq = seqMap[key];
+          if (seq !== undefined) {
+            card.dataset.sequence = seq;
+            const badge = card.querySelector('.narrative-seq-badge');
+            if (badge) badge.textContent = `#${seq}`;
+          }
+        });
+
+        // Sort each column by the new sequence
+        ['actors', 'events', 'artifacts'].forEach(col => {
+          const typeMap = { actors: 'actor', events: 'event', artifacts: 'artifact' };
+          const etype   = typeMap[col];
+          const container = document.getElementById(`js-sortable-${col}`);
+          if (!container) return;
+          const cards = [...container.querySelectorAll('.board-card')];
+          cards.sort((a, b) => {
+            const sa = parseInt(a.dataset.sequence) || 9999;
+            const sb = parseInt(b.dataset.sequence) || 9999;
+            return sa - sb;
+          });
+          cards.forEach(c => container.appendChild(c));
+        });
+
+        statusLabel.textContent = `Timeline suggested — ${data.items.length} items sequenced chronologically`;
+        btn.disabled    = false;
+        btn.textContent = '⊕ Suggest Timeline';
+      })
+      .catch(err => {
+        console.error('[FORGE AutoSeq]', err);
+        btn.disabled    = false;
+        btn.textContent = '⊕ Suggest Timeline';
+      });
+  });
+
+  /* ── Clear sequence ──────────────────────────────────────────────────────── */
+  document.getElementById('js-clear-sequence').addEventListener('click', function () {
+    const items = [];
+    document.querySelectorAll('.board-card').forEach(card => {
+      items.push({
+        entity_type:    card.dataset.entityType,
+        entity_id:      parseInt(card.dataset.entityId),
+        sequence_order: null,
+      });
+      card.dataset.sequence = '';
+      const badge = card.querySelector('.narrative-seq-badge');
+      if (badge) badge.textContent = '—';
+    });
+
+    fetch('/api/sequence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ case_id: CASE_ID, items }),
+    }).catch(console.error);
+
+    statusLabel.textContent = 'Sequence cleared';
+  });
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     INFERENCE ENGINE (Phase 9 — unchanged)
+  ═══════════════════════════════════════════════════════════════════════════ */
+
+  let _suggestions  = [];
+  let _activeFilter = 'ALL';
+
+  function refreshInference() {
+    document.getElementById('js-discovery-loading').style.display = 'flex';
+    document.getElementById('js-discovery-empty').style.display   = 'none';
+    document.getElementById('js-discovery-leads').innerHTML       = '';
+
+    fetch(`/api/suggestions/${CASE_ID}`)
+      .then(r => r.json())
+      .then(data => {
+        renderHeat(data.heat);
+        _suggestions = data.suggestions || [];
+        renderLeads();
+        document.getElementById('js-discovery-loading').style.display = 'none';
+      })
+      .catch(err => {
+        console.error('[FORGE Inference]', err);
+        document.getElementById('js-discovery-loading').style.display = 'none';
+        document.getElementById('js-discovery-empty').style.display   = 'block';
+      });
+  }
+
+  function renderHeat(heat) {
+    const score = heat.composite;
+    const circ  = 2 * Math.PI * 24;
+    const fill  = (score / 100) * circ;
+    const gap   = circ - fill;
+    const colour = score >= 85 ? '#cc5555' : score >= 70 ? '#c8943a' : '#4aaa66';
+    const fillEl = document.getElementById('js-gauge-fill');
+    if (fillEl) {
+      fillEl.setAttribute('stroke', colour);
+      fillEl.style.transition = 'stroke-dasharray 0.9s cubic-bezier(0.4,0,0.2,1)';
+      requestAnimationFrame(() => fillEl.setAttribute('stroke-dasharray', `${fill.toFixed(1)} ${gap.toFixed(1)}`));
+    }
+    const valEl = document.getElementById('js-heat-value');
+    if (valEl) { valEl.textContent = score; valEl.style.color = colour; }
+    const lblEl = document.getElementById('js-heat-label');
+    if (lblEl) {
+      lblEl.textContent = score >= 85 ? 'CRITICAL' : score >= 70 ? 'ACTIVE' : score >= 40 ? 'DEVELOPING' : 'EARLY';
+      lblEl.style.color = colour;
+    }
+    [['density', heat.density], ['volatility', heat.volatility], ['connectivity', heat.connectivity]].forEach(([k, v]) => {
+      const bar = document.getElementById(`js-${k}-bar`);
+      const spn = document.getElementById(`js-${k}-val`);
+      if (bar) setTimeout(() => { bar.style.width = `${v}%`; }, 120);
+      if (spn) spn.textContent = `${Math.round(v)}`;
+    });
+  }
+
+  function renderLeads() {
+    const container = document.getElementById('js-discovery-leads');
+    const emptyEl   = document.getElementById('js-discovery-empty');
+    container.innerHTML = '';
+    const visible = _suggestions.filter(s => {
+      if (_activeFilter === 'ALL')    return true;
+      if (_activeFilter === 'HIGH')   return s.confidence_label === 'HIGH';
+      if (_activeFilter === 'MEDIUM') return s.confidence_label === 'MEDIUM';
+      return s.type === _activeFilter;
+    });
+    if (visible.length === 0) { emptyEl.style.display = 'block'; return; }
+    emptyEl.style.display = 'none';
+    visible.forEach((s, i) => {
+      const card = document.createElement('div');
+      card.className = `lead-card lead-card--${s.type}`;
+      card.style.animationDelay = `${i * 40}ms`;
+      const icon = s.type === 'event' ? '◎' : s.type === 'actor' ? '◉' : '◈';
+      const confClass = `lead-confidence--${s.confidence_label.toLowerCase()}`;
+      let meta = '';
+      if      (s.type === 'event')    meta = `<span class="category-badge">${esc(s.category)}</span>` + (s.date ? `<span class="mono" style="font-size:0.6rem;color:var(--text-dim);">${s.date}</span>` : '');
+      else if (s.type === 'actor')    meta = `<span class="actor-type-badge">${esc(s.subtype||'')}</span>`;
+      else                            meta = `<span class="type-badge">${esc(s.subtype||'')}</span><span class="source-badge source-badge--${esc(s.source||'')}"> ${esc(s.source||'')}</span>`;
+      card.innerHTML = `
+        <div class="lead-card__top">
+          <span class="lead-card__icon">${icon}</span>
+          <div class="lead-confidence ${confClass}">
+            <span class="lead-confidence__label mono">${s.confidence_label}</span>
+            <div class="lead-confidence__bar-track"><div class="lead-confidence__bar" style="width:${s.confidence}%"></div></div>
+            <span class="lead-confidence__pct mono">${s.confidence}%</span>
+          </div>
+        </div>
+        <div class="lead-card__title">${esc(s.title)}</div>
+        <div class="lead-card__meta">${meta}</div>
+        <div class="lead-card__reason mono">${esc(s.reason)}</div>
+        <div class="lead-card__actions">
+          <a href="${esc(s.url)}" class="lead-card__view mono" target="_blank">View record →</a>
+          <button class="lead-card__pin btn--dossier btn--sm"
+                  data-entity-type="${s.type}" data-entity-id="${s.entity_id}">⊟ Pin</button>
+        </div>`;
+      card.querySelector('.lead-card__pin').addEventListener('click', function () {
+        fetch('/api/pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ case_id: CASE_ID, entity_type: this.dataset.entityType, entity_id: this.dataset.entityId }),
+        })
+        .then(r => r.json())
+        .then(d => {
+          if (d.pinned) {
+            this.textContent    = '⊠ Pinned';
+            this.disabled       = true;
+            this.style.color    = 'var(--accent)';
+            card.style.opacity  = '0.45';
+            setTimeout(refreshInference, 800);
+          }
+        }).catch(console.error);
+      });
+      container.appendChild(card);
+    });
+  }
+
+  document.getElementById('js-discovery-filter').addEventListener('click', function (e) {
+    const pill = e.target.closest('[data-filter]');
+    if (!pill) return;
+    _activeFilter = pill.dataset.filter;
+    document.querySelectorAll('.discovery-filter__pill').forEach(p =>
+      p.classList.toggle('discovery-filter__pill--active', p === pill));
+    renderLeads();
+  });
+  document.getElementById('js-suggestions-refresh').addEventListener('click', refreshInference);
+
+  /* ── Utilities ────────────────────────────────────────────────────────────── */
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal--open').forEach(m => m.classList.remove('modal--open'));
+      if (narrativeMode) exitNarrativeMode();
+    }
+  });
+
+  /* ── Boot ─────────────────────────────────────────────────────────────────── */
+  refreshInference();
+
+})();
+</script>
+{% endblock %}

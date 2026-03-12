@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ page | title }}{% endblock %}
+
+{% block content %}
+
+{% if page == '404' %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Error // 404</div>
+  <h1 class="page-header__title">Record Not Found</h1>
+  <p class="page-header__sub">This artifact, event, or actor does not exist in the archive.</p>
+</div>
+<a href="{{ url_for('index') }}" class="btn btn--secondary">← Return to Archive Home</a>
+
+{% elif page == '500' %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Error // 500</div>
+  <h1 class="page-header__title">System Error</h1>
+  <p class="page-header__sub">An internal error occurred. Check the server log.</p>
+</div>
+
+{% elif page == 'timeline' %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Timeline</div>
+  <h1 class="page-header__title">Timeline Explorer</h1>
+  <p class="page-header__sub">Chronological view — Phase 5.</p>
+</div>
+{% if events %}
+<div class="event-list">
+  {% for e in events %}
+  <a href="{{ url_for('event_detail', event_id=e.event_id) }}" class="event-row">
+    <div class="event-row__date mono">{{ e.date or '—' }}</div>
+    <div>
+      <div class="event-row__title">{{ e.title }}</div>
+      {% if e.location %}
+      <div style="font-size:0.72rem; color:var(--text-dim); font-family:var(--font-mono);">
+        ⊕ {{ e.location }}
+      </div>
+      {% endif %}
+    </div>
+    <div class="event-row__meta">
+      {% if e.category %}
+        <span class="category-badge">{{ e.category }}</span>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% elif page == 'map' %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Map</div>
+  <h1 class="page-header__title">Map Explorer</h1>
+  <p class="page-header__sub">Leaflet.js geographic view — Phase 6.</p>
+</div>
+<div class="empty-state">Map module coming in Phase 6.</div>
+
+{% elif page == 'graph' %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Graph</div>
+  <h1 class="page-header__title">Intelligence Graph</h1>
+  <p class="page-header__sub">D3.js relationship network — Phase 7.</p>
+</div>
+<div class="empty-state">Graph module coming in Phase 7.</div>
+
+{% else %}
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // {{ page }}</div>
+  <h1 class="page-header__title">{{ page | title }}</h1>
+</div>
+<div class="empty-state">This module is under construction.</div>
+{% endif %}
+
+{% endblock %}

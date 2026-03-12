@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">Archive // Search</div>
+  <h1 class="page-header__title">Archive Search</h1>
+</div>
+
+{# ── Search form ─────────────────────────────────────────────────────────── #}
+<div class="search-header">
+  <form class="search-form" action="{{ url_for('search') }}" method="get">
+    <input type="search" name="q"
+           value="{{ query }}"
+           placeholder="Search artifacts, events, tags, descriptions…"
+           autocomplete="off"
+           autofocus>
+    <button type="submit">Search</button>
+  </form>
+
+  {% if query %}
+  <div class="search-summary">
+    {% if error %}
+      <span style="color:var(--source-leaked);">⚠ {{ error }}</span>
+    {% elif total == 0 %}
+      No results for <mark>{{ query }}</mark>
+    {% else %}
+      <mark>{{ total }}</mark> result{{ 's' if total != 1 }} for
+      <mark>{{ query }}</mark>
+      —
+      {{ artifact_results|length }} artifact{{ 's' if artifact_results|length != 1 }},
+      {{ event_results|length }} event{{ 's' if event_results|length != 1 }}
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{# ── Artifact results ────────────────────────────────────────────────────── #}
+{% if artifact_results %}
+<div class="section-heading">Artifacts</div>
+{% for r in artifact_results %}
+<div class="search-result">
+  <div class="search-result__kind">
+    {{ r.type }}
+    {% if r.source %}
+      &nbsp;·&nbsp;
+      <span class="source-badge source-badge--{{ r.source }}">
+        {{ SOURCE_META[r.source].label if r.source in SOURCE_META else r.source }}
+      </span>
+    {% endif %}
+  </div>
+  <div class="search-result__title">
+    <a href="{{ url_for('artifact_detail', artifact_id=r.artifact_id) }}">
+      {{ r.title }}
+    </a>
+  </div>
+  {% if r.snippet %}
+  <div class="search-result__snippet">{{ r.snippet|safe }}</div>
+  {% endif %}
+  <div class="search-result__meta">
+    {% if r.date %}
+    <span class="mono" style="font-size:0.7rem; color:var(--text-dim);">{{ r.date }}</span>
+    {% endif %}
+    {% if r.event_title %}
+    <span style="font-size:0.78rem; color:var(--text-secondary);">
+      ↳ <a href="{{ url_for('event_detail', event_id=r.event_id) }}">{{ r.event_title }}</a>
+    </span>
+    {% endif %}
+    {% if r.tags %}
+    <span style="font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim);">
+      {{ r.tags }}
+    </span>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{# ── Event results ───────────────────────────────────────────────────────── #}
+{% if event_results %}
+<div class="section-heading" style="margin-top:var(--space-xl);">Events</div>
+{% for r in event_results %}
+<div class="search-result">
+  <div class="search-result__kind">
+    event
+    {% if r.category %}
+      &nbsp;·&nbsp;<span class="category-badge">{{ r.category }}</span>
+    {% endif %}
+  </div>
+  <div class="search-result__title">
+    <a href="{{ url_for('event_detail', event_id=r.event_id) }}">{{ r.title }}</a>
+  </div>
+  {% if r.snippet %}
+  <div class="search-result__snippet">{{ r.snippet|safe }}</div>
+  {% endif %}
+  <div class="search-result__meta">
+    {% if r.date %}
+    <span class="mono" style="font-size:0.7rem; color:var(--text-dim);">{{ r.date }}</span>
+    {% endif %}
+    {% if r.location %}
+    <span style="font-size:0.75rem; color:var(--text-dim); font-family:var(--font-mono);">
+      ⊕ {{ r.location }}
+    </span>
+    {% endif %}
+    <span style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-dim);">
+      {{ r.artifact_count }} artifact{{ 's' if r.artifact_count != 1 }}
+    </span>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{# ── Empty state ─────────────────────────────────────────────────────────── #}
+{% if not query %}
+<div class="empty-state" style="margin-top:var(--space-xl);">
+  Enter a search term to query the archive.
+  <br><br>
+  <span style="opacity:0.6;">
+    Try: <a href="?q=surveillance">surveillance</a> ·
+    <a href="?q=election">election</a> ·
+    <a href="?q=SSA">SSA</a> ·
+    <a href="?q=protest">protest</a>
+  </span>
+</div>
+{% endif %}
+
+{% endblock %}

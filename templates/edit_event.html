@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+{% block title %}Edit: {{ event.title }}{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+      crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+
+<nav class="breadcrumb">
+  <a href="{{ url_for('events') }}">Events</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('event_detail', event_id=event.event_id) }}">{{ event.title | truncate(40) }}</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">Edit</span>
+</nav>
+
+<div class="page-header">
+  <div class="page-header__eyebrow mono">EVENT #{{ event.event_id }} — EDIT</div>
+  <h1 class="page-header__title">Edit Event</h1>
+  <div class="page-header__actions">
+    <a href="{{ url_for('event_detail', event_id=event.event_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
+  </div>
+</div>
+
+<div class="edit-form-wrap">
+  <div class="form-panel">
+    <div class="form-panel__header">
+      <span style="color:var(--accent);">◎</span>
+      <span class="form-panel__header-title">Update Event Record</span>
+    </div>
+    <div class="form-panel__body">
+      <form method="POST" action="{{ url_for('event_edit', event_id=event.event_id) }}">
+
+        <div class="form-group">
+          <label>Admin Password *</label>
+          <input type="password" name="password" placeholder="Enter admin password" required>
+        </div>
+        <hr class="divider">
+
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" name="title" value="{{ event.title }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Summary</label>
+          <textarea name="summary" style="min-height:100px;">{{ event.summary or '' }}</textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date" value="{{ event.date or '' }}">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select name="category">
+              {% for cat in event_categories %}
+              <option value="{{ cat }}" {{ 'selected' if event.category == cat }}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" name="location" value="{{ event.location or '' }}"
+                 placeholder="e.g. Union Buildings, Pretoria">
+        </div>
+
+        {# ── Coordinate fields + picker ─────────────────────────────────────── #}
+        <div class="coord-field-group">
+          <div class="coord-field-group__header">
+            <span class="coord-field-group__label">Coordinates</span>
+            <button type="button" class="btn btn--ghost btn--sm coord-picker-trigger"
+                    id="js-coord-picker-open">
+              <span style="color:var(--accent);">⊕</span>
+              {% if event.latitude and event.longitude %}
+                Update on Map
+              {% else %}
+                Set Coordinates on Map
+              {% endif %}
+            </button>
+            {% if event.latitude and event.longitude %}
+            <button type="button" class="btn btn--ghost btn--sm" id="js-coord-clear"
+                    title="Clear coordinates">⊗ Clear</button>
+            {% endif %}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Latitude</label>
+              <input type="number" name="latitude" id="js-lat-input"
+                     step="0.000001" value="{{ event.latitude or '' }}"
+                     placeholder="e.g. -25.7461">
+            </div>
+            <div class="form-group">
+              <label>Longitude</label>
+              <input type="number" name="longitude" id="js-lng-input"
+                     step="0.000001" value="{{ event.longitude or '' }}"
+                     placeholder="e.g. 28.1881">
+            </div>
+          </div>
+
+          {% if event.latitude and event.longitude %}
+          <div class="coord-preview" id="js-coord-preview">
+            <span class="coord-preview__icon" style="color:var(--accent);">⊕</span>
+            <span class="coord-preview__text mono" id="js-coord-preview-text">
+              {{ "%.4f"|format(event.latitude) }}, {{ "%.4f"|format(event.longitude) }}
+            </span>
+            <a href="{{ url_for('map_explorer') }}" class="coord-preview__map-link mono"
+               target="_blank">View on Map ↗</a>
+          </div>
+          {% else %}
+          <div class="coord-preview coord-preview--empty" id="js-coord-preview">
+            <span class="coord-preview__icon" style="color:var(--text-dim);">⊕</span>
+            <span class="coord-preview__text mono" id="js-coord-preview-text">
+              No coordinates set
+            </span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="edit-form-actions">
+          <button type="submit" class="btn btn--primary">◎ Save Changes</button>
+          <button type="button" class="btn btn--danger"
+                  onclick="document.getElementById('js-delete-modal').classList.add('modal--open')">
+            Delete Event
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════
+   COORDINATE PICKER MODAL
+═══════════════════════════════════════════════════════════════════════════ #}
+<div class="modal modal--wide" id="js-coord-modal">
+  <div class="modal__backdrop" onclick="closeCoordModal()"></div>
+  <div class="modal__box modal__box--coord-picker">
+
+    <div class="modal__header">
+      <span class="modal__title">
+        <span style="color:var(--accent);">⊕</span>
+        Set Event Coordinates
+      </span>
+      <button class="modal__close" onclick="closeCoordModal()">✕</button>
+    </div>
+
+    <div class="coord-modal-body">
+
+      <div class="coord-modal-hint mono" id="js-coord-modal-hint">
+        Click anywhere on the map to place the event marker
+      </div>
+
+      <div class="coord-modal-layout">
+
+        {# Map pane #}
+        <div class="coord-modal-map-wrap">
+          <div id="js-picker-map"></div>
+        </div>
+
+        {# Right sidebar: search + readout #}
+        <div class="coord-modal-sidebar">
+
+          <div class="form-group" style="margin-bottom:var(--sp-3);">
+            <label>Quick Search</label>
+            <div class="coord-search-row">
+              <input type="text" id="js-coord-search" placeholder="e.g. Pretoria, Johannesburg…"
+                     style="flex:1;">
+              <button type="button" class="btn btn--ghost btn--sm" id="js-coord-search-btn">Go</button>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="form-group">
+            <label>Selected Latitude</label>
+            <input type="number" id="js-picker-lat-display"
+                   step="0.000001" placeholder="Click map to set"
+                   value="{{ event.latitude or '' }}">
+          </div>
+          <div class="form-group">
+            <label>Selected Longitude</label>
+            <input type="number" id="js-picker-lng-display"
+                   step="0.000001" placeholder="Click map to set"
+                   value="{{ event.longitude or '' }}">
+          </div>
+
+          <div class="coord-modal-hint mono" id="js-picker-latlon-readout" style="margin-top:0;">
+            {% if event.latitude and event.longitude %}
+              Current: {{ "%.5f"|format(event.latitude) }}, {{ "%.5f"|format(event.longitude) }}
+            {% else %}
+              No coordinates set
+            {% endif %}
+          </div>
+
+          <div class="coord-modal-actions">
+            <button type="button" class="btn btn--ghost" onclick="closeCoordModal()">Cancel</button>
+            <button type="button" class="btn btn--primary" id="js-coord-confirm">
+              ✓ Use These Coordinates
+            </button>
+          </div>
+
+          <div class="coord-modal-presets">
+            <div class="coord-modal-presets__label mono">Quick locations</div>
+            <div class="coord-modal-presets__grid">
+              {% set presets = [
+                ('Johannesburg', -26.2041, 28.0473),
+                ('Pretoria',     -25.7461, 28.1881),
+                ('Cape Town',    -33.9249, 18.4241),
+                ('Durban',       -29.8587, 31.0218),
+                ('Soweto',       -26.2680, 27.8587),
+                ('Marikana',     -25.7006, 27.4806),
+              ] %}
+              {% for name, lat, lng in presets %}
+              <button type="button" class="coord-preset-btn mono"
+                      data-lat="{{ lat }}" data-lng="{{ lng }}">{{ name }}</button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+      </div>{# /coord-modal-layout #}
+    </div>{# /coord-modal-body #}
+  </div>
+</div>
+
+{# ── Delete modal ──────────────────────────────────────────────────────────── #}
+<div class="modal" id="js-delete-modal">
+  <div class="modal__backdrop" onclick="this.parentElement.classList.remove('modal--open')"></div>
+  <div class="modal__box modal__box--sm">
+    <div class="modal__header">
+      <span class="modal__title" style="color:var(--src-leaked);">Delete Event</span>
+      <button class="modal__close" onclick="document.getElementById('js-delete-modal').classList.remove('modal--open')">✕</button>
+    </div>
+    <div class="modal__body">
+      <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6;">
+        Permanently delete <strong>{{ event.title }}</strong>?
+        Linked artifacts will have their event association cleared but will not be deleted.
+        This action cannot be undone.
+      </p>
+      <div class="form-group" style="margin-top:var(--sp-4);">
+        <label>Admin Password *</label>
+        <input type="password" id="js-delete-pw" placeholder="Confirm with admin password">
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button type="button" class="btn btn--ghost"
+              onclick="document.getElementById('js-delete-modal').classList.remove('modal--open')">Cancel</button>
+      <button type="button" class="btn btn--danger" onclick="submitDelete()">Delete Permanently</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+        crossorigin="anonymous"></script>
+<script>
+/* =============================================================================
+   FORGE Phase 11 — Edit Event: Coordinate Picker
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  const PAL = { bg: '#080d12', accent: '#c8943a', accentMuted: '#8a6420' };
+
+  /* ── Picker state ─────────────────────────────────────────────────────────── */
+  let pickerMap      = null;
+  let pickerMarker   = null;
+  let pickedLat      = {{ event.latitude or 'null' }};
+  let pickedLng      = {{ event.longitude or 'null' }};
+  let pickerInitDone = false;
+
+  const latInput    = document.getElementById('js-lat-input');
+  const lngInput    = document.getElementById('js-lng-input');
+  const modal       = document.getElementById('js-coord-modal');
+  const hint        = document.getElementById('js-coord-modal-hint');
+  const latDisplay  = document.getElementById('js-picker-lat-display');
+  const lngDisplay  = document.getElementById('js-picker-lng-display');
+  const readout     = document.getElementById('js-picker-latlon-readout');
+  const previewText = document.getElementById('js-coord-preview-text');
+  const preview     = document.getElementById('js-coord-preview');
+
+  /* ── Open / close ──────────────────────────────────────────────────────────── */
+  document.getElementById('js-coord-picker-open').addEventListener('click', openCoordModal);
+
+  window.closeCoordModal = function () {
+    modal.classList.remove('modal--open');
+  };
+
+  window.openCoordModal = function () {
+    modal.classList.add('modal--open');
+    // Init map lazily — first open only
+    setTimeout(function () {
+      if (!pickerInitDone) {
+        initPickerMap();
+        pickerInitDone = true;
+      } else {
+        pickerMap.invalidateSize();
+      }
+    }, 80);
+  };
+
+  /* ── Map init ──────────────────────────────────────────────────────────────── */
+  function initPickerMap() {
+    const defaultLat = pickedLat !== null ? pickedLat : -29.0;
+    const defaultLng = pickedLng !== null ? pickedLng : 25.5;
+    const defaultZoom = pickedLat !== null ? 10 : 6;
+
+    pickerMap = L.map('js-picker-map', {
+      center:   [defaultLat, defaultLng],
+      zoom:     defaultZoom,
+      zoomControl: true,
+    });
+
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      { attribution: '© OSM © CARTO', subdomains: 'abcd', maxZoom: 19, opacity: 0.85 }
+    ).addTo(pickerMap);
+
+    // If event already has coordinates, show existing marker
+    if (pickedLat !== null && pickedLng !== null) {
+      placeMarker(pickedLat, pickedLng);
+    }
+
+    // Click to place marker
+    pickerMap.on('click', function (e) {
+      placeMarker(e.latlng.lat, e.latlng.lng);
+    });
+  }
+
+  /* ── Marker ────────────────────────────────────────────────────────────────── */
+  function placeMarker(lat, lng) {
+    lat = parseFloat(lat.toFixed ? lat.toFixed(6) : lat);
+    lng = parseFloat(lng.toFixed ? lng.toFixed(6) : lng);
+
+    if (pickerMarker) {
+      pickerMarker.setLatLng([lat, lng]);
+    } else {
+      const icon = L.divIcon({
+        html: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="-16 -32 32 40">
+          <circle cx="0" cy="-16" r="12" fill="${PAL.bg}" stroke="${PAL.accent}" stroke-width="2"/>
+          <circle cx="0" cy="-16" r="7" fill="${PAL.accent}" opacity="0.7"/>
+          <line x1="0" y1="-4" x2="0" y2="6" stroke="${PAL.accent}" stroke-width="2"/>
+        </svg>`,
+        className: 'forge-picker-marker',
+        iconSize:  [32, 40],
+        iconAnchor:[16, 40],
+      });
+      pickerMarker = L.marker([lat, lng], { icon, draggable: true }).addTo(pickerMap);
+      pickerMarker.on('dragend', function () {
+        const ll = pickerMarker.getLatLng();
+        updatePickerReadout(ll.lat, ll.lng);
+      });
+    }
+
+    updatePickerReadout(lat, lng);
+    hint.textContent = 'Drag the marker to fine-tune the position';
+  }
+
+  function updatePickerReadout(lat, lng) {
+    pickedLat = parseFloat(lat.toFixed ? lat.toFixed(6) : lat);
+    pickedLng = parseFloat(lng.toFixed ? lng.toFixed(6) : lng);
+
+    if (latDisplay) latDisplay.value = pickedLat;
+    if (lngDisplay) lngDisplay.value = pickedLng;
+    if (readout)    readout.textContent = `Selected: ${pickedLat}, ${pickedLng}`;
+  }
+
+  /* ── Manual input sync ─────────────────────────────────────────────────────── */
+  [latDisplay, lngDisplay].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener('change', function () {
+      const lat = parseFloat(latDisplay.value);
+      const lng = parseFloat(lngDisplay.value);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        placeMarker(lat, lng);
+        pickerMap.setView([lat, lng], Math.max(pickerMap.getZoom(), 10));
+      }
+    });
+  });
+
+  /* ── Quick location search (Nominatim, FOSS) ───────────────────────────────── */
+  document.getElementById('js-coord-search-btn').addEventListener('click', doSearch);
+  document.getElementById('js-coord-search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+  });
+
+  function doSearch() {
+    const q = document.getElementById('js-coord-search').value.trim();
+    if (!q) return;
+    hint.textContent = 'Searching…';
+
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=za`,
+      { headers: { 'Accept-Language': 'en' } })
+      .then(r => r.json())
+      .then(function (data) {
+        if (!data || data.length === 0) {
+          hint.textContent = 'Location not found. Try a more specific query.';
+          return;
+        }
+        const lat = parseFloat(data[0].lat);
+        const lng = parseFloat(data[0].lon);
+        placeMarker(lat, lng);
+        pickerMap.setView([lat, lng], 12);
+        hint.textContent = `Found: ${data[0].display_name.split(',').slice(0,2).join(',')}`;
+      })
+      .catch(() => { hint.textContent = 'Search failed. Try entering coordinates manually.'; });
+  }
+
+  /* ── Preset buttons ─────────────────────────────────────────────────────────── */
+  document.querySelectorAll('.coord-preset-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const lat = parseFloat(this.dataset.lat);
+      const lng = parseFloat(this.dataset.lng);
+      placeMarker(lat, lng);
+      pickerMap.setView([lat, lng], 11);
+    });
+  });
+
+  /* ── Confirm ──────────────────────────────────────────────────────────────── */
+  document.getElementById('js-coord-confirm').addEventListener('click', function () {
+    if (pickedLat === null || pickedLng === null) {
+      hint.textContent = 'Click the map to place a marker first.';
+      return;
+    }
+
+    // Write back into the form fields
+    latInput.value = pickedLat;
+    lngInput.value = pickedLng;
+
+    // Update the preview badge
+    if (previewText) {
+      previewText.textContent = `${pickedLat.toFixed(4)}, ${pickedLng.toFixed(4)}`;
+      preview.classList.remove('coord-preview--empty');
+    }
+
+    closeCoordModal();
+  });
+
+  /* ── Clear coordinates ──────────────────────────────────────────────────────── */
+  const clearBtn = document.getElementById('js-coord-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      latInput.value = '';
+      lngInput.value = '';
+      pickedLat = null;
+      pickedLng = null;
+      if (previewText) {
+        previewText.textContent = 'No coordinates set';
+        preview.classList.add('coord-preview--empty');
+      }
+      if (pickerMarker && pickerMap) {
+        pickerMap.removeLayer(pickerMarker);
+        pickerMarker = null;
+      }
+    });
+  }
+
+  /* ── Delete modal ───────────────────────────────────────────────────────────── */
+  window.submitDelete = function () {
+    const pw = document.getElementById('js-delete-pw').value;
+    if (!pw) { alert('Password required.'); return; }
+    const form  = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ url_for("event_delete", event_id=event.event_id) }}';
+    const inp   = document.createElement('input');
+    inp.type    = 'hidden'; inp.name = 'password'; inp.value = pw;
+    form.appendChild(inp);
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal--open').forEach(m => m.classList.remove('modal--open'));
+    }
+  });
+
+})();
+</script>
+{% endblock %}

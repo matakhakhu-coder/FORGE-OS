@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FORGE{% endblock %} — Investigative Archive</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+<div class="shell">
+
+  {# ── Top Bar ──────────────────────────────────────────────────────────── #}
+  <header class="topbar">
+    <a href="{{ url_for('index') }}" class="topbar__wordmark">
+      FORGE <span>ZA-DIVERGENT ARCHIVE</span>
+    </a>
+
+    <form class="topbar__search" action="{{ url_for('search') }}" method="get">
+      <input type="search" name="q" placeholder="Search the archive…"
+             value="{{ request.args.get('q', '') }}" autocomplete="off">
+      <button type="submit">Search</button>
+    </form>
+
+    <div class="topbar__meta" id="js-clock">——</div>
+  </header>
+
+  {# ── Sidebar ──────────────────────────────────────────────────────────── #}
+  <nav class="sidebar">
+    <div class="sidebar__section">
+      <div class="sidebar__label">Intelligence</div>
+      <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('index') }}"
+             class="{{ 'active' if request.endpoint == 'index' }}">
+            <span class="nav-icon">◈</span> Archive Home
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('search') }}"
+             class="{{ 'active' if request.endpoint == 'search' }}">
+            <span class="nav-icon">⌕</span> Search
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar__section">
+      <div class="sidebar__label">Explore</div>
+      <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('events') }}"
+             class="{{ 'active' if request.endpoint == 'events' }}">
+            <span class="nav-icon">◎</span> Events
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('actors') }}"
+             class="{{ 'active' if request.endpoint == 'actors' }}">
+            <span class="nav-icon">◉</span> Actors
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('timeline') }}"
+             class="{{ 'active' if request.endpoint == 'timeline' }}">
+            <span class="nav-icon">≡</span> Timeline
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('map_explorer') }}"
+             class="{{ 'active' if request.endpoint == 'map_explorer' }}">
+            <span class="nav-icon">⊕</span> Map
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('graph') }}"
+             class="{{ 'active' if request.endpoint == 'graph' }}">
+            <span class="nav-icon">◫</span> Graph
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar__section">
+      <div class="sidebar__label">Cases</div>
+      <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('cases') }}"
+             class="{{ 'active' if request.endpoint in ('cases','case_detail') }}">
+            <span class="nav-icon">⊟</span> Workspaces
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar__section">
+      <div class="sidebar__label">System</div>
+      <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('admin') }}"
+             class="{{ 'active' if request.endpoint == 'admin' }}">
+            <span class="nav-icon">⊞</span> Admin
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  {# ── Main Content ─────────────────────────────────────────────────────── #}
+  <main class="main">
+
+    {# Flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-list">
+          {% for category, message in messages %}
+            <li class="flash flash--{{ category }}">
+              {% if category == 'success' %}✓{% else %}✗{% endif %}
+              {{ message }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+  </main>
+
+</div>{# /shell #}
+
+<script>
+  // Live clock in topbar
+  (function () {
+    const el = document.getElementById('js-clock');
+    function tick() {
+      const now = new Date();
+      el.textContent = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  // Sort select auto-submit
+  document.querySelectorAll('.sort-select').forEach(function (sel) {
+    sel.addEventListener('change', function () {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort', this.value);
+      window.location.href = url.toString();
+    });
+  });
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

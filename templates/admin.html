@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">System // Admin</div>
+  <h1 class="page-header__title">Admin Panel</h1>
+  <p class="page-header__sub">Ingest artifacts, create events, manage the archive.</p>
+</div>
+
+{# ── Stat summary ────────────────────────────────────────────────────────── #}
+<div class="stat-grid" style="margin-bottom:var(--space-xl);">
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.artifacts }}</div>
+    <div class="stat-card__label">Artifacts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.events }}</div>
+    <div class="stat-card__label">Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__value">{{ stats.actors }}</div>
+    <div class="stat-card__label">Actors</div>
+  </div>
+</div>
+
+<div class="admin-grid">
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     LEFT COLUMN — Add Artifact
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div class="form-panel">
+    <div class="form-panel__header">
+      <span style="color:var(--accent);">◈</span>
+      <span class="form-panel__header-title">Ingest Artifact</span>
+    </div>
+    <div class="form-panel__body">
+
+      <form method="POST" action="{{ url_for('admin') }}" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="add_artifact">
+
+        {# Password gate #}
+        <div class="form-group">
+          <label for="password">Admin Password</label>
+          <input type="password" id="password" name="password"
+                 placeholder="Enter admin password" required>
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input type="text" id="title" name="title"
+                 placeholder="Descriptive artifact title" required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description"
+                    placeholder="Full provenance, context, and notes…"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="type">Type *</label>
+            <select id="type" name="type" required>
+              <option value="document">Document</option>
+              <option value="photo">Photo</option>
+              <option value="video">Video</option>
+              <option value="audio">Audio</option>
+              <option value="news">News</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="source">Source Classification *</label>
+            <select id="source" name="source" required>
+              <option value="unverified">Unverified</option>
+              <option value="verified">Verified</option>
+              <option value="government">Government Source</option>
+              <option value="leaked">Anonymous Leak</option>
+              <option value="citizen">Citizen Footage</option>
+              <option value="media">Media Report</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date">
+          </div>
+          <div class="form-group">
+            <label for="event_id">Link to Event</label>
+            <select id="event_id" name="event_id">
+              <option value="">— None —</option>
+              {% for e in events %}
+              <option value="{{ e.event_id }}">
+                {{ e.date or '?' }} · {{ e.title[:45] }}{% if e.title|length > 45 %}…{% endif %}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location"
+                 placeholder="Named place (e.g. Johannesburg, Gauteng)">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input type="number" id="latitude" name="latitude"
+                   step="0.0001" placeholder="-26.2041">
+          </div>
+          <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input type="number" id="longitude" name="longitude"
+                   step="0.0001" placeholder="28.0473">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tags">Tags</label>
+          <input type="text" id="tags" name="tags"
+                 placeholder="Comma-separated: election, IEC, Gauteng">
+        </div>
+
+        <div class="form-group form-group--file">
+          <label for="file">Upload File</label>
+          <input type="file" id="file" name="file"
+                 accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.csv">
+          <div style="font-family:var(--font-mono); font-size:0.65rem;
+                      color:var(--text-dim); margin-top:4px;">
+            Images auto-generate thumbnails. Saved to /media/{type}/
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          ◈ &nbsp; Ingest Artifact
+        </button>
+      </form>
+
+    </div>
+  </div>{# /form-panel #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     RIGHT COLUMN — Add Event + Recent Artifacts
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div style="display:flex; flex-direction:column; gap:var(--space-lg);">
+
+    {# ── Add Event ───────────────────────────────────────────────────────── #}
+    <div class="form-panel">
+      <div class="form-panel__header">
+        <span style="color:var(--accent);">◎</span>
+        <span class="form-panel__header-title">Create Event</span>
+      </div>
+      <div class="form-panel__body">
+
+        <form method="POST" action="{{ url_for('admin') }}">
+          <input type="hidden" name="action" value="add_event">
+
+          <div class="form-group">
+            <label for="pw2">Admin Password</label>
+            <input type="password" id="pw2" name="password"
+                   placeholder="Enter admin password" required>
+          </div>
+
+          <hr class="divider">
+
+          <div class="form-group">
+            <label for="ev_title">Title *</label>
+            <input type="text" id="ev_title" name="ev_title"
+                   placeholder="Event name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ev_summary">Summary</label>
+            <textarea id="ev_summary" name="ev_summary" style="min-height:70px;"
+                      placeholder="Narrative description of the event…"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ev_date">Date</label>
+              <input type="date" id="ev_date" name="ev_date">
+            </div>
+            <div class="form-group">
+              <label for="ev_category">Category</label>
+              <select id="ev_category" name="ev_category">
+                {% for cat in event_categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ev_location">Location</label>
+            <input type="text" id="ev_location" name="ev_location"
+                   placeholder="Named place">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="ev_latitude">Latitude</label>
+              <input type="number" id="ev_latitude" name="ev_latitude"
+                     step="0.0001" placeholder="-26.2041">
+            </div>
+            <div class="form-group">
+              <label for="ev_longitude">Longitude</label>
+              <input type="number" id="ev_longitude" name="ev_longitude"
+                     step="0.0001" placeholder="28.0473">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--secondary btn--full">
+            ◎ &nbsp; Create Event
+          </button>
+        </form>
+
+      </div>
+    </div>{# /form-panel #}
+
+    {# ── Add Actor ───────────────────────────────────────────────────────── #}
+    <div class="form-panel">
+      <div class="form-panel__header">
+        <span style="color:var(--accent);">◉</span>
+        <span class="form-panel__header-title">Register Actor</span>
+      </div>
+      <div class="form-panel__body">
+
+        <form method="POST" action="{{ url_for('admin') }}">
+          <input type="hidden" name="action" value="add_actor">
+
+          <div class="form-group">
+            <label for="pw3">Admin Password</label>
+            <input type="password" id="pw3" name="password"
+                   placeholder="Enter admin password" required>
+          </div>
+
+          <hr class="divider">
+
+          <div class="form-group">
+            <label for="ac_name">Full Name / Designation *</label>
+            <input type="text" id="ac_name" name="ac_name"
+                   placeholder="e.g. Commissioner Nozipho Dlamini" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ac_type">Actor Type *</label>
+            <select id="ac_type" name="ac_type" required>
+              {% for atype in actor_types_list %}
+              <option value="{{ atype }}">{{ atype | title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="ac_description">Description / Intelligence Notes</label>
+            <textarea id="ac_description" name="ac_description"
+                      style="min-height:70px;"
+                      placeholder="Role, affiliation, known associations…"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--ghost btn--full">
+            ◉ &nbsp; Register Actor
+          </button>
+        </form>
+
+      </div>
+    </div>{# /form-panel #}
+
+    {# ── Recent artifacts ──────────────────────────────────────────────── #}
+    <div class="form-panel">
+      <div class="form-panel__header">
+        <span style="color:var(--text-dim);">≡</span>
+        <span class="form-panel__header-title">Recent Ingests</span>
+      </div>
+      <div class="form-panel__body" style="padding:0;">
+        {% if recent_artifacts %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Source</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in recent_artifacts %}
+            <tr>
+              <td>
+                <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}">
+                  {{ a.title[:40] }}{% if a.title|length > 40 %}…{% endif %}
+                </a>
+              </td>
+              <td class="mono" style="font-size:0.68rem;">{{ a.type }}</td>
+              <td>
+                {% if a.source %}
+                <span class="source-badge source-badge--{{ a.source }}">
+                  {{ a.source }}
+                </span>
+                {% endif %}
+              </td>
+              <td class="mono" style="font-size:0.68rem;">
+                {{ a.date or '—' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No artifacts ingested yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>{# /right column #}
+
+</div>{# /admin-grid #}
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Timeline{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">Timeline Explorer</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">Temporal Analysis // ZA-Divergent</div>
+  <h1 class="page-header__title">Timeline Explorer</h1>
+  <p class="page-header__sub">
+    The chronological spine of the archive — events ordered by date,
+    revealing the causal chain of the divergent timeline.
+  </p>
+</div>
+
+{# ── Span metadata ──────────────────────────────────────────────────────────── #}
+{% if span.start %}
+<div class="timeline-span-bar">
+  <div class="timeline-span-bar__item">
+    <span class="timeline-span-bar__value mono">{{ span.start }}</span>
+    <span class="timeline-span-bar__label">Crisis opens</span>
+  </div>
+  <div class="timeline-span-bar__track">
+    <div class="timeline-span-bar__fill"></div>
+    <div class="timeline-span-bar__label-center mono">
+      {{ span.years }} year{{ 's' if span.years != 1 }} · {{ span.total }} event{{ 's' if span.total != 1 }}
+    </div>
+  </div>
+  <div class="timeline-span-bar__item timeline-span-bar__item--right">
+    <span class="timeline-span-bar__value mono">{{ span.end }}</span>
+    <span class="timeline-span-bar__label">Latest entry</span>
+  </div>
+</div>
+{% endif %}
+
+{# ── Legend ─────────────────────────────────────────────────────────────────── #}
+<div class="timeline-legend">
+  {% set categories = [] %}
+  {% for year, months in grouped.items() %}
+    {% for month, events in months.items() %}
+      {% for e in events %}
+        {% if e.category and e.category not in categories %}
+          {% set _ = categories.append(e.category) %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+  {% for cat in categories %}
+  <span class="timeline-legend__item">
+    <span class="timeline-legend__dot timeline-legend__dot--{{ cat | lower | replace(' ', '-') }}"></span>
+    <span class="mono">{{ cat }}</span>
+  </span>
+  {% endfor %}
+</div>
+
+{# ═══════════════════════════════════════════════════════════════════════════ #}
+{# Main timeline spine                                                         #}
+{# ═══════════════════════════════════════════════════════════════════════════ #}
+
+<div class="tl">
+
+  {# Global spine line — runs the full height #}
+  <div class="tl__spine"></div>
+
+  {% for year, months in grouped.items() %}
+
+    {# ── Year marker ─────────────────────────────────────────────────────── #}
+    <div class="tl__year-marker">
+      <div class="tl__year-badge">{{ year }}</div>
+    </div>
+
+    {% for month, events in months.items() %}
+
+      {# ── Month group ───────────────────────────────────────────────────── #}
+      <div class="tl__month-group">
+        <div class="tl__month-label mono">{{ MONTH_NAMES.get(month, month) }}</div>
+
+        {% for event in events %}
+
+          {# Alternate sides: even loop index → left, odd → right #}
+          {% set side = 'left' if loop.index0 % 2 == 0 else 'right' %}
+
+          <div class="tl__entry tl__entry--{{ side }}" data-category="{{ event.category or 'other' }}">
+
+            {# Connector arm from spine to card #}
+            <div class="tl__connector tl__connector--{{ side }}"></div>
+
+            {# Spine node dot #}
+            <div class="tl__node tl__node--{{ (event.category or 'other') | lower | replace(' ', '-') }}">
+              <div class="tl__node-inner"></div>
+            </div>
+
+            {# Event card #}
+            <article class="tl__card tl__card--{{ side }}">
+
+              <div class="tl__card-header">
+                <span class="tl__date-badge mono">{{ event.date or '—' }}</span>
+                {% if event.category %}
+                <span class="category-badge tl__cat-badge tl__cat-badge--{{ event.category | lower | replace(' ', '-') }}">
+                  {{ event.category }}
+                </span>
+                {% endif %}
+              </div>
+
+              <h3 class="tl__card-title">
+                <a href="{{ url_for('event_detail', event_id=event.event_id) }}">
+                  {{ event.title }}
+                </a>
+              </h3>
+
+              {% if event.location %}
+              <div class="tl__card-location mono">⊕ {{ event.location }}</div>
+              {% endif %}
+
+              {% if event.summary %}
+              <p class="tl__card-summary">{{ event.summary | truncate(140) }}</p>
+              {% endif %}
+
+              <div class="tl__card-footer">
+                {% if event.artifact_count %}
+                <span class="tl__artifact-count mono">
+                  {{ event.artifact_count }} evidence item{{ 's' if event.artifact_count != 1 }}
+                </span>
+                {% endif %}
+                <a href="{{ url_for('event_detail', event_id=event.event_id) }}"
+                   class="tl__card-link">
+                  Investigate →
+                </a>
+              </div>
+
+            </article>
+
+          </div>{# /tl__entry #}
+
+        {% endfor %}{# /events #}
+      </div>{# /tl__month-group #}
+
+    {% endfor %}{# /months #}
+  {% endfor %}{# /years #}
+
+  {# ── Undated events ────────────────────────────────────────────────────── #}
+  {% if undated %}
+  <div class="tl__year-marker">
+    <div class="tl__year-badge tl__year-badge--undated">Undated</div>
+  </div>
+  {% for event in undated %}
+  <div class="tl__entry tl__entry--left">
+    <div class="tl__connector tl__connector--left"></div>
+    <div class="tl__node tl__node--other"><div class="tl__node-inner"></div></div>
+    <article class="tl__card tl__card--left">
+      <div class="tl__card-header">
+        <span class="tl__date-badge mono tl__date-badge--unknown">Date unknown</span>
+        {% if event.category %}
+        <span class="category-badge">{{ event.category }}</span>
+        {% endif %}
+      </div>
+      <h3 class="tl__card-title">
+        <a href="{{ url_for('event_detail', event_id=event.event_id) }}">{{ event.title }}</a>
+      </h3>
+      {% if event.location %}
+      <div class="tl__card-location mono">⊕ {{ event.location }}</div>
+      {% endif %}
+    </article>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {# ── Terminal marker ───────────────────────────────────────────────────── #}
+  <div class="tl__terminal">
+    <div class="tl__terminal-dot"></div>
+    <span class="mono tl__terminal-label">Archive continues…</span>
+  </div>
+
+</div>{# /tl #}
+
+{% endblock %}

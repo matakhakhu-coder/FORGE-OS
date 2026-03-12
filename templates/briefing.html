@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRIEFING — {{ case.title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    /* ── Briefing-specific overrides ──────────────────────────────────────── */
+    body { background: var(--bg-base); }
+
+    .briefing-shell {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: var(--sp-8) var(--sp-6) var(--sp-16);
+    }
+
+    /* ── Toolbar ────────────────────────────────────────────────────────── */
+    .briefing-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      padding: var(--sp-3) 0 var(--sp-6);
+      border-bottom: 1px solid var(--border-dim);
+      margin-bottom: var(--sp-8);
+    }
+    .briefing-toolbar__left { display: flex; align-items: center; gap: var(--sp-3); }
+    .briefing-toolbar__right { display: flex; align-items: center; gap: var(--sp-3); }
+    .briefing-wordmark {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ── Classification banner ──────────────────────────────────────────── */
+    .classification-banner {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent-muted);
+      padding: var(--sp-2) var(--sp-4);
+      margin-bottom: var(--sp-8);
+      border-radius: var(--r-sm);
+      background: var(--accent-glow);
+    }
+
+    /* ── Briefing header ────────────────────────────────────────────────── */
+    .briefing-header {
+      margin-bottom: var(--sp-10);
+      padding-bottom: var(--sp-8);
+      border-bottom: 2px solid var(--border-dim);
+    }
+    .briefing-header__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-3);
+      flex-wrap: wrap;
+    }
+    .briefing-header__case-id {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+    .briefing-header__title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.15;
+      margin-bottom: var(--sp-4);
+      letter-spacing: -0.02em;
+    }
+    .briefing-header__description {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 640px;
+      margin-bottom: var(--sp-5);
+    }
+    .briefing-header__meta {
+      display: flex;
+      gap: var(--sp-6);
+      flex-wrap: wrap;
+    }
+    .briefing-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .briefing-meta-item__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .briefing-meta-item__value {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── Thread section heading ─────────────────────────────────────────── */
+    .briefing-section-heading {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: var(--sp-6);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+    .briefing-section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-dim);
+    }
+
+    /* ── The narrative thread ───────────────────────────────────────────── */
+    .narrative-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Thread item ────────────────────────────────────────────────────── */
+    .thread-item {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 var(--sp-5);
+      margin-bottom: 0;
+    }
+
+    .thread-item__spine {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 4px;
+    }
+    .thread-item__node {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+      background: var(--bg-base);
+      position: relative;
+      z-index: 1;
+    }
+    .thread-item__node--event    { border-color: var(--accent-muted); color: var(--accent); }
+    .thread-item__node--actor    { border-color: #4a70a0;             color: #6a9de0; }
+    .thread-item__node--artifact { border-color: #3a5a7a;             color: #5a8aaa; }
+
+    .thread-item__line {
+      flex: 1;
+      width: 2px;
+      background: var(--border-dim);
+      margin: 4px 0;
+      min-height: 24px;
+    }
+    .thread-item__line--none { background: transparent; }
+
+    .thread-item__body {
+      padding-bottom: var(--sp-2);
+    }
+
+    /* ── Entity card within the thread ──────────────────────────────────── */
+    .briefing-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--r-sm);
+      padding: var(--sp-4) var(--sp-5);
+      margin-bottom: var(--sp-3);
+    }
+    .briefing-card--event    { border-left: 3px solid var(--accent-muted); }
+    .briefing-card--actor    { border-left: 3px solid #4a70a0; }
+    .briefing-card--artifact { border-left: 3px solid #3a5a7a; }
+
+    .briefing-card__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--sp-2);
+    }
+    .briefing-card__kind {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .briefing-card__title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      line-height: 1.3;
+      display: block;
+      margin-bottom: var(--sp-2);
+    }
+    .briefing-card__title:hover { color: var(--accent); }
+
+    .briefing-card__sub {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-bottom: var(--sp-3);
+      letter-spacing: 0.03em;
+    }
+    .briefing-card__body {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .briefing-card__pin-note {
+      margin-top: var(--sp-3);
+      padding-top: var(--sp-3);
+      border-top: 1px solid var(--border-dim);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .briefing-card__pin-note::before {
+      content: 'Analyst Note: ';
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-style: normal;
+      color: var(--text-ghost);
+      margin-right: var(--sp-1);
+    }
+
+    /* ── Transition note ────────────────────────────────────────────────── */
+    .transition-block {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 0 var(--sp-5);
+      padding: var(--sp-1) 0;
+    }
+    .transition-block__spine {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .transition-block__line {
+      flex: 1;
+      width: 2px;
+      background: var(--border-dim);
+      min-height: 48px;
+    }
+    .transition-block__arrow {
+      width: 16px;
+      height: 16px;
+      border-right: 2px solid var(--border-mid);
+      border-bottom: 2px solid var(--border-mid);
+      transform: rotate(45deg) translateY(-3px);
+      margin: 0 auto;
+    }
+    .transition-block__body {
+      padding: var(--sp-3) var(--sp-4);
+      border-left: 2px dashed var(--border-dim);
+      margin-left: 0;
+    }
+    .transition-block__label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-bottom: var(--sp-1);
+    }
+    .transition-block__text {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      font-style: italic;
+    }
+
+    /* ── Unsequenced items ──────────────────────────────────────────────── */
+    .unsequenced-section {
+      margin-top: var(--sp-12);
+      padding-top: var(--sp-8);
+      border-top: 1px dashed var(--border-dim);
+      opacity: 0.7;
+    }
+    .unsequenced-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--sp-3);
+    }
+    .unsequenced-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-dim);
+      border-radius: var(--r-sm);
+      padding: var(--sp-3) var(--sp-4);
+    }
+    .unsequenced-card__kind {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: var(--sp-1);
+    }
+    .unsequenced-card__title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .unsequenced-card__title:hover { color: var(--text-primary); }
+
+    /* ── Footer ─────────────────────────────────────────────────────────── */
+    .briefing-footer {
+      margin-top: var(--sp-16);
+      padding-top: var(--sp-5);
+      border-top: 1px solid var(--border-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--sp-3);
+    }
+    .briefing-footer__left {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .briefing-footer__right {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+    }
+
+    /* ── Print overrides ────────────────────────────────────────────────── */
+    @media print {
+      .briefing-toolbar   { display: none !important; }
+      body, .briefing-shell { background: white !important; color: #1a1a1a !important; }
+      .briefing-card      { background: white !important; border-color: #ccc !important; }
+      .briefing-card__body,
+      .briefing-card__title,
+      .briefing-header__title { color: #1a1a1a !important; }
+      .briefing-card__sub,
+      .briefing-card__kind,
+      .briefing-card__pin-note,
+      .transition-block__text { color: #555 !important; }
+      .classification-banner  { color: #555 !important; border-color: #ccc !important; background: white !important; }
+      .thread-item__line,
+      .transition-block__line { background: #ccc !important; }
+      @page { size: A4 portrait; margin: 20mm 18mm; }
+      .thread-item, .briefing-card { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="briefing-shell">
+
+  {# ── Toolbar ─────────────────────────────────────────────────────────── #}
+  <div class="briefing-toolbar no-print">
+    <div class="briefing-toolbar__left">
+      <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+         class="btn btn--ghost btn--sm">← Back to Workspace</a>
+      <span class="briefing-wordmark">FORGE / ZA-DIVERGENT</span>
+    </div>
+    <div class="briefing-toolbar__right">
+      <button onclick="window.print()" class="btn btn--dossier btn--sm">⎙ Print / Save PDF</button>
+    </div>
+  </div>
+
+  {# ── Classification banner ────────────────────────────────────────────── #}
+  <div class="classification-banner">
+    Intelligence Briefing — Handle Under POPIA Protocols — FORGE Archive — For Authorised Use Only
+  </div>
+
+  {# ── Header ───────────────────────────────────────────────────────────── #}
+  <header class="briefing-header">
+    <div class="briefing-header__eyebrow">
+      <span class="briefing-header__case-id mono">CASE #{{ case.case_id }}</span>
+      <span class="case-status-badge case-status-badge--{{ case.status }}">{{ case.status }}</span>
+    </div>
+    <h1 class="briefing-header__title">{{ case.title }}</h1>
+    {% if case.description %}
+    <p class="briefing-header__description">{{ case.description }}</p>
+    {% endif %}
+    <div class="briefing-header__meta">
+      <div class="briefing-meta-item">
+        <span class="briefing-meta-item__label">Generated</span>
+        <span class="briefing-meta-item__value">{{ generated_at }}</span>
+      </div>
+      <div class="briefing-meta-item">
+        <span class="briefing-meta-item__label">Sequenced Items</span>
+        <span class="briefing-meta-item__value">{{ stats.sequenced }} / {{ stats.total }}</span>
+      </div>
+      <div class="briefing-meta-item">
+        <span class="briefing-meta-item__label">Actors</span>
+        <span class="briefing-meta-item__value">{{ stats.actors }}</span>
+      </div>
+      <div class="briefing-meta-item">
+        <span class="briefing-meta-item__label">Events</span>
+        <span class="briefing-meta-item__value">{{ stats.events }}</span>
+      </div>
+      <div class="briefing-meta-item">
+        <span class="briefing-meta-item__label">Artifacts</span>
+        <span class="briefing-meta-item__value">{{ stats.artifacts }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# ══════════════════════════════════════════════════════════════════════
+     NARRATIVE THREAD
+  ═══════════════════════════════════════════════════════════════════════ #}
+
+  {% if sequenced %}
+  <div class="briefing-section-heading">Narrative Thread</div>
+
+  <div class="narrative-thread">
+    {% for item in sequenced %}
+    {% set is_last = loop.last %}
+
+    {# ── Entity node ──────────────────────────────────────────────────── #}
+    <div class="thread-item">
+      <div class="thread-item__spine">
+        <div class="thread-item__node thread-item__node--{{ item.kind }}">
+          {{ item.sequence_order }}
+        </div>
+        {% if not is_last or item.transition_note %}
+        <div class="thread-item__line"></div>
+        {% else %}
+        <div class="thread-item__line thread-item__line--none"></div>
+        {% endif %}
+      </div>
+
+      <div class="thread-item__body">
+        <div class="briefing-card briefing-card--{{ item.kind }}">
+          <div class="briefing-card__eyebrow">
+            <span class="briefing-card__kind">{{ item.kind }}</span>
+            {% if item.kind == 'event' and item.category %}
+              <span class="category-badge">{{ item.category }}</span>
+            {% elif item.kind == 'actor' and item.type %}
+              <span class="actor-type-badge">{{ item.type }}</span>
+            {% elif item.kind == 'artifact' and item.type %}
+              <span class="type-badge">{{ item.type }}</span>
+              {% if item.source %}
+              <span class="source-badge source-badge--{{ item.source }}">{{ item.source }}</span>
+              {% endif %}
+            {% endif %}
+          </div>
+
+          {% set detail_url = url_for('event_detail', event_id=item.entity_id) if item.kind == 'event'
+                              else url_for('actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
+                              else url_for('artifact_detail', artifact_id=item.entity_id) %}
+          <a href="{{ detail_url }}" class="briefing-card__title">{{ item.title }}</a>
+
+          <div class="briefing-card__sub">
+            {% if item.date %}<span>{{ item.date }}</span>{% endif %}
+            {% if item.date and item.location %} · {% endif %}
+            {% if item.location %}<span>{{ item.location }}</span>{% endif %}
+            {% if item.kind == 'artifact' and item.description_extra %}
+              {% if item.date or item.location %} · {% endif %}
+              <span>◎ {{ item.description_extra }}</span>
+            {% endif %}
+          </div>
+
+          {% if item.summary %}
+          <div class="briefing-card__body">{{ item.summary }}</div>
+          {% endif %}
+
+          {% if item.note %}
+          <div class="briefing-card__pin-note">{{ item.note }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>{# /thread-item #}
+
+    {# ── Transition note between items ─────────────────────────────────── #}
+    {% if item.transition_note %}
+    <div class="transition-block">
+      <div class="transition-block__spine">
+        <div class="transition-block__line"></div>
+      </div>
+      <div class="transition-block__body">
+        <div class="transition-block__label">Analysis / Transition</div>
+        <div class="transition-block__text">{{ item.transition_note }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state" style="padding:var(--sp-10) 0; text-align:center;">
+    <p class="mono" style="color:var(--text-dim); font-size:0.78rem; letter-spacing:0.06em;">
+      No sequenced items. Assign sequence numbers in the Workspace to build the narrative thread.
+    </p>
+    <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+       class="btn btn--ghost" style="margin-top:var(--sp-4);">
+      ← Go to Workspace
+    </a>
+  </div>
+  {% endif %}
+
+  {# ── Unsequenced appendix ─────────────────────────────────────────────── #}
+  {% if unsequenced %}
+  <div class="unsequenced-section">
+    <div class="briefing-section-heading">Appendix — Unsequenced Items</div>
+    <div class="unsequenced-grid">
+      {% for item in unsequenced %}
+      {% set detail_url = url_for('event_detail', event_id=item.entity_id) if item.kind == 'event'
+                          else url_for('actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
+                          else url_for('artifact_detail', artifact_id=item.entity_id) %}
+      <div class="unsequenced-card">
+        <div class="unsequenced-card__kind">{{ item.kind }}</div>
+        <a href="{{ detail_url }}" class="unsequenced-card__title">{{ item.title }}</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# ── Footer ───────────────────────────────────────────────────────────── #}
+  <footer class="briefing-footer">
+    <div class="briefing-footer__left">
+      FORGE / ZA-DIVERGENT ARCHIVE · CASE #{{ case.case_id }}
+    </div>
+    <div class="briefing-footer__right">
+      Generated {{ generated_at }}
+    </div>
+  </footer>
+
+</div>{# /briefing-shell #}
+</body>
+</html>

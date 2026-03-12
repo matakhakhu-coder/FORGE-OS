@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block title %}{{ actor.name }}{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('actors') }}">Actors</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ actor.name | truncate(40) }}</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">
+    <span class="mono" style="color:var(--text-dim);">ACTOR #{{ actor.actor_id }}</span>
+    &nbsp;·&nbsp;
+    <span class="actor-type-badge">{{ actor.type }}</span>
+  </div>
+  <h1 class="page-header__title">{{ actor.name }}</h1>
+</div>
+
+{# ── Description ───────────────────────────────────────────────────────────── #}
+{% if actor.description %}
+<div class="event-summary-block" style="margin-bottom:var(--sp-8);">
+  <div class="event-summary-block__rule"></div>
+  <p class="event-summary-block__text">{{ actor.description }}</p>
+</div>
+{% endif %}
+
+{# ── Intelligence summary row ──────────────────────────────────────────────── #}
+<div class="event-stat-row" style="margin-bottom:var(--sp-8);">
+  <div class="event-stat">
+    <span class="event-stat__value">{{ events | length }}</span>
+    <span class="event-stat__label mono">Events</span>
+  </div>
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value">{{ artifact_footprint | length }}</span>
+    <span class="event-stat__label mono">Evidence Items</span>
+  </div>
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value">{{ co_actors | length }}</span>
+    <span class="event-stat__label mono">Co-Actors</span>
+  </div>
+  <div class="event-stat-divider"></div>
+  <div class="event-stat">
+    <span class="event-stat__value">{{ role_timeline | length }}</span>
+    <span class="event-stat__label mono">Roles Held</span>
+  </div>
+</div>
+
+{# ── Master layout ─────────────────────────────────────────────────────────── #}
+<div class="detail-layout">
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# LEFT                                                                     #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <div class="detail-layout__main">
+
+    {# ── Role timeline ───────────────────────────────────────────────────── #}
+    {% if role_timeline %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Role Timeline
+        <span class="detail-section__count">{{ role_timeline | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Documented roles this actor has held across archived events, in chronological order.
+      </p>
+      <div class="role-timeline">
+        {% for rt in role_timeline %}
+        <div class="role-timeline__item">
+          <div class="role-timeline__spine">
+            <div class="role-timeline__dot"></div>
+            {% if not loop.last %}<div class="role-timeline__line"></div>{% endif %}
+          </div>
+          <div class="role-timeline__body">
+            <div class="role-timeline__date mono">{{ rt.date or '—' }}</div>
+            <div class="role-timeline__event">
+              <a href="{{ url_for('event_detail', event_id=rt.event_id) }}">
+                {{ rt.title }}
+              </a>
+              {% if rt.category %}
+              <span class="category-badge" style="margin-left:var(--sp-2);">{{ rt.category }}</span>
+              {% endif %}
+            </div>
+            <div class="role-timeline__role">
+              <span class="role-badge role-badge--timeline">{{ rt.role }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {# ── Event involvement ───────────────────────────────────────────────── #}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Event Involvement
+        <span class="detail-section__count">{{ events | length }}</span>
+      </h2>
+      {% if events %}
+      <div class="event-list">
+        {% for e in events %}
+        <a href="{{ url_for('event_detail', event_id=e.event_id) }}"
+           class="event-row">
+          <div class="event-row__date mono">{{ e.date or '—' }}</div>
+          <div class="event-row__content">
+            <div class="event-row__title">{{ e.title }}</div>
+            {% if e.role %}
+            <div class="event-row__role">
+              <span class="role-badge">{{ e.role }}</span>
+            </div>
+            {% endif %}
+            {% if e.summary %}
+            <div class="event-row__summary">{{ e.summary | truncate(110) }}</div>
+            {% endif %}
+          </div>
+          <div class="event-row__meta">
+            {% if e.category %}
+            <span class="category-badge">{{ e.category }}</span>
+            {% endif %}
+            {% if e.artifact_count %}
+            <span class="event-row__count mono">{{ e.artifact_count }} item{{ 's' if e.artifact_count != 1 }}</span>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">No event involvement recorded for this actor.</div>
+      {% endif %}
+    </section>
+
+    {# ── Artifact footprint ──────────────────────────────────────────────── #}
+    {% if artifact_footprint %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Artifact Footprint
+        <span class="detail-section__count">{{ artifact_footprint | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        All evidence items archived under events this actor participated in.
+        This constitutes the actor's full documentary footprint in the archive.
+      </p>
+
+      {# Group artifacts by event #}
+      {% set current_event = namespace(id=none) %}
+      {% for a in artifact_footprint %}
+        {% if a.event_id != current_event.id %}
+          {% if not loop.first %}</div>{% endif %}
+          {% set current_event.id = a.event_id %}
+          <div class="footprint-event-group">
+          <div class="footprint-event-group__header">
+            <a href="{{ url_for('event_detail', event_id=a.event_id) }}"
+               class="footprint-event-group__title">
+              ◎ {{ a.event_title }}
+            </a>
+          </div>
+          <div class="footprint-event-group__items">
+        {% endif %}
+        <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+           class="evidence-row evidence-row--compact">
+          <div class="evidence-row__type-col">
+            <span class="type-badge">{{ a.type }}</span>
+          </div>
+          <div class="evidence-row__body">
+            <div class="evidence-row__title">{{ a.title }}</div>
+          </div>
+          <div class="evidence-row__meta">
+            {% if a.source %}
+            <span class="source-badge source-badge--{{ a.source }}">
+              {{ SOURCE_META[a.source].label if a.source in SOURCE_META else a.source }}
+            </span>
+            {% endif %}
+            {% if a.date %}
+            <span class="mono" style="font-size:0.65rem; color:var(--text-dim);">{{ a.date }}</span>
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+      {% if artifact_footprint %}</div></div>{% endif %}
+
+    </section>
+    {% endif %}
+
+    {# ── Co-actor network ────────────────────────────────────────────────── #}
+    {% if co_actors %}
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Co-Actor Network
+        <span class="detail-section__count">{{ co_actors | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Actors who appear in the same events as {{ actor.name }}.
+        Density of overlap indicates structural proximity in the archive's relationship graph.
+      </p>
+      <div class="co-actor-grid">
+        {% for ca in co_actors %}
+        <a href="{{ url_for('actor_detail', actor_id=ca.actor_id) }}"
+           class="co-actor-card">
+          <div class="co-actor-card__header">
+            <span class="actor-type-badge">{{ ca.type }}</span>
+            <span class="co-actor-card__overlap">
+              <span class="mono" style="color:var(--accent); font-size:0.85rem;">
+                {{ ca.shared_events }}
+              </span>
+              <span class="mono" style="font-size:0.58rem; color:var(--text-dim);">
+                shared
+              </span>
+            </span>
+          </div>
+          <div class="co-actor-card__name">{{ ca.name }}</div>
+          {% if ca.shared_event_names %}
+          <div class="co-actor-card__events mono">
+            {% for ev_name in ca.shared_event_names.split(',')[:2] %}
+            <span>{{ ev_name | truncate(38) }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  {# RIGHT sidebar                                                            #}
+  {# ════════════════════════════════════════════════════════════════════════ #}
+  <aside class="detail-layout__sidebar">
+
+    <div class="meta-panel">
+      <div class="meta-panel__header">Actor Record</div>
+      <div class="meta-panel__body">
+
+        <div class="meta-field">
+          <div class="meta-field__label">Actor ID</div>
+          <div class="meta-field__value mono">#{{ actor.actor_id }}</div>
+        </div>
+
+        <div class="meta-field">
+          <div class="meta-field__label">Classification</div>
+          <div class="meta-field__value">
+            <span class="actor-type-badge">{{ actor.type }}</span>
+          </div>
+        </div>
+
+        <div class="meta-field">
+          <div class="meta-field__label">Ingested</div>
+          <div class="meta-field__value mono" style="font-size:0.68rem; color:var(--text-dim);">
+            {{ actor.created_at[:10] if actor.created_at else '—' }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {# Roles held summary #}
+    {% if role_timeline %}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Roles Held</div>
+      <div class="meta-panel__body" style="padding:var(--sp-3) var(--sp-4);">
+        {% set seen_roles = [] %}
+        {% for rt in role_timeline %}
+          {% if rt.role not in seen_roles %}
+            {% set _ = seen_roles.append(rt.role) %}
+            <div style="margin-bottom:var(--sp-2);">
+              <span class="role-badge">{{ rt.role }}</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Category spread #}
+    {% if events %}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Event Categories</div>
+      <div class="meta-panel__body" style="padding:var(--sp-3) var(--sp-4);">
+        {% set cat_counts = {} %}
+        {% for e in events %}
+          {% if e.category %}
+            {% if e.category in cat_counts %}
+              {% set _ = cat_counts.update({e.category: cat_counts[e.category] + 1}) %}
+            {% else %}
+              {% set _ = cat_counts.update({e.category: 1}) %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {% for cat, cnt in cat_counts.items() %}
+        <div style="display:flex; justify-content:space-between; align-items:center;
+                    margin-bottom:var(--sp-2);">
+          <span class="category-badge">{{ cat }}</span>
+          <span class="mono" style="font-size:0.7rem; color:var(--accent);">{{ cnt }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Top co-actors for quick navigation #}
+    {% if co_actors %}
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Frequent Co-Actors</div>
+      <div class="meta-panel__body" style="padding:var(--sp-3) var(--sp-4);">
+        {% for ca in co_actors[:5] %}
+        <div style="padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dim);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;
+                      gap:var(--sp-2);">
+            <a href="{{ url_for('actor_detail', actor_id=ca.actor_id) }}"
+               style="font-size:0.8rem; line-height:1.3;">
+              {{ ca.name | truncate(32) }}
+            </a>
+            <span class="mono" style="font-size:0.7rem; color:var(--accent);
+                                       flex-shrink:0;">×{{ ca.shared_events }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </aside>
+
+</div>
+
+{% endblock %}
