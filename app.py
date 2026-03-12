@@ -732,6 +732,275 @@ def create_app() -> Flask:
     # Route: /admin — Admin panel (GET + POST)
     # -----------------------------------------------------------------------
 
+    # -----------------------------------------------------------------------
+    # Phase 12: /api/graph_data — Vis-Network native payload
+    # Returns nodes and edges pre-formatted for Vis-Network.
+    # Shares the same filter params as /api/graph.
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/graph_data")
+    def api_graph_data():
+        """
+        Vis-Network graph payload.
+
+        Nodes carry Vis-Network rendering properties directly:
+          id, label, title (hover tooltip), shape, color, group,
+          size, font, kind, subtype, description, url
+
+        Edges carry:
+          from, to, label, title, arrows, color, width, kind, role
+
+        Query params (same as /api/graph):
+          actor_type  (multi)
+          category    (multi)
+          min_weight  (int, default 0)
+          include_artifacts (bool, default false)
+        """
+        import json as _json
+        from flask import request as req, Response
+
+        db = get_db()
+
+        # ── Colour maps ─────────────────────────────────────────────────────
+        ACTOR_COLOURS = {
+            "person":      {"border": "#7aa2f7", "background": "#1a2a4a",
+                            "highlight": {"border": "#9ab8ff", "background": "#263a5e"}},
+            "institution": {"border": "#7aa2f7", "background": "#1a2a4a",
+                            "highlight": {"border": "#9ab8ff", "background": "#263a5e"}},
+            "media":       {"border": "#7aa2f7", "background": "#1a2a4a",
+                            "highlight": {"border": "#9ab8ff", "background": "#263a5e"}},
+            "movement":    {"border": "#7aa2f7", "background": "#1a2a4a",
+                            "highlight": {"border": "#9ab8ff", "background": "#263a5e"}},
+            "government":  {"border": "#7aa2f7", "background": "#1a2a4a",
+                            "highlight": {"border": "#9ab8ff", "background": "#263a5e"}},
+        }
+        ACTOR_COLOUR_DEFAULT = {"border": "#7aa2f7", "background": "#1a2a4a",
+                                "highlight": {"border": "#9ab8ff", "background": "#263a5e"}}
+
+        EVENT_COLOURS = {
+            "Election":    {"border": "#f7768e", "background": "#3a1a22",
+                            "highlight": {"border": "#ff9aac", "background": "#4e2230"}},
+            "Security":    {"border": "#f7768e", "background": "#3a1a22",
+                            "highlight": {"border": "#ff9aac", "background": "#4e2230"}},
+            "Civil Unrest":{"border": "#f7768e", "background": "#3a1a22",
+                            "highlight": {"border": "#ff9aac", "background": "#4e2230"}},
+            "Legislative": {"border": "#f7768e", "background": "#3a1a22",
+                            "highlight": {"border": "#ff9aac", "background": "#4e2230"}},
+            "Military":    {"border": "#f7768e", "background": "#3a1a22",
+                            "highlight": {"border": "#ff9aac", "background": "#4e2230"}},
+        }
+        EVENT_COLOUR_DEFAULT = {"border": "#f7768e", "background": "#3a1a22",
+                                "highlight": {"border": "#ff9aac", "background": "#4e2230"}}
+
+        ARTIFACT_COLOUR = {"border": "#9ece6a", "background": "#1a2a14",
+                           "highlight": {"border": "#b8e48a", "background": "#263a1e"}}
+
+        EDGE_COLOUR     = {"color": "rgba(255,255,255,0.18)", "highlight": "#c8943a", "hover": "#c8943a"}
+
+        # ── Parse filters ───────────────────────────────────────────────────
+        actor_types    = req.args.getlist("actor_type")
+        categories     = req.args.getlist("category")
+        min_weight     = max(0, int(req.args.get("min_weight", 0)))
+        incl_artifacts = req.args.get("include_artifacts", "false").lower() == "true"
+
+        # ── Actors ─────────────────────────────────────────────────────────
+        actor_where  = ""
+        actor_params = []
+        if actor_types:
+            phs         = ",".join("?" * len(actor_types))
+            actor_where = f"WHERE type IN ({phs})"
+            actor_params = list(actor_types)
+
+        actor_rows = db.execute(f"""
+            SELECT ac.actor_id, ac.name, ac.type, ac.description,
+                   COUNT(DISTINCT ae.event_id) AS event_count
+            FROM   actors ac
+            LEFT   JOIN actor_events ae ON ae.actor_id = ac.actor_id
+            {actor_where}
+            GROUP  BY ac.actor_id
+            ORDER  BY ac.name
+        """, actor_params).fetchall()
+
+        actor_id_set = {r["actor_id"] for r in actor_rows}
+
+        # ── Events ─────────────────────────────────────────────────────────
+        event_where  = ""
+        event_params = []
+        if categories:
+            phs         = ",".join("?" * len(categories))
+            event_where = f"WHERE e.category IN ({phs})"
+            event_params = list(categories)
+
+        event_rows = db.execute(f"""
+            SELECT e.event_id, e.title, e.date, e.category,
+                   e.location, e.summary,
+                   COUNT(a.artifact_id) AS artifact_count
+            FROM   events e
+            LEFT   JOIN artifacts a ON a.event_id = e.event_id
+            {event_where}
+            GROUP  BY e.event_id
+            ORDER  BY e.date
+        """, event_params).fetchall()
+
+        event_id_set = {r["event_id"] for r in event_rows}
+
+        # ── actor_events edges ──────────────────────────────────────────────
+        ae_rows = db.execute("""
+            SELECT ae.actor_id, ae.event_id, ae.role,
+                   COUNT(a.artifact_id) AS weight
+            FROM   actor_events ae
+            LEFT   JOIN artifacts a ON a.event_id = ae.event_id
+            GROUP  BY ae.actor_id, ae.event_id
+            ORDER  BY weight DESC
+        """).fetchall()
+
+        # ── Assemble Vis-Network nodes ──────────────────────────────────────
+        vis_nodes = []
+        vis_edges = []
+
+        for ac in actor_rows:
+            col   = ACTOR_COLOURS.get(ac["type"], ACTOR_COLOUR_DEFAULT)
+            desc  = (ac["description"] or "").strip()
+            tooltip = f"{ac['name']}\nType: {ac['type']}\nEvents: {ac['event_count']}"
+            if desc:
+                tooltip += f"\n\n{desc[:200]}"
+
+            vis_nodes.append({
+                # Vis-Network required
+                "id":    f"actor-{ac['actor_id']}",
+                "label": ac["name"][:28] + ("…" if len(ac["name"]) > 28 else ""),
+                "title": tooltip,
+                "shape": "dot",
+                "size":  18,
+                "color": col,
+                "font":  {"color": "#9ab8e8", "size": 11, "face": "IBM Plex Mono"},
+                "borderWidth": 2,
+                "borderWidthSelected": 3,
+                # custom metadata for side panel
+                "kind":        "actor",
+                "subtype":     ac["type"],
+                "full_label":  ac["name"],
+                "description": desc,
+                "event_count": ac["event_count"],
+                "url":         f"/actor/{ac['actor_id']}",
+            })
+
+        for ev in event_rows:
+            col   = EVENT_COLOURS.get(ev["category"], EVENT_COLOUR_DEFAULT)
+            summ  = (ev["summary"] or "").strip()
+            tooltip = f"{ev['title']}"
+            if ev["date"]:     tooltip += f"\nDate: {ev['date']}"
+            if ev["category"]: tooltip += f"\nCategory: {ev['category']}"
+            if ev["location"]: tooltip += f"\nLocation: {ev['location']}"
+            # Scale square size by artifact count
+            sz = 16 + min(ev["artifact_count"] or 0, 6) * 2
+
+            vis_nodes.append({
+                "id":    f"event-{ev['event_id']}",
+                "label": ev["title"][:26] + ("…" if len(ev["title"]) > 26 else ""),
+                "title": tooltip,
+                "shape": "square",
+                "size":  sz,
+                "color": col,
+                "font":  {"color": "#f7a0ae", "size": 11, "face": "IBM Plex Mono"},
+                "borderWidth": 2,
+                "borderWidthSelected": 3,
+                # metadata
+                "kind":           "event",
+                "subtype":        ev["category"] or "Other",
+                "full_label":     ev["title"],
+                "date":           ev["date"]     or "",
+                "location":       ev["location"] or "",
+                "summary":        summ[:240],
+                "artifact_count": ev["artifact_count"],
+                "url":            f"/event/{ev['event_id']}",
+            })
+
+        # ── Artifact nodes (optional) ───────────────────────────────────────
+        if incl_artifacts:
+            art_rows = db.execute("""
+                SELECT artifact_id, title, type, source, event_id, description
+                FROM   artifacts
+                WHERE  event_id IS NOT NULL
+            """).fetchall()
+            for ar in art_rows:
+                if ar["event_id"] not in event_id_set:
+                    continue
+                vis_nodes.append({
+                    "id":    f"artifact-{ar['artifact_id']}",
+                    "label": ar["title"][:22] + ("…" if len(ar["title"]) > 22 else ""),
+                    "title": f"{ar['title']}\nType: {ar['type']}\nSource: {ar['source'] or 'unverified'}",
+                    "shape": "diamond",
+                    "size":  10,
+                    "color": ARTIFACT_COLOUR,
+                    "font":  {"color": "#b0d090", "size": 9, "face": "IBM Plex Mono"},
+                    "borderWidth": 1,
+                    "kind":        "artifact",
+                    "subtype":     ar["type"],
+                    "full_label":  ar["title"],
+                    "description": (ar["description"] or "")[:180],
+                    "url":         f"/artifact/{ar['artifact_id']}",
+                })
+                vis_edges.append({
+                    "from":   f"artifact-{ar['artifact_id']}",
+                    "to":     f"event-{ar['event_id']}",
+                    "label":  "evidence",
+                    "title":  "evidence of",
+                    "arrows": {"to": {"enabled": True, "scaleFactor": 0.6}},
+                    "color":  {"color": "rgba(158,206,106,0.25)", "highlight": "#9ece6a", "hover": "#9ece6a"},
+                    "width":  1,
+                    "dashes": [4, 3],
+                    "kind":   "artifact-edge",
+                    "role":   "evidence",
+                })
+
+        # ── actor→event edges ───────────────────────────────────────────────
+        for ae in ae_rows:
+            if ae["actor_id"] not in actor_id_set:
+                continue
+            if ae["event_id"] not in event_id_set:
+                continue
+            if ae["weight"] < min_weight:
+                continue
+
+            w     = ae["weight"] or 0
+            width = 1 + min(w, 6) * 0.4          # 1 → 3.4 proportional
+            role  = ae["role"] or "participated"
+            vis_edges.append({
+                "from":   f"actor-{ae['actor_id']}",
+                "to":     f"event-{ae['event_id']}",
+                "label":  role if role != "participated" else "",
+                "title":  f"{role}  (weight: {w})",
+                "arrows": {"to": {"enabled": True, "scaleFactor": 0.65}},
+                "color":  EDGE_COLOUR,
+                "width":  width,
+                "kind":   "actor-edge",
+                "role":   role,
+                "weight": w,
+            })
+
+        payload = {
+            "nodes": vis_nodes,
+            "edges": vis_edges,
+            "meta": {
+                "node_count":  len(vis_nodes),
+                "edge_count":  len(vis_edges),
+                "actor_count": len(actor_rows),
+                "event_count": len(event_rows),
+                "filters": {
+                    "actor_types": actor_types,
+                    "categories":  categories,
+                    "min_weight":  min_weight,
+                },
+            },
+        }
+
+        return Response(
+            _json.dumps(payload, ensure_ascii=False),
+            mimetype="application/json",
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
+
     @app.route("/admin", methods=["GET", "POST"])
     def admin():
         db = get_db()

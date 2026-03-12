@@ -1,16 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Intelligence Graph{% endblock %}
+{% block title %}Intelligence Graph — FORGE{% endblock %}
 
 {% block head_extra %}
+{# Vis-Network CSS — loaded before page CSS so our overrides win #}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/dist/dist/vis-network.min.css"
+      crossorigin="anonymous">
 <style>
-  /* Full-bleed canvas — suppress main padding */
+  /* Full-bleed canvas — suppress main padding for this page only */
   .main { padding: 0 !important; overflow: hidden; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-{# ── Control bar (fixed across top) ────────────────────────────────────────── #}
+{# ══════════════════════════════════════════════════════════════════════════
+   CONTROL BAR  (reuses all .graph-bar* CSS from Phase 6 — untouched)
+═══════════════════════════════════════════════════════════════════════════ #}
 <div class="graph-bar" id="js-graph-bar">
 
   <div class="graph-bar__left">
@@ -21,7 +27,7 @@
     </nav>
   </div>
 
-  {# ── Node type toggles ──────────────────────────────────────────────────── #}
+  {# ── Actor-type filter pills ─────────────────────────────────────────── #}
   <div class="graph-bar__section">
     <span class="graph-bar__label">Actors</span>
     {% for atype in actor_types %}
@@ -37,6 +43,7 @@
 
   <div class="graph-bar__divider"></div>
 
+  {# ── Event-category filter pills ─────────────────────────────────────── #}
   <div class="graph-bar__section">
     <span class="graph-bar__label">Events</span>
     {% for cat in event_categories %}
@@ -52,191 +59,189 @@
 
   <div class="graph-bar__divider"></div>
 
-  {# ── Artifact overlay toggle ─────────────────────────────────────────────── #}
+  {# ── Artifact overlay toggle ─────────────────────────────────────────── #}
   <div class="graph-bar__section">
     <span class="graph-bar__label">Overlay</span>
     <button class="graph-toggle" id="js-artifact-toggle" data-active="false">
-      <span class="graph-toggle__dot" style="background:#5a7a9a;"></span>
+      <span class="graph-toggle__dot" style="background:#9ece6a;"></span>
       <span>Artifacts</span>
     </button>
   </div>
 
   <div class="graph-bar__divider"></div>
 
-  {# ── Weight threshold slider ─────────────────────────────────────────────── #}
+  {# ── Min-evidence weight slider ──────────────────────────────────────── #}
   <div class="graph-bar__section graph-bar__section--slider">
     <span class="graph-bar__label">Min evidence</span>
-    <input type="range" id="js-weight-slider" min="0" max="5" value="0" step="1"
+    <input type="range" id="js-weight-slider"
+           min="0" max="5" value="0" step="1"
            class="graph-slider" title="Minimum link weight">
     <span class="graph-bar__label" id="js-weight-val">0</span>
   </div>
 
   <div class="graph-bar__divider"></div>
 
-  {# ── Stats ──────────────────────────────────────────────────────────────── #}
+  {# ── Physics lock toggle ─────────────────────────────────────────────── #}
+  <div class="graph-bar__section">
+    <span class="graph-bar__label">Layout</span>
+    <button class="graph-toggle graph-toggle--active" id="js-physics-toggle"
+            title="Freeze / unfreeze physics simulation">
+      <span class="graph-toggle__dot" style="background:#c8943a;"></span>
+      <span>Physics</span>
+    </button>
+  </div>
+
+  <div class="graph-bar__divider"></div>
+
+  {# ── Live stats ──────────────────────────────────────────────────────── #}
   <div class="graph-bar__stats">
     <div class="graph-stat">
       <span class="graph-stat__val" id="js-stat-nodes">—</span>
       <span class="graph-stat__label mono">nodes</span>
     </div>
     <div class="graph-stat">
-      <span class="graph-stat__val" id="js-stat-links">—</span>
+      <span class="graph-stat__val" id="js-stat-edges">—</span>
       <span class="graph-stat__label mono">edges</span>
     </div>
   </div>
 
-  {# ── Reset camera ────────────────────────────────────────────────────────── #}
-  <button class="graph-icon-btn" id="js-reset-zoom" title="Reset zoom">⊙</button>
+  {# ── Fit / reset camera ──────────────────────────────────────────────── #}
+  <button class="graph-icon-btn" id="js-reset-zoom" title="Fit all nodes to view">⊙</button>
 
-</div>
+</div>{# /graph-bar #}
 
-{# ── SVG canvas ────────────────────────────────────────────────────────────── #}
+
+{# ══════════════════════════════════════════════════════════════════════════
+   VIS-NETWORK CANVAS
+   The #js-vis-canvas div is where vis.Network mounts its internal canvas.
+   .graph-canvas-wrap provides the full-screen positioning frame.
+═══════════════════════════════════════════════════════════════════════════ #}
 <div class="graph-canvas-wrap" id="js-graph-canvas-wrap">
-  <svg id="js-graph-svg" width="100%" height="100%">
-    <defs>
-      {# Arrow markers for directed edges #}
-      <marker id="arrow-default" markerWidth="8" markerHeight="8"
-              refX="16" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L0,6 L8,3 z" fill="rgba(255,255,255,0.12)"/>
-      </marker>
-      <marker id="arrow-hover" markerWidth="8" markerHeight="8"
-              refX="16" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L0,6 L8,3 z" fill="#c8943a"/>
-      </marker>
-      <marker id="arrow-active" markerWidth="8" markerHeight="8"
-              refX="16" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M0,0 L0,6 L8,3 z" fill="#e0aa4a"/>
-      </marker>
-      {# Glow filter for selected nodes #}
-      <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="4" result="blur"/>
-        <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
-    <g id="js-graph-root">
-      <g id="js-link-layer"></g>
-      <g id="js-node-layer"></g>
-    </g>
-  </svg>
 
-  {# Loading overlay #}
+  <div id="js-vis-canvas"></div>
+
+  {# Loading overlay — visible until stabilizationIterationsDone fires #}
   <div class="graph-loading" id="js-graph-loading">
     <div class="graph-loading__spinner"></div>
-    <div class="graph-loading__label mono">Building relationship graph…</div>
-  </div>
-
-  {# Empty state #}
-  <div class="graph-empty" id="js-graph-empty" style="display:none;">
-    <div class="mono" style="font-size:0.8rem; color:var(--text-dim);">
-      No nodes match the current filters.
+    <div class="graph-loading__label mono" id="js-loading-label">
+      Building relationship graph…
     </div>
   </div>
-</div>
 
-{# ── Node info panel (slides in from right) ──────────────────────────────────── #}
-<div class="graph-panel" id="js-graph-panel" aria-hidden="true">
-  <div class="graph-panel__close" id="js-panel-close">✕</div>
-  <div class="graph-panel__content" id="js-panel-content"></div>
-</div>
+  {# Empty-state — shown when all filters produce zero nodes #}
+  <div class="graph-empty" id="js-graph-empty" style="display:none;">
+    <span class="mono" style="font-size:0.78rem; color:var(--text-dim);">
+      No nodes match the current filters.
+    </span>
+  </div>
 
-{# ── Legend (bottom-left) ────────────────────────────────────────────────────── #}
+</div>{# /graph-canvas-wrap #}
+
+
+{# ══════════════════════════════════════════════════════════════════════════
+   NODE DETAIL SIDE PANEL
+   Slides in from the right on node click.
+   Reuses .graph-panel / .gpanel__* CSS from Phase 6 — untouched.
+═══════════════════════════════════════════════════════════════════════════ #}
+<aside class="graph-panel" id="js-graph-panel" aria-hidden="true">
+  <button class="graph-panel__close" id="js-panel-close"
+          aria-label="Close panel">✕</button>
+  <div class="graph-panel__content" id="js-panel-content">
+    {# Populated by JS on every node-click #}
+  </div>
+</aside>
+
+
+{# ══════════════════════════════════════════════════════════════════════════
+   LEGEND  (bottom-left floating badge)
+═══════════════════════════════════════════════════════════════════════════ #}
 <div class="graph-legend" id="js-graph-legend">
   <div class="graph-legend__row">
-    <svg width="24" height="10"><circle cx="12" cy="5" r="5" fill="#6a9de0"/></svg>
+    <svg width="22" height="10" aria-hidden="true">
+      <circle cx="11" cy="5" r="5"
+              fill="#1a2a4a" stroke="#7aa2f7" stroke-width="1.5"/>
+    </svg>
     <span class="mono">Actor</span>
   </div>
   <div class="graph-legend__row">
-    <svg width="24" height="10">
-      <polygon points="12,0 22,9 2,9" fill="rgba(200,148,58,0.6)"
-               stroke="#c8943a" stroke-width="1"/>
+    <svg width="22" height="10" aria-hidden="true">
+      <rect x="2" y="1" width="18" height="8"
+            fill="#3a1a22" stroke="#f7768e" stroke-width="1.5"/>
     </svg>
     <span class="mono">Event</span>
   </div>
   <div class="graph-legend__row" id="js-legend-artifact" style="display:none;">
-    <svg width="24" height="10">
-      <rect x="4" y="2" width="16" height="6" rx="1"
-            fill="rgba(90,122,154,0.5)" stroke="#5a7a9a" stroke-width="1"/>
+    <svg width="22" height="10" aria-hidden="true">
+      <polygon points="11,1 21,9 1,9"
+               fill="#1a2a14" stroke="#9ece6a" stroke-width="1.5"/>
     </svg>
     <span class="mono">Artifact</span>
   </div>
   <div class="graph-legend__row graph-legend__row--weight">
-    <svg width="48" height="10">
-      <line x1="0" y1="5" x2="48" y2="5"
-            stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-      <line x1="0" y1="5" x2="24" y2="5"
-            stroke="rgba(200,148,58,0.8)" stroke-width="3"/>
+    <svg width="48" height="10" aria-hidden="true">
+      <line x1="0"  y1="5" x2="48" y2="5"
+            stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+      <line x1="0"  y1="5" x2="24" y2="5"
+            stroke="#c8943a" stroke-width="3"/>
     </svg>
     <span class="mono">Edge weight</span>
   </div>
 </div>
 
+
+{# ══════════════════════════════════════════════════════════════════════════
+   STABILISATION BADGE  (small bottom-right progress indicator)
+═══════════════════════════════════════════════════════════════════════════ #}
+<div class="vis-stabilising" id="js-stab-badge" style="display:none;">
+  <span class="mono" id="js-stab-pct">Stabilising… 0%</span>
+</div>
+
 {% endblock %}
 
+
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"
+{# ── Vis-Network 9.1.9 standalone bundle ─────────────────────────────── #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/dist/vis-network.min.js"
         crossorigin="anonymous"></script>
 <script>
 /* =============================================================================
-   FORGE — Intelligence Graph  (Phase 6)
-   D3 v7 force-directed simulation with:
-     • Weighted edges (stroke-width ∝ artifact count)
-     • Actor-type & event-category filtering via control bar
-     • Min-weight slider to collapse weak edges
-     • Artifact overlay toggle (adds artifact nodes)
-     • Click-to-panel: rich side panel for actors and events
-     • Zoom / pan / drag with reset
-     • Neighbourhood highlight on hover
+   FORGE Phase 12 — Intelligence Graph   (Vis-Network 9.1.9)
+   ─────────────────────────────────────────────────────────────────────────────
+   Visual coding (as specified):
+     Actors   → #7aa2f7 blue  · shape: dot
+     Events   → #f7768e red   · shape: square
+     Artifacts→ #9ece6a green · shape: diamond   (optional overlay)
+     Edges    → solid lines with arrowhead toward target node
+                label = role from actor_events.role (blank for generic)
+
+   Physics: Barnes-Hut stabilisation; graph freezes cleanly after convergence.
+   Interactivity: single click → sliding side panel with full metadata + links.
+   Double-click → navigate directly to the entity's detail page.
+   Hover → fade non-neighbours (dim to 12% opacity).
    ============================================================================= */
 
 (function () {
   'use strict';
 
-  /* ── Colour scheme ────────────────────────────────────────────────────────── */
+  /* ── DOM element references ────────────────────────────────────────────────── */
+  const canvasEl    = document.getElementById('js-vis-canvas');
+  const loadingEl   = document.getElementById('js-graph-loading');
+  const loadLabel   = document.getElementById('js-loading-label');
+  const emptyEl     = document.getElementById('js-graph-empty');
+  const panel       = document.getElementById('js-graph-panel');
+  const panelClose  = document.getElementById('js-panel-close');
+  const panelContent= document.getElementById('js-panel-content');
+  const statNodes   = document.getElementById('js-stat-nodes');
+  const statEdges   = document.getElementById('js-stat-edges');
+  const weightSlider= document.getElementById('js-weight-slider');
+  const weightVal   = document.getElementById('js-weight-val');
+  const artifactBtn = document.getElementById('js-artifact-toggle');
+  const physicsBtn  = document.getElementById('js-physics-toggle');
+  const legendArt   = document.getElementById('js-legend-artifact');
+  const stabBadge   = document.getElementById('js-stab-badge');
+  const stabPct     = document.getElementById('js-stab-pct');
 
-  const ACTOR_TYPE_COLOURS = {
-    person:      '#8ab4d0',
-    institution: '#c8943a',
-    media:       '#7a9aba',
-    movement:    '#8aaa6a',
-    government:  '#6a9de0',
-  };
-
-  const EVENT_CAT_COLOURS = {
-    'Election':    '#9a7acc',
-    'Security':    '#cc5555',
-    'Civil Unrest':'#cc8844',
-    'Legislative': '#5588cc',
-    'Economic':    '#55aa77',
-    'Diplomatic':  '#aa77cc',
-    'Military':    '#aa3333',
-    'Social':      '#5a9a88',
-    'Other':       '#5a6a7a',
-  };
-
-  const ARTIFACT_COLOUR = '#5a7a9a';
-  const LINK_DEFAULT    = 'rgba(255,255,255,0.10)';
-  const LINK_HOVER      = '#c8943a';
-  const LINK_ACTIVE     = '#e0aa4a';
-  const BG              = '#080d12';
-
-  function actorColour(subtype)  { return ACTOR_TYPE_COLOURS[subtype] || '#6a7a8a'; }
-  function eventColour(subtype)  { return EVENT_CAT_COLOURS[subtype]  || '#5a6a7a'; }
-  function nodeColour(n) {
-    if (n.kind === 'actor')    return actorColour(n.subtype);
-    if (n.kind === 'event')    return eventColour(n.subtype);
-    return ARTIFACT_COLOUR;
-  }
-
-  /* ── State ────────────────────────────────────────────────────────────────── */
-
-  let graphData    = null;     // full data from API
-  let simulation   = null;
-  let activeNodeId = null;
-
-  // Active filters (toggled by control bar buttons)
+  /* ── Filter state (seeded from Jinja template vars) ───────────────────────── */
   const filters = {
     actor_types: new Set({{ actor_types | tojson }}),
     categories:  new Set({{ event_categories | tojson }}),
@@ -244,104 +249,139 @@
     artifacts:   false,
   };
 
-  /* ── DOM refs ─────────────────────────────────────────────────────────────── */
+  /* ── Runtime state ─────────────────────────────────────────────────────────── */
+  let network      = null;   // vis.Network instance
+  let rawData      = null;   // last JSON payload from /api/graph_data
+  let activeNodeId = null;   // id of currently-selected node (keeps highlight)
+  let physicsOn    = true;
 
-  const svgEl       = document.getElementById('js-graph-svg');
-  const rootG       = document.getElementById('js-graph-root');
-  const loadingEl   = document.getElementById('js-graph-loading');
-  const emptyEl     = document.getElementById('js-graph-empty');
-  const panel       = document.getElementById('js-graph-panel');
-  const panelClose  = document.getElementById('js-panel-close');
-  const panelContent= document.getElementById('js-panel-content');
-  const statNodes   = document.getElementById('js-stat-nodes');
-  const statLinks   = document.getElementById('js-stat-links');
-  const weightSlider= document.getElementById('js-weight-slider');
-  const weightVal   = document.getElementById('js-weight-val');
-  const artifactBtn = document.getElementById('js-artifact-toggle');
-  const legendArt   = document.getElementById('js-legend-artifact');
+  /* ═══════════════════════════════════════════════════════════════════════════
+     HTML ESCAPE UTILITY
+  ═══════════════════════════════════════════════════════════════════════════ */
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g,  '&amp;')
+      .replace(/</g,  '&lt;')
+      .replace(/>/g,  '&gt;')
+      .replace(/"/g,  '&quot;');
+  }
 
-  /* ── Panel helpers ────────────────────────────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SIDE PANEL
+  ═══════════════════════════════════════════════════════════════════════════ */
 
-  function openPanel(node) {
-    activeNodeId = node.id;
-    const colour = nodeColour(node);
+  function openPanel(nodeData) {
+    activeNodeId = nodeData.id;
+
+    /* Spec colours: actors #7aa2f7, events #f7768e, artifacts #9ece6a */
+    const accentCol = nodeData.kind === 'actor'    ? '#7aa2f7'
+                    : nodeData.kind === 'event'    ? '#f7768e'
+                    : '#9ece6a';
+
+    /* Degree = number of connected edges in current graph */
+    const degree = network
+      ? network.getConnectedEdges(nodeData.id).length
+      : 0;
 
     let inner = '';
 
-    if (node.kind === 'actor') {
-      const typeLabel = node.subtype
-        ? `<span class="actor-type-badge">${node.subtype}</span>` : '';
+    /* ── Actor ─────────────────────────────────────────────────────────────── */
+    if (nodeData.kind === 'actor') {
+      const typeBadge = nodeData.subtype
+        ? `<span class="actor-type-badge">${esc(nodeData.subtype)}</span>` : '';
+
       inner = `
-        <div class="gpanel__header" style="border-left-color:${colour}">
-          <div class="gpanel__kind mono">Actor ${typeLabel}</div>
-          <div class="gpanel__title">${node.label}</div>
+        <div class="gpanel__header" style="border-left-color:${accentCol};">
+          <div class="gpanel__kind mono">ACTOR ${typeBadge}</div>
+          <div class="gpanel__title">${esc(nodeData.full_label)}</div>
         </div>
-        ${node.description
-          ? `<div class="gpanel__body"><p class="gpanel__desc">${node.description}</p></div>`
-          : ''}
+
+        ${nodeData.description ? `
+        <div class="gpanel__body">
+          <p class="gpanel__desc">${esc(nodeData.description)}</p>
+        </div>` : ''}
+
         <div class="gpanel__section">
           <div class="gpanel__section-label mono">Graph position</div>
           <div class="gpanel__stat-row">
             <div class="gpanel__stat">
-              <span class="gpanel__stat-val" id="gpanel-degree">—</span>
+              <span class="gpanel__stat-val">${degree}</span>
               <span class="gpanel__stat-label mono">connections</span>
+            </div>
+            <div class="gpanel__stat">
+              <span class="gpanel__stat-val">${nodeData.event_count || 0}</span>
+              <span class="gpanel__stat-label mono">events linked</span>
             </div>
           </div>
         </div>
+
+        ${buildConnectionList(nodeData.id)}
+
         <div class="gpanel__footer">
-          <a href="${node.url}" class="btn btn--primary gpanel__cta">
+          <a href="${nodeData.url}" class="btn btn--primary gpanel__cta">
             View Full Profile →
           </a>
         </div>`;
 
-    } else if (node.kind === 'event') {
-      const catBadge = node.subtype
-        ? `<span class="category-badge">${node.subtype}</span>` : '';
-      const dateLine = node.date
-        ? `<div class="gpanel__date mono">${node.date}</div>` : '';
-      const locLine  = node.location
-        ? `<div class="gpanel__location mono">⊕ ${node.location}</div>` : '';
-      const artCount = node.artifact_count > 0
-        ? `<div class="gpanel__stat">
-             <span class="gpanel__stat-val">${node.artifact_count}</span>
-             <span class="gpanel__stat-label mono">artifacts</span>
-           </div>` : '';
+    /* ── Event ─────────────────────────────────────────────────────────────── */
+    } else if (nodeData.kind === 'event') {
+      const catBadge = nodeData.subtype
+        ? `<span class="category-badge">${esc(nodeData.subtype)}</span>` : '';
+      const dateLine = nodeData.date
+        ? `<div class="gpanel__date mono">📅 ${esc(nodeData.date)}</div>` : '';
+      const locLine  = nodeData.location
+        ? `<div class="gpanel__location mono">⊕ ${esc(nodeData.location)}</div>` : '';
+
       inner = `
-        <div class="gpanel__header" style="border-left-color:${colour}">
-          <div class="gpanel__kind mono">Event ${catBadge}</div>
-          <div class="gpanel__title">${node.label}</div>
+        <div class="gpanel__header" style="border-left-color:${accentCol};">
+          <div class="gpanel__kind mono">EVENT ${catBadge}</div>
+          <div class="gpanel__title">${esc(nodeData.full_label)}</div>
           ${dateLine}${locLine}
         </div>
-        ${node.summary
-          ? `<div class="gpanel__body"><p class="gpanel__desc">${node.summary}</p></div>`
-          : ''}
+
+        ${nodeData.summary ? `
+        <div class="gpanel__body">
+          <p class="gpanel__desc">${esc(nodeData.summary)}</p>
+        </div>` : ''}
+
         <div class="gpanel__section">
-          <div class="gpanel__section-label mono">Connections</div>
+          <div class="gpanel__section-label mono">Evidence &amp; Connections</div>
           <div class="gpanel__stat-row">
             <div class="gpanel__stat">
-              <span class="gpanel__stat-val" id="gpanel-degree">—</span>
+              <span class="gpanel__stat-val">${degree}</span>
               <span class="gpanel__stat-label mono">actors linked</span>
             </div>
-            ${artCount}
+            ${nodeData.artifact_count > 0 ? `
+            <div class="gpanel__stat">
+              <span class="gpanel__stat-val">${nodeData.artifact_count}</span>
+              <span class="gpanel__stat-label mono">artifacts</span>
+            </div>` : ''}
           </div>
         </div>
+
+        ${buildConnectionList(nodeData.id)}
+
         <div class="gpanel__footer">
-          <a href="${node.url}" class="btn btn--primary gpanel__cta">
+          <a href="${nodeData.url}" class="btn btn--primary gpanel__cta">
             Investigate Event →
           </a>
         </div>`;
 
+    /* ── Artifact ──────────────────────────────────────────────────────────── */
     } else {
-      // artifact node
-      const srcBadge = node.source
-        ? `<span class="source-badge source-badge--${node.source}">${node.source}</span>` : '';
       inner = `
-        <div class="gpanel__header" style="border-left-color:${colour}">
-          <div class="gpanel__kind mono">Artifact — ${node.subtype || ''} ${srcBadge}</div>
-          <div class="gpanel__title">${node.label}</div>
+        <div class="gpanel__header" style="border-left-color:${accentCol};">
+          <div class="gpanel__kind mono">ARTIFACT — ${esc(nodeData.subtype || 'document')}</div>
+          <div class="gpanel__title">${esc(nodeData.full_label)}</div>
         </div>
+
+        ${nodeData.description ? `
+        <div class="gpanel__body">
+          <p class="gpanel__desc">${esc(nodeData.description)}</p>
+        </div>` : ''}
+
         <div class="gpanel__footer">
-          <a href="${node.url}" class="btn btn--primary gpanel__cta">
+          <a href="${nodeData.url}" class="btn btn--primary gpanel__cta">
             Open Artifact →
           </a>
         </div>`;
@@ -350,359 +390,393 @@
     panelContent.innerHTML = inner;
     panel.setAttribute('aria-hidden', 'false');
     panel.classList.add('graph-panel--open');
+  }
 
-    // Fill degree count
-    if (graphData) {
-      const degree = graphData.links.filter(
-        l => l.source.id === node.id || l.target.id === node.id
-      ).length;
-      const degEl = document.getElementById('gpanel-degree');
-      if (degEl) degEl.textContent = degree;
-    }
+  /* Build "Connected to" list inside the panel */
+  function buildConnectionList(nodeId) {
+    if (!network || !rawData) return '';
+
+    /* Find all edges that touch this node */
+    const neighbours = [];
+    const connectedEdgeIds = new Set(network.getConnectedEdges(nodeId));
+
+    rawData.edges.forEach((e, i) => {
+      const eId = e.id || `e${i}`;
+      if (!connectedEdgeIds.has(eId)) return;
+
+      const otherId   = e.from === nodeId ? e.to : e.from;
+      const direction = e.from === nodeId ? '→' : '←';
+      const other     = rawData.nodes.find(n => n.id === otherId);
+      if (!other) return;
+
+      neighbours.push({
+        label:     other.full_label || other.label,
+        kind:      other.kind,
+        role:      e.role || '',
+        direction,
+        url:       other.url,
+      });
+    });
+
+    if (neighbours.length === 0) return '';
+
+    const rows = neighbours.slice(0, 8).map(n => {
+      const dotClass = n.kind === 'actor'    ? 'gpanel__edge-dot--actor'
+                     : n.kind === 'event'    ? 'gpanel__edge-dot--event'
+                     : 'gpanel__edge-dot--artifact';
+      const roleTxt  = n.role && n.role !== 'participated'
+        ? `<span class="gpanel__edge-role">${esc(n.role)}</span>` : '';
+
+      return `
+        <div class="gpanel__edge-row">
+          <span class="gpanel__edge-dot ${dotClass}"></span>
+          <a href="${n.url}" class="gpanel__edge-label">${esc(n.label)}</a>
+          <span class="gpanel__edge-dir mono">${n.direction}</span>
+          ${roleTxt}
+        </div>`;
+    }).join('');
+
+    const overflow = neighbours.length > 8
+      ? `<div class="gpanel__edge-more mono">+${neighbours.length - 8} more</div>` : '';
+
+    return `
+      <div class="gpanel__section gpanel__section--edges">
+        <div class="gpanel__section-label mono">Connected to</div>
+        ${rows}
+        ${overflow}
+      </div>`;
   }
 
   function closePanel() {
     panel.setAttribute('aria-hidden', 'true');
     panel.classList.remove('graph-panel--open');
     activeNodeId = null;
-    // De-highlight
-    d3.selectAll('.graph-node').classed('graph-node--active', false);
-    d3.selectAll('.graph-link').classed('graph-link--active', false)
-                               .classed('graph-link--faded', false);
+    if (network) {
+      network.unselectAll();
+      resetHighlight();
+    }
   }
 
   panelClose.addEventListener('click', closePanel);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePanel();
+  });
 
-  /* ── Build graph URL from current filters ─────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     NEIGHBOURHOOD HIGHLIGHT / DIM
+  ═══════════════════════════════════════════════════════════════════════════ */
+
+  function highlightNeighbours(nodeId) {
+    if (!network || !rawData) return;
+
+    /* Build connected-node set */
+    const connected = new Set([nodeId]);
+    rawData.edges.forEach(e => {
+      if (e.from === nodeId) connected.add(e.to);
+      if (e.to   === nodeId) connected.add(e.from);
+    });
+
+    /* Dim non-neighbours */
+    const nodeUpdates = rawData.nodes.map(n => ({
+      id:      n.id,
+      opacity: connected.has(n.id) ? 1 : 0.10,
+    }));
+
+    const edgeUpdates = rawData.edges.map((e, i) => {
+      const isAdj = e.from === nodeId || e.to === nodeId;
+      return {
+        id:    e.id || `e${i}`,
+        opacity: isAdj ? 1 : 0.04,
+        color: isAdj
+          ? { color: '#c8943a', highlight: '#e0aa4a', hover: '#e0aa4a', inherit: false }
+          : { color: 'rgba(255,255,255,0.04)', highlight: '#c8943a', hover: '#c8943a', inherit: false },
+      };
+    });
+
+    network.body.data.nodes.update(nodeUpdates);
+    network.body.data.edges.update(edgeUpdates);
+  }
+
+  function resetHighlight() {
+    if (!network || !rawData) return;
+
+    const nodeReset = rawData.nodes.map(n => ({ id: n.id, opacity: 1 }));
+    const edgeReset = rawData.edges.map((e, i) => ({
+      id:    e.id || `e${i}`,
+      opacity: 1,
+      color: {
+        color:     'rgba(255,255,255,0.18)',
+        highlight: '#c8943a',
+        hover:     '#c8943a',
+        inherit:   false,
+      },
+    }));
+
+    network.body.data.nodes.update(nodeReset);
+    network.body.data.edges.update(edgeReset);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     API URL BUILDER
+  ═══════════════════════════════════════════════════════════════════════════ */
 
   function buildApiUrl() {
-    const params = new URLSearchParams();
-    filters.actor_types.forEach(t  => params.append('actor_type', t));
-    filters.categories.forEach(c   => params.append('category',   c));
-    params.set('min_weight', filters.min_weight);
-    if (filters.artifacts) params.set('include_artifacts', 'true');
-    return '/api/graph?' + params.toString();
+    const p = new URLSearchParams();
+    filters.actor_types.forEach(t => p.append('actor_type', t));
+    filters.categories.forEach(c  => p.append('category',   c));
+    p.set('min_weight', filters.min_weight);
+    if (filters.artifacts) p.set('include_artifacts', 'true');
+    return '/api/graph_data?' + p.toString();
   }
 
-  /* ── D3 simulation ────────────────────────────────────────────────────────── */
-
-  const svg  = d3.select('#js-graph-svg');
-  const root = d3.select('#js-graph-root');
-
-  // Zoom behaviour
-  const zoom = d3.zoom()
-    .scaleExtent([0.15, 4])
-    .on('zoom', e => root.attr('transform', e.transform));
-
-  svg.call(zoom).on('dblclick.zoom', null);
-
-  // Click on background closes panel
-  svg.on('click', function (e) {
-    if (e.target === svgEl) closePanel();
-  });
-
-  document.getElementById('js-reset-zoom').addEventListener('click', () => {
-    svg.transition().duration(600).call(
-      zoom.transform,
-      d3.zoomIdentity.translate(
-        svgEl.clientWidth / 2,
-        svgEl.clientHeight / 2
-      ).scale(0.85)
-    );
-  });
-
-  /* ── Render function ──────────────────────────────────────────────────────── */
-
-  function render(data) {
-    graphData = data;
-    const nodes = data.nodes;
-    const links = data.links;
-
-    loadingEl.style.display = 'none';
-
-    if (nodes.length === 0) {
-      emptyEl.style.display = 'flex';
-      statNodes.textContent = '0';
-      statLinks.textContent = '0';
-      return;
-    }
-    emptyEl.style.display = 'none';
-
-    statNodes.textContent = nodes.length;
-    statLinks.textContent = links.length;
-
-    const maxW = data.meta.max_weight || 1;
-    const W    = svgEl.clientWidth  || 900;
-    const H    = svgEl.clientHeight || 600;
-
-    // Stop previous simulation
-    if (simulation) simulation.stop();
-
-    // ── Force simulation ────────────────────────────────────────────────────
-    simulation = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links)
-        .id(d => d.id)
-        .distance(d => {
-          // Longer distance for weak links, shorter for strong
-          const baseActor  = d.source.kind === 'artifact' ? 60 : 100;
-          const baseEvent  = d.target.kind === 'artifact' ? 60 : 100;
-          const base = Math.min(baseActor, baseEvent);
-          return base + (1 - d.weight / maxW) * 80;
-        })
-        .strength(d => 0.4 + (d.weight / maxW) * 0.4)
-      )
-      .force('charge', d3.forceManyBody()
-        .strength(d => d.kind === 'artifact' ? -80 : -240)
-        .distanceMax(420)
-      )
-      .force('center', d3.forceCenter(W / 2, H / 2).strength(0.06))
-      .force('collision', d3.forceCollide()
-        .radius(d => nodeRadius(d) + 14)
-        .strength(0.8)
-      )
-      .force('x', d3.forceX(W / 2).strength(0.03))
-      .force('y', d3.forceY(H / 2).strength(0.03))
-      .alphaDecay(0.025)
-      .velocityDecay(0.4);
-
-    // ── Clear canvas ────────────────────────────────────────────────────────
-    d3.select('#js-link-layer').selectAll('*').remove();
-    d3.select('#js-node-layer').selectAll('*').remove();
-
-    // ── Links ───────────────────────────────────────────────────────────────
-    const linkSel = d3.select('#js-link-layer')
-      .selectAll('line')
-      .data(links)
-      .join('line')
-        .attr('class', 'graph-link')
-        .attr('stroke', LINK_DEFAULT)
-        .attr('stroke-width', d => 0.5 + (d.weight / maxW) * 3.5)
-        .attr('stroke-linecap', 'round')
-        .attr('marker-end', 'url(#arrow-default)')
-        .attr('opacity', 0)
-        .transition().duration(500).delay((d, i) => i * 20)
-        .attr('opacity', 1);
-
-    // Role tooltip on links
-    d3.select('#js-link-layer').selectAll('line')
-      .append('title')
-      .text(d => d.role
-        ? `${d.source.label || d.source} → ${d.target.label || d.target}\n${d.role} (weight: ${d.weight})`
-        : `weight: ${d.weight}`
-      );
-
-    // ── Node groups ─────────────────────────────────────────────────────────
-    const nodeGrp = d3.select('#js-node-layer')
-      .selectAll('g')
-      .data(nodes, d => d.id)
-      .join('g')
-        .attr('class', 'graph-node')
-        .attr('cursor', 'pointer')
-        .call(drag(simulation))
-        .on('click', function (e, d) {
-          e.stopPropagation();
-          highlightNode(d, links);
-          openPanel(d);
-        })
-        .on('mouseenter', function (e, d) { dimOthers(d, links, true); })
-        .on('mouseleave', function (e, d) {
-          if (d.id !== activeNodeId) dimOthers(d, links, false);
-        });
-
-    // Enter animation
-    nodeGrp.attr('opacity', 0)
-      .transition().duration(400).delay((d, i) => 100 + i * 30)
-      .attr('opacity', 1);
-
-    // Draw shape based on node kind
-    nodeGrp.each(function (d) {
-      const g   = d3.select(this);
-      const r   = nodeRadius(d);
-      const col = nodeColour(d);
-
-      if (d.kind === 'actor') {
-        // Circle
-        g.append('circle')
-          .attr('r', r)
-          .attr('fill', col + '33')
-          .attr('stroke', col)
-          .attr('stroke-width', 1.5);
-
-        // Inner dot
-        g.append('circle')
-          .attr('r', r * 0.38)
-          .attr('fill', col)
-          .attr('opacity', 0.7);
-
-      } else if (d.kind === 'event') {
-        // Upward-pointing triangle (⊿ shape)
-        const h   = r * 1.8;
-        const pts = `0,${-h * 0.75} ${r},${h * 0.5} ${-r},${h * 0.5}`;
-        g.append('polygon')
-          .attr('points', pts)
-          .attr('fill', col + '28')
-          .attr('stroke', col)
-          .attr('stroke-width', 1.5);
-
-        // Weight indicator line underneath
-        if (d.artifact_count > 0) {
-          g.append('line')
-            .attr('x1', -r * 0.5).attr('y1', h * 0.55)
-            .attr('x2',  r * 0.5).attr('y2', h * 0.55)
-            .attr('stroke', col).attr('stroke-width', 1.5)
-            .attr('opacity', 0.5);
-        }
-
-      } else {
-        // Artifact — small rounded rectangle
-        g.append('rect')
-          .attr('x', -r).attr('y', -r * 0.55)
-          .attr('width', r * 2).attr('height', r * 1.1)
-          .attr('rx', 2)
-          .attr('fill', col + '30')
-          .attr('stroke', col)
-          .attr('stroke-width', 1);
-      }
-
-      // Label
-      g.append('text')
-        .attr('class', 'graph-label')
-        .attr('dy', r + 13)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#7a95aa')
-        .attr('font-size', d.kind === 'artifact' ? '7px' : '9px')
-        .attr('pointer-events', 'none')
-        .text(truncLabel(d.label, d.kind));
-
-      // Tooltip
-      g.append('title').text(d.label + (d.kind === 'event' && d.date ? '\n' + d.date : ''));
-    });
-
-    // ── Tick ────────────────────────────────────────────────────────────────
-    simulation.on('tick', () => {
-      d3.select('#js-link-layer').selectAll('line')
-        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-
-      d3.select('#js-node-layer').selectAll('g')
-        .attr('transform', d => `translate(${d.x},${d.y})`);
-    });
-  }
-
-  /* ── Node radius ────────────────────────────────────────────────────────── */
-
-  function nodeRadius(d) {
-    if (d.kind === 'artifact') return 6;
-    if (d.kind === 'event')    return 10 + Math.min(d.artifact_count || 0, 5) * 1.5;
-    return 12;
-  }
-
-  /* ── Label truncation ───────────────────────────────────────────────────── */
-
-  function truncLabel(s, kind) {
-    const max = kind === 'artifact' ? 20 : kind === 'event' ? 28 : 22;
-    return s.length > max ? s.slice(0, max - 1) + '…' : s;
-  }
-
-  /* ── Drag behaviour ─────────────────────────────────────────────────────── */
-
-  function drag(sim) {
-    return d3.drag()
-      .on('start', function (e, d) {
-        if (!e.active) sim.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
-      })
-      .on('drag', function (e, d) {
-        d.fx = e.x; d.fy = e.y;
-      })
-      .on('end', function (e, d) {
-        if (!e.active) sim.alphaTarget(0);
-        d.fx = null; d.fy = null;
-      });
-  }
-
-  /* ── Neighbourhood highlight ─────────────────────────────────────────────── */
-
-  function neighbourSet(node, links) {
-    const connected = new Set([node.id]);
-    links.forEach(l => {
-      const sid = l.source.id || l.source;
-      const tid = l.target.id || l.target;
-      if (sid === node.id) connected.add(tid);
-      if (tid === node.id) connected.add(sid);
-    });
-    return connected;
-  }
-
-  function dimOthers(node, links, on) {
-    if (activeNodeId) return; // keep active highlight
-    const nb = neighbourSet(node, links);
-    d3.select('#js-node-layer').selectAll('g')
-      .classed('graph-node--faded', d => on && !nb.has(d.id));
-    d3.select('#js-link-layer').selectAll('line')
-      .classed('graph-link--faded', d => {
-        if (!on) return false;
-        return (d.source.id || d.source) !== node.id
-            && (d.target.id || d.target) !== node.id;
-      })
-      .attr('stroke', d => {
-        if (!on) return LINK_DEFAULT;
-        return (d.source.id === node.id || d.target.id === node.id)
-          ? LINK_HOVER : LINK_DEFAULT;
-      });
-  }
-
-  function highlightNode(node, links) {
-    const nb = neighbourSet(node, links);
-    d3.select('#js-node-layer').selectAll('g')
-      .classed('graph-node--active', d => d.id === node.id)
-      .classed('graph-node--faded', d => !nb.has(d.id));
-    d3.select('#js-link-layer').selectAll('line')
-      .classed('graph-link--active',  d =>
-        (d.source.id || d.source) === node.id ||
-        (d.target.id || d.target) === node.id
-      )
-      .classed('graph-link--faded',   d =>
-        (d.source.id || d.source) !== node.id &&
-        (d.target.id || d.target) !== node.id
-      )
-      .attr('stroke', d => {
-        if ((d.source.id||d.source) === node.id || (d.target.id||d.target) === node.id)
-          return LINK_ACTIVE;
-        return LINK_DEFAULT;
-      });
-  }
-
-  /* ── Fetch and render ─────────────────────────────────────────────────────── */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     LOAD + INIT NETWORK
+  ═══════════════════════════════════════════════════════════════════════════ */
 
   function loadGraph() {
+    /* Show loader, hide empty state, close panel */
     loadingEl.style.display = 'flex';
+    loadLabel.textContent   = 'Querying intelligence graph…';
     emptyEl.style.display   = 'none';
+    stabBadge.style.display = 'none';
     closePanel();
 
     fetch(buildApiUrl())
-      .then(r => { if (!r.ok) throw new Error('Graph API error ' + r.status); return r.json(); })
-      .then(data => render(data))
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(data => initNetwork(data))
       .catch(err => {
         console.error('[FORGE Graph]', err);
-        loadingEl.innerHTML =
-          `<div class="mono" style="color:var(--src-leaked);font-size:0.75rem;">
-             Failed to load graph data. Check console.
-           </div>`;
+        loadLabel.textContent = '⚠  Failed to load — see console';
       });
   }
 
-  /* ── Filter controls ─────────────────────────────────────────────────────── */
+  function initNetwork(data) {
+    rawData = data;
 
-  // Debounce reload to avoid hammering on rapid slider moves
-  let reloadTimer = null;
-  function scheduleReload(delay = 200) {
-    clearTimeout(reloadTimer);
-    reloadTimer = setTimeout(loadGraph, delay);
+    const nodeCount = data.nodes.length;
+    const edgeCount = data.edges.length;
+
+    /* Empty state check */
+    if (nodeCount === 0) {
+      loadingEl.style.display = 'none';
+      emptyEl.style.display   = 'flex';
+      statNodes.textContent   = '0';
+      statEdges.textContent   = '0';
+      return;
+    }
+
+    statNodes.textContent = nodeCount;
+    statEdges.textContent = edgeCount;
+
+    /* Assign stable IDs to edges (Vis needs them for update calls) */
+    const edgesWithIds = data.edges.map((e, i) => ({
+      ...e,
+      id: e.id || `e${i}`,
+    }));
+
+    /* Build Vis DataSet objects */
+    const visNodes = new vis.DataSet(data.nodes);
+    const visEdges = new vis.DataSet(edgesWithIds);
+
+    /* Destroy previous network cleanly */
+    if (network) {
+      network.destroy();
+      network = null;
+    }
+
+    /* ── Vis-Network configuration ────────────────────────────────────────── */
+    const options = {
+
+      nodes: {
+        /* Per-node shape/color/size come from the API payload.
+           These are sensible fallbacks only. */
+        shape:              'dot',
+        size:               16,
+        borderWidth:        2,
+        borderWidthSelected: 3,
+        chosen:             true,
+        shadow: {
+          enabled: true,
+          color:   'rgba(0,0,0,0.60)',
+          size:    10,
+          x: 0, y: 2,
+        },
+        font: {
+          color:   '#8899aa',
+          size:    11,
+          face:    'IBM Plex Mono, monospace',
+          align:   'center',
+          vadjust: 6,
+          strokeWidth: 3,
+          strokeColor: '#05080b',
+        },
+        labelHighlightBold: false,
+      },
+
+      edges: {
+        /* Directed arrows pointing at the target node */
+        arrows: {
+          to: {
+            enabled:     true,
+            scaleFactor: 0.65,
+            type:        'arrow',
+          },
+        },
+        /* Slightly curved for readability when many edges overlap */
+        smooth: {
+          enabled:   true,
+          type:      'continuous',
+          roundness: 0.20,
+        },
+        color: {
+          color:     'rgba(255,255,255,0.18)',
+          highlight: '#c8943a',
+          hover:     '#c8943a',
+          inherit:   false,
+          opacity:   1.0,
+        },
+        font: {
+          color:       '#6a7a8a',
+          size:        9,
+          face:        'IBM Plex Mono, monospace',
+          strokeWidth: 3,
+          strokeColor: '#05080b',
+          align:       'horizontal',
+        },
+        selectionWidth: 2.5,
+        hoverWidth:     1.2,
+        labelHighlightBold: false,
+      },
+
+      /* ── Interaction ─────────────────────────────────────────────────────── */
+      interaction: {
+        hover:               true,
+        hoverConnectedEdges: true,
+        selectConnectedEdges: true,
+        tooltipDelay:        250,
+        navigationButtons:   false,
+        keyboard:            false,
+        zoomView:            true,
+        dragView:            true,
+        dragNodes:           true,
+        multiselect:         false,
+        zoomSpeed:           0.8,
+      },
+
+      /* ── Physics — Barnes-Hut with stable, non-jittery parameters ─────────── */
+      physics: {
+        enabled: physicsOn,
+        solver:  'barnesHut',
+        barnesHut: {
+          gravitationalConstant: -5500,
+          centralGravity:        0.30,
+          springLength:          170,
+          springConstant:        0.040,
+          damping:               0.16,
+          avoidOverlap:          0.45,
+        },
+        stabilization: {
+          enabled:          true,
+          iterations:       600,
+          updateInterval:   25,
+          onlyDynamicEdges: false,
+          fit:              true,
+        },
+        adaptiveTimestep: true,
+        minVelocity:      0.65,
+        maxVelocity:      30,
+        timestep:         0.45,
+      },
+
+      /* ── Layout — deterministic seed so graph looks the same on reload ─────── */
+      layout: {
+        improvedLayout: true,
+        randomSeed:     42,
+      },
+    };
+
+    /* Mount the network */
+    network = new vis.Network(
+      canvasEl,
+      { nodes: visNodes, edges: visEdges },
+      options
+    );
+
+    loadLabel.textContent = 'Stabilising layout…';
+
+    /* ── Stabilisation progress badge ──────────────────────────────────────── */
+    network.on('stabilizationProgress', function (params) {
+      const pct = Math.round((params.iterations / params.total) * 100);
+      stabBadge.style.display = 'block';
+      stabPct.textContent     = `Stabilising… ${pct}%`;
+    });
+
+    /* When done: hide loader, freeze physics, fit viewport */
+    network.on('stabilizationIterationsDone', function () {
+      loadingEl.style.display = 'none';
+      stabBadge.style.display = 'none';
+      /* Freeze after stable — stops jitter permanently */
+      network.setOptions({ physics: { enabled: false } });
+      physicsOn = false;
+      physicsBtn.classList.remove('graph-toggle--active');
+      /* Smooth-animate to fit all nodes */
+      network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+    });
+
+    /* Safety net: always hide loader after 6 s */
+    setTimeout(() => { loadingEl.style.display = 'none'; }, 6000);
+
+    /* ── Node click → side panel ──────────────────────────────────────────── */
+    network.on('click', function (params) {
+      if (params.nodes.length > 0) {
+        const nId  = params.nodes[0];
+        const node = rawData.nodes.find(n => n.id === nId);
+        if (node) {
+          openPanel(node);
+          highlightNeighbours(nId);
+        }
+      } else {
+        /* Click on empty canvas */
+        closePanel();
+      }
+    });
+
+    /* ── Double-click → navigate to entity detail page ─────────────────────── */
+    network.on('doubleClick', function (params) {
+      if (params.nodes.length > 0) {
+        const nId  = params.nodes[0];
+        const node = rawData.nodes.find(n => n.id === nId);
+        if (node && node.url) window.location.href = node.url;
+      }
+    });
+
+    /* ── Hover → dim non-neighbours ─────────────────────────────────────────── */
+    network.on('hoverNode', function (params) {
+      if (activeNodeId) return;   /* selection is persistent — don't override */
+      highlightNeighbours(params.node);
+    });
+
+    network.on('blurNode', function () {
+      if (activeNodeId) return;
+      resetHighlight();
+    });
   }
 
-  // Toggle buttons (actor type / event category)
+  /* ═══════════════════════════════════════════════════════════════════════════
+     CONTROL BAR HANDLERS
+  ═══════════════════════════════════════════════════════════════════════════ */
+
+  /* Debounced reload — prevents hammering API during rapid pill-clicking */
+  let reloadTimer = null;
+  function scheduleReload(delay) {
+    clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(loadGraph, delay || 250);
+  }
+
+  /* Actor-type / event-category filter pills */
   document.getElementById('js-graph-bar').addEventListener('click', function (e) {
     const btn = e.target.closest('[data-filter-group]');
     if (!btn) return;
@@ -718,43 +792,56 @@
       set.add(val);
       btn.classList.add('graph-toggle--active');
     }
-    scheduleReload();
+    scheduleReload(200);
   });
 
-  // Artifact overlay toggle
+  /* Artifact overlay */
   artifactBtn.addEventListener('click', function () {
     filters.artifacts = !filters.artifacts;
     this.dataset.active = String(filters.artifacts);
     this.classList.toggle('graph-toggle--active', filters.artifacts);
     legendArt.style.display = filters.artifacts ? 'flex' : 'none';
-    scheduleReload();
+    scheduleReload(200);
   });
 
-  // Weight slider
+  /* Min-weight slider (debounced more aggressively) */
   weightSlider.addEventListener('input', function () {
-    filters.min_weight = parseInt(this.value, 10);
+    filters.min_weight    = parseInt(this.value, 10);
     weightVal.textContent = this.value;
-    scheduleReload(400);
+    scheduleReload(450);
   });
 
-  /* ── Initial load ─────────────────────────────────────────────────────────── */
-
-  loadGraph();
-
-  /* ── Resize handling ──────────────────────────────────────────────────────── */
-
-  let resizeTimer = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      if (graphData && simulation) {
-        simulation.force('center',
-          d3.forceCenter(svgEl.clientWidth / 2, svgEl.clientHeight / 2).strength(0.06)
-        );
-        simulation.alpha(0.3).restart();
+  /* Physics lock/unlock */
+  physicsBtn.addEventListener('click', function () {
+    physicsOn = !physicsOn;
+    this.classList.toggle('graph-toggle--active', physicsOn);
+    if (network) {
+      network.setOptions({ physics: { enabled: physicsOn } });
+      if (physicsOn) {
+        /* Re-heat the simulation briefly when re-enabling */
+        network.startSimulation();
       }
-    }, 300);
+    }
   });
+
+  /* Fit-all button */
+  document.getElementById('js-reset-zoom').addEventListener('click', function () {
+    if (network) {
+      network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+    }
+  });
+
+  /* Window resize — tell vis to re-measure canvas */
+  let resizeTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      if (network) network.redraw();
+    }, 200);
+  });
+
+  /* ── Boot ───────────────────────────────────────────────────────────────── */
+  loadGraph();
 
 })();
 </script>

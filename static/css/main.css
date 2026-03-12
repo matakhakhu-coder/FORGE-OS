@@ -6007,3 +6007,163 @@ input[type="file"]::file-selector-button:hover {
     max-height:   220px;
   }
 }
+
+
+/* ============================================================================
+   PHASE 12 — Intelligence Graph Engine (Vis-Network)
+   ─────────────────────────────────────────────────────────────────────────
+   IMPORTANT: All .graph-bar*, .graph-panel*, .gpanel__*, .graph-legend*,
+   .graph-loading*, .graph-stat*, .graph-icon-btn, .graph-canvas-wrap CSS
+   from Phase 6 is PRESERVED and REUSED.  This section adds only the new
+   classes needed for Vis-Network integration.
+   ============================================================================ */
+
+/* ── Vis-Network canvas fill inside the existing .graph-canvas-wrap ─────── */
+
+#js-vis-canvas {
+  position: absolute;
+  inset: 0;
+  width:  100% !important;
+  height: 100% !important;
+  background: transparent;
+  /* Vis-Network injects its own <canvas> here; we just make the div fill the frame */
+}
+
+/* Override vis-network's injected canvas element */
+#js-vis-canvas > canvas {
+  display: block;
+  width:   100% !important;
+  height:  100% !important;
+}
+
+/* ── Vis-Network tooltip (replaces Vis's default white popup) ────────────── */
+
+div.vis-tooltip {
+  background: rgba(8, 13, 18, 0.95)  !important;
+  border:     1px solid rgba(200, 148, 58, 0.35) !important;
+  border-radius: var(--r-sm) !important;
+  color:      var(--text-secondary) !important;
+  font-family:var(--font-mono) !important;
+  font-size:  0.68rem !important;
+  line-height: 1.55 !important;
+  padding:    var(--sp-2) var(--sp-3) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+  max-width:  260px !important;
+  white-space: pre-line !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+}
+
+/* ── Vis-Network selection ring colour  (override blue default) ──────────── */
+
+div.vis-network canvas {
+  outline: none;  /* suppress browser focus outline on canvas */
+}
+
+/* ── Stabilisation progress badge ───────────────────────────────────────── */
+
+.vis-stabilising {
+  position: fixed;
+  right:   var(--sp-5);
+  bottom:  var(--sp-5);
+  z-index: 700;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(8, 13, 18, 0.90);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.vis-stabilising .mono {
+  font-size:    0.62rem;
+  letter-spacing: 0.08em;
+  color:        var(--accent);
+  text-transform: uppercase;
+}
+
+/* ── Side-panel connected-node list  (.gpanel__edge-*) ───────────────────── */
+
+.gpanel__section--edges {
+  padding-bottom: var(--sp-3);
+}
+
+.gpanel__edge-row {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+  padding:        5px 0;
+  border-bottom:  1px solid rgba(255,255,255,0.04);
+}
+
+.gpanel__edge-row:last-of-type { border-bottom: none; }
+
+.gpanel__edge-dot {
+  width:         8px;
+  height:        8px;
+  border-radius: 50%;
+  flex-shrink:   0;
+  border:        1.5px solid;
+}
+
+.gpanel__edge-dot--actor    { background: #1a2a4a; border-color: #7aa2f7; }
+.gpanel__edge-dot--event    { background: #3a1a22; border-color: #f7768e; border-radius: 1px; }
+.gpanel__edge-dot--artifact { background: #1a2a14; border-color: #9ece6a; }
+
+.gpanel__edge-label {
+  flex:          1;
+  font-size:     0.72rem;
+  color:         var(--text-secondary);
+  text-decoration: none;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  transition:    color var(--t-fast);
+}
+
+.gpanel__edge-label:hover { color: var(--accent); }
+
+.gpanel__edge-dir {
+  font-size:  0.65rem;
+  color:      var(--text-ghost);
+  flex-shrink: 0;
+}
+
+.gpanel__edge-role {
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  letter-spacing: 0.04em;
+  color:          var(--accent-muted);
+  background:     var(--accent-glow);
+  border:         1px solid rgba(200, 148, 58, 0.20);
+  border-radius:  var(--r-sm);
+  padding:        1px 5px;
+  white-space:    nowrap;
+  flex-shrink:    0;
+}
+
+.gpanel__edge-more {
+  font-size:      0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+  padding-top:    var(--sp-2);
+}
+
+/* ── Physics-toggle visual state (already covered by .graph-toggle--active,
+      this just gives the amber dot a glow when active) ───────────────────── */
+
+#js-physics-toggle.graph-toggle--active .graph-toggle__dot {
+  box-shadow: 0 0 6px rgba(200, 148, 58, 0.6);
+}
+
+/* ── Override vis-network's injected navigation buttons (we hide them) ────── */
+
+.vis-button { display: none !important; }
+
+/* ── Responsive tweaks for the graph on small viewports ─────────────────── */
+
+@media (max-width: 900px) {
+  .vis-stabilising { right: var(--sp-3); bottom: var(--sp-3); }
+}
