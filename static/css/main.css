@@ -749,6 +749,63 @@ mark {
 .source-badge--citizen     { background: var(--src-citizen-bg);     color: #8aaabb; border: 1px solid var(--src-citizen); }
 .source-badge--media       { background: var(--src-media-bg);       color: #5a9ec0; border: 1px solid var(--src-media); }
 
+/* ── Phase 15.5: FORAGE ingestion source badges ─────────────────────────── */
+/* GDELT — indigo / electric violet */
+.source-badge--gdelt {
+  background: rgba(99, 102, 241, 0.12);
+  color:       #818cf8;
+  border:      1px solid rgba(99, 102, 241, 0.35);
+}
+.source-badge--gdelt:hover {
+  background: rgba(99, 102, 241, 0.20);
+}
+
+/* GDACS — emerald / natural-disaster green */
+.source-badge--gdacs {
+  background: rgba(16, 185, 129, 0.10);
+  color:       #34d399;
+  border:      1px solid rgba(16, 185, 129, 0.30);
+}
+.source-badge--gdacs:hover {
+  background: rgba(16, 185, 129, 0.18);
+}
+
+/* RSS — amber, matching existing accent */
+.source-badge--rss {
+  background: rgba(200, 148, 58, 0.10);
+  color:       var(--accent);
+  border:      1px solid rgba(200, 148, 58, 0.30);
+}
+
+/* Interpol — warm amber-orange */
+.source-badge--interpol {
+  background: rgba(245, 158, 11, 0.10);
+  color:       #fbbf24;
+  border:      1px solid rgba(245, 158, 11, 0.30);
+}
+
+/* Generic unknown source */
+.source-badge--unknown,
+.source-badge--gdelt_doc,
+.source-badge--other {
+  background: rgba(255,255,255,0.04);
+  color:       var(--text-dim);
+  border:      1px solid rgba(255,255,255,0.08);
+}
+
+/* Count pill inside summary bar source badges */
+.source-badge__count {
+  display:         inline-block;
+  margin-left:     4px;
+  padding:         0 4px;
+  background:      rgba(255,255,255,0.08);
+  border-radius:   3px;
+  font-size:       0.65em;
+  font-family:     var(--font-mono);
+  letter-spacing:  0;
+  vertical-align:  middle;
+}
+
 .category-badge {
   display: inline-block;
   font-family: var(--font-mono);
@@ -3059,6 +3116,74 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .map-status-bar__sep { color: var(--text-ghost); }
+
+/* ── Phase 15.5: Map Source Filter Bar ──────────────────────────────────────
+   Floating pill row above the status bar — toggles signal layer by source. ─ */
+
+.map-source-filter-bar {
+  position:        fixed;
+  bottom:          calc(var(--sp-4) + 38px);   /* sits just above status bar */
+  left:            calc(var(--sidebar-w) + var(--sp-4));
+  z-index:         500;
+  display:         none;                        /* shown by JS when signals load */
+  align-items:     center;
+  gap:             var(--sp-2);
+  padding:         var(--sp-2) var(--sp-3);
+  background:      rgba(8, 13, 18, 0.88);
+  backdrop-filter: blur(6px);
+  border:          1px solid var(--border-dim);
+  border-radius:   var(--r-sm);
+}
+
+.map-source-filter-bar__label {
+  font-size:      0.55rem;
+  letter-spacing: 0.12em;
+  color:          var(--text-ghost);
+  text-transform: uppercase;
+  margin-right:   var(--sp-1);
+}
+
+.map-source-pill {
+  padding:        2px 8px;
+  border-radius:  3px;
+  border:         1px solid rgba(255,255,255,0.10);
+  background:     transparent;
+  color:          var(--text-dim);
+  font-size:      0.62rem;
+  font-family:    var(--font-mono);
+  letter-spacing: 0.06em;
+  cursor:         pointer;
+  transition:     all var(--t-fast);
+}
+.map-source-pill:hover {
+  border-color: rgba(255,255,255,0.22);
+  color:        var(--text-secondary);
+}
+.map-source-pill--active {
+  color:        var(--text-primary);
+  border-color: rgba(255,255,255,0.28);
+  background:   rgba(255,255,255,0.06);
+}
+.map-source-pill--gdelt.map-source-pill--active {
+  color:        #818cf8;
+  background:   rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.45);
+}
+.map-source-pill--gdacs.map-source-pill--active {
+  color:        #34d399;
+  background:   rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.40);
+}
+.map-source-pill--rss.map-source-pill--active {
+  color:        var(--accent);
+  background:   rgba(200, 148, 58, 0.12);
+  border-color: rgba(200, 148, 58, 0.40);
+}
+.map-source-pill--interpol.map-source-pill--active {
+  color:        #fbbf24;
+  background:   rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.40);
+}
 
 /* ── Leaflet overrides — dark theme ─────────────────────────────────────────── */
 
@@ -6167,3 +6292,921 @@ div.vis-network canvas {
 @media (max-width: 900px) {
   .vis-stabilising { right: var(--sp-3); bottom: var(--sp-3); }
 }
+
+
+/* ============================================================================
+   PHASE 13 — FORAGE Signal Monitor
+   signal table · status badges · summary bar · filter tabs ·
+   promote/dismiss actions · empty state
+   ============================================================================ */
+
+/* ── Summary bar ─────────────────────────────────────────────────────────── */
+
+.signal-summary-bar {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-4);
+  padding:        var(--sp-4) var(--sp-5);
+  margin-bottom:  var(--sp-4);
+  background:     var(--bg-surface);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-sm);
+}
+
+.signal-summary-bar__sep {
+  width:          1px;
+  height:         28px;
+  background:     var(--border-dim);
+  flex-shrink:    0;
+}
+
+.signal-summary-bar__item {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            2px;
+  flex-shrink:    0;
+}
+
+.signal-summary-bar__val {
+  font-family:    var(--font-display);
+  font-weight:    700;
+  font-size:      1.3rem;
+  color:          var(--accent);
+  line-height:    1;
+}
+
+.signal-summary-bar__val--raw       { color: #c8943a; }
+.signal-summary-bar__val--reviewed  { color: #7aa2f7; }
+.signal-summary-bar__val--promoted  { color: #9ece6a; }
+.signal-summary-bar__val--dismissed { color: var(--text-dim); }
+
+.signal-summary-bar__label {
+  font-size:      0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-dim);
+}
+
+/* ── Filter tab bar ──────────────────────────────────────────────────────── */
+
+.signal-filter-bar {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+  margin-bottom:  var(--sp-4);
+  flex-wrap:      wrap;
+}
+
+.signal-filter-btn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+  font-family:    var(--font-mono);
+  font-size:      0.68rem;
+  letter-spacing: 0.06em;
+  padding:        5px var(--sp-4);
+  border:         1px solid var(--border-dim);
+  border-radius:  2px;
+  color:          var(--text-dim);
+  background:     transparent;
+  cursor:         pointer;
+  transition:     background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+
+.signal-filter-btn:hover {
+  color:          var(--text-secondary);
+  border-color:   var(--border-mid);
+}
+
+.signal-filter-btn--active {
+  color:          var(--text-primary);
+  border-color:   var(--accent-muted);
+  background:     var(--accent-glow);
+}
+
+/* ── Signal status dot (inline in filter buttons) ────────────────────────── */
+
+.signal-status-dot {
+  width:          7px;
+  height:         7px;
+  border-radius:  50%;
+  flex-shrink:    0;
+}
+
+.signal-status-dot--raw       { background: #c8943a; }
+.signal-status-dot--reviewed  { background: #7aa2f7; }
+.signal-status-dot--promoted  { background: #9ece6a; }
+.signal-status-dot--dismissed { background: var(--text-ghost); }
+
+/* ── Signal table wrapper ────────────────────────────────────────────────── */
+
+.signal-table-wrap {
+  overflow-x: auto;
+  border:     1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+}
+
+/* ── Signal table ────────────────────────────────────────────────────────── */
+
+.signal-table {
+  width:           100%;
+  border-collapse: collapse;
+  font-size:       0.8rem;
+}
+
+/* ── Header row ──────────────────────────────────────────────────────────── */
+
+.signal-table__th {
+  padding:         var(--sp-2) var(--sp-3);   /* Phase 15.5: tighter for density */
+  font-family:     var(--font-mono);
+  font-size:       0.6rem;
+  letter-spacing:  0.1em;
+  text-transform:  uppercase;
+  color:           var(--text-dim);
+  text-align:      left;
+  white-space:     nowrap;
+  border-bottom:   1px solid var(--border-dim);
+  background:      var(--bg-elevated);
+}
+
+.signal-table__th--status  { width: 88px;  }
+.signal-table__th--source  { width: 70px;  }
+.signal-table__th--title   { min-width: 200px; }
+.signal-table__th--content { min-width: 240px; }
+.signal-table__th--coords  { width: 110px; }
+.signal-table__th--time    { width: 150px; }
+.signal-table__th--actions { width: 160px; }
+
+/* ── Data rows ───────────────────────────────────────────────────────────── */
+
+.signal-row {
+  transition: background var(--t-fast);
+}
+
+.signal-row:hover {
+  background: var(--bg-hover);
+}
+
+.signal-row + .signal-row {
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Subtle tint for already-processed rows */
+.signal-row[data-status="promoted"]  { opacity: 0.65; }
+.signal-row[data-status="dismissed"] { opacity: 0.40; }
+
+.signal-table__td {
+  padding:        var(--sp-2) var(--sp-3);    /* Phase 15.5: tighter for density */
+  vertical-align: top;
+  color:          var(--text-secondary);
+}
+
+.signal-table__td--title {
+  color: var(--text-primary);
+}
+
+/* ── Cell sub-elements ───────────────────────────────────────────────────── */
+
+.signal-title {
+  font-size:   0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color:       var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.signal-external-id {
+  font-size:   0.6rem;
+  color:       var(--text-ghost);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  max-width:   220px;
+}
+
+.signal-coords {
+  font-size:   0.7rem;
+  color:       var(--text-dim);
+  white-space: nowrap;
+}
+
+.signal-ts {
+  font-size:   0.68rem;
+  color:       var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ── Status badge ────────────────────────────────────────────────────────── */
+
+.signal-status-badge {
+  display:        inline-flex;
+  align-items:    center;
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding:        2px 7px;
+  border-radius:  2px;
+  border:         1px solid;
+  white-space:    nowrap;
+}
+
+.signal-status-badge--raw {
+  background:   rgba(200, 148, 58, 0.10);
+  color:        #d4a84a;
+  border-color: rgba(200, 148, 58, 0.35);
+}
+
+.signal-status-badge--reviewed {
+  background:   rgba(122, 162, 247, 0.10);
+  color:        #9ab8ff;
+  border-color: rgba(122, 162, 247, 0.30);
+}
+
+.signal-status-badge--promoted {
+  background:   rgba(158, 206, 106, 0.10);
+  color:        #9ece6a;
+  border-color: rgba(158, 206, 106, 0.30);
+}
+
+.signal-status-badge--dismissed {
+  background:   rgba(255, 255, 255, 0.03);
+  color:        var(--text-ghost);
+  border-color: var(--border-dim);
+}
+
+/* ── Source tag ──────────────────────────────────────────────────────────── */
+
+.signal-source-tag {
+  display:        inline-flex;
+  font-family:    var(--font-mono);
+  font-size:      0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding:        2px 6px;
+  background:     var(--bg-overlay);
+  border:         1px solid var(--border-dim);
+  border-radius:  2px;
+  color:          var(--text-secondary);
+  white-space:    nowrap;
+}
+
+/* ── Action buttons in table ─────────────────────────────────────────────── */
+
+.signal-actions {
+  display:    flex;
+  flex-wrap:  wrap;
+  gap:        var(--sp-2);
+  align-items: flex-start;
+}
+
+.btn--promote {
+  background:   rgba(158, 206, 106, 0.10);
+  border-color: rgba(158, 206, 106, 0.35);
+  color:        #9ece6a;
+  text-decoration: none;
+}
+
+.btn--promote:hover {
+  background:   rgba(158, 206, 106, 0.18);
+  border-color: #9ece6a;
+  color:        #b8e48a;
+}
+
+.btn--dismiss {
+  background:   transparent;
+  border-color: var(--border-dim);
+  color:        var(--text-dim);
+  cursor:       pointer;
+}
+
+.btn--dismiss:hover {
+  border-color: rgba(200, 80, 80, 0.5);
+  color:        #e06060;
+}
+
+.btn--dismiss:disabled {
+  opacity: 0.4;
+  cursor:  default;
+}
+
+.signal-promoted-label {
+  font-size:      0.65rem;
+  letter-spacing: 0.06em;
+  color:          #9ece6a;
+  opacity:        0.7;
+}
+
+/* ── Empty-after-filter notice ───────────────────────────────────────────── */
+
+.signal-empty-filter {
+  display:         flex;
+  justify-content: center;
+  padding:         var(--sp-8) 0;
+}
+
+/* ── Empty state (no signals at all) ─────────────────────────────────────── */
+
+.empty-state {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--sp-4);
+  padding:         var(--sp-10) var(--sp-6);
+  text-align:      center;
+}
+
+.empty-state__icon {
+  font-size: 2.5rem;
+  color:     var(--text-ghost);
+  line-height: 1;
+}
+
+.empty-state__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size:   1rem;
+  color:       var(--text-secondary);
+}
+
+.empty-state__body {
+  font-size: 0.8rem;
+  color:     var(--text-dim);
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.empty-state__code {
+  font-size:   0.72rem;
+  padding:     var(--sp-3) var(--sp-5);
+  background:  var(--bg-elevated);
+  border:      1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color:       var(--accent);
+  letter-spacing: 0.04em;
+}
+
+/* ── Promote form — form-card, form-group, form-row re-use base styles ────── */
+
+/* Coordinates hint note inside the promote form */
+.signal-promote-coords-note {
+  font-size:      0.68rem;
+  letter-spacing: 0.04em;
+  color:          var(--text-dim);
+  padding:        var(--sp-2) var(--sp-4);
+  background:     rgba(158, 206, 106, 0.06);
+  border:         1px solid rgba(158, 206, 106, 0.18);
+  border-radius:  var(--r-sm);
+  margin-bottom:  var(--sp-5);
+}
+
+.signal-promote-coords-note strong {
+  color:  #9ece6a;
+  font-weight: 600;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .signal-table__td--content { display: none; }
+  .signal-table__th--content { display: none; }
+}
+
+@media (max-width: 860px) {
+  .signal-table__td--coords { display: none; }
+  .signal-table__th--coords { display: none; }
+  .signal-summary-bar { flex-wrap: wrap; gap: var(--sp-3); }
+}
+
+
+/* ============================================================================
+   CSS GAP-FILL — missing class definitions identified by cross-reference audit
+   Each block notes the template file that uses the class and why it was absent.
+   ============================================================================ */
+
+/* ── page-header__meta ───────────────────────────────────────────────────────
+   Used in: signals.html, admin_event_new.html
+   The page-header block had __eyebrow, __title, __sub, __actions but not __meta.
+   Role: secondary descriptive paragraph beneath the page title.           ── */
+
+.page-header__meta {
+  font-size:   0.82rem;
+  color:       var(--text-secondary);
+  line-height: 1.65;
+  margin-top:  var(--sp-2);
+  max-width:   640px;
+}
+
+/* ── search-result__snippet ──────────────────────────────────────────────────
+   Used in: search.html
+   CSS had .search-result__excerpt; template uses __snippet (name drift).
+   Both render the same role: highlighted FTS excerpt below a search hit.  ── */
+
+.search-result__snippet {
+  font-size:   0.78rem;
+  color:       var(--text-secondary);
+  line-height: 1.65;
+  margin-top:  var(--sp-2);
+  /* Highlight <mark> tags injected by the FTS snippet() function */
+}
+
+.search-result__snippet mark {
+  background: rgba(200, 148, 58, 0.22);
+  color:      var(--accent-bright);
+  padding:    0 2px;
+  border-radius: 2px;
+}
+
+/* ── dossier-header__subject ─────────────────────────────────────────────────
+   Used in: dossier.html
+   The dossier-header family had strip/classification/eyebrow/title/meta-row
+   but not __subject — the wrapper div that groups the eyebrow + title block.  */
+
+.dossier-header__subject {
+  flex:        1;
+  min-width:   0;
+}
+
+/* ── graph-toggle--actor / --event ───────────────────────────────────────────
+   Used in: graph.html (Phase 12)
+   These are modifier classes on .graph-toggle buttons in the control bar.
+   They carry no extra visual rules beyond the base .graph-toggle styles —
+   they exist as data/JS hooks and for future per-kind styling.            ── */
+
+.graph-toggle--actor,
+.graph-toggle--event {
+  /* Intentionally no additional rules — inherits from .graph-toggle.
+     Class present for semantic targeting and potential future differentiation. */
+}
+
+/* ── signal-table__td--time / --actions ─────────────────────────────────────
+   Used in: signals.html
+   signal-table__td--title and --content had explicit rules; --time and
+   --actions were missing their column-level overrides.                   ── */
+
+.signal-table__td--time {
+  white-space: nowrap;
+  color:       var(--text-dim);
+}
+
+.signal-table__td--actions {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* ── map-popup (base wrapper) ────────────────────────────────────────────────
+   Used in: map.html
+   CSS had .map-popup__header, __title, __body etc. but not the root
+   .map-popup wrapper itself (used on the Leaflet popup content div).     ── */
+
+.map-popup {
+  min-width:  220px;
+  max-width:  300px;
+  font-family: var(--font-sans);
+}
+
+/* ── tactical-popup ──────────────────────────────────────────────────────────
+   Used in: case_detail.html (Phase 11 tactical map)
+   CSS had .tactical-popup-wrapper (the Leaflet wrapper override) but not
+   .tactical-popup itself (the inner content div with inline styles).     ── */
+
+.tactical-popup {
+  font-family: var(--font-sans);
+  font-size:   0.78rem;
+  line-height: 1.55;
+}
+
+/* ── case-create-form (root wrapper) ─────────────────────────────────────────
+   Used in: cases.html
+   CSS had case-create-form__row / __input / __select / __textarea but not
+   the root form wrapper class.                                           ── */
+
+.case-create-form {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-3);
+}
+
+
+/* ── actor-card__type ────────────────────────────────────────────────────────
+   actors.html — the actor type label (person/institution/etc) inside each
+   card. Sibling to actor-card__name and actor-card__desc which exist.    ── */
+
+.actor-card__type {
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--accent);
+  margin-bottom:  var(--sp-1);
+  opacity:        0.85;
+}
+
+/* ── event-row__artifact-count ───────────────────────────────────────────────
+   events.html — artifact count pill on each event row. Sibling to
+   event-row__date, __title, __meta, __count which exist.                 ── */
+
+.event-row__artifact-count {
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  color:          var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+
+/* ============================================================================
+   Phase 14 — Pattern Detection & Alert Engine UI
+   Bell icon · Priority flag · Cluster badge · Priority Only toggle
+   ============================================================================ */
+
+/* ── Topbar alert bell ────────────────────────────────────────────────────────
+   Sits between the search form and the UTC clock.
+   Uses position:relative so the count dot can be anchored absolutely.    ── */
+
+.topbar__bell {
+  position:      relative;
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  width:         34px;
+  height:        34px;
+  border-radius: var(--r-sm);
+  color:         var(--text-dim);
+  text-decoration: none;
+  flex-shrink:   0;
+  transition:    color var(--t-fast), background var(--t-fast);
+}
+
+.topbar__bell:hover {
+  color:       var(--text-secondary);
+  background:  var(--bg-elevated);
+}
+
+/* Active state — priority signals exist */
+.topbar__bell--active {
+  color: #e05c5c;
+  animation: bell-glow 2.8s ease-in-out infinite;
+}
+
+.topbar__bell--active:hover {
+  color:      #e87070;
+  background: rgba(224, 92, 92, 0.1);
+}
+
+.topbar__bell-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Count dot — floats top-right of the bell icon */
+.topbar__bell-dot {
+  position:      absolute;
+  top:           3px;
+  right:         3px;
+  min-width:     16px;
+  height:        16px;
+  padding:       0 3px;
+  background:    #e05c5c;
+  color:         #fff;
+  font-family:   var(--font-mono);
+  font-size:     0.58rem;
+  font-weight:   700;
+  line-height:   16px;
+  text-align:    center;
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow:    0 0 0 2px var(--bg-void);
+}
+
+/* Pulse glow keyframe — ambient red shimmer on the bell when active */
+@keyframes bell-glow {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(224, 92, 92, 0));   }
+  50%       { filter: drop-shadow(0 0 5px rgba(224, 92, 92, 0.65)); }
+}
+
+/* ── signal-summary-bar Phase 14 value colours ───────────────────────────────  */
+
+.signal-summary-bar__val--priority { color: #e05c5c; }
+.signal-summary-bar__val--cluster  { color: #bb86fc; }
+
+/* ── Filter bar spacer (pushes Priority Only to right edge) ──────────────────  */
+
+.signal-filter-spacer {
+  flex: 1;
+}
+
+/* ── Priority Only toggle button ──────────────────────────────────────────────
+   Shares .signal-filter-btn base styles; --priority modifier adds red accent. */
+
+.signal-filter-btn--priority {
+  border-color: rgba(224, 92, 92, 0.3);
+  color:        #e05c5c;
+  gap:          var(--sp-2);
+}
+
+.signal-filter-btn--priority:hover {
+  background:   rgba(224, 92, 92, 0.08);
+  border-color: rgba(224, 92, 92, 0.55);
+}
+
+/* Active (pressed) state */
+.signal-filter-btn--priority-active {
+  background:   rgba(224, 92, 92, 0.15) !important;
+  border-color: #e05c5c !important;
+  color:        #e87070 !important;
+}
+
+/* Small red dot inside the Priority Only button */
+.signal-priority-dot {
+  display:       inline-block;
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    #e05c5c;
+  flex-shrink:   0;
+  animation:     priority-dot-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes priority-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(224, 92, 92, 0.5); }
+  50%       { box-shadow: 0 0 0 4px rgba(224, 92, 92, 0);   }
+}
+
+/* ── Priority row highlight ───────────────────────────────────────────────────
+   A left-edge accent stripe on rows where is_priority = 1.               ── */
+
+.signal-row--priority {
+  border-left: 3px solid rgba(224, 92, 92, 0.5);
+  background:  rgba(224, 92, 92, 0.03);
+}
+
+.signal-row--priority:hover {
+  background: rgba(224, 92, 92, 0.06);
+}
+
+/* ── Phase 15.5: Low-relevance dimming ───────────────────────────────────────
+   Applied to raw, non-priority signals — recedes into the background when
+   high-volume GDELT traffic floods the table.                              ── */
+
+.signal-row--low-relevance {
+  opacity: 0.6;
+}
+.signal-row--low-relevance:hover {
+  opacity: 1;
+  transition: opacity var(--t-fast);
+}
+
+/* ── Phase 15.5: Source filter controls in filter bar ───────────────────────  */
+
+.signal-source-filters {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-1);
+  margin-right: var(--sp-2);
+}
+
+.signal-source-filter-label {
+  font-size:      0.6rem;
+  letter-spacing: 0.1em;
+  color:          var(--text-ghost);
+  margin-right:   var(--sp-1);
+  text-transform: uppercase;
+}
+
+/* Source-specific active states mirror badge colours */
+.signal-source-filter-btn {
+  font-size:      0.65rem;
+  padding:        2px 7px;
+  border-radius:  3px;
+  border:         1px solid rgba(255,255,255,0.10);
+  background:     transparent;
+  color:          var(--text-dim);
+  cursor:         pointer;
+  font-family:    var(--font-mono);
+  letter-spacing: 0.05em;
+  transition:     all var(--t-fast);
+}
+.signal-source-filter-btn:hover {
+  border-color: rgba(255,255,255,0.22);
+  color:        var(--text-secondary);
+}
+.signal-source-filter-btn--gdelt.signal-source-filter-btn--active {
+  background:  rgba(99, 102, 241, 0.15);
+  color:       #818cf8;
+  border-color: rgba(99, 102, 241, 0.45);
+}
+.signal-source-filter-btn--gdacs.signal-source-filter-btn--active {
+  background:  rgba(16, 185, 129, 0.12);
+  color:       #34d399;
+  border-color: rgba(16, 185, 129, 0.40);
+}
+.signal-source-filter-btn--rss.signal-source-filter-btn--active {
+  background:  rgba(200, 148, 58, 0.12);
+  color:       var(--accent);
+  border-color: rgba(200, 148, 58, 0.40);
+}
+.signal-source-filter-btn--interpol.signal-source-filter-btn--active {
+  background:  rgba(245, 158, 11, 0.12);
+  color:       #fbbf24;
+  border-color: rgba(245, 158, 11, 0.40);
+}
+
+/* ── Source badges in summary bar ─────────────────────────────────────────── */
+
+.signal-summary-bar__sources {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-wrap:   wrap;
+}
+
+/* ── Priority flag glyph (⚑) inside the status cell ─────────────────────────  */
+
+.signal-status-cell {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+}
+
+.signal-priority-flag {
+  font-size:   0.82rem;
+  color:       #e05c5c;
+  line-height: 1;
+  flex-shrink: 0;
+  animation:   priority-flag-fade 2.8s ease-in-out infinite;
+}
+
+@keyframes priority-flag-fade {
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.55; }
+}
+
+/* ── Cluster badge ────────────────────────────────────────────────────────────
+   Compact truncated-UUID pill in the Cluster column.                     ── */
+
+.signal-table__th--cluster { width: 96px; }
+
+.signal-table__td--cluster {
+  white-space: nowrap;
+}
+
+.signal-cluster-badge {
+  display:       inline-block;
+  padding:       2px 6px;
+  background:    rgba(187, 134, 252, 0.1);
+  border:        1px solid rgba(187, 134, 252, 0.25);
+  border-radius: var(--r-sm);
+  color:         #bb86fc;
+  font-size:     0.62rem;
+  letter-spacing: 0.04em;
+  cursor:        default;
+  white-space:   nowrap;
+}
+
+.signal-cluster-badge:hover {
+  background: rgba(187, 134, 252, 0.18);
+  border-color: rgba(187, 134, 252, 0.45);
+}
+
+
+/* ============================================================================
+   Phase 15 — Situational Dashboard: Map Signal Layer
+   Signal markers · pulse animation · cluster centroids · layer control
+   ============================================================================ */
+
+/* ── Pulsing marker — priority signals (Phase 15.5: CSS var for source colour) ─
+   A CSS-only animated dot injected via L.divIcon html.
+   --pulse-col is set inline by makeSignalIcon() so non-red sources pulse
+   in their own brand colour.                                             ── */
+
+.forge-signal-pulse {
+  position:      relative;
+  width:         14px;
+  height:        14px;
+  border-radius: 50%;
+  background:    var(--pulse-col, #e05c5c);
+  box-shadow:    0 0 0 0 var(--pulse-col, rgba(224, 92, 92, 0.7));
+  animation:     signal-pulse-ring 1.8s ease-out infinite;
+}
+
+.forge-signal-pulse::before {
+  content:       '';
+  position:      absolute;
+  inset:         -5px;
+  border-radius: 50%;
+  border:        1.5px solid var(--pulse-col, rgba(224, 92, 92, 0.45));
+  opacity:       0.55;
+  animation:     signal-pulse-outer 1.8s ease-out infinite;
+  animation-delay: 0.3s;
+}
+
+.forge-signal-pulse::after {
+  content:       '';
+  position:      absolute;
+  inset:         -10px;
+  border-radius: 50%;
+  border:        1px solid var(--pulse-col, rgba(224, 92, 92, 0.2));
+  opacity:       0.25;
+  animation:     signal-pulse-outer 1.8s ease-out infinite;
+  animation-delay: 0.6s;
+}
+
+@keyframes signal-pulse-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(224, 92, 92, 0.7); }
+  70%  { box-shadow: 0 0 0 14px rgba(224, 92, 92, 0);   }
+  100% { box-shadow: 0 0 0 0   rgba(224, 92, 92, 0);   }
+}
+
+@keyframes signal-pulse-outer {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0;   }
+}
+
+/* ── Cluster centroid marker ──────────────────────────────────────────────────
+   Leaflet divIcon container — needs pointer-events passthrough.          ── */
+
+.forge-cluster-centroid {
+  background:    transparent !important;
+  border:        none !important;
+  cursor:        pointer;
+}
+
+/* ── Layer control — dark-first classified aesthetic ──────────────────────────
+   Override Leaflet's default white-panel layer control to match FORGE.   ── */
+
+.leaflet-control-layers {
+  background:    var(--bg-elevated) !important;
+  border:        1px solid var(--border-mid) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow:    0 4px 24px rgba(0, 0, 0, 0.55) !important;
+  min-width:     180px;
+  overflow:      hidden;
+}
+
+.leaflet-control-layers-expanded {
+  padding: 10px 14px 12px !important;
+}
+
+.leaflet-control-layers-toggle {
+  background-color: var(--bg-elevated) !important;
+  border:           1px solid var(--border-dim) !important;
+  border-radius:    var(--r-sm) !important;
+}
+
+/* Section heading "Overlays" */
+.leaflet-control-layers-separator {
+  border-top:    1px solid var(--border-dim) !important;
+  margin:        6px 0 !important;
+}
+
+.leaflet-control-layers-overlays label,
+.leaflet-control-layers-base label {
+  display:        flex !important;
+  align-items:    center !important;
+  gap:            8px;
+  padding:        4px 0;
+  font-family:    var(--font-mono) !important;
+  font-size:      0.7rem !important;
+  letter-spacing: 0.05em !important;
+  color:          var(--text-secondary) !important;
+  cursor:         pointer !important;
+  transition:     color var(--t-fast) !important;
+}
+
+.leaflet-control-layers-overlays label:hover,
+.leaflet-control-layers-base label:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Checkbox styling */
+.leaflet-control-layers input[type="checkbox"] {
+  accent-color:  var(--accent);
+  width:         13px;
+  height:        13px;
+  cursor:        pointer;
+}
+
+/* "Layers" title injected by Leaflet — hide default, shown via ::before */
+.leaflet-control-layers-list::before {
+  content:        'LAYERS';
+  display:        block;
+  font-family:    var(--font-mono);
+  font-size:      0.58rem;
+  letter-spacing: 0.14em;
+  color:          var(--text-ghost);
+  margin-bottom:  8px;
+  text-transform: uppercase;
+}
+
+/* ── Signal popup panels — additional popup-specific styles ───────────────────
+   The signal panels re-use map-popup__ classes but need a few extras.    ── */
+
+.map-popup .signal-status-badge { font-size: 0.6rem; padding: 1px 5px; }
+.map-popup .signal-source-tag   { font-size: 0.6rem; padding: 1px 5px; }
+.map-popup .signal-cluster-badge{ font-size: 0.62rem; }
+.map-popup .signal-priority-flag{ font-size: 0.75rem; color: #e05c5c; }
+.map-popup .map-popup__footer   { flex-direction: column; gap: var(--sp-2); align-items: stretch; }

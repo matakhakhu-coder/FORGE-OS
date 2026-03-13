@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+{% block title %}FORAGE Signal Monitor{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ─────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">FORAGE — Signal Monitor</span>
+</nav>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════════════════════════════════════════ #}
+<div class="page-header">
+  <div>
+    <div class="page-header__eyebrow mono">
+      FORAGE <span style="color:var(--text-ghost);">·</span> INGESTION LAYER
+    </div>
+    <h1 class="page-header__title">Signal Monitor</h1>
+    <p class="page-header__meta">
+      Raw signals ingested from external sources. Review, promote to FORGE events,
+      or dismiss. Showing the 50 most recent — priority signals surfaced first.
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('admin') }}" class="btn btn--sm">
+      ⊞ Admin
+    </a>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   SUMMARY BAR  (Phase 14: adds priority count + cluster count)
+══════════════════════════════════════════════════════════════════════════════ #}
+{% if counts %}
+<div class="signal-summary-bar">
+
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val">{{ counts.total or 0 }}</span>
+    <span class="signal-summary-bar__label mono">total</span>
+  </div>
+
+  <div class="signal-summary-bar__sep"></div>
+
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--raw">{{ counts.raw or 0 }}</span>
+    <span class="signal-summary-bar__label mono">raw</span>
+  </div>
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--reviewed">{{ counts.reviewed or 0 }}</span>
+    <span class="signal-summary-bar__label mono">reviewed</span>
+  </div>
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--promoted">{{ counts.promoted or 0 }}</span>
+    <span class="signal-summary-bar__label mono">promoted</span>
+  </div>
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--dismissed">{{ counts.dismissed or 0 }}</span>
+    <span class="signal-summary-bar__label mono">dismissed</span>
+  </div>
+
+  <div class="signal-summary-bar__sep"></div>
+
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--priority">{{ counts.priority or 0 }}</span>
+    <span class="signal-summary-bar__label mono">priority</span>
+  </div>
+  <div class="signal-summary-bar__item">
+    <span class="signal-summary-bar__val signal-summary-bar__val--cluster">{{ counts.clusters or 0 }}</span>
+    <span class="signal-summary-bar__label mono">clusters</span>
+  </div>
+
+  {% if source_counts %}
+  <div class="signal-summary-bar__sep"></div>
+  <div class="signal-summary-bar__sources">
+    {% for src, cnt in source_counts.items() %}
+    <span class="source-badge source-badge--{{ src }}" title="{{ cnt }} signals from {{ src|upper }}">
+      {{ src|upper }} <span class="source-badge__count">{{ cnt }}</span>
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   FILTER BAR  (Phase 14: adds Priority Only toggle on right side)
+══════════════════════════════════════════════════════════════════════════════ #}
+<div class="signal-filter-bar" id="js-signal-filters">
+
+  <button class="signal-filter-btn signal-filter-btn--active" data-filter="all">
+    All
+  </button>
+  <button class="signal-filter-btn" data-filter="raw">
+    <span class="signal-status-dot signal-status-dot--raw"></span> Raw
+  </button>
+  <button class="signal-filter-btn" data-filter="reviewed">
+    <span class="signal-status-dot signal-status-dot--reviewed"></span> Reviewed
+  </button>
+  <button class="signal-filter-btn" data-filter="promoted">
+    <span class="signal-status-dot signal-status-dot--promoted"></span> Promoted
+  </button>
+  <button class="signal-filter-btn" data-filter="dismissed">
+    <span class="signal-status-dot signal-status-dot--dismissed"></span> Dismissed
+  </button>
+
+  <span class="signal-filter-spacer"></span>
+
+  {# Phase 15.5: Source filter buttons #}
+  {% if source_counts %}
+  <div class="signal-source-filters" id="js-source-filters">
+    <span class="mono signal-source-filter-label">Source</span>
+    {% for src in source_counts.keys() %}
+    <button class="signal-filter-btn signal-source-filter-btn signal-source-filter-btn--{{ src }}"
+            data-source="{{ src }}"
+            title="Filter by source: {{ src|upper }}">
+      {{ src|upper }}
+    </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <button class="signal-filter-btn signal-filter-btn--priority"
+          id="js-priority-toggle"
+          data-active="0"
+          title="Show only priority signals">
+    <span class="signal-priority-dot" aria-hidden="true"></span>
+    Priority Only
+  </button>
+
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   SIGNAL TABLE  (Phase 14: Cluster column + priority indicators on rows)
+══════════════════════════════════════════════════════════════════════════════ #}
+{% if signals %}
+<div class="signal-table-wrap">
+  <table class="signal-table" id="js-signal-table">
+    <thead>
+      <tr>
+        <th class="signal-table__th signal-table__th--status">Status</th>
+        <th class="signal-table__th signal-table__th--source">Source</th>
+        <th class="signal-table__th signal-table__th--title">Title</th>
+        <th class="signal-table__th signal-table__th--content">Summary</th>
+        <th class="signal-table__th signal-table__th--cluster">Cluster</th>
+        <th class="signal-table__th signal-table__th--coords">Coordinates</th>
+        <th class="signal-table__th signal-table__th--time">Timestamp</th>
+        <th class="signal-table__th signal-table__th--actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="js-signal-tbody">
+      {% for sig in signals %}
+      <tr class="signal-row{% if sig.is_priority %} signal-row--priority{% endif %}{% if not sig.is_priority and sig.status == 'raw' %} signal-row--low-relevance{% endif %}"
+          data-status="{{ sig.status }}"
+          data-priority="{{ '1' if sig.is_priority else '0' }}"
+          data-source="{{ sig.source or '' }}"
+          id="row-{{ sig.signal_id }}">
+
+        {# Status + priority flag #}
+        <td class="signal-table__td">
+          <div class="signal-status-cell">
+            {% if sig.is_priority %}
+            <span class="signal-priority-flag" title="Priority — keyword match">⚑</span>
+            {% endif %}
+            <span class="signal-status-badge signal-status-badge--{{ sig.status }}">
+              {{ sig.status }}
+            </span>
+          </div>
+        </td>
+
+        {# Source badge — Phase 15.5 #}
+        <td class="signal-table__td">
+          {% set src = sig.source or 'unknown' %}
+          <span class="source-badge source-badge--{{ src }}" title="{{ src|upper }}">
+            {{ src|upper }}
+          </span>
+        </td>
+
+        {# Title + external_id #}
+        <td class="signal-table__td signal-table__td--title">
+          <div class="signal-title">{{ sig.title }}</div>
+          <div class="signal-external-id mono">{{ sig.external_id }}</div>
+        </td>
+
+        {# Content summary #}
+        <td class="signal-table__td signal-table__td--content">
+          <span title="{{ sig.content | e }}">
+            {{ sig.content | truncate(100) if sig.content else '—' }}
+          </span>
+        </td>
+
+        {# Phase 14: Cluster badge #}
+        <td class="signal-table__td signal-table__td--cluster">
+          {% if sig.cluster_id %}
+          <span class="signal-cluster-badge mono" title="Cluster {{ sig.cluster_id }}">
+            {{ sig.cluster_id[:8] }}…
+          </span>
+          {% else %}
+          <span class="mono" style="color:var(--text-ghost);">—</span>
+          {% endif %}
+        </td>
+
+        {# Coordinates #}
+        <td class="signal-table__td signal-table__td--coords">
+          {% if sig.lat is not none and sig.lng is not none %}
+            <span class="signal-coords mono">
+              {{ "%.3f"|format(sig.lat) }},
+              {{ "%.3f"|format(sig.lng) }}
+            </span>
+          {% else %}
+            <span class="mono" style="color:var(--text-ghost);">—</span>
+          {% endif %}
+        </td>
+
+        {# Timestamp #}
+        <td class="signal-table__td signal-table__td--time">
+          <span class="mono signal-ts">{{ sig.timestamp }}</span>
+        </td>
+
+        {# Actions #}
+        <td class="signal-table__td signal-table__td--actions">
+          <div class="signal-actions">
+
+            {% if sig.status not in ('promoted', 'dismissed') %}
+            <a class="btn btn--sm btn--promote"
+               href="{{ url_for('admin_event_new',
+                   title    = sig.title,
+                   summary  = sig.content or '',
+                   date     = sig.timestamp[:10] if sig.timestamp else '',
+                   latitude = sig.lat   if sig.lat  is not none else '',
+                   longitude= sig.lng   if sig.lng  is not none else '',
+                   category = 'Other',
+                   signal_id= sig.signal_id
+               ) }}"
+               title="Pre-fill a new event from this signal">
+              ↑ Promote
+            </a>
+            {% endif %}
+
+            {% if sig.status == 'raw' or sig.status == 'reviewed' %}
+            <button class="btn btn--sm btn--dismiss"
+                    data-signal-id="{{ sig.signal_id }}"
+                    title="Mark this signal as dismissed">
+              ✕ Dismiss
+            </button>
+            {% endif %}
+
+            {% if sig.status == 'promoted' %}
+            <span class="signal-promoted-label mono">→ in FORGE</span>
+            {% endif %}
+
+          </div>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="signal-empty-filter" id="js-signal-empty-filter" style="display:none;">
+  <span class="mono" style="color:var(--text-dim); font-size:0.78rem;">
+    No signals match this filter.
+  </span>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state__icon">⊛</div>
+  <div class="empty-state__title">No signals ingested yet</div>
+  <div class="empty-state__body">
+    Run a FORAGE collector to begin ingesting signals:
+  </div>
+  <div class="empty-state__code mono">
+    python forage/collectors/earthquake_collector.py
+  </div>
+  <div class="empty-state__code mono" style="margin-top:var(--sp-2);">
+    python forage/collectors/rss_collector.py
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+/* =============================================================================
+   FORGE Phase 14 — Signal Monitor JS
+   ─────────────────────────────────────────────────────────────────────────────
+   Three behaviours:
+     1. Status filter tabs    — show/hide rows by data-status
+     2. Priority Only toggle  — further restrict to data-priority="1"
+     3. Dismiss button        — POST dismiss API, update row in-place
+
+   The two filters compose: status sets the pool, priority narrows within it.
+   ============================================================================= */
+
+(function () {
+  'use strict';
+
+  const filterBar      = document.getElementById('js-signal-filters');
+  const emptyNote      = document.getElementById('js-signal-empty-filter');
+  const priorityToggle = document.getElementById('js-priority-toggle');
+  const sourceFilters  = document.getElementById('js-source-filters');
+  const allRows        = Array.from(document.querySelectorAll('.signal-row'));
+
+  /* ── Shared visibility engine ─────────────────────────────────────────────── */
+
+  function currentStatusFilter() {
+    if (!filterBar) return 'all';
+    const active = filterBar.querySelector('.signal-filter-btn--active[data-filter]');
+    return active ? active.dataset.filter : 'all';
+  }
+
+  function currentSourceFilter() {
+    if (!sourceFilters) return null;
+    const active = sourceFilters.querySelector('.signal-source-filter-btn--active');
+    return active ? active.dataset.source : null;
+  }
+
+  function priorityOnly() {
+    return priorityToggle && priorityToggle.dataset.active === '1';
+  }
+
+  function applyFilters() {
+    const sf  = currentStatusFilter();
+    const src = currentSourceFilter();
+    const po  = priorityOnly();
+    let visible = 0;
+
+    allRows.forEach(row => {
+      const statusOk   = sf === 'all' || row.dataset.status === sf;
+      const sourceOk   = !src || row.dataset.source === src;
+      const priorityOk = !po || row.dataset.priority === '1';
+      const show = statusOk && sourceOk && priorityOk;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    if (emptyNote) {
+      emptyNote.style.display = visible === 0 ? 'flex' : 'none';
+    }
+  }
+
+  /* ── Status filter tabs ───────────────────────────────────────────────────── */
+
+  if (filterBar) {
+    filterBar.addEventListener('click', function (e) {
+      const btn = e.target.closest('[data-filter]');
+      if (!btn || btn.id === 'js-priority-toggle') return;
+
+      filterBar.querySelectorAll('.signal-filter-btn[data-filter]').forEach(b => {
+        if (b.id === 'js-priority-toggle') return;
+        b.classList.toggle('signal-filter-btn--active', b === btn);
+      });
+
+      applyFilters();
+    });
+  }
+
+  /* ── Source filter buttons ────────────────────────────────────────────────── */
+
+  if (sourceFilters) {
+    sourceFilters.addEventListener('click', function (e) {
+      const btn = e.target.closest('.signal-source-filter-btn');
+      if (!btn) return;
+
+      const isActive = btn.classList.contains('signal-source-filter-btn--active');
+
+      // Toggle off if already active (acts as a deselect)
+      sourceFilters.querySelectorAll('.signal-source-filter-btn').forEach(b => {
+        b.classList.remove('signal-source-filter-btn--active');
+      });
+
+      if (!isActive) {
+        btn.classList.add('signal-source-filter-btn--active');
+      }
+
+      applyFilters();
+    });
+  }
+
+  /* ── Priority Only toggle ─────────────────────────────────────────────────── */
+
+  if (priorityToggle) {
+    priorityToggle.addEventListener('click', function () {
+      const isActive = this.dataset.active === '1';
+      this.dataset.active = isActive ? '0' : '1';
+      this.classList.toggle('signal-filter-btn--priority-active', !isActive);
+      applyFilters();
+    });
+  }
+
+  /* ── Dismiss buttons ──────────────────────────────────────────────────────── */
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn--dismiss');
+    if (!btn) return;
+
+    const signalId = btn.dataset.signalId;
+    if (!signalId) return;
+
+    btn.disabled    = true;
+    btn.textContent = '…';
+
+    fetch(`/api/signals/${encodeURIComponent(signalId)}/dismiss`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(() => {
+        const row = document.getElementById(`row-${signalId}`);
+        if (!row) return;
+
+        row.dataset.status = 'dismissed';
+        row.classList.remove('signal-row--low-relevance');
+
+        const badge = row.querySelector('.signal-status-badge');
+        if (badge) {
+          badge.className   = 'signal-status-badge signal-status-badge--dismissed';
+          badge.textContent = 'dismissed';
+        }
+
+        const actions = row.querySelector('.signal-actions');
+        if (actions) {
+          actions.innerHTML =
+            '<span class="signal-promoted-label mono" style="color:var(--text-dim);">dismissed</span>';
+        }
+
+        applyFilters();
+      })
+      .catch(error => {
+        console.error('[FORGE Signals] dismiss failed:', error);
+        btn.disabled    = false;
+        btn.textContent = '✕ Dismiss';
+        btn.style.borderColor = 'var(--src-leaked)';
+      });
+  });
+
+})();
+</script>
+{% endblock %}

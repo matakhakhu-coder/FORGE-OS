@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Promote Signal — New Event{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ─────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('signals') }}">Signal Monitor</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">Promote to Event</span>
+</nav>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════════════════════════════════════════ #}
+<div class="page-header">
+  <div>
+    <div class="page-header__eyebrow mono">
+      FORAGE <span style="color:var(--text-ghost);">·</span> SIGNAL PROMOTION
+    </div>
+    <h1 class="page-header__title">Promote Signal to FORGE Event</h1>
+    <p class="page-header__meta">
+      Review the pre-populated fields below. Edit as needed, then submit to create
+      a new FORGE event. The originating signal will be marked as <strong>promoted</strong>.
+    </p>
+  </div>
+</div>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   PROMOTION FORM
+══════════════════════════════════════════════════════════════════════════════ #}
+<div class="form-card">
+
+  <div class="form-card__header">
+    <div class="form-card__eyebrow mono">New Event — Pre-filled from Signal</div>
+  </div>
+
+  <form method="post" action="{{ url_for('admin_event_new_post') }}"
+        class="forge-form" id="js-promote-form">
+
+    {# Hidden fields #}
+    <input type="hidden" name="signal_id" value="{{ signal_id }}">
+    <input type="hidden" name="password"  value="{{ admin_password }}">
+
+    {# ── Title ────────────────────────────────────────────────────────────── #}
+    <div class="form-group">
+      <label class="form-label" for="ev_title">
+        Event Title <span class="form-required">*</span>
+      </label>
+      <input type="text" id="ev_title" name="ev_title"
+             class="form-input"
+             value="{{ prefill.title | e }}"
+             placeholder="Descriptive event title"
+             required>
+      <span class="form-hint mono">Required. Edit to clarify or standardise.</span>
+    </div>
+
+    {# ── Summary / Content ────────────────────────────────────────────────── #}
+    <div class="form-group">
+      <label class="form-label" for="ev_summary">Summary</label>
+      <textarea id="ev_summary" name="ev_summary"
+                class="form-input form-textarea"
+                rows="4"
+                placeholder="Analyst notes or raw signal content…">{{ prefill.summary | e }}</textarea>
+      <span class="form-hint mono">Analyst summary or original signal content. Optional.</span>
+    </div>
+
+    {# ── Date + Category ──────────────────────────────────────────────────── #}
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="ev_date">Date</label>
+        <input type="date" id="ev_date" name="ev_date"
+               class="form-input"
+               value="{{ prefill.date | e }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="ev_category">Category</label>
+        <select id="ev_category" name="ev_category" class="form-select">
+          {% for cat in event_categories %}
+          <option value="{{ cat }}"
+                  {% if cat == prefill.category %}selected{% endif %}>
+            {{ cat }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {# ── Location string ──────────────────────────────────────────────────── #}
+    <div class="form-group">
+      <label class="form-label" for="ev_location">Location</label>
+      <input type="text" id="ev_location" name="ev_location"
+             class="form-input"
+             value="{{ prefill.location | e }}"
+             placeholder="e.g. Johannesburg, South Africa">
+    </div>
+
+    {# ── Coordinates ──────────────────────────────────────────────────────── #}
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="ev_latitude">Latitude</label>
+        <input type="number" id="ev_latitude" name="ev_latitude"
+               class="form-input form-input--mono"
+               value="{{ prefill.latitude | e }}"
+               step="any" placeholder="e.g. -26.2041">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ev_longitude">Longitude</label>
+        <input type="number" id="ev_longitude" name="ev_longitude"
+               class="form-input form-input--mono"
+               value="{{ prefill.longitude | e }}"
+               step="any" placeholder="e.g. 28.0473">
+      </div>
+    </div>
+
+    {# ── Coordinates preview (if prefilled) ───────────────────────────────── #}
+    {% if prefill.latitude and prefill.longitude %}
+    <div class="signal-promote-coords-note mono">
+      ⊕ Coordinates from signal:
+      <strong>{{ prefill.latitude }}, {{ prefill.longitude }}</strong>
+      — will be pinned on the FORGE map.
+    </div>
+    {% endif %}
+
+    {# ── Submit row ───────────────────────────────────────────────────────── #}
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">
+        ↑ Promote to FORGE Event
+      </button>
+      <a href="{{ url_for('signals') }}" class="btn">
+        ← Back to Signals
+      </a>
+    </div>
+
+  </form>
+
+</div>{# /form-card #}
+
+{% endblock %}

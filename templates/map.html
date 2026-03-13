@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  {# Category filter pills #}
+  {# Category filter pills — scoped to Archive Events layer #}
   <div class="map-header__filters" id="js-map-filters">
     <span class="mono map-filter-label">Filter</span>
     <button class="map-filter-pill map-filter-pill--active" data-cat="all">All</button>
@@ -47,7 +47,7 @@
 
 </div>
 
-{# ── Time Slider bar (below header, above map) ────────────────────────────── #}
+{# ── Time Slider bar ───────────────────────────────────────────────────────── #}
 {% if min_date and max_date %}
 <div class="map-time-bar" id="js-time-bar">
   <div class="map-time-bar__inner">
@@ -67,7 +67,6 @@
         <div class="map-time-bar__track">
           <div class="map-time-bar__fill" id="js-time-fill"></div>
         </div>
-        {# Range slider — two thumbs overlaid #}
         <input type="range" class="map-time-range" id="js-time-start"
                min="0" max="100" value="0" step="1">
         <input type="range" class="map-time-range" id="js-time-end"
@@ -88,20 +87,32 @@
 </div>
 {% endif %}
 
-{# ── Map canvas ─────────────────────────────────────────────────────────────── #}
+{# ── Map canvas ──────────────────────────────────────────────────────────────── #}
 <div id="forge-map"></div>
 
-{# ── Info panel (slides in from right on marker click) ───────────────────────── #}
+{# ── Info panel (slides in from right on marker click) ─────────────────────── #}
 <div class="map-info-panel" id="js-map-info" aria-hidden="true">
   <div class="map-info-panel__close" id="js-map-info-close" title="Close">✕</div>
   <div class="map-info-panel__content" id="js-map-info-content"></div>
 </div>
 
-{# ── Status bar (bottom overlay) ─────────────────────────────────────────────── #}
+{# ── Status bar (bottom overlay) ──────────────────────────────────────────── #}
 <div class="map-status-bar" id="js-map-status">
   <span class="mono" id="js-marker-count">Loading…</span>
   <span class="map-status-bar__sep">·</span>
+  <span class="mono" id="js-signal-count" style="color:var(--text-dim);">signals: —</span>
+  <span class="map-status-bar__sep">·</span>
   <span class="mono" id="js-map-coords">— , —</span>
+</div>
+
+{# ── Source Layer Filter Bar (Phase 15.5) ────────────────────────────────── #}
+<div class="map-source-filter-bar" id="js-map-source-bar" style="display:none;">
+  <span class="mono map-source-filter-bar__label">SIGNAL SOURCE</span>
+  <button class="map-source-pill map-source-pill--active" data-src="all">All</button>
+  <button class="map-source-pill map-source-pill--gdelt"  data-src="gdelt">GDELT</button>
+  <button class="map-source-pill map-source-pill--gdacs"  data-src="gdacs">GDACS</button>
+  <button class="map-source-pill map-source-pill--rss"    data-src="rss">RSS</button>
+  <button class="map-source-pill map-source-pill--interpol" data-src="interpol">INTERPOL</button>
 </div>
 
 {% endblock %}
@@ -113,13 +124,16 @@
         crossorigin="anonymous"></script>
 <script>
 /* =============================================================================
-   FORGE Phase 11 — Global Map Explorer
-   Leaflet 1.9.4 + MarkerCluster + GeoJSON + Time Slider
+   FORGE Phase 15 — Situational Dashboard Map
+   Leaflet 1.9.4 + MarkerCluster + Layer Control
+   Layer 1: Archive Events  (existing behaviour from Phase 11)
+   Layer 2: Live Signals    (raw/promoted signals from FORAGE — grey / red-pulse)
+   Layer 3: Signal Clusters (cluster centroids — purple badge markers)
    ============================================================================= */
 (function () {
   'use strict';
 
-  /* ── Design tokens ───────────────────────────────────────────────────────── */
+  /* ── Design tokens ─────────────────────────────────────────────────────────── */
   const PAL = {
     bg:          '#080d12',
     surface:     '#0c1219',
@@ -127,9 +141,31 @@
     accentMuted: '#8a6420',
     text:        '#cfdce8',
     textDim:     '#3d5060',
+    // Phase 15 additions
+    signalGrey:  '#4a6070',
+    signalRed:   '#e05c5c',
+    clusterPurp: '#bb86fc',
+    // Phase 15.5 source colours
+    srcGdelt:    '#6366f1',   // indigo
+    srcGdacs:    '#10b981',   // emerald
+    srcRss:      '#c8943a',   // existing accent
+    srcInterpol: '#f59e0b',   // amber
   };
 
-  /* Category → hex colour */
+  // Source → accent colour mapping for signal icons
+  const SOURCE_COLOURS = {
+    'gdelt':    PAL.srcGdelt,
+    'gdacs':    PAL.srcGdacs,
+    'rss':      PAL.srcRss,
+    'interpol': PAL.srcInterpol,
+  };
+  const sourceColour = src => SOURCE_COLOURS[src] || PAL.signalGrey;
+
+  // Phase 15.5: active source filter ('all' = no filter)
+  let activeSourceFilter = 'all';
+  // Full signal feature cache for re-filter without re-fetch
+  let allSignalFeatures = [];
+
   const CAT_COLOURS = {
     'Election':    '#6a4aaa',
     'Security':    '#c04040',
@@ -143,7 +179,7 @@
   };
   const catColour = cat => CAT_COLOURS[cat] || PAL.accentMuted;
 
-  /* ── Leaflet init ─────────────────────────────────────────────────────────── */
+  /* ── Map init ──────────────────────────────────────────────────────────────── */
   const map = L.map('forge-map', {
     center:       [-29.0, 25.5],
     zoom:         6,
@@ -152,7 +188,7 @@
   });
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  L.tileLayer(
+  const tileLayer = L.tileLayer(
     'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
@@ -162,8 +198,8 @@
     }
   ).addTo(map);
 
-  /* ── SVG marker factory ──────────────────────────────────────────────────── */
-  function makeIcon(colour, count, highlighted) {
+  /* ── SVG marker factory — Archive Events ──────────────────────────────────── */
+  function makeEventIcon(colour, count, highlighted) {
     const r    = highlighted ? 14 : 10;
     const sw   = highlighted ? 2.5 : 1.5;
     const glow = highlighted
@@ -172,7 +208,6 @@
     const badge = count > 0
       ? `<text x="0" y="26" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7" fill="${colour}" opacity="0.8">${count}</text>`
       : '';
-
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-20 -20 40 40">
       ${glow}
       <circle cx="0" cy="0" r="${r}" fill="${PAL.bg}" stroke="${colour}" stroke-width="${sw}"/>
@@ -180,7 +215,6 @@
       <line x1="0" y1="${-r - 1}" x2="0" y2="${-(r + 7)}" stroke="${colour}" stroke-width="1" opacity="0.35"/>
       ${badge}
     </svg>`;
-
     return L.divIcon({
       html:        svg,
       className:   'forge-marker',
@@ -190,51 +224,114 @@
     });
   }
 
-  /* ── Cluster group ────────────────────────────────────────────────────────── */
-  const clusterGroup = L.markerClusterGroup({
-    showCoverageOnHover:    false,
-    maxClusterRadius:       60,
-    spiderfyOnMaxZoom:      true,
+  /* ── SVG marker factory — Live Signals (Phase 15.5: source-aware colour) ── */
+  function makeSignalIcon(isPriority, source) {
+    const col = isPriority ? PAL.signalRed : sourceColour(source || '');
+
+    if (isPriority) {
+      // Pulsing marker — colour-tinted wrapper
+      return L.divIcon({
+        html:        `<div class="forge-signal-pulse" style="--pulse-col:${col};"></div>`,
+        className:   '',
+        iconSize:    [24, 24],
+        iconAnchor:  [12, 12],
+        popupAnchor: [0, -14],
+      });
+    }
+
+    // Source-coloured circle
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="-8 -8 16 16">
+      <circle cx="0" cy="0" r="5" fill="${col}" opacity="0.75" stroke="${PAL.bg}" stroke-width="1"/>
+    </svg>`;
+    return L.divIcon({
+      html:        svg,
+      className:   '',
+      iconSize:    [16, 16],
+      iconAnchor:  [8, 8],
+      popupAnchor: [0, -10],
+    });
+  }
+
+  /* ── SVG marker factory — Cluster centroids ───────────────────────────────── */
+  function makeClusterCentroidIcon(count, anyPriority) {
+    const col  = anyPriority ? PAL.signalRed : PAL.clusterPurp;
+    const sz   = count > 9 ? 46 : 38;
+    const half = sz / 2;
+    const fs   = count > 9 ? 9 : 11;
+    const svg  = `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"
+        viewBox="-${half} -${half} ${sz} ${sz}">
+      <circle cx="0" cy="0" r="${half - 2}" fill="${PAL.bg}" stroke="${col}" stroke-width="1.5" opacity="0.9"/>
+      <circle cx="0" cy="0" r="${half - 8}" fill="${col}" opacity="0.25"/>
+      <text x="0" y="4" text-anchor="middle"
+            font-family="IBM Plex Mono,monospace"
+            font-size="${fs}" font-weight="700" fill="${col}">${count}</text>
+    </svg>`;
+    return L.divIcon({
+      html:        svg,
+      className:   'forge-cluster-centroid',
+      iconSize:    [sz, sz],
+      iconAnchor:  [half, half],
+      popupAnchor: [0, -half],
+    });
+  }
+
+  /* ── MarkerCluster group — Archive Events ─────────────────────────────────── */
+  const eventClusterGroup = L.markerClusterGroup({
+    showCoverageOnHover:     false,
+    maxClusterRadius:        60,
+    spiderfyOnMaxZoom:       true,
     disableClusteringAtZoom: 10,
     iconCreateFunction: function (cluster) {
       const n   = cluster.getChildCount();
       const sz  = n > 20 ? 44 : n > 10 ? 38 : 32;
+      const half = sz / 2;
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"
-        viewBox="-${sz/2} -${sz/2} ${sz} ${sz}">
-        <circle cx="0" cy="0" r="${sz/2-2}" fill="${PAL.bg}" stroke="${PAL.accentMuted}" stroke-width="1.5"/>
-        <circle cx="0" cy="0" r="${sz/2-7}" fill="${PAL.accentMuted}" opacity="0.4"/>
+          viewBox="-${half} -${half} ${sz} ${sz}">
+        <circle cx="0" cy="0" r="${half - 2}" fill="${PAL.bg}" stroke="${PAL.accentMuted}" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="${half - 7}" fill="${PAL.accentMuted}" opacity="0.4"/>
         <text x="0" y="4" text-anchor="middle" font-family="IBM Plex Mono,monospace"
               font-size="${n > 9 ? 9 : 11}" font-weight="600" fill="${PAL.accent}">${n}</text>
       </svg>`;
-      return L.divIcon({ html: svg, className: 'forge-cluster', iconSize: [sz, sz], iconAnchor: [sz/2, sz/2] });
+      return L.divIcon({ html: svg, className: 'forge-cluster', iconSize: [sz, sz], iconAnchor: [half, half] });
     },
   });
 
-  /* ── State ────────────────────────────────────────────────────────────────── */
-  let allFeatures    = [];
-  let allMarkers     = [];
-  let activeFilter   = 'all';
-  let activeId       = null;
-  let timeEnabled    = false;
-  let timeStartVal   = 0;
-  let timeEndVal     = 100;
-  let allDates       = [];   // sorted ISO date strings from all dated features
+  /* ── Layer groups — signals and cluster centroids ─────────────────────────── */
+  const signalLayer  = L.layerGroup();
+  const clusterLayer = L.layerGroup();
 
-  /* ── Info panel ──────────────────────────────────────────────────────────── */
+  /* ── State ─────────────────────────────────────────────────────────────────── */
+  let allFeatures  = [];
+  let allMarkers   = [];
+  let activeFilter = 'all';
+  let activeId     = null;
+  let timeEnabled  = false;
+  let timeStartVal = 0;
+  let timeEndVal   = 100;
+  let allDates     = [];
+
+  /* ── Info panel ─────────────────────────────────────────────────────────────── */
   const infoPanel   = document.getElementById('js-map-info');
   const infoContent = document.getElementById('js-map-info-content');
   const markerCount = document.getElementById('js-marker-count');
+  const signalCount = document.getElementById('js-signal-count');
 
-  function openInfoPanel(props) {
-    const col   = catColour(props.category);
-    const date  = props.date     ? `<span class="mono">${props.date}</span>` : '';
-    const loc   = props.location ? `<div class="map-popup__location mono">⊕ ${props.location}</div>` : '';
-    const cat   = props.category ? `<span class="category-badge">${props.category}</span>` : '';
-    const sum   = props.summary  ? `<div class="map-popup__body"><p class="map-popup__summary">${props.summary}${props.summary.length >= 160 ? '…' : ''}</p></div>` : '';
-    const evs   = props.artifact_count
+  function openInfoPanel(html) {
+    infoContent.innerHTML = html;
+    infoPanel.setAttribute('aria-hidden', 'false');
+    infoPanel.classList.add('map-info-panel--open');
+  }
+
+  function openEventPanel(props) {
+    const col = catColour(props.category);
+    const date = props.date     ? `<span class="mono">${props.date}</span>` : '';
+    const loc  = props.location ? `<div class="map-popup__location mono">⊕ ${props.location}</div>` : '';
+    const cat  = props.category ? `<span class="category-badge">${props.category}</span>` : '';
+    const sum  = props.summary  ? `<div class="map-popup__body"><p class="map-popup__summary">${props.summary}${props.summary.length >= 160 ? '…' : ''}</p></div>` : '';
+    const evs  = props.artifact_count
       ? `<span class="map-popup__count mono">${props.artifact_count} evidence item${props.artifact_count !== 1 ? 's' : ''}</span>`
       : '';
-    infoContent.innerHTML = `
+    openInfoPanel(`
       <div class="map-popup">
         <div class="map-popup__header" style="border-left-color:${col}">
           <div class="map-popup__meta">${date} ${cat}</div>
@@ -246,84 +343,216 @@
           ${evs}
           <a href="${props.url}" class="map-popup__link btn btn--primary">Open Event →</a>
         </div>
-      </div>`;
-    infoPanel.setAttribute('aria-hidden', 'false');
-    infoPanel.classList.add('map-info-panel--open');
+      </div>`);
+  }
+
+  /* Signal panel — grey / priority / source-badged variants */
+  function openSignalPanel(props) {
+    const isPriority = props.is_priority;
+    const src        = props.source || '';
+    const accentCol  = isPriority ? PAL.signalRed : sourceColour(src);
+    const priorityBadge = isPriority
+      ? `<span class="signal-priority-flag" style="font-size:0.85rem;">⚑</span>
+         <span style="color:${PAL.signalRed};font-size:0.7rem;font-family:var(--font-mono);letter-spacing:0.08em;">PRIORITY</span>`
+      : '';
+    const sourceBadge = src
+      ? `<span class="source-badge source-badge--${src}" style="font-size:0.6rem;">${src.toUpperCase()}</span>`
+      : '';
+    const clusterBadge = props.cluster_id
+      ? `<span class="signal-cluster-badge mono" style="margin-left:var(--sp-2);">⬡ ${props.cluster_id.slice(0,8)}</span>`
+      : '';
+    const ts = props.timestamp
+      ? `<div class="map-popup__meta" style="margin-top:var(--sp-2);">
+           <span class="mono" style="color:var(--text-dim);font-size:0.65rem;">${props.timestamp}</span>
+         </div>`
+      : '';
+    const content = props.content
+      ? `<div class="map-popup__body">
+           <p class="map-popup__summary" style="font-size:0.78rem;">${props.content}${props.content.length >= 200 ? '…' : ''}</p>
+         </div>`
+      : '';
+    const statusBadge = `<span class="signal-status-badge signal-status-badge--${props.status}">${props.status}</span>`;
+
+    openInfoPanel(`
+      <div class="map-popup">
+        <div class="map-popup__header" style="border-left-color:${accentCol}">
+          <div class="map-popup__meta" style="display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap;">
+            ${statusBadge}
+            ${sourceBadge}
+            ${priorityBadge}
+            ${clusterBadge}
+          </div>
+          <h3 class="map-popup__title" style="font-size:0.88rem;margin-top:var(--sp-2);">${props.title}</h3>
+          ${ts}
+        </div>
+        ${content}
+        <div class="map-popup__footer" style="flex-direction:column;gap:var(--sp-2);align-items:stretch;">
+          ${props.status !== 'promoted'
+            ? `<a href="${props.promote_url}" class="map-popup__link btn btn--primary" style="text-align:center;">
+                 ↑ Promote to Event
+               </a>`
+            : `<span class="mono" style="color:var(--text-dim);font-size:0.65rem;text-align:center;">→ already in FORGE</span>`
+          }
+          <a href="/signals" class="map-popup__link btn" style="text-align:center;font-size:0.7rem;">
+            View in Signal Monitor
+          </a>
+        </div>
+      </div>`);
+  }
+
+  /* Cluster centroid panel */
+  function openClusterPanel(props) {
+    const col = props.any_priority ? PAL.signalRed : PAL.clusterPurp;
+    openInfoPanel(`
+      <div class="map-popup">
+        <div class="map-popup__header" style="border-left-color:${col}">
+          <div class="map-popup__meta">
+            <span class="signal-cluster-badge mono">⬡ ${props.short_id}</span>
+            ${props.any_priority
+              ? `<span class="signal-priority-flag" style="margin-left:var(--sp-2);">⚑ contains priority</span>`
+              : ''}
+          </div>
+          <h3 class="map-popup__title" style="font-size:0.88rem;margin-top:var(--sp-2);">
+            Signal Cluster — ${props.member_count} signals
+          </h3>
+          <div class="map-popup__location mono">
+            ${props.earliest.slice(0,10)} — ${props.latest.slice(0,10)}
+          </div>
+        </div>
+        <div class="map-popup__body">
+          <p class="map-popup__summary" style="font-size:0.75rem;color:var(--text-dim);">
+            ${props.preview || 'No signal previews available.'}
+          </p>
+        </div>
+        <div class="map-popup__footer">
+          <a href="/signals" class="map-popup__link btn btn--primary">
+            View in Signal Monitor →
+          </a>
+        </div>
+      </div>`);
   }
 
   function closeInfoPanel() {
     infoPanel.setAttribute('aria-hidden', 'true');
     infoPanel.classList.remove('map-info-panel--open');
     allMarkers.forEach(({ feature, marker }) =>
-      marker.setIcon(makeIcon(catColour(feature.properties.category),
-                              feature.properties.artifact_count, false)));
+      marker.setIcon(makeEventIcon(catColour(feature.properties.category),
+                                   feature.properties.artifact_count, false)));
     activeId = null;
   }
 
   document.getElementById('js-map-info-close').addEventListener('click', closeInfoPanel);
   map.on('click', closeInfoPanel);
 
-  /* ── Build markers ────────────────────────────────────────────────────────── */
-  function buildMarkers(features) {
-    clusterGroup.clearLayers();
+  /* ── Archive Event markers ────────────────────────────────────────────────── */
+  function buildEventMarkers(features) {
+    eventClusterGroup.clearLayers();
     allMarkers = [];
 
     features.forEach(function (f) {
       const p   = f.properties;
       const c   = f.geometry.coordinates;
       const col = catColour(p.category);
-      const icon = makeIcon(col, p.artifact_count, false);
-      const m   = L.marker([c[1], c[0]], { icon });
+      const m   = L.marker([c[1], c[0]], { icon: makeEventIcon(col, p.artifact_count, false) });
 
       m.on('click', function (e) {
         L.DomEvent.stopPropagation(e);
         if (activeId !== null) {
           const prev = allMarkers.find(x => x.feature.properties.id === activeId);
-          if (prev) prev.marker.setIcon(makeIcon(catColour(prev.feature.properties.category), prev.feature.properties.artifact_count, false));
+          if (prev) prev.marker.setIcon(makeEventIcon(catColour(prev.feature.properties.category), prev.feature.properties.artifact_count, false));
         }
-        m.setIcon(makeIcon(col, p.artifact_count, true));
+        m.setIcon(makeEventIcon(col, p.artifact_count, true));
         activeId = p.id;
-        openInfoPanel(p);
+        openEventPanel(p);
       });
 
       allMarkers.push({ feature: f, marker: m });
-      clusterGroup.addLayer(m);
+      eventClusterGroup.addLayer(m);
     });
 
-    map.addLayer(clusterGroup);
     markerCount.textContent = `${features.length} event${features.length !== 1 ? 's' : ''} mapped`;
   }
 
-  /* ── Combined filter: category + time ────────────────────────────────────── */
+  /* ── Signal layer builder (Phase 15.5: source filter + icon colour) ─────── */
+  function buildSignalLayer(features) {
+    signalLayer.clearLayers();
+
+    features.forEach(function (f) {
+      const p = f.properties;
+      const c = f.geometry.coordinates;
+      const m = L.marker([c[1], c[0]], {
+        icon:       makeSignalIcon(p.is_priority, p.source),
+        zIndexOffset: p.is_priority ? 500 : 0,
+      });
+
+      m.on('click', function (e) {
+        L.DomEvent.stopPropagation(e);
+        openSignalPanel(p);
+      });
+
+      signalLayer.addLayer(m);
+    });
+
+    const priorityN = features.filter(f => f.properties.is_priority).length;
+    signalCount.textContent = `signals: ${features.length}${priorityN ? ` (${priorityN} ⚑)` : ''}`;
+    if (priorityN > 0) signalCount.style.color = PAL.signalRed;
+    else signalCount.style.color = PAL.textDim;
+  }
+
+  /* ── Source filter: rebuild signal layer from cache ─────────────────────── */
+  function applySignalSourceFilter(src) {
+    activeSourceFilter = src;
+    const filtered = src === 'all'
+      ? allSignalFeatures
+      : allSignalFeatures.filter(f => f.properties.source === src);
+    buildSignalLayer(filtered);
+  }
+
+  /* ── Cluster centroid layer builder ─────────────────────────────────────── */
+  function buildClusterLayer(features) {
+    clusterLayer.clearLayers();
+
+    features.forEach(function (f) {
+      const p = f.properties;
+      const c = f.geometry.coordinates;
+      const m = L.marker([c[1], c[0]], {
+        icon:         makeClusterCentroidIcon(p.member_count, p.any_priority),
+        zIndexOffset: 1000,
+      });
+
+      m.on('click', function (e) {
+        L.DomEvent.stopPropagation(e);
+        openClusterPanel(p);
+      });
+
+      clusterLayer.addLayer(m);
+    });
+  }
+
+  /* ── Combined event filter: category + time ──────────────────────────────── */
   function applyFilters() {
     closeInfoPanel();
-
     let filtered = allFeatures;
 
-    // Category filter
     if (activeFilter !== 'all')
       filtered = filtered.filter(f => f.properties.category === activeFilter);
 
-    // Time filter
     if (timeEnabled && allDates.length > 1) {
       const n     = allDates.length - 1;
       const dFrom = allDates[Math.round(timeStartVal / 100 * n)];
       const dTo   = allDates[Math.round(timeEndVal   / 100 * n)];
-      const label = `${dFrom} — ${dTo}`;
-      const el = document.getElementById('js-time-active-range');
-      if (el) el.textContent = label;
-
+      const el    = document.getElementById('js-time-active-range');
+      if (el) el.textContent = `${dFrom} — ${dTo}`;
       filtered = filtered.filter(f => {
         const d = f.properties.date;
-        if (!d) return false;           // undated events hidden when time filter active
-        return d >= dFrom && d <= dTo;
+        return d && d >= dFrom && d <= dTo;
       });
     }
 
-    buildMarkers(filtered);
+    buildEventMarkers(filtered);
   }
 
-  /* ── Category filter pills ────────────────────────────────────────────────── */
+  /* ── Category pills ──────────────────────────────────────────────────────── */
   document.getElementById('js-map-filters').addEventListener('click', function (e) {
     const pill = e.target.closest('.map-filter-pill');
     if (!pill) return;
@@ -333,17 +562,16 @@
     applyFilters();
   });
 
-  /* ── Time slider ──────────────────────────────────────────────────────────── */
-  const timeBar      = document.getElementById('js-time-bar');
-  const timeToggle   = document.getElementById('js-time-toggle');
-  const timeIcon     = document.getElementById('js-time-toggle-icon');
-  const timeLabel    = document.getElementById('js-time-toggle-label');
-  const sliderWrap   = document.getElementById('js-time-slider-wrap');
-  const startSlider  = document.getElementById('js-time-start');
-  const endSlider    = document.getElementById('js-time-end');
-  const fillEl       = document.getElementById('js-time-fill');
-  const activeRange  = document.getElementById('js-time-active-range');
-  const resetBtn     = document.getElementById('js-time-reset');
+  /* ── Time slider ─────────────────────────────────────────────────────────── */
+  const startSlider = document.getElementById('js-time-start');
+  const endSlider   = document.getElementById('js-time-end');
+  const fillEl      = document.getElementById('js-time-fill');
+  const activeRange = document.getElementById('js-time-active-range');
+  const sliderWrap  = document.getElementById('js-time-slider-wrap');
+  const timeToggle  = document.getElementById('js-time-toggle');
+  const timeIcon    = document.getElementById('js-time-toggle-icon');
+  const timeLabel   = document.getElementById('js-time-toggle-label');
+  const resetBtn    = document.getElementById('js-time-reset');
 
   function updateSliderFill() {
     if (!fillEl) return;
@@ -354,12 +582,9 @@
   }
 
   function onSliderInput() {
-    // Prevent handles crossing
     if (parseFloat(startSlider.value) > parseFloat(endSlider.value)) {
-      if (this === startSlider)
-        startSlider.value = endSlider.value;
-      else
-        endSlider.value = startSlider.value;
+      if (this === startSlider) startSlider.value = endSlider.value;
+      else                      endSlider.value   = startSlider.value;
     }
     timeStartVal = parseFloat(startSlider.value);
     timeEndVal   = parseFloat(endSlider.value);
@@ -375,18 +600,12 @@
   if (timeToggle) {
     timeToggle.addEventListener('click', function () {
       timeEnabled = !timeEnabled;
-      if (timeEnabled) {
-        sliderWrap.classList.add('map-time-slider-wrap--active');
-        timeIcon.textContent  = '◶';
-        timeLabel.textContent = 'Enabled';
-        timeToggle.classList.add('map-time-bar__toggle--active');
-      } else {
-        sliderWrap.classList.remove('map-time-slider-wrap--active');
-        timeIcon.textContent  = '◷';
-        timeLabel.textContent = 'Enable';
-        timeToggle.classList.remove('map-time-bar__toggle--active');
-        if (activeRange) activeRange.textContent = '{{ min_date }} — {{ max_date }}';
-      }
+      sliderWrap.classList.toggle('map-time-slider-wrap--active', timeEnabled);
+      timeIcon.textContent  = timeEnabled ? '◶' : '◷';
+      timeLabel.textContent = timeEnabled ? 'Enabled' : 'Enable';
+      timeToggle.classList.toggle('map-time-bar__toggle--active', timeEnabled);
+      if (!timeEnabled && activeRange)
+        activeRange.textContent = '{{ min_date }} — {{ max_date }}';
       applyFilters();
     });
   }
@@ -395,48 +614,104 @@
     resetBtn.addEventListener('click', function () {
       if (startSlider) startSlider.value = 0;
       if (endSlider)   endSlider.value   = 100;
-      timeStartVal = 0;
-      timeEndVal   = 100;
+      timeStartVal = 0; timeEndVal = 100;
       updateSliderFill();
       applyFilters();
     });
   }
 
-  /* ── Mouse coordinates display ────────────────────────────────────────────── */
-  const coordsEl = document.getElementById('js-map-coords');
-  map.on('mousemove', e =>
-    coordsEl.textContent = e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4));
+  /* ── Mouse coordinates display ───────────────────────────────────────────── */
+  map.on('mousemove', e => {
+    document.getElementById('js-map-coords').textContent =
+      e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4);
+  });
 
-  /* ── Bootstrap from GeoJSON ───────────────────────────────────────────────── */
+  /* ── Layer control (Phase 15) ────────────────────────────────────────────── */
+  // Overlays are added to layer control after data loads
+  // baseLayers: none (only one tile provider)
+  const layerControl = L.control.layers(
+    null,
+    {
+      // Placeholder entries — layers added programmatically below after fetch
+    },
+    {
+      position:    'topright',
+      collapsed:   false,
+      hideSingleBase: true,
+    }
+  ).addTo(map);
+
+  /* ── Bootstrap: fetch all three layers in parallel ───────────────────────── */
   markerCount.textContent = 'Loading events…';
 
-  fetch('/api/geo')
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function (geojson) {
-      allFeatures = geojson.features;
+  Promise.all([
+    fetch('/api/geo')             .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/signals/geojson') .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/clusters/geojson').then(r => r.ok ? r.json() : Promise.reject(r.status)),
+  ])
+  .then(function ([eventsGJ, signalsGJ, clustersGJ]) {
 
-      // Build sorted date list for time slider
-      allDates = [...new Set(
-        allFeatures.map(f => f.properties.date).filter(Boolean).sort()
-      )];
+    /* ── Archive Events layer ─────────────────────────────────────── */
+    allFeatures = eventsGJ.features;
+    allDates    = [...new Set(
+      allFeatures.map(f => f.properties.date).filter(Boolean).sort()
+    )];
 
-      buildMarkers(allFeatures);
+    map.addLayer(eventClusterGroup);
+    layerControl.addOverlay(eventClusterGroup, '◈  Archive Events');
+    buildEventMarkers(allFeatures);
 
-      if (allFeatures.length > 0) {
-        const bounds = L.geoJSON({ type: 'FeatureCollection', features: allFeatures }).getBounds();
-        map.fitBounds(bounds.pad(0.25), { maxZoom: 9 });
+    if (allFeatures.length > 0) {
+      const bounds = L.geoJSON({ type: 'FeatureCollection', features: allFeatures }).getBounds();
+      map.fitBounds(bounds.pad(0.25), { maxZoom: 9 });
+    }
+
+    /* ── Live Signals layer ───────────────────────────────────────── */
+    if (signalsGJ.features.length > 0) {
+      allSignalFeatures = signalsGJ.features;           // Phase 15.5: cache
+      buildSignalLayer(allSignalFeatures);
+      map.addLayer(signalLayer);
+      layerControl.addOverlay(signalLayer, '⊛  Live Signals');
+
+      // Show the source filter bar and wire its buttons
+      const sourceBar = document.getElementById('js-map-source-bar');
+      if (sourceBar) {
+        sourceBar.style.display = 'flex';
+        sourceBar.addEventListener('click', function (e) {
+          const pill = e.target.closest('.map-source-pill');
+          if (!pill) return;
+          sourceBar.querySelectorAll('.map-source-pill').forEach(p =>
+            p.classList.toggle('map-source-pill--active', p === pill));
+          applySignalSourceFilter(pill.dataset.src);
+        });
+
+        // Hide pills for sources not present in the data
+        const presentSources = new Set(
+          allSignalFeatures.map(f => f.properties.source).filter(Boolean)
+        );
+        sourceBar.querySelectorAll('.map-source-pill[data-src]').forEach(pill => {
+          if (pill.dataset.src !== 'all' && !presentSources.has(pill.dataset.src)) {
+            pill.style.display = 'none';
+          }
+        });
       }
+    }
 
-      updateSliderFill();
-    })
-    .catch(err => {
-      console.error('[FORGE Map]', err);
-      markerCount.textContent = 'Failed to load events — check console';
-    });
+    /* ── Cluster Centroids layer ──────────────────────────────────── */
+    if (clustersGJ.features.length > 0) {
+      buildClusterLayer(clustersGJ.features);
+      map.addLayer(clusterLayer);
+      layerControl.addOverlay(clusterLayer, '⬡  Signal Clusters');
+    }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeInfoPanel();
+    updateSliderFill();
+  })
+  .catch(function (err) {
+    console.error('[FORGE Map] failed to load layer:', err);
+    markerCount.textContent = 'Error loading layers — check console';
   });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoPanel(); });
 
 })();
 </script>

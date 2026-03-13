@@ -98,7 +98,19 @@ def create_app() -> Flask:
     # Inject SOURCE_META into every template render context
     @app.context_processor
     def inject_globals():
-        return {"SOURCE_META": SOURCE_META}
+        # Priority signal count — drives the topbar alert bell on every page.
+        # Query is lightweight (indexed on is_priority + status); result is
+        # cached per-request by Flask's g object via get_db().
+        try:
+            db = get_db()
+            row = db.execute(
+                "SELECT COUNT(*) FROM signals WHERE is_priority = 1 AND status = 'raw'"
+            ).fetchone()
+            priority_count = row[0] if row else 0
+        except Exception:
+            # signals table may not exist yet on first boot before migration
+            priority_count = 0
+        return {"SOURCE_META": SOURCE_META, "priority_count": priority_count}
 
     # -----------------------------------------------------------------------
     # Route: / — Dashboard
@@ -506,6 +518,176 @@ def create_app() -> Flask:
 
         return Response(
             _json.dumps(geojson, ensure_ascii=False, indent=None),
+            mimetype="application/geo+json",
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
+
+    # -----------------------------------------------------------------------
+    # Phase 15: /api/signals/geojson — Live Signal Layer for map.html
+    # Returns raw + promoted signals that have coordinates as GeoJSON.
+    # Properties include is_priority, cluster_id, source, status so the
+    # Leaflet layer can style markers (grey / pulsing-red / cluster-purple).
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/signals/geojson")
+    def api_signals_geojson():
+        """
+        FeatureCollection of mappable signals (raw + promoted, lat/lng present).
+        Used by the Phase 15 live-signal Leaflet overlay on map.html.
+        """
+        import json as _json
+        from flask import Response
+        db = get_db()
+
+        # Phase 15.5: optional source filter for layer-by-source toggling
+        # e.g. /api/signals/geojson?source=gdelt  or  ?source=gdacs&source=rss
+        source_filters = request.args.getlist("source")  # [] = all sources
+
+        if source_filters:
+            ph   = ",".join("?" * len(source_filters))
+            rows = db.execute(f"""
+                SELECT signal_id, source, title, content,
+                       lat, lng, timestamp, status,
+                       is_priority, cluster_id
+                FROM   signals
+                WHERE  status IN ('raw', 'promoted')
+                  AND  lat  IS NOT NULL
+                  AND  lng  IS NOT NULL
+                  AND  source IN ({ph})
+                ORDER  BY is_priority DESC, timestamp DESC
+            """, source_filters).fetchall()
+        else:
+            rows = db.execute("""
+                SELECT signal_id, source, title, content,
+                       lat, lng, timestamp, status,
+                       is_priority, cluster_id
+                FROM   signals
+                WHERE  status IN ('raw', 'promoted')
+                  AND  lat  IS NOT NULL
+                  AND  lng  IS NOT NULL
+                ORDER  BY is_priority DESC, timestamp DESC
+            """).fetchall()
+
+        features = []
+        for r in rows:
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type":        "Point",
+                    "coordinates": [r["lng"], r["lat"]],  # GeoJSON [lon, lat]
+                },
+                "properties": {
+                    "signal_id":   r["signal_id"],
+                    "source":      r["source"]      or "",
+                    "title":       r["title"]        or "",
+                    "content":     (r["content"]     or "")[:200],
+                    "timestamp":   r["timestamp"]    or "",
+                    "status":      r["status"]       or "raw",
+                    "is_priority": r["is_priority"]  or 0,
+                    "cluster_id":  r["cluster_id"]   or None,
+                    # promote_url — pre-built so the popup can link directly
+                    "promote_url": (
+                        f"/admin/event/new"
+                        f"?title={__import__('urllib.parse', fromlist=['quote_plus']).quote_plus(r['title'] or '')}"
+                        f"&summary={__import__('urllib.parse', fromlist=['quote_plus']).quote_plus((r['content'] or '')[:300])}"
+                        f"&date={r['timestamp'][:10] if r['timestamp'] else ''}"
+                        f"&latitude={r['lat']}"
+                        f"&longitude={r['lng']}"
+                        f"&category=Other"
+                        f"&signal_id={r['signal_id']}"
+                    ),
+                },
+            })
+
+        geojson = {
+            "type":     "FeatureCollection",
+            "features": features,
+            "metadata": {
+                "total":    len(features),
+                "priority": sum(1 for f in features if f["properties"]["is_priority"]),
+                "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+            },
+        }
+
+        return Response(
+            _json.dumps(geojson, ensure_ascii=False),
+            mimetype="application/geo+json",
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
+
+    # -----------------------------------------------------------------------
+    # Phase 15: /api/clusters/geojson — Cluster Centroid Layer
+    # One point per distinct cluster_id, located at the arithmetic centroid
+    # of all member signals.  Properties carry member count, cluster_id, and
+    # a sample title so the popup has something useful to say.
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/clusters/geojson")
+    def api_clusters_geojson():
+        """
+        One GeoJSON Feature per FORAGE cluster — positioned at the centroid
+        of all member signals.  Used by the Phase 15 cluster overlay layer.
+        """
+        import json as _json
+        from flask import Response
+        db = get_db()
+
+        # Aggregate per cluster_id: centroid + count + earliest/latest timestamp
+        rows = db.execute("""
+            SELECT cluster_id,
+                   AVG(lat)          AS centroid_lat,
+                   AVG(lng)          AS centroid_lng,
+                   COUNT(*)          AS member_count,
+                   MIN(timestamp)    AS earliest,
+                   MAX(timestamp)    AS latest,
+                   MAX(is_priority)  AS any_priority,
+                   GROUP_CONCAT(title, ' | ') AS sample_titles
+            FROM   signals
+            WHERE  cluster_id IS NOT NULL
+              AND  lat IS NOT NULL
+              AND  lng IS NOT NULL
+            GROUP  BY cluster_id
+            ORDER  BY member_count DESC
+        """).fetchall()
+
+        features = []
+        for r in rows:
+            # Trim sample_titles to a readable preview
+            raw_titles = r["sample_titles"] or ""
+            titles     = raw_titles.split(" | ")[:3]
+            preview    = " · ".join(t[:60] for t in titles)
+            if len(raw_titles.split(" | ")) > 3:
+                preview += " …"
+
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type":        "Point",
+                    "coordinates": [r["centroid_lng"], r["centroid_lat"]],
+                },
+                "properties": {
+                    "cluster_id":    r["cluster_id"],
+                    "member_count":  r["member_count"],
+                    "earliest":      r["earliest"]     or "",
+                    "latest":        r["latest"]        or "",
+                    "any_priority":  r["any_priority"]  or 0,
+                    "preview":       preview,
+                    # 8-char truncated ID for the badge label
+                    "short_id":      r["cluster_id"][:8],
+                },
+            })
+
+        geojson = {
+            "type":     "FeatureCollection",
+            "features": features,
+            "metadata": {
+                "total":    len(features),
+                "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+            },
+        }
+
+        return Response(
+            _json.dumps(geojson, ensure_ascii=False),
             mimetype="application/geo+json",
             headers={"Access-Control-Allow-Origin": "*"},
         )
@@ -999,6 +1181,181 @@ def create_app() -> Flask:
             _json.dumps(payload, ensure_ascii=False),
             mimetype="application/json",
             headers={"Access-Control-Allow-Origin": "*"},
+        )
+
+    # -----------------------------------------------------------------------
+    # Phase 13: FORAGE — Signal routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/signals")
+    def signals():
+        """
+        FORAGE signal monitor — lists the 50 most recent ingested signals.
+        Phase 14: includes cluster_id, is_priority columns.
+        """
+        db = get_db()
+
+        rows = db.execute("""
+            SELECT signal_id,
+                   source,
+                   external_id,
+                   title,
+                   content,
+                   lat,
+                   lng,
+                   timestamp,
+                   status,
+                   metadata_json,
+                   cluster_id,
+                   is_priority
+            FROM   signals
+            ORDER  BY is_priority DESC, timestamp DESC
+            LIMIT  50
+        """).fetchall()
+
+        # Summary counts for the header bar
+        counts = db.execute("""
+            SELECT
+                COUNT(*)                                              AS total,
+                SUM(CASE WHEN status = 'raw'      THEN 1 ELSE 0 END) AS raw,
+                SUM(CASE WHEN status = 'reviewed' THEN 1 ELSE 0 END) AS reviewed,
+                SUM(CASE WHEN status = 'promoted' THEN 1 ELSE 0 END) AS promoted,
+                SUM(CASE WHEN status = 'dismissed'THEN 1 ELSE 0 END) AS dismissed,
+                SUM(CASE WHEN is_priority = 1     THEN 1 ELSE 0 END) AS priority,
+                COUNT(DISTINCT CASE WHEN cluster_id IS NOT NULL
+                                    THEN cluster_id END)              AS clusters
+            FROM signals
+        """).fetchone()
+
+        # Phase 15.5 — per-source counts for triage badges
+        source_counts_raw = db.execute("""
+            SELECT source, COUNT(*) AS cnt
+            FROM   signals
+            WHERE  source IS NOT NULL
+            GROUP  BY source
+            ORDER  BY cnt DESC
+        """).fetchall()
+        source_counts = {r["source"]: r["cnt"] for r in source_counts_raw}
+
+        return render_template(
+            "signals.html",
+            signals=rows,
+            counts=counts,
+            source_counts=source_counts,
+        )
+
+    @app.route("/admin/event/new")
+    def admin_event_new():
+        """
+        Pre-filled event creation form.
+        Accepts query-string params that mirror the admin add_event field names:
+            title, summary, date, location, latitude, longitude, category
+        Sources can pre-populate these from a signal's data so the analyst
+        only needs to review and submit, not re-type everything.
+        """
+        db = get_db()
+
+        # Harvest prefill values from query string (all optional, all safe)
+        prefill = {
+            "title":     request.args.get("title",     ""),
+            "summary":   request.args.get("summary",   ""),
+            "date":      request.args.get("date",      ""),
+            "location":  request.args.get("location",  ""),
+            "latitude":  request.args.get("latitude",  ""),
+            "longitude": request.args.get("longitude", ""),
+            "category":  request.args.get("category",  "Other"),
+        }
+
+        # Signal ID to mark as promoted on successful submit (optional)
+        signal_id = request.args.get("signal_id", "")
+
+        event_categories = [
+            "Election", "Security", "Civil Unrest", "Legislative",
+            "Economic", "Diplomatic", "Military", "Social", "Other",
+        ]
+
+        return render_template(
+            "admin_event_new.html",
+            prefill=prefill,
+            signal_id=signal_id,
+            event_categories=event_categories,
+            admin_password=ADMIN_PASSWORD,
+        )
+
+    @app.route("/admin/event/new", methods=["POST"])
+    def admin_event_new_post():
+        """
+        Handles submission of the pre-filled event creation form.
+        On success, marks the originating signal as 'promoted' if a
+        signal_id was provided, then redirects to the new event.
+        """
+        db = get_db()
+
+        if request.form.get("password") != ADMIN_PASSWORD:
+            flash("Incorrect password — event not saved.", "error")
+            return redirect(url_for("admin_event_new"))
+
+        title    = request.form.get("ev_title",    "").strip()
+        summary  = request.form.get("ev_summary",  "").strip() or None
+        date     = request.form.get("ev_date",     "").strip() or None
+        location = request.form.get("ev_location", "").strip() or None
+        category = request.form.get("ev_category", "Other")
+        signal_id= request.form.get("signal_id",   "").strip() or None
+
+        raw_lat = request.form.get("ev_latitude",  "").strip()
+        raw_lon = request.form.get("ev_longitude", "").strip()
+
+        if not title:
+            flash("Event title is required.", "error")
+            return redirect(url_for("admin_event_new"))
+
+        try:
+            lat = float(raw_lat) if raw_lat else None
+            lon = float(raw_lon) if raw_lon else None
+        except ValueError:
+            lat = lon = None
+
+        cur = db.execute("""
+            INSERT INTO events
+                (title, summary, date, location, latitude, longitude, category)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (title, summary, date, location, lat, lon, category))
+        db.commit()
+        new_event_id = cur.lastrowid
+
+        # Mark the originating signal as promoted
+        if signal_id:
+            db.execute(
+                "UPDATE signals SET status = 'promoted' WHERE signal_id = ?",
+                (signal_id,),
+            )
+            db.commit()
+
+        flash(f"Event '{title}' created successfully.", "success")
+        return redirect(url_for("event_detail", event_id=new_event_id))
+
+    @app.route("/api/signals/<signal_id>/dismiss", methods=["POST"])
+    def api_signal_dismiss(signal_id: str):
+        """Mark a signal as dismissed (no further action needed)."""
+        import json as _json
+        from flask import Response
+        db = get_db()
+        row = db.execute(
+            "SELECT signal_id FROM signals WHERE signal_id = ?", (signal_id,)
+        ).fetchone()
+        if not row:
+            return Response(
+                _json.dumps({"error": "Signal not found"}),
+                status=404, mimetype="application/json"
+            )
+        db.execute(
+            "UPDATE signals SET status = 'dismissed' WHERE signal_id = ?",
+            (signal_id,),
+        )
+        db.commit()
+        return Response(
+            _json.dumps({"ok": True, "signal_id": signal_id, "status": "dismissed"}),
+            mimetype="application/json",
         )
 
     @app.route("/admin", methods=["GET", "POST"])
@@ -2856,6 +3213,27 @@ SCHEMA_STATEMENTS = [
         content_rowid='event_id'
     )
     """,
+    # ── Phase 13 / 14: FORAGE Signal Ingestion + Pattern Engine ─────────────
+    # Phase 14 adds cluster_id and is_priority.  CREATE TABLE IF NOT EXISTS is
+    # idempotent for fresh databases.  The migrate_db() ALTER TABLE stanzas
+    # below handle existing databases that have the Phase 13 schema already.
+    """
+    CREATE TABLE IF NOT EXISTS signals (
+        signal_id     TEXT    PRIMARY KEY,
+        source        TEXT    NOT NULL,
+        external_id   TEXT    NOT NULL UNIQUE,
+        title         TEXT    NOT NULL,
+        content       TEXT,
+        lat           REAL,
+        lng           REAL,
+        timestamp     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        status        TEXT    NOT NULL DEFAULT 'raw'
+                      CHECK(status IN ('raw','reviewed','promoted','dismissed')),
+        metadata_json TEXT,
+        cluster_id    TEXT,
+        is_priority   INTEGER NOT NULL DEFAULT 0
+    )
+    """,
 ]
 
 TRIGGER_SQL = """
@@ -2942,6 +3320,13 @@ def migrate_db():
         ("case_events",    "transition_note",  "TEXT"),
         ("case_actors",    "sequence_order",   "INTEGER"),
         ("case_actors",    "transition_note",  "TEXT"),
+        # Phase 14 — Pattern Detection: spatiotemporal clustering + priority flag
+        ("signals",        "cluster_id",       "TEXT"),
+        ("signals",        "is_priority",      "INTEGER NOT NULL DEFAULT 0"),
+        # Phase 15.5 — GDELT expansion: source column for triage badges + layer filter
+        # (source already exists in the Phase 13 schema; this guard handles
+        #  any legacy databases created before source was made NOT NULL.)
+        ("signals",        "source",           "TEXT"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):
