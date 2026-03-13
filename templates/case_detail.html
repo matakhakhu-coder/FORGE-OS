@@ -164,6 +164,11 @@
           <span class="analytics-pin-stat__val">{{ artifacts | length }}</span>
           <span class="analytics-pin-stat__label mono">artifacts</span>
         </div>
+        {# Phase 16 — FORAGE signal count #}
+        <div class="analytics-pin-stat analytics-pin-stat--signal">
+          <span class="analytics-pin-stat__val analytics-pin-stat__val--signal">{{ pinned_signals | length }}</span>
+          <span class="analytics-pin-stat__label mono">⬡ signals</span>
+        </div>
       </div>
     </div>{# /analytics-bar #}
 
@@ -378,6 +383,111 @@
       </div>
 
     </div>{# /board-layout #}
+
+    {# ═════════════════════════════════════════════════════════════════════
+       PHASE 16 — INTELLIGENCE FEED (Pinned FORAGE Signals)
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="intel-feed-section" id="js-intel-feed">
+      <div class="intel-feed-header">
+        <div class="intel-feed-header__left">
+          <span class="intel-feed-header__icon">⬡</span>
+          <h2 class="intel-feed-header__title">Intelligence Feed</h2>
+          <span class="intel-feed-header__count mono">{{ pinned_signals | length }}</span>
+        </div>
+        <div class="intel-feed-header__right">
+          {% if case.hypothesis %}
+          <div class="intel-feed-hypothesis">
+            <span class="intel-feed-hypothesis__eyebrow mono">◈ HYPOTHESIS</span>
+            <p class="intel-feed-hypothesis__body">{{ case.hypothesis }}</p>
+          </div>
+          {% endif %}
+          <a href="{{ url_for('signals') }}" class="btn btn--ghost btn--sm">
+            Open Signal Monitor
+          </a>
+        </div>
+      </div>
+
+      {% if pinned_signals %}
+      <ol class="case-signal-feed">
+        {% for sig in pinned_signals %}
+        {% set src = sig.source or 'unknown' %}
+        <li class="case-signal-item{% if sig.is_priority %} case-signal-item--priority{% endif %}"
+            id="case-sig-{{ sig.signal_id }}">
+
+          <div class="case-signal-item__timeline">
+            <div class="case-signal-item__node
+              case-signal-item__node--{% if sig.is_priority %}priority{% else %}{{ src }}{% endif %}">
+            </div>
+            {% if not loop.last %}
+            <div class="case-signal-item__line"></div>
+            {% endif %}
+          </div>
+
+          <div class="case-signal-item__card">
+            <div class="case-signal-item__meta">
+              {% set src = sig.source or 'unknown' %}
+              <span class="source-badge source-badge--{{ src }}">{{ src|upper }}</span>
+              {% if sig.is_priority %}
+              <span class="signal-priority-flag" title="Priority signal">⚑</span>
+              {% endif %}
+              <span class="signal-status-badge signal-status-badge--{{ sig.status }}">{{ sig.status }}</span>
+              <span class="case-signal-item__ts mono">
+                {{ sig.timestamp[:16] if sig.timestamp else '—' }}
+              </span>
+              {% if sig.lat and sig.lng %}
+              <span class="case-signal-item__coords mono">
+                {{ "%.3f"|format(sig.lat|float) }}, {{ "%.3f"|format(sig.lng|float) }}
+              </span>
+              {% endif %}
+            </div>
+
+            <h4 class="case-signal-item__title">{{ sig.title or '(No title)' }}</h4>
+
+            {% if sig.content %}
+            <p class="case-signal-item__content">{{ sig.content | truncate(280) }}</p>
+            {% endif %}
+
+            {% if sig.pin_note %}
+            <div class="case-signal-item__pin-note">
+              <span class="mono case-signal-item__pin-note-label">Analyst note ·</span>
+              {{ sig.pin_note }}
+            </div>
+            {% endif %}
+
+            <div class="case-signal-item__footer">
+              <span class="mono case-signal-item__pinned-at">
+                Linked {{ sig.pinned_at[:16] if sig.pinned_at else '' }}
+              </span>
+              <div class="case-signal-item__actions">
+                <button class="btn btn--sm btn--unlink js-unlink-signal"
+                        data-case-id="{{ case.case_id }}"
+                        data-signal-id="{{ sig.signal_id }}"
+                        title="Unlink this signal from the case">
+                  ✕ Unlink
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </li>
+        {% endfor %}
+      </ol>
+
+      {% else %}
+      <div class="case-intel-empty">
+        <div class="case-intel-empty__icon">⬡</div>
+        <p class="case-intel-empty__title mono">No signals linked yet.</p>
+        <p class="case-intel-empty__hint">
+          Open the
+          <a href="{{ url_for('signals') }}">Signal Monitor</a>
+          or the
+          <a href="{{ url_for('map_explorer') }}">Situational Map</a>
+          and use the ⬡ Link button on any signal to attach it to this case.
+        </p>
+      </div>
+      {% endif %}
+    </div>{# /intel-feed-section #}
+
   </div>{# /workspace-layout__main #}
 
   {# ── RIGHT: Discovery Sidebar ──────────────────────────────────────────── #}
@@ -426,6 +536,14 @@
           <input type="text" name="title" value="{{ case.title }}" required>
         </div>
         <div class="form-group">
+          <label>Type</label>
+          <select name="case_type">
+            {% for t in ['general','financial','geopolitical','criminal','infrastructure','cyber','humanitarian','other'] %}
+            <option value="{{ t }}" {{ 'selected' if (case.case_type or 'general') == t }}>{{ t|title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
           <label>Status</label>
           <select name="status">
             {% for s in ['active','closed','archived'] %}
@@ -436,6 +554,15 @@
         <div class="form-group">
           <label>Description</label>
           <textarea name="description">{{ case.description or '' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Working Hypothesis
+            <span style="font-size:0.68rem;color:var(--text-ghost);font-weight:400;display:block;margin-top:2px;">
+              Current analytical assessment — update as new intelligence arrives
+            </span>
+          </label>
+          <textarea name="hypothesis" style="min-height:100px;"
+                    placeholder="State your current working hypothesis…">{{ case.hypothesis or '' }}</textarea>
         </div>
       </div>
       <div class="modal__footer">
@@ -1135,6 +1262,61 @@
 
   /* ── Boot ─────────────────────────────────────────────────────────────────── */
   refreshInference();
+
+})();
+
+/* =============================================================================
+   Phase 16 — Intelligence Feed: Unlink signal handler
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.js-unlink-signal');
+    if (!btn) return;
+
+    const caseId   = btn.dataset.caseId;
+    const signalId = btn.dataset.signalId;
+    if (!caseId || !signalId) return;
+
+    if (!confirm('Unlink this signal from the case?')) return;
+
+    btn.disabled = true; btn.textContent = '…';
+
+    fetch(`/api/cases/${caseId}/pin/${encodeURIComponent(signalId)}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({}),
+    })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (!data.pinned) {
+          // Remove the timeline item from the DOM
+          const li = document.getElementById(`case-sig-${signalId}`);
+          if (li) {
+            li.style.transition = 'opacity 0.3s';
+            li.style.opacity = '0';
+            setTimeout(() => li.remove(), 320);
+          }
+          // Decrement the feed header count
+          const countEl = document.querySelector('.intel-feed-header__count');
+          if (countEl) {
+            const n = parseInt(countEl.textContent, 10);
+            countEl.textContent = Math.max(0, n - 1);
+          }
+          // Decrement the analytics bar signal count
+          const statVal = document.querySelector('.analytics-pin-stat--signal .analytics-pin-stat__val');
+          if (statVal) {
+            const n = parseInt(statVal.textContent, 10);
+            statVal.textContent = Math.max(0, n - 1);
+          }
+        }
+      })
+      .catch(err => {
+        console.error('[FORGE] unlink failed:', err);
+        btn.disabled = false; btn.textContent = '✕ Unlink';
+      });
+  });
 
 })();
 </script>

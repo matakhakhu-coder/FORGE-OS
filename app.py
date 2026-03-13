@@ -375,6 +375,14 @@ def create_app() -> Flask:
               AND  date IS NOT NULL
         """).fetchone()
 
+        # Phase 16: active cases for the map popup pin-to-case widget
+        active_cases = db.execute("""
+            SELECT case_id, title, status
+            FROM   cases
+            WHERE  status = 'active'
+            ORDER  BY created_at DESC
+        """).fetchall()
+
         return render_template(
             "map.html",
             geo_count=geo_count,
@@ -382,6 +390,7 @@ def create_app() -> Flask:
             categories=[r["category"] for r in categories],
             min_date=date_range["min_date"] or "",
             max_date=date_range["max_date"] or "",
+            active_cases=[dict(r) for r in active_cases],
         )
 
     # -----------------------------------------------------------------------
@@ -539,34 +548,16 @@ def create_app() -> Flask:
         from flask import Response
         db = get_db()
 
-        # Phase 15.5: optional source filter for layer-by-source toggling
-        # e.g. /api/signals/geojson?source=gdelt  or  ?source=gdacs&source=rss
-        source_filters = request.args.getlist("source")  # [] = all sources
-
-        if source_filters:
-            ph   = ",".join("?" * len(source_filters))
-            rows = db.execute(f"""
-                SELECT signal_id, source, title, content,
-                       lat, lng, timestamp, status,
-                       is_priority, cluster_id
-                FROM   signals
-                WHERE  status IN ('raw', 'promoted')
-                  AND  lat  IS NOT NULL
-                  AND  lng  IS NOT NULL
-                  AND  source IN ({ph})
-                ORDER  BY is_priority DESC, timestamp DESC
-            """, source_filters).fetchall()
-        else:
-            rows = db.execute("""
-                SELECT signal_id, source, title, content,
-                       lat, lng, timestamp, status,
-                       is_priority, cluster_id
-                FROM   signals
-                WHERE  status IN ('raw', 'promoted')
-                  AND  lat  IS NOT NULL
-                  AND  lng  IS NOT NULL
-                ORDER  BY is_priority DESC, timestamp DESC
-            """).fetchall()
+        rows = db.execute("""
+            SELECT signal_id, source, title, content,
+                   lat, lng, timestamp, status,
+                   is_priority, cluster_id
+            FROM   signals
+            WHERE  status IN ('raw', 'promoted')
+              AND  lat  IS NOT NULL
+              AND  lng  IS NOT NULL
+            ORDER  BY is_priority DESC, timestamp DESC
+        """).fetchall()
 
         features = []
         for r in rows:
@@ -1192,26 +1183,42 @@ def create_app() -> Flask:
         """
         FORAGE signal monitor — lists the 50 most recent ingested signals.
         Phase 14: includes cluster_id, is_priority columns.
+        Phase 15.5: source_counts for triage badges.
+        Phase 16: pinned_case_count per signal + active_cases for Pin-to-Case.
         """
         db = get_db()
 
-        rows = db.execute("""
-            SELECT signal_id,
-                   source,
-                   external_id,
-                   title,
-                   content,
-                   lat,
-                   lng,
-                   timestamp,
-                   status,
-                   metadata_json,
-                   cluster_id,
-                   is_priority
-            FROM   signals
-            ORDER  BY is_priority DESC, timestamp DESC
-            LIMIT  50
-        """).fetchall()
+        try:
+            rows = db.execute("""
+                SELECT s.signal_id,
+                       s.source,
+                       s.external_id,
+                       s.title,
+                       s.content,
+                       s.lat,
+                       s.lng,
+                       s.timestamp,
+                       s.status,
+                       s.metadata_json,
+                       s.cluster_id,
+                       s.is_priority,
+                       COUNT(cs.case_id) AS pinned_case_count
+                FROM   signals s
+                LEFT   JOIN case_signals cs ON cs.signal_id = s.signal_id
+                GROUP  BY s.signal_id
+                ORDER  BY s.is_priority DESC, s.timestamp DESC
+                LIMIT  50
+            """).fetchall()
+        except Exception:
+            # case_signals table not yet created — fall back to no linkage counts
+            rows = db.execute("""
+                SELECT signal_id, source, external_id, title, content,
+                       lat, lng, timestamp, status, metadata_json,
+                       cluster_id, is_priority, 0 AS pinned_case_count
+                FROM   signals
+                ORDER  BY is_priority DESC, timestamp DESC
+                LIMIT  50
+            """).fetchall()
 
         # Summary counts for the header bar
         counts = db.execute("""
@@ -1237,11 +1244,20 @@ def create_app() -> Flask:
         """).fetchall()
         source_counts = {r["source"]: r["cnt"] for r in source_counts_raw}
 
+        # Phase 16 — active cases for the "Pin to Case" dropdown
+        active_cases = db.execute("""
+            SELECT case_id, title, status
+            FROM   cases
+            WHERE  status = 'active'
+            ORDER  BY created_at DESC
+        """).fetchall()
+
         return render_template(
             "signals.html",
             signals=rows,
             counts=counts,
             source_counts=source_counts,
+            active_cases=[dict(r) for r in active_cases],
         )
 
     @app.route("/admin/event/new")
@@ -1357,6 +1373,70 @@ def create_app() -> Flask:
             _json.dumps({"ok": True, "signal_id": signal_id, "status": "dismissed"}),
             mimetype="application/json",
         )
+
+    # ── Phase 16: FORAGE → FORGE Synthesis APIs ─────────────────────────────
+
+    @app.route("/api/cases/<int:case_id>/pin/<signal_id>", methods=["POST"])
+    def api_case_pin_signal(case_id: int, signal_id: str):
+        """Toggle-pin a FORAGE signal into a FORGE case."""
+        from flask import jsonify
+        db     = get_db()
+        case   = db.execute("SELECT case_id, title FROM cases WHERE case_id=?", (case_id,)).fetchone()
+        signal = db.execute("SELECT signal_id FROM signals WHERE signal_id=?", (signal_id,)).fetchone()
+        if not case:   return jsonify({"error": "Case not found"}), 404
+        if not signal: return jsonify({"error": "Signal not found"}), 404
+
+        data = request.get_json(silent=True) or {}
+        note = (data.get("note") or "").strip() or None
+
+        existing = db.execute(
+            "SELECT 1 FROM case_signals WHERE case_id=? AND signal_id=?",
+            (case_id, signal_id),
+        ).fetchone()
+
+        if existing:
+            db.execute("DELETE FROM case_signals WHERE case_id=? AND signal_id=?", (case_id, signal_id))
+            db.commit()
+            return jsonify({"pinned": False, "case_id": case_id, "signal_id": signal_id, "case_title": case["title"]})
+        else:
+            db.execute("INSERT INTO case_signals (case_id, signal_id, note) VALUES (?, ?, ?)", (case_id, signal_id, note))
+            db.commit()
+            return jsonify({"pinned": True, "case_id": case_id, "signal_id": signal_id, "case_title": case["title"]})
+
+    @app.route("/api/cases/<int:case_id>/signals")
+    def api_case_signals(case_id: int):
+        """Returns all signals pinned to a case as JSON, ordered chronologically."""
+        from flask import jsonify
+        db   = get_db()
+        case = db.execute("SELECT case_id, title, status FROM cases WHERE case_id=?", (case_id,)).fetchone()
+        if not case: return jsonify({"error": "Case not found"}), 404
+        rows = db.execute("""
+            SELECT s.signal_id, s.source, s.external_id, s.title, s.content,
+                   s.lat, s.lng, s.timestamp, s.status, s.is_priority, s.cluster_id,
+                   cs.note, cs.pinned_at
+            FROM   case_signals cs
+            JOIN   signals s ON s.signal_id = cs.signal_id
+            WHERE  cs.case_id = ?
+            ORDER  BY s.timestamp ASC
+        """, (case_id,)).fetchall()
+        return jsonify({"case_id": case_id, "case_title": case["title"],
+                        "total": len(rows), "signals": [dict(r) for r in rows]})
+
+    @app.route("/api/signals/<signal_id>/cases")
+    def api_signal_cases(signal_id: str):
+        """Returns all cases a signal is pinned to."""
+        from flask import jsonify
+        db  = get_db()
+        sig = db.execute("SELECT signal_id FROM signals WHERE signal_id=?", (signal_id,)).fetchone()
+        if not sig: return jsonify({"error": "Signal not found"}), 404
+        rows = db.execute("""
+            SELECT c.case_id, c.title, c.status, cs.pinned_at, cs.note
+            FROM   case_signals cs
+            JOIN   cases c ON c.case_id = cs.case_id
+            WHERE  cs.signal_id = ?
+            ORDER  BY cs.pinned_at DESC
+        """, (signal_id,)).fetchall()
+        return jsonify({"signal_id": signal_id, "pinned_in": [dict(r) for r in rows]})
 
     @app.route("/admin", methods=["GET", "POST"])
     def admin():
@@ -1796,14 +1876,16 @@ def create_app() -> Flask:
     def case_new():
         title       = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip() or None
+        hypothesis  = request.form.get("hypothesis", "").strip() or None
+        case_type   = request.form.get("case_type", "general")
         status      = request.form.get("status", "active")
         if not title:
             flash("Case title is required.", "error")
             return redirect(url_for("cases"))
         db = get_db()
         cur = db.execute(
-            "INSERT INTO cases (title, description, status) VALUES (?, ?, ?)",
-            (title, description, status),
+            "INSERT INTO cases (title, description, hypothesis, case_type, status) VALUES (?, ?, ?, ?, ?)",
+            (title, description, hypothesis, case_type, status),
         )
         db.commit()
         flash(f"Case '{title}' created.", "success")
@@ -1860,12 +1942,37 @@ def create_app() -> Flask:
             "SELECT case_id, title, status FROM cases ORDER BY created_at DESC"
         ).fetchall()
 
+        # Phase 16: FORAGE signals pinned to this case, chronological.
+        # Guard: case_signals may not exist if --init-db hasn't run yet.
+        try:
+            pinned_signals = db.execute("""
+                SELECT s.signal_id,
+                       s.source,
+                       s.title,
+                       s.content,
+                       s.lat,
+                       s.lng,
+                       s.timestamp,
+                       s.status,
+                       s.is_priority,
+                       s.cluster_id,
+                       cs.note      AS pin_note,
+                       cs.pinned_at
+                FROM   case_signals cs
+                JOIN   signals s ON s.signal_id = cs.signal_id
+                WHERE  cs.case_id = ?
+                ORDER  BY s.timestamp ASC
+            """, (case_id,)).fetchall()
+        except Exception:
+            pinned_signals = []
+
         return render_template(
             "case_detail.html",
             case=case,
             artifacts=artifacts,
             events=events,
             actors=actors,
+            pinned_signals=pinned_signals,
             all_cases=all_cases,
         )
 
@@ -1873,14 +1980,16 @@ def create_app() -> Flask:
     def case_edit(case_id: int):
         title       = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip() or None
+        hypothesis  = request.form.get("hypothesis", "").strip() or None
+        case_type   = request.form.get("case_type", "general")
         status      = request.form.get("status", "active")
         if not title:
             flash("Case title is required.", "error")
             return redirect(url_for("case_detail", case_id=case_id))
         db = get_db()
         db.execute(
-            "UPDATE cases SET title=?, description=?, status=? WHERE case_id=?",
-            (title, description, status, case_id),
+            "UPDATE cases SET title=?, description=?, hypothesis=?, case_type=?, status=? WHERE case_id=?",
+            (title, description, hypothesis, case_type, status, case_id),
         )
         db.commit()
         flash("Case updated.", "success")
@@ -3154,9 +3263,25 @@ SCHEMA_STATEMENTS = [
         case_id     INTEGER PRIMARY KEY AUTOINCREMENT,
         title       TEXT    NOT NULL,
         description TEXT,
+        hypothesis  TEXT,
+        case_type   TEXT    DEFAULT 'general'
+                    CHECK(case_type IN (
+                        'general','financial','geopolitical','criminal',
+                        'infrastructure','cyber','humanitarian','other'
+                    )),
         status      TEXT    NOT NULL DEFAULT 'active'
                     CHECK(status IN ('active','closed','archived')),
         created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    # Phase 16: case_signals — FORAGE→FORGE synthesis junction
+    """
+    CREATE TABLE IF NOT EXISTS case_signals (
+        case_id     INTEGER NOT NULL REFERENCES cases(case_id)    ON DELETE CASCADE,
+        signal_id   TEXT    NOT NULL REFERENCES signals(signal_id) ON DELETE CASCADE,
+        note        TEXT,
+        pinned_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+        PRIMARY KEY (case_id, signal_id)
     )
     """,
     """
@@ -3323,15 +3448,27 @@ def migrate_db():
         # Phase 14 — Pattern Detection: spatiotemporal clustering + priority flag
         ("signals",        "cluster_id",       "TEXT"),
         ("signals",        "is_priority",      "INTEGER NOT NULL DEFAULT 0"),
-        # Phase 15.5 — GDELT expansion: source column for triage badges + layer filter
-        # (source already exists in the Phase 13 schema; this guard handles
-        #  any legacy databases created before source was made NOT NULL.)
+        # Phase 15.5 — GDELT expansion: source column
         ("signals",        "source",           "TEXT"),
+        # Phase 16 — Synthesis: hypothesis + case_type on cases
+        ("cases",          "hypothesis",       "TEXT"),
+        ("cases",          "case_type",        "TEXT DEFAULT 'general'"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):
             print(f"  [migrate] {table} ← adding column: {column} {col_type}")
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+
+    # Phase 16: ensure case_signals junction table exists on live databases
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS case_signals (
+            case_id     INTEGER NOT NULL REFERENCES cases(case_id)    ON DELETE CASCADE,
+            signal_id   TEXT    NOT NULL REFERENCES signals(signal_id) ON DELETE CASCADE,
+            note        TEXT,
+            pinned_at   TEXT    NOT NULL DEFAULT (datetime('now')),
+            PRIMARY KEY (case_id, signal_id)
+        )
+    """)
 
     for stmt in SCHEMA_STATEMENTS:
         conn.execute(stmt)

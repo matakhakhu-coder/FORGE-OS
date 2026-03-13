@@ -105,19 +105,13 @@
   <span class="mono" id="js-map-coords">— , —</span>
 </div>
 
-{# ── Source Layer Filter Bar (Phase 15.5) ────────────────────────────────── #}
-<div class="map-source-filter-bar" id="js-map-source-bar" style="display:none;">
-  <span class="mono map-source-filter-bar__label">SIGNAL SOURCE</span>
-  <button class="map-source-pill map-source-pill--active" data-src="all">All</button>
-  <button class="map-source-pill map-source-pill--gdelt"  data-src="gdelt">GDELT</button>
-  <button class="map-source-pill map-source-pill--gdacs"  data-src="gdacs">GDACS</button>
-  <button class="map-source-pill map-source-pill--rss"    data-src="rss">RSS</button>
-  <button class="map-source-pill map-source-pill--interpol" data-src="interpol">INTERPOL</button>
-</div>
-
 {% endblock %}
 
 {% block scripts %}
+{# Phase 16: active cases list for the map popup pin-to-case widget #}
+<script>
+window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined else '[]' }};
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"
@@ -145,26 +139,7 @@
     signalGrey:  '#4a6070',
     signalRed:   '#e05c5c',
     clusterPurp: '#bb86fc',
-    // Phase 15.5 source colours
-    srcGdelt:    '#6366f1',   // indigo
-    srcGdacs:    '#10b981',   // emerald
-    srcRss:      '#c8943a',   // existing accent
-    srcInterpol: '#f59e0b',   // amber
   };
-
-  // Source → accent colour mapping for signal icons
-  const SOURCE_COLOURS = {
-    'gdelt':    PAL.srcGdelt,
-    'gdacs':    PAL.srcGdacs,
-    'rss':      PAL.srcRss,
-    'interpol': PAL.srcInterpol,
-  };
-  const sourceColour = src => SOURCE_COLOURS[src] || PAL.signalGrey;
-
-  // Phase 15.5: active source filter ('all' = no filter)
-  let activeSourceFilter = 'all';
-  // Full signal feature cache for re-filter without re-fetch
-  let allSignalFeatures = [];
 
   const CAT_COLOURS = {
     'Election':    '#6a4aaa',
@@ -224,24 +199,21 @@
     });
   }
 
-  /* ── SVG marker factory — Live Signals (Phase 15.5: source-aware colour) ── */
-  function makeSignalIcon(isPriority, source) {
-    const col = isPriority ? PAL.signalRed : sourceColour(source || '');
-
+  /* ── SVG marker factory — Live Signals ────────────────────────────────────── */
+  function makeSignalIcon(isPriority) {
     if (isPriority) {
-      // Pulsing marker — colour-tinted wrapper
+      // Pulsing red — uses CSS animation via a wrapper div class
       return L.divIcon({
-        html:        `<div class="forge-signal-pulse" style="--pulse-col:${col};"></div>`,
+        html:        '<div class="forge-signal-pulse"></div>',
         className:   '',
         iconSize:    [24, 24],
         iconAnchor:  [12, 12],
         popupAnchor: [0, -14],
       });
     }
-
-    // Source-coloured circle
+    // Standard grey circle
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="-8 -8 16 16">
-      <circle cx="0" cy="0" r="5" fill="${col}" opacity="0.75" stroke="${PAL.bg}" stroke-width="1"/>
+      <circle cx="0" cy="0" r="5" fill="${PAL.signalGrey}" opacity="0.7" stroke="${PAL.bg}" stroke-width="1"/>
     </svg>`;
     return L.divIcon({
       html:        svg,
@@ -346,17 +318,13 @@
       </div>`);
   }
 
-  /* Signal panel — grey / priority / source-badged variants */
+  /* Signal panel — grey / priority variants */
   function openSignalPanel(props) {
     const isPriority = props.is_priority;
-    const src        = props.source || '';
-    const accentCol  = isPriority ? PAL.signalRed : sourceColour(src);
+    const accentCol  = isPriority ? PAL.signalRed : PAL.signalGrey;
     const priorityBadge = isPriority
       ? `<span class="signal-priority-flag" style="font-size:0.85rem;">⚑</span>
          <span style="color:${PAL.signalRed};font-size:0.7rem;font-family:var(--font-mono);letter-spacing:0.08em;">PRIORITY</span>`
-      : '';
-    const sourceBadge = src
-      ? `<span class="source-badge source-badge--${src}" style="font-size:0.6rem;">${src.toUpperCase()}</span>`
       : '';
     const clusterBadge = props.cluster_id
       ? `<span class="signal-cluster-badge mono" style="margin-left:var(--sp-2);">⬡ ${props.cluster_id.slice(0,8)}</span>`
@@ -372,6 +340,25 @@
          </div>`
       : '';
     const statusBadge = `<span class="signal-status-badge signal-status-badge--${props.status}">${props.status}</span>`;
+
+    // Build the pin-to-case dropdown HTML
+    const casesDropdown = window.FORGE_ACTIVE_CASES && window.FORGE_ACTIVE_CASES.length
+      ? `<div class="map-popup__pin-row">
+           <select class="map-popup__case-select" id="js-map-pin-select-${props.signal_id}">
+             <option value="">— select case —</option>
+             ${window.FORGE_ACTIVE_CASES.map(c =>
+               `<option value="${c.case_id}">${c.title}</option>`
+             ).join('')}
+           </select>
+           <button class="btn btn--sm btn--primary map-popup__pin-btn"
+                   data-signal-id="${props.signal_id}"
+                   onclick="mapPinSignal(this)">⬡ Link</button>
+         </div>`
+      : `<span class="mono" style="color:var(--text-dim);font-size:0.65rem;">No active cases</span>`;
+
+    const sourceBadge = props.source
+      ? `<span class="source-badge source-badge--${props.source}" style="font-size:0.6rem;">${props.source.toUpperCase()}</span>`
+      : '';
 
     openInfoPanel(`
       <div class="map-popup">
@@ -393,6 +380,7 @@
                </a>`
             : `<span class="mono" style="color:var(--text-dim);font-size:0.65rem;text-align:center;">→ already in FORGE</span>`
           }
+          ${casesDropdown}
           <a href="/signals" class="map-popup__link btn" style="text-align:center;font-size:0.7rem;">
             View in Signal Monitor
           </a>
@@ -444,6 +432,41 @@
   document.getElementById('js-map-info-close').addEventListener('click', closeInfoPanel);
   map.on('click', closeInfoPanel);
 
+  /* ── Phase 16: Map popup pin-to-case handler ─────────────────────────────── */
+  window.mapPinSignal = function (btn) {
+    const signalId = btn.dataset.signalId;
+    const select   = btn.closest('.map-popup__pin-row').querySelector('.map-popup__case-select');
+    const caseId   = select && parseInt(select.value, 10);
+    if (!caseId) { select && (select.style.borderColor = 'var(--src-leaked)'); return; }
+
+    btn.disabled = true; btn.textContent = '…';
+
+    fetch(`/api/cases/${caseId}/pin/${encodeURIComponent(signalId)}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ note: '' }),
+    })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        btn.textContent = data.pinned ? '⬡ Linked' : '⬡ Unlinked';
+        btn.style.background = data.pinned
+          ? 'rgba(99,102,241,0.18)' : 'rgba(255,255,255,0.05)';
+        btn.disabled = false;
+        // swap select for a static confirmation
+        const caseTitle = data.case_title || '';
+        if (data.pinned) {
+          select.replaceWith(Object.assign(document.createElement('span'), {
+            className: 'mono', style: 'font-size:0.65rem;color:#818cf8;',
+            textContent: `⬡ linked → ${caseTitle}`,
+          }));
+        }
+      })
+      .catch(err => {
+        console.error('[FORGE] map pin failed:', err);
+        btn.disabled = false; btn.textContent = '⬡ Link';
+      });
+  };
+
   /* ── Archive Event markers ────────────────────────────────────────────────── */
   function buildEventMarkers(features) {
     eventClusterGroup.clearLayers();
@@ -473,7 +496,7 @@
     markerCount.textContent = `${features.length} event${features.length !== 1 ? 's' : ''} mapped`;
   }
 
-  /* ── Signal layer builder (Phase 15.5: source filter + icon colour) ─────── */
+  /* ── Signal layer builder ────────────────────────────────────────────────── */
   function buildSignalLayer(features) {
     signalLayer.clearLayers();
 
@@ -481,7 +504,7 @@
       const p = f.properties;
       const c = f.geometry.coordinates;
       const m = L.marker([c[1], c[0]], {
-        icon:       makeSignalIcon(p.is_priority, p.source),
+        icon:       makeSignalIcon(p.is_priority),
         zIndexOffset: p.is_priority ? 500 : 0,
       });
 
@@ -496,16 +519,6 @@
     const priorityN = features.filter(f => f.properties.is_priority).length;
     signalCount.textContent = `signals: ${features.length}${priorityN ? ` (${priorityN} ⚑)` : ''}`;
     if (priorityN > 0) signalCount.style.color = PAL.signalRed;
-    else signalCount.style.color = PAL.textDim;
-  }
-
-  /* ── Source filter: rebuild signal layer from cache ─────────────────────── */
-  function applySignalSourceFilter(src) {
-    activeSourceFilter = src;
-    const filtered = src === 'all'
-      ? allSignalFeatures
-      : allSignalFeatures.filter(f => f.properties.source === src);
-    buildSignalLayer(filtered);
   }
 
   /* ── Cluster centroid layer builder ─────────────────────────────────────── */
@@ -668,33 +681,9 @@
 
     /* ── Live Signals layer ───────────────────────────────────────── */
     if (signalsGJ.features.length > 0) {
-      allSignalFeatures = signalsGJ.features;           // Phase 15.5: cache
-      buildSignalLayer(allSignalFeatures);
+      buildSignalLayer(signalsGJ.features);
       map.addLayer(signalLayer);
       layerControl.addOverlay(signalLayer, '⊛  Live Signals');
-
-      // Show the source filter bar and wire its buttons
-      const sourceBar = document.getElementById('js-map-source-bar');
-      if (sourceBar) {
-        sourceBar.style.display = 'flex';
-        sourceBar.addEventListener('click', function (e) {
-          const pill = e.target.closest('.map-source-pill');
-          if (!pill) return;
-          sourceBar.querySelectorAll('.map-source-pill').forEach(p =>
-            p.classList.toggle('map-source-pill--active', p === pill));
-          applySignalSourceFilter(pill.dataset.src);
-        });
-
-        // Hide pills for sources not present in the data
-        const presentSources = new Set(
-          allSignalFeatures.map(f => f.properties.source).filter(Boolean)
-        );
-        sourceBar.querySelectorAll('.map-source-pill[data-src]').forEach(pill => {
-          if (pill.dataset.src !== 'all' && !presentSources.has(pill.dataset.src)) {
-            pill.style.display = 'none';
-          }
-        });
-      }
     }
 
     /* ── Cluster Centroids layer ──────────────────────────────────── */
