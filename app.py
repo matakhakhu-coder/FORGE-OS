@@ -110,7 +110,19 @@ def create_app() -> Flask:
         except Exception:
             # signals table may not exist yet on first boot before migration
             priority_count = 0
-        return {"SOURCE_META": SOURCE_META, "priority_count": priority_count}
+        # Sentinel alert count — drives the Sentinel bell on every page
+        try:
+            s_row = db.execute(
+                "SELECT COUNT(*) FROM sentinel_alerts WHERE status = 'new'"
+            ).fetchone()
+            sentinel_count = s_row[0] if s_row else 0
+        except Exception:
+            sentinel_count = 0
+        return {
+            "SOURCE_META":    SOURCE_META,
+            "priority_count": priority_count,
+            "sentinel_count": sentinel_count,
+        }
 
     # -----------------------------------------------------------------------
     # Route: / — Dashboard
@@ -149,13 +161,439 @@ def create_app() -> Flask:
             ORDER  BY cnt DESC
         """).fetchall()
 
+        # Phase 17: 48-hour signal pulse (hourly buckets for Chart.js)
+        try:
+            pulse_rows = db.execute("""
+                WITH RECURSIVE hours(n) AS (
+                    SELECT 0 UNION ALL SELECT n+1 FROM hours WHERE n < 47
+                ),
+                buckets AS (
+                    SELECT strftime('%Y-%m-%dT%H:00',
+                           datetime('now', '-' || (47-n) || ' hours')) AS bucket
+                    FROM hours
+                ),
+                counts AS (
+                    SELECT strftime('%Y-%m-%dT%H:00', timestamp) AS bucket,
+                           COUNT(*)       AS total,
+                           SUM(is_priority) AS priority
+                    FROM signals
+                    WHERE timestamp >= datetime('now', '-48 hours')
+                    GROUP BY bucket
+                )
+                SELECT b.bucket,
+                       COALESCE(c.total,    0) AS total,
+                       COALESCE(c.priority, 0) AS priority
+                FROM   buckets b
+                LEFT   JOIN counts c ON c.bucket = b.bucket
+                ORDER  BY b.bucket ASC
+            """).fetchall()
+            pulse_data = [dict(r) for r in pulse_rows]
+        except Exception:
+            pulse_data = []
+
+        # Phase 17: signal summary stats for dashboard cards
+        try:
+            signal_stats = db.execute("""
+                SELECT COUNT(*)                                               AS total,
+                       SUM(CASE WHEN status='raw'   THEN 1 ELSE 0 END)       AS raw,
+                       SUM(CASE WHEN is_priority=1  THEN 1 ELSE 0 END)       AS priority,
+                       SUM(CASE WHEN source='usgs'  THEN 1 ELSE 0 END)       AS usgs,
+                       SUM(CASE WHEN source='gdelt' THEN 1 ELSE 0 END)       AS gdelt,
+                       SUM(CASE WHEN source='GDACS' THEN 1 ELSE 0 END)       AS gdacs,
+                       SUM(CASE WHEN source='firms' THEN 1 ELSE 0 END)       AS firms
+                FROM signals
+            """).fetchone()
+        except Exception:
+            signal_stats = None
+
+        # Phase 23: top correlated incidents for dashboard panel
+        try:
+            correlated = db.execute("""
+                SELECT ci.correlation_score,
+                       ci.distance_km,
+                       ci.time_difference_hours,
+                       ci.detected_at,
+                       sa.signal_id AS sid_a, sa.title AS title_a,
+                       sa.source AS src_a, sa.lat AS lat_a, sa.lng AS lng_a,
+                       sb.signal_id AS sid_b, sb.title AS title_b,
+                       sb.source AS src_b, sb.lat AS lat_b, sb.lng AS lng_b
+                FROM   correlated_incidents ci
+                JOIN   signals sa ON sa.signal_id = ci.signal_a
+                JOIN   signals sb ON sb.signal_id = ci.signal_b
+                ORDER  BY ci.correlation_score DESC
+                LIMIT  8
+            """).fetchall()
+            correlated = [dict(r) for r in correlated]
+        except Exception:
+            correlated = []
+
+        # Phase 24: top actors by global influence score
+        intelligence_leads = []
+        try:
+            leads_rows = db.execute(
+                "SELECT m.actor_id, a.name, a.type, "
+                "m.influence_score, m.betweenness, m.pagerank, "
+                "m.community_id, m.computed_at "
+                "FROM actor_network_metrics m "
+                "JOIN actors a ON a.actor_id = m.actor_id "
+                "ORDER BY m.influence_score DESC LIMIT 5"
+            ).fetchall()
+            intelligence_leads = [dict(r) for r in leads_rows]
+        except Exception:
+            pass
+
+        # Phase 25: recent new Sentinel alerts for dashboard
+        try:
+            sentinel_alerts_dash = db.execute(
+                "SELECT id, alert_type, confidence_score, signal_count, "
+                "summary, location_lat, location_lon, created_at "
+                "FROM sentinel_alerts "
+                "WHERE status = 'new' "
+                "ORDER BY confidence_score DESC, created_at DESC "
+                "LIMIT 5"
+            ).fetchall()
+            sentinel_alerts_dash = [dict(r) for r in sentinel_alerts_dash]
+        except Exception:
+            sentinel_alerts_dash = []
+
+        # Phase 27: stream counts for dashboard summary widget
+        try:
+            stream_counts = dict(
+                db.execute(
+                    "SELECT stream, COUNT(*) FROM signals "
+                    "WHERE stream IS NOT NULL GROUP BY stream ORDER BY COUNT(*) DESC"
+                ).fetchall()
+            )
+        except Exception:
+            stream_counts = {}
+
         return render_template(
             "index.html",
             stats=stats,
             recent_artifacts=recent_artifacts,
             recent_events=recent_events,
             type_breakdown=type_breakdown,
+            pulse_data=pulse_data,
+            signal_stats=signal_stats,
+            correlated=correlated,
+            intelligence_leads=intelligence_leads,
+            sentinel_alerts_dash=sentinel_alerts_dash,
+            stream_counts=stream_counts,
         )
+
+    # -----------------------------------------------------------------------
+    # Phase 17: /api/pulse — signal frequency for Chart.js pulse graph
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/pulse")
+    def api_pulse():
+        from flask import jsonify
+        db     = get_db()
+        window = min(int(request.args.get("hours", 48)), 168)
+        source = request.args.get("source", "").strip()
+        source_clause = "AND source = :source" if source else ""
+        try:
+            rows = db.execute(f"""
+                WITH RECURSIVE hours(n) AS (
+                    SELECT 0 UNION ALL SELECT n+1 FROM hours WHERE n < :window - 1
+                ),
+                buckets AS (
+                    SELECT strftime('%Y-%m-%dT%H:00',
+                        datetime('now', '-' || (:window-1-n) || ' hours')) AS bucket
+                    FROM hours
+                ),
+                counts AS (
+                    SELECT strftime('%Y-%m-%dT%H:00', timestamp) AS bucket,
+                           COUNT(*)         AS total,
+                           SUM(is_priority) AS priority
+                    FROM  signals
+                    WHERE timestamp >= datetime('now', '-' || :window || ' hours')
+                    {source_clause}
+                    GROUP BY bucket
+                )
+                SELECT b.bucket,
+                       COALESCE(c.total,    0) AS total,
+                       COALESCE(c.priority, 0) AS priority
+                FROM   buckets b
+                LEFT   JOIN counts c ON c.bucket = b.bucket
+                ORDER  BY b.bucket ASC
+            """, {"window": window, "source": source or None}).fetchall()
+            return jsonify({"hours": window, "source": source or None,
+                            "buckets": [dict(r) for r in rows]})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Phase 18: /api/heatmap — [lat, lng, intensity] for Leaflet.heat
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/heatmap")
+    def api_heatmap():
+        """
+        [lat, lng, intensity] triples for Leaflet.heat.
+        Phase 20: coords pruned to 4dp, hard cap 5000 points.
+        """
+        import json as _json
+        from flask import jsonify
+        db     = get_db()
+        source = request.args.get("source", "").strip()
+        hours  = request.args.get("hours",  type=int)
+        status = request.args.get("status", "raw,promoted")
+        allowed = [s.strip() for s in status.split(",")]
+
+        clauses = [
+            "lat IS NOT NULL", "lng IS NOT NULL",
+            f"status IN ({','.join('?' for _ in allowed)})",
+        ]
+        params = list(allowed)
+        if source:
+            clauses.append("source = ?");                      params.append(source)
+        if hours:
+            clauses.append("timestamp >= datetime('now', ?)"); params.append(f"-{hours} hours")
+
+        try:
+            rows = db.execute(
+                "SELECT ROUND(lat,4) AS lat, ROUND(lng,4) AS lng, "
+                "source, is_priority, metadata_json "
+                f"FROM signals WHERE {' AND '.join(clauses)} "
+                "ORDER BY is_priority DESC, timestamp DESC LIMIT 5000",
+                params,
+            ).fetchall()
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+        points = []
+        for r in rows:
+            src  = (r["source"] or "").lower()
+            prio = r["is_priority"] or 0
+            meta = {}
+            if r["metadata_json"]:
+                try:    meta = _json.loads(r["metadata_json"])
+                except: pass
+            if src == "usgs":
+                mag = meta.get("mag")
+                intensity = min(float(mag) / 9.0, 1.0) if mag is not None else 0.5
+            elif src == "firms":
+                frp = meta.get("frp")
+                intensity = min(float(frp) / 500.0, 1.0) if frp is not None else 0.4
+            else:
+                intensity = 0.5
+            if prio:
+                intensity = max(intensity, 0.7)
+            points.append([r["lat"], r["lng"], round(intensity, 3)])
+
+        return jsonify({"points": points, "count": len(points), "source": source or None})
+
+    # -----------------------------------------------------------------------
+    # Phase 18: /api/signals/<id>/entities  &  /api/entities/top
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/signals/<signal_id>/entities")
+    def api_signal_entities(signal_id: str):
+        from flask import jsonify
+        db  = get_db()
+        sig = db.execute("SELECT signal_id, title FROM signals WHERE signal_id=?",
+                         (signal_id,)).fetchone()
+        if not sig:
+            return jsonify({"error": "Signal not found"}), 404
+        try:
+            rows = db.execute(
+                "SELECT text, label, count FROM signal_entities "
+                "WHERE signal_id=? ORDER BY label, count DESC, text",
+                (signal_id,),
+            ).fetchall()
+        except Exception:
+            rows = []
+        grouped = {"PERSON": [], "ORG": [], "GPE": []}
+        for r in rows:
+            if r["label"] in grouped:
+                grouped[r["label"]].append({"text": r["text"], "count": r["count"]})
+        return jsonify({"signal_id": signal_id, "title": sig["title"],
+                        "entities": grouped, "total": len(rows)})
+
+    @app.route("/api/entities/top")
+    def api_entities_top():
+        from flask import jsonify
+        db     = get_db()
+        label  = request.args.get("label", "").strip().upper()
+        limit  = min(int(request.args.get("limit", 20)), 100)
+        source = request.args.get("source", "").strip()
+        lc     = "AND se.label = ?"  if label  else ""
+        sc     = "AND s.source = ?"  if source else ""
+        params = ([label] if label else []) + ([source] if source else []) + [limit]
+        try:
+            rows = db.execute(
+                f"SELECT se.text, se.label, SUM(se.count) AS total_count, "
+                f"COUNT(DISTINCT se.signal_id) AS signal_count "
+                f"FROM signal_entities se JOIN signals s ON s.signal_id=se.signal_id "
+                f"WHERE 1=1 {lc} {sc} GROUP BY se.text, se.label "
+                f"ORDER BY total_count DESC LIMIT ?", params,
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"label": label or None, "source": source or None,
+                        "entities": [dict(r) for r in rows], "total": len(rows)})
+
+    # -----------------------------------------------------------------------
+    # Phase 19: /artifacts gallery + artifact API routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/artifacts")
+    def artifact_gallery():
+        db       = get_db()
+        atype    = request.args.get("type",   "").strip()
+        source   = request.args.get("source", "").strip()
+        status   = request.args.get("status", "").strip()
+        q        = request.args.get("q",      "").strip()
+        page     = max(1, int(request.args.get("page", 1)))
+        per_page = 24
+
+        clauses, params = [], []
+        if atype:   clauses.append("a.type = ?");                params.append(atype)
+        if source:  clauses.append("a.source = ?");              params.append(source)
+        if status:  clauses.append("a.processing_status = ?");   params.append(status)
+        if q:
+            clauses.append("(a.title LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)")
+            like = f"%{q}%"; params += [like, like, like]
+
+        where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
+
+        try:
+            total = db.execute(
+                f"SELECT COUNT(*) FROM artifacts a {where}", params
+            ).fetchone()[0]
+            rows = db.execute(f"""
+                SELECT a.artifact_id, a.title, a.type, a.source, a.date,
+                       a.file_path, a.thumbnail, a.tags, a.location,
+                       a.processing_status,
+                       e.title AS event_title, e.event_id AS event_id,
+                       CASE WHEN a.raw_text_cache IS NOT NULL THEN 1 ELSE 0 END AS has_text
+                FROM   artifacts a
+                LEFT   JOIN events e ON e.event_id = a.event_id
+                {where}
+                ORDER  BY a.created_at DESC
+                LIMIT  ? OFFSET ?
+            """, params + [per_page, (page-1)*per_page]).fetchall()
+        except Exception:
+            # raw_text_cache / processing_status columns may not exist yet
+            # (pre-migration) — fall back to base columns
+            total = db.execute(
+                f"SELECT COUNT(*) FROM artifacts a {where}", params
+            ).fetchone()[0]
+            rows = db.execute(f"""
+                SELECT a.artifact_id, a.title, a.type, a.source, a.date,
+                       a.file_path, a.thumbnail, a.tags, a.location,
+                       'pending' AS processing_status,
+                       e.title AS event_title, e.event_id AS event_id,
+                       0 AS has_text
+                FROM   artifacts a
+                LEFT   JOIN events e ON e.event_id = a.event_id
+                {where}
+                ORDER  BY a.created_at DESC
+                LIMIT  ? OFFSET ?
+            """, params + [per_page, (page-1)*per_page]).fetchall()
+
+        def _facet(col):
+            try:
+                return {r[0]: r[1] for r in db.execute(
+                    f"SELECT {col}, COUNT(*) FROM artifacts "
+                    f"WHERE {col} IS NOT NULL GROUP BY {col}"
+                ).fetchall()}
+            except Exception:
+                return {}
+
+        return render_template(
+            "gallery.html",
+            artifacts=rows, total=total, page=page,
+            total_pages=max(1, (total+per_page-1)//per_page),
+            per_page=per_page, active_type=atype, active_source=source,
+            active_status=status, q=q,
+            type_counts=_facet("type"), source_counts=_facet("source"),
+            status_counts=_facet("processing_status"),
+        )
+
+    @app.route("/api/artifacts/<int:artifact_id>/process", methods=["POST"])
+    def api_artifact_process(artifact_id: int):
+        from flask import jsonify
+        db  = get_db()
+        row = db.execute(
+            "SELECT artifact_id, type, raw_text_cache, title, description "
+            "FROM artifacts WHERE artifact_id=?", (artifact_id,)
+        ).fetchone()
+        if not row:
+            return jsonify({"error": "Not found"}), 404
+        raw_text = (row["raw_text_cache"] if "raw_text_cache" in row.keys()
+                    else None) or row["description"] or ""
+        if not raw_text.strip():
+            try:
+                db.execute("UPDATE artifacts SET processing_status='skipped' "
+                           "WHERE artifact_id=?", (artifact_id,))
+                db.commit()
+            except Exception:
+                pass
+            return jsonify({"status": "skipped", "entities": 0})
+        try:
+            from forage.processors.artifact_processor import ProcessorManager
+            pm     = ProcessorManager(db_path=DB_PATH)
+            result = pm.process_artifact(artifact_id=artifact_id, raw_text=raw_text,
+                                         artifact_type=row["type"])
+            try:
+                db.execute("UPDATE artifacts SET processing_status='done' "
+                           "WHERE artifact_id=?", (artifact_id,))
+                db.commit()
+            except Exception:
+                pass
+            return jsonify({"status": "done", "entities": result.get("entities", 0)})
+        except Exception as exc:
+            try:
+                db.execute("UPDATE artifacts SET processing_status='failed' "
+                           "WHERE artifact_id=?", (artifact_id,))
+                db.commit()
+            except Exception:
+                pass
+            return jsonify({"status": "failed", "error": str(exc)}), 500
+
+    @app.route("/api/artifacts/<int:artifact_id>/signal", methods=["POST"])
+    def api_artifact_to_signal(artifact_id: int):
+        from flask import jsonify
+        import json as _json
+        db  = get_db()
+        row = db.execute("SELECT * FROM artifacts WHERE artifact_id=?",
+                         (artifact_id,)).fetchone()
+        if not row:
+            return jsonify({"error": "Not found"}), 404
+        body       = request.get_json(silent=True) or {}
+        title      = body.get("title") or row["title"]
+        content    = body.get("content") or row["description"] or ""
+        lat        = body.get("lat")  or row["latitude"]
+        lng        = body.get("lng")  or row["longitude"]
+        is_priority= int(body.get("is_priority", 0))
+        ext_id     = f"artifact:{artifact_id}:{(row['title'] or '')[:40]}"
+        existing   = db.execute("SELECT signal_id FROM signals WHERE external_id=?",
+                                (ext_id,)).fetchone()
+        if existing:
+            return jsonify({"status": "exists", "signal_id": existing["signal_id"]})
+        sid = str(__import__("uuid").uuid4())
+        try:
+            db.execute("""
+                INSERT INTO signals
+                    (signal_id, source, external_id, title, content,
+                     lat, lng, timestamp, status, is_priority, source_artifact_id)
+                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?,?)
+            """, (sid, row["source"] or "artifact", ext_id, title, content[:1000],
+                  float(lat) if lat else None, float(lng) if lng else None,
+                  is_priority, artifact_id))
+        except Exception:
+            # source_artifact_id column may not exist yet pre-migration
+            db.execute("""
+                INSERT INTO signals
+                    (signal_id, source, external_id, title, content,
+                     lat, lng, timestamp, status, is_priority)
+                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?)
+            """, (sid, row["source"] or "artifact", ext_id, title, content[:1000],
+                  float(lat) if lat else None, float(lng) if lng else None, is_priority))
+        db.commit()
+        return jsonify({"status": "created", "signal_id": sid})
 
     # -----------------------------------------------------------------------
     # Route: /events — Event list
@@ -445,7 +883,7 @@ def create_app() -> Flask:
             "features": features,
             "metadata": {
                 "total":    len(features),
-                "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+                "generated": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat().replace("+00:00","Z"),
             },
         }
 
@@ -543,22 +981,55 @@ def create_app() -> Flask:
         """
         FeatureCollection of mappable signals (raw + promoted, lat/lng present).
         Used by the Phase 15 live-signal Leaflet overlay on map.html.
+
+        Optimisations (Phase 20):
+          - Coordinates pruned to 6 decimal places (~11 cm precision, ~30% smaller JSON)
+          - Hard cap of 2 000 features — priority signals ranked first
+          - Optional query params:
+              ?source=usgs        — filter to one source
+              ?hours=24           — only signals from last N hours
+              ?priority_only=1    — only is_priority signals
         """
         import json as _json
         from flask import Response
         db = get_db()
 
-        rows = db.execute("""
-            SELECT signal_id, source, title, content,
-                   lat, lng, timestamp, status,
-                   is_priority, cluster_id
-            FROM   signals
-            WHERE  status IN ('raw', 'promoted')
-              AND  lat  IS NOT NULL
-              AND  lng  IS NOT NULL
-            ORDER  BY is_priority DESC, timestamp DESC
-        """).fetchall()
+        source        = request.args.get("source",        "").strip()
+        hours         = request.args.get("hours",         type=int)
+        priority_only = request.args.get("priority_only", type=int, default=0)
 
+        clauses = [
+            "status IN ('raw', 'promoted')",
+            "lat IS NOT NULL",
+            "lng IS NOT NULL",
+        ]
+        params: list = []
+
+        if source:
+            clauses.append("source = ?")
+            params.append(source)
+        if hours:
+            clauses.append("timestamp >= datetime('now', ?)")
+            params.append(f"-{hours} hours")
+        if priority_only:
+            clauses.append("is_priority = 1")
+
+        where = " AND ".join(clauses)
+
+        rows = db.execute(f"""
+            SELECT signal_id, source, title, content,
+                   ROUND(lat, 6) AS lat,
+                   ROUND(lng, 6) AS lng,
+                   timestamp, status,
+                   is_priority, cluster_id, stream,
+                   COALESCE(relevance_score, 1.0) AS relevance_score
+            FROM   signals
+            WHERE  {where}
+            ORDER  BY is_priority DESC, timestamp DESC
+            LIMIT  2000
+        """, params).fetchall()
+
+        from urllib.parse import quote_plus as _qp
         features = []
         for r in rows:
             features.append({
@@ -568,19 +1039,20 @@ def create_app() -> Flask:
                     "coordinates": [r["lng"], r["lat"]],  # GeoJSON [lon, lat]
                 },
                 "properties": {
-                    "signal_id":   r["signal_id"],
-                    "source":      r["source"]      or "",
-                    "title":       r["title"]        or "",
-                    "content":     (r["content"]     or "")[:200],
-                    "timestamp":   r["timestamp"]    or "",
-                    "status":      r["status"]       or "raw",
-                    "is_priority": r["is_priority"]  or 0,
-                    "cluster_id":  r["cluster_id"]   or None,
-                    # promote_url — pre-built so the popup can link directly
+                    "signal_id":       r["signal_id"],
+                    "source":          r["source"]          or "",
+                    "title":           r["title"]           or "",
+                    "content":         (r["content"]        or "")[:200],
+                    "timestamp":       r["timestamp"]       or "",
+                    "status":          r["status"]          or "raw",
+                    "is_priority":     r["is_priority"]     or 0,
+                    "cluster_id":      r["cluster_id"]      or None,
+                    "stream":          r["stream"]          or "GLOBAL",
+                    "relevance_score": round(float(r["relevance_score"] or 1.0), 3),
                     "promote_url": (
                         f"/admin/event/new"
-                        f"?title={__import__('urllib.parse', fromlist=['quote_plus']).quote_plus(r['title'] or '')}"
-                        f"&summary={__import__('urllib.parse', fromlist=['quote_plus']).quote_plus((r['content'] or '')[:300])}"
+                        f"?title={_qp(r['title'] or '')}"
+                        f"&summary={_qp((r['content'] or '')[:300])}"
                         f"&date={r['timestamp'][:10] if r['timestamp'] else ''}"
                         f"&latitude={r['lat']}"
                         f"&longitude={r['lng']}"
@@ -596,7 +1068,10 @@ def create_app() -> Flask:
             "metadata": {
                 "total":    len(features),
                 "priority": sum(1 for f in features if f["properties"]["is_priority"]),
-                "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+                "capped":   len(features) == 2000,
+                "generated": __import__("datetime").datetime.now(
+                    __import__("datetime").timezone.utc
+                ).isoformat().replace("+00:00", "Z"),
             },
         }
 
@@ -626,12 +1101,12 @@ def create_app() -> Flask:
         # Aggregate per cluster_id: centroid + count + earliest/latest timestamp
         rows = db.execute("""
             SELECT cluster_id,
-                   AVG(lat)          AS centroid_lat,
-                   AVG(lng)          AS centroid_lng,
-                   COUNT(*)          AS member_count,
-                   MIN(timestamp)    AS earliest,
-                   MAX(timestamp)    AS latest,
-                   MAX(is_priority)  AS any_priority,
+                   ROUND(AVG(lat), 6) AS centroid_lat,
+                   ROUND(AVG(lng), 6) AS centroid_lng,
+                   COUNT(*)           AS member_count,
+                   MIN(timestamp)     AS earliest,
+                   MAX(timestamp)     AS latest,
+                   MAX(is_priority)   AS any_priority,
                    GROUP_CONCAT(title, ' | ') AS sample_titles
             FROM   signals
             WHERE  cluster_id IS NOT NULL
@@ -673,7 +1148,7 @@ def create_app() -> Flask:
             "features": features,
             "metadata": {
                 "total":    len(features),
-                "generated": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+                "generated": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat().replace("+00:00","Z"),
             },
         }
 
@@ -1152,6 +1627,57 @@ def create_app() -> Flask:
                 "weight": w,
             })
 
+        # ── Phase 22: entity_relationships edges ───────────────────────────
+        # Directed named arrows between actor nodes.
+        # Colour-coded by extraction method; amber for manual, indigo for NLP.
+        REL_COLOURS = {
+            "manual": {"color": "rgba(200,148,58,0.70)", "highlight": "#c8943a", "hover": "#c8943a"},
+            "spacy":  {"color": "rgba(129,140,248,0.70)", "highlight": "#818cf8", "hover": "#818cf8"},
+            "llm":    {"color": "rgba(52,211,153,0.70)",  "highlight": "#34d399", "hover": "#34d399"},
+        }
+        try:
+            rel_rows = db.execute(
+                "SELECT r.relationship_id, r.subject_actor_id, r.object_actor_id, "
+                "r.relation_type, r.description, r.confidence, r.extraction_method, "
+                "a1.name AS subject_name, a2.name AS object_name "
+                "FROM entity_relationships r "
+                "JOIN actors a1 ON a1.actor_id = r.subject_actor_id "
+                "JOIN actors a2 ON a2.actor_id = r.object_actor_id "
+                "ORDER BY r.confidence DESC"
+            ).fetchall()
+            for rel in rel_rows:
+                if rel["subject_actor_id"] not in actor_id_set:
+                    continue
+                if rel["object_actor_id"] not in actor_id_set:
+                    continue
+                method = rel["extraction_method"] or "manual"
+                col    = REL_COLOURS.get(method, REL_COLOURS["manual"])
+                tip    = (f"{rel['subject_name']} → {rel['relation_type']} → {rel['object_name']}"
+                          f"\nConfidence: {rel['confidence']:.0%}"
+                          f"\nMethod: {method}")
+                if rel["description"]:
+                    tip += f"\n{rel['description'][:120]}"
+                vis_edges.append({
+                    "from":   f"actor-{rel['subject_actor_id']}",
+                    "to":     f"actor-{rel['object_actor_id']}",
+                    "label":  rel["relation_type"],
+                    "title":  tip,
+                    "arrows": {"to": {"enabled": True, "scaleFactor": 0.8}},
+                    "color":  col,
+                    "width":  max(1.5, rel["confidence"] * 3),
+                    "dashes": False,
+                    "font":   {"size": 9, "color": "#c8943a", "face": "IBM Plex Mono",
+                               "align": "middle", "strokeWidth": 2,
+                               "strokeColor": "#080d12"},
+                    "kind":        "relationship",
+                    "relation_type": rel["relation_type"],
+                    "confidence":  rel["confidence"],
+                    "method":      method,
+                    "relationship_id": rel["relationship_id"],
+                })
+        except Exception:
+            pass  # table may not exist on older databases
+
         payload = {
             "nodes": vis_nodes,
             "edges": vis_edges,
@@ -1202,19 +1728,25 @@ def create_app() -> Flask:
                        s.metadata_json,
                        s.cluster_id,
                        s.is_priority,
+                       s.source_artifact_id,
+                       a.title      AS artifact_title,
                        COUNT(cs.case_id) AS pinned_case_count
                 FROM   signals s
                 LEFT   JOIN case_signals cs ON cs.signal_id = s.signal_id
+                LEFT   JOIN artifacts a ON a.artifact_id = s.source_artifact_id
                 GROUP  BY s.signal_id
                 ORDER  BY s.is_priority DESC, s.timestamp DESC
                 LIMIT  50
             """).fetchall()
         except Exception:
-            # case_signals table not yet created — fall back to no linkage counts
+            # case_signals / source_artifact_id may not exist pre-migration
             rows = db.execute("""
                 SELECT signal_id, source, external_id, title, content,
                        lat, lng, timestamp, status, metadata_json,
-                       cluster_id, is_priority, 0 AS pinned_case_count
+                       cluster_id, is_priority,
+                       NULL AS source_artifact_id,
+                       NULL AS artifact_title,
+                       0    AS pinned_case_count
                 FROM   signals
                 ORDER  BY is_priority DESC, timestamp DESC
                 LIMIT  50
@@ -1252,11 +1784,47 @@ def create_app() -> Flask:
             ORDER  BY created_at DESC
         """).fetchall()
 
+        # Phase 27 — stream filter + stream counts for pills
+        active_stream = request.args.get("stream", "").strip().upper()
+        try:
+            stream_counts_raw = db.execute(
+                "SELECT stream, COUNT(*) AS cnt FROM signals "
+                "WHERE stream IS NOT NULL GROUP BY stream ORDER BY cnt DESC"
+            ).fetchall()
+            stream_counts = {r["stream"]: r["cnt"] for r in stream_counts_raw}
+        except Exception:
+            stream_counts = {}
+            active_stream = ""
+
+        if active_stream and active_stream != "ALL":
+            try:
+                filtered = db.execute(
+                    "SELECT s.signal_id, s.source, s.external_id, s.title, "
+                    "s.content, s.lat, s.lng, s.timestamp, s.status, "
+                    "s.metadata_json, s.cluster_id, s.is_priority, "
+                    "s.source_artifact_id, s.stream, "
+                    "a.title AS artifact_title, "
+                    "COUNT(cs.case_id) AS pinned_case_count "
+                    "FROM signals s "
+                    "LEFT JOIN case_signals cs ON cs.signal_id = s.signal_id "
+                    "LEFT JOIN artifacts a "
+                    "  ON a.artifact_id = s.source_artifact_id "
+                    "WHERE s.stream = ? "
+                    "GROUP BY s.signal_id "
+                    "ORDER BY s.is_priority DESC, s.timestamp DESC LIMIT 50",
+                    (active_stream,)
+                ).fetchall()
+                rows = filtered
+            except Exception:
+                pass
+
         return render_template(
             "signals.html",
             signals=rows,
             counts=counts,
             source_counts=source_counts,
+            stream_counts=stream_counts,
+            active_stream=active_stream or "ALL",
             active_cases=[dict(r) for r in active_cases],
         )
 
@@ -1499,21 +2067,155 @@ def create_app() -> Flask:
                         except Exception:
                             thumbnail = file_path  # fallback to original
 
-                db.execute("""
-                    INSERT INTO artifacts
-                        (title, description, type, date, location,
-                         latitude, longitude, tags, source,
-                         file_path, thumbnail, event_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    title, description, atype, date, location,
-                    float(latitude)  if latitude  else None,
-                    float(longitude) if longitude else None,
-                    tags, source, file_path, thumbnail,
-                    int(event_id) if event_id else None,
-                ))
+                # ── Phase 19 rev.2: live extraction on ingest ────────────────
+                # OCR (pytesseract) and PDF (PyMuPDF) are now live.
+                # Audio/video remain 'pending' until Whisper is installed.
+                raw_text_cache    = None
+                processing_status = "pending"
+
+                if file_path:
+                    abs_path = BASE_DIR / file_path
+                    if ext == "txt":
+                        try:
+                            raw_text_cache    = abs_path.read_text(
+                                encoding="utf-8", errors="replace")[:50_000]
+                            processing_status = "done"
+                        except Exception:
+                            processing_status = "failed"
+
+                    elif ext == "pdf":
+                        try:
+                            from forage.processors.artifact_processor import (
+                                PDFPipeline, OCRPipeline,
+                            )
+                            _pdf = PDFPipeline()
+                            _ocr = OCRPipeline() if OCRPipeline().available() else None
+                            raw_text_cache = _pdf.extract(abs_path, ocr_pipeline=_ocr)
+                            if raw_text_cache:
+                                raw_text_cache    = raw_text_cache[:50_000]
+                                processing_status = "done"
+                            else:
+                                processing_status = "failed"
+                        except Exception:
+                            processing_status = "failed"
+
+                    elif ext in IMAGE_EXTENSIONS or atype in ("photo", "capture"):
+                        try:
+                            from forage.processors.artifact_processor import OCRPipeline
+                            _ocr = OCRPipeline()
+                            if _ocr.available():
+                                raw_text_cache = _ocr.extract(abs_path)
+                                if raw_text_cache:
+                                    raw_text_cache    = raw_text_cache[:50_000]
+                                    processing_status = "done"
+                                else:
+                                    processing_status = "skipped"
+                            else:
+                                processing_status = "pending"
+                        except Exception:
+                            processing_status = "failed"
+
+                    elif ext in {"mp3","wav","ogg","m4a","mp4","mov","avi","mkv"}:
+                        processing_status = "pending"   # future: Whisper
+                    else:
+                        processing_status = "skipped"
+                else:
+                    if description:
+                        raw_text_cache    = description
+                        processing_status = "done"
+                    else:
+                        processing_status = "skipped"
+
+                # Try full Phase 19 INSERT; fall back to base INSERT if
+                # columns don't exist yet (pre-migration safety net)
+                try:
+                    cur = db.execute("""
+                        INSERT INTO artifacts
+                            (title, description, type, date, location,
+                             latitude, longitude, tags, source,
+                             file_path, thumbnail, event_id,
+                             raw_text_cache, processing_status)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        title, description, atype, date, location,
+                        float(latitude)  if latitude  else None,
+                        float(longitude) if longitude else None,
+                        tags, source, file_path, thumbnail,
+                        int(event_id) if event_id else None,
+                        raw_text_cache, processing_status,
+                    ))
+                except Exception:
+                    cur = db.execute("""
+                        INSERT INTO artifacts
+                            (title, description, type, date, location,
+                             latitude, longitude, tags, source,
+                             file_path, thumbnail, event_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        title, description, atype, date, location,
+                        float(latitude)  if latitude  else None,
+                        float(longitude) if longitude else None,
+                        tags, source, file_path, thumbnail,
+                        int(event_id) if event_id else None,
+                    ))
+                new_artifact_id = cur.lastrowid
                 db.commit()
-                flash(f"Artifact '{title}' added successfully.", "success")
+
+                # Trigger inline NER if text is ready
+                if raw_text_cache and processing_status == "done":
+                    try:
+                        from forage.processors.artifact_processor import ProcessorManager
+                        ProcessorManager(db_path=DB_PATH).process_artifact(
+                            artifact_id=new_artifact_id,
+                            raw_text=raw_text_cache,
+                            artifact_type=atype,
+                        )
+                    except Exception:
+                        pass  # NER failure never blocks ingest
+
+                # ── Phase 20: Forensic extraction on ingest ───────────────────────
+                if file_path:
+                    try:
+                        from forage.processors.forensic_processor import hash_file, extract_exif
+                        import json as _fj
+                        _abs = BASE_DIR / file_path
+                        _sha, _md5 = hash_file(_abs)
+                        _sz   = _abs.stat().st_size if _abs.exists() else None
+                        _exif = extract_exif(_abs)
+                        _ej   = _fj.dumps(_exif, ensure_ascii=False) if _exif else None
+                        _glat = _exif.get("gps_lat")           if _exif else None
+                        _glng = _exif.get("gps_lng")           if _exif else None
+                        _make = _exif.get("make")              if _exif else None
+                        _mod  = _exif.get("model")             if _exif else None
+                        _edt  = _exif.get("datetime_original") if _exif else None
+                        try:
+                            db.execute(
+                                "UPDATE artifacts SET file_hash_sha256=?,file_hash_md5=?,"
+                                "file_size_bytes=?,exif_json=?,gps_lat=?,gps_lng=?,"
+                                "device_make=?,device_model=?,exif_datetime=? "
+                                "WHERE artifact_id=?",
+                                (_sha,_md5,_sz,_ej,_glat,_glng,_make,_mod,_edt,cur.lastrowid))
+                            if _glat and _glng and not latitude:
+                                db.execute(
+                                    "UPDATE artifacts SET latitude=?,longitude=? WHERE artifact_id=?",
+                                    (_glat, _glng, cur.lastrowid))
+                            if _sha:
+                                _dups = db.execute(
+                                    "SELECT artifact_id FROM artifacts "
+                                    "WHERE file_hash_sha256=? AND artifact_id!=?",
+                                    (_sha, cur.lastrowid)).fetchall()
+                                for _d in _dups:
+                                    db.execute(
+                                        "INSERT OR IGNORE INTO artifact_duplicates "
+                                        "(artifact_id,duplicate_of_id,hash_sha256) VALUES(?,?,?)",
+                                        (cur.lastrowid, _d["artifact_id"], _sha))
+                            db.commit()
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
+
+                flash(f"Artifact '{title}' ingested successfully.", "success")
                 return redirect(url_for("admin"))
 
             # ── add event ────────────────────────────────────────────────────
@@ -1674,13 +2376,868 @@ def create_app() -> Flask:
                 """, (*like_params, artifact_id,
                       artifact["linked_event_id"] or -1)).fetchall()
 
+        # Phase 20: forensic context
+        forensic_exif = {}
+        if artifact["exif_json"]:
+            try:
+                import json as _fj; forensic_exif = _fj.loads(artifact["exif_json"])
+            except Exception: pass
+        duplicates = []
+        if artifact["file_hash_sha256"]:
+            try:
+                duplicates = db.execute(
+                    "SELECT a.artifact_id, a.title, a.type, a.source, "
+                    "a.date, a.thumbnail, ad.detected_at "
+                    "FROM artifact_duplicates ad "
+                    "JOIN artifacts a ON a.artifact_id = ad.duplicate_of_id "
+                    "WHERE ad.artifact_id = ? "
+                    "UNION "
+                    "SELECT a.artifact_id, a.title, a.type, a.source, "
+                    "a.date, a.thumbnail, ad.detected_at "
+                    "FROM artifact_duplicates ad "
+                    "JOIN artifacts a ON a.artifact_id = ad.artifact_id "
+                    "WHERE ad.duplicate_of_id = ? AND ad.artifact_id != ? "
+                    "ORDER BY detected_at DESC",
+                    (artifact_id, artifact_id, artifact_id),
+                ).fetchall()
+            except Exception: pass
+
         return render_template(
             "asset.html",
             artifact=artifact,
             circle_of_evidence=circle_of_evidence,
             siblings=siblings,
             tag_related=tag_related,
+            forensic_exif=forensic_exif,
+            duplicates=duplicates,
         )
+
+    # -----------------------------------------------------------------------
+    # Phase 20/21/22: Forensic + Graph + Relationship API routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/artifacts/<int:artifact_id>/forensic")
+    def api_artifact_forensic(artifact_id: int):
+        from flask import jsonify
+        import json as _fj
+        db  = get_db()
+        row = db.execute(
+            "SELECT artifact_id, title, file_path, file_hash_sha256, file_hash_md5, "
+            "file_size_bytes, exif_json, gps_lat, gps_lng, "
+            "device_make, device_model, exif_datetime "
+            "FROM artifacts WHERE artifact_id=?", (artifact_id,)
+        ).fetchone()
+        if not row: return jsonify({"error": "Not found"}), 404
+        exif = {}
+        if row["exif_json"]:
+            try: exif = _fj.loads(row["exif_json"])
+            except Exception: pass
+        try:
+            dups = db.execute(
+                "SELECT a.artifact_id, a.title, a.type, ad.detected_at "
+                "FROM artifact_duplicates ad "
+                "JOIN artifacts a ON a.artifact_id = ad.duplicate_of_id "
+                "WHERE ad.artifact_id = ? "
+                "UNION "
+                "SELECT a.artifact_id, a.title, a.type, ad.detected_at "
+                "FROM artifact_duplicates ad "
+                "JOIN artifacts a ON a.artifact_id = ad.artifact_id "
+                "WHERE ad.duplicate_of_id = ? AND ad.artifact_id != ?",
+                (artifact_id, artifact_id, artifact_id)
+            ).fetchall()
+            duplicates = [dict(d) for d in dups]
+        except Exception:
+            duplicates = []
+        return jsonify({
+            "artifact_id": artifact_id, "title": row["title"],
+            "hashes": {"sha256": row["file_hash_sha256"], "md5": row["file_hash_md5"]},
+            "file_size_bytes": row["file_size_bytes"], "exif": exif,
+            "gps": {"lat": row["gps_lat"], "lng": row["gps_lng"]} if row["gps_lat"] else None,
+            "device": {"make": row["device_make"], "model": row["device_model"]} if row["device_make"] else None,
+            "exif_datetime": row["exif_datetime"],
+            "duplicates": duplicates, "duplicate_count": len(duplicates),
+        })
+
+    @app.route("/api/artifacts/<int:artifact_id>/forensic-process", methods=["POST"])
+    def api_artifact_forensic_process(artifact_id: int):
+        from flask import jsonify
+        db  = get_db()
+        row = db.execute(
+            "SELECT artifact_id, file_path, latitude FROM artifacts WHERE artifact_id=?",
+            (artifact_id,)
+        ).fetchone()
+        if not row: return jsonify({"error": "Not found"}), 404
+        try:
+            from forage.processors.forensic_processor import ForensicProcessor
+            fp = ForensicProcessor(db_path=DB_PATH)
+            result = fp.process_artifact(row)
+            fp.close()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/artifacts/duplicates")
+    def api_artifact_duplicates():
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT ad.hash_sha256, "
+                "COUNT(DISTINCT ad.artifact_id)+COUNT(DISTINCT ad.duplicate_of_id) AS total_copies, "
+                "MIN(ad.detected_at) AS first_detected "
+                "FROM artifact_duplicates ad GROUP BY ad.hash_sha256 ORDER BY total_copies DESC"
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"groups": [dict(r) for r in rows], "total": len(rows)})
+
+    @app.route("/api/correlations/geojson")
+    def api_correlations_geojson():
+        """
+        Returns correlated pairs as GeoJSON LineString features.
+        Each feature is a line connecting signal_a to signal_b.
+        Properties carry correlation_score, distance_km, time_diff.
+        Used by map.html to draw L.polyline connections.
+        """
+        import json as _j
+        from flask import Response
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT ci.correlation_score, ci.distance_km, "
+                "ci.time_difference_hours, ci.detected_at, "
+                "sa.title AS title_a, sa.source AS src_a, "
+                "sa.lat AS lat_a, sa.lng AS lng_a, "
+                "sb.title AS title_b, sb.source AS src_b, "
+                "sb.lat AS lat_b, sb.lng AS lng_b "
+                "FROM correlated_incidents ci "
+                "JOIN signals sa ON sa.signal_id = ci.signal_a "
+                "JOIN signals sb ON sb.signal_id = ci.signal_b "
+                "WHERE ci.correlation_score >= 0.7 "
+                "ORDER BY ci.correlation_score DESC LIMIT 200"
+            ).fetchall()
+        except Exception:
+            rows = []
+        features = []
+        for r in rows:
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [round(r["lng_a"], 6), round(r["lat_a"], 6)],
+                        [round(r["lng_b"], 6), round(r["lat_b"], 6)],
+                    ],
+                },
+                "properties": {
+                    "score":     r["correlation_score"],
+                    "dist_km":   r["distance_km"],
+                    "time_diff": r["time_difference_hours"],
+                    "title_a":   r["title_a"] or "",
+                    "src_a":     r["src_a"]   or "",
+                    "title_b":   r["title_b"] or "",
+                    "src_b":     r["src_b"]   or "",
+                    "detected_at": r["detected_at"] or "",
+                },
+            })
+        return Response(
+            _j.dumps({"type": "FeatureCollection", "features": features},
+                     ensure_ascii=False),
+            mimetype="application/geo+json",
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
+
+    @app.route("/api/correlations/recalculate", methods=["POST"])
+    def api_correlations_recalculate():
+        from flask import jsonify
+        try:
+            from forage.engines.correlation_engine import CorrelationEngine
+            result = CorrelationEngine(db_path=DB_PATH).run()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Phase 25: Sentinel API routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/alerts")
+    def api_alerts():
+        """Return new sentinel alerts, optionally filtered by type."""
+        from flask import jsonify
+        db     = get_db()
+        status = request.args.get("status", "new")
+        limit  = min(int(request.args.get("limit", 50)), 200)
+        try:
+            rows = db.execute(
+                "SELECT id, alert_type, confidence_score, signal_count, "
+                "summary, location_lat, location_lon, status, created_at "
+                "FROM sentinel_alerts WHERE status = ? "
+                "ORDER BY confidence_score DESC, created_at DESC LIMIT ?",
+                (status, limit)
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"alerts": [dict(r) for r in rows], "total": len(rows)})
+
+    @app.route("/api/alerts/<int:alert_id>/acknowledge", methods=["POST"])
+    def api_alert_acknowledge(alert_id: int):
+        from flask import jsonify
+        db = get_db()
+        try:
+            db.execute(
+                "UPDATE sentinel_alerts SET status='acknowledged' WHERE id=?",
+                (alert_id,)
+            )
+            db.commit()
+            return jsonify({"status": "acknowledged", "id": alert_id})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/alerts/<int:alert_id>/dismiss", methods=["POST"])
+    def api_alert_dismiss(alert_id: int):
+        from flask import jsonify
+        db = get_db()
+        try:
+            db.execute(
+                "UPDATE sentinel_alerts SET status='dismissed' WHERE id=?",
+                (alert_id,)
+            )
+            db.commit()
+            return jsonify({"status": "dismissed", "id": alert_id})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/alerts/<int:alert_id>/promote-case", methods=["POST"])
+    def api_alert_promote_case(alert_id: int):
+        """Promote a sentinel alert to a new Case workspace."""
+        from flask import jsonify, request as req
+        db   = get_db()
+        alert = db.execute(
+            "SELECT * FROM sentinel_alerts WHERE id=?", (alert_id,)
+        ).fetchone()
+        if not alert:
+            return jsonify({"error": "Alert not found"}), 404
+        data       = req.get_json(silent=True) or {}
+        case_title = data.get("title") or f"SENTINEL: {alert['alert_type']} ({alert['created_at'][:10]})"
+        hypothesis = f"Pattern: {alert['summary'][:200]}"
+        try:
+            cur = db.execute(
+                "INSERT INTO cases (title, description, hypothesis, status, case_type) "
+                "VALUES (?, ?, ?, 'active', 'signal') ",
+                (case_title,
+                 f"Auto-generated from Sentinel alert #{alert_id}. "
+                 f"Type: {alert['alert_type']} | "
+                 f"Confidence: {alert['confidence_score']:.0%}",
+                 hypothesis)
+            )
+            case_id = cur.lastrowid
+            db.execute(
+                "UPDATE sentinel_alerts SET status='acknowledged' WHERE id=?",
+                (alert_id,)
+            )
+            db.commit()
+            return jsonify({"case_id": case_id, "status": "promoted"})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/sentinel/run", methods=["POST"])
+    def api_sentinel_run():
+        """Trigger a Sentinel analysis run. Option B: on-demand."""
+        from flask import jsonify
+        try:
+            from forage.processors.sentinel import Sentinel
+            result = Sentinel(db_path=DB_PATH).run()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/signals/streams")
+    def api_signals_streams():
+        """Phase 27: stream counts summary used by dashboard and feed."""
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT stream, COUNT(*) AS total, "
+                "SUM(CASE WHEN status='raw' THEN 1 ELSE 0 END) AS raw, "
+                "SUM(CASE WHEN is_priority=1 THEN 1 ELSE 0 END) AS priority, "
+                "MAX(timestamp) AS latest "
+                "FROM signals WHERE stream IS NOT NULL "
+                "GROUP BY stream ORDER BY total DESC"
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"streams": [dict(r) for r in rows]})
+
+    @app.route("/api/decay/run", methods=["POST"])
+    def api_decay_run():
+        """Phase 28: Trigger a decay pass on all signals. Option B: on-demand."""
+        from flask import jsonify
+        try:
+            from forage.engines.decay_engine import DecayEngine
+            result = DecayEngine(db_path=DB_PATH).run()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Phase 29: Intelligence Feed — /feed  +  /api/feed
+    # -----------------------------------------------------------------------
+
+    # Stream → numeric weight used in feed_score formula
+    _STREAM_WEIGHTS = {
+        "CRIME_INTEL":    1.0,
+        "PRIORITY":       0.9,
+        "INFRASTRUCTURE": 0.7,
+        "GLOBAL":         0.3,
+    }
+    _STREAM_WEIGHT_DEFAULT = 0.3
+
+    @app.route("/feed")
+    def feed():
+        """Phase 29: Analyst Intelligence Feed page."""
+        return render_template("feed.html")
+
+    @app.route("/api/feed")
+    def api_feed():
+        """
+        Phase 29.3: Unified, ranked intelligence feed.
+
+        Query params
+        ───────────
+          limit  (int, default 50, max 200)
+          stream (str)  — filter to a single stream; omit for all
+          offset (int)  — for infinite scroll pagination
+
+        Item types returned
+        ───────────────────
+          SENTINEL_ALERT    — new sentinel escalations; FIRMS-sourced alerts excluded
+          SIGNAL            — ranked signals; FIRMS signals shown only if high-impact
+          CORRELATION       — non-FIRMS pairs with score >= 0.85; stream_weight = 1.0
+          INTELLIGENCE_LEAD — actors in the top 10% by influence_score (90th-pct subquery)
+
+        feed_score formula
+        ──────────────────
+          (relevance_score × 0.40)
+        + (is_priority     × 0.30)
+        + (sentinel_flag   × 0.20)   ← 1.0 if sentinel alert within 100 km / 6 h
+        + (stream_weight   × 0.10)
+
+        FIRMS noise-reduction (Phase 29.3)
+        ───────────────────────────────────
+        FIRMS wildfire pixel-pairs are structurally perfect spatiotemporal matches
+        and flood all three scored sections. We apply source-level filters:
+
+          SENTINEL_ALERT : exclude any alert whose summary references [firms]
+          CORRELATION    : exclude any pair where either signal is source='firms'
+          SIGNAL (FIRMS) : show only if EITHER:
+                           (a) is_priority = 1  (high-intensity threshold hit), OR
+                           (b) isolated — no other firms signal within 50 km / 24 h
+                           AND not already represented by a sentinel or correlation
+        """
+        from flask import jsonify
+
+        db     = get_db()
+        limit  = min(int(request.args.get("limit",  50)),  200)
+        offset = max(int(request.args.get("offset",  0)),    0)
+        stream_filter = request.args.get("stream", "").strip().upper() or None
+
+        items = []
+
+        # ── 1. SENTINEL_ALERT items ─────────────────────────────────────────
+        # Score: confidence-weighted 0.20–1.00 → always floats above signals.
+        #
+        # Phase 29.4 — Sentinel Density Gate
+        # ────────────────────────────────────
+        # FIRMS data floods sentinel_alerts via two alert_type paths, each
+        # requiring a different suppression strategy:
+        #
+        # 1. correlation_escalation + '[firms]' in summary
+        #    → Pure pixel-pair noise (0.4 km / 0.0 h). Always exclude.
+        #    → Identified by summary LIKE '%[firms]%'
+        #
+        # 2. cluster_spike + 'Sources: firms' in summary
+        #    → Regional fire cluster. May be genuine (Khuzestan, Nebraska).
+        #    → Density gate: exclude only if signal_count < 20.
+        #    → 20+ signals in a 100 km radius = major regional event.
+        #
+        # 3. cluster_spike without FIRMS source → standard guard (>= 3).
+        #
+        # 4. All other alert types (actor_match etc.) → standard guard (>= 3).
+        #
+        # Cap: max 5 SENTINEL_ALERT items per feed call so other item types
+        # always get page-space regardless of alert volume.
+        try:
+            sa_rows = db.execute("""
+                SELECT id, alert_type, confidence_score, signal_count,
+                       summary, location_lat, location_lon,
+                       status, created_at
+                FROM   sentinel_alerts
+                WHERE  status = 'new'
+                  AND  (
+                    -- Rule 1: correlation_escalation — exclude all FIRMS pixel-pairs
+                    (
+                        alert_type = 'correlation_escalation'
+                        AND summary NOT LIKE '%[firms]%'
+                        AND signal_count >= 10
+                    )
+                    OR
+                    -- Rule 2: cluster_spike FIRMS — density gate, major clusters only
+                    (
+                        alert_type = 'cluster_spike'
+                        AND summary LIKE '%Sources: firms%'
+                        AND signal_count >= 20
+                    )
+                    OR
+                    -- Rule 3: cluster_spike non-FIRMS — standard minimum guard
+                    (
+                        alert_type = 'cluster_spike'
+                        AND summary NOT LIKE '%Sources: firms%'
+                        AND signal_count >= 3
+                    )
+                    OR
+                    -- Rule 4: all other types (actor_match etc.) — standard guard
+                    (
+                        alert_type NOT IN ('correlation_escalation', 'cluster_spike')
+                        AND signal_count >= 3
+                    )
+                  )
+                ORDER  BY confidence_score DESC, signal_count DESC, created_at DESC
+                LIMIT  5
+            """).fetchall()
+            for r in sa_rows:
+                items.append({
+                    "item_type":        "SENTINEL_ALERT",
+                    "id":               f"sa-{r['id']}",
+                    "alert_id":         r["id"],
+                    "feed_score":       round(0.20 + r["confidence_score"] * 0.80, 4),
+                    "title":            r["summary"][:120],
+                    "summary":          r["summary"],
+                    "alert_type":       r["alert_type"],
+                    "confidence_score": r["confidence_score"],
+                    "signal_count":     r["signal_count"],
+                    "location_lat":     r["location_lat"],
+                    "location_lon":     r["location_lon"],
+                    "timestamp":        r["created_at"],
+                    "stream":           None,
+                    "source":           "SENTINEL",
+                    "is_priority":      0,
+                })
+        except Exception:
+            pass
+
+        # ── 2. SIGNAL items ─────────────────────────────────────────────────
+        # sentinel_flag: 1 if a non-dismissed sentinel alert exists within
+        # ~100 km (±0.9°) in the last 6 h — bounding-box keeps it fast.
+        #
+        # FIRMS high-impact filter (Phase 29.3):
+        # For source='firms' signals we only surface them if they are NOT
+        # already covered by a sentinel/correlation AND meet one of:
+        #   (a) is_priority = 1   — intensity threshold hit by ingestion rules
+        #   (b) isolated          — no other firms signal within ±0.45° / 24 h
+        #                           (±0.45° ≈ 50 km at mid-latitudes)
+        # Non-FIRMS signals pass through without additional filtering.
+        try:
+            stream_clause = "AND s.stream = :stream" if stream_filter else ""
+            sig_rows = db.execute(f"""
+                SELECT
+                    s.signal_id,
+                    s.title,
+                    s.content,
+                    s.source,
+                    s.stream,
+                    s.timestamp,
+                    s.status,
+                    s.is_priority,
+                    s.lat,
+                    s.lng,
+                    COALESCE(s.relevance_score, 1.0) AS relevance_score,
+                    CASE
+                        WHEN s.lat IS NOT NULL AND s.lng IS NOT NULL
+                             AND EXISTS (
+                                 SELECT 1 FROM sentinel_alerts sa
+                                 WHERE  sa.status    != 'dismissed'
+                                   AND  sa.created_at >= datetime('now', '-6 hours')
+                                   AND  sa.location_lat BETWEEN s.lat - 0.9 AND s.lat + 0.9
+                                   AND  sa.location_lon BETWEEN s.lng - 0.9 AND s.lng + 0.9
+                             )
+                        THEN 1.0 ELSE 0.0
+                    END AS sentinel_flag,
+                    -- Isolation flag: 1 if NO other firms signal nearby in 24 h
+                    CASE
+                        WHEN s.source = 'firms'
+                             AND s.lat IS NOT NULL AND s.lng IS NOT NULL
+                             AND NOT EXISTS (
+                                 SELECT 1 FROM signals nb
+                                 WHERE  nb.source    = 'firms'
+                                   AND  nb.signal_id != s.signal_id
+                                   AND  nb.timestamp >= datetime('now', '-24 hours')
+                                   AND  nb.lat BETWEEN s.lat - 0.45 AND s.lat + 0.45
+                                   AND  nb.lng BETWEEN s.lng - 0.45 AND s.lng + 0.45
+                             )
+                        THEN 1 ELSE 0
+                    END AS firms_isolated,
+                    -- Redundancy flag: 1 if already in a sentinel or correlation
+                    CASE
+                        WHEN s.source = 'firms' AND (
+                             EXISTS (
+                                 SELECT 1 FROM sentinel_alerts sa2
+                                 WHERE  sa2.status != 'dismissed'
+                                   AND  sa2.location_lat BETWEEN s.lat - 0.9 AND s.lat + 0.9
+                                   AND  sa2.location_lon BETWEEN s.lng - 0.9 AND s.lng + 0.9
+                             )
+                          OR EXISTS (
+                                 SELECT 1 FROM correlated_incidents ci
+                                 WHERE  ci.signal_a = s.signal_id
+                                    OR  ci.signal_b = s.signal_id
+                             )
+                        )
+                        THEN 1 ELSE 0
+                    END AS firms_redundant
+                FROM  signals s
+                WHERE s.status IN ('raw', 'promoted')
+                {stream_clause}
+                ORDER BY s.is_priority DESC, s.relevance_score DESC
+                LIMIT  500
+            """, {"stream": stream_filter}).fetchall()
+
+            for r in sig_rows:
+                # FIRMS high-impact gate
+                if r["source"] == "firms":
+                    # Suppress if already covered by sentinel/correlation
+                    if r["firms_redundant"]:
+                        continue
+                    # Only pass through if priority OR isolated
+                    if not r["is_priority"] and not r["firms_isolated"]:
+                        continue
+
+                sw    = _STREAM_WEIGHTS.get(r["stream"] or "GLOBAL", _STREAM_WEIGHT_DEFAULT)
+                rel   = float(r["relevance_score"] or 1.0)
+                prio  = float(r["is_priority"]     or 0)
+                sflag = float(r["sentinel_flag"]   or 0)
+                score = round(rel * 0.40 + prio * 0.30 + sflag * 0.20 + sw * 0.10, 4)
+                items.append({
+                    "item_type":       "SIGNAL",
+                    "id":              f"sig-{r['signal_id']}",
+                    "signal_id":       r["signal_id"],
+                    "feed_score":      score,
+                    "title":           r["title"]    or "(untitled)",
+                    "summary":         (r["content"] or "")[:200],
+                    "source":          r["source"]   or "",
+                    "stream":          r["stream"]   or "GLOBAL",
+                    "timestamp":       r["timestamp"],
+                    "is_priority":     r["is_priority"],
+                    "relevance_score": round(rel, 3),
+                    "sentinel_flag":   sflag,
+                    "stream_weight":   sw,
+                })
+        except Exception:
+            pass
+
+        # ── 3. CORRELATION items ────────────────────────────────────────────
+        # Threshold: >= 0.85 (strong patterns only).
+        # stream_weight: pinned to CRIME_INTEL (1.0) — patterns always compete
+        #   at the top of the feed regardless of constituent signal streams.
+        # FIRMS exclusion (Phase 29.3): exclude any pair where either signal
+        #   is source='firms'. Fire pixel-pairs are not investigative incidents.
+        try:
+            corr_rows = db.execute("""
+                SELECT ci.id,
+                       ci.correlation_score,
+                       ci.distance_km,
+                       ci.time_difference_hours,
+                       ci.detected_at,
+                       sa.title          AS title_a,
+                       sa.source         AS src_a,
+                       sa.stream         AS stream_a,
+                       sa.is_priority    AS prio_a,
+                       COALESCE(sa.relevance_score, 1.0) AS rel_a,
+                       sb.title          AS title_b,
+                       sb.source         AS src_b,
+                       sb.stream         AS stream_b,
+                       sb.is_priority    AS prio_b,
+                       COALESCE(sb.relevance_score, 1.0) AS rel_b
+                FROM   correlated_incidents ci
+                JOIN   signals sa ON sa.signal_id = ci.signal_a
+                JOIN   signals sb ON sb.signal_id = ci.signal_b
+                WHERE  ci.correlation_score >= 0.85
+                  AND  sa.source != 'firms'
+                  AND  sb.source != 'firms'
+                ORDER  BY ci.correlation_score DESC
+                LIMIT  100
+            """).fetchall()
+
+            for r in corr_rows:
+                rel   = (float(r["rel_a"]) + float(r["rel_b"])) / 2.0
+                prio  = max(r["prio_a"] or 0, r["prio_b"] or 0)
+                sw    = 1.0   # pinned: patterns are always CRIME_INTEL weight
+                score = round(rel * 0.40 + prio * 0.30 + 0.0 * 0.20 + sw * 0.10, 4)
+                items.append({
+                    "item_type":        "CORRELATION",
+                    "id":               f"corr-{r['id']}",
+                    "feed_score":       score,
+                    "title":            (
+                        f"Pattern: {(r['title_a'] or '')[:50]} "
+                        f"↔ {(r['title_b'] or '')[:50]}"
+                    ),
+                    "summary":          (
+                        f"Correlation score {r['correlation_score']:.3f} · "
+                        f"{r['distance_km']:.0f} km apart · "
+                        f"{r['time_difference_hours']:.1f} h apart"
+                    ),
+                    "correlation_score": r["correlation_score"],
+                    "distance_km":      r["distance_km"],
+                    "time_diff_hours":  r["time_difference_hours"],
+                    "title_a":          r["title_a"] or "",
+                    "title_b":          r["title_b"] or "",
+                    "source":           r["src_a"]   or "",
+                    "stream":           r["stream_a"] or "GLOBAL",
+                    "timestamp":        r["detected_at"],
+                    "is_priority":      prio,
+                    "stream_weight":    sw,
+                })
+        except Exception:
+            pass
+
+        # ── 4. INTELLIGENCE_LEAD items ──────────────────────────────────────
+        # "Top 10%" = influence_score >= 90th-percentile value, computed once
+        # via NTILE(10) window function (SQLite >= 3.25, ships with Win10+).
+        # Fallback: threshold = 0.0 if table is empty or ntile unavailable.
+        # p90_threshold is included in the item payload for UI transparency.
+        try:
+            p90_row = db.execute("""
+                SELECT influence_score AS p90
+                FROM (
+                    SELECT influence_score,
+                           NTILE(10) OVER (ORDER BY influence_score ASC) AS decile
+                    FROM   actor_network_metrics
+                    WHERE  influence_score > 0
+                )
+                WHERE decile = 10
+                ORDER BY influence_score ASC
+                LIMIT  1
+            """).fetchone()
+
+            p90_threshold = float(p90_row["p90"]) if p90_row else 0.0
+
+            lead_rows = db.execute("""
+                SELECT m.actor_id, a.name, a.type,
+                       m.influence_score, m.betweenness, m.pagerank,
+                       m.community_id, m.computed_at
+                FROM   actor_network_metrics m
+                JOIN   actors a ON a.actor_id = m.actor_id
+                WHERE  m.influence_score >= :threshold
+                ORDER  BY m.influence_score DESC
+                LIMIT  50
+            """, {"threshold": p90_threshold}).fetchall()
+
+            for r in lead_rows:
+                inf = float(r["influence_score"] or 0)
+                # Normalise to 0–1 for feed_score: inf / (inf + 1) is a
+                # smooth sigmoid that never exceeds 1 regardless of raw value.
+                rel_proxy = inf / (inf + 1.0) if inf > 0 else 0.0
+                # stream_weight uses PRIORITY tier (0.9) — actor leads are
+                # strategic intelligence, not real-time operational signals.
+                score = round(rel_proxy * 0.40 + 0.0 * 0.30 + 0.0 * 0.20 + 0.9 * 0.10, 4)
+                items.append({
+                    "item_type":       "INTELLIGENCE_LEAD",
+                    "id":              f"lead-{r['actor_id']}",
+                    "actor_id":        r["actor_id"],
+                    "feed_score":      score,
+                    "title":           f"Actor: {r['name']}",
+                    "summary":         (
+                        f"Type: {r['type']} · "
+                        f"Influence {inf:.3f} · "
+                        f"PageRank {(r['pagerank'] or 0):.4f}"
+                    ),
+                    "actor_name":      r["name"],
+                    "actor_type":      r["type"],
+                    "influence_score": inf,
+                    "p90_threshold":   p90_threshold,
+                    "community_id":    r["community_id"],
+                    "computed_at":     r["computed_at"],
+                    "source":          "GRAPH",
+                    "stream":          None,
+                    "timestamp":       r["computed_at"],
+                    "is_priority":     0,
+                })
+        except Exception:
+            pass
+
+        # ── Sort: feed_score DESC, then timestamp DESC as tiebreaker ─────────
+        def _sort_key(item):
+            ts = item.get("timestamp") or "1970-01-01"
+            return (item["feed_score"], ts)
+
+        items.sort(key=_sort_key, reverse=True)
+
+        # ── Paginate ─────────────────────────────────────────────────────────
+        total = len(items)
+        page  = items[offset : offset + limit]
+
+        return jsonify({
+            "total":    total,
+            "offset":   offset,
+            "limit":    limit,
+            "has_more": (offset + limit) < total,
+            "items":    page,
+        })
+
+    @app.route("/api/anomaly/run", methods=["POST"])
+    def api_anomaly_run():
+        """Trigger a full anomaly detection pass (Option B: on-demand)."""
+        from flask import jsonify
+        try:
+            from forage.engines.anomaly_engine import AnomalyEngine
+            result = AnomalyEngine(db_path=DB_PATH).run()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/anomaly/baselines")
+    def api_anomaly_baselines():
+        """Return baseline coverage stats — useful for the admin panel."""
+        from flask import jsonify
+        db = get_db()
+        try:
+            meta = db.execute(
+                "SELECT COUNT(*) AS rows, "
+                "COUNT(DISTINCT source) AS sources, "
+                "COUNT(DISTINCT region_key) AS regions, "
+                "MIN(bucket_date) AS earliest, "
+                "MAX(bucket_date) AS latest "
+                "FROM signal_baselines"
+            ).fetchone()
+            breakdown = db.execute(
+                "SELECT source, COUNT(*) AS rows, "
+                "COUNT(DISTINCT region_key) AS regions "
+                "FROM signal_baselines "
+                "GROUP BY source ORDER BY rows DESC"
+            ).fetchall()
+        except Exception:
+            return jsonify({"rows": 0, "sources": 0, "regions": 0})
+        return jsonify({
+            "rows":     meta["rows"],
+            "sources":  meta["sources"],
+            "regions":  meta["regions"],
+            "earliest": meta["earliest"],
+            "latest":   meta["latest"],
+            "breakdown": [dict(r) for r in breakdown],
+        })
+
+    @app.route("/api/graph/metrics")
+    def api_graph_metrics():
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT m.actor_id, a.name, a.type, m.betweenness, m.eigenvector, "
+                "m.pagerank, m.community_id, m.node_count, m.edge_count, m.computed_at "
+                "FROM actor_network_metrics m JOIN actors a ON a.actor_id=m.actor_id "
+                "ORDER BY m.pagerank DESC"
+            ).fetchall()
+            meta = db.execute(
+                "SELECT MAX(computed_at) AS last_run, COUNT(*) AS actor_count "
+                "FROM actor_network_metrics"
+            ).fetchone()
+        except Exception:
+            rows, meta = [], None
+        return jsonify({
+            "actors": [dict(r) for r in rows], "total": len(rows),
+            "last_computed": meta["last_run"] if meta else None,
+        })
+
+    @app.route("/api/graph/recalculate", methods=["POST"])
+    def api_graph_recalculate():
+        from flask import jsonify
+        try:
+            from forage.engines.graph_engine import GraphEngine
+            result = GraphEngine(db_path=DB_PATH).run()
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/relationships", methods=["GET"])
+    def api_relationships():
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT r.relationship_id, r.subject_actor_id, r.object_actor_id, "
+                "r.relation_type, r.description, r.confidence, r.extraction_method, "
+                "r.source_artifact_id, r.source_event_id, r.created_at, "
+                "a1.name AS subject_name, a2.name AS object_name "
+                "FROM entity_relationships r "
+                "JOIN actors a1 ON a1.actor_id=r.subject_actor_id "
+                "JOIN actors a2 ON a2.actor_id=r.object_actor_id "
+                "ORDER BY r.created_at DESC"
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"relationships": [dict(r) for r in rows], "total": len(rows)})
+
+    @app.route("/api/relationships", methods=["POST"])
+    def api_relationship_create():
+        from flask import jsonify, request as req
+        db   = get_db()
+        data = req.get_json(silent=True) or {}
+        subject_id  = data.get("subject_actor_id")
+        object_id   = data.get("object_actor_id")
+        rel_type    = (data.get("relation_type") or "").strip()
+        description = (data.get("description") or "").strip() or None
+        confidence  = float(data.get("confidence", 1.0))
+        src_art     = data.get("source_artifact_id")
+        src_evt     = data.get("source_event_id")
+        if not subject_id or not object_id or not rel_type:
+            return jsonify({"error": "subject_actor_id, object_actor_id, relation_type required"}), 400
+        if subject_id == object_id:
+            return jsonify({"error": "Subject and object must be different actors"}), 400
+        try:
+            cur = db.execute(
+                "INSERT OR REPLACE INTO entity_relationships "
+                "(subject_actor_id, object_actor_id, relation_type, description, "
+                "confidence, source_artifact_id, source_event_id, extraction_method) "
+                "VALUES (?,?,?,?,?,?,?,?)",
+                (subject_id, object_id, rel_type, description,
+                 confidence, src_art, src_evt, "manual")
+            )
+            db.commit()
+            return jsonify({"relationship_id": cur.lastrowid, "status": "created"})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/relationships/<int:relationship_id>", methods=["DELETE"])
+    def api_relationship_delete(relationship_id: int):
+        from flask import jsonify
+        db = get_db()
+        try:
+            db.execute("DELETE FROM entity_relationships WHERE relationship_id=?",
+                       (relationship_id,))
+            db.commit()
+            return jsonify({"status": "deleted", "relationship_id": relationship_id})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/actors/<int:actor_id>/relationships")
+    def api_actor_relationships(actor_id: int):
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute(
+                "SELECT r.relationship_id, r.subject_actor_id, r.object_actor_id, "
+                "r.relation_type, r.description, r.confidence, r.extraction_method, "
+                "r.created_at, a1.name AS subject_name, a2.name AS object_name "
+                "FROM entity_relationships r "
+                "JOIN actors a1 ON a1.actor_id=r.subject_actor_id "
+                "JOIN actors a2 ON a2.actor_id=r.object_actor_id "
+                "WHERE r.subject_actor_id=? OR r.object_actor_id=? "
+                "ORDER BY r.confidence DESC",
+                (actor_id, actor_id)
+            ).fetchall()
+        except Exception:
+            rows = []
+        return jsonify({"relationships": [dict(r) for r in rows], "total": len(rows)})
 
     # -----------------------------------------------------------------------
     # Route: Event detail — Phase 4: Deep relationships + related events
@@ -1842,6 +3399,52 @@ def create_app() -> Flask:
             ORDER  BY e.date
         """, (actor_id,)).fetchall()
 
+        # Phase 21: network metrics
+        network_metrics = None
+        try:
+            network_metrics = db.execute(
+                "SELECT betweenness, eigenvector, pagerank, community_id, "
+                "node_count, edge_count, computed_at "
+                "FROM actor_network_metrics WHERE actor_id=?",
+                (actor_id,)
+            ).fetchone()
+        except Exception: pass
+        network_top = []
+        try:
+            network_top = db.execute(
+                "SELECT m.actor_id, a.name, a.type, m.pagerank, m.community_id "
+                "FROM actor_network_metrics m "
+                "JOIN actors a ON a.actor_id=m.actor_id "
+                "ORDER BY m.pagerank DESC LIMIT 10"
+            ).fetchall()
+        except Exception: pass
+
+        # Phase 22: named relationships for this actor
+        relationships = []
+        try:
+            relationships = db.execute(
+                "SELECT r.relationship_id, r.subject_actor_id, r.object_actor_id, "
+                "r.relation_type, r.description, r.confidence, r.extraction_method, "
+                "a1.name AS subject_name, a2.name AS object_name "
+                "FROM entity_relationships r "
+                "JOIN actors a1 ON a1.actor_id=r.subject_actor_id "
+                "JOIN actors a2 ON a2.actor_id=r.object_actor_id "
+                "WHERE r.subject_actor_id=? OR r.object_actor_id=? "
+                "ORDER BY r.confidence DESC",
+                (actor_id, actor_id)
+            ).fetchall()
+        except Exception: pass
+
+        # All actors list for the relationship form
+        all_actors = []
+        try:
+            all_actors = db.execute(
+                "SELECT actor_id, name, type FROM actors "
+                "WHERE actor_id != ? ORDER BY name",
+                (actor_id,)
+            ).fetchall()
+        except Exception: pass
+
         return render_template(
             "actor.html",
             actor=actor,
@@ -1849,6 +3452,10 @@ def create_app() -> Flask:
             artifact_footprint=artifact_footprint,
             co_actors=co_actors,
             role_timeline=role_timeline,
+            network_metrics=network_metrics,
+            network_top=network_top,
+            relationships=relationships,
+            all_actors=all_actors,
         )
 
     # -----------------------------------------------------------------------
@@ -2294,7 +3901,7 @@ def create_app() -> Flask:
         }
 
         import datetime
-        generated_at = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+        generated_at = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
         return render_template(
             "briefing.html",
@@ -3140,7 +4747,7 @@ def create_app() -> Flask:
             "dossier.html",
             subject_type="actor",
             subject=actor,
-            generated_at=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            generated_at=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             back_url=url_for("actor_detail", actor_id=actor_id),
             **ctx,
         )
@@ -3157,7 +4764,7 @@ def create_app() -> Flask:
             "dossier.html",
             subject_type="event",
             subject=event,
-            generated_at=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            generated_at=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
             back_url=url_for("event_detail", event_id=event_id),
             **ctx,
         )
@@ -3225,26 +4832,122 @@ SCHEMA_STATEMENTS = [
     """,
     """
     CREATE TABLE IF NOT EXISTS artifacts (
-        artifact_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title       TEXT    NOT NULL,
-        description TEXT,
-        type        TEXT    NOT NULL
-                    CHECK(type IN ('video','photo','document','audio','news')),
-        date        TEXT,
-        location    TEXT,
-        latitude    REAL,
-        longitude   REAL,
-        tags        TEXT,
-        source      TEXT
-                    CHECK(source IN (
-                        'verified','unverified','government','leaked',
-                        'citizen','media'
-                    )),
-        file_path   TEXT,
-        thumbnail   TEXT,
-        event_id    INTEGER
-                    REFERENCES events(event_id) ON DELETE SET NULL,
-        created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+        artifact_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        title             TEXT    NOT NULL,
+        description       TEXT,
+        type              TEXT    NOT NULL
+                          CHECK(type IN ('video','photo','document','audio','news','capture')),
+        date              TEXT,
+        location          TEXT,
+        latitude          REAL,
+        longitude         REAL,
+        tags              TEXT,
+        source            TEXT
+                          CHECK(source IN (
+                              'verified','unverified','government','leaked',
+                              'citizen','media'
+                          )),
+        file_path         TEXT,
+        thumbnail         TEXT,
+        event_id          INTEGER
+                          REFERENCES events(event_id) ON DELETE SET NULL,
+        created_at        TEXT    NOT NULL DEFAULT (datetime('now')),
+        raw_text_cache    TEXT,
+        processing_status TEXT    NOT NULL DEFAULT 'pending'
+                          CHECK(processing_status IN
+                              ('pending','processing','done','failed','skipped')),
+        -- Phase 20: Forensic Artifact Intelligence Layer
+        file_hash_sha256  TEXT,
+        file_hash_md5     TEXT,
+        file_size_bytes   INTEGER,
+        exif_json         TEXT,
+        gps_lat           REAL,
+        gps_lng           REAL,
+        device_make       TEXT,
+        device_model      TEXT,
+        exif_datetime     TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS artifact_duplicates (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        artifact_id     INTEGER NOT NULL REFERENCES artifacts(artifact_id) ON DELETE CASCADE,
+        duplicate_of_id INTEGER NOT NULL REFERENCES artifacts(artifact_id) ON DELETE CASCADE,
+        hash_sha256     TEXT    NOT NULL,
+        detected_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (artifact_id, duplicate_of_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS actor_network_metrics (
+        actor_id        INTEGER PRIMARY KEY REFERENCES actors(actor_id) ON DELETE CASCADE,
+        betweenness     REAL    NOT NULL DEFAULT 0,
+        eigenvector     REAL    NOT NULL DEFAULT 0,
+        pagerank        REAL    NOT NULL DEFAULT 0,
+        community_id    INTEGER,
+        node_count      INTEGER,
+        edge_count      INTEGER,
+        influence_score REAL    NOT NULL DEFAULT 0,
+        computed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS signal_baselines (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        bucket_date  TEXT    NOT NULL,
+        source       TEXT    NOT NULL,
+        region_key   TEXT    NOT NULL,
+        daily_count  INTEGER NOT NULL DEFAULT 0,
+        computed_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (bucket_date, source, region_key)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS sentinel_alerts (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        alert_type       TEXT    NOT NULL,
+        confidence_score REAL    NOT NULL DEFAULT 0.5
+                         CHECK(confidence_score >= 0.0 AND confidence_score <= 1.0),
+        location_lat     REAL,
+        location_lon     REAL,
+        signal_count     INTEGER NOT NULL DEFAULT 1,
+        summary          TEXT    NOT NULL,
+        status           TEXT    NOT NULL DEFAULT 'new'
+                         CHECK(status IN ('new','acknowledged','dismissed')),
+        created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS correlated_incidents (
+        id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+        signal_a              TEXT    NOT NULL
+                              REFERENCES signals(signal_id) ON DELETE CASCADE,
+        signal_b              TEXT    NOT NULL
+                              REFERENCES signals(signal_id) ON DELETE CASCADE,
+        correlation_score     REAL    NOT NULL,
+        distance_km           REAL    NOT NULL,
+        time_difference_hours REAL    NOT NULL,
+        space_score           REAL    NOT NULL,
+        time_score            REAL    NOT NULL,
+        detected_at           TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (signal_a, signal_b)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS entity_relationships (
+        relationship_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        subject_actor_id  INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        object_actor_id   INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        relation_type     TEXT    NOT NULL,
+        description       TEXT,
+        confidence        REAL    NOT NULL DEFAULT 1.0
+                          CHECK(confidence >= 0.0 AND confidence <= 1.0),
+        source_artifact_id INTEGER REFERENCES artifacts(artifact_id) ON DELETE SET NULL,
+        source_event_id    INTEGER REFERENCES events(event_id) ON DELETE SET NULL,
+        extraction_method  TEXT    NOT NULL DEFAULT 'manual'
+                           CHECK(extraction_method IN ('manual','spacy','llm')),
+        created_at        TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (subject_actor_id, object_actor_id, relation_type)
     )
     """,
     """
@@ -3344,19 +5047,36 @@ SCHEMA_STATEMENTS = [
     # below handle existing databases that have the Phase 13 schema already.
     """
     CREATE TABLE IF NOT EXISTS signals (
-        signal_id     TEXT    PRIMARY KEY,
-        source        TEXT    NOT NULL,
-        external_id   TEXT    NOT NULL UNIQUE,
-        title         TEXT    NOT NULL,
-        content       TEXT,
-        lat           REAL,
-        lng           REAL,
-        timestamp     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        status        TEXT    NOT NULL DEFAULT 'raw'
-                      CHECK(status IN ('raw','reviewed','promoted','dismissed')),
-        metadata_json TEXT,
-        cluster_id    TEXT,
-        is_priority   INTEGER NOT NULL DEFAULT 0
+        signal_id          TEXT    PRIMARY KEY,
+        source             TEXT    NOT NULL,
+        external_id        TEXT    NOT NULL UNIQUE,
+        title              TEXT    NOT NULL,
+        content            TEXT,
+        lat                REAL,
+        lng                REAL,
+        timestamp          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        status             TEXT    NOT NULL DEFAULT 'raw'
+                           CHECK(status IN ('raw','reviewed','promoted','dismissed')),
+        metadata_json      TEXT,
+        cluster_id         TEXT,
+        is_priority        INTEGER NOT NULL DEFAULT 0,
+        confidence_score   REAL,
+        source_artifact_id INTEGER REFERENCES artifacts(artifact_id) ON DELETE SET NULL,
+        stream             TEXT    NOT NULL DEFAULT 'GLOBAL'
+                           CHECK(stream IN
+                               ('GLOBAL','CRIME_INTEL','INFRASTRUCTURE','PRIORITY')),
+        relevance_score    REAL    NOT NULL DEFAULT 1.0
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS signal_entities (
+        entity_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        signal_id   TEXT    NOT NULL REFERENCES signals(signal_id) ON DELETE CASCADE,
+        text        TEXT    NOT NULL,
+        label       TEXT    NOT NULL,
+        count       INTEGER NOT NULL DEFAULT 1,
+        created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (signal_id, text, label)
     )
     """,
 ]
@@ -3451,15 +5171,35 @@ def migrate_db():
         # Phase 15.5 — GDELT expansion: source column
         ("signals",        "source",           "TEXT"),
         # Phase 16 — Synthesis: hypothesis + case_type on cases
-        ("cases",          "hypothesis",       "TEXT"),
-        ("cases",          "case_type",        "TEXT DEFAULT 'general'"),
+        ("cases",          "hypothesis",          "TEXT"),
+        ("cases",          "case_type",           "TEXT DEFAULT 'general'"),
+        # Phase 18 — Confidence scoring
+        ("signals",        "confidence_score",    "REAL"),
+        # Phase 19 — Artifact-First Architecture
+        ("artifacts",      "raw_text_cache",      "TEXT"),
+        ("artifacts",      "processing_status",   "TEXT NOT NULL DEFAULT 'pending'"),
+        ("signals",        "source_artifact_id",  "INTEGER"),
+        # Phase 27 — Signal Stream Engine
+        ("signals", "stream",           "TEXT NOT NULL DEFAULT 'GLOBAL'"),
+        # Phase 28 — Signal Decay Engine
+        ("signals", "relevance_score",  "REAL NOT NULL DEFAULT 1.0"),
+        # Phase 20 — Forensic Artifact Intelligence Layer
+        ("artifacts",      "file_hash_sha256",    "TEXT"),
+        ("artifacts",      "file_hash_md5",       "TEXT"),
+        ("artifacts",      "file_size_bytes",     "INTEGER"),
+        ("artifacts",      "exif_json",           "TEXT"),
+        ("artifacts",      "gps_lat",             "REAL"),
+        ("artifacts",      "gps_lng",             "REAL"),
+        ("artifacts",      "device_make",         "TEXT"),
+        ("artifacts",      "device_model",        "TEXT"),
+        ("artifacts",      "exif_datetime",       "TEXT"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):
             print(f"  [migrate] {table} ← adding column: {column} {col_type}")
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
 
-    # Phase 16: ensure case_signals junction table exists on live databases
+    # Phase 16: case_signals junction table
     conn.execute("""
         CREATE TABLE IF NOT EXISTS case_signals (
             case_id     INTEGER NOT NULL REFERENCES cases(case_id)    ON DELETE CASCADE,
@@ -3467,6 +5207,135 @@ def migrate_db():
             note        TEXT,
             pinned_at   TEXT    NOT NULL DEFAULT (datetime('now')),
             PRIMARY KEY (case_id, signal_id)
+        )
+    """)
+
+    # Phase 18: NER entity extraction results
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS signal_entities (
+            entity_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+            signal_id   TEXT    NOT NULL REFERENCES signals(signal_id) ON DELETE CASCADE,
+            text        TEXT    NOT NULL,
+            label       TEXT    NOT NULL,
+            count       INTEGER NOT NULL DEFAULT 1,
+            created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE (signal_id, text, label)
+        )
+    """)
+
+    # Phase 19: backfill processing_status for existing artifacts
+    conn.execute("""
+        UPDATE artifacts SET processing_status='pending'
+        WHERE processing_status IS NULL
+    """)
+
+    # Phase 20: duplicate registry
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS artifact_duplicates (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            artifact_id     INTEGER NOT NULL REFERENCES artifacts(artifact_id) ON DELETE CASCADE,
+            duplicate_of_id INTEGER NOT NULL REFERENCES artifacts(artifact_id) ON DELETE CASCADE,
+            hash_sha256     TEXT    NOT NULL,
+            detected_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE (artifact_id, duplicate_of_id)
+        )
+    """)
+
+    # Phase 21: actor network metrics
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS actor_network_metrics (
+            actor_id        INTEGER PRIMARY KEY REFERENCES actors(actor_id) ON DELETE CASCADE,
+            betweenness     REAL    NOT NULL DEFAULT 0,
+            eigenvector     REAL    NOT NULL DEFAULT 0,
+            pagerank        REAL    NOT NULL DEFAULT 0,
+            community_id    INTEGER,
+            node_count      INTEGER,
+            edge_count      INTEGER,
+            computed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+        )
+    """)
+
+    # Phase 23: correlated incidents
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS correlated_incidents (
+            id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+            signal_a              TEXT    NOT NULL
+                                  REFERENCES signals(signal_id) ON DELETE CASCADE,
+            signal_b              TEXT    NOT NULL
+                                  REFERENCES signals(signal_id) ON DELETE CASCADE,
+            correlation_score     REAL    NOT NULL,
+            distance_km           REAL    NOT NULL,
+            time_difference_hours REAL    NOT NULL,
+            space_score           REAL    NOT NULL,
+            time_score            REAL    NOT NULL,
+            detected_at           TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE (signal_a, signal_b)
+        )
+    """)
+
+    # Phase 22: entity relationships
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS entity_relationships (
+            relationship_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+            subject_actor_id   INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+            object_actor_id    INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+            relation_type      TEXT    NOT NULL,
+            description        TEXT,
+            confidence         REAL    NOT NULL DEFAULT 1.0
+                               CHECK(confidence >= 0.0 AND confidence <= 1.0),
+            source_artifact_id INTEGER REFERENCES artifacts(artifact_id) ON DELETE SET NULL,
+            source_event_id    INTEGER REFERENCES events(event_id) ON DELETE SET NULL,
+            extraction_method  TEXT    NOT NULL DEFAULT 'manual'
+                               CHECK(extraction_method IN ('manual','spacy','llm')),
+            created_at         TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE (subject_actor_id, object_actor_id, relation_type)
+        )
+    """)
+
+    # Phase 24: influence_score column on actor_network_metrics
+    try:
+        existing_cols = {r[1] for r in conn.execute(
+            "PRAGMA table_info(actor_network_metrics)")}
+        if "influence_score" not in existing_cols:
+            conn.execute(
+                "ALTER TABLE actor_network_metrics "
+                "ADD COLUMN influence_score REAL NOT NULL DEFAULT 0"
+            )
+            print("  [migrate] actor_network_metrics <- adding column: influence_score REAL")
+    except Exception:
+        pass
+
+    # Phase 26: Anomaly engine baseline cache
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS signal_baselines (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            bucket_date  TEXT    NOT NULL,
+            source       TEXT    NOT NULL,
+            region_key   TEXT    NOT NULL,
+            daily_count  INTEGER NOT NULL DEFAULT 0,
+            computed_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+            UNIQUE (bucket_date, source, region_key)
+        )
+    """)
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_baselines_lookup "
+        "ON signal_baselines (source, region_key, bucket_date)"
+    )
+
+    # Phase 25: Sentinel alert store
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS sentinel_alerts (
+            id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            alert_type       TEXT    NOT NULL,
+            confidence_score REAL    NOT NULL DEFAULT 0.5
+                             CHECK(confidence_score >= 0.0 AND confidence_score <= 1.0),
+            location_lat     REAL,
+            location_lon     REAL,
+            signal_count     INTEGER NOT NULL DEFAULT 1,
+            summary          TEXT    NOT NULL,
+            status           TEXT    NOT NULL DEFAULT 'new'
+                             CHECK(status IN ('new','acknowledged','dismissed')),
+            created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
         )
     """)
 

@@ -7878,3 +7878,2026 @@ div.vis-network canvas {
 /* Signal stats in analytics bar */
 .analytics-pin-stat--signal { margin-left: var(--sp-2); }
 .analytics-pin-stat__val--signal { color: #818cf8; }
+
+/* ============================================================================
+   Phase 19 — Artifact-First Architecture: Gallery + Processing Status
+   ============================================================================ */
+
+/* ── Gallery filter sidebar links ────────────────────────────────────────── */
+
+.gallery-filter-link {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-2) var(--sp-3);
+  border-radius:   var(--r-sm);
+  font-size:       0.72rem;
+  font-family:     var(--font-mono);
+  color:           var(--text-secondary);
+  text-decoration: none;
+  transition:      background var(--t-fast), color var(--t-fast);
+  gap:             var(--sp-2);
+}
+.gallery-filter-link:hover {
+  background: var(--bg-hover);
+  color:      var(--text-primary);
+}
+.gallery-filter-link--active {
+  background: var(--bg-elevated);
+  color:      var(--accent);
+  border:     1px solid var(--border-dim);
+}
+
+.gallery-filter-count {
+  font-size:  0.62rem;
+  color:      var(--text-ghost);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+/* ── Artifact processing status badge ────────────────────────────────────── */
+
+.artifact-status-badge {
+  display:        inline-block;
+  padding:        1px 6px;
+  border-radius:  var(--r-sm);
+  font-size:      0.58rem;
+  font-family:    var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border:         1px solid transparent;
+  white-space:    nowrap;
+}
+
+.artifact-status-badge--pending    {
+  color: var(--text-dim);
+  border-color: var(--border-dim);
+  background: transparent;
+}
+.artifact-status-badge--processing {
+  color: #818cf8;
+  border-color: rgba(129,140,248,0.30);
+  background: rgba(129,140,248,0.07);
+  animation: artifact-processing-pulse 1.5s ease-in-out infinite;
+}
+.artifact-status-badge--done       {
+  color: #34d399;
+  border-color: rgba(52,211,153,0.30);
+  background: rgba(52,211,153,0.07);
+}
+.artifact-status-badge--failed     {
+  color: #e05c5c;
+  border-color: rgba(224,92,92,0.30);
+  background: rgba(224,92,92,0.07);
+}
+.artifact-status-badge--skipped    {
+  color: var(--text-ghost);
+  border-color: var(--border-subtle);
+  background: transparent;
+}
+
+@keyframes artifact-processing-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+/* ── Gallery card extensions (on top of existing .artifact-card) ─────────── */
+
+.gallery-card__thumb {
+  width:      100%;
+  height:     140px;
+  overflow:   hidden;
+  background: var(--bg-elevated);
+  display:    flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery-card__thumb img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+  transition: transform 0.4s ease;
+}
+.artifact-card:hover .gallery-card__thumb img {
+  transform: scale(1.03);
+}
+.gallery-card__thumb-placeholder {
+  font-size:  2rem;
+  opacity:    0.25;
+  user-select: none;
+}
+
+.gallery-card__tags {
+  display:    flex;
+  flex-wrap:  wrap;
+  gap:        var(--sp-1);
+  margin-top: var(--sp-1);
+}
+
+.gallery-tag {
+  padding:        1px 6px;
+  border-radius:  var(--r-sm);
+  font-size:      0.6rem;
+  font-family:    var(--font-mono);
+  color:          var(--text-dim);
+  background:     var(--bg-elevated);
+  border:         1px solid var(--border-subtle);
+  white-space:    nowrap;
+}
+
+.gallery-card__text-indicator {
+  font-size:  0.6rem;
+  color:      var(--text-dim);
+  margin-top: var(--sp-1);
+}
+.gallery-card__text-indicator--pending {
+  color: var(--text-ghost);
+  font-style: italic;
+}
+
+.gallery-card__footer {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--sp-2);
+  padding:       var(--sp-2) var(--sp-4) var(--sp-3);
+  border-top:    1px solid var(--border-subtle);
+  margin-top:    auto;
+}
+
+/* ── Signal breadcrumb in Signal Monitor rows ────────────────────────────── */
+
+.signal-artifact-crumb {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            4px;
+  font-size:      0.6rem;
+  font-family:    var(--font-mono);
+  color:          var(--text-dim);
+  padding:        1px 5px;
+  border-radius:  var(--r-sm);
+  background:     var(--bg-elevated);
+  border:         1px solid var(--border-subtle);
+  text-decoration: none;
+  transition:     color var(--t-fast), border-color var(--t-fast);
+  white-space:    nowrap;
+  max-width:      160px;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}
+.signal-artifact-crumb:hover {
+  color:         var(--accent);
+  border-color:  var(--accent-muted);
+}
+.signal-artifact-crumb__icon {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+
+/* ============================================================================
+   Phase 17 — System Pulse Graph
+   ============================================================================ */
+
+.pulse-section {
+  margin: var(--sp-8) 0 var(--sp-6);
+}
+.pulse-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+}
+.pulse-section__eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  margin-bottom: var(--sp-1);
+}
+.pulse-section__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.pulse-section__title-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+  animation: pulse-title-dot 2.4s ease-in-out infinite;
+}
+@keyframes pulse-title-dot {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.65); }
+}
+.pulse-section__meta {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.pulse-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5) var(--sp-3);
+  overflow: hidden;
+}
+.pulse-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    transparent 0%, var(--accent) 40%,
+    var(--accent) 60%, transparent 100%);
+  opacity: 0.5;
+}
+.pulse-canvas-wrap {
+  position: relative;
+  height: 160px;
+}
+.pulse-canvas-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.pulse-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-dim);
+  flex-wrap: wrap;
+}
+.pulse-stat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.pulse-stat__val {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+.pulse-stat__val--priority { color: #e05c5c; }
+.pulse-stat__val--usgs     { color: #fb8c6a; }
+.pulse-stat__val--gdelt    { color: #818cf8; }
+.pulse-stat__val--gdacs    { color: #34d399; }
+.pulse-stat__label {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.pulse-stat__sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border-dim);
+  flex-shrink: 0;
+}
+
+.pulse-source-pills {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.pulse-pill {
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.pulse-pill:hover { color: var(--text-secondary); border-color: rgba(255,255,255,0.2); }
+.pulse-pill--active           { color: var(--text-primary); border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); }
+.pulse-pill--usgs.pulse-pill--active  { color: #fb8c6a; background: rgba(251,100,50,0.12);  border-color: rgba(251,100,50,0.4);  }
+.pulse-pill--gdelt.pulse-pill--active { color: #818cf8; background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4); }
+.pulse-pill--gdacs.pulse-pill--active { color: #34d399; background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); }
+.pulse-pill--rss.pulse-pill--active   { color: var(--accent); background: rgba(200,148,58,0.12); border-color: rgba(200,148,58,0.4); }
+.pulse-pill--firms.pulse-pill--active { color: #f87171; background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.40); }
+
+.pulse-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  gap: var(--sp-2);
+  color: var(--text-ghost);
+}
+.pulse-empty__icon  { font-size: 1.6rem; opacity: 0.3; }
+.pulse-empty__label { font-size: 0.7rem; font-family: var(--font-mono); letter-spacing: 0.08em; }
+
+
+/* ============================================================================
+   Phase 18 — Spatial Density, NER & Confidence / Source Badges
+   ============================================================================ */
+
+/* USGS — seismic orange */
+.source-badge--usgs {
+  background: rgba(251, 100, 50, 0.10);
+  color:       #fb8c6a;
+  border:      1px solid rgba(251, 100, 50, 0.30);
+}
+.source-badge--usgs:hover { background: rgba(251, 100, 50, 0.18); }
+
+/* FIRMS — fire red */
+.source-badge--firms {
+  background: rgba(239, 68, 68, 0.10);
+  color:       #f87171;
+  border:      1px solid rgba(239, 68, 68, 0.30);
+}
+.source-badge--firms:hover { background: rgba(239, 68, 68, 0.18); }
+
+/* Confidence score bar */
+.confidence-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  vertical-align: middle;
+}
+.confidence-bar__track {
+  width: 60px;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.confidence-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.confidence-bar__fill--low  { background: #e05c5c; }
+.confidence-bar__fill--mid  { background: var(--accent); }
+.confidence-bar__fill--high { background: #34d399; }
+.confidence-bar__val {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Entity chips */
+.entity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.entity-chip--person { background: rgba(129,140,248,0.10); color: #818cf8; border: 1px solid rgba(129,140,248,0.25); }
+.entity-chip--org    { background: rgba(200,148,58,0.10);  color: var(--accent); border: 1px solid rgba(200,148,58,0.25); }
+.entity-chip--gpe    { background: rgba(52,211,153,0.10);  color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+
+
+/* ============================================================================
+   Phase 20 — Map Optimisation: Supercluster bubble markers
+   ============================================================================
+   .forge-sc-cluster is the divIcon className for Supercluster aggregate
+   bubbles.  Needs the same "no background bleed" reset as .forge-cluster,
+   plus pointer cursor and a hover lift so it's clearly clickable.
+   The bubble itself is drawn as an inline SVG — no extra sizing needed here.
+   ============================================================================ */
+
+.forge-sc-cluster {
+  background:    none   !important;
+  border:        none   !important;
+  cursor:        pointer;
+  transition:    transform 120ms ease, filter 120ms ease;
+}
+
+.forge-sc-cluster:hover {
+  transform: scale(1.12);
+  filter:    brightness(1.25);
+}
+
+/* ============================================================================
+   Phase 21 — Graph Intelligence Engine: Network Position Panel
+   ============================================================================ */
+
+/* ── Panel container ─────────────────────────────────────────────────────── */
+
+.network-panel {
+  background:    var(--bg-surface);
+  border:        1px solid var(--border-dim);
+  border-radius: var(--r-lg);
+  overflow:      hidden;
+  margin-top:    var(--sp-6);
+}
+
+.network-panel__header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-3) var(--sp-5);
+  background:      var(--bg-elevated);
+  border-bottom:   1px solid var(--border-dim);
+}
+
+.network-panel__title {
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--text-dim);
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+}
+
+.network-panel__body {
+  padding:        var(--sp-5);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-5);
+}
+
+/* ── Community badge ─────────────────────────────────────────────────────── */
+
+.community-badge {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        2px 8px;
+  border-radius:  var(--r-full, 999px);
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  border:         1px solid currentColor;
+}
+
+/* 8 community colours cycling through the FORGE palette */
+.community-badge--0 { color: #818cf8; background: rgba(129,140,248,0.10); }
+.community-badge--1 { color: #34d399; background: rgba( 52,211,153,0.10); }
+.community-badge--2 { color: #c8943a; background: rgba(200,148, 58,0.10); }
+.community-badge--3 { color: #e05c5c; background: rgba(224, 92, 92,0.10); }
+.community-badge--4 { color: #a78bfa; background: rgba(167,139,250,0.10); }
+.community-badge--5 { color: #38bdf8; background: rgba( 56,189,248,0.10); }
+.community-badge--6 { color: #fb923c; background: rgba(251,146, 60,0.10); }
+.community-badge--7 { color: #f472b6; background: rgba(244,114,182,0.10); }
+
+/* ── Metric bars ─────────────────────────────────────────────────────────── */
+
+.network-metrics-grid {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-4);
+}
+
+.network-metric { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.network-metric__header {
+  display:         flex;
+  align-items:     baseline;
+  justify-content: space-between;
+}
+
+.network-metric__label {
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-dim);
+}
+
+.network-metric__value {
+  font-size: 0.72rem;
+  color:     var(--text-secondary);
+}
+
+.network-metric__bar-track {
+  height:        4px;
+  background:    var(--bg-elevated);
+  border-radius: 2px;
+  overflow:      hidden;
+}
+
+.network-metric__bar {
+  height:        100%;
+  border-radius: 2px;
+  min-width:     2px;
+  transition:    width 0.4s ease;
+}
+
+.network-metric__bar--pagerank    { background: #818cf8; }
+.network-metric__bar--betweenness { background: #c8943a; }
+.network-metric__bar--eigenvector { background: #34d399; }
+
+.network-metric__desc {
+  font-size:  0.62rem;
+  color:      var(--text-ghost);
+  line-height: 1.4;
+}
+
+/* ── Graph metadata line ─────────────────────────────────────────────────── */
+
+.network-meta {
+  padding-top:   var(--sp-2);
+  border-top:    1px solid var(--border-subtle);
+}
+
+/* ── Rank list ───────────────────────────────────────────────────────────── */
+
+.network-rank__heading {
+  font-size:      0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+  margin-bottom:  var(--sp-2);
+}
+
+.network-rank__list {
+  list-style: none;
+  padding:    0;
+  margin:     0;
+  display:    flex;
+  flex-direction: column;
+  gap:        2px;
+}
+
+.network-rank__item {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  padding:     var(--sp-1) var(--sp-2);
+  border-radius: var(--r-sm);
+  transition:  background 120ms;
+}
+
+.network-rank__item:hover { background: var(--bg-elevated); }
+
+.network-rank__item--current {
+  background:  rgba(200,148,58,0.08) !important;
+  border-left: 2px solid var(--accent);
+  padding-left: calc(var(--sp-2) - 2px);
+}
+
+.network-rank__link {
+  display:     flex;
+  align-items: baseline;
+  gap:         var(--sp-2);
+  flex:        1;
+  min-width:   0;
+  text-decoration: none;
+}
+
+.network-rank__name {
+  font-size:     0.75rem;
+  color:         var(--text-primary);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.network-rank__type {
+  font-size:  0.58rem;
+  color:      var(--text-ghost);
+  flex-shrink: 0;
+}
+
+.network-rank__score {
+  font-size:   0.65rem;
+  color:       var(--text-dim);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── Empty / not-computed state ──────────────────────────────────────────── */
+
+.network-empty {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  padding:         var(--sp-6) var(--sp-4);
+  text-align:      center;
+}
+
+.network-empty__icon {
+  font-size:    2rem;
+  color:        var(--text-ghost);
+  margin-bottom: var(--sp-3);
+  opacity:      0.4;
+}
+
+.network-empty__text {
+  font-size:  0.75rem;
+  color:      var(--text-dim);
+  max-width:  240px;
+  line-height: 1.5;
+}
+
+
+/* ============================================================================
+   Phase 20 — Forensic Artifact Intelligence Layer
+   ============================================================================ */
+
+.forensic-panel {
+  background:    var(--bg-surface);
+  border:        1px solid var(--border-dim);
+  border-radius: var(--r-lg);
+  overflow:      hidden;
+  margin-top:    var(--sp-6);
+}
+
+.forensic-panel__header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-3) var(--sp-5);
+  background:      var(--bg-elevated);
+  border-bottom:   1px solid var(--border-dim);
+}
+
+.forensic-panel__title {
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--text-dim);
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+}
+
+.forensic-panel__title-icon { color: var(--accent); opacity: 0.8; }
+
+.forensic-panel__body {
+  padding:        var(--sp-4) var(--sp-5);
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-4);
+}
+
+.forensic-hash { display: flex; align-items: baseline; gap: var(--sp-3); flex-wrap: wrap; }
+
+.forensic-hash__label {
+  font-family:    var(--font-mono);
+  font-size:      0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-dim);
+  width:          48px;
+  flex-shrink:    0;
+}
+
+.forensic-hash__value {
+  font-family:   var(--font-mono);
+  font-size:     0.68rem;
+  color:         var(--text-secondary);
+  word-break:    break-all;
+  background:    var(--bg-elevated);
+  padding:       2px 6px;
+  border-radius: var(--r-sm);
+  border:        1px solid var(--border-subtle);
+  flex:          1;
+}
+
+.forensic-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap:                   var(--sp-3);
+}
+
+.forensic-field        { display: flex; flex-direction: column; gap: 2px; }
+
+.forensic-field__label {
+  font-family:    var(--font-mono);
+  font-size:      0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+}
+
+.forensic-field__value { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); }
+
+.forensic-gps-badge {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           var(--sp-2);
+  padding:       var(--sp-2) var(--sp-3);
+  background:    rgba(52,211,153,0.08);
+  border:        1px solid rgba(52,211,153,0.25);
+  border-radius: var(--r-md);
+  font-family:   var(--font-mono);
+  font-size:     0.68rem;
+  color:         #34d399;
+}
+
+.forensic-gps-badge__icon { opacity: 0.7; }
+
+.forensic-duplicate-alert {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           var(--sp-3);
+  padding:       var(--sp-3) var(--sp-4);
+  background:    rgba(224,92,92,0.07);
+  border:        1px solid rgba(224,92,92,0.25);
+  border-left:   3px solid #e05c5c;
+  border-radius: var(--r-sm);
+}
+
+.forensic-duplicate-alert__icon   { color: #e05c5c; font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.forensic-duplicate-alert__body   { flex: 1; }
+
+.forensic-duplicate-alert__heading {
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          #e05c5c;
+  margin-bottom:  var(--sp-1);
+}
+
+.forensic-duplicate-alert__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.forensic-duplicate-alert__list a       { font-size: 0.72rem; color: var(--text-secondary); }
+.forensic-duplicate-alert__list a:hover { color: var(--accent); }
+
+.forensic-integrity { display: flex; align-items: center; gap: var(--sp-2); font-family: var(--font-mono); font-size: 0.65rem; }
+
+.forensic-integrity__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.forensic-integrity--verified .forensic-integrity__dot  { background: #34d399; }
+.forensic-integrity--pending  .forensic-integrity__dot  { background: var(--accent); }
+.forensic-integrity--unknown  .forensic-integrity__dot  { background: var(--text-ghost); }
+.forensic-integrity--verified .forensic-integrity__label { color: #34d399; }
+.forensic-integrity--pending  .forensic-integrity__label { color: var(--accent); }
+.forensic-integrity--unknown  .forensic-integrity__label { color: var(--text-ghost); }
+
+/* ============================================================================
+   Phase 22 — Relationship Extraction: Named Relationship Panel
+   ============================================================================ */
+
+.rel-panel { background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: var(--r-lg); overflow: hidden; margin-top: var(--sp-6); }
+
+.rel-panel__header { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-3) var(--sp-5); background: var(--bg-elevated); border-bottom: 1px solid var(--border-dim); }
+
+.rel-panel__title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); display: flex; align-items: center; gap: var(--sp-2); }
+
+.rel-panel__body { padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* ── Relationship list ───────────────────────────────────────────────────── */
+
+.rel-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.rel-item { display: flex; flex-direction: column; gap: var(--sp-1); padding: var(--sp-3) var(--sp-3); background: var(--bg-elevated); border-radius: var(--r-md); border: 1px solid var(--border-subtle); }
+
+.rel-item__main { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; font-size: 0.75rem; }
+
+.rel-item__self  { color: var(--text-dim); font-style: italic; }
+.rel-item__peer  { color: var(--accent); text-decoration: none; }
+.rel-item__peer:hover { text-decoration: underline; }
+.rel-item__arrow { color: var(--text-ghost); font-size: 0.7rem; }
+
+.rel-item__type { font-family: var(--font-mono); font-size: 0.65rem; padding: 1px 6px; border-radius: var(--r-sm); font-weight: 600; }
+.rel-item__type--out { background: rgba(200,148,58,0.12); color: #c8943a; border: 1px solid rgba(200,148,58,0.25); }
+.rel-item__type--in  { background: rgba(129,140,248,0.12); color: #818cf8; border: 1px solid rgba(129,140,248,0.25); }
+
+.rel-item__meta { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+
+.rel-item__method { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 5px; border-radius: var(--r-sm); }
+.rel-item__method--manual { background: rgba(200,148,58,0.08); color: #c8943a; }
+.rel-item__method--spacy  { background: rgba(129,140,248,0.08); color: #818cf8; }
+.rel-item__method--llm    { background: rgba(52,211,153,0.08);  color: #34d399; }
+
+.rel-item__confidence { font-size: 0.6rem; color: var(--text-dim); }
+.rel-item__desc       { font-size: 0.62rem; color: var(--text-ghost); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.rel-item__delete { background: none; border: none; cursor: pointer; color: var(--text-ghost); font-size: 0.6rem; padding: 2px 4px; border-radius: var(--r-sm); margin-left: auto; flex-shrink: 0; }
+.rel-item__delete:hover { color: #e05c5c; background: rgba(224,92,92,0.08); }
+
+.rel-empty { padding: var(--sp-3) 0; }
+
+/* ── Add relationship form ───────────────────────────────────────────────── */
+
+.rel-add { border-top: 1px solid var(--border-dim); padding-top: var(--sp-4); }
+
+.rel-add__heading { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-ghost); margin-bottom: var(--sp-3); }
+
+.rel-add__form { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.rel-add__row { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
+.rel-add__row--secondary { align-items: flex-end; }
+
+.rel-add__field { display: flex; flex-direction: column; gap: var(--sp-1); flex: 1; min-width: 140px; }
+
+.rel-add__field--fixed { flex: 0 0 auto; }
+
+.rel-add__label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-ghost); }
+
+.rel-add__subject { font-size: 0.75rem; color: var(--text-dim); padding: var(--sp-2) var(--sp-3); background: var(--bg-elevated); border-radius: var(--r-sm); border: 1px solid var(--border-subtle); }
+
+.rel-add__input,
+.rel-add__select {
+  background:    var(--bg-elevated);
+  border:        1px solid var(--border-mid);
+  border-radius: var(--r-sm);
+  color:         var(--text-primary);
+  font-family:   var(--font-mono);
+  font-size:     0.72rem;
+  padding:       var(--sp-2) var(--sp-3);
+  width:         100%;
+  outline:       none;
+  transition:    border-color 120ms;
+}
+
+.rel-add__input:focus,
+.rel-add__select:focus { border-color: var(--accent); }
+
+.rel-add__range { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+.rel-add__actions { display: flex; align-items: center; gap: var(--sp-3); }
+
+.rel-add__status { font-size: 0.65rem; color: var(--text-dim); }
+
+/* ============================================================================
+   Phase 23 — Correlation Engine: Correlated Incidents Panel
+   ============================================================================ */
+
+/* ── Section on dashboard ────────────────────────────────────────────────── */
+
+.corr-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-3);
+  margin-top:     var(--sp-3);
+}
+
+.corr-item {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-4);
+  padding:        var(--sp-4) var(--sp-5);
+  background:     var(--bg-surface);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-lg);
+  border-left:    3px solid var(--accent);
+  transition:     border-color 150ms, background 150ms;
+}
+
+.corr-item:hover {
+  background:   var(--bg-elevated);
+  border-color: var(--border-mid);
+  border-left-color: #e05c5c;
+}
+
+/* ── Score ring (left column) ────────────────────────────────────────────── */
+
+.corr-item__score-col {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--sp-1);
+  flex-shrink:    0;
+  width:          52px;
+}
+
+.corr-item__score-ring {
+  position:     relative;
+  width:        44px;
+  height:       44px;
+  border-radius:50%;
+  background:   conic-gradient(
+    #c8943a calc(var(--score, 0) * 1%),
+    var(--bg-elevated) 0%
+  );
+  display:      flex;
+  align-items:  center;
+  justify-content: center;
+}
+
+/* Inner circle cutout */
+.corr-item__score-ring::before {
+  content:       '';
+  position:      absolute;
+  inset:         5px;
+  border-radius: 50%;
+  background:    var(--bg-surface);
+}
+
+.corr-item__score-val {
+  position:   relative;
+  font-size:  0.62rem;
+  font-weight:700;
+  color:      var(--accent);
+  z-index:    1;
+}
+
+.corr-item__score-label {
+  font-size:      0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+}
+
+/* ── Signal pair body ────────────────────────────────────────────────────── */
+
+.corr-item__body {
+  flex:           1;
+  min-width:      0;
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-2);
+}
+
+.corr-item__signals {
+  display:        flex;
+  flex-direction: column;
+  gap:            3px;
+}
+
+.corr-item__signal {
+  display:     flex;
+  align-items: baseline;
+  gap:         var(--sp-2);
+  min-width:   0;
+}
+
+.corr-item__src {
+  font-family:    var(--font-mono);
+  font-size:      0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding:        1px 5px;
+  border-radius:  var(--r-sm);
+  flex-shrink:    0;
+}
+
+/* Source colour coding — reuse signal source palette */
+.corr-item__src--usgs  { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.corr-item__src--firms { background: rgba(239,68,68,0.12);  color: #f87171; }
+.corr-item__src--gdelt { background: rgba(168,85,247,0.12); color: #c084fc; }
+.corr-item__src--GDACS { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+.corr-item__title {
+  font-size:     0.78rem;
+  color:         var(--text-secondary);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.corr-item__connector {
+  font-size:  0.7rem;
+  color:      var(--text-ghost);
+  padding-left: var(--sp-1);
+}
+
+.corr-item__meta {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-wrap:   wrap;
+}
+
+.corr-item__meta-val {
+  font-size: 0.65rem;
+  color:     var(--text-dim);
+}
+
+.corr-item__meta-sep {
+  color:     var(--text-ghost);
+  font-size: 0.6rem;
+}
+
+/* ── Map link (right) ────────────────────────────────────────────────────── */
+
+.corr-item__map-link {
+  flex-shrink:  0;
+  font-size:    1.1rem;
+  color:        var(--text-ghost);
+  text-decoration: none;
+  padding:      var(--sp-2);
+  border-radius:var(--r-md);
+  transition:   color 120ms, background 120ms;
+}
+
+.corr-item__map-link:hover {
+  color:      var(--accent);
+  background: var(--bg-elevated);
+}
+
+/* ── Leaflet tooltip for correlation polylines ───────────────────────────── */
+
+.map-corr-tip-wrap .leaflet-tooltip {
+  background:    var(--bg-elevated, #0c1219) !important;
+  border:        1px solid rgba(200,148,58,0.4) !important;
+  border-radius: 6px !important;
+  box-shadow:    0 4px 16px rgba(0,0,0,0.6) !important;
+  padding:       6px 10px !important;
+  color:         #cfdce8 !important;
+}
+
+.map-corr-tooltip {
+  font-family: 'IBM Plex Mono', monospace;
+  min-width:   180px;
+}
+
+/* ============================================================================
+   Phase 24 — The Centrality Protocol: Intelligence Leads Panel
+   ============================================================================ */
+
+.leads-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-2);
+  margin-top:     var(--sp-3);
+}
+
+.lead-item {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--sp-4);
+  padding:         var(--sp-4) var(--sp-5);
+  background:      var(--bg-surface);
+  border:          1px solid var(--border-dim);
+  border-radius:   var(--r-lg);
+  text-decoration: none;
+  color:           inherit;
+  transition:      background 150ms, border-color 150ms, transform 120ms;
+}
+
+.lead-item:hover {
+  background:    var(--bg-elevated);
+  border-color:  var(--border-mid);
+  transform:     translateX(3px);
+}
+
+/* ── Rank number ─────────────────────────────────────────────────────────── */
+
+.lead-item__rank {
+  font-size:   1.1rem;
+  font-weight: 700;
+  color:       var(--text-ghost);
+  width:       28px;
+  text-align:  right;
+  flex-shrink: 0;
+}
+
+.lead-item:nth-child(1) .lead-item__rank { color: #c8943a; }
+.lead-item:nth-child(2) .lead-item__rank { color: var(--text-dim); }
+.lead-item:nth-child(3) .lead-item__rank { color: #8a6420; }
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.lead-item__body {
+  flex:           1;
+  min-width:      0;
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-2);
+}
+
+.lead-item__top {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-wrap:   wrap;
+}
+
+.lead-item__name {
+  font-size:   0.88rem;
+  font-weight: 600;
+  color:       var(--text-primary);
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.lead-item__type {
+  font-size:      0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+  flex-shrink:    0;
+}
+
+/* ── Heat bar ────────────────────────────────────────────────────────────── */
+
+.lead-item__heat-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-3);
+}
+
+.lead-item__heat-track {
+  flex:          1;
+  height:        5px;
+  background:    var(--bg-elevated);
+  border-radius: 3px;
+  overflow:      hidden;
+}
+
+.lead-item__heat-fill {
+  height:        100%;
+  border-radius: 3px;
+  min-width:     3px;
+  transition:    width 0.5s ease;
+}
+
+.lead-item__score {
+  font-size:   0.68rem;
+  color:       var(--accent);
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+/* ── Sub metrics ─────────────────────────────────────────────────────────── */
+
+.lead-item__sub {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+}
+
+.lead-item__sub-val {
+  font-size: 0.62rem;
+  color:     var(--text-ghost);
+}
+
+.lead-item__sub-sep {
+  color:     var(--text-ghost);
+  font-size: 0.55rem;
+}
+
+/* ── Arrow ───────────────────────────────────────────────────────────────── */
+
+.lead-item__arrow {
+  color:       var(--text-ghost);
+  font-size:   0.8rem;
+  flex-shrink: 0;
+  transition:  color 150ms;
+}
+
+.lead-item:hover .lead-item__arrow { color: var(--accent); }
+
+/* ============================================================================
+   Phase 25 — SENTINEL: Alert Bell, Incident Panel, Sidebar Badge
+   ============================================================================ */
+
+/* ── Sentinel bell (topbar) — sits next to the signal priority bell ──────── */
+
+.topbar__sentinel-bell {
+  position:   relative;
+  display:    inline-flex;
+  align-items: center;
+  justify-content: center;
+  width:      36px;
+  height:     36px;
+  border-radius: var(--r-md);
+  color:      var(--text-ghost);
+  text-decoration: none;
+  transition: color 150ms, background 150ms;
+}
+
+.topbar__sentinel-bell:hover {
+  color:       #e05c5c;
+  background:  rgba(224,92,92,0.08);
+}
+
+.topbar__sentinel-bell--active {
+  color: #e05c5c;
+  animation: sentinel-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sentinel-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.topbar__sentinel-dot {
+  position:      absolute;
+  top:           4px;
+  right:         4px;
+  min-width:     16px;
+  height:        16px;
+  border-radius: 8px;
+  background:    #e05c5c;
+  color:         #fff;
+  font-family:   var(--font-mono);
+  font-size:     0.55rem;
+  font-weight:   700;
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  padding:       0 3px;
+  border:        2px solid var(--bg-topbar, #080d12);
+}
+
+/* ── Sidebar Sentinel badge ─────────────────────────────────────────────── */
+
+.nav-sentinel-badge {
+  margin-left:   auto;
+  background:    rgba(224,92,92,0.18);
+  color:         #e05c5c;
+  font-family:   var(--font-mono);
+  font-size:     0.6rem;
+  font-weight:   700;
+  padding:       1px 6px;
+  border-radius: 999px;
+  border:        1px solid rgba(224,92,92,0.3);
+}
+
+.sentinel-nav-active {
+  color: #e05c5c !important;
+}
+
+/* ── Sentinel alert list ────────────────────────────────────────────────── */
+
+.sentinel-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-4);
+  margin-top:     var(--sp-3);
+}
+
+/* ── Sentinel card ───────────────────────────────────────────────────────── */
+
+.sentinel-card {
+  background:    var(--bg-surface);
+  border:        1px solid var(--border-dim);
+  border-left:   3px solid #e05c5c;
+  border-radius: var(--r-lg);
+  overflow:      hidden;
+}
+
+.sentinel-card--cluster_spike      { border-left-color: #f59e0b; }
+.sentinel-card--actor_match        { border-left-color: #818cf8; }
+.sentinel-card--correlation_escalation { border-left-color: #e05c5c; }
+
+/* ── Card header ─────────────────────────────────────────────────────────── */
+
+.sentinel-card__header {
+  padding:         var(--sp-3) var(--sp-5);
+  background:      var(--bg-elevated);
+  border-bottom:   1px solid var(--border-dim);
+  display:         flex;
+  flex-direction:  column;
+  gap:             var(--sp-2);
+}
+
+.sentinel-card__type-row {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-3);
+  flex-wrap:   wrap;
+}
+
+.sentinel-card__type-badge {
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding:        2px 8px;
+  border-radius:  var(--r-sm);
+  flex-shrink:    0;
+}
+
+.sentinel-card--correlation_escalation .sentinel-card__type-badge {
+  background: rgba(224,92,92,0.12);
+  color:      #e05c5c;
+  border:     1px solid rgba(224,92,92,0.3);
+}
+.sentinel-card--cluster_spike .sentinel-card__type-badge {
+  background: rgba(245,158,11,0.12);
+  color:      #f59e0b;
+  border:     1px solid rgba(245,158,11,0.3);
+}
+.sentinel-card--actor_match .sentinel-card__type-badge {
+  background: rgba(129,140,248,0.12);
+  color:      #818cf8;
+  border:     1px solid rgba(129,140,248,0.3);
+}
+
+.sentinel-card__disclaimer {
+  font-size:      0.58rem;
+  letter-spacing: 0.1em;
+  color:          var(--text-ghost);
+  text-transform: uppercase;
+}
+
+.sentinel-card__meta-row {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-4);
+  flex-wrap:   wrap;
+}
+
+/* ── Confidence bar ─────────────────────────────────────────────────────── */
+
+.sentinel-card__conf-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex:        1;
+  min-width:   160px;
+}
+
+.sentinel-card__conf-track {
+  flex:          1;
+  height:        4px;
+  background:    var(--bg-surface);
+  border-radius: 2px;
+  overflow:      hidden;
+}
+
+.sentinel-card__conf-fill {
+  height:           100%;
+  border-radius:    2px;
+  background:       linear-gradient(90deg, #818cf8, #c8943a, #e05c5c);
+  transition:       width 0.4s ease;
+}
+
+.sentinel-card__conf-val {
+  font-size:   0.62rem;
+  color:       var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.sentinel-card__signals,
+.sentinel-card__time {
+  font-size:   0.62rem;
+  color:       var(--text-ghost);
+  flex-shrink: 0;
+}
+
+/* ── Card body ───────────────────────────────────────────────────────────── */
+
+.sentinel-card__body {
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.sentinel-card__summary {
+  font-size:   0.78rem;
+  color:       var(--text-secondary);
+  line-height: 1.6;
+  margin:      0;
+}
+
+.sentinel-card__coords {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  margin-top:  var(--sp-1);
+}
+
+/* ── Card actions ────────────────────────────────────────────────────────── */
+
+.sentinel-card__actions {
+  display:      flex;
+  align-items:  center;
+  gap:          var(--sp-3);
+  padding:      var(--sp-3) var(--sp-5);
+  background:   var(--bg-elevated);
+  border-top:   1px solid var(--border-dim);
+  flex-wrap:    wrap;
+}
+
+/* ============================================================================
+   Phase 26 — Anomaly Engine: statistical_anomaly alert variant
+   ============================================================================ */
+
+/* Left-border colour for statistical anomaly cards in Sentinel panel */
+.sentinel-card--statistical_anomaly {
+  border-left-color: #34d399;   /* emerald — distinct from red/amber/indigo */
+}
+
+.sentinel-card--statistical_anomaly .sentinel-card__type-badge {
+  background: rgba(52,211,153,0.12);
+  color:      #34d399;
+  border:     1px solid rgba(52,211,153,0.3);
+}
+
+/* ============================================================================
+   Phase 27 — Signal Stream Engine: Stream Badges + Stream Summary Cards
+   ============================================================================ */
+
+/* ── Stream badge — inline tag on signal rows ────────────────────────────── */
+
+.stream-badge {
+  display:        inline-flex;
+  align-items:    center;
+  font-family:    var(--font-mono);
+  font-size:      0.58rem;
+  font-weight:    700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding:        2px 7px;
+  border-radius:  var(--r-sm);
+  flex-shrink:    0;
+  border:         1px solid currentColor;
+}
+
+.stream-badge--GLOBAL        { color: var(--text-ghost);  background: rgba(255,255,255,0.04); }
+.stream-badge--CRIME_INTEL   { color: #e05c5c;            background: rgba(224,92,92,0.10);   }
+.stream-badge--INFRASTRUCTURE{ color: #f59e0b;            background: rgba(245,158,11,0.10);  }
+.stream-badge--PRIORITY      { color: #818cf8;            background: rgba(129,140,248,0.10); }
+
+/* ── Stream filter pills — signals monitor header ────────────────────────── */
+
+.stream-pills {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  flex-wrap:   wrap;
+}
+
+.stream-pill {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             var(--sp-1);
+  font-family:     var(--font-mono);
+  font-size:       0.62rem;
+  font-weight:     600;
+  letter-spacing:  0.06em;
+  text-transform:  uppercase;
+  padding:         var(--sp-1) var(--sp-3);
+  border-radius:   999px;
+  border:          1px solid var(--border-mid);
+  color:           var(--text-dim);
+  background:      transparent;
+  text-decoration: none;
+  cursor:          pointer;
+  transition:      background 120ms, color 120ms, border-color 120ms;
+}
+
+.stream-pill:hover,
+.stream-pill--active {
+  background:   var(--bg-elevated);
+  color:        var(--text-primary);
+  border-color: var(--border-mid);
+}
+
+.stream-pill--active-CRIME_INTEL    { color: #e05c5c; border-color: rgba(224,92,92,0.5);    background: rgba(224,92,92,0.08);    }
+.stream-pill--active-INFRASTRUCTURE { color: #f59e0b; border-color: rgba(245,158,11,0.5);   background: rgba(245,158,11,0.08);   }
+.stream-pill--active-PRIORITY       { color: #818cf8; border-color: rgba(129,140,248,0.5);  background: rgba(129,140,248,0.08);  }
+.stream-pill--active-GLOBAL         { color: var(--text-secondary); border-color: var(--border-mid); }
+
+.stream-pill__count {
+  font-size:    0.55rem;
+  opacity:      0.7;
+  margin-left:  2px;
+}
+
+/* ── Stream summary cards — dashboard widget ─────────────────────────────── */
+
+.stream-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap:                   var(--sp-3);
+  margin-top:            var(--sp-3);
+}
+
+.stream-card {
+  display:        flex;
+  flex-direction: column;
+  align-items:    flex-start;
+  gap:            var(--sp-1);
+  padding:        var(--sp-4) var(--sp-5);
+  background:     var(--bg-surface);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-lg);
+  border-top:     3px solid var(--border-dim);
+  transition:     background 150ms, border-color 150ms, transform 120ms;
+}
+
+.stream-card:hover {
+  background:  var(--bg-elevated);
+  transform:   translateY(-2px);
+}
+
+.stream-card--CRIME_INTEL    { border-top-color: #e05c5c; }
+.stream-card--INFRASTRUCTURE { border-top-color: #f59e0b; }
+.stream-card--PRIORITY       { border-top-color: #818cf8; }
+.stream-card--GLOBAL         { border-top-color: var(--text-ghost); }
+
+.stream-card__name {
+  font-size:      0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--text-ghost);
+}
+
+.stream-card--CRIME_INTEL    .stream-card__name { color: #e05c5c; }
+.stream-card--INFRASTRUCTURE .stream-card__name { color: #f59e0b; }
+.stream-card--PRIORITY       .stream-card__name { color: #818cf8; }
+
+.stream-card__count {
+  font-size:   1.8rem;
+  font-weight: 700;
+  color:       var(--text-primary);
+  line-height: 1;
+}
+
+.stream-card__label {
+  font-size: 0.65rem;
+  color:     var(--text-dim);
+}
+
+/* ============================================================================
+   Phase 28 — Signal Decay Engine: Relevance Bar
+   ============================================================================ */
+
+/* ── Relevance bar — signal monitor rows ─────────────────────────────────── */
+
+.rel-bar {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  min-width:   64px;
+}
+
+.rel-bar__track {
+  flex:          1;
+  height:        4px;
+  background:    var(--bg-elevated);
+  border-radius: 2px;
+  overflow:      hidden;
+  min-width:     36px;
+}
+
+.rel-bar__fill {
+  height:        100%;
+  border-radius: 2px;
+  transition:    width 0.4s ease;
+  min-width:     2px;
+}
+
+/* Three decay states match the engine thresholds */
+.rel-bar__fill--fresh  { background: #34d399; }   /* ≥ 0.60 — emerald */
+.rel-bar__fill--fading { background: #c8943a; }   /* 0.20–0.59 — amber */
+.rel-bar__fill--stale  { background: #4a6070; }   /* < 0.20 — grey */
+
+.rel-bar__val {
+  font-size:   0.58rem;
+  color:       var(--text-ghost);
+  flex-shrink: 0;
+  width:       28px;
+  text-align:  right;
+}
+/* ============================================================================
+   Phase 29 — Analyst Intelligence Feed
+   ============================================================================ */
+
+/* ── Feed CTA banner (index.html) ────────────────────────────────────────── */
+
+.feed-cta {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--sp-4);
+  margin-bottom:   var(--sp-6);
+  padding:         var(--sp-4) var(--sp-5);
+  background:      linear-gradient(
+                     135deg,
+                     rgba(200,148,58,0.06) 0%,
+                     rgba(129,140,248,0.04) 100%
+                   );
+  border:          1px solid rgba(200,148,58,0.18);
+  border-left:     3px solid var(--accent);
+  border-radius:   var(--r-md);
+}
+
+.feed-cta__left {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-4);
+}
+
+.feed-cta__icon {
+  font-size:   1.6rem;
+  color:       var(--accent);
+  opacity:     0.8;
+  flex-shrink: 0;
+}
+
+.feed-cta__title {
+  font-family:    var(--font-display);
+  font-weight:    700;
+  font-size:      0.95rem;
+  color:          var(--text-primary);
+  letter-spacing: 0.02em;
+  margin-bottom:  2px;
+}
+
+.feed-cta__sub {
+  font-size:   0.72rem;
+  color:       var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* ── Feed page layout ────────────────────────────────────────────────────── */
+
+.feed-header {
+  display:         flex;
+  align-items:     flex-start;
+  justify-content: space-between;
+  gap:             var(--sp-4);
+  margin-bottom:   var(--sp-6);
+  padding-bottom:  var(--sp-6);
+  border-bottom:   1px solid var(--border-dim);
+  position:        relative;
+  flex-wrap:       wrap;
+}
+
+.feed-header::after {
+  content:    '';
+  position:   absolute;
+  bottom:     -1px;
+  left:       0;
+  width:      48px;
+  height:     2px;
+  background: var(--accent);
+}
+
+.feed-header__meta {
+  font-family:    var(--font-mono);
+  font-size:      0.62rem;
+  color:          var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-top:     var(--sp-1);
+}
+
+.feed-controls {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-3);
+  flex-wrap:   wrap;
+}
+
+/* Stream filter pills */
+.feed-pills {
+  display: flex;
+  gap:     var(--sp-1);
+}
+
+.feed-pill {
+  padding:        var(--sp-1) var(--sp-3);
+  background:     var(--bg-elevated);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-sm);
+  font-family:    var(--font-mono);
+  font-size:      0.65rem;
+  letter-spacing: 0.06em;
+  color:          var(--text-dim);
+  cursor:         pointer;
+  transition:     all var(--t-fast);
+  text-transform: uppercase;
+}
+.feed-pill:hover {
+  color:           var(--text-secondary);
+  border-color:    var(--border-mid);
+}
+.feed-pill--active {
+  color:        var(--accent);
+  border-color: var(--accent-muted);
+  background:   var(--accent-glow);
+}
+
+/* Live indicator dot */
+.feed-live {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  font-family: var(--font-mono);
+  font-size:   0.6rem;
+  color:       var(--text-dim);
+}
+
+.feed-live__dot {
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    #34d399;
+  animation:     feed-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes feed-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(0.7); }
+}
+
+/* ── Feed timeline container ──────────────────────────────────────────────── */
+
+.feed-timeline {
+  position: relative;
+}
+
+/* Vertical spine */
+.feed-timeline::before {
+  content:    '';
+  position:   absolute;
+  top:        0;
+  bottom:     0;
+  left:       9px;
+  width:      1px;
+  background: var(--border-dim);
+}
+
+/* ── Individual feed item (row = node + card) ────────────────────────────── */
+
+.feed-item {
+  display:       flex;
+  gap:           var(--sp-4);
+  margin-bottom: var(--sp-4);
+  position:      relative;
+}
+
+.feed-item__node-col {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  flex-shrink:    0;
+  width:          20px;
+  padding-top:    var(--sp-1);
+  z-index:        1;
+}
+
+.feed-item__node {
+  width:         18px;
+  height:        18px;
+  border-radius: 50%;
+  border:        2px solid var(--border-mid);
+  background:    var(--bg-surface);
+  flex-shrink:   0;
+}
+
+/* Type-specific node colours */
+.feed-item--SENTINEL_ALERT  .feed-item__node { border-color: #e05c5c; background: rgba(224,92,92,0.2);  }
+.feed-item--SIGNAL          .feed-item__node { border-color: #818cf8; background: rgba(129,140,248,0.15); }
+.feed-item--SIGNAL.feed-item--priority .feed-item__node { border-color: #e05c5c; background: rgba(224,92,92,0.2); }
+.feed-item--CORRELATION     .feed-item__node { border-color: #34d399; background: rgba(52,211,153,0.15); }
+.feed-item--INTELLIGENCE_LEAD .feed-item__node { border-color: var(--accent); background: var(--accent-glow); }
+
+/* ── Feed card ───────────────────────────────────────────────────────────── */
+
+.feed-card {
+  flex:          1;
+  padding:       var(--sp-3) var(--sp-4);
+  background:    var(--bg-surface);
+  border:        1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  transition:    border-color var(--t-fast), background var(--t-fast);
+  min-width:     0;
+}
+.feed-card:hover {
+  border-color: var(--border-mid);
+  background:   var(--bg-elevated);
+}
+
+/* Type-specific left accent stripe */
+.feed-card--SENTINEL_ALERT  { border-left: 3px solid rgba(224,92,92,0.7);   background: rgba(224,92,92,0.025); }
+.feed-card--SIGNAL          { border-left: 3px solid rgba(129,140,248,0.4); }
+.feed-card--SIGNAL.feed-card--priority { border-left: 3px solid rgba(224,92,92,0.5); background: rgba(224,92,92,0.02); }
+.feed-card--CORRELATION     { border-left: 3px solid rgba(52,211,153,0.4);  }
+.feed-card--INTELLIGENCE_LEAD { border-left: 3px solid rgba(200,148,58,0.4); }
+
+/* Card header row */
+.feed-card__header {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--sp-2);
+  flex-wrap:       wrap;
+  margin-bottom:   var(--sp-2);
+}
+
+/* Type badge */
+.feed-type-badge {
+  font-family:    var(--font-mono);
+  font-size:      0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding:        1px 6px;
+  border-radius:  var(--r-sm);
+  flex-shrink:    0;
+}
+.feed-type-badge--SENTINEL_ALERT  { background: rgba(224,92,92,0.15);   color: #e05c5c;  border: 1px solid rgba(224,92,92,0.3); }
+.feed-type-badge--SIGNAL          { background: rgba(129,140,248,0.12); color: #818cf8;  border: 1px solid rgba(129,140,248,0.25); }
+.feed-type-badge--SIGNAL-priority { background: rgba(224,92,92,0.12);   color: #e05c5c;  border: 1px solid rgba(224,92,92,0.3); }
+.feed-type-badge--CORRELATION     { background: rgba(52,211,153,0.12);  color: #34d399;  border: 1px solid rgba(52,211,153,0.25); }
+.feed-type-badge--INTELLIGENCE_LEAD { background: rgba(200,148,58,0.12); color: var(--accent); border: 1px solid rgba(200,148,58,0.25); }
+
+/* Stream badge */
+.feed-stream-badge {
+  font-family:    var(--font-mono);
+  font-size:      0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding:        1px 6px;
+  border-radius:  var(--r-sm);
+  border:         1px solid var(--border-dim);
+  color:          var(--text-dim);
+}
+.feed-stream-badge--CRIME_INTEL    { color: #f87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.06); }
+.feed-stream-badge--INFRASTRUCTURE { color: #fbbf24; border-color: rgba(251,191,36,0.3);  background: rgba(251,191,36,0.06);  }
+.feed-stream-badge--PRIORITY       { color: #818cf8; border-color: rgba(129,140,248,0.3); background: rgba(129,140,248,0.06); }
+.feed-stream-badge--GLOBAL         { color: var(--text-dim); }
+
+/* Timestamp */
+.feed-card__ts {
+  font-family: var(--font-mono);
+  font-size:   0.6rem;
+  color:       var(--text-ghost);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Score chip */
+.feed-score-chip {
+  font-family:    var(--font-mono);
+  font-size:      0.58rem;
+  color:          var(--text-ghost);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-sm);
+  padding:        1px 5px;
+  flex-shrink:    0;
+}
+
+/* Title */
+.feed-card__title {
+  font-size:     0.88rem;
+  font-weight:   500;
+  color:         var(--text-primary);
+  margin-bottom: var(--sp-1);
+  line-height:   1.4;
+  word-break:    break-word;
+}
+.feed-card__title a {
+  color:           var(--text-primary);
+  text-decoration: none;
+}
+.feed-card__title a:hover { color: var(--accent-bright); }
+
+/* Summary / body text */
+.feed-card__summary {
+  font-size:   0.76rem;
+  color:       var(--text-secondary);
+  line-height: 1.55;
+  margin:      0 0 var(--sp-2);
+}
+
+/* Sentinel-specific confidence bar */
+.feed-conf-bar {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  margin-top:  var(--sp-2);
+}
+.feed-conf-bar__track {
+  flex:          1;
+  height:        3px;
+  background:    var(--bg-elevated);
+  border-radius: 2px;
+  overflow:      hidden;
+  max-width:     120px;
+}
+.feed-conf-bar__fill {
+  height:        100%;
+  background:    #e05c5c;
+  border-radius: 2px;
+}
+.feed-conf-bar__label {
+  font-size:   0.58rem;
+  color:       var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+/* Correlation score pill */
+.feed-corr-score {
+  display:        inline-block;
+  font-family:    var(--font-mono);
+  font-size:      0.62rem;
+  color:          #34d399;
+  background:     rgba(52,211,153,0.08);
+  border:         1px solid rgba(52,211,153,0.2);
+  border-radius:  var(--r-sm);
+  padding:        1px 7px;
+  margin-right:   var(--sp-2);
+}
+
+/* Sentinel actions inside feed card */
+.feed-card__actions {
+  display:     flex;
+  gap:         var(--sp-2);
+  margin-top:  var(--sp-3);
+  padding-top: var(--sp-2);
+  border-top:  1px solid var(--border-dim);
+}
+
+/* ── Relevance bar mini (reused in feed card footer) ─────────────────────── */
+.feed-rel-bar {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+}
+.feed-rel-bar__track {
+  width:         52px;
+  height:        3px;
+  background:    var(--bg-elevated);
+  border-radius: 2px;
+  overflow:      hidden;
+}
+.feed-rel-bar__fill {
+  height:        100%;
+  border-radius: 2px;
+}
+.feed-rel-bar__fill--fresh  { background: #34d399; }
+.feed-rel-bar__fill--fading { background: #c8943a; }
+.feed-rel-bar__fill--stale  { background: #4a6070; }
+.feed-rel-bar__val {
+  font-size:   0.57rem;
+  color:       var(--text-ghost);
+  font-family: var(--font-mono);
+  min-width:   24px;
+}
+
+/* ── Load more spinner ────────────────────────────────────────────────────── */
+
+.feed-load-more {
+  text-align: center;
+  padding:    var(--sp-8) 0 var(--sp-4);
+}
+
+.feed-spinner {
+  display:       inline-block;
+  width:         18px;
+  height:        18px;
+  border:        2px solid var(--border-dim);
+  border-top:    2px solid var(--accent);
+  border-radius: 50%;
+  animation:     feed-spin 0.8s linear infinite;
+}
+
+@keyframes feed-spin {
+  to { transform: rotate(360deg); }
+}
+
+.feed-empty {
+  padding:    var(--sp-16) var(--sp-6);
+  text-align: center;
+  color:      var(--text-ghost);
+  font-family: var(--font-mono);
+  font-size:  0.72rem;
+}
+
+/* ── Feed status bar (above timeline) ────────────────────────────────────── */
+
+.feed-status-bar {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--sp-4);
+  margin-bottom:   var(--sp-5);
+  padding:         var(--sp-2) var(--sp-4);
+  background:      var(--bg-elevated);
+  border:          1px solid var(--border-dim);
+  border-radius:   var(--r-sm);
+  font-family:     var(--font-mono);
+  font-size:       0.62rem;
+  flex-wrap:       wrap;
+}
+
+.feed-status-bar__stat {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-1);
+  color:       var(--text-dim);
+}
+
+.feed-status-bar__val {
+  color: var(--text-secondary);
+}
+
+.feed-status-bar__sep {
+  width:      1px;
+  height:     12px;
+  background: var(--border-dim);
+}

@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+{% block title %}Intelligence Feed{% endblock %}
+
+{% block content %}
+
+{# ── Page Header ─────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">FORAGE · PHASE 29</div>
+  <h1 class="page-header__title">
+    Analyst Intelligence Feed
+  </h1>
+  <p class="page-header__sub">
+    Unified ranked timeline of signals, sentinel alerts, correlations, and actor
+    intelligence leads — ordered by operational relevance.
+  </p>
+</div>
+
+{# ── Feed Header Controls ─────────────────────────────────────────────────── #}
+<div class="feed-header">
+  <div>
+    <div class="feed-live" id="js-feed-live">
+      <span class="feed-live__dot"></span>
+      <span class="mono" id="js-feed-count">Loading…</span>
+    </div>
+    <div class="feed-header__meta" id="js-feed-meta">— last computed at load —</div>
+  </div>
+
+  <div class="feed-controls">
+    <div class="feed-pills" id="js-stream-pills">
+      <button class="feed-pill feed-pill--active" data-stream="">All Streams</button>
+      <button class="feed-pill" data-stream="CRIME_INTEL">Crime Intel</button>
+      <button class="feed-pill" data-stream="INFRASTRUCTURE">Infrastructure</button>
+      <button class="feed-pill" data-stream="PRIORITY">Priority</button>
+      <button class="feed-pill" data-stream="GLOBAL">Global</button>
+    </div>
+  </div>
+</div>
+
+{# ── Status Bar ───────────────────────────────────────────────────────────── #}
+<div class="feed-status-bar" id="js-status-bar" style="display:none;">
+  <span class="feed-status-bar__stat">
+    <span>Total</span>
+    <span class="feed-status-bar__val" id="js-sb-total">—</span>
+  </span>
+  <span class="feed-status-bar__sep"></span>
+  <span class="feed-status-bar__stat">
+    <span style="color:#e05c5c;">⚠ Alerts</span>
+    <span class="feed-status-bar__val" id="js-sb-alerts">—</span>
+  </span>
+  <span class="feed-status-bar__sep"></span>
+  <span class="feed-status-bar__stat">
+    <span style="color:#818cf8;">Signals</span>
+    <span class="feed-status-bar__val" id="js-sb-signals">—</span>
+  </span>
+  <span class="feed-status-bar__sep"></span>
+  <span class="feed-status-bar__stat">
+    <span style="color:#34d399;">Correlations</span>
+    <span class="feed-status-bar__val" id="js-sb-corr">—</span>
+  </span>
+  <span class="feed-status-bar__sep"></span>
+  <span class="feed-status-bar__stat">
+    <span style="color:var(--accent);">Leads</span>
+    <span class="feed-status-bar__val" id="js-sb-leads">—</span>
+  </span>
+</div>
+
+{# ── Feed Timeline ────────────────────────────────────────────────────────── #}
+<div class="feed-timeline" id="js-feed-timeline">
+  <div class="feed-empty" id="js-feed-empty" style="display:none;">
+    <div style="font-size:2rem;opacity:0.2;margin-bottom:var(--sp-3);">⊜</div>
+    No intelligence items match the current filter.
+  </div>
+</div>
+
+{# ── Infinite scroll sentinel ─────────────────────────────────────────────── #}
+<div class="feed-load-more" id="js-load-more" style="display:none;">
+  <span class="feed-spinner"></span>
+</div>
+
+<div id="js-feed-end" style="height:1px;"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  var state = {
+    stream:   '',
+    offset:   0,
+    limit:    30,
+    loading:  false,
+    hasMore:  true,
+    counts:   { total: 0, alerts: 0, signals: 0, corr: 0, leads: 0 },
+  };
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  var timeline  = document.getElementById('js-feed-timeline');
+  var loadMore  = document.getElementById('js-load-more');
+  var feedEmpty = document.getElementById('js-feed-empty');
+  var countEl   = document.getElementById('js-feed-count');
+  var metaEl    = document.getElementById('js-feed-meta');
+  var statusBar = document.getElementById('js-status-bar');
+
+  // ── Fetch a page of feed items ─────────────────────────────────────────────
+  function fetchPage(reset) {
+    if (state.loading) return;
+    if (!reset && !state.hasMore) return;
+    state.loading = true;
+    loadMore.style.display = 'block';
+
+    var params = '?limit=' + state.limit + '&offset=' + state.offset;
+    if (state.stream) params += '&stream=' + encodeURIComponent(state.stream);
+
+    fetch('/api/feed' + params)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        state.loading = false;
+        state.hasMore = data.has_more;
+        state.offset += data.items.length;
+
+        if (reset) {
+          timeline.innerHTML = '';
+          // reset counts
+          state.counts = { total: data.total, alerts: 0, signals: 0, corr: 0, leads: 0 };
+          // first page counts
+          data.items.forEach(function (item) { tally(item.item_type); });
+        } else {
+          data.items.forEach(function (item) { tally(item.item_type); });
+        }
+
+        // Update status bar totals
+        state.counts.total = data.total;
+        updateStatusBar();
+
+        if (data.total === 0) {
+          feedEmpty.style.display = 'block';
+          loadMore.style.display  = 'none';
+          countEl.textContent     = '0 items';
+          return;
+        }
+        feedEmpty.style.display = 'none';
+        countEl.textContent     = data.total + ' item' + (data.total !== 1 ? 's' : '');
+        metaEl.textContent      = '— loaded ' + state.offset + ' of ' + data.total;
+        statusBar.style.display = 'flex';
+
+        data.items.forEach(function (item) {
+          timeline.appendChild(buildCard(item));
+        });
+
+        loadMore.style.display = state.hasMore ? 'none' : 'none';
+        if (!state.hasMore) {
+          loadMore.style.display = 'none';
+        }
+      })
+      .catch(function () {
+        state.loading = false;
+        loadMore.style.display = 'none';
+        countEl.textContent = 'Error loading feed.';
+      });
+  }
+
+  function tally(type) {
+    if (type === 'SENTINEL_ALERT')    state.counts.alerts++;
+    else if (type === 'SIGNAL')       state.counts.signals++;
+    else if (type === 'CORRELATION')  state.counts.corr++;
+    else if (type === 'INTELLIGENCE_LEAD') state.counts.leads++;
+  }
+
+  function updateStatusBar() {
+    document.getElementById('js-sb-total').textContent   = state.counts.total;
+    document.getElementById('js-sb-alerts').textContent  = state.counts.alerts;
+    document.getElementById('js-sb-signals').textContent = state.counts.signals;
+    document.getElementById('js-sb-corr').textContent    = state.counts.corr;
+    document.getElementById('js-sb-leads').textContent   = state.counts.leads;
+  }
+
+  // ── Build a single feed card element ──────────────────────────────────────
+  function buildCard(item) {
+    var wrap  = document.createElement('div');
+    var type  = item.item_type;
+    var isPri = item.is_priority ? 'feed-item--priority' : '';
+    wrap.className = 'feed-item feed-item--' + type + ' ' + isPri;
+
+    // ── Timeline node ───────────────────────────────────────────────────────
+    var nodeCol = document.createElement('div');
+    nodeCol.className = 'feed-item__node-col';
+    var node = document.createElement('div');
+    node.className = 'feed-item__node';
+    nodeCol.appendChild(node);
+    wrap.appendChild(nodeCol);
+
+    // ── Card ─────────────────────────────────────────────────────────────────
+    var card = document.createElement('div');
+    var cardClass = 'feed-card feed-card--' + type;
+    if (isPri) cardClass += ' feed-card--priority';
+    card.className = cardClass;
+
+    // Header row
+    var header = document.createElement('div');
+    header.className = 'feed-card__header';
+
+    // Type badge
+    var typeBadge = document.createElement('span');
+    typeBadge.className = 'feed-type-badge feed-type-badge--' + (isPri && type === 'SIGNAL' ? 'SIGNAL-priority' : type);
+    var typeLabels = {
+      SENTINEL_ALERT:    '⚠ Sentinel Alert',
+      SIGNAL:            isPri ? '⚑ Priority Signal' : '◎ Signal',
+      CORRELATION:       '⟷ Correlation',
+      INTELLIGENCE_LEAD: '◉ Actor Lead',
+    };
+    typeBadge.textContent = typeLabels[type] || type;
+    header.appendChild(typeBadge);
+
+    // Stream badge (if applicable)
+    if (item.stream) {
+      var sb = document.createElement('span');
+      sb.className = 'feed-stream-badge feed-stream-badge--' + item.stream;
+      sb.textContent = item.stream.replace('_', ' ');
+      header.appendChild(sb);
+    }
+
+    // Sentinel flag indicator
+    if (item.sentinel_flag && item.sentinel_flag > 0) {
+      var sfEl = document.createElement('span');
+      sfEl.className = 'feed-type-badge feed-type-badge--SENTINEL_ALERT';
+      sfEl.style.fontSize = '0.5rem';
+      sfEl.textContent = '⊕ SENTINEL';
+      header.appendChild(sfEl);
+    }
+
+    // Source badge
+    if (item.source && item.source !== 'SENTINEL' && item.source !== 'GRAPH') {
+      var srcEl = document.createElement('span');
+      srcEl.className = 'mono';
+      srcEl.style.cssText = 'font-size:0.58rem;color:var(--text-ghost);border:1px solid var(--border-dim);padding:1px 5px;border-radius:2px;';
+      srcEl.textContent = item.source.toUpperCase();
+      header.appendChild(srcEl);
+    }
+
+    // Score chip
+    var scoreChip = document.createElement('span');
+    scoreChip.className = 'feed-score-chip';
+    scoreChip.title = 'Feed score (relevance×0.4 + priority×0.3 + sentinel×0.2 + stream×0.1)';
+    scoreChip.textContent = 'S:' + (item.feed_score || 0).toFixed(3);
+    header.appendChild(scoreChip);
+
+    // Timestamp
+    var ts = document.createElement('span');
+    ts.className = 'feed-card__ts';
+    ts.textContent = item.timestamp ? item.timestamp.slice(0, 16).replace('T', ' ') : '—';
+    header.appendChild(ts);
+
+    card.appendChild(header);
+
+    // Title
+    var titleEl = document.createElement('div');
+    titleEl.className = 'feed-card__title';
+    if (type === 'SIGNAL' && item.signal_id) {
+      titleEl.innerHTML = '<a href="/signals">' + esc(item.title) + '</a>';
+    } else if (type === 'INTELLIGENCE_LEAD' && item.actor_id) {
+      titleEl.innerHTML = '<a href="/actor/' + item.actor_id + '">' + esc(item.title) + '</a>';
+    } else {
+      titleEl.textContent = item.title || '(untitled)';
+    }
+    card.appendChild(titleEl);
+
+    // Summary / body
+    if (item.summary) {
+      var sumEl = document.createElement('div');
+      sumEl.className = 'feed-card__summary';
+      sumEl.textContent = item.summary;
+      card.appendChild(sumEl);
+    }
+
+    // ── Type-specific extras ─────────────────────────────────────────────────
+
+    if (type === 'SENTINEL_ALERT') {
+      // Confidence bar
+      var confWrap = document.createElement('div');
+      confWrap.className = 'feed-conf-bar';
+      var confTrack = document.createElement('div');
+      confTrack.className = 'feed-conf-bar__track';
+      var confFill = document.createElement('div');
+      confFill.className = 'feed-conf-bar__fill';
+      confFill.style.width = Math.round((item.confidence_score || 0) * 100) + '%';
+      confTrack.appendChild(confFill);
+      confWrap.appendChild(confTrack);
+      var confLbl = document.createElement('span');
+      confLbl.className = 'feed-conf-bar__label';
+      confLbl.textContent = Math.round((item.confidence_score || 0) * 100) + '% confidence · ' + (item.signal_count || 0) + ' signals';
+      confWrap.appendChild(confLbl);
+      card.appendChild(confWrap);
+
+      // Sentinel action buttons
+      var actDiv = document.createElement('div');
+      actDiv.className = 'feed-card__actions';
+      actDiv.innerHTML = (
+        '<button class="btn btn--primary btn--sm js-sa-promote" data-id="' + item.alert_id + '">↑ Promote</button>' +
+        '<button class="btn btn--sm js-sa-ack" data-id="' + item.alert_id + '">✓ Acknowledge</button>' +
+        '<button class="btn btn--sm js-sa-dismiss" data-id="' + item.alert_id + '" style="color:var(--text-dim);">✕ Dismiss</button>'
+      );
+      card.appendChild(actDiv);
+    }
+
+    if (type === 'CORRELATION') {
+      var scoreSpan = document.createElement('span');
+      scoreSpan.className = 'feed-corr-score';
+      scoreSpan.textContent = 'Score ' + (item.correlation_score || 0).toFixed(3);
+      card.insertBefore(scoreSpan, card.querySelector('.feed-card__summary'));
+    }
+
+    if (type === 'SIGNAL' && item.relevance_score != null) {
+      var relDiv = document.createElement('div');
+      relDiv.className = 'feed-rel-bar';
+      var relTrack = document.createElement('div');
+      relTrack.className = 'feed-rel-bar__track';
+      var relFill = document.createElement('div');
+      var relPct  = Math.round(item.relevance_score * 100);
+      var relClass = relPct >= 60 ? 'fresh' : relPct >= 20 ? 'fading' : 'stale';
+      relFill.className = 'feed-rel-bar__fill feed-rel-bar__fill--' + relClass;
+      relFill.style.width = Math.min(relPct, 100) + '%';
+      relTrack.appendChild(relFill);
+      relDiv.appendChild(relTrack);
+      var relVal = document.createElement('span');
+      relVal.className = 'feed-rel-bar__val mono';
+      relVal.textContent = item.relevance_score.toFixed(2);
+      relDiv.appendChild(relVal);
+      card.appendChild(relDiv);
+    }
+
+    if (type === 'INTELLIGENCE_LEAD') {
+      var infEl = document.createElement('span');
+      infEl.className = 'feed-score-chip';
+      infEl.style.marginTop = 'var(--sp-1)';
+      infEl.textContent = 'Influence ' + (item.influence_score || 0).toFixed(3);
+      if (item.community_id != null) {
+        infEl.textContent += ' · Community ' + item.community_id;
+      }
+      card.appendChild(infEl);
+    }
+
+    wrap.appendChild(card);
+    return wrap;
+  }
+
+  // ── Sentinel card actions (delegate from timeline) ─────────────────────────
+  timeline.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var id = btn.dataset.id;
+    if (!id) return;
+
+    if (btn.classList.contains('js-sa-promote')) {
+      btn.textContent = 'Creating…'; btn.disabled = true;
+      fetch('/api/alerts/' + id + '/promote-case', { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (d.case_id) window.location.href = '/cases/' + d.case_id; });
+    } else if (btn.classList.contains('js-sa-ack')) {
+      fetch('/api/alerts/' + id + '/acknowledge', { method: 'POST' })
+        .then(function () { btn.closest('.feed-item').remove(); });
+    } else if (btn.classList.contains('js-sa-dismiss')) {
+      fetch('/api/alerts/' + id + '/dismiss', { method: 'POST' })
+        .then(function () { btn.closest('.feed-item').remove(); });
+    }
+  });
+
+  // ── Stream filter pills ────────────────────────────────────────────────────
+  document.querySelectorAll('.feed-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      document.querySelectorAll('.feed-pill').forEach(function (p) {
+        p.classList.remove('feed-pill--active');
+      });
+      pill.classList.add('feed-pill--active');
+      state.stream = pill.dataset.stream;
+      state.offset = 0;
+      state.hasMore = true;
+      state.counts  = { total: 0, alerts: 0, signals: 0, corr: 0, leads: 0 };
+      fetchPage(true);
+    });
+  });
+
+  // ── Infinite scroll via IntersectionObserver ───────────────────────────────
+  var sentinel = document.getElementById('js-feed-end');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting && !state.loading && state.hasMore) {
+        fetchPage(false);
+      }
+    }, { rootMargin: '200px' });
+    io.observe(sentinel);
+  }
+
+  // ── HTML escape helper ─────────────────────────────────────────────────────
+  function esc(s) {
+    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Initial load ───────────────────────────────────────────────────────────
+  fetchPage(true);
+
+})();
+</script>
+{% endblock %}
