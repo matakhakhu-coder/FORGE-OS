@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block title %}Control Room{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">SYSTEM · PHASE 32</div>
+  <h1 class="page-header__title">
+    <span style="color:var(--accent);">⊡</span> Control Room
+  </h1>
+  <p class="page-header__sub">
+    Pipeline diagnostics — collector latency, engine throughput, database vitals.
+  </p>
+</div>
+
+{# ── Overall health banner ────────────────────────────────────────────────── #}
+<div class="diag-health-banner" id="js-health-banner">
+  <div class="diag-health-banner__led" id="js-health-led"></div>
+  <div class="diag-health-banner__text">
+    <span class="diag-health-banner__status mono" id="js-health-status">Loading…</span>
+    <span class="diag-health-banner__sub" id="js-health-sub"></span>
+  </div>
+  <button class="btn btn--sm btn--ghost diag-refresh-btn" id="js-refresh">↻ Refresh</button>
+</div>
+
+{# ── DB Vitals row ────────────────────────────────────────────────────────── #}
+<div class="diag-vitals" id="js-vitals">
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-signals">—</div>
+    <div class="diag-vital__label">Total Signals</div>
+  </div>
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-raw">—</div>
+    <div class="diag-vital__label">Awaiting Review</div>
+  </div>
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-corr">—</div>
+    <div class="diag-vital__label">Correlated Pairs</div>
+  </div>
+  <div class="diag-vital diag-vital--alert" id="js-v-sentinel-wrap">
+    <div class="diag-vital__val mono" id="js-v-sentinel">—</div>
+    <div class="diag-vital__label">Sentinel Backlog</div>
+  </div>
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-actors">—</div>
+    <div class="diag-vital__label">Actors</div>
+  </div>
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-cases">—</div>
+    <div class="diag-vital__label">Cases</div>
+  </div>
+  <div class="diag-vital">
+    <div class="diag-vital__val mono" id="js-v-db">—</div>
+    <div class="diag-vital__label">DB Size</div>
+  </div>
+</div>
+
+{# ── Stream counts ────────────────────────────────────────────────────────── #}
+<div class="diag-section">
+  <div class="diag-section__title mono">STREAM DISTRIBUTION</div>
+  <div class="diag-streams" id="js-streams"></div>
+</div>
+
+{# ── Component status board ───────────────────────────────────────────────── #}
+<div class="diag-section">
+  <div class="diag-section__title mono">PIPELINE COMPONENTS</div>
+  <div class="diag-section__sub">Last successful run per component. Red = error on last run. Amber = stale (&gt;6 h).</div>
+  <div class="diag-board" id="js-board"></div>
+</div>
+
+{# ── Run history ──────────────────────────────────────────────────────────── #}
+<div class="diag-section">
+  <div class="diag-section__title mono">RECENT RUN LOG</div>
+  <table class="diag-table" id="js-run-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Status</th>
+        <th>Records In</th>
+        <th>Records Out</th>
+        <th>Duration</th>
+        <th>Run At</th>
+      </tr>
+    </thead>
+    <tbody id="js-run-tbody">
+      <tr><td colspan="6" class="diag-table__loading mono">Loading…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  // ── Component display names ────────────────────────────────────────────────
+  var LABELS = {
+    usgs_collector:        'USGS Earthquakes',
+    earthquake_collector:  'USGS Hourly',
+    gdelt_collector:       'GDELT News',
+    firms_collector:       'NASA FIRMS Fire',
+    rss_collector:         'GDACS RSS',
+    civic_intel_collector: 'Civic Intel',
+    correlation_engine:    'Correlation Engine',
+    sentinel:              'Sentinel',
+    decay_engine:          'Decay Engine',
+    graph_engine:          'Graph Engine',
+  };
+  var COLLECTOR_ORDER = [
+    'usgs_collector','earthquake_collector','gdelt_collector',
+    'firms_collector','rss_collector','civic_intel_collector',
+  ];
+  var ENGINE_ORDER = [
+    'correlation_engine','sentinel','decay_engine','graph_engine',
+  ];
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function fmtHours(h) {
+    if (h === null || h === undefined) return '—';
+    h = parseFloat(h);
+    if (h < 1) return Math.round(h * 60) + 'm ago';
+    if (h < 24) return h.toFixed(1) + 'h ago';
+    return (h / 24).toFixed(1) + 'd ago';
+  }
+
+  function ledClass(c) {
+    if (!c) return 'diag-led--never';
+    if (c.status === 'error') return 'diag-led--error';
+    if ((c.hours_ago || 0) > 6) return 'diag-led--warn';
+    return 'diag-led--ok';
+  }
+
+  // ── Load data ──────────────────────────────────────────────────────────────
+  function load() {
+    fetch('/api/diagnostics')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        renderHealth(d.health);
+        renderVitals(d.db_stats || {});
+        renderStreams(d.stream_counts || {});
+        renderBoard(d.components || []);
+        renderRunLog(d.recent_runs || []);
+      })
+      .catch(function () {
+        document.getElementById('js-health-status').textContent = 'FETCH ERROR';
+      });
+  }
+
+  // ── Health banner ──────────────────────────────────────────────────────────
+  function renderHealth(health) {
+    var banner = document.getElementById('js-health-banner');
+    var led    = document.getElementById('js-health-led');
+    var status = document.getElementById('js-health-status');
+    var sub    = document.getElementById('js-health-sub');
+    var map = {
+      ok:   { cls: 'diag-health-banner--ok',   ledCls: 'diag-led--ok',   text: 'ALL SYSTEMS OPERATIONAL', sub: 'All pipeline components running within threshold.' },
+      warn: { cls: 'diag-health-banner--warn',  ledCls: 'diag-led--warn', text: 'DEGRADED — ATTENTION REQUIRED', sub: 'One or more components are stale or have not yet run.' },
+      error:{ cls: 'diag-health-banner--error', ledCls: 'diag-led--error',text: 'CRITICAL — PIPELINE FAILURE', sub: 'One or more components reported an error on last run.' },
+    };
+    var m = map[health] || map.warn;
+    banner.className = 'diag-health-banner ' + m.cls;
+    led.className    = 'diag-health-banner__led ' + m.ledCls;
+    status.textContent = m.text;
+    sub.textContent    = m.sub;
+  }
+
+  // ── DB Vitals ──────────────────────────────────────────────────────────────
+  function renderVitals(s) {
+    var set = function (id, v) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = (v !== null && v !== undefined) ? v.toLocaleString() : '—';
+    };
+    set('js-v-signals',  s.signals);
+    set('js-v-raw',      s.signals_raw);
+    set('js-v-corr',     s.correlated_pairs);
+    set('js-v-sentinel', s.sentinel_alerts_new);
+    set('js-v-actors',   s.actors);
+    set('js-v-cases',    s.cases);
+    var dbEl = document.getElementById('js-v-db');
+    if (dbEl) dbEl.textContent = s.db_size_mb ? s.db_size_mb + ' MB' : '—';
+    // Alert sentinel wrap if backlog > 100
+    if ((s.sentinel_alerts_new || 0) > 100) {
+      var w = document.getElementById('js-v-sentinel-wrap');
+      if (w) w.classList.add('diag-vital--alert-active');
+    }
+  }
+
+  // ── Stream distribution ────────────────────────────────────────────────────
+  function renderStreams(counts) {
+    var el   = document.getElementById('js-streams');
+    var total = Object.values(counts).reduce(function(a,b){return a+b;}, 0) || 1;
+    var streams = ['CRIME_INTEL','INFRASTRUCTURE','PRIORITY','GLOBAL'];
+    var colours = {
+      CRIME_INTEL:    '#f87171',
+      INFRASTRUCTURE: '#fbbf24',
+      PRIORITY:       '#818cf8',
+      GLOBAL:         '#4a5a6a',
+    };
+    el.innerHTML = streams.map(function (s) {
+      var cnt = counts[s] || 0;
+      var pct = Math.round(cnt / total * 100);
+      return '<div class="diag-stream">' +
+        '<div class="diag-stream__label mono">' + s.replace('_',' ') + '</div>' +
+        '<div class="diag-stream__bar-wrap">' +
+          '<div class="diag-stream__bar" style="width:' + Math.max(pct,1) + '%;background:' + (colours[s]||'#555') + ';"></div>' +
+        '</div>' +
+        '<div class="diag-stream__count mono">' + cnt.toLocaleString() + '</div>' +
+        '<div class="diag-stream__pct mono">' + pct + '%</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ── Component board ────────────────────────────────────────────────────────
+  function renderBoard(components) {
+    var el  = document.getElementById('js-board');
+    var map = {};
+    components.forEach(function (c) { map[c.component] = c; });
+
+    var allOrder = COLLECTOR_ORDER.concat(ENGINE_ORDER);
+    var html = '<div class="diag-board__group"><div class="diag-board__group-label mono">COLLECTORS</div><div class="diag-board__cards">';
+    COLLECTOR_ORDER.forEach(function (key) {
+      html += buildCard(key, map[key]);
+    });
+    html += '</div></div>';
+    html += '<div class="diag-board__group"><div class="diag-board__group-label mono">ENGINES</div><div class="diag-board__cards">';
+    ENGINE_ORDER.forEach(function (key) {
+      html += buildCard(key, map[key]);
+    });
+    html += '</div></div>';
+    el.innerHTML = html;
+  }
+
+  function buildCard(key, c) {
+    var label  = LABELS[key] || key;
+    var lClass = c ? ledClass(c) : 'diag-led--never';
+    var statusText = c ? (c.status === 'error' ? 'ERROR' : fmtHours(c.hours_ago)) : 'NEVER RUN';
+    var recIn  = c && c.records_in  !== null ? c.records_in.toLocaleString()  : '—';
+    var recOut = c && c.records_out !== null ? c.records_out.toLocaleString() : '—';
+    var dur    = c && c.duration_s  !== null ? c.duration_s.toFixed(2) + 's'  : '—';
+
+    return '<div class="diag-card diag-card--' + (c ? c.status : 'never') + '">' +
+      '<div class="diag-card__top">' +
+        '<span class="diag-led ' + lClass + '"></span>' +
+        '<span class="diag-card__name mono">' + esc(label) + '</span>' +
+      '</div>' +
+      '<div class="diag-card__status mono">' + esc(statusText) + '</div>' +
+      '<div class="diag-card__metrics mono">' +
+        '<span title="Records in">↓ ' + recIn  + '</span>' +
+        '<span title="Records out">↑ ' + recOut + '</span>' +
+        '<span title="Duration">⧗ ' + dur + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── Run history table ──────────────────────────────────────────────────────
+  function renderRunLog(runs) {
+    var tbody = document.getElementById('js-run-tbody');
+    if (!runs.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="diag-table__loading mono">No runs logged yet. Execute the pipeline to populate.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = runs.map(function (r) {
+      var statusCls = r.status === 'error' ? 'diag-table__status--error' : 'diag-table__status--ok';
+      return '<tr>' +
+        '<td class="mono">' + esc(LABELS[r.component] || r.component) + '</td>' +
+        '<td><span class="diag-table__status ' + statusCls + ' mono">' + esc(r.status.toUpperCase()) + '</span></td>' +
+        '<td class="mono">' + (r.records_in  !== null ? r.records_in  : '—') + '</td>' +
+        '<td class="mono">' + (r.records_out !== null ? r.records_out : '—') + '</td>' +
+        '<td class="mono">' + (r.duration_s  !== null ? r.duration_s.toFixed(2) + 's' : '—') + '</td>' +
+        '<td class="mono" style="color:var(--text-ghost);font-size:0.7rem;">' + esc((r.run_at||'').replace('T',' ').slice(0,19)) + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  document.getElementById('js-refresh').addEventListener('click', load);
+  load();
+
+})();
+</script>
+{% endblock %}

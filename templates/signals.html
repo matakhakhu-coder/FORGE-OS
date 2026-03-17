@@ -72,17 +72,6 @@
     <span class="signal-summary-bar__label mono">clusters</span>
   </div>
 
-  {% if source_counts %}
-  <div class="signal-summary-bar__sep"></div>
-  <div class="signal-summary-bar__sources">
-    {% for src, cnt in source_counts.items() %}
-    <span class="source-badge source-badge--{{ src }}" title="{{ cnt }} signals from {{ src|upper }}">
-      {{ src|upper }} <span class="source-badge__count">{{ cnt }}</span>
-    </span>
-    {% endfor %}
-  </div>
-  {% endif %}
-
 </div>
 {% endif %}
 
@@ -91,7 +80,9 @@
 ══════════════════════════════════════════════════════════════════════════════ #}
 <div class="signal-filter-bar" id="js-signal-filters">
 
-  <button class="signal-filter-btn signal-filter-btn--active" data-filter="all">All</button>
+  <button class="signal-filter-btn signal-filter-btn--active" data-filter="all">
+    All
+  </button>
   <button class="signal-filter-btn" data-filter="raw">
     <span class="signal-status-dot signal-status-dot--raw"></span> Raw
   </button>
@@ -107,54 +98,34 @@
 
   <span class="signal-filter-spacer"></span>
 
-  {# Phase 15.5: Source filter buttons #}
-  {% if source_counts %}
-  <div class="signal-source-filters" id="js-source-filters">
-    <span class="mono signal-source-filter-label">Source</span>
-    {% for src in source_counts.keys() %}
-    <button class="signal-filter-btn signal-source-filter-btn signal-source-filter-btn--{{ src }}"
-            data-source="{{ src }}" title="Filter by {{ src|upper }}">
-      {{ src|upper }}
-    </button>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  {# Phase 16: Linked-only filter #}
-  <button class="signal-filter-btn signal-filter-btn--linked"
-          id="js-linked-toggle" data-active="0"
-          title="Show only signals linked to a case">
-    <span class="signal-linked-badge" aria-hidden="true">⬡</span> Linked Only
-  </button>
-
   <button class="signal-filter-btn signal-filter-btn--priority"
-          id="js-priority-toggle" data-active="0"
+          id="js-priority-toggle"
+          data-active="0"
           title="Show only priority signals">
-    <span class="signal-priority-dot" aria-hidden="true"></span> Priority Only
+    <span class="signal-priority-dot" aria-hidden="true"></span>
+    Priority Only
   </button>
 
 </div>
 
-{# ── Phase 16: Pin-to-Case modal ───────────────────────────────────────────── #}
-<div class="signal-pin-modal" id="js-pin-modal" aria-hidden="true">
-  <div class="signal-pin-modal__box">
-    <div class="signal-pin-modal__header">
-      <span class="mono signal-pin-modal__title">⬡ LINK SIGNAL TO CASE</span>
-      <button class="signal-pin-modal__close" id="js-pin-modal-close">✕</button>
-    </div>
-    <div class="signal-pin-modal__signal-title" id="js-pin-signal-title"></div>
-    <div class="signal-pin-modal__cases" id="js-pin-cases-list"></div>
-    <div class="signal-pin-modal__note-row">
-      <label class="mono signal-pin-modal__note-label">Analyst note (optional)</label>
-      <input type="text" class="signal-pin-modal__note-input" id="js-pin-note"
-             placeholder="e.g. corroborates timeline entry 3" maxlength="200">
-    </div>
-    <div class="signal-pin-modal__footer">
-      <button class="btn btn--primary btn--sm" id="js-pin-confirm">Confirm Link</button>
-      <button class="btn btn--sm" id="js-pin-cancel">Cancel</button>
-    </div>
-  </div>
+{# ── Phase 27: Stream filter pills ────────────────────────────────────────── #}
+{% if stream_counts %}
+<div class="stream-pills" style="margin-bottom:var(--sp-4);">
+  <a href="{{ url_for('signals') }}"
+     class="stream-pill {% if active_stream == 'ALL' %}stream-pill--active{% endif %}">
+    All Streams
+    <span class="stream-pill__count">{{ counts.total or 0 }}</span>
+  </a>
+  {% for sname, scnt in stream_counts.items() %}
+  <a href="{{ url_for('signals') }}?stream={{ sname }}"
+     class="stream-pill
+            {%- if active_stream == sname %} stream-pill--active stream-pill--active-{{ sname }}{% endif %}">
+    {{ sname }}
+    <span class="stream-pill__count">{{ scnt }}</span>
+  </a>
+  {% endfor %}
 </div>
+{% endif %}
 
 {# ══════════════════════════════════════════════════════════════════════════════
    SIGNAL TABLE  (Phase 14: Cluster column + priority indicators on rows)
@@ -166,6 +137,8 @@
       <tr>
         <th class="signal-table__th signal-table__th--status">Status</th>
         <th class="signal-table__th signal-table__th--source">Source</th>
+        <th class="signal-table__th" style="width:100px;">Stream</th>
+        <th class="signal-table__th" style="width:80px;">Relevance</th>
         <th class="signal-table__th signal-table__th--title">Title</th>
         <th class="signal-table__th signal-table__th--content">Summary</th>
         <th class="signal-table__th signal-table__th--cluster">Cluster</th>
@@ -176,23 +149,16 @@
     </thead>
     <tbody id="js-signal-tbody">
       {% for sig in signals %}
-      <tr class="signal-row{% if sig.is_priority %} signal-row--priority{% elif sig.status == 'raw' %} signal-row--low-relevance{% endif %}"
+      <tr class="signal-row{% if sig.is_priority %} signal-row--priority{% endif %}"
           data-status="{{ sig.status }}"
           data-priority="{{ '1' if sig.is_priority else '0' }}"
-          data-source="{{ sig.source or '' }}"
-          data-pinned="{{ '1' if sig.pinned_case_count and sig.pinned_case_count > 0 else '0' }}"
           id="row-{{ sig.signal_id }}">
 
-        {# Status + priority flag + linked badge #}
+        {# Status + priority flag #}
         <td class="signal-table__td">
           <div class="signal-status-cell">
             {% if sig.is_priority %}
             <span class="signal-priority-flag" title="Priority — keyword match">⚑</span>
-            {% endif %}
-            {% if sig.pinned_case_count and sig.pinned_case_count > 0 %}
-            <span class="signal-linked-badge"
-                  title="Linked to {{ sig.pinned_case_count }} case{{ 's' if sig.pinned_case_count != 1 else '' }}"
-                  data-signal-id="{{ sig.signal_id }}">⬡</span>
             {% endif %}
             <span class="signal-status-badge signal-status-badge--{{ sig.status }}">
               {{ sig.status }}
@@ -200,12 +166,42 @@
           </div>
         </td>
 
-        {# Source badge — Phase 15.5 #}
+        {# Source tag #}
         <td class="signal-table__td">
-          {% set src = sig.source or 'unknown' %}
-          <span class="source-badge source-badge--{{ src }}" title="{{ src|upper }}">
-            {{ src|upper }}
-          </span>
+          <span class="signal-source-tag">{{ sig.source }}</span>
+          {# Phase 19: artifact breadcrumb #}
+          {% if sig.source_artifact_id %}
+          <a href="{{ url_for('artifact_detail', artifact_id=sig.source_artifact_id) }}"
+             class="signal-artifact-crumb" title="{{ sig.artifact_title or 'Source artifact' }}">
+            <span class="signal-artifact-crumb__icon">◈</span>
+            {{ (sig.artifact_title or 'Artifact') | truncate(20, True, '…') }}
+          </a>
+          {% endif %}
+        </td>
+
+        {# Phase 27: Stream badge #}
+        <td class="signal-table__td">
+          {% set s = sig.stream if sig.stream is defined else 'GLOBAL' %}
+          <span class="stream-badge stream-badge--{{ s }}">{{ s }}</span>
+        </td>
+
+        {# Phase 28: Relevance bar #}
+        <td class="signal-table__td">
+          {% set rel = sig.relevance_score if sig.relevance_score is defined else 1.0 %}
+          {% set rel_pct = (rel * 100)|int %}
+          {% if rel >= 0.6 %}
+            {% set rel_class = "rel-bar__fill--fresh" %}
+          {% elif rel >= 0.2 %}
+            {% set rel_class = "rel-bar__fill--fading" %}
+          {% else %}
+            {% set rel_class = "rel-bar__fill--stale" %}
+          {% endif %}
+          <div class="rel-bar" title="Relevance: {{ "%.0f"|format(rel * 100) }}%">
+            <div class="rel-bar__track">
+              <div class="rel-bar__fill {{ rel_class }}" style="width:{{ rel_pct }}%"></div>
+            </div>
+            <span class="rel-bar__val mono">{{ "%.0f"|format(rel * 100) }}%</span>
+          </div>
         </td>
 
         {# Title + external_id #}
@@ -269,16 +265,6 @@
             </a>
             {% endif %}
 
-            {# Phase 16: Pin to Case #}
-            {% if active_cases %}
-            <button class="btn btn--sm btn--pin-case"
-                    data-signal-id="{{ sig.signal_id }}"
-                    data-pinned="{{ '1' if sig.pinned_case_count and sig.pinned_case_count > 0 else '0' }}"
-                    title="Link this signal to an active investigation">
-              ⬡ Link
-            </button>
-            {% endif %}
-
             {% if sig.status == 'raw' or sig.status == 'reviewed' %}
             <button class="btn btn--sm btn--dismiss"
                     data-signal-id="{{ sig.signal_id }}"
@@ -326,21 +312,16 @@
 
 
 {% block scripts %}
-{# Phase 16: pass active cases list to JS for the pin-to-case dropdown #}
-<script>
-const FORGE_ACTIVE_CASES = {{ active_cases | tojson }};
-</script>
 <script>
 /* =============================================================================
-   FORGE Phase 16 — Signal Monitor JS
+   FORGE Phase 14 — Signal Monitor JS
    ─────────────────────────────────────────────────────────────────────────────
-   Behaviours:
-     1. Status filter tabs       — show/hide rows by data-status
-     2. Source filter pills      — narrow by data-source (Phase 15.5)
-     3. Priority Only toggle     — further restrict to data-priority="1"
-     4. Linked Only toggle       — restrict to data-pinned="1"  (Phase 16)
-     5. Dismiss button           — POST dismiss API, update row in-place
-     6. Pin-to-Case modal        — select case, POST pin API, show linked badge
+   Three behaviours:
+     1. Status filter tabs    — show/hide rows by data-status
+     2. Priority Only toggle  — further restrict to data-priority="1"
+     3. Dismiss button        — POST dismiss API, update row in-place
+
+   The two filters compose: status sets the pool, priority narrows within it.
    ============================================================================= */
 
 (function () {
@@ -349,246 +330,111 @@ const FORGE_ACTIVE_CASES = {{ active_cases | tojson }};
   const filterBar      = document.getElementById('js-signal-filters');
   const emptyNote      = document.getElementById('js-signal-empty-filter');
   const priorityToggle = document.getElementById('js-priority-toggle');
-  const linkedToggle   = document.getElementById('js-linked-toggle');
-  const sourceFilters  = document.getElementById('js-source-filters');
   const allRows        = Array.from(document.querySelectorAll('.signal-row'));
 
-  /* ── Shared visibility engine ─────────────────────────────────────── */
+  /* ── Shared visibility engine ─────────────────────────────────────────────── */
 
   function currentStatusFilter() {
-    const active = filterBar && filterBar.querySelector('.signal-filter-btn--active[data-filter]');
+    if (!filterBar) return 'all';
+    const active = filterBar.querySelector('.signal-filter-btn--active[data-filter]');
     return active ? active.dataset.filter : 'all';
   }
-  function currentSourceFilter() {
-    const active = sourceFilters && sourceFilters.querySelector('.signal-source-filter-btn--active');
-    return active ? active.dataset.source : null;
+
+  function priorityOnly() {
+    return priorityToggle && priorityToggle.dataset.active === '1';
   }
-  function priorityOnly()  { return priorityToggle && priorityToggle.dataset.active === '1'; }
-  function linkedOnly()    { return linkedToggle   && linkedToggle.dataset.active   === '1'; }
 
   function applyFilters() {
     const sf  = currentStatusFilter();
-    const src = currentSourceFilter();
     const po  = priorityOnly();
-    const lo  = linkedOnly();
     let visible = 0;
 
     allRows.forEach(row => {
-      const ok = (sf  === 'all' || row.dataset.status   === sf)
-              && (!src || row.dataset.source  === src)
-              && (!po  || row.dataset.priority === '1')
-              && (!lo  || row.dataset.pinned   === '1');
-      row.style.display = ok ? '' : 'none';
-      if (ok) visible++;
+      const statusOk   = sf === 'all' || row.dataset.status === sf;
+      const priorityOk = !po || row.dataset.priority === '1';
+      row.style.display = (statusOk && priorityOk) ? '' : 'none';
+      if (statusOk && priorityOk) visible++;
     });
 
-    if (emptyNote) emptyNote.style.display = visible === 0 ? 'flex' : 'none';
+    if (emptyNote) {
+      emptyNote.style.display = visible === 0 ? 'flex' : 'none';
+    }
   }
 
-  /* ── Status filter tabs ───────────────────────────────────────────── */
+  /* ── Status filter tabs ───────────────────────────────────────────────────── */
+
   if (filterBar) {
     filterBar.addEventListener('click', function (e) {
       const btn = e.target.closest('[data-filter]');
-      if (!btn || btn.id === 'js-priority-toggle' || btn.id === 'js-linked-toggle') return;
+      if (!btn || btn.id === 'js-priority-toggle') return;
+
       filterBar.querySelectorAll('.signal-filter-btn[data-filter]').forEach(b => {
-        if (b.id === 'js-priority-toggle' || b.id === 'js-linked-toggle') return;
+        if (b.id === 'js-priority-toggle') return;
         b.classList.toggle('signal-filter-btn--active', b === btn);
       });
+
       applyFilters();
     });
   }
 
-  /* ── Source filter pills ──────────────────────────────────────────── */
-  if (sourceFilters) {
-    sourceFilters.addEventListener('click', function (e) {
-      const btn = e.target.closest('.signal-source-filter-btn');
-      if (!btn) return;
-      const wasActive = btn.classList.contains('signal-source-filter-btn--active');
-      sourceFilters.querySelectorAll('.signal-source-filter-btn')
-        .forEach(b => b.classList.remove('signal-source-filter-btn--active'));
-      if (!wasActive) btn.classList.add('signal-source-filter-btn--active');
-      applyFilters();
-    });
-  }
+  /* ── Priority Only toggle ─────────────────────────────────────────────────── */
 
-  /* ── Priority Only toggle ─────────────────────────────────────────── */
   if (priorityToggle) {
     priorityToggle.addEventListener('click', function () {
-      const on = this.dataset.active === '1';
-      this.dataset.active = on ? '0' : '1';
-      this.classList.toggle('signal-filter-btn--priority-active', !on);
+      const isActive = this.dataset.active === '1';
+      this.dataset.active = isActive ? '0' : '1';
+      this.classList.toggle('signal-filter-btn--priority-active', !isActive);
       applyFilters();
     });
   }
 
-  /* ── Linked Only toggle (Phase 16) ───────────────────────────────── */
-  if (linkedToggle) {
-    linkedToggle.addEventListener('click', function () {
-      const on = this.dataset.active === '1';
-      this.dataset.active = on ? '0' : '1';
-      this.classList.toggle('signal-filter-btn--linked-active', !on);
-      applyFilters();
-    });
-  }
+  /* ── Dismiss buttons ──────────────────────────────────────────────────────── */
 
-  /* ── Dismiss buttons ──────────────────────────────────────────────── */
   document.addEventListener('click', function (e) {
     const btn = e.target.closest('.btn--dismiss');
     if (!btn) return;
+
     const signalId = btn.dataset.signalId;
     if (!signalId) return;
-    btn.disabled = true; btn.textContent = '…';
+
+    btn.disabled    = true;
+    btn.textContent = '…';
+
     fetch(`/api/signals/${encodeURIComponent(signalId)}/dismiss`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
     })
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
       .then(() => {
         const row = document.getElementById(`row-${signalId}`);
         if (!row) return;
+
         row.dataset.status = 'dismissed';
-        row.classList.remove('signal-row--low-relevance');
+
         const badge = row.querySelector('.signal-status-badge');
-        if (badge) { badge.className = 'signal-status-badge signal-status-badge--dismissed'; badge.textContent = 'dismissed'; }
+        if (badge) {
+          badge.className   = 'signal-status-badge signal-status-badge--dismissed';
+          badge.textContent = 'dismissed';
+        }
+
         const actions = row.querySelector('.signal-actions');
-        if (actions) actions.innerHTML = '<span class="signal-promoted-label mono" style="color:var(--text-dim);">dismissed</span>';
+        if (actions) {
+          actions.innerHTML =
+            '<span class="signal-promoted-label mono" style="color:var(--text-dim);">dismissed</span>';
+        }
+
         applyFilters();
       })
-      .catch(err => {
-        console.error('[FORGE] dismiss failed:', err);
-        btn.disabled = false; btn.textContent = '✕ Dismiss';
+      .catch(error => {
+        console.error('[FORGE Signals] dismiss failed:', error);
+        btn.disabled    = false;
+        btn.textContent = '✕ Dismiss';
         btn.style.borderColor = 'var(--src-leaked)';
       });
   });
-
-  /* ── Pin-to-Case modal (Phase 16) ────────────────────────────────── */
-
-  const modal      = document.getElementById('js-pin-modal');
-  const casesList  = document.getElementById('js-pin-cases-list');
-  const sigTitle   = document.getElementById('js-pin-signal-title');
-  const noteInput  = document.getElementById('js-pin-note');
-  const confirmBtn = document.getElementById('js-pin-confirm');
-  const cancelBtn  = document.getElementById('js-pin-cancel');
-  const closeBtn   = document.getElementById('js-pin-modal-close');
-
-  let activeSignalId   = null;
-  let activeCaseId     = null;
-  let activeSignalRow  = null;
-
-  function openPinModal(signalId, titleText, row) {
-    activeSignalId  = signalId;
-    activeSignalRow = row;
-    activeCaseId    = null;
-    if (noteInput)  noteInput.value = '';
-    if (sigTitle)   sigTitle.textContent = titleText;
-
-    // Build case radio list
-    if (casesList) {
-      casesList.innerHTML = '';
-      if (!FORGE_ACTIVE_CASES || FORGE_ACTIVE_CASES.length === 0) {
-        casesList.innerHTML = '<p class="mono" style="color:var(--text-dim);font-size:0.72rem;">No active cases. Create one first.</p>';
-      } else {
-        FORGE_ACTIVE_CASES.forEach(c => {
-          const item = document.createElement('label');
-          item.className = 'signal-pin-modal__case-item';
-          item.innerHTML = `
-            <input type="radio" name="pin-case" value="${c.case_id}" class="signal-pin-modal__radio">
-            <span class="signal-pin-modal__case-title">${c.title}</span>
-            <span class="signal-pin-modal__case-status mono">${c.status}</span>`;
-          casesList.appendChild(item);
-        });
-        casesList.addEventListener('change', function (e) {
-          if (e.target.name === 'pin-case') activeCaseId = parseInt(e.target.value, 10);
-        });
-      }
-    }
-
-    if (modal) { modal.setAttribute('aria-hidden', 'false'); modal.classList.add('signal-pin-modal--open'); }
-  }
-
-  function closePinModal() {
-    if (modal) { modal.setAttribute('aria-hidden', 'true'); modal.classList.remove('signal-pin-modal--open'); }
-    activeSignalId = null; activeCaseId = null; activeSignalRow = null;
-  }
-
-  // Open modal on ⬡ Link button click
-  document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.btn--pin-case');
-    if (!btn) return;
-    const signalId = btn.dataset.signalId;
-    const row = document.getElementById(`row-${signalId}`);
-    const titleEl = row && row.querySelector('.signal-title');
-    const title = titleEl ? titleEl.textContent.trim() : signalId;
-    openPinModal(signalId, title, row);
-  });
-
-  if (closeBtn) closeBtn.addEventListener('click', closePinModal);
-  if (cancelBtn) cancelBtn.addEventListener('click', closePinModal);
-
-  // Confirm pin
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', function () {
-      if (!activeSignalId || !activeCaseId) {
-        // flash inside modal
-        const fl = document.createElement('p');
-        fl.className = 'mono'; fl.style.cssText = 'color:#e05c5c;font-size:0.7rem;margin:4px 0 0;';
-        fl.textContent = 'Select a case first.';
-        const existing = casesList.querySelector('.pin-error');
-        if (existing) existing.remove();
-        fl.classList.add('pin-error');
-        casesList.appendChild(fl);
-        return;
-      }
-
-      confirmBtn.disabled = true; confirmBtn.textContent = '…';
-
-      fetch(`/api/cases/${activeCaseId}/pin/${encodeURIComponent(activeSignalId)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: noteInput ? noteInput.value.trim() : '' }),
-      })
-        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-        .then(data => {
-          confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm Link';
-
-          if (activeSignalRow) {
-            // Update data-pinned on the row
-            if (data.pinned) {
-              activeSignalRow.dataset.pinned = '1';
-
-              // Inject linked badge if not present
-              const statusCell = activeSignalRow.querySelector('.signal-status-cell');
-              if (statusCell && !statusCell.querySelector('.signal-linked-badge')) {
-                const badge = document.createElement('span');
-                badge.className = 'signal-linked-badge';
-                badge.title = `Linked to ${data.case_title}`;
-                badge.dataset.signalId = activeSignalId;
-                badge.textContent = '⬡';
-                statusCell.insertBefore(badge, statusCell.firstChild);
-              }
-            } else {
-              activeSignalRow.dataset.pinned = '0';
-              const badge = activeSignalRow.querySelector('.signal-linked-badge');
-              if (badge) badge.remove();
-            }
-          }
-
-          closePinModal();
-          applyFilters();
-        })
-        .catch(err => {
-          console.error('[FORGE] pin failed:', err);
-          confirmBtn.disabled = false; confirmBtn.textContent = 'Confirm Link';
-        });
-    });
-  }
-
-  // Close on outside click
-  if (modal) {
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal) closePinModal();
-    });
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePinModal(); });
 
 })();
 </script>

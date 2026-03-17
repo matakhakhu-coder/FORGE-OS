@@ -5,7 +5,7 @@
 
 {# ── Page Header ─────────────────────────────────────────────────────────── #}
 <div class="page-header">
-  <div class="page-header__eyebrow">FORAGE · PHASE 29</div>
+  <div class="page-header__eyebrow">FORAGE · PHASE 31</div>
   <h1 class="page-header__title">
     Analyst Intelligence Feed
   </h1>
@@ -27,11 +27,24 @@
 
   <div class="feed-controls">
     <div class="feed-pills" id="js-stream-pills">
-      <button class="feed-pill feed-pill--active" data-stream="">All Streams</button>
-      <button class="feed-pill" data-stream="CRIME_INTEL">Crime Intel</button>
-      <button class="feed-pill" data-stream="INFRASTRUCTURE">Infrastructure</button>
-      <button class="feed-pill" data-stream="PRIORITY">Priority</button>
-      <button class="feed-pill" data-stream="GLOBAL">Global</button>
+      <button class="feed-pill feed-pill--active" data-stream="" data-topic="">
+        All <span class="feed-pill__count" id="js-pill-count-all"></span>
+      </button>
+      <button class="feed-pill feed-pill--crime" data-stream="CRIME_INTEL" data-topic="">
+        Crime Intel <span class="feed-pill__count" id="js-pill-count-crime"></span>
+      </button>
+      <button class="feed-pill feed-pill--corruption" data-stream="CRIME_INTEL" data-topic="corruption">
+        Corruption <span class="feed-pill__count feed-pill__count--sub">⊢</span>
+      </button>
+      <button class="feed-pill feed-pill--infra" data-stream="INFRASTRUCTURE" data-topic="">
+        Infrastructure <span class="feed-pill__count" id="js-pill-count-infra"></span>
+      </button>
+      <button class="feed-pill feed-pill--priority" data-stream="PRIORITY" data-topic="">
+        Priority <span class="feed-pill__count" id="js-pill-count-priority"></span>
+      </button>
+      <button class="feed-pill feed-pill--global" data-stream="GLOBAL" data-topic="">
+        Global <span class="feed-pill__count" id="js-pill-count-global"></span>
+      </button>
     </div>
   </div>
 </div>
@@ -89,6 +102,7 @@
   // ── State ──────────────────────────────────────────────────────────────────
   var state = {
     stream:   '',
+    topic:    '',
     offset:   0,
     limit:    30,
     loading:  false,
@@ -113,6 +127,7 @@
 
     var params = '?limit=' + state.limit + '&offset=' + state.offset;
     if (state.stream) params += '&stream=' + encodeURIComponent(state.stream);
+    if (state.topic)  params += '&topic='  + encodeURIComponent(state.topic);
 
     fetch('/api/feed' + params)
       .then(function (r) { return r.json(); })
@@ -310,6 +325,17 @@
       scoreSpan.className = 'feed-corr-score';
       scoreSpan.textContent = 'Score ' + (item.correlation_score || 0).toFixed(3);
       card.insertBefore(scoreSpan, card.querySelector('.feed-card__summary'));
+
+      // Phase 30E: promote correlation to case
+      var corrAct = document.createElement('div');
+      corrAct.className = 'feed-card__actions';
+      corrAct.innerHTML = (
+        '<button class="btn btn--primary btn--sm js-corr-promote" ' +
+          'data-corr-id="' + (item.corr_db_id || '') + '">' +
+          '&#8593; Open as Case' +
+        '</button>'
+      );
+      card.appendChild(corrAct);
     }
 
     if (type === 'SIGNAL' && item.relevance_score != null) {
@@ -346,10 +372,38 @@
     return wrap;
   }
 
-  // ── Sentinel card actions (delegate from timeline) ─────────────────────────
+  // ── Card actions (delegate from timeline) ────────────────────────────────────
   timeline.addEventListener('click', function (e) {
     var btn = e.target.closest('button');
     if (!btn) return;
+
+    // ── Phase 30E: CORRELATION "Open as Case" ─────────────────────────────────
+    if (btn.classList.contains('js-corr-promote')) {
+      var corrId = btn.dataset.corrId;
+      if (!corrId) return;
+      btn.textContent = 'Creating…'; btn.disabled = true;
+      fetch('/api/correlations/promote-case', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ correlation_id: parseInt(corrId) })
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.case_id) {
+          window.location.href = '/cases/' + d.case_id;
+        } else {
+          btn.textContent = '↑ Open as Case';
+          btn.disabled    = false;
+        }
+      })
+      .catch(function () {
+        btn.textContent = '↑ Open as Case';
+        btn.disabled    = false;
+      });
+      return;
+    }
+
+    // ── Sentinel alert actions (require data-id) ──────────────────────────────
     var id = btn.dataset.id;
     if (!id) return;
 
@@ -367,20 +421,44 @@
     }
   });
 
-  // ── Stream filter pills ────────────────────────────────────────────────────
+  // ── Stream + topic filter pills ──────────────────────────────────────────────
   document.querySelectorAll('.feed-pill').forEach(function (pill) {
     pill.addEventListener('click', function () {
       document.querySelectorAll('.feed-pill').forEach(function (p) {
         p.classList.remove('feed-pill--active');
       });
       pill.classList.add('feed-pill--active');
-      state.stream = pill.dataset.stream;
+      state.stream = pill.dataset.stream || '';
+      state.topic  = pill.dataset.topic  || '';
       state.offset = 0;
       state.hasMore = true;
       state.counts  = { total: 0, alerts: 0, signals: 0, corr: 0, leads: 0 };
       fetchPage(true);
     });
   });
+
+  // ── Load live signal counts into pill badges ──────────────────────────────
+  (function loadStreamCounts() {
+    fetch('/api/signals/streams')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var map = {};
+        (d.streams || []).forEach(function (s) { map[s.stream] = s.total; });
+        var total = Object.values(map).reduce(function (a, b) { return a + b; }, 0);
+        var allEl = document.getElementById('js-pill-count-all');
+        if (allEl && total) allEl.textContent = total.toLocaleString();
+        [
+          ['CRIME_INTEL',    'js-pill-count-crime'],
+          ['INFRASTRUCTURE', 'js-pill-count-infra'],
+          ['PRIORITY',       'js-pill-count-priority'],
+          ['GLOBAL',         'js-pill-count-global'],
+        ].forEach(function (p) {
+          var el = document.getElementById(p[1]);
+          if (el && map[p[0]]) el.textContent = map[p[0]].toLocaleString();
+        });
+      })
+      .catch(function () {});
+  })();
 
   // ── Infinite scroll via IntersectionObserver ───────────────────────────────
   var sentinel = document.getElementById('js-feed-end');

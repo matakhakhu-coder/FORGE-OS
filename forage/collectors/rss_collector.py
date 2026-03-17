@@ -59,6 +59,7 @@ comma-separated):
 """
 
 import json
+import time
 import os
 import re
 import sqlite3
@@ -67,6 +68,22 @@ import uuid
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+# Phase 32: path-safe pipeline logger import
+def _log_run_safe(*args, **kwargs):
+    """Inline log_run that works whether called as a module or direct script."""
+    import sys as _sys, importlib.util as _ilu
+    from pathlib import Path as _P
+    _logger_path = _P(__file__).resolve().parent.parent.parent / "forage" / "utils" / "pipeline_logger.py"
+    if str(_logger_path.parent.parent) not in _sys.path:
+        _sys.path.insert(0, str(_logger_path.parent.parent))
+    try:
+        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_logger_path))
+        _mod  = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        _mod.log_run(*args, **kwargs)
+    except Exception:
+        pass  # logging must never crash the pipeline
+log_run = _log_run_safe
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
@@ -93,6 +110,51 @@ def _load_keywords() -> list[str]:
     return _DEFAULT_KEYWORDS
 
 PRIORITY_KEYWORDS = _load_keywords()
+
+# ── Phase 27: Signal Stream classification ───────────────────────────────────
+# Evaluated in order: CRIME_INTEL → INFRASTRUCTURE → PRIORITY → GLOBAL
+
+CRIME_KEYWORDS = [
+    "arrest", "murder", "robbery", "drug bust", "trafficking",
+    "gang", "kidnapping", "smuggling", "police raid", "crime",
+    "shooting", "homicide", "carjacking", "heist", "extortion",
+    "organised crime", "organized crime", "syndicate", "narco",
+    "interpol", "fugitive", "warrant", "conviction", "sentenced",
+]
+
+INFRASTRUCTURE_KEYWORDS = [
+    "power outage", "load shedding", "loadshedding", "blackout",
+    "water outage", "water supply", "pipe burst", "sewage",
+    "road closure", "bridge failure", "transport disruption",
+    "telecom failure", "network outage", "internet outage",
+    "eskom", "infrastructure", "supply chain",
+    "port congestion", "fuel shortage", "gas leak",
+]
+
+PRIORITY_ARTICLE_KEYWORDS = [
+    "analysis", "investigation", "exclusive", "intelligence briefing",
+    "threat assessment", "special report", "revealed", "leaked",
+    "deep dive", "exposed", "classified",
+]
+
+
+def classify_stream(title: str, content: str) -> str:
+    """
+    Classify a signal into a curated stream via keyword matching.
+    Evaluation order: CRIME_INTEL -> INFRASTRUCTURE -> PRIORITY -> GLOBAL
+    """
+    combined = (title + " " + (content or "")).lower()
+    for kw in CRIME_KEYWORDS:
+        if kw in combined:
+            return "CRIME_INTEL"
+    for kw in INFRASTRUCTURE_KEYWORDS:
+        if kw in combined:
+            return "INFRASTRUCTURE"
+    for kw in PRIORITY_ARTICLE_KEYWORDS:
+        if kw in combined:
+            return "PRIORITY"
+    return "GLOBAL"
+
 
 # ── XML namespace map ─────────────────────────────────────────────────────────
 # GDACS uses several optional namespaces; we register them all so XPath
@@ -284,6 +346,8 @@ def item_to_signal(item: ET.Element) -> dict | None:
         meta      = _collect_metadata(item)
         priority  = _is_priority(title, content)
 
+        stream = classify_stream(title, content)
+
         return {
             "signal_id":     str(uuid.uuid4()),
             "source":        SOURCE_TAG,
@@ -296,6 +360,7 @@ def item_to_signal(item: ET.Element) -> dict | None:
             "status":        "raw",
             "metadata_json": json.dumps(meta, ensure_ascii=False),
             "is_priority":   priority,
+            "stream":        stream,
         }
     except Exception as exc:
         warn(f"Skipping malformed item: {exc}")
@@ -351,15 +416,31 @@ def insert_signals(conn: sqlite3.Connection, signals: list[dict]) -> tuple[int, 
     skipped.  Returns (inserted_count, skipped_count).
     """
     inserted = skipped = 0
+
+    # Phase 27: ensure stream column exists on pre-migration databases
+    existing_cols = {r[1] for r in conn.execute("PRAGMA table_info(signals)")}
+    if "stream" not in existing_cols:
+        try:
+            conn.execute(
+                "ALTER TABLE signals ADD COLUMN "
+                "stream TEXT NOT NULL DEFAULT 'GLOBAL'"
+            )
+            conn.commit()
+        except Exception:
+            pass
+
     for sig in signals:
+        row = {**sig, "stream": sig.get("stream", "GLOBAL")}
         cur = conn.execute("""
             INSERT OR IGNORE INTO signals
                 (signal_id, source, external_id, title, content,
-                 lat, lng, timestamp, status, metadata_json, is_priority)
+                 lat, lng, timestamp, status, metadata_json,
+                 is_priority, stream)
             VALUES
                 (:signal_id, :source, :external_id, :title, :content,
-                 :lat, :lng, :timestamp, :status, :metadata_json, :is_priority)
-        """, sig)
+                 :lat, :lng, :timestamp, :status, :metadata_json,
+                 :is_priority, :stream)
+        """, row)
         if cur.rowcount > 0:
             inserted += 1
         else:
@@ -371,6 +452,7 @@ def insert_signals(conn: sqlite3.Connection, signals: list[dict]) -> tuple[int, 
 
 def run() -> int:
     """Execute one collection cycle.  Returns exit code (0 = success, 1 = error)."""
+    _t0 = time.monotonic()
     log(f"Starting RSS collection — feed: {FEED_URL}")
     log(f"Priority keywords ({len(PRIORITY_KEYWORDS)}): {', '.join(PRIORITY_KEYWORDS)}")
     log(f"Database: {DB_PATH}")
@@ -414,6 +496,9 @@ def run() -> int:
     log(f"Done — inserted: {inserted}, skipped (duplicate): {skipped}")
     if inserted > 0 and priority_new > 0:
         log(f"⚠  PRIORITY SIGNALS INSERTED — check Signal Monitor at /signals")
+    log_run(DB_PATH, "rss_collector", "success",
+            records_in=len(signals), records_out=inserted,
+            duration_s=time.monotonic() - _t0)
     return 0
 
 if __name__ == "__main__":

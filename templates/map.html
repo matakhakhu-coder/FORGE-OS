@@ -45,6 +45,14 @@
     {% endfor %}
   </div>
 
+  {# Phase 18: Heatmap toggle — right side of header #}
+  <div style="display:flex;align-items:center;gap:var(--sp-2);margin-left:auto;padding-right:var(--sp-3);">
+    <button class="map-time-bar__toggle" id="js-heatmap-toggle" title="Toggle signal density heatmap">
+      <span id="js-heatmap-icon">◉</span>
+      <span class="mono" id="js-heatmap-label">Heatmap</span>
+    </button>
+  </div>
+
 </div>
 
 {# ── Time Slider bar ───────────────────────────────────────────────────────── #}
@@ -108,14 +116,228 @@
 {% endblock %}
 
 {% block scripts %}
-{# Phase 16: active cases list for the map popup pin-to-case widget #}
-<script>
-window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined else '[]' }};
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"
         crossorigin="anonymous"></script>
+{# Phase 18: Leaflet.heat for signal density heatmap #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"
+        crossorigin="anonymous"></script>
+{# Phase 20: Supercluster — inlined, no CDN dependency #}
+<script>
+/* =============================================================================
+   Supercluster — viewport-aware point clustering for FORGE map
+   Clean from-scratch implementation of the algorithm FORGE needs:
+     new Supercluster(opts)   opts: radius, maxZoom, minPoints, map, reduce
+     .load(geojsonFeatures)
+     .getClusters([w,s,e,n], zoom)  → GeoJSON features (clusters + points)
+     .getClusterExpansionZoom(id)   → zoom level to expand a cluster
+   ============================================================================= */
+(function (root) {
+  'use strict';
+
+  // ─ Spherical Mercator helpers ───────────────────────────────────────────────
+  function lngToX(lng) {
+    return lng / 360 + 0.5;
+  }
+  function latToY(lat) {
+    var sin = Math.sin(lat * Math.PI / 180);
+    var y   = 0.5 - 0.25 * Math.log((1 + sin) / (1 - sin)) / Math.PI;
+    return y < 0 ? 0 : y > 1 ? 1 : y;
+  }
+  function xToLng(x) { return (x - 0.5) * 360; }
+  function yToLat(y) {
+    var y2 = (180 - y * 360) * Math.PI / 180;
+    return 360 * Math.atan(Math.exp(y2)) / Math.PI - 90;
+  }
+
+  // ─ Simple flat spatial index ─────────────────────────────────────────────────
+  // Stores points in a plain array; range() does a linear scan.
+  // Fast enough for 2000 points (< 1ms); no tree-building complexity.
+  function FlatIndex(points) {
+    this.points = points;
+  }
+
+  FlatIndex.prototype.range = function (minX, minY, maxX, maxY) {
+    var result = [];
+    var pts    = this.points;
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      if (p.x >= minX && p.x <= maxX && p.y >= minY && p.y <= maxY) {
+        result.push(i);
+      }
+    }
+    return result;
+  };
+
+  FlatIndex.prototype.within = function (x, y, r) {
+    var result = [];
+    var pts    = this.points;
+    var r2     = r * r;
+    for (var i = 0; i < pts.length; i++) {
+      var p  = pts[i];
+      var dx = p.x - x, dy = p.y - y;
+      if (dx * dx + dy * dy <= r2) result.push(i);
+    }
+    return result;
+  };
+
+  // ─ Supercluster ─────────────────────────────────────────────────────────────────
+  function Supercluster(opts) {
+    opts          = opts || {};
+    this.minZoom  = opts.minZoom  !== undefined ? opts.minZoom  : 0;
+    this.maxZoom  = opts.maxZoom  !== undefined ? opts.maxZoom  : 16;
+    this.radius   = opts.radius   !== undefined ? opts.radius   : 40;
+    this.extent   = opts.extent   !== undefined ? opts.extent   : 512;
+    this.minPts   = opts.minPoints !== undefined ? opts.minPoints : 2;
+    this.mapFn    = opts.map    || function (p) { return p; };
+    this.reduceFn = opts.reduce || null;
+    this._trees   = new Array(this.maxZoom + 2);
+    this._pts     = [];   // original GeoJSON features
+    this._nextId  = 0;
+  }
+
+  Supercluster.prototype.load = function (features) {
+    this._pts    = features;
+    this._nextId = features.length;
+
+    // Convert features to internal cluster objects
+    var clusters = features.map(function (f, i) {
+      return {
+        x:      lngToX(f.geometry.coordinates[0]),
+        y:      latToY(f.geometry.coordinates[1]),
+        zoom:   Infinity,   // last zoom level at which this was merged
+        idx:    i,          // index into this._pts
+        id:     i,          // cluster id (same as idx for leaf points)
+        n:      1,          // point count
+        props:  this.mapFn(f.properties),
+        leaf:   true,
+      };
+    }, this);
+
+    // Build trees from maxZoom down to minZoom
+    for (var z = this.maxZoom; z >= this.minZoom; z--) {
+      this._trees[z + 1] = new FlatIndex(clusters);
+      clusters = this._clusterAtZoom(clusters, z);
+    }
+    this._trees[this.minZoom] = new FlatIndex(clusters);
+    return this;
+  };
+
+  Supercluster.prototype._clusterAtZoom = function (points, zoom) {
+    var r       = this.radius / (this.extent * Math.pow(2, zoom));
+    var result  = [];
+    var self    = this;
+
+    for (var i = 0; i < points.length; i++) {
+      var p = points[i];
+      if (p.zoom <= zoom) { result.push(p); continue; }
+      p.zoom = zoom;   // mark as processed at this zoom
+
+      // Find neighbours
+      var neighbours = this._trees[zoom + 1].within(p.x, p.y, r);
+      var count = p.n;
+      var wx    = p.x * count;
+      var wy    = p.y * count;
+      var hasPriority = p.props && p.props.has_priority;
+      var clusterProps = this.reduceFn ? Object.assign({}, p.props) : null;
+
+      for (var j = 0; j < neighbours.length; j++) {
+        var nb = this._trees[zoom + 1].points[neighbours[j]];
+        if (nb.zoom <= zoom) continue;
+        nb.zoom = zoom;
+        wx     += nb.x * nb.n;
+        wy     += nb.y * nb.n;
+        count  += nb.n;
+        if (nb.props && nb.props.has_priority) hasPriority = true;
+        if (self.reduceFn && clusterProps) self.reduceFn(clusterProps, nb.props);
+      }
+
+      if (count === 1) {
+        result.push(p);
+      } else {
+        var cid = ++this._nextId;
+        result.push({
+          x:     wx / count,
+          y:     wy / count,
+          zoom:  Infinity,
+          idx:   -1,
+          id:    cid,
+          n:     count,
+          leaf:  false,
+          props: clusterProps || { has_priority: hasPriority },
+          _originZoom: zoom + 1,
+        });
+      }
+    }
+    return result;
+  };
+
+  Supercluster.prototype.getClusters = function (bbox, zoom) {
+    var z    = Math.max(this.minZoom, Math.min(Math.floor(zoom), this.maxZoom + 1));
+    var tree = this._trees[z];
+    if (!tree) return [];
+
+    var minX = lngToX(bbox[0]);
+    var minY = latToY(bbox[3]);   // note: Y axis is flipped (latToY inverts)
+    var maxX = lngToX(bbox[2]);
+    var maxY = latToY(bbox[1]);
+
+    var ids     = tree.range(minX, minY, maxX, maxY);
+    var result  = [];
+
+    for (var i = 0; i < ids.length; i++) {
+      var c = tree.points[ids[i]];
+      if (c.leaf || c.n === 1) {
+        // Individual point — return original GeoJSON feature
+        result.push(this._pts[c.idx]);
+      } else {
+        // Cluster bubble
+        result.push({
+          type: 'Feature',
+          id:   c.id,
+          geometry: {
+            type:        'Point',
+            coordinates: [xToLng(c.x), yToLat(c.y)],
+          },
+          properties: {
+            cluster:      true,
+            cluster_id:   c.id,
+            point_count:  c.n,
+            has_priority: c.props ? c.props.has_priority : false,
+          },
+        });
+      }
+    }
+    return result;
+  };
+
+  Supercluster.prototype.getClusterExpansionZoom = function (clusterId) {
+    var z    = this.maxZoom;
+    var tree, pts, i, p;
+
+    // Walk trees from minZoom upward to find at which zoom this cluster
+    // breaks into more than one child — that's the expansion zoom.
+    for (var zoom = this.minZoom; zoom <= this.maxZoom + 1; zoom++) {
+      tree = this._trees[zoom];
+      if (!tree) continue;
+      pts  = tree.points;
+      for (i = 0; i < pts.length; i++) {
+        p = pts[i];
+        if (!p.leaf && p.id === clusterId) {
+          z = zoom;
+          break;
+        }
+      }
+    }
+    return Math.min(z + 1, this.maxZoom);
+  };
+
+  // Export
+  root.Supercluster = Supercluster;
+
+}(typeof window !== 'undefined' ? window : this));
+</script>
 <script>
 /* =============================================================================
    FORGE Phase 15 — Situational Dashboard Map
@@ -200,20 +422,31 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
   }
 
   /* ── SVG marker factory — Live Signals ────────────────────────────────────── */
-  function makeSignalIcon(isPriority) {
+  /* Phase 28: relevance param scales marker opacity + radius */
+  function makeSignalIcon(isPriority, relevance) {
+    const rel = (relevance !== undefined && relevance !== null)
+      ? Math.max(relevance, 0.05) : 1.0;
+    // Opacity: fresh=0.90, fading=0.55, stale=0.25
+    const opacity = 0.20 + rel * 0.70;
+    // Radius: shrinks slightly as signal ages (5→3)
+    const radius  = 3 + Math.round(rel * 2);
+
     if (isPriority) {
       // Pulsing red — uses CSS animation via a wrapper div class
+      // Stale priority signals still pulse but at reduced opacity
+      const wrapStyle = rel < 0.4 ? `opacity:${opacity.toFixed(2)};` : '';
       return L.divIcon({
-        html:        '<div class="forge-signal-pulse"></div>',
+        html:        `<div class="forge-signal-pulse" style="${wrapStyle}"></div>`,
         className:   '',
         iconSize:    [24, 24],
         iconAnchor:  [12, 12],
         popupAnchor: [0, -14],
       });
     }
-    // Standard grey circle
+    // Standard grey circle — opacity and radius scaled by relevance
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="-8 -8 16 16">
-      <circle cx="0" cy="0" r="5" fill="${PAL.signalGrey}" opacity="0.7" stroke="${PAL.bg}" stroke-width="1"/>
+      <circle cx="0" cy="0" r="${radius}" fill="${PAL.signalGrey}"
+              opacity="${opacity.toFixed(2)}" stroke="${PAL.bg}" stroke-width="1"/>
     </svg>`;
     return L.divIcon({
       html:        svg,
@@ -269,8 +502,9 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
   });
 
   /* ── Layer groups — signals and cluster centroids ─────────────────────────── */
-  const signalLayer  = L.layerGroup();
-  const clusterLayer = L.layerGroup();
+  const signalLayer       = L.layerGroup();
+  const clusterLayer      = L.layerGroup();
+  const correlationLayer  = L.layerGroup();  // Phase 23
 
   /* ── State ─────────────────────────────────────────────────────────────────── */
   let allFeatures  = [];
@@ -339,37 +573,32 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
            <p class="map-popup__summary" style="font-size:0.78rem;">${props.content}${props.content.length >= 200 ? '…' : ''}</p>
          </div>`
       : '';
-    const statusBadge = `<span class="signal-status-badge signal-status-badge--${props.status}">${props.status}</span>`;
-
-    // Build the pin-to-case dropdown HTML
-    const casesDropdown = window.FORGE_ACTIVE_CASES && window.FORGE_ACTIVE_CASES.length
-      ? `<div class="map-popup__pin-row">
-           <select class="map-popup__case-select" id="js-map-pin-select-${props.signal_id}">
-             <option value="">— select case —</option>
-             ${window.FORGE_ACTIVE_CASES.map(c =>
-               `<option value="${c.case_id}">${c.title}</option>`
-             ).join('')}
-           </select>
-           <button class="btn btn--sm btn--primary map-popup__pin-btn"
-                   data-signal-id="${props.signal_id}"
-                   onclick="mapPinSignal(this)">⬡ Link</button>
-         </div>`
-      : `<span class="mono" style="color:var(--text-dim);font-size:0.65rem;">No active cases</span>`;
-
-    const sourceBadge = props.source
-      ? `<span class="source-badge source-badge--${props.source}" style="font-size:0.6rem;">${props.source.toUpperCase()}</span>`
+    const statusBadge  = `<span class="signal-status-badge signal-status-badge--${props.status}">${props.status}</span>`;
+    const streamBadge  = props.stream && props.stream !== "GLOBAL"
+      ? `<span class="stream-badge stream-badge--${props.stream}" style="font-size:0.55rem;">${props.stream}</span>`
       : '';
+    const relScore     = props.relevance_score !== undefined ? props.relevance_score : 1.0;
+    const relPct       = Math.round(relScore * 100);
+    const relColour    = relScore >= 0.6 ? '#34d399' : relScore >= 0.2 ? '#c8943a' : '#4a6070';
+    const relBar       = `<div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+      <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;">
+        <div style="width:${relPct}%;height:100%;background:${relColour};border-radius:2px;"></div>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:0.58rem;color:${relColour};">${relPct}%</span>
+    </div>`;
 
     openInfoPanel(`
       <div class="map-popup">
         <div class="map-popup__header" style="border-left-color:${accentCol}">
           <div class="map-popup__meta" style="display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap;">
             ${statusBadge}
-            ${sourceBadge}
+            <span class="signal-source-tag" style="font-size:0.62rem;">${props.source}</span>
+            ${streamBadge}
             ${priorityBadge}
             ${clusterBadge}
           </div>
           <h3 class="map-popup__title" style="font-size:0.88rem;margin-top:var(--sp-2);">${props.title}</h3>
+          ${relBar}
           ${ts}
         </div>
         ${content}
@@ -380,7 +609,6 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
                </a>`
             : `<span class="mono" style="color:var(--text-dim);font-size:0.65rem;text-align:center;">→ already in FORGE</span>`
           }
-          ${casesDropdown}
           <a href="/signals" class="map-popup__link btn" style="text-align:center;font-size:0.7rem;">
             View in Signal Monitor
           </a>
@@ -432,41 +660,6 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
   document.getElementById('js-map-info-close').addEventListener('click', closeInfoPanel);
   map.on('click', closeInfoPanel);
 
-  /* ── Phase 16: Map popup pin-to-case handler ─────────────────────────────── */
-  window.mapPinSignal = function (btn) {
-    const signalId = btn.dataset.signalId;
-    const select   = btn.closest('.map-popup__pin-row').querySelector('.map-popup__case-select');
-    const caseId   = select && parseInt(select.value, 10);
-    if (!caseId) { select && (select.style.borderColor = 'var(--src-leaked)'); return; }
-
-    btn.disabled = true; btn.textContent = '…';
-
-    fetch(`/api/cases/${caseId}/pin/${encodeURIComponent(signalId)}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ note: '' }),
-    })
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(data => {
-        btn.textContent = data.pinned ? '⬡ Linked' : '⬡ Unlinked';
-        btn.style.background = data.pinned
-          ? 'rgba(99,102,241,0.18)' : 'rgba(255,255,255,0.05)';
-        btn.disabled = false;
-        // swap select for a static confirmation
-        const caseTitle = data.case_title || '';
-        if (data.pinned) {
-          select.replaceWith(Object.assign(document.createElement('span'), {
-            className: 'mono', style: 'font-size:0.65rem;color:#818cf8;',
-            textContent: `⬡ linked → ${caseTitle}`,
-          }));
-        }
-      })
-      .catch(err => {
-        console.error('[FORGE] map pin failed:', err);
-        btn.disabled = false; btn.textContent = '⬡ Link';
-      });
-  };
-
   /* ── Archive Event markers ────────────────────────────────────────────────── */
   function buildEventMarkers(features) {
     eventClusterGroup.clearLayers();
@@ -496,28 +689,142 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
     markerCount.textContent = `${features.length} event${features.length !== 1 ? 's' : ''} mapped`;
   }
 
-  /* ── Signal layer builder ────────────────────────────────────────────────── */
-  function buildSignalLayer(features) {
-    signalLayer.clearLayers();
+  /* ── Phase 20: Supercluster — viewport-aware signal clustering ──────────────
+     Supercluster pre-indexes all signal features on load, then on every
+     map move/zoom it re-queries only the clusters visible in the current
+     viewport.  The browser renders O(clusters) DOM nodes instead of
+     O(all signals), making 5 000+ USGS/FIRMS points completely stable.
 
-    features.forEach(function (f) {
-      const p = f.properties;
-      const c = f.geometry.coordinates;
-      const m = L.marker([c[1], c[0]], {
-        icon:       makeSignalIcon(p.is_priority),
-        zIndexOffset: p.is_priority ? 500 : 0,
-      });
+     Cluster marker:  custom FORGE SVG badge (count + priority tint)
+     Individual point: same makeSignalIcon() / openSignalPanel() as before
+     — zero behaviour change for the analyst, just vastly fewer DOM nodes.
+  ─────────────────────────────────────────────────────────────────────────── */
 
-      m.on('click', function (e) {
-        L.DomEvent.stopPropagation(e);
-        openSignalPanel(p);
-      });
+  let _scIndex    = null;   // Supercluster instance (populated after fetch)
+  let _scFeatures = [];     // raw GeoJSON features (kept for panel lookup)
+  let _scLayer    = null;   // current rendered L.layerGroup snapshot
 
-      signalLayer.addLayer(m);
+  /* Make the SVG icon for a Supercluster cluster bubble */
+  function makeScClusterIcon(count, hasPriority) {
+    const col  = hasPriority ? PAL.signalRed : '#818cf8';   // red or indigo
+    const sz   = count > 99 ? 48 : count > 9 ? 42 : 34;
+    const half = sz / 2;
+    const fs   = count > 99 ? 8 : count > 9 ? 10 : 12;
+    const svg  = `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"
+        viewBox="-${half} -${half} ${sz} ${sz}">
+      <circle cx="0" cy="0" r="${half-1}" fill="${PAL.bg}"
+              stroke="${col}" stroke-width="1.5" opacity="0.95"/>
+      <circle cx="0" cy="0" r="${half-6}" fill="${col}" opacity="0.20"/>
+      <text x="0" y="4" text-anchor="middle"
+            font-family="IBM Plex Mono,monospace"
+            font-size="${fs}" font-weight="700" fill="${col}">${count > 999 ? '999+' : count}</text>
+    </svg>`;
+    return L.divIcon({
+      html:      svg,
+      className: 'forge-sc-cluster',
+      iconSize:  [sz, sz],
+      iconAnchor:[half, half],
+    });
+  }
+
+  /* Render whatever Supercluster returns for the current viewport */
+  function renderSignalClusters() {
+    if (!_scIndex) return;
+
+    const bounds = map.getBounds();
+    const zoom   = map.getZoom();
+    const bbox   = [
+      bounds.getWest(), bounds.getSouth(),
+      bounds.getEast(), bounds.getNorth(),
+    ];
+
+    const clusters = _scIndex.getClusters(bbox, Math.round(zoom));
+
+    // Swap layers atomically — build new group, then swap reference
+    const newLayer = L.layerGroup();
+
+    clusters.forEach(function (feature) {
+      const props = feature.properties;
+      const [lng, lat] = feature.geometry.coordinates;
+
+      if (props.cluster) {
+        // ── Cluster bubble ───────────────────────────────────────────
+        const count    = props.point_count;
+        const hasPrio  = props.has_priority || false;
+        const marker   = L.marker([lat, lng], {
+          icon:         makeScClusterIcon(count, hasPrio),
+          zIndexOffset: 200,
+        });
+
+        marker.on('click', function (e) {
+          L.DomEvent.stopPropagation(e);
+          // Zoom into cluster on click
+          const expansionZoom = Math.min(
+            _scIndex.getClusterExpansionZoom(props.cluster_id),
+            18
+          );
+          map.flyTo([lat, lng], expansionZoom, { duration: 0.4 });
+        });
+
+        newLayer.addLayer(marker);
+
+      } else {
+        // ── Individual signal point ──────────────────────────────────
+        const p      = props;
+        const marker = L.marker([lat, lng], {
+          icon:         makeSignalIcon(p.is_priority, p.relevance_score),
+          zIndexOffset: p.is_priority ? 500 : 0,
+        });
+
+        marker.on('click', function (e) {
+          L.DomEvent.stopPropagation(e);
+          openSignalPanel(p);
+        });
+
+        newLayer.addLayer(marker);
+      }
     });
 
+    // Swap old layer group for new one on the map
+    if (_scLayer && map.hasLayer(_scLayer)) {
+      map.removeLayer(_scLayer);
+    }
+    _scLayer = newLayer;
+    if (map.hasLayer(signalLayer)) {
+      map.addLayer(_scLayer);
+    }
+  }
+
+  /* Build Supercluster index from GeoJSON features and do initial render */
+  function buildSignalLayer(features) {
+    _scFeatures = features;
+
+    _scIndex = new Supercluster({
+      radius:   60,    // cluster radius in pixels
+      maxZoom:  14,    // stop clustering above zoom 14
+      map:      function (props) {
+        // Propagate has_priority flag into cluster aggregates
+        return { has_priority: props.is_priority === 1 };
+      },
+      reduce:   function (accumulated, props) {
+        // Any priority in cluster → cluster is priority
+        accumulated.has_priority = accumulated.has_priority || props.has_priority;
+      },
+    });
+
+    _scIndex.load(features);
+
+    // Re-render on every pan or zoom
+    map.on('moveend zoomend', renderSignalClusters);
+
+    // Initial render
+    renderSignalClusters();
+
+    // Update status bar
     const priorityN = features.filter(f => f.properties.is_priority).length;
-    signalCount.textContent = `signals: ${features.length}${priorityN ? ` (${priorityN} ⚑)` : ''}`;
+    const cappedNote = features.length === 2000 ? ' (capped)' : '';
+    signalCount.textContent =
+      `signals: ${features.length}${cappedNote}${priorityN ? ` (${priorityN} ⚑)` : ''}`;
     if (priorityN > 0) signalCount.style.color = PAL.signalRed;
   }
 
@@ -539,6 +846,37 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
       });
 
       clusterLayer.addLayer(m);
+    });
+  }
+
+  /* ── Phase 23: Correlation polyline layer ─────────────────────────────────── */
+  function buildCorrelationLayer(features) {
+    correlationLayer.clearLayers();
+    features.forEach(function (f) {
+      const p     = f.properties;
+      const coords = f.geometry.coordinates;
+      const score  = p.score || 0;
+      const t   = Math.min((score - 0.7) / 0.3, 1.0);
+      const r   = Math.round(200 + t * 55);
+      const g   = Math.round(148 - t * 148);
+      const col = `rgb(${r},${g},0)`;
+      const wt  = 1 + score * 3;
+      const line = L.polyline(
+        coords.map(c => [c[1], c[0]]),
+        { color: col, weight: wt, opacity: 0.6 + score * 0.3,
+          dashArray: score > 0.9 ? null : '6 4' }
+      );
+      line.bindTooltip(
+        `<div class="map-corr-tooltip">`
+        + `<div class="mono" style="color:#c8943a;font-size:0.6rem;">CORRELATION ${(score*100).toFixed(0)}%</div>`
+        + `<div style="font-size:0.7rem;margin-top:2px;">${p.title_a}</div>`
+        + `<div style="font-size:0.65rem;color:var(--text-dim);">&#8597; ${p.title_b}</div>`
+        + `<div class="mono" style="font-size:0.6rem;color:var(--text-ghost);margin-top:3px;">`
+        + `${p.dist_km.toFixed(1)} km &middot; ${p.time_diff.toFixed(1)} h apart</div>`
+        + `</div>`,
+        { sticky: true, className: 'map-corr-tip-wrap' }
+      );
+      correlationLayer.addLayer(line);
     });
   }
 
@@ -654,17 +992,18 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
     }
   ).addTo(map);
 
-  /* ── Bootstrap: fetch all three layers in parallel ───────────────────────── */
+  /* ── Bootstrap: fetch archive + signals + clusters (heatmap is lazy) ─────── */
   markerCount.textContent = 'Loading events…';
 
   Promise.all([
-    fetch('/api/geo')             .then(r => r.ok ? r.json() : Promise.reject(r.status)),
-    fetch('/api/signals/geojson') .then(r => r.ok ? r.json() : Promise.reject(r.status)),
-    fetch('/api/clusters/geojson').then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/geo')                  .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/signals/geojson')      .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/clusters/geojson')     .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/correlations/geojson') .then(r => r.ok ? r.json() : Promise.resolve({features:[]})),
   ])
-  .then(function ([eventsGJ, signalsGJ, clustersGJ]) {
+  .then(function ([eventsGJ, signalsGJ, clustersGJ, corrGJ]) {
 
-    /* ── Archive Events layer ─────────────────────────────────────── */
+    /* ── Archive Events layer ───────────────────────────────── */
     allFeatures = eventsGJ.features;
     allDates    = [...new Set(
       allFeatures.map(f => f.properties.date).filter(Boolean).sort()
@@ -679,18 +1018,28 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
       map.fitBounds(bounds.pad(0.25), { maxZoom: 9 });
     }
 
-    /* ── Live Signals layer ───────────────────────────────────────── */
+    /* ── Live Signals layer (Supercluster) ───────────────── */
     if (signalsGJ.features.length > 0) {
-      buildSignalLayer(signalsGJ.features);
+      // Add sentinel FIRST so renderSignalClusters() (called inside
+      // buildSignalLayer) sees map.hasLayer(signalLayer) === true
+      // and correctly adds _scLayer to the map on initial render.
       map.addLayer(signalLayer);
       layerControl.addOverlay(signalLayer, '⊛  Live Signals');
+      buildSignalLayer(signalsGJ.features);
     }
 
-    /* ── Cluster Centroids layer ──────────────────────────────────── */
+    /* ── Cluster Centroids layer ─────────────────────────── */
     if (clustersGJ.features.length > 0) {
       buildClusterLayer(clustersGJ.features);
       map.addLayer(clusterLayer);
       layerControl.addOverlay(clusterLayer, '⬡  Signal Clusters');
+    }
+
+    /* ── Phase 23: Correlation polylines ─────────────────── */
+    if (corrGJ.features && corrGJ.features.length > 0) {
+      buildCorrelationLayer(corrGJ.features);
+      map.addLayer(correlationLayer);
+      layerControl.addOverlay(correlationLayer, '⟷  Correlations');
     }
 
     updateSliderFill();
@@ -700,7 +1049,69 @@ window.FORGE_ACTIVE_CASES = {{ active_cases | tojson if active_cases is defined 
     markerCount.textContent = 'Error loading layers — check console';
   });
 
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInfoPanel(); });
+  /* ── Phase 18/20: Heatmap toggle — fully lazy, zero cost on load ─────────────── */
+  (function () {
+    const btn   = document.getElementById('js-heatmap-toggle');
+    const label = document.getElementById('js-heatmap-label');
+    if (!btn) return;
+
+    const HEAT_OPTIONS = {
+      radius: 28, blur: 18, maxZoom: 10, max: 1.0,
+      gradient: {
+        0.0: 'rgba(8,13,18,0)',
+        0.2: 'rgba(99,102,241,0.6)',
+        0.5: 'rgba(200,148,58,0.8)',
+        0.8: 'rgba(224,92,92,0.9)',
+        1.0: '#ffffff',
+      },
+    };
+
+    let heatmapOn = false;
+
+    btn.addEventListener('click', function () {
+      const heat = window._forgeHeatLayer;
+
+      if (!heat) {
+        label.textContent = 'Loading…';
+        fetch('/api/heatmap')
+          .then(r => r.json())
+          .then(data => {
+            if (data.points && data.points.length > 0 && L.heatLayer) {
+              window._forgeHeatLayer = L.heatLayer(data.points, HEAT_OPTIONS);
+              map.addLayer(window._forgeHeatLayer);
+              layerControl.addOverlay(window._forgeHeatLayer, '◉  Signal Heatmap');
+              heatmapOn = true;
+              btn.classList.add('map-time-bar__toggle--active');
+              label.textContent = 'Heatmap On';
+            } else {
+              label.textContent = 'No data';
+              setTimeout(() => { label.textContent = 'Heatmap'; }, 2000);
+            }
+          })
+          .catch(() => {
+            label.textContent = 'Error';
+            setTimeout(() => { label.textContent = 'Heatmap'; }, 2000);
+          });
+        return;
+      }
+
+      heatmapOn = !heatmapOn;
+      if (heatmapOn) {
+        map.addLayer(heat);
+        btn.classList.add('map-time-bar__toggle--active');
+        label.textContent = 'Heatmap On';
+      } else {
+        map.removeLayer(heat);
+        btn.classList.remove('map-time-bar__toggle--active');
+        label.textContent = 'Heatmap';
+      }
+    });
+  })();
+
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeInfoPanel();
+  });
 
 })();
 </script>

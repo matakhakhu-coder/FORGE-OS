@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% block title %}Artifact Gallery — FORGE{% endblock %}
+
+{% block content %}
+
+{# ── Page header ──────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div>
+    <div class="page-header__eyebrow mono">FORGE · PRIMARY EVIDENCE</div>
+    <h1 class="page-header__title">Artifact Gallery</h1>
+    <p class="page-header__sub">
+      Raw evidence archive — documents, footage, intercepts, and citizen media.
+      {% if total %}<span class="mono" style="color:var(--text-dim);">{{ total }} artifact{{ 's' if total != 1 }}</span>{% endif %}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <a href="{{ url_for('admin') }}" class="btn btn--sm">⊕ Ingest Artifact</a>
+    <a href="{{ url_for('index') }}" class="btn btn--sm">← Archive</a>
+  </div>
+</div>
+
+{# ── Search bar ────────────────────────────────────────────────────────────── #}
+<form method="get" action="{{ url_for('artifact_gallery') }}"
+      style="display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5);align-items:center;">
+  <input type="text" name="q" value="{{ q }}"
+         placeholder="Search title, description, tags…"
+         class="form-input"
+         style="flex:1;max-width:480px;">
+  {# Preserve active filters when searching #}
+  {% if active_type   %}<input type="hidden" name="type"   value="{{ active_type   }}">{% endif %}
+  {% if active_source %}<input type="hidden" name="source" value="{{ active_source }}">{% endif %}
+  {% if active_status %}<input type="hidden" name="status" value="{{ active_status }}">{% endif %}
+  <button type="submit" class="btn btn--sm">Search</button>
+  {% if q or active_type or active_source or active_status %}
+  <a href="{{ url_for('artifact_gallery') }}" class="btn btn--sm"
+     style="color:var(--text-dim);">✕ Clear</a>
+  {% endif %}
+</form>
+
+<div style="display:grid;grid-template-columns:200px 1fr;gap:var(--sp-6);align-items:start;">
+
+{# ── Filter sidebar ────────────────────────────────────────────────────────── #}
+<aside>
+
+  {# Type filter #}
+  <div class="section-heading">Type</div>
+  <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
+    <a href="{{ url_for('artifact_gallery', source=active_source, status=active_status, q=q) }}"
+       class="gallery-filter-link {% if not active_type %}gallery-filter-link--active{% endif %}">
+      All
+      <span class="gallery-filter-count">{{ total }}</span>
+    </a>
+    {% for t, cnt in type_counts.items() | sort %}
+    <a href="{{ url_for('artifact_gallery', type=t, source=active_source, status=active_status, q=q) }}"
+       class="gallery-filter-link gallery-filter-link--type-{{ t }}
+              {% if active_type == t %}gallery-filter-link--active{% endif %}">
+      {{ t }}
+      <span class="gallery-filter-count">{{ cnt }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+
+  {# Source filter #}
+  {% if source_counts %}
+  <div class="section-heading">Source</div>
+  <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
+    <a href="{{ url_for('artifact_gallery', type=active_type, status=active_status, q=q) }}"
+       class="gallery-filter-link {% if not active_source %}gallery-filter-link--active{% endif %}">
+      All sources
+    </a>
+    {% for src, cnt in source_counts.items() | sort %}
+    <a href="{{ url_for('artifact_gallery', type=active_type, source=src, status=active_status, q=q) }}"
+       class="gallery-filter-link {% if active_source == src %}gallery-filter-link--active{% endif %}">
+      <span class="source-badge source-badge--{{ src }}">
+        {{ SOURCE_META[src].label if src in SOURCE_META else src }}
+      </span>
+      <span class="gallery-filter-count">{{ cnt }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  {# Processing status filter #}
+  <div class="section-heading">Processing</div>
+  <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
+    <a href="{{ url_for('artifact_gallery', type=active_type, source=active_source, q=q) }}"
+       class="gallery-filter-link {% if not active_status %}gallery-filter-link--active{% endif %}">
+      All statuses
+    </a>
+    {% for st, cnt in status_counts.items() | sort %}
+    <a href="{{ url_for('artifact_gallery', type=active_type, source=active_source, status=st, q=q) }}"
+       class="gallery-filter-link {% if active_status == st %}gallery-filter-link--active{% endif %}">
+      <span class="artifact-status-badge artifact-status-badge--{{ st }}">{{ st }}</span>
+      <span class="gallery-filter-count">{{ cnt }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+
+</aside>
+
+{# ── Main gallery grid ─────────────────────────────────────────────────────── #}
+<div>
+
+  {% if artifacts %}
+  <div class="artifact-grid">
+    {% for a in artifacts %}
+    <div class="artifact-card" data-processing="{{ a.processing_status }}">
+
+      {# ── Card header: type + status ─────────────────────────────── #}
+      <div class="artifact-card__header">
+        <span class="artifact-card__type">{{ a.type }}</span>
+        <span class="artifact-status-badge artifact-status-badge--{{ a.processing_status }}">
+          {{ a.processing_status }}
+        </span>
+      </div>
+
+      {# ── Thumbnail / media preview ──────────────────────────────── #}
+      {% if a.thumbnail or a.file_path %}
+      <div class="gallery-card__thumb">
+        {% if a.thumbnail %}
+          <img src="{{ url_for('serve_media', filepath=a.thumbnail[6:]) }}"
+               alt="{{ a.title }}" loading="lazy">
+        {% elif a.type == 'video' %}
+          <div class="gallery-card__thumb-placeholder">🎞</div>
+        {% elif a.type == 'audio' %}
+          <div class="gallery-card__thumb-placeholder">🎙</div>
+        {% elif a.type == 'document' %}
+          <div class="gallery-card__thumb-placeholder">📄</div>
+        {% else %}
+          <div class="gallery-card__thumb-placeholder">📎</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {# ── Card body ──────────────────────────────────────────────── #}
+      <div class="artifact-card__body">
+        <div class="artifact-card__title">
+          <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}">
+            {{ a.title }}
+          </a>
+        </div>
+
+        <div class="artifact-card__date">
+          {% if a.date %}{{ a.date }}{% endif %}
+          {% if a.source %}
+          &nbsp;·&nbsp;
+          <span class="source-badge source-badge--{{ a.source }}">
+            {{ SOURCE_META[a.source].label if a.source in SOURCE_META else a.source }}
+          </span>
+          {% endif %}
+        </div>
+
+        {% if a.event_title %}
+        <div class="artifact-card__event">
+          ↳ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">
+            {{ a.event_title }}
+          </a>
+        </div>
+        {% endif %}
+
+        {% if a.tags %}
+        <div class="gallery-card__tags">
+          {% for tag in a.tags.split(',')[:4] %}
+          <span class="gallery-tag">{{ tag.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {# ── Text extraction indicator ───────────────────────────── #}
+        {% if a.has_text %}
+        <div class="gallery-card__text-indicator mono">
+          ◈ text extracted
+        </div>
+        {% elif a.processing_status == 'pending' %}
+        <div class="gallery-card__text-indicator gallery-card__text-indicator--pending mono">
+          ◷ pending extraction
+        </div>
+        {% endif %}
+      </div>
+
+      {# ── Card footer: action buttons ────────────────────────────── #}
+      <div class="gallery-card__footer">
+        <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+           class="btn btn--sm" style="flex:1;text-align:center;">View</a>
+        {% if a.processing_status in ('pending', 'failed') %}
+        <button class="btn btn--sm js-reprocess"
+                data-id="{{ a.artifact_id }}"
+                style="color:var(--accent);">↺ Process</button>
+        {% endif %}
+        <button class="btn btn--sm js-derive-signal"
+                data-id="{{ a.artifact_id }}"
+                data-title="{{ a.title | e }}"
+                title="Derive a signal from this artifact">⬡</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# ── Pagination ──────────────────────────────────────────────────────── #}
+  {% if total_pages > 1 %}
+  <div style="display:flex;justify-content:center;align-items:center;
+              gap:var(--sp-3);margin-top:var(--sp-8);font-family:var(--font-mono);
+              font-size:0.7rem;">
+    {% if page > 1 %}
+    <a href="{{ url_for('artifact_gallery', page=page-1, type=active_type,
+                         source=active_source, status=active_status, q=q) }}"
+       class="btn btn--sm">← Prev</a>
+    {% endif %}
+    <span style="color:var(--text-dim);">
+      Page {{ page }} of {{ total_pages }}
+      &nbsp;·&nbsp; {{ total }} artifacts
+    </span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('artifact_gallery', page=page+1, type=active_type,
+                         source=active_source, status=active_status, q=q) }}"
+       class="btn btn--sm">Next →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state" style="padding:var(--sp-16) var(--sp-8);text-align:center;">
+    <div style="font-size:2rem;margin-bottom:var(--sp-4);opacity:0.3;">◈</div>
+    <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-dim);">
+      {% if q or active_type or active_source or active_status %}
+        No artifacts match the current filters.
+        <a href="{{ url_for('artifact_gallery') }}" style="color:var(--accent);">Clear filters</a>
+      {% else %}
+        No artifacts in the archive yet.
+        <a href="{{ url_for('admin') }}" style="color:var(--accent);">Ingest evidence →</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>{# /main grid #}
+</div>{# /layout grid #}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  /* ── Re-process button ─────────────────────────────────────────────────── */
+  document.querySelectorAll('.js-reprocess').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const id   = this.dataset.id;
+      const card = this.closest('.artifact-card');
+      this.textContent = '…';
+      this.disabled    = true;
+
+      fetch(`/api/artifacts/${id}/process`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          const badge = card.querySelector('.artifact-status-badge');
+          if (badge) badge.textContent = data.status;
+          if (badge) badge.className = `artifact-status-badge artifact-status-badge--${data.status}`;
+          if (data.status === 'done') {
+            this.remove();
+            // Show entity count if any
+            if (data.entities > 0) {
+              const body = card.querySelector('.gallery-card__text-indicator');
+              if (body) {
+                body.textContent = `◈ ${data.entities} entities extracted`;
+                body.classList.remove('gallery-card__text-indicator--pending');
+              }
+            }
+          } else {
+            this.textContent = '↺ Retry';
+            this.disabled    = false;
+          }
+        })
+        .catch(() => {
+          this.textContent = '↺ Retry';
+          this.disabled    = false;
+        });
+    });
+  });
+
+  /* ── Derive-signal button ──────────────────────────────────────────────── */
+  document.querySelectorAll('.js-derive-signal').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const id    = this.dataset.id;
+      const title = this.dataset.title;
+      this.textContent = '…';
+      this.disabled    = true;
+
+      fetch(`/api/artifacts/${id}/signal`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ title }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'created') {
+            this.textContent = '✓ Signal';
+            this.style.color = '#34d399';
+          } else if (data.status === 'exists') {
+            this.textContent = '✓ Exists';
+            this.style.color = 'var(--text-dim)';
+          } else {
+            this.textContent = '⬡';
+            this.disabled    = false;
+          }
+        })
+        .catch(() => {
+          this.textContent = '⬡';
+          this.disabled    = false;
+        });
+    });
+  });
+
+})();
+</script>
+{% endblock %}

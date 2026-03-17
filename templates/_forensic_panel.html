@@ -1,0 +1,229 @@
+{# ─────────────────────────────────────────────────────────────────────────────
+   Phase 20: Forensic Artifact Intelligence Panel
+   Include in asset.html with:
+       {% include '_forensic_panel.html' %}
+
+   Requires these variables in context (all provided by artifact_detail route):
+       artifact        — the artifact Row object (with file_hash_sha256 etc.)
+       forensic_exif   — dict of parsed EXIF fields (may be empty {})
+       duplicates      — list of duplicate artifact rows (may be [])
+
+   Degrades gracefully: if forensic columns don't exist yet (pre-migration),
+   the panel shows only the integrity status and no data.
+   ─────────────────────────────────────────────────────────────────────────── #}
+
+{# Only render if we have at least a file_path or hash #}
+{% if artifact.file_path or artifact.file_hash_sha256 %}
+<div class="forensic-panel">
+
+  <div class="forensic-panel__header">
+    <span class="forensic-panel__title">
+      <span class="forensic-panel__title-icon">◈</span>
+      Forensic Metadata
+    </span>
+
+    {# Integrity indicator #}
+    {% if artifact.file_hash_sha256 %}
+      {% if duplicates %}
+        <span class="forensic-integrity forensic-integrity--pending">
+          <span class="forensic-integrity__dot"></span>
+          <span class="forensic-integrity__label mono">Duplicate detected</span>
+        </span>
+      {% else %}
+        <span class="forensic-integrity forensic-integrity--verified">
+          <span class="forensic-integrity__dot"></span>
+          <span class="forensic-integrity__label mono">Integrity verified</span>
+        </span>
+      {% endif %}
+    {% else %}
+      <span class="forensic-integrity forensic-integrity--unknown">
+        <span class="forensic-integrity__dot"></span>
+        <span class="forensic-integrity__label mono">Not yet processed</span>
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="forensic-panel__body">
+
+    {# ── Duplicate warning ─────────────────────────────────────────────── #}
+    {% if duplicates %}
+    <div class="forensic-duplicate-alert">
+      <div class="forensic-duplicate-alert__icon">⚠</div>
+      <div class="forensic-duplicate-alert__body">
+        <div class="forensic-duplicate-alert__heading">
+          Duplicate file detected — identical SHA-256 hash
+        </div>
+        <ul class="forensic-duplicate-alert__list">
+          {% for dup in duplicates %}
+          <li>
+            <a href="{{ url_for('artifact_detail', artifact_id=dup.artifact_id) }}">
+              ◈ {{ dup.title }} (ID {{ dup.artifact_id }})
+            </a>
+            <span class="mono" style="color:var(--text-ghost);font-size:0.6rem;">
+              &nbsp;·&nbsp;{{ dup.type }}
+              {% if dup.detected_at %}&nbsp;·&nbsp;detected {{ dup.detected_at[:10] }}{% endif %}
+            </span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
+    {# ── File hashes ───────────────────────────────────────────────────── #}
+    {% if artifact.file_hash_sha256 %}
+    <div style="display:flex;flex-direction:column;gap:var(--sp-2);">
+      <div class="forensic-hash">
+        <span class="forensic-hash__label">SHA-256</span>
+        <span class="forensic-hash__value" title="Copy to verify file integrity">
+          {{ artifact.file_hash_sha256 }}
+        </span>
+      </div>
+      {% if artifact.file_hash_md5 %}
+      <div class="forensic-hash">
+        <span class="forensic-hash__label">MD5</span>
+        <span class="forensic-hash__value">{{ artifact.file_hash_md5 }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {# ── File metadata grid ────────────────────────────────────────────── #}
+    <div class="forensic-grid">
+
+      {% if artifact.file_size_bytes %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">File size</span>
+        <span class="forensic-field__value">
+          {% set sz = artifact.file_size_bytes %}
+          {% if sz >= 1048576 %}
+            {{ "%.1f"|format(sz / 1048576) }} MB
+          {% elif sz >= 1024 %}
+            {{ "%.1f"|format(sz / 1024) }} KB
+          {% else %}
+            {{ sz }} B
+          {% endif %}
+          <span style="color:var(--text-ghost);">&nbsp;({{ "{:,}".format(sz) }} bytes)</span>
+        </span>
+      </div>
+      {% endif %}
+
+      {% if artifact.device_make or artifact.device_model %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Device</span>
+        <span class="forensic-field__value">
+          {{ artifact.device_make or '' }}
+          {% if artifact.device_make and artifact.device_model %} · {% endif %}
+          {{ artifact.device_model or '' }}
+        </span>
+      </div>
+      {% endif %}
+
+      {% if artifact.exif_datetime %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Captured</span>
+        <span class="forensic-field__value">{{ artifact.exif_datetime }}</span>
+      </div>
+      {% endif %}
+
+      {% if artifact.file_path %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Stored as</span>
+        <span class="forensic-field__value"
+              style="font-size:0.62rem;color:var(--text-ghost);">
+          {{ artifact.file_path }}
+        </span>
+      </div>
+      {% endif %}
+
+      {# EXIF extras from forensic_exif dict #}
+      {% if forensic_exif.get('iso') %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">ISO</span>
+        <span class="forensic-field__value">{{ forensic_exif.iso }}</span>
+      </div>
+      {% endif %}
+
+      {% if forensic_exif.get('focal_length') %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Focal length</span>
+        <span class="forensic-field__value">{{ "%.1f"|format(forensic_exif.focal_length) }} mm</span>
+      </div>
+      {% endif %}
+
+      {% if forensic_exif.get('f_number') %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Aperture</span>
+        <span class="forensic-field__value">ƒ/{{ "%.1f"|format(forensic_exif.f_number) }}</span>
+      </div>
+      {% endif %}
+
+      {% if forensic_exif.get('software') %}
+      <div class="forensic-field">
+        <span class="forensic-field__label">Software</span>
+        <span class="forensic-field__value">{{ forensic_exif.software }}</span>
+      </div>
+      {% endif %}
+
+    </div>
+
+    {# ── GPS from EXIF (shown separately if different from artifact coords) #}
+    {% if artifact.gps_lat and artifact.gps_lng %}
+    <div>
+      <div class="forensic-gps-badge">
+        <span class="forensic-gps-badge__icon">⊕</span>
+        EXIF GPS &nbsp;
+        <span class="mono">
+          {{ "%.6f"|format(artifact.gps_lat) }},
+          {{ "%.6f"|format(artifact.gps_lng) }}
+        </span>
+        {% if artifact.latitude and artifact.longitude %}
+          {% set lat_diff = (artifact.gps_lat - artifact.latitude)|abs %}
+          {% set lng_diff = (artifact.gps_lng - artifact.longitude)|abs %}
+          {% if lat_diff > 0.001 or lng_diff > 0.001 %}
+          &nbsp;·&nbsp;
+          <span style="color:var(--accent);font-size:0.6rem;">
+            ⚠ differs from entered coordinates
+          </span>
+          {% else %}
+          &nbsp;·&nbsp;
+          <span style="color:var(--text-dim);font-size:0.6rem;">matches entered</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# ── Re-process button ─────────────────────────────────────────────── #}
+    {% if not artifact.file_hash_sha256 and artifact.file_path %}
+    <div>
+      <button class="btn btn--sm js-forensic-process"
+              data-id="{{ artifact.artifact_id }}"
+              style="color:var(--accent);">
+        ◈ Extract Forensic Metadata
+      </button>
+    </div>
+    {% endif %}
+
+  </div>{# /forensic-panel__body #}
+</div>{# /forensic-panel #}
+
+<script>
+(function () {
+  var btn = document.querySelector('.js-forensic-process');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var id = this.dataset.id;
+    this.textContent = 'Processing…';
+    this.disabled    = true;
+    fetch('/api/artifacts/' + id + '/forensic-process', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function () { window.location.reload(); })
+      .catch(function () {
+        btn.textContent = 'Failed — retry';
+        btn.disabled    = false;
+      });
+  });
+})();
+</script>
+{% endif %}

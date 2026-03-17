@@ -1,0 +1,225 @@
+{# ─────────────────────────────────────────────────────────────────────────────
+   Phase 22: Named Relationship Panel
+   Include in actor.html with:
+       {% include '_relationship_panel.html' %}
+
+   Context variables required (provided by actor_detail route):
+       actor           — current actor Row
+       relationships   — list of entity_relationship rows for this actor
+       all_actors      — all other actors (for the Add Relationship form)
+   ─────────────────────────────────────────────────────────────────────────── #}
+
+<div class="rel-panel">
+
+  <div class="rel-panel__header">
+    <span class="rel-panel__title">
+      <span style="color:var(--accent);opacity:0.8;">→</span>
+      Named Relationships
+    </span>
+    {% if relationships %}
+    <span class="mono" style="font-size:0.6rem;color:var(--text-dim);">
+      {{ relationships|length }} link{{ 's' if relationships|length != 1 }}
+    </span>
+    {% endif %}
+  </div>
+
+  <div class="rel-panel__body">
+
+    {# ── Existing relationships ────────────────────────────────────────── #}
+    {% if relationships %}
+    <ul class="rel-list">
+      {% for r in relationships %}
+      <li class="rel-item" data-id="{{ r.relationship_id }}">
+
+        <div class="rel-item__main">
+          {% if r.subject_actor_id == actor.actor_id %}
+            {# This actor is the subject #}
+            <span class="rel-item__self">{{ actor.name | truncate(20) }}</span>
+            <span class="rel-item__arrow">→</span>
+            <span class="rel-item__type rel-item__type--out">{{ r.relation_type }}</span>
+            <span class="rel-item__arrow">→</span>
+            <a href="{{ url_for('actor_detail', actor_id=r.object_actor_id) }}"
+               class="rel-item__peer">{{ r.object_name | truncate(20) }}</a>
+          {% else %}
+            {# This actor is the object #}
+            <a href="{{ url_for('actor_detail', actor_id=r.subject_actor_id) }}"
+               class="rel-item__peer">{{ r.subject_name | truncate(20) }}</a>
+            <span class="rel-item__arrow">→</span>
+            <span class="rel-item__type rel-item__type--in">{{ r.relation_type }}</span>
+            <span class="rel-item__arrow">→</span>
+            <span class="rel-item__self">{{ actor.name | truncate(20) }}</span>
+          {% endif %}
+        </div>
+
+        <div class="rel-item__meta">
+          <span class="rel-item__method rel-item__method--{{ r.extraction_method }}">
+            {{ r.extraction_method }}
+          </span>
+          <span class="rel-item__confidence mono">
+            {{ "%.0f"|format(r.confidence * 100) }}%
+          </span>
+          {% if r.description %}
+          <span class="rel-item__desc" title="{{ r.description }}">
+            {{ r.description | truncate(40) }}
+          </span>
+          {% endif %}
+          <button class="rel-item__delete js-rel-delete mono"
+                  data-id="{{ r.relationship_id }}"
+                  title="Remove relationship">✕</button>
+        </div>
+
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="rel-empty">
+      <span class="mono" style="font-size:0.68rem;color:var(--text-ghost);">
+        No named relationships defined yet.
+      </span>
+    </div>
+    {% endif %}
+
+    {# ── Add Relationship form ─────────────────────────────────────────── #}
+    <div class="rel-add">
+      <div class="rel-add__heading mono">Define a relationship</div>
+
+      <div class="rel-add__form" id="js-rel-form">
+
+        <div class="rel-add__row">
+          <div class="rel-add__field rel-add__field--fixed">
+            <label class="rel-add__label">Subject</label>
+            <div class="rel-add__subject mono">{{ actor.name | truncate(22) }}</div>
+          </div>
+
+          <div class="rel-add__field">
+            <label class="rel-add__label" for="rel-type">Relation type</label>
+            <input id="rel-type" class="rel-add__input" type="text"
+                   list="rel-type-suggestions"
+                   placeholder="e.g. works_for"
+                   autocomplete="off">
+            <datalist id="rel-type-suggestions">
+              <option value="works_for">
+              <option value="owns">
+              <option value="funded_by">
+              <option value="funds">
+              <option value="associated_with">
+              <option value="member_of">
+              <option value="controls">
+              <option value="opposed_by">
+              <option value="allied_with">
+              <option value="subsidiary_of">
+              <option value="parent_of">
+              <option value="reported_by">
+              <option value="investigated_by">
+            </datalist>
+          </div>
+
+          <div class="rel-add__field">
+            <label class="rel-add__label" for="rel-object">Object (target actor)</label>
+            <select id="rel-object" class="rel-add__select">
+              <option value="">— select actor —</option>
+              {% for a in all_actors %}
+              <option value="{{ a.actor_id }}">{{ a.name }} ({{ a.type }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="rel-add__row rel-add__row--secondary">
+          <div class="rel-add__field" style="flex:2;">
+            <label class="rel-add__label" for="rel-desc">Description (optional)</label>
+            <input id="rel-desc" class="rel-add__input"
+                   type="text" placeholder="Evidentiary note…">
+          </div>
+          <div class="rel-add__field" style="flex:1;">
+            <label class="rel-add__label" for="rel-confidence">
+              Confidence: <span id="rel-conf-display" class="mono">100%</span>
+            </label>
+            <input id="rel-confidence" type="range" min="0" max="100" value="100" step="5"
+                   class="rel-add__range">
+          </div>
+        </div>
+
+        <div class="rel-add__actions">
+          <button class="btn btn--sm js-rel-submit" data-actor-id="{{ actor.actor_id }}">
+            ◈ Record Relationship
+          </button>
+          <span class="rel-add__status js-rel-status mono"></span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Confidence display ─────────────────────────────────────────────── */
+  var confSlider  = document.getElementById('rel-confidence');
+  var confDisplay = document.getElementById('rel-conf-display');
+  if (confSlider) {
+    confSlider.addEventListener('input', function () {
+      confDisplay.textContent = this.value + '%';
+    });
+  }
+
+  /* ── Submit new relationship ─────────────────────────────────────────── */
+  var submitBtn = document.querySelector('.js-rel-submit');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function () {
+      var actorId    = parseInt(this.dataset.actorId);
+      var relType    = document.getElementById('rel-type').value.trim();
+      var objectId   = parseInt(document.getElementById('rel-object').value);
+      var desc       = document.getElementById('rel-desc').value.trim();
+      var confidence = parseFloat(document.getElementById('rel-confidence').value) / 100;
+      var status     = document.querySelector('.js-rel-status');
+
+      if (!relType) { status.textContent = 'Relation type required.'; return; }
+      if (!objectId) { status.textContent = 'Select a target actor.'; return; }
+
+      status.textContent = 'Saving…';
+      submitBtn.disabled = true;
+
+      fetch('/api/relationships', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          subject_actor_id: actorId,
+          object_actor_id:  objectId,
+          relation_type:    relType,
+          description:      desc || null,
+          confidence:       confidence,
+        }),
+      })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          status.textContent = 'Error: ' + data.error;
+          submitBtn.disabled = false;
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(function () {
+        status.textContent = 'Request failed.';
+        submitBtn.disabled = false;
+      });
+    });
+  }
+
+  /* ── Delete relationship ─────────────────────────────────────────────── */
+  document.querySelectorAll('.js-rel-delete').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = this.dataset.id;
+      if (!confirm('Remove this relationship?')) return;
+      fetch('/api/relationships/' + id, { method: 'DELETE' })
+        .then(function (r) { return r.json(); })
+        .then(function () { window.location.reload(); })
+        .catch(function () { alert('Delete failed.'); });
+    });
+  });
+
+})();
+</script>

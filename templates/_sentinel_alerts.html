@@ -1,0 +1,150 @@
+{# ─────────────────────────────────────────────────────────────────────────────
+   Phase 25: Sentinel Incident Panel
+   Include in index.html with:
+       {% include '_sentinel_alerts.html' %}
+
+   Context variable required:
+       sentinel_alerts_dash — list of new alert dicts (from index route)
+   ─────────────────────────────────────────────────────────────────────────── #}
+
+{% if sentinel_alerts_dash %}
+<div class="section-heading" id="sentinel-alerts" style="margin-top:var(--space-xl);">
+  <span style="color:#e05c5c;">⚠</span>
+  Sentinel Alerts
+  <span class="mono" style="font-size:0.65rem;color:var(--text-dim);margin-left:var(--sp-3);">
+    pattern detected · requires analyst review
+  </span>
+</div>
+
+<div class="sentinel-list">
+  {% for alert in sentinel_alerts_dash %}
+  <div class="sentinel-card sentinel-card--{{ alert.alert_type }}"
+       data-id="{{ alert.id }}" id="sentinel-{{ alert.id }}">
+
+    {# ── Header ──────────────────────────────────────────────────────────── #}
+    <div class="sentinel-card__header">
+      <div class="sentinel-card__type-row">
+        <span class="sentinel-card__type-badge sentinel-card__type-badge--{{ alert.alert_type }}">
+          {% if alert.alert_type == 'correlation_escalation' %}⟷ Correlation Escalation
+          {% elif alert.alert_type == 'cluster_spike' %}⬡ Regional Cluster Spike
+          {% elif alert.alert_type == 'actor_match' %}◉ Actor Activity
+          {% else %}◈ {{ alert.alert_type }}{% endif %}
+        </span>
+        <span class="sentinel-card__disclaimer mono">
+          PATTERN DETECTED · ANALYST REVIEW REQUIRED
+        </span>
+      </div>
+
+      <div class="sentinel-card__meta-row">
+        <div class="sentinel-card__conf-wrap">
+          <div class="sentinel-card__conf-track">
+            <div class="sentinel-card__conf-fill"
+                 style="width:{{ (alert.confidence_score * 100)|int }}%"></div>
+          </div>
+          <span class="sentinel-card__conf-val mono">
+            {{ (alert.confidence_score * 100)|int }}% confidence
+          </span>
+        </div>
+        <span class="mono sentinel-card__signals">
+          {{ alert.signal_count }} signal{{ 's' if alert.signal_count != 1 }}
+        </span>
+        <span class="mono sentinel-card__time">
+          {{ alert.created_at[:16] if alert.created_at else '—' }}
+        </span>
+      </div>
+    </div>
+
+    {# ── Summary ─────────────────────────────────────────────────────────── #}
+    <div class="sentinel-card__body">
+      <p class="sentinel-card__summary">{{ alert.summary }}</p>
+
+      {% if alert.location_lat and alert.location_lon %}
+      <div class="sentinel-card__coords">
+        <span class="mono" style="color:var(--text-dim);font-size:0.65rem;">⊕</span>
+        <span class="mono" style="font-size:0.68rem;color:var(--text-secondary);">
+          {{ "%.4f"|format(alert.location_lat) }},
+          {{ "%.4f"|format(alert.location_lon) }}
+        </span>
+        <a href="{{ url_for('map_explorer') }}"
+           class="mono" style="font-size:0.62rem;color:var(--accent);margin-left:var(--sp-2);">
+          View on Map →
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    {# ── Actions ─────────────────────────────────────────────────────────── #}
+    <div class="sentinel-card__actions">
+      <button class="btn btn--primary btn--sm js-sentinel-promote"
+              data-id="{{ alert.id }}">
+        ↑ Promote to Case
+      </button>
+      <button class="btn btn--sm js-sentinel-acknowledge"
+              data-id="{{ alert.id }}">
+        ✓ Acknowledge
+      </button>
+      <button class="btn btn--sm js-sentinel-dismiss"
+              data-id="{{ alert.id }}"
+              style="color:var(--text-dim);">
+        ✕ Dismiss
+      </button>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+(function () {
+  function alertAction(url, id, onSuccess) {
+    fetch(url, { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) { alert('Error: ' + data.error); return; }
+        onSuccess(data);
+      })
+      .catch(function () { alert('Request failed.'); });
+  }
+
+  /* Promote to Case */
+  document.querySelectorAll('.js-sentinel-promote').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = this.dataset.id;
+      this.textContent = 'Creating case…';
+      this.disabled    = true;
+      alertAction('/api/alerts/' + id + '/promote-case', id, function (data) {
+        if (data.case_id) {
+          window.location.href = '/cases/' + data.case_id;
+        }
+      });
+    });
+  });
+
+  /* Acknowledge */
+  document.querySelectorAll('.js-sentinel-acknowledge').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id   = this.dataset.id;
+      var card = document.getElementById('sentinel-' + id);
+      alertAction('/api/alerts/' + id + '/acknowledge', id, function () {
+        card.style.opacity    = '0.4';
+        card.style.transition = 'opacity 0.3s';
+        setTimeout(function () { card.remove(); }, 350);
+      });
+    });
+  });
+
+  /* Dismiss */
+  document.querySelectorAll('.js-sentinel-dismiss').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id   = this.dataset.id;
+      var card = document.getElementById('sentinel-' + id);
+      alertAction('/api/alerts/' + id + '/dismiss', id, function () {
+        card.style.opacity    = '0';
+        card.style.transition = 'opacity 0.3s';
+        setTimeout(function () { card.remove(); }, 350);
+      });
+    });
+  });
+})();
+</script>
+{% endif %}

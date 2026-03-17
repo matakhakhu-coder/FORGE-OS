@@ -169,6 +169,11 @@
           <span class="analytics-pin-stat__val analytics-pin-stat__val--signal">{{ pinned_signals | length }}</span>
           <span class="analytics-pin-stat__label mono">⬡ signals</span>
         </div>
+        {# Phase 30E — correlation count chip #}
+        <div class="analytics-pin-stat analytics-pin-stat--corr" id="js-corr-pin-stat" style="display:none;">
+          <span class="analytics-pin-stat__val" id="js-corr-pin-val" style="color:#34d399;">—</span>
+          <span class="analytics-pin-stat__label mono" style="color:#34d399;">⟷ corr</span>
+        </div>
       </div>
     </div>{# /analytics-bar #}
 
@@ -487,6 +492,59 @@
       </div>
       {% endif %}
     </div>{# /intel-feed-section #}
+
+    {# ═════════════════════════════════════════════════════════════════════
+       PHASE 30E — SIGNAL CORRELATIONS
+       Shows correlated_incidents pairs where both signals are pinned to
+       this case. Surfaces the VBS/Makhado 1.000 score automatically.
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="intel-feed-section" id="js-corr-section" style="display:none;">
+      <div class="intel-feed-header">
+        <div class="intel-feed-header__left">
+          <span class="intel-feed-header__icon" style="color:#34d399;">⟷</span>
+          <h2 class="intel-feed-header__title">Signal Correlations</h2>
+          <span class="intel-feed-header__count mono" id="js-corr-section-count">—</span>
+        </div>
+        <div class="intel-feed-header__right">
+          <span class="mono" style="font-size:0.68rem;color:var(--text-ghost);">
+            Pairs where both signals are pinned to this case
+          </span>
+        </div>
+      </div>
+
+      {# Perfect correlation callout — shown when score = 1.000 #}
+      <div id="js-corr-perfect-callout" style="display:none;
+           align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:12px;
+           background:rgba(224,92,92,0.05);border:1px solid rgba(224,92,92,0.3);
+           border-radius:4px;">
+        <div id="js-corr-perfect-pulse" style="flex-shrink:0;width:10px;height:10px;
+             border-radius:50%;background:#e05c5c;margin-top:4px;
+             animation:forge-pulse 1.8s ease-in-out infinite;"></div>
+        <div>
+          <div class="mono" style="font-size:0.6rem;color:#e05c5c;letter-spacing:0.12em;margin-bottom:4px;">
+            ⬡ PERFECT CORRELATION DETECTED
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;">
+            A score 1.000 pair exists in this case. Both signals occupy the same
+            spatiotemporal window — zero distance, zero time offset. This is
+            FORGE&#8217;s first confirmed investigative hit. Treat as primary evidentiary thread.
+          </div>
+        </div>
+      </div>
+
+      <div id="js-corr-loading" class="mono" style="font-size:0.7rem;color:var(--text-ghost);padding:16px 0;">
+        Scanning correlation matrix&#8230;
+      </div>
+      <ol class="case-signal-feed" id="js-corr-list" style="display:none;"></ol>
+      <div class="case-intel-empty" id="js-corr-empty" style="display:none;">
+        <div class="case-intel-empty__icon">⟷</div>
+        <p class="case-intel-empty__title mono">No correlated pairs found.</p>
+        <p class="case-intel-empty__hint">
+          Run the correlation engine, then pin both signals of a pair to this case.
+          The VBS/Makhado 1.000 pair will appear here automatically once both signals are linked.
+        </p>
+      </div>
+    </div>{# /corr-section #}
 
   </div>{# /workspace-layout__main #}
 
@@ -1262,6 +1320,121 @@
 
   /* ── Boot ─────────────────────────────────────────────────────────────────── */
   refreshInference();
+
+})();
+
+/* =============================================================================
+   Phase 30E — Signal Correlations
+   ============================================================================= */
+(function () {
+  'use strict';
+
+  const CASE_ID = {{ case.case_id }};
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function loadCorrelations() {
+    fetch('/api/cases/' + CASE_ID + '/correlations')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        const pairs   = d.pairs || [];
+        const section = document.getElementById('js-corr-section');
+        const loading = document.getElementById('js-corr-loading');
+        const list    = document.getElementById('js-corr-list');
+        const empty   = document.getElementById('js-corr-empty');
+        const countEl = document.getElementById('js-corr-section-count');
+        const pinStat = document.getElementById('js-corr-pin-stat');
+        const pinVal  = document.getElementById('js-corr-pin-val');
+        const tabBadge= document.getElementById('js-corr-pin-val');
+
+        loading.style.display = 'none';
+
+        // Update analytics chip
+        if (pinStat) { pinStat.style.display = 'flex'; }
+        if (pinVal)  { pinVal.textContent = pairs.length; }
+        if (countEl) { countEl.textContent = pairs.length; }
+
+        // Show section only if there are pairs
+        if (pairs.length === 0) {
+          // Still show the section so analyst knows to check
+          section.style.display = 'block';
+          empty.style.display   = 'block';
+          return;
+        }
+
+        section.style.display = 'block';
+        list.style.display    = 'block';
+        list.innerHTML        = '';
+
+        const hasPerfect = pairs.some(function (p) { return p.correlation_score >= 1.0; });
+        if (hasPerfect) {
+          const callout = document.getElementById('js-corr-perfect-callout');
+          if (callout) callout.style.display = 'flex';
+          // Alert the analytics chip
+          if (pinStat) {
+            pinStat.style.borderColor = 'rgba(224,92,92,0.5)';
+            if (pinVal) pinVal.style.color = '#e05c5c';
+          }
+        }
+
+        pairs.forEach(function (p) {
+          const isPerfect  = p.correlation_score >= 1.0;
+          const isStrong   = p.correlation_score >= 0.9;
+          const scoreColor = isPerfect ? '#e05c5c' : isStrong ? '#34d399' : '#818cf8';
+          const borderLeft = isPerfect ? '#e05c5c' : isStrong ? '#34d399' : '#818cf8';
+
+          const li = document.createElement('li');
+          li.className = 'case-signal-item';
+          li.style.cssText = 'border-left:3px solid ' + borderLeft + ';' +
+            (isPerfect ? 'background:rgba(224,92,92,0.03);' : '');
+
+          li.innerHTML =
+            '<div class="case-signal-item__timeline">' +
+              '<div class="case-signal-item__node" style="border-color:' + scoreColor + ';background:' + scoreColor.replace(')', ',0.2)').replace('rgb', 'rgba') + ';"></div>' +
+            '</div>' +
+            '<div class="case-signal-item__card">' +
+              '<div class="case-signal-item__meta">' +
+                '<span class="mono" style="font-size:1rem;font-weight:700;color:' + scoreColor + ';">' + p.correlation_score.toFixed(3) + '</span>' +
+                (isPerfect ? '<span class="mono" style="font-size:0.6rem;letter-spacing:0.12em;color:#e05c5c;border:1px solid rgba(224,92,92,0.4);padding:1px 6px;border-radius:2px;">PERFECT</span>' : '') +
+                '<span class="mono" style="font-size:0.62rem;color:var(--text-ghost);">Δ ' + (p.distance_km || 0).toFixed(1) + ' km</span>' +
+                '<span class="mono" style="font-size:0.62rem;color:var(--text-ghost);">Δ ' + (p.time_difference_hours || 0).toFixed(2) + ' h</span>' +
+                '<span class="case-signal-item__ts mono">' + (p.detected_at || '—').slice(0,16).replace('T',' ') + '</span>' +
+              '</div>' +
+              '<h4 class="case-signal-item__title">' +
+                '<span style="color:var(--text-dim);font-size:0.72rem;">' + esc(p.src_a || '—') + '</span> ' +
+                esc(p.title_a || '(untitled)') +
+                ' <span style="color:var(--text-ghost);font-family:var(--font-mono);">&#8596;</span> ' +
+                '<span style="color:var(--text-dim);font-size:0.72rem;">' + esc(p.src_b || '—') + '</span> ' +
+                esc(p.title_b || '(untitled)') +
+              '</h4>' +
+              '<div class="mono" style="font-size:0.62rem;color:var(--text-ghost);margin-top:4px;">' +
+                'Space score ' + (p.space_score || 0).toFixed(3) +
+                ' &nbsp;&middot;&nbsp; Time score ' + (p.time_score || 0).toFixed(3) +
+              '</div>' +
+            '</div>';
+
+          list.appendChild(li);
+        });
+      })
+      .catch(function (err) {
+        console.error('[FORGE Correlations]', err);
+        const loading = document.getElementById('js-corr-loading');
+        if (loading) loading.textContent = 'Failed to load correlations.';
+      });
+  }
+
+  // Boot
+  loadCorrelations();
+
+  // Add pulse keyframe if not already in page styles
+  if (!document.getElementById('forge-pulse-style')) {
+    const s = document.createElement('style');
+    s.id = 'forge-pulse-style';
+    s.textContent = '@keyframes forge-pulse{0%{box-shadow:0 0 0 0 rgba(224,92,92,0.5)}70%{box-shadow:0 0 0 8px rgba(224,92,92,0)}100%{box-shadow:0 0 0 0 rgba(224,92,92,0)}}';
+    document.head.appendChild(s);
+  }
 
 })();
 

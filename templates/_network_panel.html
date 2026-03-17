@@ -1,0 +1,167 @@
+{# ─────────────────────────────────────────────────────────────────────────────
+   Phase 21: Actor Network Position Panel
+   Include in actor.html (dossier page) with:
+       {% include '_network_panel.html' %}
+
+   Requires these context variables (provided by actor_detail route):
+       actor           — the actor Row object
+       network_metrics — Row from actor_network_metrics (may be None)
+       network_top     — list of top actors by pagerank (may be [])
+   ─────────────────────────────────────────────────────────────────────────── #}
+
+<div class="network-panel">
+
+  <div class="network-panel__header">
+    <span class="network-panel__title">
+      <span style="color:var(--accent);opacity:0.8;">⬡</span>
+      Network Position
+    </span>
+    {% if network_metrics %}
+      {% if network_metrics.community_id is not none %}
+        <span class="community-badge community-badge--{{ network_metrics.community_id % 8 }}">
+          Community {{ network_metrics.community_id }}
+        </span>
+      {% endif %}
+    {% else %}
+      <span class="mono" style="font-size:0.6rem;color:var(--text-ghost);">
+        Not yet computed
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="network-panel__body">
+
+    {% if network_metrics %}
+
+      {# ── Three metric bars ─────────────────────────────────────────── #}
+      <div class="network-metrics-grid">
+
+        <div class="network-metric">
+          <div class="network-metric__header">
+            <span class="network-metric__label">PageRank</span>
+            <span class="network-metric__value mono">
+              {{ "%.4f"|format(network_metrics.pagerank) }}
+            </span>
+          </div>
+          <div class="network-metric__bar-track">
+            <div class="network-metric__bar network-metric__bar--pagerank"
+                 style="width:{{ [network_metrics.pagerank * 1000, 100]|min }}%">
+            </div>
+          </div>
+          <div class="network-metric__desc">
+            Influence in the network — higher means more connected to key actors
+          </div>
+        </div>
+
+        <div class="network-metric">
+          <div class="network-metric__header">
+            <span class="network-metric__label">Betweenness</span>
+            <span class="network-metric__value mono">
+              {{ "%.4f"|format(network_metrics.betweenness) }}
+            </span>
+          </div>
+          <div class="network-metric__bar-track">
+            <div class="network-metric__bar network-metric__bar--betweenness"
+                 style="width:{{ [network_metrics.betweenness * 200, 100]|min }}%">
+            </div>
+          </div>
+          <div class="network-metric__desc">
+            Broker score — sits on shortest paths between other actors
+          </div>
+        </div>
+
+        <div class="network-metric">
+          <div class="network-metric__header">
+            <span class="network-metric__label">Eigenvector</span>
+            <span class="network-metric__value mono">
+              {{ "%.4f"|format(network_metrics.eigenvector) }}
+            </span>
+          </div>
+          <div class="network-metric__bar-track">
+            <div class="network-metric__bar network-metric__bar--eigenvector"
+                 style="width:{{ [network_metrics.eigenvector * 100, 100]|min }}%">
+            </div>
+          </div>
+          <div class="network-metric__desc">
+            Connected to other high-influence actors
+          </div>
+        </div>
+
+      </div>
+
+      {# ── Graph metadata ────────────────────────────────────────────── #}
+      <div class="network-meta">
+        <span class="mono" style="font-size:0.6rem;color:var(--text-ghost);">
+          Graph: {{ network_metrics.node_count }} actors ·
+          {{ network_metrics.edge_count }} connections ·
+          computed {{ network_metrics.computed_at[:10] if network_metrics.computed_at else '—' }}
+        </span>
+      </div>
+
+      {# ── Top actors rank list (for context) ────────────────────────── #}
+      {% if network_top %}
+      <div class="network-rank">
+        <div class="network-rank__heading mono">Top actors by influence</div>
+        <ol class="network-rank__list">
+          {% for r in network_top %}
+          <li class="network-rank__item {% if r.actor_id == actor.actor_id %}network-rank__item--current{% endif %}">
+            <a href="{{ url_for('actor_detail', actor_id=r.actor_id) }}"
+               class="network-rank__link">
+              <span class="network-rank__name">{{ r.name }}</span>
+              <span class="network-rank__type mono">{{ r.type }}</span>
+            </a>
+            <span class="network-rank__score mono">{{ "%.4f"|format(r.pagerank) }}</span>
+            {% if r.community_id is not none %}
+            <span class="community-badge community-badge--{{ r.community_id % 8 }}"
+                  style="font-size:0.55rem;padding:1px 5px;">
+              C{{ r.community_id }}
+            </span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
+
+    {% else %}
+
+      {# ── Not yet computed state ────────────────────────────────────── #}
+      <div class="network-empty">
+        <div class="network-empty__icon">⬡</div>
+        <div class="network-empty__text">
+          Network intelligence not yet computed for this archive.
+        </div>
+        <button class="btn btn--sm js-graph-recalculate" style="margin-top:var(--sp-3);">
+          ◈ Calculate Network Intelligence
+        </button>
+      </div>
+
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var btn = document.querySelector('.js-graph-recalculate');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    btn.textContent = 'Calculating…';
+    btn.disabled    = true;
+    fetch('/api/graph/recalculate', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          btn.textContent = 'Error — check server log';
+          btn.disabled    = false;
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(function () {
+        btn.textContent = 'Failed — retry';
+        btn.disabled    = false;
+      });
+  });
+})();
+</script>

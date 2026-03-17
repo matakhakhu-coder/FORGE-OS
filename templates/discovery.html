@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Discovery{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">SYSTEM · PHASE 33</div>
+  <h1 class="page-header__title">
+    <span style="color:#818cf8;">⟁</span> Evolution Layer
+  </h1>
+  <p class="page-header__sub">
+    Candidate entities extracted from high-scoring correlated signals.
+    Approve to generate a collector snippet. Ignore to suppress permanently.
+  </p>
+</div>
+
+{# ── Stats bar ────────────────────────────────────────────────────────────── #}
+<div class="disc-stats">
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" style="color:#818cf8;">{{ pending }}</span>
+    <span class="disc-stat__label">Pending</span>
+  </div>
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" style="color:#4ade80;">{{ approved }}</span>
+    <span class="disc-stat__label">Approved</span>
+  </div>
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" style="color:var(--text-ghost);">{{ ignored }}</span>
+    <span class="disc-stat__label">Ignored</span>
+  </div>
+  <div class="disc-stat" style="margin-left:auto;">
+    <button class="btn btn--primary btn--sm" id="js-run-engine">
+      ↻ Run Evolution Engine
+    </button>
+  </div>
+</div>
+
+{# ── Engine output banner ─────────────────────────────────────────────────── #}
+<div id="js-run-banner" class="disc-run-banner" style="display:none;">
+  <span class="mono" id="js-run-msg">Running…</span>
+</div>
+
+{# ── Candidate list ───────────────────────────────────────────────────────── #}
+{% if targets %}
+<div class="disc-list" id="js-disc-list">
+  {% for t in targets %}
+  <div class="disc-card disc-card--{{ t.status }}" id="disc-card-{{ t.id }}">
+
+    <div class="disc-card__left">
+      <div class="disc-card__status-dot disc-dot--{{ t.status }}"></div>
+    </div>
+
+    <div class="disc-card__body">
+      <div class="disc-card__header">
+        <span class="disc-card__entity">{{ t.entity_name }}</span>
+        <span class="disc-card__score mono">
+          score {{ '%.3f'|format(t.candidate_score) }}
+        </span>
+        <span class="disc-card__count mono">
+          {{ t.evidence_count }} pair{{ 's' if t.evidence_count != 1 }}
+        </span>
+        <span class="disc-card__status-badge disc-badge--{{ t.status }} mono">
+          {{ t.status.upper() }}
+        </span>
+      </div>
+
+      <div class="disc-card__query mono">
+        <span class="disc-card__query-label">Query →</span>
+        <a href="{{ t.suggested_query }}" target="_blank" class="disc-card__query-link">
+          {{ t.suggested_query[:90] }}{% if t.suggested_query|length > 90 %}…{% endif %}
+        </a>
+      </div>
+
+      {# Evidence signal IDs #}
+      {% if t.evidence_json %}
+      {% set ev = t.evidence_json | tojson %}
+      <div class="disc-card__evidence mono" id="disc-ev-{{ t.id }}">
+        <span class="disc-card__ev-label">Evidence signals:</span>
+        <span class="disc-card__ev-ids" id="disc-ev-ids-{{ t.id }}">—</span>
+      </div>
+      {% endif %}
+
+      {# Snippet (shown after approve) #}
+      <div class="disc-card__snippet" id="disc-snippet-{{ t.id }}" style="display:none;">
+        <div class="disc-card__snippet-label mono">⊢ ADD TO civic_intel_collector.py SOURCES:</div>
+        <pre class="disc-card__snippet-code" id="disc-snippet-code-{{ t.id }}"></pre>
+        <button class="btn btn--sm disc-copy-btn" data-target="disc-snippet-code-{{ t.id }}">
+          ⎘ Copy
+        </button>
+      </div>
+    </div>
+
+    <div class="disc-card__actions">
+      {% if t.status == 'pending' %}
+      <button class="btn btn--primary btn--sm js-approve"
+              data-id="{{ t.id }}">✓ Approve</button>
+      <button class="btn btn--sm js-ignore"
+              data-id="{{ t.id }}" style="color:var(--text-ghost);">✕ Ignore</button>
+      {% elif t.status == 'approved' %}
+      <button class="btn btn--sm js-show-snippet"
+              data-id="{{ t.id }}">⎙ Show Snippet</button>
+      {% endif %}
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="disc-empty">
+  <div style="font-size:2.5rem;opacity:0.15;margin-bottom:var(--sp-3);">⟁</div>
+  <div class="mono" style="font-size:0.82rem;color:var(--text-ghost);">
+    No candidates yet. Run the Evolution Engine to scan the archive.
+  </div>
+  <div style="margin-top:var(--sp-3);">
+    <button class="btn btn--primary btn--sm" id="js-run-engine-empty">
+      ↻ Run Evolution Engine
+    </button>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Parse evidence JSON into signal ID list ────────────────────────────────
+  document.querySelectorAll('[id^="disc-ev-ids-"]').forEach(function (el) {
+    var cardId  = el.id.replace('disc-ev-ids-', '');
+    var evEl    = document.getElementById('disc-ev-' + cardId);
+    if (!evEl) return;
+    // Read evidence_json from a data attribute on the card
+    var card    = document.getElementById('disc-card-' + cardId);
+    if (!card) return;
+    // Find the evidence mono div and read from server-rendered tojson
+    // We'll fetch from the API instead for cleanliness
+  });
+
+  // ── Run engine ─────────────────────────────────────────────────────────────
+  function runEngine(btn) {
+    if (btn) { btn.textContent = 'Running…'; btn.disabled = true; }
+    var banner = document.getElementById('js-run-banner');
+    var msg    = document.getElementById('js-run-msg');
+    if (banner) banner.style.display = 'block';
+    if (msg)    msg.textContent = 'Evolution engine scanning archive…';
+
+    fetch('/api/evolution/run', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (msg) {
+          if (d.error) {
+            msg.textContent = '✕ Error: ' + d.error;
+            msg.style.color = '#e05c5c';
+          } else {
+            msg.textContent = '✓ Done — ' + (d.candidates || 0) + ' candidates scanned, ' +
+                              (d.written || 0) + ' new targets written. Reloading…';
+            msg.style.color = '#4ade80';
+            setTimeout(function () { window.location.reload(); }, 1800);
+          }
+        }
+        if (btn) { btn.textContent = '↻ Run Evolution Engine'; btn.disabled = false; }
+      })
+      .catch(function (e) {
+        if (msg) { msg.textContent = '✕ Network error'; msg.style.color = '#e05c5c'; }
+        if (btn) { btn.textContent = '↻ Run Evolution Engine'; btn.disabled = false; }
+      });
+  }
+
+  var runBtn = document.getElementById('js-run-engine');
+  if (runBtn) runBtn.addEventListener('click', function () { runEngine(this); });
+  var runBtnEmpty = document.getElementById('js-run-engine-empty');
+  if (runBtnEmpty) runBtnEmpty.addEventListener('click', function () { runEngine(this); });
+
+  // ── Approve ────────────────────────────────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-approve');
+    if (!btn) return;
+    var id = btn.dataset.id;
+    btn.textContent = '…'; btn.disabled = true;
+
+    fetch('/api/discovery/' + id + '/approve', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) { btn.textContent = '✕'; return; }
+
+        // Update card status
+        var card = document.getElementById('disc-card-' + id);
+        if (card) {
+          card.className = card.className.replace('disc-card--pending', 'disc-card--approved');
+          var badge = card.querySelector('.disc-card__status-badge');
+          if (badge) { badge.textContent = 'APPROVED'; badge.className = 'disc-card__status-badge disc-badge--approved mono'; }
+          var dot = card.querySelector('.disc-card__status-dot');
+          if (dot) { dot.className = 'disc-card__status-dot disc-dot--approved'; }
+        }
+
+        // Show snippet
+        var snippetWrap = document.getElementById('disc-snippet-' + id);
+        var snippetCode = document.getElementById('disc-snippet-code-' + id);
+        if (snippetWrap && snippetCode) {
+          snippetWrap.style.display = 'block';
+          snippetCode.textContent   = d.snippet;
+        }
+
+        // Replace action buttons
+        var actionsEl = btn.closest('.disc-card__actions');
+        if (actionsEl) {
+          actionsEl.innerHTML = '<button class="btn btn--sm js-show-snippet" data-id="' + id + '">⎙ Show Snippet</button>';
+        }
+      });
+  });
+
+  // ── Ignore ─────────────────────────────────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-ignore');
+    if (!btn) return;
+    var id = btn.dataset.id;
+    btn.textContent = '…'; btn.disabled = true;
+
+    fetch('/api/discovery/' + id + '/ignore', { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var card = document.getElementById('disc-card-' + id);
+        if (card) {
+          card.style.transition = 'opacity 0.3s';
+          card.style.opacity    = '0.35';
+          card.className = card.className.replace('disc-card--pending', 'disc-card--ignored');
+          var badge = card.querySelector('.disc-card__status-badge');
+          if (badge) { badge.textContent = 'IGNORED'; badge.className = 'disc-card__status-badge disc-badge--ignored mono'; }
+          var actionsEl = btn.closest('.disc-card__actions');
+          if (actionsEl) actionsEl.innerHTML = '';
+        }
+      });
+  });
+
+  // ── Show snippet (for already-approved) ────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.js-show-snippet');
+    if (!btn) return;
+    var id  = btn.dataset.id;
+    var wrap = document.getElementById('disc-snippet-' + id);
+    if (wrap) {
+      wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+      btn.textContent    = wrap.style.display === 'none' ? '⎙ Show Snippet' : '⎙ Hide Snippet';
+    }
+  });
+
+  // ── Copy snippet ───────────────────────────────────────────────────────────
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.disc-copy-btn');
+    if (!btn) return;
+    var target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    navigator.clipboard.writeText(target.textContent).then(function () {
+      btn.textContent = '✓ Copied';
+      setTimeout(function () { btn.textContent = '⎘ Copy'; }, 2000);
+    });
+  });
+
+})();
+</script>
+{% endblock %}
