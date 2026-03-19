@@ -90,6 +90,13 @@ def create_app() -> Flask:
 
     app.context_processor(inject_globals(get_db))
 
+    # FMS: module readiness scan on startup — observability only, no side effects
+    try:
+        from core.fms.readiness import report_readiness
+        report_readiness()
+    except Exception:
+        pass  # FMS readiness is never allowed to affect app startup
+
     # Initialize wiki schema and register wiki routes
     from core.db.wiki import init_wiki_db
     init_wiki_db()
@@ -695,7 +702,7 @@ def create_app() -> Flask:
                    COUNT(DISTINCT sa.signal_id)   AS signal_count,
                    MAX(COALESCE(s.gravity_score, 0))  AS max_gravity,
                    MAX(COALESCE(s.is_priority, 0))    AS has_priority_signal,
-                   CASE WHEN MAX(COALESCE(s.gravity_score, 0)) >= 0.75
+                   CASE WHEN MAX(COALESCE(s.gravity_score, 0)) >= 0.55
                              OR MAX(COALESCE(s.is_priority, 0)) = 1
                         THEN 1 ELSE 0 END              AS is_targeted
             FROM   actors ac
@@ -3655,24 +3662,24 @@ def create_app() -> Flask:
                 WHERE  sa.actor_id = ?
             """, (actor_id,)).fetchone()
             if t:
-                max_g    = float(t["max_gravity"] or 0)
-                has_pri  = bool(t["has_priority_signal"])
+                max_g     = float(t["max_gravity"] or 0)
+                has_pri   = bool(t["has_priority_signal"])
                 sig_count = int(t["signal_count"] or 0)
-                is_targeted = max_g >= 0.75 or has_pri
+                is_targeted = max_g >= 0.55 or has_pri
                 if max_g >= 0.75 or has_pri:
                     threat_level = "critical"
-                elif max_g >= 0.45:
+                elif max_g >= 0.55:
                     threat_level = "elevated"
-                elif sig_count > 0:
+                elif max_g >= 0.35:
                     threat_level = "monitored"
                 else:
                     threat_level = "none"
                 targeting = {
-                    "is_targeted": is_targeted,
-                    "signal_count": sig_count,
-                    "max_gravity": round(max_g, 3),
+                    "is_targeted":        is_targeted,
+                    "signal_count":       sig_count,
+                    "max_gravity":        round(max_g, 3),
                     "has_priority_signal": has_pri,
-                    "threat_level": threat_level,
+                    "threat_level":       threat_level,
                 }
         except Exception: pass
 
@@ -5153,6 +5160,23 @@ def create_app() -> Flask:
     # -----------------------------------------------------------------------
     # Phase 33: Evolution Layer — Discovery
     # -----------------------------------------------------------------------
+
+    @app.route("/api/fms/status")
+    def api_fms_status():
+        """FMS module readiness — pure observability, no side effects."""
+        try:
+            from core.fms.readiness import report_readiness
+            from core.conclave.context import get_context
+            reports  = report_readiness()
+            context  = get_context()
+            pipeline = context.status()
+        except Exception as exc:
+            return {"error": str(exc)}, 500
+
+        return {
+            "modules":  reports,
+            "pipeline": pipeline,
+        }
 
     @app.route("/discovery")
     def discovery():
