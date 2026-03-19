@@ -3675,11 +3675,11 @@ def create_app() -> Flask:
                 else:
                     threat_level = "none"
                 targeting = {
-                    "is_targeted":        is_targeted,
-                    "signal_count":       sig_count,
-                    "max_gravity":        round(max_g, 3),
+                    "is_targeted":         is_targeted,
+                    "signal_count":        sig_count,
+                    "max_gravity":         round(max_g, 3),
                     "has_priority_signal": has_pri,
-                    "threat_level":       threat_level,
+                    "threat_level":        threat_level,
                 }
         except Exception: pass
 
@@ -5177,6 +5177,36 @@ def create_app() -> Flask:
             "modules":  reports,
             "pipeline": pipeline,
         }
+
+    @app.route("/api/fms/attach/<module_name>", methods=["POST"])
+    def api_fms_attach(module_name: str):
+        """
+        Explicitly attach a READY module to Conclave.
+        Idempotent — safe to call on an already-active module.
+        """
+        try:
+            from core.fms.activation import attach_module
+            from core.conclave.context import get_context
+            result = attach_module(module_name, get_context())
+        except Exception as exc:
+            return {"status": "failed", "reason": str(exc)}, 500
+        code = 200 if result["status"] in ("attached", "already_active") else 400
+        return result, code
+
+    @app.route("/api/fms/detach/<module_name>", methods=["POST"])
+    def api_fms_detach(module_name: str):
+        """
+        Detach a module from Conclave.
+        Module remains READY — engines and hooks are removed from the pipeline.
+        """
+        try:
+            from core.fms.activation import detach_module
+            from core.conclave.context import get_context
+            result = detach_module(module_name, get_context())
+        except Exception as exc:
+            return {"status": "failed", "reason": str(exc)}, 500
+        code = 200 if result["status"] in ("detached", "not_active") else 400
+        return result, code
 
     @app.route("/discovery")
     def discovery():
