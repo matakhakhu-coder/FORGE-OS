@@ -4,11 +4,18 @@
 {% block content %}
 
 <div class="page-header">
-  <div class="page-header__eyebrow">Archive // Events</div>
-  <h1 class="page-header__title">Event Registry</h1>
-  <p class="page-header__sub">
-    Historical moments that anchor artifacts in time and connect actors across the timeline.
-  </p>
+  {% set lens = request.args.get('lens', 'live') %}
+  {% if lens == 'live' %}
+    <div class="page-header__eyebrow">FORGE // LIVE INTELLIGENCE</div>
+    <h1 class="page-header__title">Event Registry</h1>
+    <p class="page-header__sub">Near-real-time event signal capture for ongoing operations.</p>
+  {% else %}
+    <div class="page-header__eyebrow">Intelligence Archive</div>
+    <h1 class="page-header__title">Event Registry</h1>
+    <p class="page-header__sub">
+      Historical moments that anchor artifacts in time and connect actors across the timeline.
+    </p>
+  {% endif %}
 </div>
 
 {# ── Filter bar ──────────────────────────────────────────────────────────── #}

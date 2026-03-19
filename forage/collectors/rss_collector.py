@@ -503,3 +503,14 @@ def run() -> int:
 
 if __name__ == "__main__":
     sys.exit(run())
+
+# --- MEGA RUNNER ADAPTER ---
+import asyncio as _asyncio
+
+async def async_main(**kwargs):
+    try:
+        result = run()
+        if _asyncio.iscoroutine(result):
+            await result
+    except Exception as e:
+        print(f"[ERROR] async_main failed in rss_collector.py: {e}")

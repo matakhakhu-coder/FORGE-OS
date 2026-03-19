@@ -125,7 +125,8 @@
     state.loading = true;
     loadMore.style.display = 'block';
 
-    var params = '?limit=' + state.limit + '&offset=' + state.offset;
+    var lens = new URLSearchParams(window.location.search).get('lens') || 'live';
+    var params = '?limit=' + state.limit + '&offset=' + state.offset + '&lens=' + encodeURIComponent(lens);
     if (state.stream) params += '&stream=' + encodeURIComponent(state.stream);
     if (state.topic)  params += '&topic='  + encodeURIComponent(state.topic);
 

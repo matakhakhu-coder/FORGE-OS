@@ -14,7 +14,17 @@
 {% if actors %}
 <div class="actor-grid">
   {% for a in actors %}
-  <a href="{{ url_for('actor_detail', actor_id=a.actor_id) }}" class="actor-card">
+  <a href="{{ url_for('actor_detail', actor_id=a.actor_id) }}"
+     class="actor-card{% if a.is_targeted %} actor-card--targeted{% endif %}"
+     {% if a.is_targeted %}data-targeted="true"{% endif %}>
+
+    {# ── Machine targeting label ──────────────────────────────────────── #}
+    {% if a.is_targeted %}
+    <div class="targeting-label targeting-label--machine">ASSET IDENTIFIED</div>
+    <div class="targeting-label targeting-label--samaritan">THREAT CLASSIFIED</div>
+    <div class="targeting-scan"></div>
+    {% endif %}
+
     <div class="actor-card__type">{{ a.type }}</div>
     <div class="actor-card__name">{{ a.name }}</div>
     {% if a.description %}
@@ -29,6 +39,12 @@
         <strong>{{ a.artifact_count }}</strong>
         Artifacts
       </div>
+      {% if a.signal_count %}
+      <div class="actor-card__stat actor-card__stat--signals">
+        <strong>{{ a.signal_count }}</strong>
+        Signals
+      </div>
+      {% endif %}
     </div>
   </a>
   {% endfor %}

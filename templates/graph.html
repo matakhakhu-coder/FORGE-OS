@@ -522,10 +522,12 @@
 
   function buildApiUrl() {
     const p = new URLSearchParams();
+    const lens = new URLSearchParams(window.location.search).get('lens') || 'live';
     filters.actor_types.forEach(t => p.append('actor_type', t));
     filters.categories.forEach(c  => p.append('category',   c));
     p.set('min_weight', filters.min_weight);
     if (filters.artifacts) p.set('include_artifacts', 'true');
+    p.set('lens', lens);
     return '/api/graph_data?' + p.toString();
   }
 

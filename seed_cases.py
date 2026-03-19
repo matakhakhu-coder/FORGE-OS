@@ -65,7 +65,7 @@ def seed_cases(conn: sqlite3.Connection):
     print("[seed_cases] Creating Case Workspaces...")
     for title, description, status in CASES:
         cur.execute(
-            "INSERT INTO cases (title, description, status) VALUES (?, ?, ?)",
+            "INSERT INTO cases (title, description, status, source_type) VALUES (?, ?, ?, 'seed')",
             (title, description, status)
         )
         case_ids.append(cur.lastrowid)

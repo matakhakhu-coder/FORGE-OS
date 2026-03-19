@@ -793,8 +793,9 @@
     const countEl  = document.getElementById('js-tactical-count');
     const emptyEl  = document.getElementById('js-tactical-empty');
     const legendEl = document.getElementById('js-tactical-legend-items');
+    const lens     = new URLSearchParams(window.location.search).get('lens') || 'live';
 
-    fetch(`/api/geo/case/${CASE_ID}`)
+    fetch(`/api/geo/case/${CASE_ID}?lens=${encodeURIComponent(lens)}`)
       .then(r => r.json())
       .then(function (geojson) {
         const features = geojson.features || [];

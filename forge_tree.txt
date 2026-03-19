@@ -1,0 +1,264 @@
+Folder PATH listing for volume Windows-SSD
+Volume serial number is 660A-B91D
+C:\USERS\MATAM\PROJECTS\FORGE
+|   .gitignore
+|   26
+|   anchor_npa.py
+|   app.py
+|   app.py.phase28.bak
+|   backfill_streams.py
+|   capture_npa_signal.py
+|   cleanup_firms.py
+|   database.db
+|   decay_worker.bat
+|   fix_schema.py
+|   fix_wiki_links.py
+|   folder_tree.txt
+|   forge_tree.txt
+|   init_wiki.py
+|   mega_ingest.py
+|   migrate_layer_separation.py
+|   patch_collectors_async.py
+|   purge_signals.py
+|   python
+|   repair_db.py
+|   requirements.txt
+|   schema.sql
+|   seed_cache.py
+|   seed_cases.py
+|   seed_data.py
+|   sentinel_signal_simulator.py
+|   system_decontamination.py
+|   tables.txt
+|   test_ocr.py
+|   tree.txt
+|   wiki_worker.bat
+|   
++---core
+|   +---api
+|   |   |   context.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---routes
+|   |   |   |   wiki_routes.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           wiki_routes.cpython-313.pyc
+|   |   |           __init__.cpython-313.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           context.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---conclave
+|   |   |   engine.py
+|   |   |   registry.py
+|   |   |   
+|   |   \---__pycache__
+|   |           engine.cpython-313.pyc
+|   |           registry.cpython-313.pyc
+|   |           
+|   +---db
+|   |   |   connection.py
+|   |   |   wiki.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           connection.cpython-313.pyc
+|   |           wiki.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---diagnostics
+|   |   |   health.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           health.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---governance
+|   +---media
+|   |   \---documents
+|   |           058da3b2dcd34ea88ce6fa77af7a1376_PAIA_Manual_for_NPA1.pdf
+|   |           
+|   +---meta
+|   +---pipeline
+|   |   |   ingest.py
+|   |   |   intelligence.py
+|   |   |   synthesizer.py
+|   |   |   wiki_logger.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           ingest.cpython-313.pyc
+|   |           intelligence.cpython-313.pyc
+|   |           synthesizer.cpython-313.pyc
+|   |           wiki_logger.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   \---proto
++---forage
+|   +---collectors
+|   |   |   civic_intel_collector.py
+|   |   |   earthquake_collector.py
+|   |   |   firms_collector.py
+|   |   |   gdelt_collector.py
+|   |   |   gdelt_collector.py.bak
+|   |   |   rss_collector.py
+|   |   |   usgs_collector.py
+|   |   |   
+|   |   \---__pycache__
+|   |           civic_intel_collector.cpython-313.pyc
+|   |           earthquake_collector.cpython-313.pyc
+|   |           firms_collector.cpython-313.pyc
+|   |           gdelt_collector.cpython-313.pyc
+|   |           rss_collector.cpython-313.pyc
+|   |           usgs_collector.cpython-313.pyc
+|   |           
+|   +---engines
+|   |   |   anomaly_engine.py
+|   |   |   case_engine.py
+|   |   |   cluster_engine.py
+|   |   |   correlation_engine.py
+|   |   |   decay_engine.py
+|   |   |   entity_engine.py
+|   |   |   escalation_engine.py
+|   |   |   evolution_engine.py
+|   |   |   feedback_engine.py
+|   |   |   graph_engine.py
+|   |   |   gravity_engine.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           anomaly_engine.cpython-313.pyc
+|   |           case_engine.cpython-313.pyc
+|   |           cluster_engine.cpython-313.pyc
+|   |           correlation_engine.cpython-313.pyc
+|   |           decay_engine.cpython-313.pyc
+|   |           entity_engine.cpython-313.pyc
+|   |           escalation_engine.cpython-313.pyc
+|   |           evolution_engine.cpython-313.pyc
+|   |           feedback_engine.cpython-313.pyc
+|   |           graph_engine.cpython-313.pyc
+|   |           gravity_engine.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---processors
+|   |   |   --init-db
+|   |   |   artifact_processor.py
+|   |   |   entity_resolver.py
+|   |   |   event_constructor.py
+|   |   |   forensic_processor.py
+|   |   |   ner_processor.py
+|   |   |   sentinel.py
+|   |   |   signal_interpreter.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           artifact_processor.cpython-313.pyc
+|   |           cluster_engine.cpython-313.pyc
+|   |           entity_resolver.cpython-313.pyc
+|   |           event_constructor.cpython-313.pyc
+|   |           forensic_processor.cpython-313.pyc
+|   |           ner_processor.cpython-313.pyc
+|   |           sentinel.cpython-313.pyc
+|   |           signal_interpreter.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   \---utils
+|       |   pipeline_logger.py
+|       |   __init__.py
+|       |   
+|       \---__pycache__
+|               pipeline_logger.cpython-313.pyc
+|               
++---media
+|   +---audio
+|   +---documents
+|   |   \---wiki
+|   +---images
+|   \---videos
++---static
+|   +---css
+|   |       main.css
+|   |       main.css.phase28.bak
+|   |       
+|   +---graph
+|   +---js
+|   \---map
++---templates
+|       actor.html
+|       actors.html
+|       actor_detail.html
+|       admin.html
+|       admin_event_new.html
+|       archive.html
+|       artifact_detail.html
+|       asset.html
+|       base.html
+|       base.html.phase28.bak
+|       briefing.html
+|       cases.html
+|       case_detail.html
+|       diagnostics.html
+|       discovery.html
+|       dossier.html
+|       edit_actor.html
+|       edit_artifact.html
+|       edit_event.html
+|       event.html
+|       events.html
+|       event_detail.html
+|       evolution.html
+|       feed.html
+|       gallery.html
+|       graph.html
+|       index.html
+|       index.html.phase28.bak
+|       layout.html
+|       map.html
+|       search.html
+|       signals.html
+|       timeline.html
+|       wiki_article.html
+|       wiki_graph.html
+|       wiki_index.html
+|       _forensic_panel.html
+|       _network_panel.html
+|       _pin_widget_js.html
+|       _relationship_panel.html
+|       _sentinel_alerts.html
+|       
++---utils
+|   |   forge_db.py
+|   |   rss_parser.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           forge_db.cpython-313.pyc
+|           rss_parser.cpython-313.pyc
+|           __init__.cpython-313.pyc
+|           
++---wiki
+|   |   routes.py
+|   |   
+|   +---engines
+|   |   |   wiki_link_engine.py
+|   |   |   
+|   |   \---__pycache__
+|   |           wiki_link_engine.cpython-313.pyc
+|   |           
+|   +---processors
+|   |   |   wiki_compiler.py
+|   |   |   
+|   |   \---__pycache__
+|   |           wiki_compiler.cpython-313.pyc
+|   |           
+|   \---__pycache__
+|           routes.cpython-313.pyc
+|           
+\---__pycache__
+        app.cpython-313.pyc
+        migrate_layer_separation.cpython-313.pyc
+        

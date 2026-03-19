@@ -378,7 +378,7 @@ def seed(conn: sqlite3.Connection):
     actor_ids = []
     for name, atype, description in ACTORS:
         cur.execute(
-            "INSERT INTO actors (name, type, description) VALUES (?, ?, ?)",
+            "INSERT INTO actors (name, type, description, source_type) VALUES (?, ?, ?, 'seed')",
             (name, atype, description),
         )
         actor_ids.append(cur.lastrowid)
@@ -388,8 +388,8 @@ def seed(conn: sqlite3.Connection):
     for title, summary, date, location, lat, lon, category in EVENTS:
         cur.execute(
             """INSERT INTO events
-               (title, summary, date, location, latitude, longitude, category)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+               (title, summary, date, location, latitude, longitude, category, source_type)
+               VALUES (?, ?, ?, ?, ?, ?, ?, 'seed')""",
             (title, summary, date, location, lat, lon, category),
         )
         event_ids.append(cur.lastrowid)
@@ -400,8 +400,8 @@ def seed(conn: sqlite3.Connection):
         cur.execute(
             """INSERT INTO artifacts
                (title, description, type, date, location,
-                latitude, longitude, tags, source, event_id)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                latitude, longitude, tags, source, event_id, source_type)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')""",
             (title, description, atype, date, location,
              lat, lon, tags, source, event_ids[event_index]),
         )

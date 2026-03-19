@@ -994,12 +994,13 @@
 
   /* ── Bootstrap: fetch archive + signals + clusters (heatmap is lazy) ─────── */
   markerCount.textContent = 'Loading events…';
+  const _lens = new URLSearchParams(window.location.search).get('lens') || 'live';
 
   Promise.all([
-    fetch('/api/geo')                  .then(r => r.ok ? r.json() : Promise.reject(r.status)),
-    fetch('/api/signals/geojson')      .then(r => r.ok ? r.json() : Promise.reject(r.status)),
-    fetch('/api/clusters/geojson')     .then(r => r.ok ? r.json() : Promise.reject(r.status)),
-    fetch('/api/correlations/geojson') .then(r => r.ok ? r.json() : Promise.resolve({features:[]})),
+    fetch('/api/geo?lens=' + encodeURIComponent(_lens))                  .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/signals/geojson?lens=' + encodeURIComponent(_lens))      .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/clusters/geojson?lens=' + encodeURIComponent(_lens))     .then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    fetch('/api/correlations/geojson?lens=' + encodeURIComponent(_lens)) .then(r => r.ok ? r.json() : Promise.resolve({features:[]})),
   ])
   .then(function ([eventsGJ, signalsGJ, clustersGJ, corrGJ]) {
 

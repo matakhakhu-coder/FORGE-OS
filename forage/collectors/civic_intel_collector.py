@@ -552,8 +552,8 @@ def run(db_path: Path = DB_PATH) -> dict:
                     INSERT INTO signals
                         (signal_id, source, external_id, title, content,
                          lat, lng, timestamp, status,
-                         stream, relevance_score, is_priority)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                         stream, relevance_score, is_priority, source_type)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'live')
                 """, (
                     sig["signal_id"], sig["source"], sig["external_id"],
                     sig["title"],     sig["content"],
@@ -622,3 +622,14 @@ def run(db_path: Path = DB_PATH) -> dict:
 if __name__ == "__main__":
     db = Path(sys.argv[1]) if len(sys.argv) > 1 else DB_PATH
     print(json.dumps(run(db_path=db), indent=2))
+
+# --- MEGA RUNNER ADAPTER ---
+import asyncio as _asyncio
+
+async def async_main(**kwargs):
+    try:
+        result = run()
+        if _asyncio.iscoroutine(result):
+            await result
+    except Exception as e:
+        print(f"[ERROR] async_main failed in civic_intel_collector.py: {e}")

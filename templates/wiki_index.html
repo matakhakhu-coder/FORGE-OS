@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">Archive Intelligence</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow mono">
+    KNOWLEDGE BASE <span style="color:var(--text-ghost);">·</span> SYNTHESIZED DOSSIERS
+  </div>
+  <h1 class="page-header__title">Archive Intelligence</h1>
+  <p class="page-header__meta">
+    A synthesized library of entities discovered through investigative signal streams.
+  </p>
+</div>
+
+{# ── Master layout ─────────────────────────────────────────────────────────── #}
+<div class="detail-layout">
+
+  <div class="detail-layout__main">
+    <section class="detail-section">
+      <h2 class="detail-section__title">
+        Dossiers
+        <span class="detail-section__count">{{ articles | length }}</span>
+      </h2>
+      <p class="detail-section__desc">
+        Most recently updated dossiers appear first.
+      </p>
+
+      {% if articles %}
+      <div class="event-list">
+        {% for article in articles %}
+        <a href="{{ url_for('wiki.wiki_article', slug=article.slug) }}" class="event-row">
+          <div class="event-row__date mono">{{ article.last_updated[:10] if article.last_updated else '—' }}</div>
+          <div>
+            <div class="event-row__title">
+              {{ article.title }}
+              <span class="behavior-badge behavior-{{ article.behavior|lower if article.behavior else 'unknown' }}">
+                {{ article.behavior or 'ANALYZING' }}
+              </span>
+            </div>
+            {% if article.summary %}
+            <div style="font-size:0.72rem; color:var(--text-dim);">
+              {{ article.summary | truncate(120) }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="event-row__meta">
+            {% if article.tags %}
+              <div class="tag-cloud" style="justify-content:flex-end;">
+                {% for tag in article.tags.split(',') %}
+                <a href="{{ url_for('search') }}?q={{ tag.strip() }}"
+                   class="tag-pill">{{ tag.strip() }}</a>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state__icon">◈</div>
+        <div class="empty-state__title">No dossiers yet</div>
+        <div class="empty-state__sub">
+          Run the Wiki pipeline to synthesize dossiers from signals and entities.
+        </div>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <aside class="detail-layout__sidebar">
+    <div class="meta-panel">
+      <div class="meta-panel__header">Top Categories</div>
+      <div class="meta-panel__body">
+        {% if tags %}
+          <div class="tag-cloud">
+            {% for tag in tags %}
+            <span class="tag-pill" style="cursor:default;">
+              {{ tag.tags }} <span style="opacity:0.7;">({{ tag.count }})</span>
+            </span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="meta-field__value" style="color:var(--text-dim);">—</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Graph</div>
+      <div class="meta-panel__body" style="padding:var(--sp-4);">
+        <a href="{{ url_for('wiki.wiki_graph') }}" class="btn btn--secondary" style="width:100%; text-align:center;">
+          ◫ View Relationship Graph
+        </a>
+      </div>
+    </div>
+  </aside>
+
+</div>
+{% endblock %}
+

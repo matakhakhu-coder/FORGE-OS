@@ -251,6 +251,59 @@ mark {
 .topbar__meta {
   margin-left: auto;
   font-family: var(--font-mono);
+
+}
+
+.topbar__lens-toggle {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.topbar__mode-badge {
+  margin-left: 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148,163,184,0.35);
+  padding: 0.28rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #cbd5e1;
+  background: rgba(148,163,184,0.12);
+}
+
+.topbar__mode-badge--live { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.45); color: #dcfce7; }
+.topbar__mode-badge--seed { background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.45); color: #facc15; }
+.topbar__mode-badge--all { background: rgba(148,163,184,0.16); border-color: rgba(148,163,184,0.45); color: #94a3b8; }
+
+.lens-btn {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(148, 163, 184, 0.08);
+  color: #cbd5e1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lens-btn:hover {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.7);
+}
+
+.lens-btn--active {
+  background: rgba(34, 197, 94, 0.22);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #dcfce7;
+}
   font-size: 0.65rem;
   color: var(--text-dim);
   letter-spacing: 0.04em;
@@ -258,6 +311,86 @@ mark {
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────────── */
+
+/* --- Archive Intelligence Briefs --- */
+.intelligence-brief {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    margin-bottom: 2rem;
+}
+
+.intelligence-brief h3, .intelligence-brief h4 {
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-box {
+    background: var(--bg-darker, #0a0a0a);
+    padding: 0.75rem;
+    border-left: 2px solid var(--accent-color, #fbbf24);
+    border-radius: 2px;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+}
+
+.behavior-badge {
+    margin-left: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.35rem;
+    font-size: 0.68rem;
+    font-family: var(--font-mono, monospace);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.behavior-chaotic { background: rgba(239,68,68,0.15); color: #ef4444; border-color: rgba(239,68,68,0.4); }
+.behavior-escalating { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.4); }
+.behavior-damping { background: rgba(34,197,94,0.15); color: #22c55e; border-color: rgba(34,197,94,0.4); }
+.behavior-steady { background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.4); }
+.behavior-unknown { background: rgba(100,116,139,0.15); color: #64748b; border-color: rgba(100,116,139,0.4); }
+
+/* --- Tag Pills & Anchors --- */
+.tag-pill {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: var(--bg-hover, #262626);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-ghost);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.tag-pill:hover {
+    background: var(--accent-dim, #451a03);
+    border-color: var(--accent-color, #fbbf24);
+    color: white;
+}
+
 
 .sidebar {
   grid-area: sidebar;
@@ -11046,6 +11179,15 @@ div.vis-network canvas {
 }
 .disc-copy-btn { font-size: 0.65rem; }
 
+/* ── Articles ────────────────────────────────────────────────────────── */
+.disc-card__articles { margin: var(--sp-2) 0; }
+.disc-article { margin-bottom: var(--sp-2); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--border-light); }
+.disc-article:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.disc-article__title { font-weight: 500; margin-bottom: var(--sp-1); }
+.disc-article__title a { color: var(--text-primary); text-decoration: none; }
+.disc-article__title a:hover { color: #818cf8; text-decoration: underline; }
+.disc-article__summary { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
+
 /* ── Actions column ──────────────────────────────────────────────────── */
 .disc-card__actions {
   flex-shrink: 0;
@@ -11055,3 +11197,313 @@ div.vis-network canvas {
   align-items: flex-end;
   justify-content: flex-start;
 }
+
+/* ============================================================================
+   PHASE 34 — Knowledge Base (Wiki Clone)
+   ============================================================================ */
+
+/* ── Wiki Article Content ────────────────────────────────────────────────── */
+
+.wiki-content {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.wiki-content h1, .wiki-content h2, .wiki-content h3 {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-3);
+}
+
+.wiki-content p {
+  margin-bottom: var(--sp-4);
+}
+
+.wiki-content a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--t-fast);
+}
+.wiki-content a:hover {
+  color: var(--accent-bright);
+  text-decoration: underline;
+}
+
+/* ── Wiki Timeline (Compiler Generated) ──────────────────────────────────── */
+
+.wiki-timeline {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border-dim);
+}
+
+.wiki-timeline h3 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  margin-bottom: var(--sp-5);
+}
+
+.timeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 2px solid var(--border-dim);
+  margin-left: 8px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+/* The Timeline Dot */
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2px solid var(--accent-muted);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+
+.timeline-item:hover::before {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.timeline-meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-1);
+}
+
+.timeline-content h4 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.timeline-content h4 a {
+  color: inherit;
+}
+.timeline-content h4 a:hover {
+  color: var(--accent);
+}
+
+.timeline-content p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ============================================================
+   FORGE — Targeting Component CSS Patch
+   Append to: static/css/main.css
+   ============================================================ */
+
+/* ── Scan-line animation ─────────────────────────────────────────────────── */
+@keyframes targeting-scan {
+  0%   { top: 0;    opacity: 0.7; }
+  100% { top: 100%; opacity: 0;   }
+}
+@keyframes targeting-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 204, 0, 0.4); }
+  50%       { box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15),
+                          0 0 12px rgba(255, 204, 0, 0.1); }
+}
+@keyframes targeting-pulse-red {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.5); }
+  50%       { box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2),
+                          0 0 12px rgba(255, 0, 0, 0.1); }
+}
+@keyframes banner-flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.6; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.4; }
+}
+
+/* ── Actor card targeting (actors.html grid) ─────────────────────────────── */
+.actor-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Targeting labels — hidden by default, shown by POV */
+.targeting-label {
+  display: none;
+  position: absolute;
+  top: 6px; right: 6px;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  font-family: 'Courier New', monospace;
+  padding: 1px 5px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Scan line on card */
+.targeting-scan {
+  display: none;
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* THE MACHINE — yellow targeting on actor cards */
+[data-aesthetic="THE_MACHINE"] .actor-card--targeted {
+  animation: targeting-pulse 2.5s ease-in-out infinite;
+  border-color: rgba(255, 204, 0, 0.6) !important;
+}
+[data-aesthetic="THE_MACHINE"] .actor-card--targeted .targeting-label--machine {
+  display: block;
+  background: rgba(255, 204, 0, 0.15);
+  color: #ffcc00;
+  border: 1px solid rgba(255, 204, 0, 0.4);
+}
+[data-aesthetic="THE_MACHINE"] .actor-card--targeted .targeting-scan {
+  display: block;
+  background: linear-gradient(to bottom, transparent, rgba(255,204,0,0.4), transparent);
+  animation: targeting-scan 2s linear infinite;
+}
+/* Corner brackets on targeted card */
+[data-aesthetic="THE_MACHINE"] .actor-card--targeted::before {
+  content: "◤";
+  position: absolute; top: 2px; left: 4px;
+  color: #ffcc00; font-size: 8px;
+  pointer-events: none;
+}
+[data-aesthetic="THE_MACHINE"] .actor-card--targeted::after {
+  content: "◢";
+  position: absolute; bottom: 2px; right: 4px;
+  color: #ffcc00; font-size: 8px;
+  pointer-events: none;
+}
+
+/* SAMARITAN — red targeting on actor cards */
+[data-aesthetic="SAMARITAN"] .actor-card--targeted {
+  animation: targeting-pulse-red 2s ease-in-out infinite;
+  border-color: rgba(255, 0, 0, 0.7) !important;
+}
+[data-aesthetic="SAMARITAN"] .actor-card--targeted .targeting-label--samaritan {
+  display: block;
+  background: rgba(255, 0, 0, 0.15);
+  color: #ff0000;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+}
+
+/* Signal count stat highlight */
+[data-aesthetic="THE_MACHINE"] .actor-card__stat--signals strong { color: #ffcc00; }
+[data-aesthetic="SAMARITAN"]   .actor-card__stat--signals strong { color: #ff0000; }
+
+/* ── Actor detail page wrapper ───────────────────────────────────────────── */
+.actor-detail-wrap {
+  position: relative;
+}
+
+/* Full-page scan on load for targeted actors */
+.targeting-scan-full {
+  display: none;
+  position: fixed;
+  left: 0; right: 0;
+  height: 2px;
+  pointer-events: none;
+  z-index: 9998;
+}
+[data-aesthetic="THE_MACHINE"] .actor-detail-wrap--targeted .targeting-scan-full {
+  display: block;
+  background: rgba(255, 204, 0, 0.5);
+  animation: targeting-scan 1.5s linear 1 forwards;
+}
+[data-aesthetic="SAMARITAN"] .actor-detail-wrap--targeted .targeting-scan-full {
+  display: block;
+  background: rgba(255, 0, 0, 0.5);
+  animation: targeting-scan 1.5s linear 1 forwards;
+}
+
+/* ── Targeting banner (actor detail page) ────────────────────────────────── */
+.targeting-banner {
+  display: none;
+  position: relative;
+  padding: 8px 16px;
+  margin-bottom: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+/* Machine banner */
+[data-aesthetic="THE_MACHINE"] .targeting-banner--machine {
+  display: block;
+  background: rgba(255, 204, 0, 0.06);
+  border: 1px solid rgba(255, 204, 0, 0.35);
+  color: #ffcc00;
+  animation: banner-flicker 8s ease-in-out infinite;
+}
+[data-aesthetic="THE_MACHINE"] .targeting-banner--samaritan { display: none; }
+
+/* Samaritan banner */
+[data-aesthetic="SAMARITAN"] .targeting-banner--samaritan {
+  display: block;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: #ff0000;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+[data-aesthetic="SAMARITAN"] .targeting-banner--machine { display: none; }
+
+/* Corner glyphs on machine banner */
+.targeting-banner__corner {
+  position: absolute;
+  font-size: 10px;
+  color: #ffcc00;
+  line-height: 1;
+}
+.targeting-banner__corner--tl { top: 2px;  left:  4px; }
+.targeting-banner__corner--tr { top: 2px;  right: 4px; }
+.targeting-banner__corner--bl { bottom: 2px; left:  4px; }
+.targeting-banner__corner--br { bottom: 2px; right: 4px; }
+
+/* ── Signal Intel Panel ──────────────────────────────────────────────────── */
+.signal-intel-panel--targeted {
+  border-color: rgba(255, 204, 0, 0.3);
+}
+[data-aesthetic="SAMARITAN"] .signal-intel-panel--targeted {
+  border-color: rgba(255, 0, 0, 0.4);
+}
+
+/* Threat level dot indicator */
+.targeting-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.targeting-dot--critical  { background: #ff4444; box-shadow: 0 0 4px #ff4444; }
+.targeting-dot--elevated  { background: #f59e0b; box-shadow: 0 0 4px #f59e0b; }
+.targeting-dot--monitored { background: #ffcc00; box-shadow: 0 0 4px #ffcc00; }
+.targeting-dot--none      { background: var(--text-dim); }
+
+/* Threat level value colours */
+.targeting-level--critical  { color: #ff4444 !important; }
+.targeting-level--elevated  { color: #f59e0b !important; }
+.targeting-level--monitored { color: #ffcc00 !important; }
+.targeting-level--none      { color: var(--text-dim) !important; }

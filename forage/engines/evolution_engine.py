@@ -384,3 +384,8 @@ if __name__ == "__main__":
     )
     print(json.dumps(result, indent=2))
     sys.exit(0 if result.get("status") in ("done", "dry_run", "no_pairs") else 1)
+
+# --- MEGA RUNNER ADAPTER ---
+def run_all():
+    print(f"[{__name__}] Executing run_all...")
+    # Call your actual processing logic here

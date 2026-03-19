@@ -47,6 +47,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sqlite3
 import sys
@@ -523,6 +524,74 @@ class ProcessorManager:
                   row["latitude"], row["longitude"]))
         return sid
 
+    def _clean_text(self, raw: str) -> str:
+        """Minimal cleanup for unstructured signal text."""
+        txt = raw or ""
+        txt = re.sub(r"\s+", " ", txt).strip()
+        return txt
+
+    def signal_to_artifact(self, signal: dict) -> int:
+        """Convert a signal dict into artifacts table entry + metadata."""
+        conn = self._conn()
+
+        existing = conn.execute(
+            "SELECT artifact_id FROM artifacts WHERE source = ? AND description = ?",
+            (signal.get("source", ""), signal.get("content", ""),),
+        ).fetchone()
+        if existing:
+            return existing["artifact_id"]
+
+        title = signal.get("title", "") or "GDELT Signal"
+        content = self._clean_text(signal.get("content", ""))
+        source = signal.get("source", "unverified")
+        if source not in {"verified", "unverified", "government", "leaked", "citizen", "media"}:
+            source = "unverified"
+        metadata = {
+            "signal_id": signal.get("signal_id"),
+            "external_id": signal.get("external_id"),
+            "source": source,
+            "event_type": signal.get("source_type", "live"),
+        }
+
+        # Map signal stream/type to a valid artifact type value.
+        # source_type is the lens (live/seed) — not an artifact type.
+        _VALID_TYPES = {"video", "photo", "document", "audio", "news"}
+        _STREAM_MAP  = {
+            "CRIME_INTEL": "news", "INFRASTRUCTURE": "document",
+            "PRIORITY": "news",    "GLOBAL": "news",
+        }
+        raw_type = (signal.get("stream") or signal.get("type") or "")
+        artifact_type = _STREAM_MAP.get(raw_type, raw_type if raw_type in _VALID_TYPES else "document")
+
+        table_info = [r[1] for r in conn.execute("PRAGMA table_info(artifacts)").fetchall()]
+        if "metadata_json" in table_info:
+            cur = conn.execute(
+                "INSERT INTO artifacts (title, description, type, source, raw_text_cache, created_at, metadata_json) "
+                "VALUES (?, ?, ?, ?, ?, datetime('now'), ?)",
+                (
+                    title[:500],
+                    content[:1000],
+                    artifact_type,
+                    source,
+                    content[:1000],
+                    json.dumps(metadata, ensure_ascii=False),
+                ),
+            )
+        else:
+            cur = conn.execute(
+                "INSERT INTO artifacts (title, description, type, source, raw_text_cache, created_at) "
+                "VALUES (?, ?, ?, ?, ?, datetime('now'))",
+                (
+                    title[:500],
+                    content[:1000],
+                    artifact_type,
+                    source,
+                    content[:1000],
+                ),
+            )
+        self._commit()
+        return cur.lastrowid
+
     def _extract_text(self, abs_path: Path,
                       atype: str, ext: str) -> tuple[str | None, str]:
         """
@@ -763,3 +832,13 @@ if __name__ == "__main__":
         artifact_id=args.artifact_id,
         dry_run=args.dry_run,
     ))
+
+
+# --- MEGA RUNNER ADAPTER ---
+def process_all():
+    print("[Artifact Processor] Executing...")
+    try:
+        pm = ProcessorManager(db_path=None)
+        pm.run_batch(status_filter="pending")
+    except Exception as e:
+        print(f"[Artifact Processor] Error: {e}")

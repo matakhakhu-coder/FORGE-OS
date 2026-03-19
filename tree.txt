@@ -9,12 +9,16 @@ C:.
 ¦   cleanup_firms.py
 ¦   database.db
 ¦   decay_worker.bat
+¦   init_wiki.py
 ¦   python
 ¦   requirements.txt
+¦   schema.sql
 ¦   seed_cases.py
 ¦   seed_data.py
+¦   tables.txt
 ¦   test_ocr.py
 ¦   tree.txt
+¦   wiki_worker.bat
 ¦   
 +---forage
 ¦   +---collectors
@@ -60,10 +64,11 @@ C:.
 +---media
 ¦   +---audio
 ¦   +---documents
-¦   ¦       59368734b7f94b9f9fa9696e33656885_Draft_Annual_Report_Makhado_18_19_Financial_Year20200214.pdf
-¦   ¦       7b1bbebe2cd54a20a5947e5292282dac_dialogue_1.txt
-¦   ¦       9fa59078e6224688a08ea5970c44a5c9_VBS-Mutual-Bank---The-Great-Bank-Heist.pdf
-¦   ¦       
+¦   ¦   ¦   59368734b7f94b9f9fa9696e33656885_Draft_Annual_Report_Makhado_18_19_Financial_Year20200214.pdf
+¦   ¦   ¦   7b1bbebe2cd54a20a5947e5292282dac_dialogue_1.txt
+¦   ¦   ¦   9fa59078e6224688a08ea5970c44a5c9_VBS-Mutual-Bank---The-Great-Bank-Heist.pdf
+¦   ¦   ¦   
+¦   ¦   +---wiki
 ¦   +---images
 ¦   ¦       6b86c7f9c2584fb49f48406f4029ad89_Screenshot_14-3-2026_15354_zoutnet.co.za.jpeg
 ¦   ¦       thumb_6b86c7f9c2584fb49f48406f4029ad89_Screenshot_14-3-2026_15354_zoutnet.co.za.jpeg
@@ -80,40 +85,73 @@ C:.
 ¦   +---js
 ¦   +---map
 +---templates
-        actor.html
-        actors.html
-        actor_detail.html
-        admin.html
-        admin_event_new.html
-        archive.html
-        artifact_detail.html
-        asset.html
-        base.html
-        base.html.phase28.bak
-        briefing.html
-        cases.html
-        case_detail.html
-        diagnostics.html
-        discovery.html
-        dossier.html
-        edit_actor.html
-        edit_artifact.html
-        edit_event.html
-        event.html
-        events.html
-        event_detail.html
-        feed.html
-        gallery.html
-        graph.html
-        index.html
-        index.html.phase28.bak
-        map.html
-        search.html
-        signals.html
-        timeline.html
-        _forensic_panel.html
-        _network_panel.html
-        _pin_widget_js.html
-        _relationship_panel.html
-        _sentinel_alerts.html
+¦       actor.html
+¦       actors.html
+¦       actor_detail.html
+¦       admin.html
+¦       admin_event_new.html
+¦       archive.html
+¦       artifact_detail.html
+¦       asset.html
+¦       base.html
+¦       base.html.phase28.bak
+¦       briefing.html
+¦       cases.html
+¦       case_detail.html
+¦       diagnostics.html
+¦       discovery.html
+¦       dossier.html
+¦       edit_actor.html
+¦       edit_artifact.html
+¦       edit_event.html
+¦       event.html
+¦       events.html
+¦       event_detail.html
+¦       evolution.html
+¦       feed.html
+¦       gallery.html
+¦       graph.html
+¦       index.html
+¦       index.html.phase28.bak
+¦       layout.html
+¦       map.html
+¦       search.html
+¦       signals.html
+¦       timeline.html
+¦       wiki_article.html
+¦       wiki_index.html
+¦       _forensic_panel.html
+¦       _network_panel.html
+¦       _pin_widget_js.html
+¦       _relationship_panel.html
+¦       _sentinel_alerts.html
+¦       
++---utils
+¦   ¦   rss_parser.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           rss_parser.cpython-313.pyc
+¦           __init__.cpython-313.pyc
+¦           
++---wiki
+¦   ¦   routes.py
+¦   ¦   
+¦   +---engines
+¦   ¦   ¦   wiki_link_engine.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           wiki_link_engine.cpython-313.pyc
+¦   ¦           
+¦   +---processors
+¦   ¦   ¦   wiki_compiler.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           wiki_compiler.cpython-313.pyc
+¦   ¦           
+¦   +---__pycache__
+¦           routes.cpython-313.pyc
+¦           
++---__pycache__
+        app.cpython-313.pyc
         

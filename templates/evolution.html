@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Evolution Fetched Intelligence{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">SYSTEM · PHASE 33</div>
+  <h1 class="page-header__title">
+    <span style="color:#818cf8;">⟁</span> Evolution Fetched Intelligence
+  </h1>
+  <p class="page-header__sub">
+    Parsed articles from Google News RSS feeds for evolution-approved sources.
+  </p>
+</div>
+
+{# ── Articles ───────────────────────────────────────────────────────────── #}
+<div class="feed-timeline">
+  {% for article in articles %}
+  <div class="disc-card disc-card--pending" id="evolution-card-{{ loop.index }}">
+    <div class="disc-card__left">
+      <div class="disc-card__status-dot disc-dot--pending"></div>
+    </div>
+    <div class="disc-card__body">
+      <div class="disc-card__header">
+        <span class="disc-card__entity">{{ article.source }}</span>
+        <span class="disc-card__status-badge disc-badge--pending mono">PENDING</span>
+      </div>
+      <div class="disc-card__articles">
+        <div class="disc-article">
+          <div class="disc-article__title">
+            <a href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+          </div>
+          {% if article.summary %}
+          <div class="disc-article__summary">{{ article.summary | striptags | truncate(300) }}</div>
+          {% endif %}
+          {% if article.published %}
+          <div class="disc-article__summary" style="font-size: 0.8rem; color: var(--text-ghost); margin-top: var(--sp-1);">
+            Published: {{ article.published }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="disc-card__actions">
+      <button class="btn btn--sm btn--primary js-approve-article" data-title="{{ article.title }}" data-link="{{ article.link }}" data-summary="{{ article.summary }}" data-source="{{ article.source }}">
+        ✓ Approve Article
+      </button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+// ── Approve Article ─────────────────────────────────────────────────────────
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('.js-approve-article');
+  if (!btn) return;
+  var title = btn.dataset.title;
+  var link = btn.dataset.link;
+  var summary = btn.dataset.summary;
+  var source = btn.dataset.source;
+  btn.textContent = '…'; btn.disabled = true;
+
+  // Create artifact via POST to /admin with action=add_artifact
+  var formData = new FormData();
+  formData.append('password', 'forge-admin'); // Assuming default password
+  formData.append('action', 'add_artifact');
+  formData.append('title', title);
+  formData.append('description', summary || 'Article from ' + source);
+  formData.append('type', 'document');
+  formData.append('source', source);
+  formData.append('tags', 'evolution,intelligence');
+
+  fetch('/admin', { method: 'POST', body: formData })
+    .then(function (r) { return r.text(); })
+    .then(function (text) {
+      if (text.includes('Artifact added successfully')) {
+        btn.textContent = '✓ Approved';
+        btn.disabled = true;
+        // Update card status
+        var card = btn.closest('.disc-card');
+        if (card) {
+          card.className = card.className.replace('disc-card--pending', 'disc-card--approved');
+          var badge = card.querySelector('.disc-card__status-badge');
+          if (badge) { badge.textContent = 'APPROVED'; badge.className = 'disc-card__status-badge disc-badge--approved mono'; }
+          var dot = card.querySelector('.disc-card__status-dot');
+          if (dot) { dot.className = 'disc-card__status-dot disc-dot--approved'; }
+        }
+      } else {
+        btn.textContent = '✕ Failed';
+        setTimeout(function () { btn.textContent = '✓ Approve Article'; btn.disabled = false; }, 2000);
+      }
+    })
+    .catch(function (e) {
+      btn.textContent = '✕ Error';
+      setTimeout(function () { btn.textContent = '✓ Approve Article'; btn.disabled = false; }, 2000);
+    });
+});
+</script>
+
+{% endblock %}

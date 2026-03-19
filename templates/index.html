@@ -4,12 +4,19 @@
 {% block content %}
 
 <div class="page-header">
-  <div class="page-header__eyebrow">ZA-Divergent // Active Archive</div>
-  <h1 class="page-header__title">Intelligence Archive</h1>
-  <p class="page-header__sub">
-    Reconstructing an alternate South African timeline through primary evidence,
-    intercepted documents, and citizen media.
-  </p>
+  {% set lens = request.args.get('lens', 'live') %}
+  {% if lens == 'live' %}
+    <div class="page-header__eyebrow">FORGE // LIVE INTELLIGENCE</div>
+    <h1 class="page-header__title">FORGE // LIVE INTELLIGENCE</h1>
+    <p class="page-header__sub">Real-time event syndication from intelligence signals.</p>
+  {% else %}
+    <div class="page-header__eyebrow">Intelligence Archive</div>
+    <h1 class="page-header__title">Intelligence Archive</h1>
+    <p class="page-header__sub">
+      Reconstructing an alternate South African timeline through primary evidence,
+      intercepted documents, and citizen media.
+    </p>
+  {% endif %}
 </div>
 
 {# ── Stats ──────────────────────────────────────────────────────────────── #}
@@ -61,7 +68,7 @@
       </div>
     </div>
   </div>
-  <a href="{{ url_for('feed') }}" class="btn btn--primary">
+  <a href="{{ url_for('feed', lens=request.args.get('lens', 'live')) }}" class="btn btn--primary">
     View Feed →
   </a>
 </div>

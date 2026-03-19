@@ -5,7 +5,9 @@
 
 {# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('index', lens=request.args.get('lens', 'live')) }}">
+    {% if request.args.get('lens','live') == 'live' %}Live{% else %}Archive{% endif %}
+  </a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">Timeline Explorer</span>
 </nav>
@@ -179,5 +181,20 @@
   </div>
 
 </div>{# /tl #}
+
+<script>
+  (function () {
+    const currentLens = new URLSearchParams(window.location.search).get('lens') || 'live';
+    const timelineApiUrl = '/api/timeline?lens=' + encodeURIComponent(currentLens);
+    console.debug('Timeline data URL:', timelineApiUrl);
+
+    // Example fetch semantics (not used for current template render)
+    // fetch(timelineApiUrl)
+    //   .then(r => r.json())
+    //   .then(data => {
+    //     /* handle timeline data */
+    //   });
+  })();
+</script>
 
 {% endblock %}

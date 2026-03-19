@@ -13,6 +13,34 @@
 </nav>
 
 {# ── Page header ───────────────────────────────────────────────────────────── #}
+{# Targeting wrapper — activates Machine/Samaritan overlays when is_targeted #}
+<div class="actor-detail-wrap{% if targeting.is_targeted %} actor-detail-wrap--targeted{% endif %}"
+     {% if targeting.is_targeted %}data-targeted="true" data-threat="{{ targeting.threat_level }}"{% endif %}>
+<div class="targeting-scan-full"></div>
+
+{# ── Targeting banner (POV-aware) ─────────────────────────────────────────── #}
+{% if targeting.is_targeted %}
+<div class="targeting-banner targeting-banner--machine">
+  <span class="targeting-banner__corner targeting-banner__corner--tl">◤</span>
+  <span class="targeting-banner__corner targeting-banner__corner--tr">◥</span>
+  <span class="targeting-banner__corner targeting-banner__corner--bl">◣</span>
+  <span class="targeting-banner__corner targeting-banner__corner--br">◢</span>
+  <span class="targeting-banner__label">
+    ◈ ASSET IDENTIFIED &nbsp;·&nbsp;
+    GRAVITY: {{ "%.3f"|format(targeting.max_gravity) }} &nbsp;·&nbsp;
+    {{ targeting.signal_count }} SIGNAL{{ 'S' if targeting.signal_count != 1 }} &nbsp;·&nbsp;
+    STATUS: {{ targeting.threat_level | upper }}
+  </span>
+</div>
+<div class="targeting-banner targeting-banner--samaritan">
+  <span class="targeting-banner__label">
+    ▲ THREAT CLASSIFIED &nbsp;·&nbsp;
+    LEVEL: {{ targeting.threat_level | upper }} &nbsp;·&nbsp;
+    {{ targeting.signal_count }} ACTIVE SIGNAL{{ 'S' if targeting.signal_count != 1 }}
+  </span>
+</div>
+{% endif %}
+
 <div class="page-header">
   <div class="page-header__eyebrow">
     <span class="mono" style="color:var(--text-dim);">ACTOR #{{ actor.actor_id }}</span>
@@ -291,6 +319,56 @@
       </div>
     </div>
 
+    {# ── Signal Intelligence Panel ─────────────────────────────────────── #}
+    <div class="meta-panel signal-intel-panel
+                {% if targeting.is_targeted %} signal-intel-panel--targeted{% endif %}"
+         style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">
+        Signal Intelligence
+        {% if targeting.is_targeted %}
+        <span class="targeting-dot targeting-dot--{{ targeting.threat_level }}"></span>
+        {% endif %}
+      </div>
+      <div class="meta-panel__body">
+        {% if targeting.signal_count > 0 %}
+        <div class="meta-field">
+          <div class="meta-field__label">Linked Signals</div>
+          <div class="meta-field__value mono">{{ targeting.signal_count }}</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-field__label">Max Gravity</div>
+          <div class="meta-field__value mono"
+               style="color:{% if targeting.max_gravity >= 0.75 %}#ffcc00{% elif targeting.max_gravity >= 0.45 %}#f59e0b{% else %}var(--text-dim){% endif %};">
+            {{ "%.3f"|format(targeting.max_gravity) }}
+          </div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-field__label">Priority Signal</div>
+          <div class="meta-field__value mono">
+            {% if targeting.has_priority_signal %}
+            <span style="color:#ff4444;">⚑ YES</span>
+            {% else %}
+            <span style="color:var(--text-dim);">—</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-field__label">Threat Level</div>
+          <div class="meta-field__value mono targeting-level--{{ targeting.threat_level }}">
+            {{ targeting.threat_level | upper }}
+          </div>
+        </div>
+        {% else %}
+        <div class="meta-field">
+          <div class="meta-field__value mono" style="color:var(--text-dim); font-size:0.72rem;">
+            No signals linked yet.
+            Run <code>mega_ingest.py</code> to populate.
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
     {# Roles held summary #}
     {% if role_timeline %}
     <div class="meta-panel" style="margin-top:var(--sp-4);">
@@ -366,6 +444,8 @@
   </aside>
 
 </div>
+
+</div>{# /actor-detail-wrap #}
 
 {% endblock %}
 

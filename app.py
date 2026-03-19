@@ -21,6 +21,11 @@ import sqlite3
 import argparse
 import uuid
 from pathlib import Path
+from core.api.context import inject_globals
+from core.api.routes.wiki_routes import register_wiki_routes, wiki_bp
+from core.db.connection import get_connection
+from core.diagnostics.health import compute_pipeline_health
+from core.pipeline.ingest import process_artifact_upload, IMAGE_EXTENSIONS
 
 from flask import (
     Flask, g, render_template, request, redirect,
@@ -39,18 +44,6 @@ MEDIA_DIR = BASE_DIR / "media"
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio"]
 
 ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "forge-admin")
-
-# Allowed upload extensions mapped to media subdirectory
-ALLOWED_EXTENSIONS: dict[str, str] = {
-    "jpg": "images", "jpeg": "images", "png": "images",
-    "gif": "images", "webp": "images",
-    "mp4": "videos", "mov": "videos", "avi": "videos", "mkv": "videos",
-    "mp3": "audio",  "wav": "audio",  "ogg": "audio",  "m4a": "audio",
-    "pdf": "documents", "doc": "documents", "docx": "documents",
-    "txt": "documents", "csv": "documents",
-}
-
-IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
 
 # Source classification display config (used by templates via context)
 SOURCE_META = {
@@ -81,11 +74,11 @@ def create_app() -> Flask:
 
     def get_db() -> sqlite3.Connection:
         if "db" not in g:
-            g.db = sqlite3.connect(str(DB_PATH), detect_types=sqlite3.PARSE_DECLTYPES)
-            g.db.row_factory = sqlite3.Row
-            g.db.execute("PRAGMA journal_mode=WAL;")
-            g.db.execute("PRAGMA foreign_keys=ON;")
-        return g.db
+            db = g._database = get_connection()
+            db.row_factory = sqlite3.Row
+            db.execute("PRAGMA journal_mode=WAL;")
+            db.execute("PRAGMA foreign_keys=ON;")
+        return g._database
 
     @app.teardown_appcontext
     def close_db(exception=None):
@@ -95,73 +88,16 @@ def create_app() -> Flask:
 
     app.get_db = get_db  # type: ignore[attr-defined]
 
-    # Inject SOURCE_META into every template render context
-    @app.context_processor
-    def inject_globals():
-        # Priority signal count — drives the topbar alert bell on every page.
-        # Query is lightweight (indexed on is_priority + status); result is
-        # cached per-request by Flask's g object via get_db().
-        try:
-            db = get_db()
-            row = db.execute(
-                "SELECT COUNT(*) FROM signals WHERE is_priority = 1 AND status = 'raw'"
-            ).fetchone()
-            priority_count = row[0] if row else 0
-        except Exception:
-            # signals table may not exist yet on first boot before migration
-            priority_count = 0
-        # Sentinel alert count — drives the Sentinel bell on every page
-        try:
-            s_row = db.execute(
-                "SELECT COUNT(*) FROM sentinel_alerts WHERE status = 'new'"
-            ).fetchone()
-            sentinel_count = s_row[0] if s_row else 0
-        except Exception:
-            sentinel_count = 0
-        # Phase 32: pipeline health for sidebar LED
-        # One query: latest run per component, checks for errors or staleness (>6h)
-        pipeline_health = "ok"
-        try:
-            health_rows = db.execute("""
-                SELECT component, status, run_at
-                FROM   pipeline_runs pr
-                WHERE  run_at = (
-                    SELECT MAX(run_at) FROM pipeline_runs pr2
-                    WHERE  pr2.component = pr.component
-                )
-                GROUP  BY component
-            """).fetchall()
-            if health_rows:
-                for hr in health_rows:
-                    if hr["status"] == "error":
-                        pipeline_health = "error"
-                        break
-                    stale = db.execute(
-                        "SELECT 1 FROM pipeline_runs "
-                        "WHERE component=? AND run_at < datetime('now','-6 hours') "
-                        "AND run_at = (SELECT MAX(run_at) FROM pipeline_runs "
-                        "WHERE component=?)",
-                        (hr["component"], hr["component"])
-                    ).fetchone()
-                    if stale and pipeline_health != "error":
-                        pipeline_health = "warn"
-        except Exception:
-            pipeline_health = "warn"
-        # Phase 33: pending discovery targets for sidebar badge
-        try:
-            d_row = db.execute(
-                "SELECT COUNT(*) FROM discovery_targets WHERE status='pending'"
-            ).fetchone()
-            discovery_count = d_row[0] if d_row else 0
-        except Exception:
-            discovery_count = 0
-        return {
-            "SOURCE_META":      SOURCE_META,
-            "priority_count":   priority_count,
-            "sentinel_count":   sentinel_count,
-            "pipeline_health":  pipeline_health,
-            "discovery_count":  discovery_count,
-        }
+    app.context_processor(inject_globals(get_db))
+
+    # Initialize wiki schema and register wiki routes
+    from core.db.wiki import init_wiki_db
+    init_wiki_db()
+
+    register_wiki_routes(app)
+    app.register_blueprint(wiki_bp, url_prefix='/wiki')
+    # expose graph API at root path for D3 payload fetch
+    app.add_url_rule('/api/wiki/graph_data', endpoint='api_wiki_graph_data', view_func=app.view_functions.get('wiki.graph_data'))
 
     # -----------------------------------------------------------------------
     # Route: / — Dashboard
@@ -171,36 +107,65 @@ def create_app() -> Flask:
     def index():
         db = get_db()
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        artifact_where = ""
+        event_where = ""
+        artifact_params = []
+        event_params = []
+        if lens != 'all':
+            artifact_where = "WHERE a.source_type = ?"
+            artifact_params = [lens]
+            event_where = "WHERE e.source_type = ?"
+            event_params = [lens]
+
+        actor_where = ""
+        actor_params = []
+        if lens != 'all':
+            actor_where = "WHERE ac.source_type = ?"
+            actor_params = [lens]
+
         stats = {
-            "artifacts": db.execute("SELECT COUNT(*) FROM artifacts").fetchone()[0],
-            "events":    db.execute("SELECT COUNT(*) FROM events").fetchone()[0],
-            "actors":    db.execute("SELECT COUNT(*) FROM actors").fetchone()[0],
+            "artifacts": db.execute(f"SELECT COUNT(*) FROM artifacts a {artifact_where}", artifact_params).fetchone()[0],
+            "events":    db.execute(f"SELECT COUNT(*) FROM events e {event_where}", event_params).fetchone()[0],
+            "actors":    db.execute(f"SELECT COUNT(*) FROM actors ac {actor_where}", actor_params).fetchone()[0],
         }
 
-        recent_artifacts = db.execute("""
+        recent_artifacts = db.execute(f"""
             SELECT a.artifact_id, a.title, a.type, a.date, a.source, a.thumbnail,
                    e.title AS event_title, e.event_id
             FROM   artifacts a
             LEFT   JOIN events e ON e.event_id = a.event_id
+            {artifact_where}
             ORDER  BY a.created_at DESC
             LIMIT  6
-        """).fetchall()
+        """, artifact_params).fetchall()
 
-        recent_events = db.execute("""
-            SELECT event_id, title, date, category, location
-            FROM   events
-            ORDER  BY date DESC
+        recent_events = db.execute(f"""
+            SELECT e.event_id, e.title, e.date, e.category, e.location
+            FROM   events e
+            {event_where}
+            ORDER  BY e.date DESC
             LIMIT  5
-        """).fetchall()
+        """, event_params).fetchall()
 
-        type_breakdown = db.execute("""
+        type_breakdown = db.execute(f"""
             SELECT type, COUNT(*) AS cnt
-            FROM   artifacts
+            FROM   artifacts a
+            {artifact_where}
             GROUP  BY type
             ORDER  BY cnt DESC
-        """).fetchall()
+        """, artifact_params).fetchall()
 
         # Phase 17: 48-hour signal pulse (hourly buckets for Chart.js)
+        pulse_source_clause = ""
+        pulse_params = []
+        if lens != 'all':
+            pulse_source_clause = "AND source_type = ?"
+            pulse_params = [lens]
+
         try:
             pulse_rows = db.execute("""
                 WITH RECURSIVE hours(n) AS (
@@ -217,6 +182,7 @@ def create_app() -> Flask:
                            SUM(is_priority) AS priority
                     FROM signals
                     WHERE timestamp >= datetime('now', '-48 hours')
+                      """ + pulse_source_clause + """
                     GROUP BY bucket
                 )
                 SELECT b.bucket,
@@ -225,7 +191,7 @@ def create_app() -> Flask:
                 FROM   buckets b
                 LEFT   JOIN counts c ON c.bucket = b.bucket
                 ORDER  BY b.bucket ASC
-            """).fetchall()
+            """, pulse_params).fetchall()
             pulse_data = [dict(r) for r in pulse_rows]
         except Exception:
             pulse_data = []
@@ -484,6 +450,9 @@ def create_app() -> Flask:
         source   = request.args.get("source", "").strip()
         status   = request.args.get("status", "").strip()
         q        = request.args.get("q",      "").strip()
+        lens     = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
         page     = max(1, int(request.args.get("page", 1)))
         per_page = 24
 
@@ -491,6 +460,8 @@ def create_app() -> Flask:
         if atype:   clauses.append("a.type = ?");                params.append(atype)
         if source:  clauses.append("a.source = ?");              params.append(source)
         if status:  clauses.append("a.processing_status = ?");   params.append(status)
+        if lens != 'all':
+            clauses.append("a.source_type = ?");                 params.append(lens)
         if q:
             clauses.append("(a.title LIKE ? OR a.description LIKE ? OR a.tags LIKE ?)")
             like = f"%{q}%"; params += [like, like, like]
@@ -534,9 +505,15 @@ def create_app() -> Flask:
 
         def _facet(col):
             try:
+                if lens == 'all':
+                    return {r[0]: r[1] for r in db.execute(
+                        f"SELECT {col}, COUNT(*) FROM artifacts "
+                        f"WHERE {col} IS NOT NULL GROUP BY {col}"
+                    ).fetchall()}
                 return {r[0]: r[1] for r in db.execute(
                     f"SELECT {col}, COUNT(*) FROM artifacts "
-                    f"WHERE {col} IS NOT NULL GROUP BY {col}"
+                    f"WHERE {col} IS NOT NULL AND source_type = ? GROUP BY {col}",
+                    (lens,)
                 ).fetchall()}
             except Exception:
                 return {}
@@ -617,8 +594,8 @@ def create_app() -> Flask:
             db.execute("""
                 INSERT INTO signals
                     (signal_id, source, external_id, title, content,
-                     lat, lng, timestamp, status, is_priority, source_artifact_id)
-                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?,?)
+                     lat, lng, timestamp, status, is_priority, source_artifact_id, source_type)
+                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?,?, 'live')
             """, (sid, row["source"] or "artifact", ext_id, title, content[:1000],
                   float(lat) if lat else None, float(lng) if lng else None,
                   is_priority, artifact_id))
@@ -627,8 +604,8 @@ def create_app() -> Flask:
             db.execute("""
                 INSERT INTO signals
                     (signal_id, source, external_id, title, content,
-                     lat, lng, timestamp, status, is_priority)
-                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?)
+                     lat, lng, timestamp, status, is_priority, source_type)
+                VALUES (?,?,?,?,?,?,?,datetime('now'),'raw',?,'live')
             """, (sid, row["source"] or "artifact", ext_id, title, content[:1000],
                   float(lat) if lat else None, float(lng) if lng else None, is_priority))
         db.commit()
@@ -641,6 +618,10 @@ def create_app() -> Flask:
     @app.route("/events")
     def events():
         db       = get_db()
+        lens     = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
         category = request.args.get("category", "")
         sort     = request.args.get("sort", "date_desc")
 
@@ -651,8 +632,16 @@ def create_app() -> Flask:
         }
         order_clause = order_map.get(sort, "e.date DESC")
 
-        where_clause = "WHERE e.category = ?" if category else ""
-        params       = (category,) if category else ()
+        where_clause = []
+        params       = []
+        if category:
+            where_clause.append("e.category = ?")
+            params.append(category)
+        if lens != 'all':
+            where_clause.append("e.source_type = ?")
+            params.append(lens)
+
+        where_sql = "WHERE " + " AND ".join(where_clause) if where_clause else ""
 
         events_rows = db.execute(f"""
             SELECT e.event_id, e.title, e.summary, e.date, e.category,
@@ -660,16 +649,22 @@ def create_app() -> Flask:
                    COUNT(a.artifact_id) AS artifact_count
             FROM   events e
             LEFT   JOIN artifacts a ON a.event_id = e.event_id
-            {where_clause}
+            {where_sql}
             GROUP  BY e.event_id
             ORDER  BY {order_clause}
         """, params).fetchall()
 
-        categories = db.execute("""
+        category_where = "WHERE category IS NOT NULL"
+        category_params = []
+        if lens != 'all':
+            category_where += " AND source_type = ?"
+            category_params.append(lens)
+
+        categories = db.execute(f"""
             SELECT DISTINCT category FROM events
-            WHERE  category IS NOT NULL
+            {category_where}
             ORDER  BY category
-        """).fetchall()
+        """, category_params).fetchall()
 
         return render_template(
             "events.html",
@@ -687,18 +682,33 @@ def create_app() -> Flask:
     def actors():
         db = get_db()
 
-        actors_rows = db.execute("""
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        actor_where = '' if lens == 'all' else f"WHERE ac.source_type = '{lens}'"
+
+        actors_rows = db.execute(f"""
             SELECT ac.actor_id, ac.name, ac.type, ac.description,
                    COUNT(DISTINCT ae.event_id)    AS event_count,
-                   COUNT(DISTINCT a.artifact_id)  AS artifact_count
+                   COUNT(DISTINCT a.artifact_id)  AS artifact_count,
+                   COUNT(DISTINCT sa.signal_id)   AS signal_count,
+                   MAX(COALESCE(s.gravity_score, 0))  AS max_gravity,
+                   MAX(COALESCE(s.is_priority, 0))    AS has_priority_signal,
+                   CASE WHEN MAX(COALESCE(s.gravity_score, 0)) >= 0.75
+                             OR MAX(COALESCE(s.is_priority, 0)) = 1
+                        THEN 1 ELSE 0 END              AS is_targeted
             FROM   actors ac
-            LEFT   JOIN actor_events ae ON ae.actor_id = ac.actor_id
-            LEFT   JOIN artifacts a     ON a.event_id  = ae.event_id
+            LEFT   JOIN actor_events ae  ON ae.actor_id  = ac.actor_id
+            LEFT   JOIN artifacts a      ON a.event_id   = ae.event_id
+            LEFT   JOIN signal_actors sa ON sa.actor_id  = ac.actor_id
+            LEFT   JOIN signals s        ON s.signal_id  = sa.signal_id
+            {actor_where}
             GROUP  BY ac.actor_id
-            ORDER  BY event_count DESC, ac.name
+            ORDER  BY is_targeted DESC, event_count DESC, ac.name
         """).fetchall()
 
-        return render_template("actors.html", actors=actors_rows)
+        return render_template("actors.html", actors=actors_rows, lens=lens)
 
     # -----------------------------------------------------------------------
     # Route: /search — FTS5 full-text search
@@ -769,17 +779,25 @@ def create_app() -> Flask:
     def timeline():
         db = get_db()
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        event_where = '' if lens == 'all' else 'WHERE e.source_type = ?'
+        params = [] if lens == 'all' else [lens]
+
         # All events with artifact counts, sorted chronologically
-        rows = db.execute("""
+        rows = db.execute(f"""
             SELECT e.event_id, e.title, e.date, e.category,
                    e.location, e.summary,
                    e.latitude, e.longitude,
                    COUNT(a.artifact_id) AS artifact_count
             FROM   events e
             LEFT   JOIN artifacts a ON a.event_id = e.event_id
+            {event_where}
             GROUP  BY e.event_id
             ORDER  BY e.date ASC, e.title ASC
-        """).fetchall()
+        """, params).fetchall()
 
         # Group by year → month for template rendering
         from collections import OrderedDict
@@ -820,6 +838,38 @@ def create_app() -> Flask:
         )
 
     # -----------------------------------------------------------------------
+    # API: /api/timeline — timeline data payload
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/timeline")
+    def api_timeline():
+        from flask import jsonify
+        db = get_db()
+
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        event_where = '' if lens == 'all' else 'WHERE e.source_type = ?'
+        params = [] if lens == 'all' else [lens]
+
+        rows = db.execute(f"""
+            SELECT e.event_id, e.title, e.date, e.category,
+                   e.location, e.summary,
+                   e.latitude, e.longitude,
+                   COUNT(a.artifact_id) AS artifact_count
+            FROM   events e
+            LEFT   JOIN artifacts a ON a.event_id = e.event_id
+            {event_where}
+            GROUP  BY e.event_id
+            ORDER  BY e.date ASC, e.title ASC
+        """, params).fetchall()
+
+        return jsonify({
+            'events': [dict(r) for r in rows],
+        })
+
+    # -----------------------------------------------------------------------
     # Route: /map — Phase 5: Leaflet geographic explorer
     # -----------------------------------------------------------------------
 
@@ -827,13 +877,26 @@ def create_app() -> Flask:
     def map_explorer():
         db = get_db()
 
-        # Summary counts for the map header stats
-        geo_count = db.execute("""
-            SELECT COUNT(*) FROM events
-            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
-        """).fetchone()[0]
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
 
-        total_events = db.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+        event_where = "WHERE latitude IS NOT NULL AND longitude IS NOT NULL"
+        event_params = []
+        if lens != 'all':
+            event_where += " AND source_type = ?"
+            event_params.append(lens)
+
+        # Summary counts for the map header stats
+        geo_count = db.execute(f"""
+            SELECT COUNT(*) FROM events
+            {event_where}
+        """, event_params).fetchone()[0]
+
+        if lens == 'all':
+            total_events = db.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+        else:
+            total_events = db.execute("SELECT COUNT(*) FROM events WHERE source_type = ?", (lens,)).fetchone()[0]
 
         # Category list for the filter legend
         categories = db.execute("""
@@ -884,18 +947,29 @@ def create_app() -> Flask:
         import json as _json
         db = get_db()
 
-        rows = db.execute("""
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        where_clauses = ["e.latitude IS NOT NULL", "e.longitude IS NOT NULL"]
+        params = []
+        if lens != 'all':
+            where_clauses.append("e.source_type = ?")
+            params.append(lens)
+
+        where_sql = " AND ".join(where_clauses)
+
+        rows = db.execute(f"""
             SELECT e.event_id, e.title, e.date, e.category,
                    e.location, e.summary,
                    e.latitude, e.longitude,
                    COUNT(a.artifact_id) AS artifact_count
             FROM   events e
             LEFT   JOIN artifacts a ON a.event_id = e.event_id
-            WHERE  e.latitude  IS NOT NULL
-              AND  e.longitude IS NOT NULL
+            WHERE  {where_sql}
             GROUP  BY e.event_id
             ORDER  BY e.date ASC
-        """).fetchall()
+        """, params).fetchall()
 
         features = []
         for r in rows:
@@ -1037,12 +1111,19 @@ def create_app() -> Flask:
         hours         = request.args.get("hours",         type=int)
         priority_only = request.args.get("priority_only", type=int, default=0)
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
         clauses = [
             "status IN ('raw', 'promoted')",
             "lat IS NOT NULL",
             "lng IS NOT NULL",
         ]
         params: list = []
+        if lens != 'all':
+            clauses.append("source_type = ?")
+            params.append(lens)
 
         if source:
             clauses.append("source = ?")
@@ -1137,8 +1218,22 @@ def create_app() -> Flask:
         from flask import Response
         db = get_db()
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        where_clauses = [
+            "cluster_id IS NOT NULL",
+            "lat IS NOT NULL",
+            "lng IS NOT NULL",
+        ]
+        params = []
+        if lens != 'all':
+            where_clauses.append("source_type = ?")
+            params.append(lens)
+
         # Aggregate per cluster_id: centroid + count + earliest/latest timestamp
-        rows = db.execute("""
+        rows = db.execute(f"""
             SELECT cluster_id,
                    ROUND(AVG(lat), 6) AS centroid_lat,
                    ROUND(AVG(lng), 6) AS centroid_lng,
@@ -1148,12 +1243,10 @@ def create_app() -> Flask:
                    MAX(is_priority)   AS any_priority,
                    GROUP_CONCAT(title, ' | ') AS sample_titles
             FROM   signals
-            WHERE  cluster_id IS NOT NULL
-              AND  lat IS NOT NULL
-              AND  lng IS NOT NULL
+            WHERE  {' AND '.join(where_clauses)}
             GROUP  BY cluster_id
             ORDER  BY member_count DESC
-        """).fetchall()
+        """, params).fetchall()
 
         features = []
         for r in rows:
@@ -1205,11 +1298,18 @@ def create_app() -> Flask:
     def graph():
         db = get_db()
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        event_filter = '' if lens == 'all' else f"WHERE source_type = '{lens}'"
+        artifact_filter = '' if lens == 'all' else f"WHERE source_type = '{lens}'"
+
         # Pre-compute summary stats for the graph header
         node_counts = {
             "actors":    db.execute("SELECT COUNT(*) FROM actors").fetchone()[0],
-            "events":    db.execute("SELECT COUNT(*) FROM events").fetchone()[0],
-            "artifacts": db.execute("SELECT COUNT(*) FROM artifacts").fetchone()[0],
+            "events":    db.execute(f"SELECT COUNT(*) FROM events {event_filter}").fetchone()[0],
+            "artifacts": db.execute(f"SELECT COUNT(*) FROM artifacts {artifact_filter}").fetchone()[0],
             "links":     db.execute("SELECT COUNT(*) FROM actor_events").fetchone()[0],
         }
 
@@ -1262,6 +1362,10 @@ def create_app() -> Flask:
         min_weight    = max(0, int(req.args.get("min_weight", 0)))
         incl_artifacts = req.args.get("include_artifacts", "false").lower() == "true"
 
+        lens = req.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
         # ── Actors ─────────────────────────────────────────────────────────
         actor_where = ""
         actor_params: list = []
@@ -1269,6 +1373,10 @@ def create_app() -> Flask:
             placeholders = ",".join("?" * len(actor_types))
             actor_where  = f"WHERE type IN ({placeholders})"
             actor_params = list(actor_types)
+
+        if lens != 'all':
+            actor_where = ("WHERE " if not actor_where else actor_where + " AND ") + "source_type = ?"
+            actor_params.append(lens)
 
         actors = db.execute(f"""
             SELECT actor_id, name, type, description
@@ -1286,6 +1394,10 @@ def create_app() -> Flask:
             placeholders = ",".join("?" * len(categories))
             event_where  = f"WHERE category IN ({placeholders})"
             event_params = list(categories)
+
+        if lens != 'all':
+            event_where = ("WHERE " if not event_where else event_where + " AND ") + "e.source_type = ?"
+            event_params.append(lens)
 
         events = db.execute(f"""
             SELECT e.event_id, e.title, e.date, e.category,
@@ -1319,11 +1431,18 @@ def create_app() -> Flask:
         artifact_nodes = []
         artifact_links = []
         if incl_artifacts:
-            artifacts = db.execute("""
-                SELECT artifact_id, title, type, source, event_id
-                FROM   artifacts
-                WHERE  event_id IS NOT NULL
-            """).fetchall()
+            if lens == 'all':
+                artifacts = db.execute("""
+                    SELECT artifact_id, title, type, source, event_id
+                    FROM   artifacts
+                    WHERE  event_id IS NOT NULL
+                """).fetchall()
+            else:
+                artifacts = db.execute("""
+                    SELECT artifact_id, title, type, source, event_id
+                    FROM   artifacts
+                    WHERE  event_id IS NOT NULL AND source_type = ?
+                """, (lens,)).fetchall()
 
             for a in artifacts:
                 if a["event_id"] in event_id_set:
@@ -1489,6 +1608,9 @@ def create_app() -> Flask:
         categories     = req.args.getlist("category")
         min_weight     = max(0, int(req.args.get("min_weight", 0)))
         incl_artifacts = req.args.get("include_artifacts", "false").lower() == "true"
+        lens = req.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
 
         # ── Actors ─────────────────────────────────────────────────────────
         actor_where  = ""
@@ -1497,6 +1619,10 @@ def create_app() -> Flask:
             phs         = ",".join("?" * len(actor_types))
             actor_where = f"WHERE type IN ({phs})"
             actor_params = list(actor_types)
+
+        if lens != 'all':
+            actor_where = ("WHERE " if not actor_where else actor_where + " AND ") + "source_type = ?"
+            actor_params.append(lens)
 
         actor_rows = db.execute(f"""
             SELECT ac.actor_id, ac.name, ac.type, ac.description,
@@ -1517,6 +1643,10 @@ def create_app() -> Flask:
             phs         = ",".join("?" * len(categories))
             event_where = f"WHERE e.category IN ({phs})"
             event_params = list(categories)
+
+        if lens != 'all':
+            event_where = ("WHERE " if not event_where else event_where + " AND ") + "e.source_type = ?"
+            event_params.append(lens)
 
         event_rows = db.execute(f"""
             SELECT e.event_id, e.title, e.date, e.category,
@@ -1605,11 +1735,18 @@ def create_app() -> Flask:
 
         # ── Artifact nodes (optional) ───────────────────────────────────────
         if incl_artifacts:
-            art_rows = db.execute("""
-                SELECT artifact_id, title, type, source, event_id, description
-                FROM   artifacts
-                WHERE  event_id IS NOT NULL
-            """).fetchall()
+            if lens == 'all':
+                art_rows = db.execute("""
+                    SELECT artifact_id, title, type, source, event_id, description
+                    FROM   artifacts
+                    WHERE  event_id IS NOT NULL
+                """).fetchall()
+            else:
+                art_rows = db.execute("""
+                    SELECT artifact_id, title, type, source, event_id, description
+                    FROM   artifacts
+                    WHERE  event_id IS NOT NULL AND source_type = ?
+                """, (lens,)).fetchall()
             for ar in art_rows:
                 if ar["event_id"] not in event_id_set:
                     continue
@@ -1940,8 +2077,8 @@ def create_app() -> Flask:
 
         cur = db.execute("""
             INSERT INTO events
-                (title, summary, date, location, latitude, longitude, category)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                (title, summary, date, location, latitude, longitude, category, source_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'live')
         """, (title, summary, date, location, lat, lon, category))
         db.commit()
         new_event_id = cur.lastrowid
@@ -2080,31 +2217,19 @@ def create_app() -> Flask:
                 uploaded  = request.files.get("file")
 
                 if uploaded and uploaded.filename:
-                    ext = uploaded.filename.rsplit(".", 1)[-1].lower()
-                    if ext not in ALLOWED_EXTENSIONS:
-                        flash(f"File type '.{ext}' is not allowed.", "error")
+                    try:
+                        upload_info = process_artifact_upload(uploaded, metadata={
+                            "media_dir": str(MEDIA_DIR)
+                        })
+                        file_path = upload_info.get("file_path")
+                        thumbnail = upload_info.get("thumbnail")
+                        ext = upload_info.get("extension")
+                    except ValueError as exc:
+                        flash(str(exc), "error")
                         return redirect(url_for("admin"))
-
-                    subdir     = ALLOWED_EXTENSIONS[ext]
-                    safe_name  = f"{uuid.uuid4().hex}_{secure_filename(uploaded.filename)}"
-                    dest_dir   = MEDIA_DIR / subdir
-                    dest_dir.mkdir(parents=True, exist_ok=True)
-                    dest_path  = dest_dir / safe_name
-                    uploaded.save(str(dest_path))
-                    file_path  = f"media/{subdir}/{safe_name}"
-
-                    # Generate thumbnail for image uploads
-                    if ext in IMAGE_EXTENSIONS:
-                        try:
-                            from PIL import Image
-                            thumb_name = f"thumb_{safe_name}"
-                            thumb_path = dest_dir / thumb_name
-                            with Image.open(str(dest_path)) as img:
-                                img.thumbnail((400, 400))
-                                img.save(str(thumb_path))
-                            thumbnail = f"media/{subdir}/{thumb_name}"
-                        except Exception:
-                            thumbnail = file_path  # fallback to original
+                    except Exception as exc:
+                        flash("Failed to process uploaded file.", "error")
+                        return redirect(url_for("admin"))
 
                 # ── Phase 19 rev.2: live extraction on ingest ────────────────
                 # OCR (pytesseract) and PDF (PyMuPDF) are now live.
@@ -2173,8 +2298,8 @@ def create_app() -> Flask:
                             (title, description, type, date, location,
                              latitude, longitude, tags, source,
                              file_path, thumbnail, event_id,
-                             raw_text_cache, processing_status)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             raw_text_cache, processing_status, source_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'live')
                     """, (
                         title, description, atype, date, location,
                         float(latitude)  if latitude  else None,
@@ -2188,8 +2313,8 @@ def create_app() -> Flask:
                         INSERT INTO artifacts
                             (title, description, type, date, location,
                              latitude, longitude, tags, source,
-                             file_path, thumbnail, event_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             file_path, thumbnail, event_id, source_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'live')
                     """, (
                         title, description, atype, date, location,
                         float(latitude)  if latitude  else None,
@@ -2294,7 +2419,7 @@ def create_app() -> Flask:
                     return redirect(url_for("admin"))
 
                 db.execute(
-                    "INSERT INTO actors (name, type, description) VALUES (?, ?, ?)",
+                    "INSERT INTO actors (name, type, description, source_type) VALUES (?, ?, ?, 'live')",
                     (name, atype, description),
                 )
                 db.commit()
@@ -2662,8 +2787,8 @@ def create_app() -> Flask:
         hypothesis = f"Pattern: {alert['summary'][:200]}"
         try:
             cur = db.execute(
-                "INSERT INTO cases (title, description, hypothesis, status, case_type) "
-                "VALUES (?, ?, ?, 'active', 'signal') ",
+                "INSERT INTO cases (title, description, hypothesis, status, case_type, source_type) "
+                "VALUES (?, ?, ?, 'active', 'signal', 'live') ",
                 (case_title,
                  f"Auto-generated from Sentinel alert #{alert_id}. "
                  f"Type: {alert['alert_type']} | "
@@ -2702,7 +2827,7 @@ def create_app() -> Flask:
                 "SUM(CASE WHEN status='raw' THEN 1 ELSE 0 END) AS raw, "
                 "SUM(CASE WHEN is_priority=1 THEN 1 ELSE 0 END) AS priority, "
                 "MAX(timestamp) AS latest "
-                "FROM signals WHERE stream IS NOT NULL "
+                "FROM signals WHERE stream IS NOT NULL AND source_type = 'live' "
                 "GROUP BY stream ORDER BY total DESC"
             ).fetchall()
         except Exception:
@@ -2782,6 +2907,19 @@ def create_app() -> Flask:
         offset = max(int(request.args.get("offset",  0)),    0)
         stream_filter = request.args.get("stream", "").strip().upper() or None
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        if lens == 'all':
+            source_type_clause = "1=1"
+            source_type_param = None
+            sentinel_allowed = True
+        else:
+            source_type_clause = "s.source_type = ?"
+            source_type_param = lens
+            sentinel_allowed = (lens == 'live')
+
         items = []
 
         # ── 1. SENTINEL_ALERT items ─────────────────────────────────────────
@@ -2807,14 +2945,15 @@ def create_app() -> Flask:
         #
         # Cap: max 5 SENTINEL_ALERT items per feed call so other item types
         # always get page-space regardless of alert volume.
-        try:
-            sa_rows = db.execute("""
-                SELECT id, alert_type, confidence_score, signal_count,
-                       summary, location_lat, location_lon,
-                       status, created_at
-                FROM   sentinel_alerts
-                WHERE  status = 'new'
-                  AND  (
+        if sentinel_allowed:
+            try:
+                sa_rows = db.execute("""
+                    SELECT id, alert_type, confidence_score, signal_count,
+                           summary, location_lat, location_lon,
+                           status, created_at
+                    FROM   sentinel_alerts
+                    WHERE  status = 'new'
+                      AND  (
                     -- Rule 1: correlation_escalation — exclude all FIRMS pixel-pairs
                     (
                         alert_type = 'correlation_escalation'
@@ -2845,26 +2984,26 @@ def create_app() -> Flask:
                 ORDER  BY confidence_score DESC, signal_count DESC, created_at DESC
                 LIMIT  5
             """).fetchall()
-            for r in sa_rows:
-                items.append({
-                    "item_type":        "SENTINEL_ALERT",
-                    "id":               f"sa-{r['id']}",
-                    "alert_id":         r["id"],
-                    "feed_score":       round(0.20 + r["confidence_score"] * 0.80, 4),
-                    "title":            r["summary"][:120],
-                    "summary":          r["summary"],
-                    "alert_type":       r["alert_type"],
-                    "confidence_score": r["confidence_score"],
-                    "signal_count":     r["signal_count"],
-                    "location_lat":     r["location_lat"],
-                    "location_lon":     r["location_lon"],
-                    "timestamp":        r["created_at"],
-                    "stream":           None,
-                    "source":           "SENTINEL",
-                    "is_priority":      0,
-                })
-        except Exception:
-            pass
+                for r in sa_rows:
+                    items.append({
+                        "item_type":        "SENTINEL_ALERT",
+                        "id":               f"sa-{r['id']}",
+                        "alert_id":         r["id"],
+                        "feed_score":       round(0.20 + r["confidence_score"] * 0.80, 4),
+                        "title":            r["summary"][:120],
+                        "summary":          r["summary"],
+                        "alert_type":       r["alert_type"],
+                        "confidence_score": r["confidence_score"],
+                        "signal_count":     r["signal_count"],
+                        "location_lat":     r["location_lat"],
+                        "location_lon":     r["location_lon"],
+                        "timestamp":        r["created_at"],
+                        "stream":           None,
+                        "source":           "SENTINEL",
+                        "is_priority":      0,
+                    })
+            except Exception:
+                pass
 
         # ── 2. SIGNAL items ─────────────────────────────────────────────────
         # sentinel_flag: 1 if a non-dismissed sentinel alert exists within
@@ -2879,6 +3018,12 @@ def create_app() -> Flask:
         # Non-FIRMS signals pass through without additional filtering.
         try:
             stream_clause = "AND s.stream = :stream" if stream_filter else ""
+            params = {}
+            if stream_filter:
+                params["stream"] = stream_filter
+            if source_type_param is not None:
+                params["source_type"] = source_type_param
+
             sig_rows = db.execute(f"""
                 SELECT
                     s.signal_id,
@@ -2936,10 +3081,11 @@ def create_app() -> Flask:
                     END AS firms_redundant
                 FROM  signals s
                 WHERE s.status IN ('raw', 'promoted')
-                {stream_clause}
+                  AND (" + source_type_clause + ")
+                " + stream_clause + "
                 ORDER BY s.is_priority DESC, s.relevance_score DESC
                 LIMIT  500
-            """, {"stream": stream_filter}).fetchall()
+            """, params).fetchall()
 
             for r in sig_rows:
                 # FIRMS high-impact gate
@@ -2981,6 +3127,12 @@ def create_app() -> Flask:
         # FIRMS exclusion (Phase 29.3): exclude any pair where either signal
         #   is source='firms'. Fire pixel-pairs are not investigative incidents.
         try:
+            corr_params = {}
+            corr_source_clause = ""
+            if source_type_param is not None:
+                corr_source_clause = "\n                  AND  sa.source_type = :source_type\n                  AND  sb.source_type = :source_type"
+                corr_params['source_type'] = source_type_param
+
             corr_rows = db.execute("""
                 SELECT ci.id,
                        ci.correlation_score,
@@ -3002,10 +3154,10 @@ def create_app() -> Flask:
                 JOIN   signals sb ON sb.signal_id = ci.signal_b
                 WHERE  ci.correlation_score >= 0.85
                   AND  sa.source != 'firms'
-                  AND  sb.source != 'firms'
+                  AND  sb.source != 'firms'" + corr_source_clause + "
                 ORDER  BY ci.correlation_score DESC
                 LIMIT  100
-            """).fetchall()
+            """, corr_params).fetchall()
 
             for r in corr_rows:
                 rel   = (float(r["rel_a"]) + float(r["rel_b"])) / 2.0
@@ -3485,6 +3637,45 @@ def create_app() -> Flask:
             ).fetchall()
         except Exception: pass
 
+        # Targeting: signals linked via relationship engine
+        targeting = {
+            "is_targeted": False,
+            "signal_count": 0,
+            "max_gravity": 0.0,
+            "has_priority_signal": False,
+            "threat_level": "none",
+        }
+        try:
+            t = db.execute("""
+                SELECT COUNT(DISTINCT sa.signal_id)        AS signal_count,
+                       MAX(COALESCE(s.gravity_score, 0))   AS max_gravity,
+                       MAX(COALESCE(s.is_priority, 0))     AS has_priority_signal
+                FROM   signal_actors sa
+                JOIN   signals s ON s.signal_id = sa.signal_id
+                WHERE  sa.actor_id = ?
+            """, (actor_id,)).fetchone()
+            if t:
+                max_g    = float(t["max_gravity"] or 0)
+                has_pri  = bool(t["has_priority_signal"])
+                sig_count = int(t["signal_count"] or 0)
+                is_targeted = max_g >= 0.75 or has_pri
+                if max_g >= 0.75 or has_pri:
+                    threat_level = "critical"
+                elif max_g >= 0.45:
+                    threat_level = "elevated"
+                elif sig_count > 0:
+                    threat_level = "monitored"
+                else:
+                    threat_level = "none"
+                targeting = {
+                    "is_targeted": is_targeted,
+                    "signal_count": sig_count,
+                    "max_gravity": round(max_g, 3),
+                    "has_priority_signal": has_pri,
+                    "threat_level": threat_level,
+                }
+        except Exception: pass
+
         return render_template(
             "actor.html",
             actor=actor,
@@ -3496,6 +3687,7 @@ def create_app() -> Flask:
             network_top=network_top,
             relationships=relationships,
             all_actors=all_actors,
+            targeting=targeting,
         )
 
     # -----------------------------------------------------------------------
@@ -3505,7 +3697,15 @@ def create_app() -> Flask:
     @app.route("/cases")
     def cases():
         db = get_db()
-        cases_list = db.execute("""
+
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
+        case_where = '' if lens == 'all' else 'WHERE c.source_type = ?'
+        params = [] if lens == 'all' else [lens]
+
+        cases_list = db.execute(f"""
             SELECT c.case_id, c.title, c.description, c.status, c.created_at,
                    COUNT(DISTINCT ca.artifact_id) AS artifact_count,
                    COUNT(DISTINCT ce.event_id)    AS event_count,
@@ -3514,10 +3714,11 @@ def create_app() -> Flask:
             LEFT JOIN case_artifacts ca  ON ca.case_id = c.case_id
             LEFT JOIN case_events    ce  ON ce.case_id = c.case_id
             LEFT JOIN case_actors    cac ON cac.case_id = c.case_id
+            {case_where}
             GROUP BY c.case_id
             ORDER BY c.created_at DESC
-        """).fetchall()
-        return render_template("cases.html", cases=cases_list)
+        """, params).fetchall()
+        return render_template("cases.html", cases=cases_list, lens=lens)
 
     @app.route("/cases/new", methods=["POST"])
     def case_new():
@@ -3531,7 +3732,7 @@ def create_app() -> Flask:
             return redirect(url_for("cases"))
         db = get_db()
         cur = db.execute(
-            "INSERT INTO cases (title, description, hypothesis, case_type, status) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO cases (title, description, hypothesis, case_type, status, source_type) VALUES (?, ?, ?, ?, ?, 'live')",
             (title, description, hypothesis, case_type, status),
         )
         db.commit()
@@ -4956,6 +5157,7 @@ def create_app() -> Flask:
     @app.route("/discovery")
     def discovery():
         """Phase 33: Discovery dashboard — candidate entities from evolution engine."""
+        from utils.rss_parser import parse_rss
         db = get_db()
         try:
             targets = db.execute("""
@@ -4967,6 +5169,10 @@ def create_app() -> Flask:
                     candidate_score DESC
             """).fetchall()
             targets = [dict(t) for t in targets]
+            # Fetch parsed articles for each target
+            for t in targets:
+                rss_url = t['suggested_query'].replace('/search?', '/rss/search?')
+                t['articles'] = parse_rss(rss_url, limit=3)
         except Exception:
             targets = []
 
@@ -4974,12 +5180,17 @@ def create_app() -> Flask:
         approved = sum(1 for t in targets if t["status"] == "approved")
         ignored  = sum(1 for t in targets if t["status"] == "ignored")
 
+        lens = request.args.get('lens', 'live').lower()
+        if lens not in ('live', 'seed', 'all'):
+            lens = 'live'
+
         return render_template(
             "discovery.html",
             targets=targets,
             pending=pending,
             approved=approved,
             ignored=ignored,
+            lens=lens,
         )
 
     @app.route("/api/evolution/run", methods=["POST"])
@@ -5055,6 +5266,73 @@ def create_app() -> Flask:
         )
         db.commit()
         return jsonify({"status": "ignored", "id": target_id})
+
+    # -----------------------------------------------------------------------
+    # Phase 33: Evolution Fetched Intelligence
+    # -----------------------------------------------------------------------
+
+    @app.route("/evolution")
+    def evolution():
+        """Phase 33: Evolution Fetched Intelligence — parsed articles from Google News RSS sources."""
+        from utils.rss_parser import parse_rss
+
+        # Google News sources from civic_intel_collector
+        google_news_sources = [
+            {
+                "label": "Daily Maverick",
+                "url": "https://news.google.com/rss/search?q=site:dailymaverick.co.za+investigat&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "GroundUp",
+                "url": "https://news.google.com/rss/search?q=site:groundup.org.za&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "Daily Maverick — Corruption",
+                "url": "https://news.google.com/rss/search?q=site:dailymaverick.co.za+corruption+OR+VBS+OR+tender&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "News24 — Crime & Courts",
+                "url": "https://news.google.com/rss/search?q=site:news24.com+crime+OR+court+OR+arrest+south+africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "TimesLive — Corruption",
+                "url": "https://news.google.com/rss/search?q=site:timeslive.co.za+corruption+OR+Hawks+OR+NPA&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "Eskom",
+                "url": "https://news.google.com/rss/search?q=Eskom+loadshedding+OR+%22load+shedding%22+OR+%22power+outage%22+south+africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "Municipal Infrastructure",
+                "url": "https://news.google.com/rss/search?q=south+africa+municipality+%22water+outage%22+OR+%22sewage%22+OR+%22road+collapse%22+OR+%22infrastructure%22&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "SAPS Media Releases",
+                "url": "https://news.google.com/rss/search?q=site:saps.gov.za+newsroom&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "Hawks (DPCI) Media",
+                "url": "https://news.google.com/rss/search?q=%22Hawks+DPCI%22+OR+%22Directorate+for+Priority+Crime%22+arrest+OR+charge+OR+raid+South+Africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+            {
+                "label": "NPA Media",
+                "url": "https://news.google.com/rss/search?q=site:npa.gov.za+OR+%22NPA%22+prosecution+South+Africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
+            },
+        ]
+
+        articles = []
+        for source in google_news_sources:
+            parsed = parse_rss(source["url"], limit=5)
+            for article in parsed:
+                articles.append({
+                    "source": source["label"],
+                    "title": article.title,
+                    "link": article.link,
+                    "summary": article.summary,
+                    "published": article.published,
+                })
+
+        return render_template("evolution.html", articles=articles)
 
     # -----------------------------------------------------------------------
     # Phase 30E: Case Correlation Intelligence Routes
@@ -5251,6 +5529,17 @@ SCHEMA_STATEMENTS = [
                         'person','institution','media','movement','government'
                     )),
         description TEXT,
+        source_type TEXT    NOT NULL DEFAULT 'live',
+        created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS priorities (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        name        TEXT    NOT NULL UNIQUE,
+        description TEXT,
+        status      TEXT    NOT NULL DEFAULT 'active'
+                    CHECK(status IN ('active','deprecated','disabled')),
         created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
     )
     """,
@@ -5268,9 +5557,10 @@ SCHEMA_STATEMENTS = [
                         'Election','Security','Civil Unrest','Legislative',
                         'Economic','Diplomatic','Military','Social','Other'
                     )),
+        source_type TEXT    NOT NULL DEFAULT 'live',
         created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
     )
-    """,
+    """, 
     """
     CREATE TABLE IF NOT EXISTS artifacts (
         artifact_id       INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -5288,6 +5578,7 @@ SCHEMA_STATEMENTS = [
                               'verified','unverified','government','leaked',
                               'citizen','media'
                           )),
+        source_type       TEXT    NOT NULL DEFAULT 'live',
         file_path         TEXT,
         thumbnail         TEXT,
         event_id          INTEGER
@@ -5415,6 +5706,7 @@ SCHEMA_STATEMENTS = [
                     )),
         status      TEXT    NOT NULL DEFAULT 'active'
                     CHECK(status IN ('active','closed','archived')),
+        source_type TEXT    NOT NULL DEFAULT 'live',
         created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
     )
     """,
@@ -5535,9 +5827,10 @@ SCHEMA_STATEMENTS = [
         stream             TEXT    NOT NULL DEFAULT 'GLOBAL'
                            CHECK(stream IN
                                ('GLOBAL','CRIME_INTEL','INFRASTRUCTURE','PRIORITY')),
-        relevance_score    REAL    NOT NULL DEFAULT 1.0
+        relevance_score    REAL    NOT NULL DEFAULT 1.0,
+        source_type        TEXT    NOT NULL DEFAULT 'live'
     )
-    """,
+    """,   
     """
     CREATE TABLE IF NOT EXISTS signal_entities (
         entity_id   INTEGER PRIMARY KEY AUTOINCREMENT,

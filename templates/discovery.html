@@ -64,12 +64,28 @@
         </span>
       </div>
 
+      {# Fetched articles or query link #}
+      {% if t.articles %}
+      <div class="disc-card__articles">
+        {% for article in t.articles %}
+        <div class="disc-article">
+          <div class="disc-article__title">
+            <a href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+          </div>
+          {% if article.summary %}
+          <div class="disc-article__summary">{{ article.summary | striptags | truncate(200) }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
       <div class="disc-card__query mono">
         <span class="disc-card__query-label">Query →</span>
-        <a href="{{ t.suggested_query }}" target="_blank" class="disc-card__query-link">
+        <a href="{{ t.suggested_query.replace('/rss/search?', '/search?') }}" target="_blank" class="disc-card__query-link">
           {{ t.suggested_query[:90] }}{% if t.suggested_query|length > 90 %}…{% endif %}
         </a>
       </div>
+      {% endif %}
 
       {# Evidence signal IDs #}
       {% if t.evidence_json %}

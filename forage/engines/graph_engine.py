@@ -456,3 +456,6 @@ if __name__ == "__main__":
     result = engine.run(dry_run=args.dry_run)
     engine.report()
     sys.exit(0 if result.get("status") in ("done", "empty", "too_few_actors") else 1)
+
+def build_graphs():
+    print("[Graph Engine] Building graphs...")

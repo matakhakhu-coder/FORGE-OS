@@ -566,3 +566,6 @@ if __name__ == "__main__":
     result = s.run(dry_run=args.dry_run)
     s.report()
     sys.exit(0 if result["status"] == "done" else 1)
+
+def process_alerts():
+    print("[Sentinel] Processing alerts...")

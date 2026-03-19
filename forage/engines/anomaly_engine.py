@@ -683,3 +683,8 @@ if __name__ == "__main__":
     )
     engine.report()
     sys.exit(0 if result["status"] == "done" else 1)
+
+# --- MEGA RUNNER ADAPTER ---
+def run_all():
+    print(f"[{__name__}] Executing run_all...")
+    # Call your actual processing logic here

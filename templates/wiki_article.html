@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+{# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
+<nav class="breadcrumb">
+  <a href="{{ url_for('index') }}">Archive</a>
+  <span class="breadcrumb__sep">›</span>
+  <a href="{{ url_for('wiki.wiki_index') }}">Archive Intelligence</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ article.title | truncate(40) }}</span>
+</nav>
+
+{# ── Page header ───────────────────────────────────────────────────────────── #}
+<div class="page-header">
+  <div class="page-header__eyebrow">
+    <span class="mono" style="color:var(--text-dim);">DOSSIER</span>
+    {% if article.tags %}
+    &nbsp;·&nbsp;
+    <span class="mono" style="color:var(--text-ghost);">{{ article.tags }}</span>
+    {% endif %}
+    {% if article.last_updated %}
+    &nbsp;·&nbsp;
+    <span class="mono" style="color:var(--text-dim);">UPDATED {{ article.last_updated[:10] }}</span>
+    {% endif %}
+  </div>
+  <h1 class="page-header__title">{{ article.title }}</h1>
+  {% if article.summary %}
+  <p class="page-header__meta">{{ article.summary }}</p>
+  {% endif %}
+</div>
+
+<div class="detail-layout">
+
+  <div class="detail-layout__main">
+    <section class="detail-section">
+      <h2 class="detail-section__title">Brief</h2>
+      <div class="wiki-content">
+        {{ article.content_html | safe }}
+      </div>
+    </section>
+  </div>
+
+  <aside class="detail-layout__sidebar">
+
+    <div class="meta-panel">
+      <div class="meta-panel__header">Connections</div>
+      <div class="meta-panel__body">
+
+        <div class="meta-field">
+          <div class="meta-field__label">What links here</div>
+          <div class="meta-field__value">
+            {% if inbound %}
+              <div class="tag-cloud" style="flex-direction:column; align-items:flex-start;">
+                {% for item in inbound %}
+                <a class="tag-pill" href="{{ url_for('wiki.wiki_article', slug=item.slug) }}">↳ {{ item.title }}</a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <span style="color:var(--text-dim);">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="meta-field">
+          <div class="meta-field__label">Links out</div>
+          <div class="meta-field__value">
+            {% if outbound %}
+              <div class="tag-cloud" style="flex-direction:column; align-items:flex-start;">
+                {% for item in outbound %}
+                <a class="tag-pill" href="{{ url_for('wiki.wiki_article', slug=item.slug) }}">→ {{ item.title }}</a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <span style="color:var(--text-dim);">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="meta-panel" style="margin-top:var(--sp-4);">
+      <div class="meta-panel__header">Graph</div>
+      <div class="meta-panel__body" style="padding:var(--sp-4);">
+        <a href="{{ url_for('wiki.wiki_graph') }}" class="btn btn--secondary" style="width:100%; text-align:center;">
+          ◫ View Relationship Graph
+        </a>
+      </div>
+    </div>
+
+  </aside>
+</div>
+{% endblock %}

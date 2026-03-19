@@ -23,6 +23,25 @@
   <button class="btn btn--sm btn--ghost diag-refresh-btn" id="js-refresh">↻ Refresh</button>
 </div>
 
+{# ── Deterministic Intelligence Health ────────────────────────────────────── #}
+<div class="meta-panel" style="margin-top: var(--sp-4);">
+  <div class="meta-panel__header">Intelligence Health</div>
+  <div class="meta-panel__body" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem;">
+    <div class="meta-field">
+      <div class="meta-field__label">Most Volatile Actor</div>
+      <div class="meta-field__value">{{ most_volatile.title if most_volatile else '—' }} ({{ most_volatile.volatility|default(0.0)|round(3) if most_volatile else '—' }})</div>
+    </div>
+    <div class="meta-field">
+      <div class="meta-field__label">Fastest Escalating Node</div>
+      <div class="meta-field__value">{{ fastest_escalating.title if fastest_escalating else '—' }} ({{ fastest_escalating.velocity|default(0.0)|round(3) if fastest_escalating else '—' }})</div>
+    </div>
+    <div class="meta-field">
+      <div class="meta-field__label">Global Stability Average</div>
+      <div class="meta-field__value">{{ global_stability|default(0.0)|round(3) }}</div>
+    </div>
+  </div>
+</div>
+
 {# ── DB Vitals row ────────────────────────────────────────────────────────── #}
 <div class="diag-vitals" id="js-vitals">
   <div class="diag-vital">

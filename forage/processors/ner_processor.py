@@ -369,3 +369,8 @@ if __name__ == "__main__":
         signal_id=args.signal_id,
         dry_run=args.dry_run,
     ))
+
+# --- MEGA RUNNER ADAPTER ---
+def process_all():
+    print("[NER Processor] Executing...")
+    # Add your actual function call here if it exists

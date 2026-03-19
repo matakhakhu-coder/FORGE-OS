@@ -6,6 +6,125 @@
   <title>{% block title %}FORGE{% endblock %} — Investigative Archive</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   {% block head_extra %}{% endblock %}
+  <style>
+    /* ── Aesthetic: THE MACHINE ─────────────────────────────────────── */
+    [data-aesthetic="THE_MACHINE"] {
+      --bg: #050505;
+      --text: #ffffff;
+      --accent: #ffcc00;
+      --ui-border: rgba(255, 204, 0, 0.4);
+      --font: 'Courier New', monospace;
+    }
+    [data-aesthetic="THE_MACHINE"] body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    [data-aesthetic="THE_MACHINE"] .signal-card {
+      border: 1px solid var(--ui-border);
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(255, 204, 0, 0.1);
+    }
+    [data-aesthetic="THE_MACHINE"] .topbar__pov-btn {
+      border-color: #ffcc00;
+      color: #ffcc00;
+    }
+
+    /* ── Aesthetic: SAMARITAN ────────────────────────────────────────── */
+    [data-aesthetic="SAMARITAN"] {
+      --bg: #000;
+      --text: #fff;
+      --accent: #ff0000;
+      --ui-border: #ff0000;
+      --font: 'Helvetica', 'Arial', sans-serif;
+    }
+    [data-aesthetic="SAMARITAN"] body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    [data-aesthetic="SAMARITAN"] h1,
+    [data-aesthetic="SAMARITAN"] .signal-title {
+      border-left: 8px solid var(--accent);
+      padding-left: 15px;
+    }
+    [data-aesthetic="SAMARITAN"] .topbar__pov-btn {
+      border-color: #ff0000;
+      color: #ff0000;
+    }
+
+    /* ── POV button base style ───────────────────────────────────────── */
+    .topbar__pov-btn {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid #444;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 11px;
+      letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .topbar__pov-btn:hover { opacity: 0.8; }
+
+    /* ── Glitch animation ────────────────────────────────────────────── */
+    @keyframes glitch-clip {
+      0%   { clip-path: inset(40% 0 61% 0); transform: translate(-4px, 0); }
+      20%  { clip-path: inset(92% 0 1%  0); transform: translate( 4px, 0); }
+      40%  { clip-path: inset(43% 0 50% 0); transform: translate(-4px, 0); }
+      60%  { clip-path: inset(25% 0 58% 0); transform: translate( 4px, 0); }
+      80%  { clip-path: inset(54% 0 7%  0); transform: translate(-4px, 0); }
+      100% { clip-path: inset(58% 0 43% 0); transform: translate( 0,   0); }
+    }
+    @keyframes glitch-skew {
+      0%  { transform: skew(-2deg); opacity: 0.8; }
+      25% { transform: skew( 3deg); opacity: 0.6; }
+      50% { transform: skew(-1deg); opacity: 0.9; }
+      75% { transform: skew( 2deg); opacity: 0.7; }
+      100%{ transform: skew( 0deg); opacity: 1;   }
+    }
+    .glitch-active::before,
+    .glitch-active::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .glitch-active::before {
+      color: #ff0000;
+      animation: glitch-clip 0.3s steps(1) forwards;
+    }
+    .glitch-active::after {
+      color: #00ffff;
+      animation: glitch-clip 0.3s steps(1) reverse forwards;
+    }
+    .glitch-active {
+      animation: glitch-skew 0.3s ease forwards;
+      position: relative;
+    }
+
+    /* ── Samaritan sidebar & nav enhancements ────────────────────────── */
+    [data-aesthetic="SAMARITAN"] .sidebar {
+      border-right: 1px solid #ff0000;
+      background: #000;
+    }
+    [data-aesthetic="SAMARITAN"] .nav-icon {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    [data-aesthetic="SAMARITAN"] .sidebar__label {
+      background: #ff0000;
+      color: #000;
+      padding: 2px 5px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
@@ -13,11 +132,17 @@
 
   {# ── Top Bar ──────────────────────────────────────────────────────────── #}
   <header class="topbar">
-    <a href="{{ url_for('index') }}" class="topbar__wordmark">
-      FORGE <span>ZA-DIVERGENT ARCHIVE</span>
+    {% set lens = request.args.get('lens', 'live') %}
+    <a href="{{ url_for('index', lens=lens) }}" class="topbar__wordmark">
+      {% if lens == 'live' %}
+        FORGE <span>LIVE INTELLIGENCE STREAM</span>
+      {% else %}
+        FORGE <span>INTELLIGENCE ARCHIVE</span>
+      {% endif %}
     </a>
 
-    <form class="topbar__search" action="{{ url_for('search') }}" method="get">
+    <form class="topbar__search" action="{{ url_for('search', lens=lens) }}" method="get">
+      <input type="hidden" name="lens" value="{{ lens }}">
       <input type="search" name="q" placeholder="Search the archive…"
              value="{{ request.args.get('q', '') }}" autocomplete="off">
       <button type="submit">Search</button>
@@ -26,7 +151,7 @@
     {# ── Priority alert bell ────────────────────────────────────────────── #}
     {# priority_count is injected by the context_processor in app.py on      #}
     {# every request — counts raw signals with is_priority = 1.              #}
-    <a href="{{ url_for('signals') }}"
+    <a href="{{ url_for('signals', lens=lens) }}"
        class="topbar__bell{% if priority_count %} topbar__bell--active{% endif %}"
        title="{{ priority_count }} priority signal{{ 's' if priority_count != 1 }} awaiting review"
        aria-label="Signal alerts">
@@ -44,6 +169,19 @@
 
     {# ── Sentinel alert bell ────────────────────────────────────────────── #}
     {# sentinel_count injected by context_processor — counts 'new' alerts   #}
+    {% set lens = request.args.get('lens', 'live') %}
+    {% set active_mode = {'live':'LIVE', 'seed':'ARCHIVE', 'all':'ALL'}.get(lens, 'LIVE') %}
+
+    <div class="topbar__mode-badge topbar__mode-badge--{{ lens }}" aria-live="polite" aria-atomic="true">
+      ACTIVE MODE: <strong>{{ active_mode }}</strong>
+    </div>
+
+    <div class="topbar__lens-toggle" aria-label="Select intelligence layer">
+      <a href="{{ request.path }}?lens=live" class="lens-btn{% if lens == 'live' %} lens-btn--active{% endif %}">LIVE</a>
+      <a href="{{ request.path }}?lens=seed" class="lens-btn{% if lens == 'seed' %} lens-btn--active{% endif %}">ARCHIVE</a>
+      <a href="{{ request.path }}?lens=all" class="lens-btn{% if lens == 'all' %} lens-btn--active{% endif %}">ALL</a>
+    </div>
+
     <a href="{{ url_for('index') }}#sentinel-alerts"
        class="topbar__bell topbar__sentinel-bell{% if sentinel_count %} topbar__sentinel-bell--active{% endif %}"
        title="{{ sentinel_count }} Sentinel alert{{ 's' if sentinel_count != 1 }} requiring review"
@@ -61,6 +199,12 @@
     </a>
 
     <div class="topbar__meta" id="js-clock">——</div>
+
+    {# ── POV Aesthetic Toggle ─────────────────────────────────────────────── #}
+    <button onclick="cycleAesthetic()" id="aesthetic-btn"
+            class="topbar__pov-btn" title="Cycle UI aesthetic">
+      POV: STANDARD
+    </button>
   </header>
 
   {# ── Sidebar ──────────────────────────────────────────────────────────── #}
@@ -69,13 +213,13 @@
       <div class="sidebar__label">Intelligence</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('index') }}"
+          <a href="{{ url_for('index', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'index' }}">
             <span class="nav-icon">◈</span> Archive Home
           </a>
         </li>
         <li>
-          <a href="{{ url_for('feed') }}"
+          <a href="{{ url_for('feed', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'feed' }}">
             <span class="nav-icon">⊜</span> Intel Feed
             {% if sentinel_count %}
@@ -84,7 +228,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('search') }}"
+          <a href="{{ url_for('search', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'search' }}">
             <span class="nav-icon">⌕</span> Search
           </a>
@@ -96,31 +240,36 @@
       <div class="sidebar__label">Explore</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('events') }}"
+          <a href="{{ url_for('events', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'events' }}">
             <span class="nav-icon">◎</span> Events
           </a>
         </li>
         <li>
-          <a href="{{ url_for('actors') }}"
+          <a href="{{ url_for('actors', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'actors' }}">
             <span class="nav-icon">◉</span> Actors
           </a>
         </li>
         <li>
-          <a href="{{ url_for('timeline') }}"
+          <a href="{{ url_for('wiki.wiki_index', lens=lens) }}" class="nav-link">
+              <span class="nav-icon">◈</span> <span class="nav-label">Archive Intelligence</span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('timeline', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'timeline' }}">
             <span class="nav-icon">≡</span> Timeline
           </a>
         </li>
         <li>
-          <a href="{{ url_for('map_explorer') }}"
+          <a href="{{ url_for('map_explorer', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'map_explorer' }}">
             <span class="nav-icon">⊕</span> Map
           </a>
         </li>
         <li>
-          <a href="{{ url_for('graph') }}"
+          <a href="{{ url_for('graph', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'graph' }}">
             <span class="nav-icon">◫</span> Graph
           </a>
@@ -132,7 +281,7 @@
       <div class="sidebar__label">Cases</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('cases') }}"
+          <a href="{{ url_for('cases', lens=lens) }}"
              class="{{ 'active' if request.endpoint in ('cases','case_detail') }}">
             <span class="nav-icon">⊟</span> Workspaces
           </a>
@@ -144,21 +293,21 @@
       <div class="sidebar__label">FORAGE</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('signals') }}"
+          <a href="{{ url_for('signals', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'signals' }}">
             <span class="nav-icon">⊛</span> Signals
           </a>
         </li>
         <li>
-          <a href="{{ url_for('artifact_gallery') }}"
+          <a href="{{ url_for('artifact_gallery', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'artifact_gallery' }}">
             <span class="nav-icon">◈</span> Gallery
           </a>
         </li>
         <li>
-          <a href="{{ url_for('index') }}#sentinel-alerts"
+          <a href="{{ url_for('index', lens=lens) }}#sentinel-alerts"
              class="{% if sentinel_count %}sentinel-nav-active{% endif %}">
-            <span class="nav-icon" style="color:{% if sentinel_count %}#e05c5c{% endif %};">⚠</span>
+            <span class="nav-icon{% if sentinel_count %} nav-icon--alert{% endif %}">⚠</span>
             Sentinel
             {% if sentinel_count %}
             <span class="nav-sentinel-badge">{{ sentinel_count }}</span>
@@ -172,7 +321,7 @@
       <div class="sidebar__label">System</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('diagnostics') }}"
+          <a href="{{ url_for('diagnostics', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'diagnostics' }}">
             <span class="nav-icon">⊡</span> Control Room
             <span class="pipeline-led pipeline-led--{{ pipeline_health }}"
@@ -181,7 +330,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('discovery') }}"
+          <a href="{{ url_for('discovery', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'discovery' }}">
             <span class="nav-icon">⟁</span> Discovery
             {% if discovery_count %}
@@ -190,7 +339,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('admin') }}"
+          <a href="{{ url_for('admin', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'admin' }}">
             <span class="nav-icon">⊞</span> Admin
           </a>
@@ -242,7 +391,48 @@
       window.location.href = url.toString();
     });
   });
+
+  // ── POV Aesthetic Cycle ──────────────────────────────────────────────────
+  function cycleAesthetic() {
+    const html = document.documentElement;
+    const btn  = document.getElementById('aesthetic-btn');
+    const states = [null, 'THE_MACHINE', 'SAMARITAN'];
+
+    let current = html.getAttribute('data-aesthetic');
+    if (current === "null") current = null;
+
+    const nextIndex = (states.indexOf(current) + 1) % states.length;
+    const next      = states[nextIndex];
+
+    // Glitch the shell on transition
+    document.body.classList.add('glitch-active');
+    setTimeout(() => document.body.classList.remove('glitch-active'), 350);
+
+    if (next) {
+      html.setAttribute('data-aesthetic', next);
+      btn.textContent = 'POV: ' + next.replace('_', ' ');
+    } else {
+      html.removeAttribute('data-aesthetic');
+      btn.textContent = 'POV: STANDARD';
+    }
+
+    try { localStorage.setItem('forge_aesthetic', next || ''); } catch(e) {}
+  }
+
+  // Restore persisted aesthetic on load
+  (function () {
+    try {
+      const saved = localStorage.getItem('forge_aesthetic');
+      if (saved && saved !== "null") {
+        document.documentElement.setAttribute('data-aesthetic', saved);
+        const btn = document.getElementById('aesthetic-btn');
+        if (btn) btn.textContent = 'POV: ' + saved.replace('_', ' ');
+      }
+    } catch(e) {}
+  })();
 </script>
+
+
 
 {% block scripts %}{% endblock %}
 </body>
