@@ -1,0 +1,10 @@
+{
+    "name":        "geo_enrichment",
+    "version":     "1.0.0",
+    "description": "Enriches signals with South African geographic context. Maps lat/lng coordinates to province, municipality, and strategic location tier. Follows signal_enrichment reference standard.",
+    "author":      "FORGE-OS",
+    "engines":     ["geo_enrichment_engine"],
+    "hooks":       ["on_signal"],
+    "routes":      [],
+    "schema":      null
+}

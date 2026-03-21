@@ -3546,19 +3546,33 @@ def create_app() -> Flask:
         if not actor:
             return render_template("archive.html", page="404"), 404
 
-        # All events this actor participated in, with their role and artifact counts
+        # All events this actor participated in — manual (actor_events) +
+        # automated pipeline links (event_actors), deduplicated by event_id
         events = db.execute("""
             SELECT e.event_id, e.title, e.date, e.category,
                    e.location, e.summary,
                    ae.role,
-                   COUNT(a.artifact_id) AS artifact_count
+                   COUNT(DISTINCT a.artifact_id) AS artifact_count
             FROM   actor_events ae
             JOIN   events e ON e.event_id = ae.event_id
             LEFT   JOIN artifacts a ON a.event_id = e.event_id
             WHERE  ae.actor_id = ?
             GROUP  BY e.event_id
-            ORDER  BY e.date ASC
-        """, (actor_id,)).fetchall()
+
+            UNION
+
+            SELECT e.event_id, e.title, e.date, e.category,
+                   e.location, e.summary,
+                   ea.role,
+                   COUNT(DISTINCT a.artifact_id) AS artifact_count
+            FROM   event_actors ea
+            JOIN   events e ON e.event_id = ea.event_id
+            LEFT   JOIN artifacts a ON a.event_id = e.event_id
+            WHERE  ea.actor_id = ?
+            GROUP  BY e.event_id
+
+            ORDER  BY 3 ASC
+        """, (actor_id, actor_id)).fetchall()
 
         # Full artifact footprint: all artifacts from every linked event
         artifact_footprint = db.execute("""
@@ -3572,21 +3586,28 @@ def create_app() -> Flask:
             ORDER  BY a.date ASC
         """, (actor_id,)).fetchall()
 
-        # Co-actors: other actors who share events with this actor
+        # Co-actors: actors sharing events via both manual and automated links
         co_actors = db.execute("""
             SELECT ac.actor_id, ac.name, ac.type,
-                   COUNT(DISTINCT ae2.event_id) AS shared_events,
+                   COUNT(DISTINCT e.event_id) AS shared_events,
                    GROUP_CONCAT(DISTINCT e.title) AS shared_event_names
-            FROM   actor_events ae1
-            JOIN   actor_events ae2 ON ae2.event_id  = ae1.event_id
-                                   AND ae2.actor_id != ae1.actor_id
-            JOIN   actors ac ON ac.actor_id = ae2.actor_id
-            JOIN   events e  ON e.event_id  = ae1.event_id
-            WHERE  ae1.actor_id = ?
+            FROM (
+                SELECT event_id FROM actor_events WHERE actor_id = ?
+                UNION
+                SELECT event_id FROM event_actors WHERE actor_id = ?
+            ) my_events
+            JOIN (
+                SELECT event_id, actor_id FROM actor_events
+                UNION
+                SELECT event_id, actor_id FROM event_actors
+            ) all_links ON all_links.event_id = my_events.event_id
+                       AND all_links.actor_id != ?
+            JOIN actors ac ON ac.actor_id = all_links.actor_id
+            JOIN events e  ON e.event_id  = my_events.event_id
             GROUP  BY ac.actor_id
             ORDER  BY shared_events DESC
             LIMIT  8
-        """, (actor_id,)).fetchall()
+        """, (actor_id, actor_id, actor_id)).fetchall()
 
         # Role timeline: each role this actor has held across events
         role_timeline = db.execute("""
