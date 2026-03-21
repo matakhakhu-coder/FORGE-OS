@@ -1637,9 +1637,13 @@ def create_app() -> Flask:
 
         actor_rows = db.execute(f"""
             SELECT ac.actor_id, ac.name, ac.type, ac.description,
-                   COUNT(DISTINCT ae.event_id) AS event_count
+                   COUNT(DISTINCT all_ev.event_id) AS event_count
             FROM   actors ac
-            LEFT   JOIN actor_events ae ON ae.actor_id = ac.actor_id
+            LEFT   JOIN (
+                SELECT actor_id, event_id FROM actor_events
+                UNION
+                SELECT actor_id, event_id FROM event_actors
+            ) all_ev ON all_ev.actor_id = ac.actor_id
             {actor_where}
             GROUP  BY ac.actor_id
             ORDER  BY ac.name
@@ -1672,13 +1676,22 @@ def create_app() -> Flask:
 
         event_id_set = {r["event_id"] for r in event_rows}
 
-        # ── actor_events edges ──────────────────────────────────────────────
+        # ── actor_events + event_actors edges (combined) ──────────────────
         ae_rows = db.execute("""
-            SELECT ae.actor_id, ae.event_id, ae.role,
-                   COUNT(a.artifact_id) AS weight
-            FROM   actor_events ae
-            LEFT   JOIN artifacts a ON a.event_id = ae.event_id
-            GROUP  BY ae.actor_id, ae.event_id
+            SELECT actor_id, event_id, role,
+                   COUNT(DISTINCT artifact_id) AS weight
+            FROM (
+                SELECT ae.actor_id, ae.event_id, ae.role,
+                       a.artifact_id
+                FROM   actor_events ae
+                LEFT   JOIN artifacts a ON a.event_id = ae.event_id
+                UNION ALL
+                SELECT ea.actor_id, ea.event_id, ea.role,
+                       a.artifact_id
+                FROM   event_actors ea
+                LEFT   JOIN artifacts a ON a.event_id = ea.event_id
+            )
+            GROUP  BY actor_id, event_id
             ORDER  BY weight DESC
         """).fetchall()
 
@@ -1716,7 +1729,15 @@ def create_app() -> Flask:
         for ev in event_rows:
             col   = EVENT_COLOURS.get(ev["category"], EVENT_COLOUR_DEFAULT)
             summ  = (ev["summary"] or "").strip()
-            tooltip = f"{ev['title']}"
+            # Clean title — strip common HTML artifacts from civic intel collector
+            import re as _re
+            clean_title = _re.sub(
+                r'\s*(Date Published|Published|SAPS|saps\.gov\.za|&nbsp;).*$',
+                '', ev['title'], flags=_re.IGNORECASE
+            ).strip()
+            clean_title = clean_title or ev['title']
+
+            tooltip = f"{clean_title}"
             if ev["date"]:     tooltip += f"\nDate: {ev['date']}"
             if ev["category"]: tooltip += f"\nCategory: {ev['category']}"
             if ev["location"]: tooltip += f"\nLocation: {ev['location']}"
@@ -1725,7 +1746,7 @@ def create_app() -> Flask:
 
             vis_nodes.append({
                 "id":    f"event-{ev['event_id']}",
-                "label": ev["title"][:26] + ("…" if len(ev["title"]) > 26 else ""),
+                "label": clean_title[:26] + ("…" if len(clean_title) > 26 else ""),
                 "title": tooltip,
                 "shape": "square",
                 "size":  sz,

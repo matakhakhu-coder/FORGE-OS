@@ -68,6 +68,21 @@ cur.execute("""
 """)
 print(f"  Fixed {cur.rowcount} event titles from signal content")
 
+# Strip HTML artifacts from event titles (civic intel collector noise)
+import re
+cur.execute("SELECT event_id, title FROM events WHERE automated=1")
+rows = cur.fetchall()
+fixed = 0
+for event_id, title in rows:
+    clean = re.sub(
+        r'\s*(Date Published|Published|SAPS|saps\.gov\.za|&nbsp;|\.\s*$).*$',
+        '', title or '', flags=re.IGNORECASE
+    ).strip()
+    if clean and clean != title:
+        cur.execute("UPDATE events SET title=? WHERE event_id=?", (clean, event_id))
+        fixed += 1
+print(f"  Cleaned {fixed} event titles (stripped HTML artifacts)")
+
 # ── 3. Ensure all automated actors are source_type=live ──────────────────────
 cur.execute("UPDATE actors SET source_type='live' WHERE automated=1")
 print(f"  Set {cur.rowcount} automated actors to source_type=live")
