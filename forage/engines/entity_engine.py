@@ -7,7 +7,7 @@ _TYPE_MAP = {
     "institution":    "institution",
     "government":     "institution",
     "political_party":"movement",
-    "location":       "institution",
+    "location":       "institution",  # actors table has no location type
     "unknown":        "institution",
 }
 
@@ -37,6 +37,10 @@ def get_or_create_actor(name, db, actor_type: str = "institution"):
         datetime.utcnow(),
         0.5
     ))
+    db.execute(
+        "UPDATE actors SET source_type='live' WHERE actor_id=?",
+        (cursor.lastrowid,)
+    )
 
     db.commit()
     return cursor.lastrowid

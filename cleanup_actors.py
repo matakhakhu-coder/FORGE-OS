@@ -71,6 +71,26 @@ print(f"  Fixed {cur.rowcount} event titles from signal content")
 cur.execute("UPDATE actors SET source_type='live' WHERE automated=1")
 print(f"  Set {cur.rowcount} automated actors to source_type=live")
 
+# ── 4. Set all automated actors to source_type=live ──────────────────────────
+cur.execute("UPDATE actors SET source_type='live' WHERE automated=1")
+print(f"  Ensured {cur.rowcount} automated actors visible in LIVE lens")
+
+# ── 5. Fix location actors typed as institution ───────────────────────────────
+location_names = [
+    "Gauteng", "Western Cape", "Eastern Cape", "KwaZulu-Natal",
+    "Limpopo", "Mpumalanga", "North West", "Free State", "Northern Cape",
+    "South Africa", "Cape Town", "Johannesburg", "Pretoria", "Durban",
+    "Soweto", "Sandton", "Ekurhuleni", "East London", "Pietermaritzburg",
+    "Bloemfontein", "Mbombela", "Polokwane", "Mahikeng", "Kimberley",
+    "Newcastle", "Port Elizabeth",
+]
+for name in location_names:
+    cur.execute(
+        "UPDATE actors SET type='institution' WHERE name=? AND automated=1",
+        (name,)
+    )
+print(f"  Location actors normalised")
+
 conn.commit()
 conn.close()
 print("\nDone.")
