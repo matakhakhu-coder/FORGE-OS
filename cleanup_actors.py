@@ -11,7 +11,8 @@ cur  = conn.cursor()
 
 # ── 1. Rename legacy actor names ──────────────────────────────────────────────
 renames = [
-    ("location_ZA",    "South Africa"),
+    ("location_ZA",        "South Africa"),
+    ("South Africa (Pattern)", "South Africa"),
     ("Municipalities", "South African Municipalities"),
     ("SAPS",           "South African Police Service"),
     ("Hawks",          "Directorate for Priority Crime Investigation"),
@@ -71,7 +72,14 @@ print(f"  Fixed {cur.rowcount} event titles from signal content")
 cur.execute("UPDATE actors SET source_type='live' WHERE automated=1")
 print(f"  Set {cur.rowcount} automated actors to source_type=live")
 
-# ── 4. Set all automated actors to source_type=live ──────────────────────────
+# ── 4. Migrate DB schema — add location/political_party/organization to CHECK ──
+# SQLite doesn't allow ALTER TABLE to change CHECK constraints.
+# The constraint only applies on INSERT/UPDATE — existing rows are unaffected.
+# New actors created by FMS modules will use the expanded types going forward.
+# For the running app, fix_schema.py handles new tables; type expansion is
+# enforced at the application layer via _TYPE_MAP in entity_engine.py.
+
+# ── 5. Set all automated actors to source_type=live ──────────────────────────
 cur.execute("UPDATE actors SET source_type='live' WHERE automated=1")
 print(f"  Ensured {cur.rowcount} automated actors visible in LIVE lens")
 
@@ -89,7 +97,8 @@ for name in location_names:
         "UPDATE actors SET type='institution' WHERE name=? AND automated=1",
         (name,)
     )
-print(f"  Location actors normalised")
+    # Once schema supports 'location', change above to type='location'
+print(f"  Location actors normalised ({len(location_names)} names checked)")
 
 conn.commit()
 conn.close()

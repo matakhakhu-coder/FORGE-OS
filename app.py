@@ -697,22 +697,26 @@ def create_app() -> Flask:
 
         actors_rows = db.execute(f"""
             SELECT ac.actor_id, ac.name, ac.type, ac.description,
-                   COUNT(DISTINCT ae.event_id)    AS event_count,
-                   COUNT(DISTINCT a.artifact_id)  AS artifact_count,
-                   COUNT(DISTINCT sa.signal_id)   AS signal_count,
+                   COUNT(DISTINCT all_ev.event_id)    AS event_count,
+                   COUNT(DISTINCT a.artifact_id)      AS artifact_count,
+                   COUNT(DISTINCT sa.signal_id)       AS signal_count,
                    MAX(COALESCE(s.gravity_score, 0))  AS max_gravity,
                    MAX(COALESCE(s.is_priority, 0))    AS has_priority_signal,
                    CASE WHEN MAX(COALESCE(s.gravity_score, 0)) >= 0.55
                              OR MAX(COALESCE(s.is_priority, 0)) = 1
                         THEN 1 ELSE 0 END              AS is_targeted
             FROM   actors ac
-            LEFT   JOIN actor_events ae  ON ae.actor_id  = ac.actor_id
-            LEFT   JOIN artifacts a      ON a.event_id   = ae.event_id
+            LEFT   JOIN (
+                SELECT actor_id, event_id FROM actor_events
+                UNION
+                SELECT actor_id, event_id FROM event_actors
+            ) all_ev ON all_ev.actor_id = ac.actor_id
+            LEFT   JOIN artifacts a      ON a.event_id   = all_ev.event_id
             LEFT   JOIN signal_actors sa ON sa.actor_id  = ac.actor_id
             LEFT   JOIN signals s        ON s.signal_id  = sa.signal_id
             {actor_where}
             GROUP  BY ac.actor_id
-            ORDER  BY is_targeted DESC, event_count DESC, ac.name
+            ORDER  BY is_targeted DESC, signal_count DESC, ac.name
         """).fetchall()
 
         return render_template("actors.html", actors=actors_rows, lens=lens)
@@ -5601,7 +5605,8 @@ SCHEMA_STATEMENTS = [
         name        TEXT    NOT NULL,
         type        TEXT    NOT NULL
                     CHECK(type IN (
-                        'person','institution','media','movement','government'
+                        'person','institution','media','movement','government',
+                        'location','political_party','organization','unknown'
                     )),
         description TEXT,
         source_type TEXT    NOT NULL DEFAULT 'live',

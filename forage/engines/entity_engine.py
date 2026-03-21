@@ -7,7 +7,8 @@ _TYPE_MAP = {
     "institution":    "institution",
     "government":     "institution",
     "political_party":"movement",
-    "location":       "institution",  # actors table has no location type
+    "location":       "institution",  # maps to institution until schema migration
+    "organization":   "institution",
     "unknown":        "institution",
 }
 
