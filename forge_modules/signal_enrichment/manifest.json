@@ -1,0 +1,10 @@
+{
+    "name":        "signal_enrichment",
+    "version":     "1.0.0",
+    "description": "Enriches signals with South African entity detection and source credibility scoring.",
+    "author":      "FORGE-OS",
+    "engines":     ["signal_enrichment_engine"],
+    "hooks":       ["on_signal"],
+    "routes":      [],
+    "schema":      null
+}

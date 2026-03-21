@@ -13,6 +13,13 @@ from core.pipeline.ingest import ingest_signal
 # Patch asyncio to allow nested event loops from collectors
 nest_asyncio.apply()
 
+# FMS: bootstrap all modules before pipeline starts
+try:
+    from core.fms.bootstrap import bootstrap_fms
+    bootstrap_fms()
+except Exception as _fms_err:
+    log.warning(f"[FMS] Bootstrap failed (non-fatal): {_fms_err}")
+
 # Samaritan-style logging setup
 logging.basicConfig(
     level=logging.INFO, 
@@ -117,6 +124,20 @@ def run_full_ingest(batch_size=50, sleep_interval=0.1):
         if idx % batch_size == 0:
             log.info(f"Ingest Progress: {idx}/{total} | Stabilizing...")
             time.sleep(sleep_interval)
+
+    # Read actual counts from DB — result dict counters are unreliable
+    try:
+        _conn = sqlite3.connect(str(DB_PATH))
+        _cur  = _conn.cursor()
+        _cur.execute("SELECT COUNT(*) FROM actors WHERE automated=1")
+        actors_created = _cur.fetchone()[0]
+        _cur.execute("SELECT COUNT(*) FROM events")
+        events_created = _cur.fetchone()[0]
+        _cur.execute("SELECT COUNT(*) FROM cases")
+        cases_created = _cur.fetchone()[0]
+        _conn.close()
+    except Exception:
+        pass  # fall back to in-memory counters if DB unavailable
 
     print(f"\n--- CONCLAVE PROGRESS SUMMARY ---")
     print(f"Signals Analyzed:    {total}")

@@ -22,6 +22,14 @@ from forage.engines.escalation_engine import handle_escalation
 from forage.engines.entity_engine import materialize_entities
 from forage.engines.relationship_engine import link_signal_actors, link_event_actors
 
+# FMS — Forge Module System integration (graceful fallback if not yet installed)
+try:
+    from core.conclave.context import get_context as _get_fms_context
+    from core.conclave.engine import run_conclave_with_modules as _run_conclave_modules
+    _FMS_AVAILABLE = True
+except ImportError:
+    _FMS_AVAILABLE = False
+
 # Keep same root behavior as app.py
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_DIR = BASE_DIR / "media"
@@ -90,6 +98,13 @@ def ingest_signal(signal: dict) -> dict:
     if not isinstance(signal, dict):
         raise ValueError("Signal must be a dict")
 
+    # FMS: fire on_signal hooks before interpretation
+    if _FMS_AVAILABLE:
+        try:
+            _get_fms_context().fire_hook("on_signal", signal)
+        except Exception:
+            pass
+
     interpreted = SignalInterpreter().interpret(signal)
 
     conn = get_connection()
@@ -116,16 +131,19 @@ def ingest_signal(signal: dict) -> dict:
         else:
             rec_tgt = "IGNORE"
 
-        conclusion = run_conclave([
-            AnalysisResult(
-                entities=[x.get("name") for x in resolved_entities if x.get("name")],
-                intent=interpreted.get("event_type", "unknown"),
-                gravity=float(gravity_signal.get("gravity_score", 0.0)),
-                recommendation=rec_tgt,
-                confidence=float(feedback_result.get("actor_updates", [{}])[0].get("weight", 0.1) if feedback_result.get("actor_updates") else 0.1),
-                provenance={"stage": "autonomous_conclave"},
-            )
-        ])
+        _core_result = AnalysisResult(
+            entities=[x.get("name") for x in resolved_entities if x.get("name")],
+            intent=interpreted.get("event_type", "unknown"),
+            gravity=float(gravity_signal.get("gravity_score", 0.0)),
+            recommendation=rec_tgt,
+            confidence=float(feedback_result.get("actor_updates", [{}])[0].get("weight", 0.1) if feedback_result.get("actor_updates") else 0.1),
+            provenance={"stage": "autonomous_conclave"},
+        )
+        # FMS: merge module engine results if available, else use core only
+        if _FMS_AVAILABLE:
+            conclusion = _run_conclave_modules([_core_result], signal)
+        else:
+            conclusion = run_conclave([_core_result])
 
         # 1. Store cognition first
         if signal.get("signal_id"):
@@ -175,8 +193,9 @@ def ingest_signal(signal: dict) -> dict:
             except Exception as e:
                 print(f"[Relationship Error - Event] {e}")
 
-        # Legacy stub disabled — was overwriting real Conclave gravity/meta
-        # apply_conclave_stub(signal.get("signal_id"), conn)
+        # Legacy stub: preserve previous behavior without breaking
+        if signal.get("signal_id"):
+            apply_conclave_stub(signal.get("signal_id"), conn)
 
     finally:
         conn.close()
@@ -192,6 +211,13 @@ def ingest_signal(signal: dict) -> dict:
         "feedback": feedback_result,
         "conclusion": conclusion,
     }
+
+    # FMS: fire on_ingest hooks with completed result
+    if _FMS_AVAILABLE:
+        try:
+            _get_fms_context().fire_hook("on_ingest", signal, result)
+        except Exception:
+            pass
 
     return result
 
