@@ -1,0 +1,10 @@
+{
+    "name":        "graph_sync",
+    "version":     "1.0.0",
+    "description": "Maintains the FORGE Graph Core in real-time. Creates graph_nodes and graph_edges entries on every ingest cycle via on_ingest hook. Follows signal_enrichment reference standard.",
+    "author":      "FORGE-OS",
+    "engines":     [],
+    "hooks":       ["on_ingest"],
+    "routes":      [],
+    "schema":      null
+}

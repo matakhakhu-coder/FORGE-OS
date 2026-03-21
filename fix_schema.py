@@ -98,7 +98,76 @@ def apply_relationship_schema_patch(db_path="database.db"):
     conn.close()
     print("[✓] Relationship tables: signal_actors, event_actors — ready.")
 
+
+
+def apply_graph_schema_patch(db_path="database.db"):
+    """
+    Creates the FORGE Graph Core tables:
+        graph_nodes  — universal node registry
+        graph_edges  — universal edge table
+
+    Deliberately excludes graph_embeddings (no embedding model yet)
+    and graph_intelligence (actor_network_metrics already covers this).
+
+    Safe to run multiple times — all CREATE TABLE IF NOT EXISTS.
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS graph_nodes (
+            node_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+            node_type    TEXT    NOT NULL,
+            ref_id       TEXT    NOT NULL,
+            label        TEXT,
+            metadata_json TEXT,
+            created_at   TEXT    DEFAULT (datetime('now')),
+            UNIQUE(node_type, ref_id)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS graph_edges (
+            edge_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_node_id    INTEGER NOT NULL,
+            target_node_id    INTEGER NOT NULL,
+            relation_type     TEXT    NOT NULL,
+            weight            REAL    DEFAULT 1.0,
+            confidence        REAL    DEFAULT 1.0,
+            source_event_id   INTEGER,
+            source_signal_id  TEXT,
+            source_artifact_id INTEGER,
+            created_at        TEXT    DEFAULT (datetime('now')),
+            UNIQUE(source_node_id, target_node_id, relation_type),
+            FOREIGN KEY(source_node_id) REFERENCES graph_nodes(node_id) ON DELETE CASCADE,
+            FOREIGN KEY(target_node_id) REFERENCES graph_nodes(node_id) ON DELETE CASCADE
+        )
+    """)
+
+    # Index for fast traversal
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_graph_edges_source
+        ON graph_edges(source_node_id)
+    """)
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_graph_edges_target
+        ON graph_edges(target_node_id)
+    """)
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_graph_edges_relation
+        ON graph_edges(relation_type)
+    """)
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_graph_nodes_type_ref
+        ON graph_nodes(node_type, ref_id)
+    """)
+
+    conn.commit()
+    conn.close()
+    print("[✓] Graph Core tables: graph_nodes, graph_edges — ready.")
+
 if __name__ == "__main__":
     patch_forge_schema()
     apply_conclave_schema_patch()
     apply_relationship_schema_patch()
+    apply_graph_schema_patch()
