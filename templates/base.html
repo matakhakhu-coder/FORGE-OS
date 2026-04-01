@@ -213,9 +213,21 @@
       <div class="sidebar__label">Intelligence</div>
       <ul class="sidebar__nav">
         <li>
+          <a href="{{ url_for('surface.surface') }}"
+             class="{{ 'active' if request.endpoint == 'surface.surface' }}">
+            <span class="nav-icon">◉</span> Surface
+          </a>
+        </li>
+        <li>
           <a href="{{ url_for('index', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'index' }}">
             <span class="nav-icon">◈</span> Archive Home
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('intel') }}"
+             class="{{ 'active' if request.endpoint == 'intel' }}">
+            <span class="nav-icon">⊞</span> Intel Dashboard
           </a>
         </li>
         <li>

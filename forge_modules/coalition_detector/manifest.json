@@ -1,0 +1,17 @@
+{
+    "name":        "coalition_detector",
+    "version":     "1.0.0",
+    "description": "Identifies recurring actor networks by counting co-occurrence across events. Actors appearing together above a configurable threshold are classified as a coalition and stored in actor_coalitions. Complements graph_engine community detection with an evidence-based, threshold-driven approach.",
+    "author":      "FORGE-OS",
+    "engines":     ["coalition_detector_engine"],
+    "hooks":       [],
+    "routes":      ["/api/graph/coalitions"],
+    "schema":      "actor_coalitions",
+    "ui": {
+        "title":       "Actor Coalitions",
+        "endpoint":    "/api/graph/coalitions",
+        "type":        "table",
+        "data_key":    "coalitions",
+        "panel_group": "Networks"
+    }
+}

@@ -75,7 +75,7 @@ class ConclaveContext:
                 Optional — existing callers without _owner continue to work.
         """
         if name in self._engines:
-            log.warning(f"[FMS] Engine '{name}' already registered — overwriting")
+            log.debug(f"[FMS] Engine '{name}' already registered — overwriting")
         self._engines[name] = fn
         if _owner:
             self._engine_owners[name] = _owner

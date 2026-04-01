@@ -1,0 +1,17 @@
+{
+    "name":        "counterintel",
+    "version":     "1.0.0",
+    "description": "Detects misinformation patterns, coordinated narratives, and adversarial influence in the signal corpus. Three independent detectors: narrative similarity clustering (TF-IDF cosine), bot-pattern repetition (near-duplicate hashing), and campaign fingerprinting (source coordination scoring). Results stored in signal_flags table. Only analyses CRIME_INTEL and PRIORITY stream signals — FIRMS, USGS, GDACS excluded by design.",
+    "author":      "FORGE-OS",
+    "engines":     ["counterintel_engine"],
+    "hooks":       [],
+    "routes":      ["/api/counterintel/flags", "/api/counterintel/summary"],
+    "schema":      "signal_flags",
+    "ui": {
+        "title":       "Counter Intelligence",
+        "endpoint":    "/api/counterintel/flags",
+        "type":        "table",
+        "data_key":    "flags",
+        "panel_group": "CounterIntel"
+    }
+}

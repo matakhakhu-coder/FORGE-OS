@@ -1,0 +1,18 @@
+{
+    "name":        "emergence_engine",
+    "version":     "1.0",
+    "description": "Detects emerging actor networks and narrative surges using time-based graph analysis. Compares actor-event link counts across two 24-hour windows and scores actors by growth rate, flagging those forming new networks before they become stable clusters.",
+    "author":      "FORGE-OS",
+    "engines":     ["emergence_engine_engine"],
+    "hooks":       [],
+    "routes":      ["/api/intel/emergence"],
+    "schema":      "network_emergence",
+    "ui": {
+        "title":          "Emerging Actor Networks",
+        "endpoint":       "/api/intel/emergence",
+        "type":           "table",
+        "data_key":       "emergence",
+        "panel_group":    "Analysis",
+        "panel_priority": 2
+    }
+}

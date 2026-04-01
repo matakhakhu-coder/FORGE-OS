@@ -90,12 +90,65 @@ def create_app() -> Flask:
 
     app.context_processor(inject_globals(get_db))
 
-    # FMS: module readiness scan on startup — observability only, no side effects
+    # ── FMS: auto-attach all READY modules at startup (Phase 38) ───────────
+    # Replaces observability-only scan. Discovers, validates, and attaches
+    # every READY module in one pass. Never crashes app startup.
     try:
+        import logging as _fms_log
+        _fms_logger = _fms_log.getLogger('forge.fms.startup')
+
+        # Step 1: discover all modules (idempotent)
+        from core.fms.bootstrap import bootstrap_fms
+        bootstrap_fms(verbose=False)
+
+        # Step 2: scan readiness (no side effects)
         from core.fms.readiness import report_readiness
-        report_readiness()
-    except Exception:
-        pass  # FMS readiness is never allowed to affect app startup
+        reports = report_readiness()
+
+        # Step 3: attach each READY module to Conclave
+        from core.fms.activation import attach_module
+        from core.conclave.context import get_context
+        _context = get_context()
+
+        attached = []
+        skipped  = []
+        failed   = []
+
+        for _report in reports:
+            _mod_name = _report.get('name', '')
+            _status   = _report.get('status', '')
+
+            if _status != 'READY':
+                skipped.append(f'{_mod_name}({_status})')
+                continue
+
+            try:
+                _result = attach_module(_mod_name, _context)
+                if _result.get('status') in ('attached', 'already_active'):
+                    attached.append(_mod_name)
+                else:
+                    failed.append(_mod_name)
+                    _fms_logger.warning(
+                        f"[FMS] Auto-attach failed '{_mod_name}': "
+                        f"{_result.get('reason', 'unknown')}"
+                    )
+            except Exception as _mod_exc:
+                failed.append(_mod_name)
+                _fms_logger.warning(
+                    f"[FMS] Auto-attach error '{_mod_name}': {_mod_exc}"
+                )
+
+        _fms_logger.info(f'[FMS] Auto-attached modules: {attached}')
+        if skipped:
+            _fms_logger.info(f'[FMS] Skipped (not READY): {skipped}')
+        if failed:
+            _fms_logger.warning(f'[FMS] Failed to attach: {failed}')
+
+    except Exception as _fms_startup_exc:
+        import logging as _fms_log
+        _fms_log.getLogger('forge.fms.startup').warning(
+            f'[FMS] Startup sequence failed (non-fatal): {_fms_startup_exc}'
+        )
 
     # Initialize wiki schema and register wiki routes
     from core.db.wiki import init_wiki_db
@@ -105,6 +158,10 @@ def create_app() -> Flask:
     app.register_blueprint(wiki_bp, url_prefix='/wiki')
     # expose graph API at root path for D3 payload fetch
     app.add_url_rule('/api/wiki/graph_data', endpoint='api_wiki_graph_data', view_func=app.view_functions.get('wiki.graph_data'))
+
+    # ── Surface Intelligence Blueprint ────────────────────────────────────────
+    from surface.routes import surface_bp
+    app.register_blueprint(surface_bp)
 
     # -----------------------------------------------------------------------
     # Route: / — Dashboard
@@ -5611,6 +5668,470 @@ def create_app() -> Flask:
             })
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Phase 34: Control Room — pipeline execution endpoints
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/run_collectors", methods=["POST"])
+    def api_control_run_collectors():
+        """
+        Spawn all FORAGE collectors concurrently.
+        Mirrors mega_ingest.run_all_collectors() — async coroutines driven
+        in a background thread via asyncio.run() so Flask is never blocked.
+        """
+        from flask import jsonify
+        import threading, asyncio
+
+        def _run():
+            try:
+                from mega_ingest import run_all_collectors
+                asyncio.run(run_all_collectors())
+            except Exception as exc:
+                import logging
+                logging.getLogger("forge.control").error(
+                    f"[control/run_collectors] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_collectors"})
+
+
+    @app.route("/api/control/run_ingest", methods=["POST"])
+    def api_control_run_ingest():
+        """
+        Run the full Conclave ingest pass over all signals.
+        Mirrors mega_ingest.run_full_ingest().
+        """
+        from flask import jsonify
+        import threading
+
+        def _run():
+            try:
+                from mega_ingest import run_full_ingest
+                run_full_ingest(batch_size=50, sleep_interval=0.1)
+            except Exception as exc:
+                import logging
+                logging.getLogger("forge.control").error(
+                    f"[control/run_ingest] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_ingest"})
+
+
+    @app.route("/api/control/run_conclave", methods=["POST"])
+    def api_control_run_conclave():
+        """
+        Run the full engines + processors pass in one shot.
+        Mirrors mega_ingest.run_engines_processors():
+          artifact_processor -> cluster_engine -> ner_processor -> anomaly_engine
+          -> correlation_engine -> decay_engine -> evolution_engine
+          -> graph_engine -> sentinel
+        """
+        from flask import jsonify
+        import threading
+
+        def _run():
+            try:
+                from mega_ingest import run_engines_processors
+                run_engines_processors()
+            except Exception as exc:
+                import logging
+                logging.getLogger("forge.control").error(
+                    f"[control/run_conclave] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_conclave"})
+
+
+    @app.route("/api/control/run_graph_engine", methods=["POST"])
+    def api_control_run_graph_engine():
+        """
+        Recompute actor network graph metrics in isolation.
+        GraphEngine(db_path=...).run() confirmed: class at line 119,
+        .run() at line 353 of forage/engines/graph_engine.py.
+        """
+        from flask import jsonify
+        import threading
+
+        def _run():
+            try:
+                from forage.engines.graph_engine import GraphEngine
+                GraphEngine(db_path=DB_PATH).run()
+            except Exception as exc:
+                import logging
+                logging.getLogger("forge.control").error(
+                    f"[control/run_graph_engine] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_graph_engine"})
+
+
+    @app.route("/api/graph/coalitions")
+    def api_graph_coalitions():
+        """
+        Return all detected actor coalitions with member details.
+        Sourced from actor_coalitions table written by coalition_detector engine.
+
+        Response shape:
+          {
+            coalitions: [
+              {
+                coalition_label: "COALITION_1",
+                member_count: 4,
+                threshold_used: 5,
+                computed_at: "...",
+                members: [
+                  { actor_id, actor_name, actor_type,
+                    co_occurrence, pagerank, influence_score }
+                ]
+              }
+            ],
+            total: <int>,
+            total_actors: <int>
+          }
+        """
+        from flask import jsonify
+        try:
+            from forge_modules.coalition_detector.engine import query_coalitions
+            data = query_coalitions(db_path=DB_PATH)
+            return jsonify({
+                "coalitions":   data,
+                "total":        len(data),
+                "total_actors": sum(len(c["members"]) for c in data),
+            })
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+
+    @app.route("/api/control/run_coalition_detector", methods=["POST"])
+    def api_control_run_coalition_detector():
+        """
+        Run coalition detection in isolation (replaces the Phase 34 stub).
+        Accepts optional JSON body: { "threshold": <int> } (default 5).
+        Runs in a background thread — returns immediately.
+        """
+        from flask import jsonify, request as req
+        import threading
+
+        body      = req.get_json(silent=True) or {}
+        threshold = int(body.get("threshold", 5))
+
+        def _run():
+            try:
+                from forge_modules.coalition_detector.engine import run
+                result = run(threshold=threshold, db_path=DB_PATH)
+                import logging as _log
+                _log.getLogger("forge.control").info(
+                    f"[coalition_detector] {result}"
+                )
+            except Exception as exc:
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[control/run_coalition_detector] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({
+            "status":    "started",
+            "job":       "run_coalition_detector",
+            "threshold": threshold,
+        })
+
+    # -----------------------------------------------------------------------
+    # Phase 38+: Emergence Engine routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/intel/emergence", methods=["GET"])
+    def api_intel_emergence():
+        """
+        Return all actors currently flagged as emerging.
+
+        Actors are scored across two 24-hour windows:
+            current  window : [now - 24h → now]
+            baseline window : [now - 48h → now - 24h]
+
+        growth_rate     = current_links / previous_links
+                          (if previous == 0 → growth_rate = current_links)
+        emergence_score = log(1 + growth_rate) * current_links
+
+        Only actors with current_links >= 3 AND growth_rate >= 2.0
+        are returned.
+
+        Response shape:
+            {
+                "emergence": [
+                    {
+                        "actor_id":            <int>,
+                        "actor_name":          <str>,
+                        "growth_rate":         <float>,
+                        "current_links":       <int>,
+                        "previous_link_count": <int>,
+                        "emergence_score":     <float>,
+                        "window_start":        <str>,
+                        "window_end":          <str>
+                    },
+                    ...
+                ],
+                "total": <int>
+            }
+        """
+        from flask import jsonify
+        try:
+            from forge_modules.emergence_engine.engine import query_emergence
+            data = query_emergence(db_path=DB_PATH)
+            return jsonify({"emergence": data, "total": len(data)})
+        except Exception as exc:
+            import logging as _log
+            _log.getLogger("forge.control").error(
+                f"[api/intel/emergence] {exc}"
+            )
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/control/run_emergence", methods=["POST"])
+    def api_control_run_emergence():
+        """
+        Trigger the emergence engine (time-window actor growth analysis).
+        Runs in a background thread — returns immediately.
+
+        No request body required.
+        """
+        from flask import jsonify
+        import threading
+
+        def _run():
+            try:
+                from forge_modules.emergence_engine.engine import run
+                result = run(db_path=DB_PATH)
+                import logging as _log
+                _log.getLogger("forge.control").info(
+                    f"[emergence_engine] {result}"
+                )
+            except Exception as exc:
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[control/run_emergence] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({
+            "status": "started",
+            "job":    "run_emergence",
+        })
+
+    # -----------------------------------------------------------------------
+    # Phase 35: Archive Engine routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/archive_case/<int:case_id>", methods=["POST"])
+    def api_control_archive_case(case_id: int):
+        """
+        Archive all intelligence tied to a case:
+          1. Copies signals / events / artifacts to *_archive tables
+          2. Deletes exclusive rows from live tables
+          3. Marks case status = 'archived'
+
+        Runs synchronously (not threaded) so the UI gets a real result
+        immediately — archive operations are fast (single transaction).
+
+        Returns full result dict including counts of what was moved.
+        """
+        from flask import jsonify
+        try:
+            from forage.engines.archive_engine import ArchiveEngine
+            result = ArchiveEngine(db_path=DB_PATH).archive_case(case_id)
+            code   = 200 if result["status"] in ("success", "skipped") else 400
+            return jsonify(result), code
+        except Exception as exc:
+            return jsonify({"status": "error", "case_id": case_id,
+                            "error": str(exc)}), 500
+
+
+    @app.route("/api/archive/<int:case_id>")
+    def api_archive_query(case_id: int):
+        """
+        Query the archive for a specific case.
+        Returns all archived signals, events and artifacts with their
+        original data intact plus archived_at timestamp.
+        """
+        from flask import jsonify
+        try:
+            from forage.engines.archive_engine import ArchiveEngine
+            result = ArchiveEngine(db_path=DB_PATH).query_archive(case_id)
+            return jsonify(result)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+
+    @app.route("/api/archive")
+    def api_archive_index():
+        """
+        Summary of all archived cases — which cases have been archived
+        and how many records each holds.
+        """
+        from flask import jsonify
+        db = get_db()
+        try:
+            rows = db.execute("""
+                SELECT
+                    c.case_id,
+                    c.title,
+                    c.status,
+                    c.created_at,
+                    COUNT(DISTINCT sa.signal_id)   AS signal_count,
+                    COUNT(DISTINCT ea.event_id)    AS event_count,
+                    COUNT(DISTINCT aa.artifact_id) AS artifact_count,
+                    MAX(sa.archived_at)            AS last_archived_at
+                FROM   cases c
+                LEFT JOIN signals_archive   sa ON sa.archived_case_id = c.case_id
+                LEFT JOIN events_archive    ea ON ea.archived_case_id = c.case_id
+                LEFT JOIN artifacts_archive aa ON aa.archived_case_id = c.case_id
+                WHERE  c.status = 'archived'
+                GROUP  BY c.case_id
+                ORDER  BY last_archived_at DESC
+            """).fetchall()
+            return jsonify({
+                "archived_cases": [dict(r) for r in rows],
+                "total": len(rows),
+            })
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Phase 37: CounterIntel routes
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/counterintel/flags")
+    def api_counterintel_flags():
+        """
+        Return flagged signals.
+        Query params:
+          ?type=narrative_cluster|bot_pattern|information_campaign
+          ?min_confidence=0.0-1.0  (default 0.0)
+          ?limit=200               (max 500)
+        """
+        from flask import jsonify
+        try:
+            from forge_modules.counterintel.engine import query_flags
+            flag_type      = request.args.get("type", "").strip() or None
+            min_confidence = float(request.args.get("min_confidence", 0.0))
+            limit          = min(int(request.args.get("limit", 200)), 500)
+            data = query_flags(
+                db_path=DB_PATH,
+                flag_type=flag_type,
+                min_confidence=min_confidence,
+                limit=limit,
+            )
+            return jsonify({
+                "flags":  data,
+                "total":  len(data),
+                "filter": {"type": flag_type, "min_confidence": min_confidence},
+            })
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/counterintel/summary")
+    def api_counterintel_summary():
+        """Return aggregate flag counts by type."""
+        from flask import jsonify
+        try:
+            from forge_modules.counterintel.engine import query_summary
+            return jsonify(query_summary(db_path=DB_PATH))
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/control/run_counterintel", methods=["POST"])
+    def api_control_run_counterintel():
+        """
+        Run CounterIntel scan in background thread.
+        Returns immediately with { "status": "started" }.
+        Results queryable at /api/counterintel/flags after completion.
+        """
+        from flask import jsonify
+        import threading
+
+        def _run():
+            try:
+                from forge_modules.counterintel.engine import run
+                result = run(db_path=DB_PATH)
+                import logging as _log
+                _log.getLogger("forge.control").info(
+                    f"[counterintel] {result}"
+                )
+            except Exception as exc:
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[control/run_counterintel] {exc}"
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_counterintel"})
+
+    # -----------------------------------------------------------------------
+    # Phase 39: FMS UI Discovery + Intel Dashboard
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/fms/ui")
+    def api_fms_ui():
+        """
+        Return all ACTIVE modules that declare a ui block in their manifest.
+        Used by /intel to build the dynamic module panel list.
+
+        Response: list of {module, title, endpoint, type, data_key, panel_group}
+        Only modules currently attached to Conclave are included.
+        """
+        from flask import jsonify
+        from core.conclave.context import get_context
+        from core.fms.readiness import scan_modules
+        import json as _json
+
+        try:
+            ctx            = get_context()
+            active_modules = set(ctx.get_active_modules().keys())
+            reports        = scan_modules()
+
+            ui_panels = []
+            for report in reports:
+                name = report.get("name", "")
+                if name not in active_modules:
+                    continue
+                # Read manifest directly for ui block
+                manifest_path = report.get("path", "")
+                if not manifest_path:
+                    continue
+                try:
+                    from pathlib import Path as _Path
+                    mf = _json.loads(
+                        (_Path(manifest_path) / "manifest.json").read_text(encoding="utf-8")
+                    )
+                except Exception:
+                    continue
+                ui = mf.get("ui")
+                if not ui:
+                    continue
+                ui_panels.append({
+                    "module":      name,
+                    "title":       ui.get("title", name),
+                    "endpoint":    ui.get("endpoint", ""),
+                    "type":        ui.get("type", "table"),
+                    "data_key":    ui.get("data_key", "data"),
+                    "panel_group": ui.get("panel_group", "General"),
+                })
+
+            # Sort alphabetically within groups
+            ui_panels.sort(key=lambda x: (x["panel_group"], x["title"]))
+            return jsonify(ui_panels)
+
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+    @app.route("/intel")
+    def intel():
+        """Phase 39: Unified FMS Intelligence Dashboard."""
+        return render_template("intel.html")
 
     return app
 

@@ -489,6 +489,145 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
     }
 
 
+# ── Title-based deduplication ──────────────────────────────────────────────
+#
+# Three-tier system:
+#   similarity >= 0.90  → BLOCK: increment duplicate_count on existing signal
+#   similarity  0.70–0.89 → ALLOW but tag: metadata_json["near_duplicate"] = true
+#   similarity  < 0.70  → ALLOW: unique signal, insert normally
+#
+# Performance: titles from the last 24h are loaded ONCE before the main loop
+# into a list of (signal_id, norm_title) tuples — no per-signal DB queries.
+
+_STOPWORDS = {
+    "the","a","an","and","or","but","in","on","at","to","for","of","with",
+    "by","from","is","was","are","were","be","been","has","have","had",
+    "will","would","could","should","this","that","it","its","as","up",
+    "out","about","south","africa","african","new","also","after","says",
+    "said","news","media","releases","newsroom","featured","inside","untitled",
+}
+
+
+def _normalize_title(title: str) -> str:
+    """Lowercase, strip punctuation, remove stopwords, collapse whitespace."""
+    title = title.lower()
+    title = re.sub(r"[^\w\s]", " ", title)
+    title = re.sub(r"\s+", " ", title).strip()
+    tokens = [t for t in title.split() if t not in _STOPWORDS and len(t) > 1]
+    return " ".join(tokens)
+
+
+def _title_similarity(norm_a: str, norm_b: str) -> float:
+    """
+    Token overlap similarity: |intersection| / |union| (Jaccard).
+    Fast, no external dependencies, handles word reordering.
+    Returns 0.0–1.0.
+    """
+    if not norm_a or not norm_b:
+        return 0.0
+    set_a = set(norm_a.split())
+    set_b = set(norm_b.split())
+    if not set_a or not set_b:
+        return 0.0
+    intersection = len(set_a & set_b)
+    union        = len(set_a | set_b)
+    return intersection / union if union else 0.0
+
+
+def _ensure_dedup_index(conn: sqlite3.Connection) -> None:
+    """Create the title+timestamp index once per run if it doesn't exist."""
+    try:
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_signals_title_time "
+            "ON signals(title, timestamp)"
+        )
+        conn.commit()
+    except Exception:
+        pass
+
+
+def _load_title_cache(conn: sqlite3.Connection,
+                      window_hours: int = 24) -> list:
+    """
+    Load (signal_id, normalised_title) for all signals ingested in the
+    last window_hours. Called once before the main loop — O(1) per signal.
+    Returns list of (signal_id, norm_title) tuples.
+    """
+    try:
+        rows = conn.execute(
+            "SELECT signal_id, title FROM signals "
+            "WHERE timestamp >= datetime('now', ?) "
+            "  AND title IS NOT NULL",
+            (f"-{window_hours} hours",)
+        ).fetchall()
+        return [(r["signal_id"], _normalize_title(r["title"])) for r in rows]
+    except Exception:
+        return []
+
+
+def _check_dedup(sig: dict, title_cache: list) -> tuple:
+    """
+    Check a candidate signal against the title cache.
+
+    Returns (action, matched_signal_id, similarity) where action is:
+      'block'        — similarity >= 0.90, do not insert
+      'near_dup'     — similarity 0.70–0.89, insert with tag
+      'allow'        — similarity < 0.70, insert normally
+    """
+    if not sig.get("title"):
+        return ("allow", None, 0.0)
+
+    # Very short normalised titles (≤2 tokens) skip similarity —
+    # they're too ambiguous to dedup reliably (e.g. "untitled")
+    norm_new = _normalize_title(sig["title"])
+    if len(norm_new.split()) <= 2:
+        return ("allow", None, 0.0)
+
+    best_sim = 0.0
+    best_sid = None
+    for (sid, norm_existing) in title_cache:
+        sim = _title_similarity(norm_new, norm_existing)
+        if sim > best_sim:
+            best_sim = sim
+            best_sid = sid
+            if sim >= 0.90:
+                break  # early exit — no need to keep scanning
+
+    if best_sim >= 0.90:
+        return ("block", best_sid, best_sim)
+    if best_sim >= 0.70:
+        return ("near_dup", best_sid, best_sim)
+    return ("allow", None, best_sim)
+
+
+def _increment_duplicate_count(conn: sqlite3.Connection,
+                                signal_id: str) -> None:
+    """
+    Increment duplicate_count in the existing signal's metadata_json.
+    Creates the key if it doesn't exist yet.
+    """
+    try:
+        row = conn.execute(
+            "SELECT metadata_json FROM signals WHERE signal_id=?",
+            (signal_id,)
+        ).fetchone()
+        if not row:
+            return
+        meta = {}
+        if row["metadata_json"]:
+            try:
+                meta = json.loads(row["metadata_json"])
+            except Exception:
+                pass
+        meta["duplicate_count"] = meta.get("duplicate_count", 0) + 1
+        conn.execute(
+            "UPDATE signals SET metadata_json=? WHERE signal_id=?",
+            (json.dumps(meta), signal_id)
+        )
+    except Exception:
+        pass
+
+
 # ── DB helpers ─────────────────────────────────────────────────────────────
 
 def _open_db(path: Path) -> sqlite3.Connection:
@@ -510,6 +649,11 @@ def run(db_path: Path = DB_PATH) -> dict:
     Iterate all SOURCES, fetch via appropriate strategy,
     deduplicate by external_id, insert new signals.
     Returns summary dict and writes heartbeat to pipeline_runs.
+
+    Phase 34 addition: title-based deduplication layer.
+      - Blocks near-identical signals (similarity >= 0.90)
+      - Tags near-duplicates (similarity 0.70–0.89)
+      - Loads title cache once per run — no per-signal DB queries
     """
     if not HAS_FEEDPARSER:
         print("[civic_intel] feedparser required — pip install feedparser --break-system-packages")
@@ -520,10 +664,17 @@ def run(db_path: Path = DB_PATH) -> dict:
 
     conn = _open_db(db_path)
 
-    total_new     = 0
-    total_skipped = 0
-    total_errors  = 0
-    per_source    = {}
+    # ── Dedup setup: index + title cache (loaded once, used per-signal) ───
+    _ensure_dedup_index(conn)
+    title_cache = _load_title_cache(conn, window_hours=24)
+    print(f"[civic_intel] Dedup cache: {len(title_cache)} titles from last 24h")
+
+    total_new      = 0
+    total_skipped  = 0
+    total_errors   = 0
+    total_blocked  = 0
+    total_near_dup = 0
+    per_source     = {}
 
     for source in SOURCES:
         key   = source["source_key"]
@@ -533,13 +684,14 @@ def run(db_path: Path = DB_PATH) -> dict:
         print(f"[{label}] [{mode}] {url_display}")
 
         entries = fetch_source(source)
-        new_s = skipped_s = 0
+        new_s = skipped_s = blocked_s = near_dup_s = 0
 
         for entry in entries:
             sig = entry_to_signal(entry, source)
             if sig is None:
                 continue
 
+            # ── Tier 0: external_id exact dedup (existing behaviour) ──────
             if conn.execute(
                 "SELECT 1 FROM signals WHERE external_id=?",
                 (sig["external_id"],)
@@ -547,21 +699,55 @@ def run(db_path: Path = DB_PATH) -> dict:
                 skipped_s += 1
                 continue
 
+            # ── Tier 1–2: title similarity dedup ─────────────────────────
+            action, matched_sid, sim = _check_dedup(sig, title_cache)
+
+            if action == "block":
+                # Do not insert — increment counter on matched signal
+                _increment_duplicate_count(conn, matched_sid)
+                conn.commit()
+                blocked_s += 1
+                print(
+                    f"  [dedup:block]    {sig['title'][:60]!r} "
+                    f"sim={sim:.2f} → blocked, counter↑ on {matched_sid[:8]}"
+                )
+                continue
+
+            # Build metadata_json — tag near-duplicates before insert
+            meta = {}
+            if action == "near_dup":
+                meta["near_duplicate"] = True
+                meta["near_dup_sim"]   = round(sim, 3)
+                meta["near_dup_ref"]   = matched_sid
+                near_dup_s += 1
+                print(
+                    f"  [dedup:near_dup] {sig['title'][:60]!r} "
+                    f"sim={sim:.2f} → inserting with tag"
+                )
+
+            meta_json = json.dumps(meta) if meta else None
+
             try:
                 conn.execute("""
                     INSERT INTO signals
                         (signal_id, source, external_id, title, content,
                          lat, lng, timestamp, status,
-                         stream, relevance_score, is_priority, source_type)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?, 'live')
+                         stream, relevance_score, is_priority,
+                         metadata_json, source_type)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, 'live')
                 """, (
                     sig["signal_id"], sig["source"], sig["external_id"],
                     sig["title"],     sig["content"],
                     sig["lat"],       sig["lng"],
                     sig["timestamp"], sig["status"],
                     sig["stream"],    sig["relevance_score"], sig["is_priority"],
+                    meta_json,
                 ))
                 new_s += 1
+                # Add to cache so subsequent signals in this run can match it
+                title_cache.append(
+                    (sig["signal_id"], _normalize_title(sig["title"]))
+                )
             except sqlite3.IntegrityError:
                 skipped_s += 1
             except Exception as exc:
@@ -569,12 +755,24 @@ def run(db_path: Path = DB_PATH) -> dict:
                 total_errors += 1
 
         conn.commit()
-        per_source[key] = {"new": new_s, "skipped": skipped_s, "mode": mode}
-        total_new     += new_s
-        total_skipped += skipped_s
+        per_source[key] = {
+            "new":      new_s,
+            "skipped":  skipped_s,
+            "blocked":  blocked_s,
+            "near_dup": near_dup_s,
+            "mode":     mode,
+        }
+        total_new      += new_s
+        total_skipped  += skipped_s
+        total_blocked  += blocked_s
+        total_near_dup += near_dup_s
 
-        if new_s > 0:
-            print(f"  ✓ {new_s} new  ({skipped_s} known)")
+        if new_s > 0 or blocked_s > 0:
+            parts = [f"✓ {new_s} new"]
+            if blocked_s  > 0: parts.append(f"⊘ {blocked_s} blocked")
+            if near_dup_s > 0: parts.append(f"≈ {near_dup_s} near-dup")
+            parts.append(f"({skipped_s} known)")
+            print(f"  {' · '.join(parts)}")
         else:
             print(f"  · {skipped_s} known, nothing new")
 
@@ -593,26 +791,32 @@ def run(db_path: Path = DB_PATH) -> dict:
         run_status = "success"
 
     summary = {
-        "collector":      "civic_intel",
-        "sources":        len(SOURCES),
-        "sources_ok":     sources_ok,
-        "sources_failed": len(SOURCES) - sources_ok,
-        "total_new":      total_new,
-        "total_skipped":  total_skipped,
-        "total_errors":   total_errors,
-        "per_source":     per_source,
-        "run_status":     run_status,
-        "timestamp":      datetime.now(timezone.utc).isoformat(),
+        "collector":       "civic_intel",
+        "sources":         len(SOURCES),
+        "sources_ok":      sources_ok,
+        "sources_failed":  len(SOURCES) - sources_ok,
+        "total_new":       total_new,
+        "total_skipped":   total_skipped,
+        "total_blocked":   total_blocked,
+        "total_near_dup":  total_near_dup,
+        "total_errors":    total_errors,
+        "per_source":      per_source,
+        "run_status":      run_status,
+        "timestamp":       datetime.now(timezone.utc).isoformat(),
     }
 
-    print(f"\n[civic_intel] Done — {total_new} new · "
+    dedup_line = ""
+    if total_blocked > 0 or total_near_dup > 0:
+        dedup_line = f" · ⊘ {total_blocked} blocked · ≈ {total_near_dup} near-dup"
+
+    print(f"\n[civic_intel] Done — {total_new} new{dedup_line} · "
           f"{sources_ok}/{len(SOURCES)} sources active · status: {run_status}")
 
     log_run(
         db_path,
         "civic_intel_collector",
         "success" if run_status in ("success", "partial_success") else "error",
-        records_in=total_new + total_skipped,
+        records_in=total_new + total_skipped + total_blocked,
         records_out=total_new,
         detail=summary,
     )

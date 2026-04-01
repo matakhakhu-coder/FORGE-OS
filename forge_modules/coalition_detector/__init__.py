@@ -1,0 +1,1 @@
+# forge_modules/coalition_detector/__init__.py

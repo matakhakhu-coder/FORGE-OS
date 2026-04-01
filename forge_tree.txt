@@ -8,15 +8,20 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   app.py.phase28.bak
 |   backfill_streams.py
 |   capture_npa_signal.py
+|   cleanup_actors.py
 |   cleanup_firms.py
 |   database.db
 |   decay_worker.bat
 |   fix_schema.py
 |   fix_wiki_links.py
 |   folder_tree.txt
+|   FORGE_DEBUG_SECURITY.md
+|   FORGE_OS_MANIFEST.md
+|   FORGE_PIPELINE_CONTRACTS.md
 |   forge_tree.txt
 |   init_wiki.py
 |   mega_ingest.py
+|   migrate_graph.py
 |   migrate_layer_separation.py
 |   patch_collectors_async.py
 |   purge_signals.py
@@ -33,6 +38,7 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   test_ocr.py
 |   tree.txt
 |   wiki_worker.bat
+|   {t}')
 |   
 +---core
 |   +---api
@@ -52,10 +58,12 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   |           __init__.cpython-313.pyc
 |   |           
 |   +---conclave
+|   |   |   context.py
 |   |   |   engine.py
 |   |   |   registry.py
 |   |   |   
 |   |   \---__pycache__
+|   |           context.cpython-313.pyc
 |   |           engine.cpython-313.pyc
 |   |           registry.cpython-313.pyc
 |   |           
@@ -75,6 +83,22 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   |   |   
 |   |   \---__pycache__
 |   |           health.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---fms
+|   |   |   activation.py
+|   |   |   bootstrap.py
+|   |   |   loader.py
+|   |   |   readiness.py
+|   |   |   validator.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           activation.cpython-313.pyc
+|   |           bootstrap.cpython-313.pyc
+|   |           loader.cpython-313.pyc
+|   |           readiness.cpython-313.pyc
+|   |           validator.cpython-313.pyc
 |   |           __init__.cpython-313.pyc
 |   |           
 |   +---governance
@@ -122,12 +146,14 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   |   |   cluster_engine.py
 |   |   |   correlation_engine.py
 |   |   |   decay_engine.py
+|   |   |   engines__init__.py
 |   |   |   entity_engine.py
 |   |   |   escalation_engine.py
 |   |   |   evolution_engine.py
 |   |   |   feedback_engine.py
 |   |   |   graph_engine.py
 |   |   |   gravity_engine.py
+|   |   |   relationship_engine.py
 |   |   |   __init__.py
 |   |   |   
 |   |   \---__pycache__
@@ -142,6 +168,7 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   |           feedback_engine.cpython-313.pyc
 |   |           graph_engine.cpython-313.pyc
 |   |           gravity_engine.cpython-313.pyc
+|   |           relationship_engine.cpython-313.pyc
 |   |           __init__.cpython-313.pyc
 |   |           
 |   +---processors
@@ -151,6 +178,7 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |   |   |   event_constructor.py
 |   |   |   forensic_processor.py
 |   |   |   ner_processor.py
+|   |   |   processors__init__.py
 |   |   |   sentinel.py
 |   |   |   signal_interpreter.py
 |   |   |   __init__.py
@@ -173,6 +201,45 @@ C:\USERS\MATAM\PROJECTS\FORGE
 |       \---__pycache__
 |               pipeline_logger.cpython-313.pyc
 |               
++---forge_modules
+|   |   __init__.py
+|   |   
+|   +---geo_enrichment
+|   |   |   engine.py
+|   |   |   manifest.json
+|   |   |   module.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           engine.cpython-313.pyc
+|   |           module.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---graph_sync
+|   |   |   engine.py
+|   |   |   manifest.json
+|   |   |   module.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           engine.cpython-313.pyc
+|   |           module.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---signal_enrichment
+|   |   |   engine.py
+|   |   |   manifest.json
+|   |   |   module.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           engine.cpython-313.pyc
+|   |           module.cpython-313.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   \---__pycache__
+|           __init__.cpython-313.pyc
+|           
 +---media
 |   +---audio
 |   +---documents

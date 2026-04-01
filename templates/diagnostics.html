@@ -80,6 +80,131 @@
   <div class="diag-streams" id="js-streams"></div>
 </div>
 
+{# ── Pipeline Execution ───────────────────────────────────────────────────── #}
+<div class="diag-section">
+  <div class="diag-section__title mono">PIPELINE EXECUTION</div>
+  <div class="diag-section__sub">
+    Run collectors and engines on demand. Each job fires asynchronously —
+    results appear in the run log below after completion.
+  </div>
+
+  <div id="cr-status-bar"
+       style="display:none;
+              font-family:var(--font-mono,monospace);
+              font-size:0.75rem;
+              color:var(--text-dim);
+              margin:0.75rem 0 0.5rem;
+              min-height:1.2em;">
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_collectors"
+            data-label="Run Collectors"
+            title="Spawn all FORAGE collectors: GDELT, RSS, USGS, FIRMS, Civic Intel, Earthquake">
+      📡 Run Collectors
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_ingest"
+            data-label="Run Mega Ingest"
+            title="Full Conclave ingest pass — builds actors, events and cases from raw signals">
+      🔄 Run Mega Ingest
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_conclave"
+            data-label="Run Conclave"
+            title="All engines: NER, clustering, anomaly, correlation, decay, graph, sentinel">
+      🧠 Run Conclave
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_graph_engine"
+            data-label="Recompute Graph"
+            title="Recompute actor network metrics: PageRank, betweenness, community IDs">
+      🕸 Recompute Graph
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_coalition_detector"
+            data-label="Detect Coalitions"
+            title="Run cluster/coalition detection to identify actor communities in signal data">
+      🔍 Detect Coalitions
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_counterintel"
+            data-label="Run CounterIntel Scan"
+            title="Detect coordinated narratives, bot-pattern repetition, and information campaigns in CRIME_INTEL + PRIORITY signals">
+      🛡 Run CounterIntel Scan
+    </button>
+    <button class="cr-btn btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_emergence"
+            data-label="Run Emergence Engine"
+            title="Detect emerging actor networks — compares 24h actor-event link growth against the prior 24h baseline and scores by growth rate">
+      🌐 Run Emergence Engine
+    </button>
+  </div>
+</div>
+
+{# ── Archive ──────────────────────────────────────────────────────────────── #}
+<div class="diag-section">
+  <div class="diag-section__title mono">ARCHIVE CASE</div>
+  <div class="diag-section__sub">
+    Move a closed case's signals, events and artifacts into archive tables.
+    Intelligence is never deleted — archived data remains fully queryable.
+    Only signals/events/artifacts exclusive to this case are moved from the
+    live tables; records shared with other active cases are copied for
+    provenance and left live.
+  </div>
+
+  <div id="arc-status-bar"
+       style="display:none;
+              font-family:var(--font-mono,monospace);
+              font-size:0.75rem;
+              margin:0.75rem 0 0.5rem;
+              min-height:1.2em;">
+  </div>
+
+  <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap;">
+    <select id="arc-case-select"
+            style="font-family:var(--font-mono,monospace);
+                   font-size:0.75rem;
+                   background:var(--bg-2,#111);
+                   color:var(--fg,#e0e0e0);
+                   border:1px solid rgba(255,255,255,0.14);
+                   border-radius:4px;
+                   padding:0.4rem 0.6rem;
+                   min-width:260px;">
+      <option value="">— Select a case to archive —</option>
+    </select>
+    <button id="arc-btn"
+            class="btn btn--sm btn--ghost"
+            disabled
+            style="border-color:#f7768e; color:#f7768e;
+                   font-family:var(--font-mono,monospace);
+                   font-size:0.75rem;">
+      🗄 Archive Case
+    </button>
+  </div>
+
+  <div id="arc-result"
+       style="display:none;
+              margin-top:1rem;
+              font-family:var(--font-mono,monospace);
+              font-size:0.73rem;
+              background:rgba(255,255,255,0.03);
+              border:1px solid rgba(255,255,255,0.08);
+              border-radius:4px;
+              padding:0.75rem 1rem;
+              line-height:1.8;">
+  </div>
+</div>
+
+<style>
+.cr-btn { transition: border-color 0.15s, color 0.15s, opacity 0.15s; }
+.cr-btn:disabled   { opacity: 0.4; cursor: not-allowed; }
+.cr-btn.cr-running { border-color: #7aa2f7 !important; color: #7aa2f7 !important; }
+.cr-btn.cr-done    { border-color: #9ece6a !important; color: #9ece6a !important; }
+.cr-btn.cr-error   { border-color: #f7768e !important; color: #f7768e !important; }
+</style>
+
 {# ── Component status board ───────────────────────────────────────────────── #}
 <div class="diag-section">
   <div class="diag-section__title mono">PIPELINE COMPONENTS</div>
@@ -298,6 +423,163 @@
 
   document.getElementById('js-refresh').addEventListener('click', load);
   load();
+
+  // ── Phase 34: Control Room button handlers ─────────────────────────────────
+  (function () {
+    var statusBar = document.getElementById('cr-status-bar');
+
+    function setStatus(msg, colour) {
+      statusBar.style.display = 'block';
+      statusBar.style.color   = colour || 'var(--text-dim)';
+      statusBar.textContent   = msg;
+    }
+
+    function resetBtn(btn) {
+      btn.disabled = false;
+      btn.classList.remove('cr-running', 'cr-done', 'cr-error');
+      btn.textContent = btn.dataset.label;
+    }
+
+    document.querySelectorAll('.cr-btn').forEach(function (btn) {
+      btn.dataset.label = btn.textContent.trim();
+
+      btn.addEventListener('click', function () {
+        var endpoint = btn.dataset.endpoint;
+        var label    = btn.dataset.label;
+
+        document.querySelectorAll('.cr-btn').forEach(function (b) { b.disabled = true; });
+        btn.classList.add('cr-running');
+        btn.textContent = '⏳ ' + label + ' …';
+        setStatus('▶ Dispatching: ' + label, '#7aa2f7');
+
+        fetch(endpoint, { method: 'POST' })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.status === 'started') {
+              btn.classList.remove('cr-running');
+              btn.classList.add('cr-done');
+              btn.textContent = '✓ ' + label;
+              setStatus(
+                '✓ ' + label + ' started — results appear in the run log once complete.',
+                '#9ece6a'
+              );
+              setTimeout(load, 3000);
+            } else {
+              throw new Error(data.error || 'Unexpected response');
+            }
+          })
+          .catch(function (err) {
+            btn.classList.remove('cr-running');
+            btn.classList.add('cr-error');
+            btn.textContent = '✗ ' + label;
+            setStatus('✗ Error — ' + err.message, '#f7768e');
+          })
+          .finally(function () {
+            setTimeout(function () {
+              document.querySelectorAll('.cr-btn').forEach(resetBtn);
+            }, 2500);
+          });
+      });
+    });
+  })();
+
+  // ── Phase 35: Archive Case handler ─────────────────────────────────────────
+  (function () {
+    var select    = document.getElementById('arc-case-select');
+    var arcBtn    = document.getElementById('arc-btn');
+    var arcStatus = document.getElementById('arc-status-bar');
+    var arcResult = document.getElementById('arc-result');
+
+    // Populate case dropdown from /api/cases-list
+    fetch('/api/cases-list')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        (data.cases || []).forEach(function (c) {
+          if (c.status === 'archived') return; // already archived — skip
+          var opt = document.createElement('option');
+          opt.value       = c.case_id;
+          opt.textContent = '[' + c.status.toUpperCase() + '] ' + c.title;
+          select.appendChild(opt);
+        });
+      })
+      .catch(function () {});
+
+    select.addEventListener('change', function () {
+      arcBtn.disabled = !select.value;
+    });
+
+    arcBtn.addEventListener('click', function () {
+      var caseId = select.value;
+      if (!caseId) return;
+
+      var caseName = select.options[select.selectedIndex].textContent;
+
+      if (!confirm(
+        'Archive case: ' + caseName + '\n\n' +
+        'Signals, events and artifacts exclusive to this case will be moved\n' +
+        'from live tables into archive tables and the case will be marked\n' +
+        'as archived. This cannot be undone via the UI.\n\n' +
+        'Continue?'
+      )) return;
+
+      arcBtn.disabled      = true;
+      arcBtn.textContent   = '⏳ Archiving…';
+      arcStatus.style.display = 'block';
+      arcStatus.style.color   = '#7aa2f7';
+      arcStatus.textContent   = '▶ Running archive transaction…';
+      arcResult.style.display = 'none';
+
+      fetch('/api/control/archive_case/' + caseId, { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.status === 'success' || d.status === 'skipped') {
+            arcStatus.style.color = '#9ece6a';
+            arcStatus.textContent = d.status === 'skipped'
+              ? '✓ Already archived — no changes made.'
+              : '✓ Archive complete in ' + (d.duration_s || '?') + 's';
+
+            arcResult.style.display = 'block';
+            arcResult.innerHTML = d.status === 'skipped'
+              ? '<span style="color:var(--text-dim)">Case was already archived.</span>'
+              : [
+                  '<span style="color:#9ece6a">✓ Case archived: ' + esc(d.case_title || '') + '</span>',
+                  '',
+                  'Signals moved:    <b>' + (d.archived_signals   || 0) + '</b>' +
+                    (d.shared_signals   ? '  <span style="color:var(--text-dim)">(+' + d.shared_signals   + ' shared — copied only)</span>' : ''),
+                  'Events moved:     <b>' + (d.archived_events    || 0) + '</b>' +
+                    (d.shared_events    ? '  <span style="color:var(--text-dim)">(+' + d.shared_events    + ' shared — copied only)</span>' : ''),
+                  'Artifacts moved:  <b>' + (d.archived_artifacts || 0) + '</b>' +
+                    (d.shared_artifacts ? '  <span style="color:var(--text-dim)">(+' + d.shared_artifacts + ' shared — copied only)</span>' : ''),
+                  '',
+                  '<span style="color:var(--text-dim)">Query archive: GET /api/archive/' + caseId + '</span>',
+                ].join('<br>');
+
+            // Remove archived case from dropdown
+            var opt = select.querySelector('option[value="' + caseId + '"]');
+            if (opt) opt.remove();
+            select.value    = '';
+            arcBtn.disabled = true;
+            arcBtn.textContent = '🗄 Archive Case';
+
+            // Refresh diagnostics to reflect DB size change
+            setTimeout(load, 1500);
+
+          } else {
+            throw new Error(d.error || 'Archive failed');
+          }
+        })
+        .catch(function (err) {
+          arcStatus.style.color = '#f7768e';
+          arcStatus.textContent = '✗ Error — ' + err.message;
+          arcBtn.disabled     = false;
+          arcBtn.textContent  = '🗄 Archive Case';
+        });
+    });
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  })();
 
 })();
 </script>
