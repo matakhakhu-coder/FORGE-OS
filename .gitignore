@@ -3,4 +3,5 @@ database.db
 media/
 __pycache__/
 *.pyc
-.env
+.env*.db-shm 
+*.db-wal 
