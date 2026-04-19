@@ -73,6 +73,37 @@
   </a>
 </div>
 
+{# ── Case Filter Bar ─────────────────────────────────────────────────────── #}
+{% if active_cases %}
+<div class="case-filter-bar">
+  <div class="case-filter-bar__label mono">CASE WORKSPACE</div>
+  <div class="case-filter-pills" id="js-case-pills">
+    <a href="{{ request.path }}?lens={{ request.args.get('lens','live') }}"
+       class="case-pill {% if not selected_case_id %}case-pill--active{% endif %}">
+      ALL CASES
+    </a>
+    {% for c in active_cases %}
+    <a href="{{ request.path }}?lens={{ request.args.get('lens','live') }}&case_id={{ c.case_id }}"
+       class="case-pill {% if selected_case_id == c.case_id %}case-pill--active{% endif %}"
+       title="{{ c.name }}">
+      {{ c.name[:32] }}{% if c.name|length > 32 %}…{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% if selected_case %}
+  <div class="case-filter-bar__active-label">
+    <span class="targeting-dot targeting-dot--critical"></span>
+    ACTIVE FILTER:&nbsp;<strong>{{ selected_case.name }}</strong>
+    &nbsp;&mdash;&nbsp;
+    <a href="{{ request.path }}?lens={{ request.args.get('lens','live') }}"
+       class="mono" style="font-size:0.65rem;color:var(--text-dim);text-decoration:none;">
+      clear &times;
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
 {# ── Phase 17: System Pulse — 48-hour signal frequency chart ─────────────── #}
 {% if pulse_data %}
 <div class="pulse-section">
@@ -298,7 +329,9 @@
   {% set max_score = intelligence_leads[0].influence_score if intelligence_leads else 1 %}
   {% for lead in intelligence_leads %}
   {% set heat_pct = ((lead.influence_score / max_score) * 100)|int if max_score > 0 else 0 %}
-  <a href="{{ url_for('actor_detail', actor_id=lead.actor_id) }}" class="lead-item">
+  {% set is_critical = lead.influence_score > 0.5 %}
+  <a href="{{ url_for('actor_detail', actor_id=lead.actor_id) }}"
+     class="lead-item{% if is_critical %} lead-item--critical{% endif %}">
 
     <div class="lead-item__rank mono">#{{ loop.index }}</div>
 

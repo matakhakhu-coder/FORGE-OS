@@ -11507,3 +11507,526 @@ div.vis-network canvas {
 .targeting-level--elevated  { color: #f59e0b !important; }
 .targeting-level--monitored { color: #ffcc00 !important; }
 .targeting-level--none      { color: var(--text-dim) !important; }
+/* ============================================================================
+   SAMARITAN Aesthetic — Phase 43
+   Critical actor pulse + Case filter bar
+   ============================================================================ */
+
+/* ── targeting-dot--critical: live pulse animation ─────────────────────────── */
+@keyframes critical-dot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0   rgba(255, 68,  68, 0.8),
+                0 0 6px 0 rgba(255, 68,  68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(255, 68,  68, 0),
+                0 0 12px 3px rgba(255, 68, 68, 0.3);
+  }
+}
+.targeting-dot--critical {
+  background:  #ff4444;
+  animation:   critical-dot-pulse 1.4s ease-in-out infinite;
+}
+
+/* ── lead-item--critical: DPCI / Soweto Collective tier ────────────────────── */
+/*
+   GPU COMPOSITING NOTE:
+   Only box-shadow and opacity are animated here.
+   border-color and background changes trigger paint — avoided.
+   The browser compositor handles box-shadow on a separate layer,
+   producing zero layout/paint cost per frame.
+*/
+@keyframes critical-lead-pulse {
+  0%, 100% {
+    box-shadow: inset 2px 0 0 rgba(255, 68, 68, 0.50),
+                0 0  0    0   rgba(255, 68, 68, 0),
+                0 0  8px  0   rgba(255, 68, 68, 0.04);
+  }
+  50% {
+    box-shadow: inset 2px 0 0 rgba(255, 68, 68, 0.90),
+                0 0  0    4px rgba(255, 68, 68, 0),
+                0 0  18px 0   rgba(255, 68, 68, 0.16);
+  }
+}
+
+/* Accent bar: opacity-only pulse — also GPU composited */
+@keyframes critical-bar-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1.00; }
+}
+
+.lead-item--critical {
+  /* Static border — no animated border-color (causes repaint) */
+  border-color: rgba(255, 68, 68, 0.30);
+  /* Single GPU-composited animation via box-shadow only */
+  animation:       critical-lead-pulse 2s ease-in-out infinite;
+  will-change:     box-shadow;   /* hint compositor to promote layer */
+  position:        relative;
+}
+
+/* Left accent bar — animated via opacity only (GPU layer) */
+.lead-item--critical::before {
+  content:       '';
+  position:      absolute;
+  left:          0; top: 0; bottom: 0;
+  width:         3px;
+  background:    #ff4444;
+  border-radius: var(--r-lg) 0 0 var(--r-lg);
+  animation:     critical-bar-pulse 2s ease-in-out infinite;
+  will-change:   opacity;
+}
+
+.lead-item--critical .lead-item__name  { color: #fca5a5; }
+.lead-item--critical .lead-item__score { color: #ff4444; }
+
+/* Hover: background only — no border-color change (paint trigger) */
+.lead-item--critical:hover {
+  background: rgba(255, 68, 68, 0.06);
+}
+
+/* ── Case Filter Bar ────────────────────────────────────────────────────────── */
+.case-filter-bar {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--sp-3);
+  padding:        var(--sp-4) var(--sp-5);
+  background:     var(--bg-surface);
+  border:         1px solid var(--border-dim);
+  border-radius:  var(--r-lg);
+  margin-bottom:  var(--space-xl);
+}
+.case-filter-bar__label {
+  font-size:      0.6rem;
+  letter-spacing: 0.14em;
+  color:          var(--text-ghost);
+  text-transform: uppercase;
+}
+.case-filter-pills {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       var(--sp-2);
+}
+.case-pill {
+  display:        inline-block;
+  padding:        3px 10px;
+  font-size:      0.65rem;
+  font-family:    'Courier New', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color:          var(--text-dim);
+  background:     var(--bg-elevated);
+  border:         1px solid var(--border-dim);
+  border-radius:  3px;
+  transition:     background 120ms, border-color 120ms, color 120ms;
+  white-space:    nowrap;
+  max-width:      220px;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}
+.case-pill:hover {
+  color:        var(--text-primary);
+  border-color: var(--border-mid);
+  background:   var(--bg-surface);
+}
+.case-pill--active {
+  color:        var(--accent);
+  border-color: var(--accent);
+  background:   rgba(129, 140, 248, 0.08);
+}
+.case-filter-bar__active-label {
+  font-size:      0.7rem;
+  color:          var(--text-secondary);
+  display:        flex;
+  align-items:    center;
+  gap:            var(--sp-2);
+  padding-top:    var(--sp-2);
+  border-top:     1px solid var(--border-dim);
+}
+.case-filter-bar__active-label strong {
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   CT-1 — Contextual Tunneling styles
+   Focus pill · CT banner · Gravity slider · Gravity badge · Focus badge
+   ============================================================================ */
+
+/* ── Topbar focus pill ───────────────────────────────────────────────────── */
+.topbar__focus-pill {
+  display:         flex;
+  align-items:     center;
+  gap:             6px;
+  padding:         3px 8px 3px 6px;
+  background:      rgba(200, 148, 58, 0.12);
+  border:          1px solid rgba(200, 148, 58, 0.35);
+  border-radius:   3px;
+  cursor:          default;
+  max-width:       220px;
+}
+.topbar__focus-dot {
+  width:           6px;
+  height:          6px;
+  border-radius:   50%;
+  background:      var(--accent);
+  flex-shrink:     0;
+  animation:       ct-pulse 2s ease-in-out infinite;
+}
+@keyframes ct-pulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0 rgba(200,148,58,0.5); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(200,148,58,0); }
+}
+.topbar__focus-label {
+  font-size:       0.58rem;
+  color:           var(--accent-bright);
+  letter-spacing:  0.06em;
+  text-transform:  uppercase;
+  white-space:     nowrap;
+  overflow:        hidden;
+  text-overflow:   ellipsis;
+  max-width:       140px;
+}
+.topbar__focus-clear {
+  background:      none;
+  border:          none;
+  color:           var(--text-dim);
+  font-size:       0.75rem;
+  cursor:          pointer;
+  padding:         0 2px;
+  line-height:     1;
+  flex-shrink:     0;
+}
+.topbar__focus-clear:hover { color: var(--text-primary); }
+
+/* ── CT-1 banner (inside feed page) ─────────────────────────────────────── */
+.ct-banner {
+  background:      rgba(200, 148, 58, 0.07);
+  border:          1px solid rgba(200, 148, 58, 0.25);
+  border-radius:   var(--r-md);
+  margin-bottom:   var(--sp-4);
+}
+.ct-banner__inner {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--sp-4);
+  padding:         var(--sp-3) var(--sp-5);
+  flex-wrap:       wrap;
+}
+.ct-banner__icon {
+  font-size:       1.1rem;
+  color:           var(--accent);
+  flex-shrink:     0;
+  animation:       ct-pulse 2s ease-in-out infinite;
+}
+.ct-banner__info {
+  display:         flex;
+  flex-direction:  column;
+  gap:             2px;
+  flex:            1;
+  min-width:       0;
+}
+.ct-banner__label {
+  font-size:       0.55rem;
+  letter-spacing:  0.14em;
+  text-transform:  uppercase;
+  color:           var(--accent);
+}
+.ct-banner__title {
+  font-family:     var(--font-body);
+  font-size:       0.82rem;
+  font-weight:     600;
+  color:           var(--text-primary);
+  white-space:     nowrap;
+  overflow:        hidden;
+  text-overflow:   ellipsis;
+}
+.ct-banner__controls {
+  display:         flex;
+  flex-direction:  column;
+  gap:             4px;
+  min-width:       160px;
+}
+.ct-gravity-label {
+  font-size:       0.58rem;
+  color:           var(--text-dim);
+  letter-spacing:  0.04em;
+}
+.ct-gravity-slider {
+  -webkit-appearance: none;
+  appearance:      none;
+  width:           100%;
+  height:          3px;
+  background:      linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) calc(var(--val, 50) * 1%),
+    var(--border-dim) calc(var(--val, 50) * 1%),
+    var(--border-dim) 100%
+  );
+  border-radius:   2px;
+  outline:         none;
+  cursor:          pointer;
+}
+.ct-gravity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width:           12px;
+  height:          12px;
+  border-radius:   50%;
+  background:      var(--accent);
+  border:          2px solid var(--bg-surface);
+  cursor:          pointer;
+}
+.ct-gravity-slider::-moz-range-thumb {
+  width:           12px;
+  height:          12px;
+  border-radius:   50%;
+  background:      var(--accent);
+  border:          2px solid var(--bg-surface);
+  cursor:          pointer;
+}
+
+/* ── Per-card gravity badge ──────────────────────────────────────────────── */
+.ct-gravity-badge {
+  font-family:     var(--font-mono);
+  font-size:       0.52rem;
+  padding:         1px 5px;
+  border-radius:   var(--r-sm);
+  background:      rgba(200,148,58,0.10);
+  color:           var(--text-dim);
+  border:          1px solid rgba(200,148,58,0.20);
+  letter-spacing:  0.04em;
+  white-space:     nowrap;
+}
+.ct-gravity-badge--hot {
+  background:      rgba(200,148,58,0.18);
+  color:           var(--accent-bright);
+  border-color:    rgba(200,148,58,0.45);
+}
+
+/* ── Focus active badge (in case_detail eyebrow) ─────────────────────────── */
+.ct-focus-badge {
+  font-family:     var(--font-mono);
+  font-size:       0.55rem;
+  padding:         2px 7px;
+  border-radius:   var(--r-sm);
+  background:      rgba(200,148,58,0.12);
+  color:           var(--accent);
+  border:          1px solid rgba(200,148,58,0.35);
+  letter-spacing:  0.10em;
+  text-transform:  uppercase;
+  margin-left:     var(--sp-2);
+  animation:       ct-pulse 2s ease-in-out infinite;
+}
+
+/* ── CT button variant ───────────────────────────────────────────────────── */
+.btn--ct {
+  background:      rgba(200,148,58,0.10);
+  color:           var(--accent-bright);
+  border:          1px solid rgba(200,148,58,0.35);
+}
+.btn--ct:hover {
+  background:      rgba(200,148,58,0.22);
+  border-color:    var(--accent);
+  color:           var(--accent-bright);
+}
+
+/* ============================================================================
+   FORGE SECURITY MANIFEST — UI Components
+   forge_security v1.0  |  Detonator · Sanitizer · Quarantine Manager
+   ============================================================================ */
+
+/* ── Security Badges ─────────────────────────────────────────────────────────
+   Usage:  {% from "_security_badges.html" import detonation_badge %}
+           {{ detonation_badge() }}
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.sec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px 2px 5px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: default;
+  user-select: none;
+  vertical-align: middle;
+  transition: opacity var(--t-fast);
+}
+.sec-badge:hover { opacity: 0.85; }
+
+.sec-badge__icon {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+.sec-badge__label {
+  line-height: 1;
+}
+.sec-badge__reason {
+  color: inherit;
+  opacity: 0.7;
+  font-size: 0.5rem;
+  padding-left: 4px;
+  border-left: 1px solid currentColor;
+  margin-left: 2px;
+}
+
+/* Detonation (Air-Lock Cleared) — teal/green */
+.sec-badge--detonate {
+  background: rgba(6, 78, 59, 0.20);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+.sec-badge--detonate:hover { background: rgba(6, 78, 59, 0.30); }
+
+/* Sanitized (Bleach) — blue/cyan */
+.sec-badge--sanitize {
+  background: rgba(7, 89, 133, 0.18);
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  color: #38bdf8;
+}
+.sec-badge--sanitize:hover { background: rgba(7, 89, 133, 0.28); }
+
+/* Quarantined — red/orange warning */
+.sec-badge--quarantine {
+  background: rgba(122, 26, 26, 0.22);
+  border: 1px solid rgba(185, 28, 28, 0.35);
+  color: #f87171;
+}
+.sec-badge--quarantine:hover { background: rgba(122, 26, 26, 0.35); }
+
+/* Composite strip container */
+.sec-provenance-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+/* ── Toast Notification System ───────────────────────────────────────────────
+   Triggered by: forge.toast(message, type)
+   Types: 'success' | 'error' | 'quarantine' | 'info' | 'warning'
+   ──────────────────────────────────────────────────────────────────────────── */
+
+#forge-toast-stack {
+  position: fixed;
+  bottom: var(--sp-6);
+  right: var(--sp-6);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  pointer-events: none;
+  max-width: 400px;
+  width: calc(100vw - 3rem);
+}
+
+.forge-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  line-height: 1.55;
+  pointer-events: all;
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  transform: translateX(120%);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.2s ease;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+}
+.forge-toast.forge-toast--in {
+  transform: translateX(0);
+  opacity: 1;
+}
+.forge-toast.forge-toast--out {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+/* Progress bar */
+.forge-toast::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.35;
+  animation: toast-progress var(--toast-duration, 5s) linear forwards;
+  transform-origin: left;
+}
+@keyframes toast-progress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+.forge-toast__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+.forge-toast__body { flex: 1; }
+.forge-toast__type {
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+.forge-toast__msg { color: inherit; }
+.forge-toast__close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.5;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0;
+  transition: opacity 0.12s;
+}
+.forge-toast__close:hover { opacity: 1; }
+
+/* Type variants */
+.forge-toast--success {
+  background: rgba(6, 78, 59, 0.92);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #a7f3d0;
+}
+.forge-toast--error {
+  background: rgba(90, 10, 10, 0.95);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+.forge-toast--quarantine {
+  background: rgba(76, 17, 0, 0.96);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fcd34d;
+  border-left: 3px solid #ef4444;
+}
+.forge-toast--info {
+  background: rgba(7, 30, 60, 0.93);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+.forge-toast--warning {
+  background: rgba(78, 50, 0, 0.93);
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fde68a;
+}
+
+/* ── Sidebar Security nav link ───────────────────────────────────────────── */
+.nav-icon--quarantine { color: #ef4444; }

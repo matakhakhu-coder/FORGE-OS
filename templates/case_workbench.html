@@ -1,0 +1,1217 @@
+{% extends "base.html" %}
+{% from "_security_badges.html" import detonation_badge, sanitized_badge %}
+{% block title %}Workbench — {{ case.name }}{% endblock %}
+
+{% block head_extra %}
+<style>
+/* ── Full-bleed layout ─────────────────────────────────────────── */
+.main { padding: 0 !important; overflow: hidden; }
+
+/* ── Root ─────────────────────────────────────────────────────── */
+#wb-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px);
+  background: var(--bg-void);
+}
+
+/* ── Header bar ───────────────────────────────────────────────── */
+#wb-header {
+  flex-shrink: 0;
+  padding: var(--sp-4) var(--sp-6);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+.wb-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.wb-header__title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+.wb-header__status {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.wb-status--active   { background: rgba(30,102,64,0.25);  color: #4ade80; border: 1px solid rgba(30,102,64,0.5); }
+.wb-status--closed   { background: rgba(60,60,60,0.25);   color: #9ca3af; border: 1px solid rgba(60,60,60,0.5); }
+.wb-status--archived { background: rgba(90,70,20,0.25);   color: #fbbf24; border: 1px solid rgba(90,70,20,0.5); }
+.wb-header__stats {
+  display: flex;
+  gap: var(--sp-4);
+}
+.wb-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.wb-stat__val {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.wb-stat__label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.wb-header__actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+.wb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.wb-btn:hover { border-color: var(--border-mid); color: var(--text-primary); }
+
+/* ── 3-column body ────────────────────────────────────────────── */
+#wb-body {
+  display: grid;
+  grid-template-columns: 1fr 300px 280px;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* ── Column shared styles ─────────────────────────────────────── */
+.wb-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+.wb-col:last-child { border-right: none; }
+.wb-col__header {
+  flex-shrink: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.wb-col__icon { font-size: 0.8rem; opacity: 0.6; }
+.wb-col__title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  flex: 1;
+}
+.wb-col__count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+.wb-col__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-3) var(--sp-4);
+}
+.wb-col__body::-webkit-scrollbar { width: 3px; }
+.wb-col__body::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 2px; }
+
+/* ── Timeline items ───────────────────────────────────────────── */
+.tl-item {
+  display: flex;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  position: relative;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 20px;
+  bottom: -16px;
+  width: 1px;
+  background: var(--border-subtle);
+}
+.tl-item:last-child::before { display: none; }
+.tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+  border: 1px solid;
+}
+.tl-dot--signal   { background: rgba(129,140,248,0.25); border-color: #818cf8; }
+.tl-dot--artifact { background: rgba(158,206,106,0.25); border-color: #9ece6a; }
+.tl-dot--pdf      { background: rgba(200,148,58,0.20);  border-color: var(--accent); }
+.tl-dot--priority { background: rgba(247,118,142,0.3);  border-color: #f7768e; }
+.tl-content { flex: 1; min-width: 0; }
+.tl-ts {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-1);
+}
+.tl-title {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: var(--sp-1);
+  word-break: break-word;
+}
+.tl-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+.tl-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.tl-badge--signal   { background: rgba(129,140,248,0.12); color: #818cf8; }
+.tl-badge--artifact { background: rgba(158,206,106,0.12); color: #9ece6a; }
+.tl-badge--priority { background: rgba(247,118,142,0.15); color: #f7768e; }
+.tl-badge--source   { background: var(--bg-elevated); color: var(--text-dim); }
+.tl-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--accent-muted);
+  border-radius: var(--r-sm);
+  background: rgba(200,148,58,0.08);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.tl-pdf-btn:hover { background: rgba(200,148,58,0.18); color: var(--accent-bright); }
+.tl-body {
+  margin-top: var(--sp-1);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Roster items ─────────────────────────────────────────────── */
+.roster-item {
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.roster-item:last-child { border-bottom: none; }
+.roster-item__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.roster-item__name {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  line-height: 1.3;
+}
+.roster-item__name a {
+  color: inherit;
+  text-decoration: none;
+}
+.roster-item__name a:hover { color: var(--accent-bright); }
+.risk-badge {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  padding: 2px 5px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+.risk-badge--HIGH_RISK { background: rgba(247,118,142,0.18); color: #f7768e; border: 1px solid rgba(247,118,142,0.3); }
+.risk-badge--person      { background: rgba(224,128,58,0.12);  color: #e0803a; }
+.risk-badge--institution { background: rgba(58,110,212,0.12);  color: #3a6ed4; }
+.risk-badge--government  { background: rgba(64,160,96,0.12);   color: #40a060; }
+.risk-badge--media       { background: rgba(64,176,192,0.12);  color: #40b0c0; }
+.risk-badge--movement    { background: rgba(192,64,192,0.12);  color: #c040c0; }
+.risk-badge--unknown     { background: var(--bg-elevated); color: var(--text-dim); }
+.roster-item__inf {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.inf-bar-track {
+  flex: 1;
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.inf-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-muted), var(--accent));
+}
+.inf-val {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.roster-item__rels {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-ghost);
+  margin-top: var(--sp-1);
+}
+
+/* ── Column 3 tab switcher ────────────────────────────────────── */
+.wb-col3-tabs {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.wb-c3tab {
+  flex: 1;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.wb-c3tab:hover { color: var(--text-secondary); }
+.wb-c3tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Evidence graph ───────────────────────────────────────────── */
+#wb-eg-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#wb-cy {
+  flex: 1;
+  width: 100%;
+  background: var(--bg-void);
+}
+.eg-legend {
+  flex-shrink: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.eg-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+}
+.eg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.eg-empty {
+  padding: var(--sp-8) var(--sp-4);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  line-height: 1.8;
+}
+.eg-tooltip {
+  position: absolute;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-primary);
+  max-width: 200px;
+  pointer-events: none;
+  display: none;
+  line-height: 1.5;
+}
+
+/* ── Overlap items ────────────────────────────────────────────── */
+.overlap-item {
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.overlap-item:last-child { border-bottom: none; }
+.overlap-item__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.overlap-item__name {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+.overlap-count-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(247,118,142,0.15);
+  color: #f7768e;
+  border: 1px solid rgba(247,118,142,0.25);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.overlap-cases {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.overlap-case-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  line-height: 1.4;
+}
+.overlap-case-link:hover { color: var(--accent-bright); }
+.overlap-case-link::before {
+  content: '→';
+  color: var(--text-ghost);
+  flex-shrink: 0;
+}
+.overlap-empty {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  font-style: italic;
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PDF VIEWER MODAL
+   ════════════════════════════════════════════════════════════════ */
+#pdf-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: stretch;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+#pdf-modal.pdf-modal--open {
+  opacity: 1;
+  pointer-events: all;
+}
+#pdf-shell {
+  display: flex;
+  flex-direction: column;
+  width: min(900px, 95vw);
+  margin: auto;
+  max-height: 96vh;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 4px;
+  overflow: hidden;
+}
+#pdf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+#pdf-title {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pdf-nav-btn {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-dim);
+  color: var(--text-secondary);
+  border-radius: var(--r-sm);
+  padding: var(--sp-1) var(--sp-3);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  transition: all 0.15s;
+}
+.pdf-nav-btn:hover:not(:disabled) { border-color: var(--accent-muted); color: var(--accent); }
+.pdf-nav-btn:disabled { opacity: 0.3; cursor: default; }
+#pdf-page-info {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.pdf-close-btn {
+  background: none;
+  border: 1px solid var(--border-dim);
+  color: var(--text-dim);
+  border-radius: var(--r-sm);
+  padding: var(--sp-1) var(--sp-3);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  transition: all 0.15s;
+}
+.pdf-close-btn:hover { border-color: #f7768e; color: #f7768e; }
+#pdf-canvas-wrap {
+  flex: 1;
+  overflow: auto;
+  background: #1a1a1a;
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+#pdf-canvas {
+  display: block;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  max-width: 100%;
+}
+#pdf-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-12);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+#pdf-error {
+  padding: var(--sp-8);
+  color: #f7768e;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="wb-root">
+
+  {# ── Header ───────────────────────────────────────────────────── #}
+  <div id="wb-header">
+    <div>
+      <div class="wb-header__eyebrow">
+        <a href="{{ url_for('cases') }}" style="color:inherit;text-decoration:none;">
+          Workspaces
+        </a> › CASE #{{ case.case_id }} › Workbench
+      </div>
+      <h1 class="wb-header__title">{{ case.name }}</h1>
+    </div>
+    <span class="wb-header__status wb-status--{{ case.status }}">{{ case.status }}</span>
+    <div class="wb-header__stats">
+      <div class="wb-stat">
+        <div class="wb-stat__val" style="color:#818cf8;">{{ stats.signals }}</div>
+        <div class="wb-stat__label">signals</div>
+      </div>
+      <div class="wb-stat">
+        <div class="wb-stat__val" style="color:#9ece6a;">{{ stats.artifacts }}</div>
+        <div class="wb-stat__label">artifacts</div>
+      </div>
+      <div class="wb-stat">
+        <div class="wb-stat__val">{{ stats.actors }}</div>
+        <div class="wb-stat__label">actors</div>
+      </div>
+      <div class="wb-stat">
+        <div class="wb-stat__val" style="color:{% if stats.overlap > 0 %}#f7768e{% else %}var(--text-dim){% endif %};">
+          {{ stats.overlap }}
+        </div>
+        <div class="wb-stat__label">overlap</div>
+      </div>
+    </div>
+    <div class="wb-header__actions">
+      <a href="{{ url_for('case_detail', case_id=case.case_id) }}" class="wb-btn">◫ Board</a>
+      <a href="{{ url_for('case_briefing', case_id=case.case_id) }}" class="wb-btn" target="_blank">⎙ Briefing</a>
+      <a href="{{ url_for('intel_graph') }}" class="wb-btn">⬡ Intel Graph</a>
+    </div>
+  </div>
+
+  {# ── 3-column body ────────────────────────────────────────────── #}
+  <div id="wb-body">
+
+    {# ════════════════════════════════════════════════════════════
+       Column 1: Evidence Timeline
+    ═══════════════════════════════════════════════════════════════ #}
+    <div class="wb-col">
+      <div class="wb-col__header">
+        <span class="wb-col__icon">⏱</span>
+        <span class="wb-col__title">Evidence Timeline</span>
+        <span class="wb-col__count">{{ timeline | length }}</span>
+      </div>
+      <div class="wb-col__body">
+        {% if timeline %}
+          {% for item in timeline %}
+            {% set is_pdf = item.artifact_type == 'document' and item.media_url %}
+            {% set is_priority = item.is_priority %}
+            <div class="tl-item">
+              <div class="tl-dot
+                {% if is_priority %}tl-dot--priority
+                {% elif item.kind == 'signal' %}tl-dot--signal
+                {% elif is_pdf %}tl-dot--pdf
+                {% else %}tl-dot--artifact{% endif %}">
+              </div>
+              <div class="tl-content">
+                <div class="tl-ts">
+                  {{ item.effective_ts[:16] if item.effective_ts else '—' }}
+                </div>
+                <div class="tl-title">{{ item.title or 'Untitled' }}</div>
+                <div class="tl-meta">
+                  {% if item.kind == 'signal' %}
+                    <span class="tl-badge tl-badge--signal">Signal</span>
+                    {% if item.stream %}
+                      <span class="tl-badge tl-badge--source">{{ item.stream }}</span>
+                    {% endif %}
+                    {% if is_priority %}
+                      <span class="tl-badge tl-badge--priority">⚑ Priority</span>
+                    {% endif %}
+                    {% if item.relevance_score %}
+                      <span class="tl-badge tl-badge--source">rel {{ '%.1f'|format(item.relevance_score) }}</span>
+                    {% endif %}
+                    {# ── Forensic Provenance: signal passed bleach sanitizer #}
+                    {{ sanitized_badge(compact=True) }}
+                  {% else %}
+                    <span class="tl-badge tl-badge--artifact">
+                      {{ item.artifact_type or 'artifact' }}
+                    </span>
+                    {% if item.source %}
+                      <span class="tl-badge tl-badge--source">{{ item.source }}</span>
+                    {% endif %}
+                    {% if is_pdf %}
+                      <button class="tl-pdf-btn"
+                              onclick="openPdf('{{ item.media_url }}', '{{ (item.title or 'Document') | replace("'", "\\'") }}')"
+                              title="Read PDF in browser">
+                        📄 View PDF
+                      </button>
+                      {# ── Forensic Provenance: PDF passed detonator air-lock #}
+                      {{ detonation_badge(compact=True) }}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                {% if item.body %}
+                  <div class="tl-body">{{ item.body[:200] }}</div>
+                {% endif %}
+                {% if item.pin_note %}
+                  <div style="margin-top:var(--sp-1);font-family:var(--font-mono);font-size:0.58rem;color:var(--accent-muted);">
+                    note: {{ item.pin_note }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="overlap-empty">
+            No signals or artifacts<br>pinned to this case yet.<br><br>
+            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+               style="color:var(--accent);text-decoration:none;">
+              Pin evidence from the Board →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ════════════════════════════════════════════════════════════
+       Column 2: Actor Roster
+    ═══════════════════════════════════════════════════════════════ #}
+    <div class="wb-col">
+      <div class="wb-col__header">
+        <span class="wb-col__icon">◉</span>
+        <span class="wb-col__title">Actor Roster</span>
+        <span class="wb-col__count">{{ roster | length }}</span>
+      </div>
+      <div class="wb-col__body">
+        {% if roster %}
+          {% for actor in roster %}
+            {% set desc = actor.description or '' %}
+            {% set is_high_risk = 'HIGH_RISK' in desc %}
+            <div class="roster-item">
+              <div class="roster-item__header">
+                <div class="roster-item__name">
+                  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}">
+                    {{ actor.name }}
+                  </a>
+                </div>
+                {% if is_high_risk %}
+                  <span class="risk-badge risk-badge--HIGH_RISK">High Risk</span>
+                {% else %}
+                  <span class="risk-badge risk-badge--{{ actor.type or 'unknown' }}">
+                    {{ actor.type or '?' }}
+                  </span>
+                {% endif %}
+              </div>
+              <div class="roster-item__inf">
+                <div class="inf-bar-track">
+                  <div class="inf-bar-fill"
+                       style="width:{{ [actor.influence_score * 100, 100] | min | int }}%">
+                  </div>
+                </div>
+                <div class="inf-val">{{ '%.3f'|format(actor.influence_score) }}</div>
+              </div>
+              <div class="roster-item__rels">
+                {% if actor.rel_count > 0 %}
+                  {{ actor.rel_count }} named relationship{{ 's' if actor.rel_count != 1 }}
+                {% else %}
+                  no named relationships
+                {% endif %}
+                {% if actor.community_id is not none %}
+                  · community #{{ actor.community_id }}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="overlap-empty">
+            No actors pinned to this case.<br><br>
+            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+               style="color:var(--accent);text-decoration:none;">
+              Add actors from the Board →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ════════════════════════════════════════════════════════════
+       Column 3: Evidence Graph / Cross-Case Overlap (tab toggle)
+    ═══════════════════════════════════════════════════════════════ #}
+    <div class="wb-col" style="border-right:none;">
+      <div class="wb-col3-tabs">
+        <button class="wb-c3tab active" id="tab-graph"   onclick="switchC3('graph')">⬡ Evidence Graph</button>
+        <button class="wb-c3tab"        id="tab-overlap" onclick="switchC3('overlap')">⟷ Overlap</button>
+      </div>
+
+      {# ── Evidence Graph panel ──────────────────────────────── #}
+      <div id="pane-graph" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div id="wb-eg-wrap">
+          <div id="wb-cy"></div>
+          <div class="eg-legend">
+            <div class="eg-legend-item"><div class="eg-dot" style="background:#f7768e;"></div>In case</div>
+            <div class="eg-legend-item"><div class="eg-dot" style="background:#4a5568;border:1px solid #718096;"></div>Bridging</div>
+            <div class="eg-legend-item"><div class="eg-dot" style="background:rgba(200,148,58,0.6);width:24px;border-radius:0;height:2px;margin-top:3px;"></div>Named rel</div>
+            <div class="eg-legend-item"><div class="eg-dot" style="background:#334155;width:24px;border-radius:0;height:1px;margin-top:3px;"></div>Co-occur</div>
+          </div>
+        </div>
+        <div id="eg-tooltip" class="eg-tooltip"></div>
+      </div>
+
+      {# ── Cross-Case Overlap panel ──────────────────────────── #}
+      <div id="pane-overlap" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="wb-col__body">
+        {% if overlap %}
+          <div style="margin-bottom:var(--sp-4);padding:var(--sp-3);background:rgba(247,118,142,0.07);border:1px solid rgba(247,118,142,0.18);border-radius:var(--r-sm);">
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:#f7768e;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:var(--sp-1);">
+              ⚑ Serial Offenders Detected
+            </div>
+            <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);line-height:1.6;">
+              {{ overlap | length }} actor{{ 's' if overlap|length != 1 }} in this case also
+              appear in other active investigations.
+            </div>
+          </div>
+          {% for actor in overlap %}
+            <div class="overlap-item">
+              <div class="overlap-item__header">
+                <div class="overlap-item__name">
+                  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}"
+                     style="color:inherit;text-decoration:none;">
+                    {{ actor.name }}
+                  </a>
+                </div>
+                <span class="overlap-count-badge">
+                  {{ actor.overlap_count }} case{{ 's' if actor.overlap_count != 1 }}
+                </span>
+              </div>
+              {% if actor.is_high_risk %}
+                <div style="margin-bottom:var(--sp-2);">
+                  <span class="risk-badge risk-badge--HIGH_RISK">High Risk</span>
+                </div>
+              {% endif %}
+              <div style="margin-bottom:var(--sp-1);font-family:var(--font-mono);font-size:0.58rem;color:var(--text-ghost);">
+                inf {{ '%.3f'|format(actor.influence_score) }} · {{ actor.type or '?' }}
+              </div>
+              <div class="overlap-cases">
+                {% for c in actor.other_cases %}
+                  <a href="{{ url_for('case_workbench', case_id=c.case_id) }}"
+                     class="overlap-case-link"
+                     title="Open workbench for this case">
+                    #{{ c.case_id }} {{ c.name | truncate(36) }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="overlap-empty">
+            No cross-case actors<br>detected for this investigation.<br><br>
+            <span style="color:var(--text-ghost);">
+              Actors pinned to this case will be<br>
+              automatically cross-referenced<br>
+              against all active cases.
+            </span>
+          </div>
+        {% endif %}
+      </div>
+      </div>{# /pane-overlap #}
+    </div>{# /wb-col #}
+
+  </div>{# /wb-body #}
+</div>{# /wb-root #}
+
+{# ════════════════════════════════════════════════════════════════
+   PDF VIEWER MODAL (PDF.js)
+════════════════════════════════════════════════════════════════ #}
+<div id="pdf-modal" role="dialog" aria-modal="true" aria-label="PDF Viewer">
+  <div id="pdf-shell">
+    <div id="pdf-toolbar">
+      <span id="pdf-title">—</span>
+      <button class="pdf-nav-btn" id="pdf-prev" disabled>◀ Prev</button>
+      <span id="pdf-page-info">— / —</span>
+      <button class="pdf-nav-btn" id="pdf-next" disabled>Next ▶</button>
+      <button class="pdf-close-btn" id="pdf-close">✕ Close</button>
+    </div>
+    <div id="pdf-canvas-wrap">
+      <div id="pdf-loading">Loading document…</div>
+      <canvas id="pdf-canvas" style="display:none;"></canvas>
+      <div id="pdf-error" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Cytoscape.js CDN — evidence graph #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"
+        crossorigin="anonymous"></script>
+
+{# PDF.js CDN #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+        crossorigin="anonymous"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── PDF.js worker ─────────────────────────────────────────────────────────
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let pdfDoc      = null;
+  let currentPage = 1;
+  let totalPages  = 0;
+  let renderTask  = null;
+
+  const modal    = document.getElementById('pdf-modal');
+  const canvas   = document.getElementById('pdf-canvas');
+  const ctx      = canvas.getContext('2d');
+  const loading  = document.getElementById('pdf-loading');
+  const errDiv   = document.getElementById('pdf-error');
+  const titleEl  = document.getElementById('pdf-title');
+  const pageInfo = document.getElementById('pdf-page-info');
+  const prevBtn  = document.getElementById('pdf-prev');
+  const nextBtn  = document.getElementById('pdf-next');
+
+  // ── Open PDF ──────────────────────────────────────────────────────────────
+  window.openPdf = function (url, title) {
+    if (typeof pdfjsLib === 'undefined') {
+      alert('PDF.js failed to load. Check your network connection.');
+      return;
+    }
+    titleEl.textContent = title || url.split('/').pop();
+    modal.classList.add('pdf-modal--open');
+    loading.style.display = 'flex';
+    canvas.style.display  = 'none';
+    errDiv.style.display  = 'none';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    pageInfo.textContent = '— / —';
+    pdfDoc = null;
+    currentPage = 1;
+
+    pdfjsLib.getDocument(url).promise
+      .then(function (pdf) {
+        pdfDoc     = pdf;
+        totalPages = pdf.numPages;
+        loading.style.display = 'none';
+        canvas.style.display  = 'block';
+        renderPage(1);
+      })
+      .catch(function (err) {
+        loading.style.display = 'none';
+        errDiv.style.display  = 'block';
+        errDiv.textContent    = 'Failed to load PDF: ' + (err.message || String(err));
+      });
+  };
+
+  // ── Render page ───────────────────────────────────────────────────────────
+  function renderPage(num) {
+    if (!pdfDoc) return;
+    currentPage = num;
+    pageInfo.textContent = `${num} / ${totalPages}`;
+    prevBtn.disabled = (num <= 1);
+    nextBtn.disabled = (num >= totalPages);
+
+    if (renderTask) {
+      renderTask.cancel();
+    }
+
+    pdfDoc.getPage(num).then(function (page) {
+      const viewport = page.getViewport({ scale: getScale(page) });
+      canvas.width  = viewport.width;
+      canvas.height = viewport.height;
+
+      renderTask = page.render({ canvasContext: ctx, viewport });
+      return renderTask.promise;
+    }).catch(function (err) {
+      if (err && err.name === 'RenderingCancelledException') return;
+      errDiv.style.display = 'block';
+      errDiv.textContent   = 'Render error: ' + String(err);
+    });
+  }
+
+  // ── Compute scale to fit modal width ──────────────────────────────────────
+  function getScale(page) {
+    const wrapW = document.getElementById('pdf-canvas-wrap').clientWidth - 32;
+    const vp    = page.getViewport({ scale: 1 });
+    return Math.min(2.0, wrapW / vp.width);
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  prevBtn.addEventListener('click', function () {
+    if (currentPage > 1) renderPage(currentPage - 1);
+  });
+  nextBtn.addEventListener('click', function () {
+    if (currentPage < totalPages) renderPage(currentPage + 1);
+  });
+
+  // ── Close ─────────────────────────────────────────────────────────────────
+  function closePdf() {
+    modal.classList.remove('pdf-modal--open');
+    if (renderTask) { renderTask.cancel(); renderTask = null; }
+    pdfDoc = null;
+  }
+
+  document.getElementById('pdf-close').addEventListener('click', closePdf);
+
+  // Click outside shell closes
+  modal.addEventListener('click', function (e) {
+    if (e.target === modal) closePdf();
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function (e) {
+    if (!modal.classList.contains('pdf-modal--open')) return;
+    if (e.key === 'Escape')     { closePdf(); }
+    if (e.key === 'ArrowRight') { if (currentPage < totalPages) renderPage(currentPage + 1); }
+    if (e.key === 'ArrowLeft')  { if (currentPage > 1)          renderPage(currentPage - 1); }
+  });
+
+})();
+</script>
+
+{# ── Evidence Graph — Cytoscape.js ──────────────────────────────────────── #}
+<script>
+(function () {
+  'use strict';
+
+  const CASE_ID = {{ case.case_id }};
+
+  // ── Relation type colours ──────────────────────────────────────────────────
+  const REL_COLOUR = {
+    'INVESTIGATES': '#f7768e',
+    'CONTRACTED':   '#e0803a',
+    'ACCUSED_OF':   '#bb9af7',
+    'MEMBER_OF':    '#7dcfff',
+    'co_occurrence':'#2d3f55',
+  };
+
+  // ── Actor type colours ─────────────────────────────────────────────────────
+  const TYPE_COLOUR = {
+    'person':      '#e0803a',
+    'institution': '#3a6ed4',
+    'government':  '#40a060',
+    'media':       '#40b0c0',
+    'movement':    '#c040c0',
+    'unknown':     '#4a5568',
+  };
+
+  let cy = null;
+  let graphLoaded = false;
+
+  // ── Tab switcher ──────────────────────────────────────────────────────────
+  window.switchC3 = function (tab) {
+    document.getElementById('tab-graph').classList.toggle('active',   tab === 'graph');
+    document.getElementById('tab-overlap').classList.toggle('active', tab === 'overlap');
+    document.getElementById('pane-graph').style.display   = tab === 'graph'   ? 'flex' : 'none';
+    document.getElementById('pane-overlap').style.display = tab === 'overlap' ? 'flex' : 'none';
+
+    if (tab === 'graph' && !graphLoaded) {
+      loadGraph();
+    } else if (tab === 'graph' && cy) {
+      cy.resize();
+      cy.fit(undefined, 20);
+    }
+  };
+
+  // ── Load graph data ───────────────────────────────────────────────────────
+  function loadGraph() {
+    const wrap = document.getElementById('wb-cy');
+    wrap.innerHTML = '<div class="eg-empty">Loading evidence graph…</div>';
+
+    // forge.fetch — hardened wrapper with DetonationError handling
+    forge.fetch('/api/cases/' + CASE_ID + '/evidence-graph')
+      .then(function (data) {
+        graphLoaded = true;
+        if (!data.nodes || data.nodes.length === 0) {
+          wrap.innerHTML = '<div class="eg-empty">No named relationships yet.<br><br>' +
+            '<span style="color:var(--text-ghost);">Pin actors to this case and run<br>' +
+            'triple_extractor to build edges.</span></div>';
+          return;
+        }
+        renderGraph(data);
+      })
+      .catch(function (err) {
+        wrap.innerHTML = '<div class="eg-empty" style="color:#f7768e;">Graph load failed:<br>' +
+          err.message + '</div>';
+      });
+  }
+
+  // ── Render with Cytoscape ─────────────────────────────────────────────────
+  function renderGraph(data) {
+    const wrap = document.getElementById('wb-cy');
+    wrap.innerHTML = '';   // clear placeholder
+
+    // Filter out co_occurrence edges if named edges exist (cleaner view)
+    const namedEdges = data.edges.filter(function (e) {
+      return e.data.relation !== 'co_occurrence';
+    });
+    const edges = namedEdges.length > 0 ? namedEdges : data.edges;
+
+    cy = cytoscape({
+      container: wrap,
+      elements:  { nodes: data.nodes, edges: edges },
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'label':            'data(label)',
+            'font-family':      'monospace',
+            'font-size':        '9px',
+            'color':            '#c0caf5',
+            'text-valign':      'bottom',
+            'text-margin-y':    '4px',
+            'text-wrap':        'ellipsis',
+            'text-max-width':   '80px',
+            'width':            function (ele) {
+              return 14 + Math.min(ele.data('influence') * 200, 28);
+            },
+            'height':           function (ele) {
+              return 14 + Math.min(ele.data('influence') * 200, 28);
+            },
+            'background-color': function (ele) {
+              return ele.data('in_case')
+                ? (TYPE_COLOUR[ele.data('type')] || '#4a5568')
+                : '#1e2433';
+            },
+            'border-width':     function (ele) { return ele.data('in_case') ? 2 : 1; },
+            'border-color':     function (ele) {
+              return ele.data('in_case')
+                ? (TYPE_COLOUR[ele.data('type')] || '#4a5568')
+                : '#4a5568';
+            },
+            'border-opacity':   0.9,
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width':            function (ele) {
+              return ele.data('relation') === 'co_occurrence' ? 1 : 2;
+            },
+            'line-color':       function (ele) {
+              return REL_COLOUR[ele.data('relation')] || '#2d3f55';
+            },
+            'line-opacity':     function (ele) {
+              return ele.data('bridging') ? 0.35 : 0.8;
+            },
+            'target-arrow-shape': function (ele) {
+              return ele.data('relation') === 'co_occurrence' ? 'none' : 'triangle';
+            },
+            'target-arrow-color': function (ele) {
+              return REL_COLOUR[ele.data('relation')] || '#2d3f55';
+            },
+            'curve-style':      'bezier',
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            'border-color': 'var(--accent)',
+            'border-width': 3,
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style: { 'line-opacity': 1, 'width': 3 }
+        },
+      ],
+      layout: {
+        name:          'cose',
+        animate:       false,
+        randomize:     true,
+        nodeRepulsion: function () { return 8000; },
+        idealEdgeLength: function () { return 60; },
+        gravity:       0.4,
+        padding:       20,
+      },
+      userZoomingEnabled:    true,
+      userPanningEnabled:    true,
+      boxSelectionEnabled:   false,
+      autoungrabifyNodes:    false,
+    });
+
+    // ── Tooltip on node hover ──────────────────────────────────────────────
+    const tooltip = document.getElementById('eg-tooltip');
+    cy.on('mouseover', 'node', function (e) {
+      const d = e.target.data();
+      tooltip.innerHTML =
+        '<strong>' + d.label + '</strong><br>' +
+        'Type: ' + (d.type || '?') + '<br>' +
+        'Influence: ' + d.influence.toFixed(3) + '<br>' +
+        (d.in_case ? '<span style="color:#4ade80;">In case</span>' :
+                     '<span style="color:#718096;">Bridging actor</span>');
+      tooltip.style.display = 'block';
+    });
+    cy.on('mouseout', 'node', function () {
+      tooltip.style.display = 'none';
+    });
+    cy.on('mousemove', function (e) {
+      if (tooltip.style.display === 'none') return;
+      const pos = e.originalEvent;
+      tooltip.style.left = (pos.offsetX + 12) + 'px';
+      tooltip.style.top  = (pos.offsetY + 12) + 'px';
+    });
+
+    // ── Tooltip on edge hover ──────────────────────────────────────────────
+    cy.on('mouseover', 'edge', function (e) {
+      const d = e.target.data();
+      tooltip.innerHTML =
+        '<strong>' + d.relation + '</strong><br>' +
+        'Conf: ' + d.confidence + '<br>' +
+        (d.artifact_title
+          ? 'Source: ' + d.artifact_title.substring(0, 40)
+          : '<span style="color:#718096;">no artifact</span>');
+      tooltip.style.display = 'block';
+    });
+    cy.on('mouseout', 'edge', function () {
+      tooltip.style.display = 'none';
+    });
+
+    // ── Click node → open actor detail ────────────────────────────────────
+    cy.on('tap', 'node', function (e) {
+      const aid = e.target.data('id');
+      window.open('/actors/' + aid, '_blank');
+    });
+  }
+
+  // ── Auto-load graph on page ready (graph tab is default) ─────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    loadGraph();
+  });
+
+})();
+</script>
+{% endblock %}

@@ -1,7 +1,34 @@
-# Ignore the database and local media
+# Database & WAL files
 database.db
+*.db-shm
+*.db-wal
+
+# Media uploads
 media/
+
+# Python bytecode
 __pycache__/
 *.pyc
-.env*.db-shm 
-*.db-wal 
+*.pyo
+
+# Environment / secrets — NEVER commit
+.env
+.env.*
+*.env
+
+# Claude session data
+.claude/
+
+# Logs
+logs/
+
+# Temp / scratch files
+*.bak
+folder_tree.txt
+forge_tree.txt
+tree.txt
+tables.txt
+
+# OS artefacts
+.DS_Store
+Thumbs.db

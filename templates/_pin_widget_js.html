@@ -79,7 +79,7 @@
       row.dataset.caseId = c.case_id;
       row.innerHTML = `
         <span class="pin-widget__case-icon">${pinned ? '⊠' : '⊟'}</span>
-        <span class="pin-widget__case-name">${escHtml(c.title)}</span>
+        <span class="pin-widget__case-name">${escHtml(c.name)}</span>
         <span class="case-status-badge case-status-badge--${c.status}">${c.status}</span>
       `;
       row.addEventListener('click', function () {
@@ -93,7 +93,7 @@
     // Interim state while full list loads
     if (pinnedIn.length > 0) {
       casesList.innerHTML = pinnedIn.map(c =>
-        `<div class="pin-widget__loading mono" style="color:var(--accent);">⊠ ${escHtml(c.title)}</div>`
+        `<div class="pin-widget__loading mono" style="color:var(--accent);">⊠ ${escHtml(c.name)}</div>`
       ).join('');
     }
   }

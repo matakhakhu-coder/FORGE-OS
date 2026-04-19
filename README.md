@@ -62,13 +62,17 @@ cd FORGE-OS
 pip install -r requirements.txt
 
 # 3. Set up your environment variables
-cp .env.example .env
+cp env.example .env
 # Edit .env and fill in your secret key and admin password
 
-# 4. Initialise the database
+# 4. Initialise the database schema
 python app.py --init-db
+python migrations/fix_schema.py   # apply column patches + relationship tables
 
-# 5. Start the application
+# 5. Seed the pipeline (first run)
+python tools/mega_ingest.py       # collect + synthesise (runs all 4 phases)
+
+# 6. Start the application
 python app.py
 ```
 
@@ -108,6 +112,34 @@ Artifact ──────► Event ──────► Actor
 
 ---
 
+## Directory Structure
+
+```
+FORGE/
+├── app.py                  ← Flask entry point
+├── requirements.txt        ← Python dependencies
+├── .env                    ← Runtime secrets (not committed)
+├── database.db             ← SQLite database (~650MB, WAL mode)
+│
+├── core/                   ← Conclave synthesis engine, FMS, API routes
+├── forage/                 ← Collectors, engines, processors
+├── forge_modules/          ← Analytical capability modules
+├── forge_security/         ← Input sanitisation layer
+│
+├── tools/                  ← Standalone operator scripts (mega_ingest, nexus_bridge…)
+├── migrations/             ← Schema migrations & DB repair (fix_schema, repair_db…)
+├── maintenance/            ← Housekeeping (cleanup_actors, system_decontamination…)
+├── bin/                    ← Windows batch workers (decay_worker.bat, wiki_worker.bat)
+│
+├── docs/                   ← Supplementary docs (ROADMAP, pipeline contracts, debug)
+├── .archive/               ← Superseded versioned files
+├── tests/                  ← Unit & integration tests
+├── wiki/                   ← Auto-generated intelligence knowledge base
+└── static/ templates/ surface/ logs/ media/
+```
+
+---
+
 ## Forge Modules
 
 FORGE uses a modular architecture for analytical capabilities. Active modules:
@@ -125,7 +157,7 @@ Modules are auto-attached at startup via the FMS (Forge Module System) and can b
 
 ## Current Development Phase
 
-See [ROADMAP.md](./ROADMAP.md) for the active phase and task checklist.
+See [ROADMAP.md](./docs/ROADMAP.md) for the active phase and task checklist.
 
 Currently at **Phase 41** with **CT-1: Contextual Tunneling** in progress — gravity-based feed and signal filtering anchored to an active case context, so analysts see what is relevant rather than the full firehose.
 

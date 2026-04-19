@@ -94,6 +94,55 @@ def warn(msg: str) -> None: print(f"[{_ts()}] [graph_engine] WARN  {msg}",
                                    file=sys.stderr, flush=True)
 
 
+def _pagerank(G, weight: str = "weight", alpha: float = 0.85,
+              max_iter: int = 100, tol: float = 1.0e-4) -> dict:
+    """
+    Pure-Python power-iteration PageRank.
+    Drop-in replacement for nx.pagerank() — avoids BLAS/NumPy hangs seen in
+    NetworkX 3.6 + NumPy 2.4 on Windows.
+    Works on both nx.Graph and nx.DiGraph.
+    """
+    nodes = list(G.nodes())
+    n = len(nodes)
+    if n == 0:
+        return {}
+    idx   = {v: i for i, v in enumerate(nodes)}
+    # Build row-normalised adjacency list (out-edges for directed, all edges for undirected)
+    out_w: list = [[] for _ in range(n)]  # [(target_idx, weight), ...]
+    out_sum: list = [0.0] * n
+    is_directed = G.is_directed()
+    for u, v, d in G.edges(data=True):
+        w = float(d.get(weight, 1.0))
+        iu, iv = idx[u], idx[v]
+        out_w[iu].append((iv, w))
+        out_sum[iu] += w
+        if not is_directed:
+            out_w[iv].append((iu, w))
+            out_sum[iv] += w
+    # Initialise uniform distribution
+    rank = [1.0 / n] * n
+    for _ in range(max_iter):
+        new_rank = [0.0] * n
+        dangling_sum = 0.0
+        for i in range(n):
+            if out_sum[i] == 0.0:          # dangling node
+                dangling_sum += rank[i]
+            else:
+                for j, w in out_w[i]:
+                    new_rank[j] += alpha * rank[i] * (w / out_sum[i])
+        # Distribute dangling mass and (1-alpha) teleportation uniformly
+        base = (alpha * dangling_sum + (1.0 - alpha)) / n
+        for i in range(n):
+            new_rank[i] += base
+        # Check convergence
+        err = sum(abs(new_rank[i] - rank[i]) for i in range(n))
+        rank = new_rank
+        if err < n * tol:
+            break
+    total = sum(rank)
+    return {nodes[i]: rank[i] / total for i in range(n)}
+
+
 def _haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     R    = 6_371.0
     phi1 = math.radians(lat1)
@@ -151,11 +200,16 @@ class GraphEngine:
         if len(actors) < 2:
             return actors, []
         raw = conn.execute("""
+            WITH all_actor_events AS (
+                SELECT actor_id, event_id FROM actor_events
+                UNION
+                SELECT actor_id, event_id FROM event_actors
+            )
             SELECT ae1.actor_id AS a,
                    ae2.actor_id AS b,
                    COUNT(DISTINCT ae1.event_id) AS shared
-            FROM   actor_events ae1
-            JOIN   actor_events ae2
+            FROM   all_actor_events ae1
+            JOIN   all_actor_events ae2
                 ON ae2.event_id  = ae1.event_id
                AND ae2.actor_id > ae1.actor_id
             GROUP  BY ae1.actor_id, ae2.actor_id
@@ -167,7 +221,8 @@ class GraphEngine:
         try:
             return conn.execute(
                 "SELECT subject_actor_id AS a, object_actor_id AS b, "
-                "confidence AS weight FROM entity_relationships"
+                "confidence AS weight FROM entity_relationships "
+                "WHERE relation_type != 'co_occurrence'"
             ).fetchall()
         except Exception:
             return []
@@ -187,7 +242,7 @@ class GraphEngine:
         if G.number_of_edges() == 0:
             return {}
         try:
-            return nx.pagerank(G, weight="weight", alpha=0.85, max_iter=200)
+            return _pagerank(G, weight="weight", alpha=0.85, max_iter=200)
         except Exception as exc:
             warn(f"Relationship PageRank failed: {exc}")
             return {}
@@ -212,7 +267,8 @@ class GraphEngine:
         try:
             rows = conn.execute(
                 "SELECT ae.actor_id, e.latitude, e.longitude "
-                "FROM actor_events ae "
+                "FROM (SELECT actor_id, event_id FROM actor_events "
+                "      UNION SELECT actor_id, event_id FROM event_actors) ae "
                 "JOIN events e ON e.event_id = ae.event_id "
                 "WHERE e.latitude IS NOT NULL AND e.longitude IS NOT NULL"
             ).fetchall()
@@ -268,7 +324,7 @@ class GraphEngine:
         log("Computing betweenness centrality...")
         betweenness = nx.betweenness_centrality(G, weight="weight", normalized=True)
         log("Computing PageRank (co-occurrence graph)...")
-        pagerank = nx.pagerank(G, weight="weight", alpha=0.85, max_iter=200)
+        pagerank = _pagerank(G, weight="weight", alpha=0.85, max_iter=100)
         log("Computing eigenvector centrality...")
         try:
             eigenvector = nx.eigenvector_centrality_numpy(G, weight="weight")
@@ -322,32 +378,42 @@ class GraphEngine:
                        influence: dict, dry_run: bool = False) -> int:
         now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         written = 0
+        skipped = 0
         for actor_id, m in core_metrics.items():
             if dry_run:
                 continue
-            conn.execute("""
-                INSERT INTO actor_network_metrics
-                    (actor_id, betweenness, eigenvector, pagerank,
-                     community_id, node_count, edge_count,
-                     influence_score, computed_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(actor_id) DO UPDATE SET
-                    betweenness     = excluded.betweenness,
-                    eigenvector     = excluded.eigenvector,
-                    pagerank        = excluded.pagerank,
-                    community_id    = excluded.community_id,
-                    node_count      = excluded.node_count,
-                    edge_count      = excluded.edge_count,
-                    influence_score = excluded.influence_score,
-                    computed_at     = excluded.computed_at
-            """, (
-                actor_id, m["betweenness"], m["eigenvector"], m["pagerank"],
-                m["community_id"], m["node_count"], m["edge_count"],
-                influence.get(actor_id, 0.0), now,
-            ))
-            written += 1
+            try:
+                conn.execute("""
+                    INSERT INTO actor_network_metrics
+                        (actor_id, betweenness, eigenvector, pagerank,
+                         community_id, node_count, edge_count,
+                         influence_score, computed_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(actor_id) DO UPDATE SET
+                        betweenness     = excluded.betweenness,
+                        eigenvector     = excluded.eigenvector,
+                        pagerank        = excluded.pagerank,
+                        community_id    = excluded.community_id,
+                        node_count      = excluded.node_count,
+                        edge_count      = excluded.edge_count,
+                        influence_score = excluded.influence_score,
+                        computed_at     = excluded.computed_at
+                """, (
+                    actor_id, m["betweenness"], m["eigenvector"], m["pagerank"],
+                    m["community_id"], m["node_count"], m["edge_count"],
+                    influence.get(actor_id, 0.0), now,
+                ))
+                written += 1
+            except Exception:
+                # Orphaned actor_id (deleted actor still referenced in event_actors)
+                skipped += 1
         if not dry_run:
             conn.commit()
+            if skipped:
+                import logging as _log
+                _log.getLogger("forge.graph_engine").debug(
+                    f"[graph_engine] _write_metrics: skipped {skipped} orphaned actor_ids"
+                )
         return written
 
     def run(self, dry_run: bool = False) -> dict:
@@ -450,7 +516,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     engine = GraphEngine(db_path=_resolve_db(str(args.db) if args.db else None))
-    if args.report:
+    if args.report and not args.recalculate:
         engine.report()
         sys.exit(0)
     result = engine.run(dry_run=args.dry_run)

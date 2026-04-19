@@ -1,466 +1,562 @@
+#!/usr/bin/env python3
 """
-FORAGE — GDELT 2.0 Signal Collector (Async/RAM-only)
-====================================================
-Phase 15.5 refactor to high-concurrency with aiohttp/BytesIO/zipfile/pandas.
+FORGE — GDELT DOC API Collector  (forage/collectors/gdelt_collector.py)
+═══════════════════════════════════════════════════════════════════════
 
-Requirements implemented:
-- Zero-disk temp (zip -> BytesIO -> pandas)
-- SA filtering: country code 'SF' in columns 44 and 53
-- DB integration uses open_db + loop.run_in_executor (batch commits)
-- Logging includes _log_run_safe/log_run
-- BASE_DIR from core/db/connection.py
-- Class-based: GDELTForgeCollector
-- Methods: fetch_latest_url, download_and_process, integrate_to_forge
+REPLACEMENT for the unreliable GDELT event stream collector.
+
+This version uses the GDELT Document API (DOC API) instead of the
+GDELT Event CSV stream. The DOC API returns structured JSON of news
+articles matching a keyword query — far less noisy than the raw event
+stream, and allows precise South Africa targeting.
+
+Key differences from the old gdelt_collector.py
+────────────────────────────────────────────────
+  OLD: Polling raw GDELT event CSV → high noise, broad geo, no query control
+  NEW: GDELT DOC API JSON query   → keyword-targeted, SA-focused, article-level
+
+GDELT DOC API reference:
+  https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/
+  https://api.gdeltproject.org/api/v2/doc/doc
+
+No API key required. Rate limit: ~1 request/second.
+
+Usage
+─────
+  python forage/collectors/gdelt_collector.py
+  python forage/collectors/gdelt_collector.py --dry-run
+  python forage/collectors/gdelt_collector.py --query "Hawks arrest" --hours 6
 """
+
+from __future__ import annotations
 
 import argparse
 import asyncio
 import hashlib
-import io
 import json
 import logging
+import os
+import re
 import sqlite3
 import sys
-import zipfile
-from datetime import datetime, timezone
+import random
+import time
+import uuid
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlencode, quote_plus
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError, URLError
 
-# Ensure repo root in path for module import
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+log = logging.getLogger("forge.collectors.gdelt")
 
-import aiohttp
-import pandas as pd
+# ── Configuration ─────────────────────────────────────────────────────────────
 
-from forage.processors.artifact_processor import ProcessorManager
-from forage.processors.signal_interpreter import SignalInterpreter
-from forage.processors.entity_resolver import EntityResolver
-from forage.processors.event_constructor import EventConstructor
-from forage.engines.gravity_engine import score_signal
-from forage.engines.case_engine import evaluate_case
-from forage.engines.feedback_engine import apply_feedback
+GDELT_DOC_API = "https://api.gdeltproject.org/api/v2/doc/doc"
 
-# Pipeline logger helper (keeps existing "safe" behavior)
-def _log_run_safe(*args, **kwargs):
-    import importlib.util as _ilu
-    from pathlib import Path as _P
+# Targeted queries for South Africa OSINT
+# Format: (query_string, stream, base_relevance)
+# The DOC API supports full boolean: AND, OR, NOT, site: filters
+SA_QUERIES: list[tuple[str, str, float]] = [
+    # Crime / Law enforcement
+    (
+        '"South Africa" (Hawks OR NPA OR SAPS OR arrest OR conviction OR sentenced) '
+        'NOT sport NOT cricket NOT rugby',
+        "CRIME_INTEL", 1.4,
+    ),
+    (
+        '"South Africa" (corruption OR "state capture" OR tender OR fraud) '
+        'NOT sport',
+        "CRIME_INTEL", 1.3,
+    ),
+    # Infrastructure / Services
+    (
+        '"South Africa" (Eskom OR loadshedding OR "load shedding" OR "power outage" '
+        'OR "water outage" OR municipality)',
+        "INFRASTRUCTURE", 1.2,
+    ),
+    # Political / Civil unrest
+    (
+        '"South Africa" (protest OR "civil unrest" OR strike OR shutdown OR riots) '
+        'NOT student NOT campus',
+        "GLOBAL", 1.0,
+    ),
+    # High-priority intelligence
+    (
+        '"South Africa" (investigation OR "leaked documents" OR "whistleblower" '
+        'OR intelligence OR surveillance)',
+        "PRIORITY", 1.3,
+    ),
+]
 
-    _logger_path = (
-        _P(__file__).resolve().parent.parent.parent
-        / "forage"
-        / "utils"
-        / "pipeline_logger.py"
-    )
-    if str(_logger_path.parent.parent) not in sys.path:
-        sys.path.insert(0, str(_logger_path.parent.parent))
-    try:
-        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_logger_path))
-        _mod = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        _mod.log_run(*args, **kwargs)
-    except Exception:
-        pass  # telemetry must not break run
+# Number of articles per query (DOC API max: 250)
+MAX_ARTICLES_PER_QUERY = 75
 
-log_run = _log_run_safe
+# Look-back window for articles (GDELT DOC API supports: 15min to 3months)
+DEFAULT_LOOKBACK_HOURS = 24
 
-# Core path logic using shared BASE_DIR
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# Fixed credibility for GDELT DOC (secondary source aggregator)
+SOURCE_CREDIBILITY = 0.60
 
-from core.db.connection import BASE_DIR as CORE_BASE_DIR
-
-DB_PATH = CORE_BASE_DIR / "database.db"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="[GDELT %(levelname)s %(asctime)s] %(message)s",
-    datefmt="%H:%M:%S",
-)
-log = logging.getLogger("gdelt_collector")
-
-GDELT_V2_DATA = "https://data.gdeltproject.org/gdeltv2/"
-GDELT_LASTUPDATE = GDELT_V2_DATA + "lastupdate.txt"
-GDELT_ZIP_TEMPLATE = GDELT_V2_DATA + "gdeltv2-{update_stamp}.export.CSV.zip"
-
-SOURCE_NAME = "gdelt"
-STREAM = "GLOBAL"
-SOURCE_TYPE = "live"
+# Keywords that boost is_priority flag
+PRIORITY_KEYWORDS = {
+    "Hawks", "NPA", "arrest", "raid", "shoot", "killed", "murder",
+    "explosion", "bomb", "attack", "protest", "shutdown", "strike",
+    "collapsed", "Eskom", "blackout", "loadshedding",
+}
 
 
-def open_db(path: Optional[Path] = None) -> sqlite3.Connection:
-    db = Path(path or DB_PATH)
-    if not db.exists():
+# ── Geo-Aware Leaky Bucket throttle ──────────────────────────────────────────
+
+class GeoAwareLeakyBucket:
+    """
+    Synchronous rate-limiter with per-tier parameters.
+
+    SA tier (*.co.za / *.gov.za / *.org.za / *.ac.za / known SA outlets):
+        max 3 req/s — 333 ms min interval + 800–1200 ms random jitter.
+    Global tier:
+        max 5 req/s — 200 ms min interval + 200–500 ms random jitter.
+
+    Rationale: SA government/news sites sit behind Cloudflare-style WAFs
+    that are aggressive on burst traffic; the extra jitter mimics human
+    browsing pacing and avoids the write-lock death spiral on 429s.
+    """
+
+    _SA_TLDS = frozenset([".co.za", ".gov.za", ".org.za", ".ac.za", ".net.za"])
+    _SA_DOMAINS = frozenset([
+        "news24.com", "businesslive.co.za", "businesstech.co.za",
+        "iol.co.za", "dailymaverick.co.za", "groundup.org.za",
+        "sabcnews.com", "ewn.co.za", "timeslive.co.za",
+        "citizen.co.za", "politicsweb.co.za", "702.co.za",
+        "capetalk.co.za", "dailysun.co.za", "sowetanlive.co.za",
+    ])
+
+    # (min_interval_ms, jitter_low_ms, jitter_high_ms)
+    _SA_PARAMS     = (333, 800, 1200)
+    _GLOBAL_PARAMS = (200, 200, 500)
+
+    def __init__(self):
+        self._last_ts: dict[str, float] = {}
+
+    def _tier(self, domain: str) -> tuple[int, int, int]:
+        d = (domain or "").lower()
+        if any(d.endswith(t) for t in self._SA_TLDS):
+            return self._SA_PARAMS
+        if d in self._SA_DOMAINS:
+            return self._SA_PARAMS
+        return self._GLOBAL_PARAMS
+
+    def drain(self, domain: str = "") -> None:
+        """Block until the bucket allows the next request for this domain."""
+        min_ms, jitter_lo, jitter_hi = self._tier(domain)
+        now   = time.monotonic()
+        last  = self._last_ts.get(domain, 0.0)
+        gap   = (now - last) * 1000          # ms elapsed since last request
+        wait  = (min_ms - gap) + random.uniform(jitter_lo, jitter_hi)
+        if wait > 0:
+            time.sleep(wait / 1000)
+        self._last_ts[domain] = time.monotonic()
+
+    async def async_drain(self, domain: str = "") -> None:
+        """Async variant — yields to the event loop during the wait."""
+        min_ms, jitter_lo, jitter_hi = self._tier(domain)
+        now   = time.monotonic()
+        last  = self._last_ts.get(domain, 0.0)
+        gap   = (now - last) * 1000
+        wait  = (min_ms - gap) + random.uniform(jitter_lo, jitter_hi)
+        if wait > 0:
+            await asyncio.sleep(wait / 1000)
+        self._last_ts[domain] = time.monotonic()
+
+
+# ── DB helpers ────────────────────────────────────────────────────────────────
+
+def _resolve_db(override: Optional[str] = None) -> Path:
+    if override:
+        return Path(override).resolve()
+    env = os.environ.get("FORGE_DB")
+    if env:
+        return Path(env).resolve()
+    return Path(__file__).resolve().parents[2] / "database.db"
+
+
+def _open_db(path: Path) -> sqlite3.Connection:
+    if not path.exists():
         raise FileNotFoundError(
-            f"[FORGE ERROR] Database missing at {db}. Run 'python app.py --init-db'"
+            f"Database not found at {path}. Run: python app.py --init-db"
         )
-    conn = sqlite3.connect(str(db), timeout=30, check_same_thread=False)
+    conn = sqlite3.connect(str(path), timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
     return conn
 
 
-class GDELTForgeCollector:
-    def __init__(self, db_path: Optional[Path] = None, verify_ssl: bool = True):
-        self.db_path = Path(db_path) if db_path else DB_PATH
-        self.last_update_url = GDELT_LASTUPDATE
-        self.verify_ssl = verify_ssl  # config: avoid SSL cert errors
+# ── GDELT DOC API client ──────────────────────────────────────────────────────
 
-    async def fetch_latest_url(self) -> Optional[str]:
-        """Non-blocking check of GDELT lastupdate.txt; returns zip URL or None."""
-        log.info("Fetching GDELT lastupdate URL: %s", self.last_update_url)
-        try:
-            connector = aiohttp.TCPConnector(ssl=self.verify_ssl)
-            async with aiohttp.ClientSession(connector=connector) as sess:
-                async with sess.get(self.last_update_url, timeout=20) as resp:
-                    resp.raise_for_status()
-                    raw = (await resp.text()).strip()
-            if not raw:
-                raise ValueError("Empty lastupdate.txt payload")
+class GDELTDocClient:
 
-            # lastupdate.txt format: "<size> <sha1> <url>"
-            # Choose the primary export URL to avoid invalid template mapping.
-            zip_url = None
-            for line in raw.splitlines():
-                parts = line.strip().split()
-                if len(parts) < 3:
-                    continue
-                candidate = parts[2]
-                if candidate.lower().endswith(".export.csv.zip"):
-                    zip_url = candidate
-                    break
-
-            if not zip_url:
-                raise ValueError(f"Could not extract export ZIP URL from lastupdate contents: {raw[:256]}")
-
-            log.info("Latest GDELT zip URL: %s", zip_url)
-            return zip_url
-        except aiohttp.ClientConnectorCertificateError as exc:
-            if self.verify_ssl:
-                log.warning(
-                    "Certificate validation failure: %s; retry with --insecure or install certifi",
-                    exc,
-                )
-                log.warning("Try: pip install certifi")
-            log.error("Error fetching latest URL: %s", exc)
-            return None
-        except Exception as exc:
-            log.error("Error fetching latest URL: %s", exc)
-            return None
-
-    async def download_and_process(self, zip_url: str, max_rows: Optional[int] = None):
+    def fetch_articles(
+        self,
+        query: str,
+        max_records: int = MAX_ARTICLES_PER_QUERY,
+        lookback_hours: int = DEFAULT_LOOKBACK_HOURS,
+    ) -> list[dict]:
         """
-        Download ZIP into memory and parse CSV with pandas.
-        Keep only SA rows where col44 or col53 is 'SF'.
+        Query the GDELT DOC API and return a list of article dicts.
+
+        DOC API parameters used:
+          query        keyword query string
+          mode         ArtList (article metadata list, not full text)
+          maxrecords   1-250
+          timespan     e.g. "24h", "6h"
+          sort         DateDesc
+          format       json
         """
-        log.info("Downloading GDELT ZIP: %s", zip_url)
-        try:
-            connector = aiohttp.TCPConnector(ssl=self.verify_ssl)
-            async with aiohttp.ClientSession(connector=connector) as sess:
-                async with sess.get(zip_url, timeout=120) as resp:
-                    resp.raise_for_status()
-                    raw_bytes = await resp.read()
-        except aiohttp.ClientConnectorCertificateError as exc:
-            if self.verify_ssl:
-                log.warning(
-                    "Certificate validation failure: %s; retry with --insecure or install certifi",
-                    exc,
-                )
-                log.warning("Try: pip install certifi")
-            log.error("Download failure: %s", exc)
-            return pd.DataFrame()
-        except Exception as exc:
-            log.error("Download failure: %s", exc)
-            return pd.DataFrame()
+        timespan = f"{lookback_hours}h"
 
-        try:
-            buf = io.BytesIO(raw_bytes)
-            with zipfile.ZipFile(buf, "r") as zf:
-                names = [n for n in zf.namelist() if n.lower().endswith(".csv")]
-                if not names:
-                    log.error("No CSV file inside GDELT ZIP")
-                    return pd.DataFrame()
-                csv_name = names[0]
-                with zf.open(csv_name) as csv_file:
-                    df = pd.read_csv(
-                        csv_file,
-                        sep="\t",
-                        header=None,
-                        low_memory=False,
-                        dtype=str,
-                        keep_default_na=False,
-                        na_values=[],
-                    )
-        except Exception as exc:
-            log.error("CSV parse failure in-memory: %s", exc)
-            return pd.DataFrame()
-
-        log.info("Loaded %d rows from CSV", len(df))
-        if max_rows:
-            df = df.head(max_rows)
-
-        # filter by SA codes in columns 44 and 53 (0-based)
-        df_sa = df[(df.iloc[:, 44].fillna("").str.upper() == "SF") | (df.iloc[:, 53].fillna("").str.upper() == "SF")]
-        log.info("Filtered South African signals: %d rows", len(df_sa))
-        return df_sa
-
-    async def integrate_to_forge(self, sa_df: pd.DataFrame, batch_size: int = 512):
-        """Batch-insert OR IGNORE into signals table using run_in_executor to avoid SQLite blocking."""
-        if sa_df.empty:
-            log.warning("No SA records to integrate")
-            return {"inserted": 0, "skipped": 0, "errors": 0}
-
-        EVENT_CODE_LABELS = {
-            141: "PROTEST",
-            143: "STRIKE",
-            145: "VIOLENT PROTEST",
-            180: "ASSAULT",
-            190: "COUP",
-            193: "FIREBOMBING",
-            200: "MASS VIOLENCE",
+        params = {
+            "query":      query,
+            "mode":       "ArtList",
+            "maxrecords": str(max_records),
+            "timespan":   timespan,
+            "sort":       "DateDesc",
+            "format":     "json",
         }
 
-        def _execute_batch():
-            stats = {"inserted": 0, "skipped": 0, "errors": 0}
-            conn = open_db(self.db_path)
+        url = f"{GDELT_DOC_API}?{urlencode(params)}"
+        log.debug(f"GDELT DOC fetch: {url[:120]}...")
+
+        req = Request(url, headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            )
+        })
+        try:
+            with urlopen(req, timeout=20) as resp:
+                raw = resp.read()
+                data = json.loads(raw)
+                return data.get("articles", [])
+        except HTTPError as e:
+            raise RuntimeError(f"GDELT HTTP {e.code}: {e.reason}") from e
+        except URLError as e:
+            raise RuntimeError(f"GDELT network error: {e.reason}") from e
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"GDELT JSON parse error: {e}") from e
+
+
+# ── Signal builder ────────────────────────────────────────────────────────────
+
+def _is_priority(title: str, snippet: str) -> int:
+    combined = (title + " " + snippet).lower()
+    return 1 if any(kw.lower() in combined for kw in PRIORITY_KEYWORDS) else 0
+
+
+def _clean_text(raw: str) -> str:
+    """Strip HTML tags and normalise whitespace."""
+    cleaned = re.sub(r"<[^>]+>", " ", raw or "")
+    return " ".join(cleaned.split())[:500]
+
+
+def _build_signal(article: dict, stream: str, base_relevance: float) -> Optional[dict]:
+    """
+    Map one GDELT DOC API article dict to a FORGE signals row.
+    Returns None if the article lacks the minimum required fields.
+
+    GDELT DOC API article fields:
+      url, title, seendate, socialimage, domain, language,
+      sourcecountry, sentiment (optional)
+    """
+    url     = article.get("url", "").strip()
+    title   = _clean_text(article.get("title", ""))
+    snippet = _clean_text(article.get("seendescription", ""))
+    domain  = article.get("domain", "")
+    lang    = article.get("language", "English")
+    raw_ts  = article.get("seendate", "")     # "20240415T123000Z"
+
+    if not url or not title:
+        return None
+
+    # Stable dedup key from URL hash
+    ext_id    = f"gdelt-doc:{hashlib.sha1(url.encode()).hexdigest()[:16]}"
+    signal_id = str(uuid.uuid5(uuid.NAMESPACE_URL, ext_id))
+
+    # Parse GDELT timestamp format: "20240415T123000Z"
+    try:
+        timestamp = (
+            datetime.strptime(raw_ts, "%Y%m%dT%H%M%SZ")
+            .replace(tzinfo=timezone.utc)
+            .isoformat()
+        )
+    except ValueError:
+        timestamp = datetime.now(timezone.utc).isoformat()
+
+    # GDELT DOC API provides sentiment in some modes (-1 to +1)
+    try:
+        sentiment = float(article.get("sentiment", -0.1))
+    except (TypeError, ValueError):
+        sentiment = -0.1   # slight negative default — OSINT skews negative
+
+    # Severity: GDELT articles don't have fatality counts so we use
+    # relevance as a proxy — higher base_relevance → higher urgency
+    severity = round(min(base_relevance / 2.0, 0.75), 4)
+
+    # Content = snippet or title fallback
+    content = snippet if snippet else title
+
+    metadata = {
+        "url":            url,
+        "domain":         domain,
+        "language":       lang,
+        "source_country": article.get("sourcecountry", ""),
+        "social_image":   article.get("socialimage", ""),
+        # Pre-computed gravity inputs
+        "severity":           severity,
+        "actor_importance":   0.3,      # unknown without NER — ingest will update
+        "sentiment":          sentiment,
+        "source_credibility": SOURCE_CREDIBILITY,
+    }
+
+    return {
+        "signal_id":        signal_id,
+        "source":           "gdelt",
+        "external_id":      ext_id,
+        "title":            title[:200],
+        "content":          content,
+        "lat":              None,   # GDELT DOC doesn't geo-code articles
+        "lng":              None,
+        "timestamp":        timestamp,
+        "status":           "raw",
+        "is_priority":      _is_priority(title, snippet),
+        "stream":           stream,
+        "source_type":      "live",
+        "relevance_score":  round(base_relevance / 1.5, 4),
+        "metadata_json":    json.dumps(metadata, ensure_ascii=False),
+        # Gravity inputs for ingest.py score_signal()
+        "severity":           severity,
+        "actor_importance":   0.3,
+        "sentiment":          sentiment,
+        "source_credibility": SOURCE_CREDIBILITY,
+        "frequency":          0.0,
+    }
+
+
+# ── DB write ──────────────────────────────────────────────────────────────────
+
+def _insert_signals(conn: sqlite3.Connection, signals: list[dict]) -> tuple[int, int]:
+    inserted = 0
+    skipped  = 0
+    for sig in signals:
+        try:
+            conn.execute("""
+                INSERT OR IGNORE INTO signals
+                    (signal_id, source, external_id, title, content,
+                     lat, lng, timestamp, status, is_priority,
+                     stream, source_type, relevance_score, metadata_json)
+                VALUES
+                    (:signal_id, :source, :external_id, :title, :content,
+                     :lat, :lng, :timestamp, :status, :is_priority,
+                     :stream, :source_type, :relevance_score, :metadata_json)
+            """, sig)
+            if conn.execute("SELECT changes()").fetchone()[0] > 0:
+                inserted += 1
+            else:
+                skipped += 1
+        except sqlite3.Error as exc:
+            log.warning(f"Insert error {sig.get('external_id')}: {exc}")
+            skipped += 1
+    conn.commit()
+    return inserted, skipped
+
+
+def _log_run(db_path, status, records_in, records_out, duration_s, detail):
+    try:
+        conn = sqlite3.connect(str(db_path), timeout=10)
+        conn.execute("""
+            INSERT INTO pipeline_runs
+                (component, status, records_in, records_out, duration_s, detail_json)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            "gdelt_collector", status, records_in, records_out,
+            round(duration_s, 2), json.dumps(detail, ensure_ascii=False),
+        ))
+        conn.commit()
+        conn.close()
+    except Exception as exc:
+        log.debug(f"pipeline_runs log failed: {exc}")
+
+
+# ── Main collector ────────────────────────────────────────────────────────────
+
+class GDELTDocCollector:
+
+    def __init__(
+        self,
+        db_path: Optional[Path] = None,
+        queries: Optional[list[tuple[str, str, float]]] = None,
+        lookback_hours: int = DEFAULT_LOOKBACK_HOURS,
+    ):
+        self.db_path       = db_path or _resolve_db()
+        self.queries       = queries or SA_QUERIES
+        self.lookback_hours = lookback_hours
+
+    def run(self, dry_run: bool = False) -> dict:
+        start    = time.monotonic()
+        client   = GDELTDocClient()
+        throttle = GeoAwareLeakyBucket()
+        all_sigs: list[dict] = []
+        errors  : list[str]  = []
+
+        log.info(
+            f"[gdelt_collector] Starting: {len(self.queries)} queries, "
+            f"lookback={self.lookback_hours}h, dry_run={dry_run}"
+        )
+
+        # GDELT DOC API lives on gdeltproject.org — classified Global tier
+        _GDELT_DOMAIN = "gdeltproject.org"
+
+        for query_str, stream, base_rel in self.queries:
             try:
-                rows = []
-                for idx, row in sa_df.iterrows():
-                    try:
-                        global_id = str(row.iloc[0] if 0 in row.index else "")
-                        if global_id:
-                            external_id = f"gdelt:{global_id}"
-                            signal_id = "gdelt-" + hashlib.sha256(global_id.encode("utf-8")).hexdigest()[:36]
-                        else:
-                            external_seed = str(row.iloc[0] if 0 in row.index else idx) + str(row.iloc[1] if 1 in row.index else "")
-                            external_id = "gdelt:" + hashlib.sha1(external_seed.encode("utf-8")).hexdigest()[:20]
-                            signal_id = "gdelt-" + hashlib.sha256(external_id.encode("utf-8")).hexdigest()[:36]
+                # Geo-aware throttle: respects per-tier rate + jitter before
+                # each request to avoid 429 write-lock death spirals
+                throttle.drain(_GDELT_DOMAIN)
 
-                        # status / timestamp fallback
-                        timestamp = datetime.now(timezone.utc).isoformat()
-                        if 1 in row.index and row.iloc[1]:
-                            try:
-                                dt = datetime.strptime(str(row.iloc[1]), "%Y%m%d%H%M%S")
-                                timestamp = dt.replace(tzinfo=timezone.utc).isoformat()
-                            except Exception:
-                                pass
-
-                        raw_title = (row.iloc[2] if 2 in row.index and row.iloc[2] else "GDELT SA Signal").strip()
-
-                        # Event code mapping
-                        event_label = "UNKNOWN"
-                        if 26 in row.index and row.iloc[26]:
-                            try:
-                                code_val = int(float(row.iloc[26]))
-                                event_label = EVENT_CODE_LABELS.get(code_val, "UNKNOWN")
-                            except Exception:
-                                event_label = "UNKNOWN"
-
-                        title = f"[{event_label}] {raw_title}" if event_label else raw_title
-
-                        # Goldstein scale
-                        goldstein = 0.0
-                        if 30 in row.index and row.iloc[30]:
-                            try:
-                                goldstein = float(row.iloc[30])
-                            except Exception:
-                                goldstein = 0.0
-
-                        is_priority = 1 if goldstein < -5.0 else 0
-
-                        content = (
-                            f"actor1={row.iloc[44] if 44 in row.index else ''}; "
-                            f"actor2={row.iloc[53] if 53 in row.index else ''}"
-                        )
-
-                        lat = None
-                        lng = None
-                        if 8 in row.index and row.iloc[8]:
-                            try:
-                                lat = float(row.iloc[8])
-                            except Exception:
-                                lat = None
-                        if 9 in row.index and row.iloc[9]:
-                            try:
-                                lng = float(row.iloc[9])
-                            except Exception:
-                                lng = None
-
-                        meta = {
-                            "row_index": int(idx),
-                            "global_id": global_id,
-                            "event_code": row.iloc[26] if 26 in row.index else None,
-                            "event_label": event_label,
-                            "goldstein": goldstein,
-                            "actor1country": row.iloc[44] if 44 in row.index else None,
-                            "actor2country": row.iloc[53] if 53 in row.index else None,
-                        }
-
-                        rows.append(
-                            (
-                                signal_id,
-                                SOURCE_NAME,
-                                external_id,
-                                title[:500],
-                                content[:1000],
-                                lat,
-                                lng,
-                                timestamp,
-                                "raw",
-                                json.dumps(meta, ensure_ascii=False),
-                                is_priority,
-                                STREAM,
-                                SOURCE_TYPE,
+                log.info(f"[gdelt_collector] Query: {query_str[:60]}...")
+                articles = client.fetch_articles(
+                    query_str,
+                    lookback_hours=self.lookback_hours,
+                )
+                built = 0
+                for art in articles:
+                    sig = _build_signal(art, stream, base_rel)
+                    if sig:
+                        all_sigs.append(sig)
+                        built += 1
+                log.info(
+                    f"[gdelt_collector] → {len(articles)} articles, "
+                    f"{built} signals built ({stream})"
+                )
+            except Exception as exc:
+                msg = f"Query failed: {exc}"
+                log.warning(f"[gdelt_collector] WARN {msg}")
+                errors.append(msg)
+                # P3-04: 429 Retry-After backoff — parse from HTTPError directly
+                # (urllib raises HTTPError, not requests.Response, so check .code)
+                backoff = 0
+                if isinstance(exc, RuntimeError) and "GDELT HTTP 429" in str(exc):
+                    backoff = 30   # conservative default when no Retry-After header
+                elif hasattr(exc, "__cause__") and isinstance(exc.__cause__, HTTPError):
+                    if exc.__cause__.code == 429:
+                        try:
+                            backoff = int(
+                                exc.__cause__.headers.get("Retry-After", 30)
                             )
-                        )
-                        if len(rows) >= batch_size:
-                            conn.executemany(
-                                """
-                                INSERT OR IGNORE INTO signals
-                                    (signal_id, source, external_id, title, content,
-                                     lat, lng, timestamp, status, metadata_json,
-                                     is_priority, stream, source_type)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                                """,
-                                rows,
-                            )
-                            stats["inserted"] += conn.total_changes
-                            rows.clear()
-                    except sqlite3.IntegrityError:
-                        stats["skipped"] += 1
-                    except Exception:
-                        stats["errors"] += 1
-
-                if rows:
-                    conn.executemany(
-                        """
-                        INSERT OR IGNORE INTO signals
-                            (signal_id, source, external_id, title, content,
-                             lat, lng, timestamp, status, metadata_json,
-                             is_priority, stream, source_type)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        rows,
+                        except (ValueError, TypeError):
+                            backoff = 30
+                backoff = max(0, min(backoff, 60))
+                if backoff > 0:
+                    log.warning(
+                        f"[gdelt_collector] 429 rate-limited — "
+                        f"backing off {backoff}s (Retry-After)"
                     )
-                    stats["inserted"] += conn.total_changes
+                    time.sleep(backoff)
 
-                conn.commit()
+        total_fetched = len(all_sigs)
+        inserted = 0
+        skipped  = 0
+
+        if dry_run:
+            log.info(
+                f"[gdelt_collector] DRY RUN — {total_fetched} signals not written"
+            )
+            for s in all_sigs[:3]:
+                log.info(
+                    f"  SAMPLE [{s['stream']}]: {s['title'][:80]}"
+                )
+        else:
+            conn = _open_db(self.db_path)
+            try:
+                inserted, skipped = _insert_signals(conn, all_sigs)
             finally:
                 conn.close()
-            return stats
-
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, _execute_batch)
-
-    async def run(self, max_rows: Optional[int] = None, dry_run: bool = False):
-        started_at = datetime.now(timezone.utc).isoformat()
-        zip_url = await self.fetch_latest_url()
-        if not zip_url:
-            log.error("Unable to resolve latest GDELT ZIP URL.")
-            return 1
-
-        sa_df = await self.download_and_process(zip_url, max_rows=max_rows)
-        if dry_run:
-            log.info("[DRY-RUN] %d SA rows ready (no DB write)", len(sa_df))
-            log_run(
-                pipeline="gdelt_collector",
-                status="dry-run",
-                start_time=started_at,
-                records_processed=len(sa_df),
+            log.info(
+                f"[gdelt_collector] Written: {inserted} new, {skipped} skipped"
             )
-            return 0
 
-        # self-describing enrichment step
-        interpreter = SignalInterpreter()
-        sample_signals = []
-        for index, row in sa_df.iterrows():
-            sample_signals.append({
-                "signal_id": f"row-{index}",
-                "title": row.iloc[2] if 2 in row.index else "",
-                "content": row.iloc[26] if 26 in row.index else "",
-                "metadata_json": "",
-            })
-        interpreted = interpreter.batch_interpret(sample_signals)
-        log.info("Interpreted sample signals: %s", interpreted[:3])
+        duration = round(time.monotonic() - start, 2)
+        result   = {
+            "status":      "success" if not errors else "partial",
+            "fetched":     total_fetched,
+            "inserted":    inserted,
+            "skipped":     skipped,
+            "errors":      errors,
+            "dry_run":     dry_run,
+            "duration_s":  duration,
+            "computed_at": datetime.now(timezone.utc).isoformat(),
+        }
 
-        # Resolve actors into DB and apply gravity/case/feedback control loop
-        conn = open_db(self.db_path)
-        resolver = EntityResolver(conn)
-        for i, metadata in enumerate(interpreted):
-            resolved = resolver.resolve_actors(metadata.get("actors", []))
-            log.info("Actor resolution for signal %s: %s", metadata.get("raw_signal_id"), resolved)
+        if not dry_run:
+            _log_run(
+                self.db_path,
+                status="success" if not errors else "error",
+                records_in=total_fetched,
+                records_out=inserted,
+                duration_s=duration,
+                detail=result,
+            )
 
-            g = score_signal(metadata, actors=resolved)
-            c = evaluate_case(g, linked_actors=resolved, linked_events=[])
-            fb = apply_feedback(g, resolved, c, conn=conn)
-            log.info("Gravity/case/feedback for signal %s: gravity=%s; case=%s; feedback=%s",
-                     metadata.get("raw_signal_id"), g.get("gravity_score"), c.get("decision"), fb)
-
-        # Turn interpreted signals into artifacts for continuity
-        manager = ProcessorManager(db_path=self.db_path)
-        for signal in sample_signals:
-            artifact_id = manager.signal_to_artifact(signal)
-            log.info("Signal %s mapped to artifact %s", signal.get("signal_id"), artifact_id)
-
-        # Maintain event continuity from signal semantics
-        eventer = EventConstructor()
-        events = eventer.batch_construct(sample_signals, interpreted)
-        log.info("Constructed events: %s", events)
-
-        manager.close()
-        conn.close()
-
-        stats = await self.integrate_to_forge(sa_df)
-        log.info("Integration stats: %s", stats)
-        log_run(
-            pipeline="gdelt_collector",
-            status="success",
-            start_time=started_at,
-            records_processed=len(sa_df),
-            inserted=stats.get("inserted", 0),
-            skipped=stats.get("skipped", 0),
-            errors=stats.get("errors", 0),
-        )
-        return 0
+        return result
 
 
-def parse_args():
-    p = argparse.ArgumentParser(description="Async GDELT collector (FORGE).")
-    p.add_argument("--db", type=str, default=None, help="Optional override DB path")
-    p.add_argument("--max-rows", type=int, default=None, help="Read max CSV rows while testing")
-    p.add_argument("--dry-run", action="store_true", help="Don't write to DB")
-    p.add_argument(
-        "--insecure",
-        action="store_true",
-        help="Disable SSL certificate verification (for self-signed or tunneled environments)",
+# ── Async wrapper ─────────────────────────────────────────────────────────────
+
+async def collect(
+    db_path: Optional[Path] = None,
+    queries: Optional[list] = None,
+    lookback_hours: int = DEFAULT_LOOKBACK_HOURS,
+) -> dict:
+    """Async entry point for mega_ingest.run_all_collectors()."""
+    loop = asyncio.get_event_loop()
+    collector = GDELTDocCollector(
+        db_path=db_path,
+        queries=queries,
+        lookback_hours=lookback_hours,
     )
-    return p.parse_args()
+    return await loop.run_in_executor(None, collector.run)
 
 
-def main():
-    args = parse_args()
-    collector = GDELTForgeCollector(
-        db_path=Path(args.db) if args.db else None,
-        verify_ssl=not args.insecure,
-    )
-    return asyncio.run(collector.run(max_rows=args.max_rows, dry_run=args.dry_run))
-
+# ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
 
-# --- MEGA RUNNER ADAPTER ---
-async def async_main(max_rows=5000, **kwargs):
-    """
-    Async entry point for mega_ingest.py.
-    Calls collector.run() directly — bypasses main() which uses asyncio.run()
-    and would conflict with the already-running event loop.
-    """
-    try:
-        collector = GDELTForgeCollector(db_path=None, verify_ssl=True)
-        await collector.run(max_rows=max_rows)
-    except Exception as e:
-        print(f"[ERROR] async_main failed in gdelt_collector.py: {e}")
+    parser = argparse.ArgumentParser(
+        description="FORGE GDELT DOC API Collector — SA-focused news signals"
+    )
+    parser.add_argument("--hours",   type=int, default=DEFAULT_LOOKBACK_HOURS)
+    parser.add_argument("--query",   type=str, default=None,
+                        help="Override with a single custom query string")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--db",      type=str, default=None)
+    args = parser.parse_args()
+
+    queries = (
+        [(args.query, "GLOBAL", 1.0)]
+        if args.query
+        else SA_QUERIES
+    )
+
+    collector = GDELTDocCollector(
+        db_path=_resolve_db(args.db),
+        queries=queries,
+        lookback_hours=args.hours,
+    )
+    result = collector.run(dry_run=args.dry_run)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
+    sys.exit(0 if result["status"] in ("success", "partial") else 1)

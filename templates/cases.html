@@ -41,7 +41,7 @@
         <span class="case-status-badge case-status-badge--{{ c.status }}">{{ c.status }}</span>
         <span class="mono case-card__id">#{{ c.case_id }}</span>
       </div>
-      <h2 class="case-card__title">{{ c.title }}</h2>
+      <h2 class="case-card__title">{{ c.name }}</h2>
       {% if c.description %}
       <p class="case-card__desc">{{ c.description | truncate(100) }}</p>
       {% endif %}

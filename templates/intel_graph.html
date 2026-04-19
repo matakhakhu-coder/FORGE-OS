@@ -1,0 +1,1062 @@
+{% extends "base.html" %}
+{% block title %}Actor Intelligence Graph — FORGE{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"
+        crossorigin="anonymous"></script>
+<style>
+/* ── Full-bleed layout — suppress main padding for this page ── */
+.main { padding: 0 !important; overflow: hidden; }
+
+/* ── Root layout ─────────────────────────────────────────────── */
+#ig-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 56px);   /* subtract topbar height */
+  background: var(--bg-void);
+  position: relative;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────── */
+#ig-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  z-index: 10;
+}
+.ig-toolbar__title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: var(--sp-3);
+  white-space: nowrap;
+}
+.ig-toolbar__stat {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.ig-toolbar__stat strong {
+  color: var(--text-secondary);
+}
+.ig-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-dim);
+  margin: 0 var(--sp-2);
+}
+.ig-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.ig-btn:hover { border-color: var(--border-mid); color: var(--text-primary); }
+.ig-btn--active {
+  background: rgba(200,148,58,0.12);
+  border-color: var(--accent-muted);
+  color: var(--accent-bright);
+}
+.ig-btn__dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ig-toolbar__spacer { flex: 1; }
+#ig-search {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: var(--sp-2) var(--sp-3);
+  width: 180px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#ig-search:focus { border-color: var(--accent-muted); }
+#ig-search::placeholder { color: var(--text-ghost); }
+
+/* ── Canvas area ─────────────────────────────────────────────── */
+#ig-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+#ig-cy {
+  flex: 1;
+  background: var(--bg-void);
+  position: relative;
+}
+
+/* ── Loading overlay ─────────────────────────────────────────── */
+#ig-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-void);
+  z-index: 20;
+  gap: var(--sp-4);
+  pointer-events: none;
+}
+.ig-loading__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ig-spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border-subtle);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: ig-spin 0.8s linear infinite;
+}
+@keyframes ig-spin { to { transform: rotate(360deg); } }
+
+/* ── Legend ──────────────────────────────────────────────────── */
+#ig-legend {
+  position: absolute;
+  bottom: var(--sp-5);
+  left: var(--sp-5);
+  background: rgba(8,13,18,0.88);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3) var(--sp-4);
+  z-index: 5;
+  pointer-events: none;
+}
+.ig-legend__title {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-3);
+}
+.ig-legend__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+.ig-legend__row:last-child { margin-bottom: 0; }
+.ig-legend__swatch {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ig-legend__edge {
+  width: 22px; height: 2px;
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+.ig-legend__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+/* ── Side panel ──────────────────────────────────────────────── */
+#ig-panel {
+  width: 320px;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  z-index: 10;
+}
+#ig-panel.ig-panel--open {
+  transform: translateX(0);
+}
+#ig-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.ig-panel__name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  flex: 1;
+  margin-right: var(--sp-3);
+}
+.ig-panel__close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ig-panel__close:hover { color: var(--text-primary); }
+.ig-panel__meta {
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.ig-meta-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.ig-meta-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  width: 80px;
+  flex-shrink: 0;
+}
+.ig-meta-value {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+.ig-risk--HIGH_RISK  { color: #f7768e; font-weight: 600; }
+.ig-risk--ELEVATED   { color: #e0803a; }
+.ig-risk--STANDARD   { color: var(--text-dim); }
+.ig-influence-bar {
+  height: 3px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+.ig-influence-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+#ig-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+#ig-panel-body::-webkit-scrollbar { width: 4px; }
+#ig-panel-body::-webkit-scrollbar-track { background: transparent; }
+#ig-panel-body::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 2px; }
+
+.ig-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ig-rel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ig-rel-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.ig-rel-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  padding: 2px 5px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+.rel-INVESTIGATES { background: rgba(247,118,142,0.18); color: #f7768e; }
+.rel-ACCUSED_OF   { background: rgba(224,128,58,0.18);  color: #e0803a; }
+.rel-CONTRACTED   { background: rgba(158,206,106,0.18); color: #9ece6a; }
+.rel-MEMBER_OF    { background: rgba(122,162,247,0.18); color: #7aa2f7; }
+.rel-DEBARRED_BY  { background: rgba(247,118,142,0.22); color: #f7768e; }
+.rel-co_occurrence{ background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.rel-default      { background: var(--bg-elevated); color: var(--text-secondary); }
+.ig-rel-info { flex: 1; }
+.ig-rel-peer {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--border-dim);
+}
+.ig-rel-peer:hover { color: var(--accent-bright); }
+.ig-rel-dir {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+.ig-signal-item {
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ig-signal-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.ig-signal-title {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: var(--sp-1);
+}
+.ig-signal-meta {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+}
+.ig-artifact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ig-artifact-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.ig-artifact-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ig-artifact-title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.ig-artifact-rel {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+}
+.ig-empty {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  font-style: italic;
+}
+
+/* ── Panel loading ───────────────────────────────────────────── */
+.ig-panel-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8);
+}
+
+/* ── Recalculate btn ─────────────────────────────────────────── */
+#ig-recalc-btn {
+  font-size: 0.6rem;
+  padding: 2px var(--sp-3);
+  border-color: var(--border-subtle);
+}
+#ig-recalc-btn:hover { border-color: var(--accent-muted); color: var(--accent); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="ig-root">
+
+  {# ── Toolbar ─────────────────────────────────────────────────── #}
+  <div id="ig-toolbar">
+    <span class="ig-toolbar__title">⬡ Intel Graph</span>
+
+    <span class="ig-toolbar__stat">
+      <strong id="tb-nodes">—</strong> nodes
+    </span>
+    <span class="ig-toolbar__stat">
+      <strong id="tb-edges">—</strong> edges
+    </span>
+    <span class="ig-sep"></span>
+
+    {# Hard-edges toggle #}
+    <button class="ig-btn" id="btn-hard-only" title="Show only named investigative edges">
+      <span class="ig-btn__dot"></span>
+      Hard Edges Only
+    </button>
+
+    {# Show isolated nodes #}
+    <button class="ig-btn" id="btn-show-all" title="Include actors with no relationships">
+      <span class="ig-btn__dot"></span>
+      Show Isolated
+    </button>
+
+    <span class="ig-sep"></span>
+
+    {# Layout reset #}
+    <button class="ig-btn" id="btn-fit" title="Reset zoom to fit all nodes">Fit</button>
+    <button class="ig-btn" id="btn-relayout" title="Re-run layout">Relayout</button>
+
+    <span class="ig-sep"></span>
+
+    {# Stats from server #}
+    <span class="ig-toolbar__stat">
+      {{ stats.actors }} actors &middot;
+      {{ stats.hard_edges }} hard edges &middot;
+      {{ stats.co_edges }} co-occurrence &middot;
+      {{ stats.communities }} communities
+    </span>
+
+    <span class="ig-toolbar__spacer"></span>
+    <button class="ig-btn" id="ig-recalc-btn">↺ Recalculate Graph</button>
+    <input id="ig-search" type="text" placeholder="Search actor…" autocomplete="off">
+  </div>
+
+  {# ── Canvas + Panel ───────────────────────────────────────────── #}
+  <div id="ig-body">
+    <div id="ig-cy">
+      <div id="ig-loading">
+        <div class="ig-spinner"></div>
+        <div class="ig-loading__label">Building intelligence network…</div>
+      </div>
+    </div>
+
+    {# ── Legend ────────────────────────────────────────────────── #}
+    <div id="ig-legend">
+      <div class="ig-legend__title">Actor Type</div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#3a6ed4;"></div>
+        <div class="ig-legend__label">Institution</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#e0803a;"></div>
+        <div class="ig-legend__label">Person</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#40a060;"></div>
+        <div class="ig-legend__label">Government</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#40b0c0;"></div>
+        <div class="ig-legend__label">Media</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#c040c0;"></div>
+        <div class="ig-legend__label">Movement</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__swatch" style="background:#f7768e; outline: 2px solid #f7768e; outline-offset:1px;"></div>
+        <div class="ig-legend__label">HIGH_RISK</div>
+      </div>
+
+      <div class="ig-legend__title" style="margin-top:var(--sp-3);">Relationship</div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__edge" style="background:#f7768e;height:2px;"></div>
+        <div class="ig-legend__label">INVESTIGATES</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__edge" style="background:#e0803a;height:2px;"></div>
+        <div class="ig-legend__label">ACCUSED_OF</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__edge" style="background:#9ece6a;height:2px;"></div>
+        <div class="ig-legend__label">CONTRACTED</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__edge" style="background:#7aa2f7;height:2px;"></div>
+        <div class="ig-legend__label">MEMBER_OF</div>
+      </div>
+      <div class="ig-legend__row">
+        <div class="ig-legend__edge" style="background:rgba(255,255,255,0.15);height:1px;"></div>
+        <div class="ig-legend__label">Co-occurrence</div>
+      </div>
+    </div>
+
+    {# ── Side panel ────────────────────────────────────────────── #}
+    <div id="ig-panel">
+      <div id="ig-panel-header">
+        <div class="ig-panel__name" id="panel-name">—</div>
+        <button class="ig-panel__close" id="btn-panel-close" title="Close">✕</button>
+      </div>
+      <div class="ig-panel__meta" id="panel-meta"></div>
+      <div id="ig-panel-body">
+        <div class="ig-panel-loading">
+          <div class="ig-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  // ── Colour maps ────────────────────────────────────────────────────────────
+  const NODE_COLOURS = {
+    institution: { bg: '#0e1e3a', border: '#3a6ed4' },
+    person:      { bg: '#2a1500', border: '#e0803a' },
+    government:  { bg: '#0a2010', border: '#40a060' },
+    media:       { bg: '#0a2a2a', border: '#40b0c0' },
+    movement:    { bg: '#2a0a2a', border: '#c040c0' },
+    unknown:     { bg: '#141e28', border: '#3d5060' },
+  };
+
+  const EDGE_COLOURS = {
+    INVESTIGATES:  '#f7768e',
+    ACCUSED_OF:    '#e0803a',
+    CONTRACTED:    '#9ece6a',
+    MEMBER_OF:     '#7aa2f7',
+    DEBARRED_BY:   '#f7768e',
+    co_occurrence: 'rgba(255,255,255,0.10)',
+  };
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let cy = null;
+  let allData = null;        // full graph payload
+  let hardOnly  = false;
+  let showAll   = false;
+  let activeId  = null;
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function nodeSize(score) {
+    // influence_score 0→1 maps to radius 12→44
+    return 12 + Math.round(score * 32);
+  }
+
+  function edgeWidth(confidence) {
+    return 1 + confidence * 4;
+  }
+
+  function edgeColour(relType) {
+    return EDGE_COLOURS[relType] || '#4a6080';
+  }
+
+  function edgeOpacity(relType) {
+    return relType === 'co_occurrence' ? 0.25 : 0.85;
+  }
+
+  // ── Build Cytoscape elements from raw data ─────────────────────────────────
+  function buildElements(data) {
+    const elements = [];
+
+    for (const n of data.nodes) {
+      const colours  = NODE_COLOURS[n.actor_type] || NODE_COLOURS.unknown;
+      const size     = nodeSize(n.influence_score);
+      const riskGlow = n.is_high_risk
+        ? { 'border-color': '#f7768e', 'border-width': 3 }
+        : {};
+      elements.push({
+        group: 'nodes',
+        data: {
+          id:              String(n.id),
+          label:           n.label,
+          actor_type:      n.actor_type,
+          influence_score: n.influence_score,
+          community_id:    n.community_id,
+          is_high_risk:    n.is_high_risk,
+          _size:           size,
+          _bg:             colours.bg,
+          _border:         n.is_high_risk ? '#f7768e' : colours.border,
+          _borderW:        n.is_high_risk ? 3 : 1.5,
+        },
+      });
+    }
+
+    for (const e of data.edges) {
+      elements.push({
+        group: 'edges',
+        data: {
+          id:         'e' + e.relationship_id,
+          source:     String(e.subject_actor_id),
+          target:     String(e.object_actor_id),
+          relation:   e.relation_type,
+          confidence: e.confidence,
+          artifact_id: e.source_artifact_id,
+          _color:     edgeColour(e.relation_type),
+          _width:     edgeWidth(e.confidence),
+          _opacity:   edgeOpacity(e.relation_type),
+        },
+      });
+    }
+
+    return elements;
+  }
+
+  // ── Cytoscape stylesheet ───────────────────────────────────────────────────
+  const CY_STYLE = [
+    {
+      selector: 'node',
+      style: {
+        'background-color':    'data(_bg)',
+        'border-color':        'data(_border)',
+        'border-width':        'data(_borderW)',
+        'width':               'data(_size)',
+        'height':              'data(_size)',
+        'label':               'data(label)',
+        'font-family':         'IBM Plex Mono, monospace',
+        'font-size':           9,
+        'color':               '#7a95aa',
+        'text-valign':         'bottom',
+        'text-halign':         'center',
+        'text-margin-y':       4,
+        'text-max-width':      100,
+        'text-wrap':           'ellipsis',
+        'text-overflow-wrap':  'anywhere',
+        'overlay-opacity':     0,
+        'transition-property': 'background-color, border-color, width, height',
+        'transition-duration': '0.15s',
+      },
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-color':  '#c8943a',
+        'border-width':  3,
+        'color':         '#e0aa4a',
+        'font-weight':   600,
+        'z-index':       999,
+      },
+    },
+    {
+      selector: 'node.highlighted',
+      style: {
+        'border-color': '#c8943a',
+        'border-width':  2,
+        'color':         '#cfdce8',
+      },
+    },
+    {
+      selector: 'node.faded',
+      style: {
+        'opacity': 0.15,
+      },
+    },
+    {
+      selector: 'edge',
+      style: {
+        'line-color':              'data(_color)',
+        'width':                   'data(_width)',
+        'opacity':                 'data(_opacity)',
+        'curve-style':             'bezier',
+        'target-arrow-shape':      'triangle',
+        'target-arrow-color':      'data(_color)',
+        'arrow-scale':             0.7,
+        'overlay-opacity':         0,
+        'transition-property':     'opacity',
+        'transition-duration':     '0.15s',
+      },
+    },
+    {
+      selector: 'edge[relation = "co_occurrence"]',
+      style: {
+        'target-arrow-shape': 'none',
+        'curve-style':        'haystack',   // faster rendering for many edges
+      },
+    },
+    {
+      selector: 'edge.faded',
+      style: { 'opacity': 0.04 },
+    },
+    {
+      selector: 'edge:selected',
+      style: {
+        'line-color':         '#c8943a',
+        'target-arrow-color': '#c8943a',
+        'opacity': 1,
+        'z-index': 999,
+      },
+    },
+  ];
+
+  // ── Init / render ──────────────────────────────────────────────────────────
+  async function loadGraph() {
+    // Show / re-show loading overlay so it's visible before layout blocks thread
+    const loadingEl = document.getElementById('ig-loading');
+    loadingEl.style.display = 'flex';
+
+    const params = new URLSearchParams({
+      hard_only: hardOnly  ? 'true' : 'false',
+      show_all:  showAll   ? 'true' : 'false',
+    });
+
+    const res  = await fetch('/api/actor-network?' + params);
+    allData    = await res.json();
+
+    document.getElementById('tb-nodes').textContent = allData.meta.shown_nodes;
+    document.getElementById('tb-edges').textContent = allData.meta.edges;
+
+    if (cy) {
+      cy.destroy();
+      cy = null;
+    }
+
+    const elements = buildElements(allData);
+
+    // Yield to the browser event loop so the loading spinner actually paints
+    // before the layout computation (which runs synchronously) begins.
+    const nodeCount = allData.nodes.length;
+    document.querySelector('.ig-loading__label').textContent =
+      nodeCount > 150
+        ? `Community layout — ${nodeCount} nodes…`
+        : `Force layout — ${nodeCount} nodes…`;
+    await new Promise(resolve => setTimeout(resolve, 60));
+
+    // Adaptive layout — cose is O(n²) per iter and blocks the JS thread at scale.
+    // Use concentric (community-grouped, O(n)) for large graphs.
+    // nodeCount already declared above.
+    const layoutCfg = nodeCount <= 150
+      ? {
+          name:            'cose',
+          randomize:       true,
+          animate:         false,
+          nodeRepulsion:   () => 4500,
+          idealEdgeLength: () => 80,
+          edgeElasticity:  () => 100,
+          gravity:         0.25,
+          numIter:         500,
+          initialTemp:     200,
+          coolingFactor:   0.95,
+          minTemp:         1,
+        }
+      : {
+          // concentric: rings grouped by community_id, sized by influence
+          name:          'concentric',
+          animate:       false,
+          padding:       40,
+          startAngle:    (3 / 2) * Math.PI,
+          sweep:         undefined,
+          clockwise:     true,
+          equidistant:   false,
+          minNodeSpacing: 6,
+          concentric:    (node) => {
+            // Each community gets its own ring; highest influence goes outer
+            const c = node.data('community_id');
+            return c !== null && c !== undefined ? (100 - (c % 20)) : 0;
+          },
+          levelWidth:    () => 2,
+        };
+
+    cy = cytoscape({
+      container: document.getElementById('ig-cy'),
+      elements,
+      style: CY_STYLE,
+      layout: layoutCfg,
+      minZoom: 0.05,
+      maxZoom: 4,
+      wheelSensitivity: 0.4,
+    });
+
+    // Event: node click → open panel
+    cy.on('tap', 'node', function (evt) {
+      const node = evt.target;
+      openPanel(parseInt(node.data('id'), 10), node.data('label'));
+      highlightNeighbourhood(node);
+    });
+
+    // Event: tap on background → clear
+    cy.on('tap', function (evt) {
+      if (evt.target === cy) {
+        clearHighlight();
+        closePanel();
+      }
+    });
+
+    // Event: edge click → highlight
+    cy.on('tap', 'edge', function (evt) {
+      clearHighlight();
+      const edge = evt.target;
+      edge.style('opacity', 1);
+    });
+
+    document.getElementById('ig-loading').style.display = 'none';
+  }
+
+  // ── Neighbourhood highlight ────────────────────────────────────────────────
+  function highlightNeighbourhood(node) {
+    const neighbourhood = node.closedNeighborhood();
+    cy.elements().addClass('faded');
+    neighbourhood.removeClass('faded').addClass('highlighted');
+    node.removeClass('faded highlighted');
+  }
+
+  function clearHighlight() {
+    cy.elements().removeClass('faded highlighted');
+  }
+
+  // ── Side panel ─────────────────────────────────────────────────────────────
+  async function openPanel(actorId, name) {
+    activeId = actorId;
+    const panel = document.getElementById('ig-panel');
+    panel.classList.add('ig-panel--open');
+    document.getElementById('panel-name').textContent = name;
+    document.getElementById('panel-meta').innerHTML   = '';
+    document.getElementById('ig-panel-body').innerHTML =
+      '<div class="ig-panel-loading"><div class="ig-spinner"></div></div>';
+
+    try {
+      const res  = await fetch(`/api/actor/${actorId}/panel`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      renderPanel(data);
+    } catch (err) {
+      document.getElementById('ig-panel-body').innerHTML =
+        `<p class="ig-empty">Failed to load: ${err.message}</p>`;
+    }
+  }
+
+  function closePanel() {
+    activeId = null;
+    document.getElementById('ig-panel').classList.remove('ig-panel--open');
+  }
+
+  function renderPanel(data) {
+    const a   = data.actor;
+    const inf = a.influence_score;
+
+    // Meta bar
+    document.getElementById('panel-meta').innerHTML = `
+      <div class="ig-meta-row">
+        <div class="ig-meta-label">Type</div>
+        <div class="ig-meta-value">${a.type || '—'}</div>
+      </div>
+      <div class="ig-meta-row">
+        <div class="ig-meta-label">Risk</div>
+        <div class="ig-meta-value ig-risk--${a.risk_level}">${a.risk_level}</div>
+      </div>
+      <div class="ig-meta-row">
+        <div class="ig-meta-label">Influence</div>
+        <div class="ig-influence-bar">
+          <div class="ig-influence-fill" style="width:${Math.min(100, inf * 180)}%"></div>
+        </div>
+        <div class="ig-meta-value" style="width:36px;text-align:right;">${inf.toFixed(3)}</div>
+      </div>
+      <div class="ig-meta-row">
+        <div class="ig-meta-label">Community</div>
+        <div class="ig-meta-value">${a.community_id !== null ? '#' + a.community_id : '—'}</div>
+      </div>
+    `;
+
+    // Body sections
+    let html = '';
+
+    // ── Relationships ──
+    html += `<div><div class="ig-section-title">Named Relationships</div>`;
+    if (data.relationships.length === 0) {
+      html += `<p class="ig-empty">No named relationships found</p>`;
+    } else {
+      for (const r of data.relationships) {
+        const arrow = r.direction === 'outbound' ? '→' : '←';
+        const relClass = 'rel-' + r.relation_type;
+        html += `
+          <div class="ig-rel-item">
+            <span class="ig-rel-badge ${relClass}">${r.relation_type.replace('_',' ')}</span>
+            <div class="ig-rel-info">
+              <div class="ig-rel-peer" onclick="navigateToActor(${r.peer_id},'${escHtml(r.peer_name)}')">${escHtml(r.peer_name)}</div>
+              <div class="ig-rel-dir">${arrow} ${r.direction} · conf ${r.confidence.toFixed(2)} · ${r.extraction_method}</div>
+            </div>
+          </div>`;
+      }
+    }
+    html += `</div>`;
+
+    // ── Linked Signals ──
+    html += `<div><div class="ig-section-title">Linked Signals (${data.signals.length})</div>`;
+    if (data.signals.length === 0) {
+      html += `<p class="ig-empty">No signals indexed for this actor</p>`;
+    } else {
+      for (const s of data.signals) {
+        const ts = s.timestamp ? s.timestamp.substring(0, 10) : '—';
+        html += `
+          <div class="ig-signal-item">
+            <div class="ig-signal-title">${escHtml(s.title || 'Untitled')}</div>
+            <div class="ig-signal-meta">${ts} · ${s.stream || s.source || '—'} · rel ${(s.relevance_score || 0).toFixed(1)}</div>
+          </div>`;
+      }
+    }
+    html += `</div>`;
+
+    // ── PDF Evidence ──
+    html += `<div><div class="ig-section-title">PDF Evidence (${data.artifacts.length})</div>`;
+    if (data.artifacts.length === 0) {
+      html += `<p class="ig-empty">No PDF evidence linked</p>`;
+    } else {
+      for (const art of data.artifacts) {
+        const filename = art.file_path
+          ? art.file_path.split(/[\\/]/).pop()
+          : (art.pdf_url || 'unknown.pdf').split('/').pop();
+        html += `
+          <div class="ig-artifact-item">
+            <div class="ig-artifact-icon">📄</div>
+            <div>
+              <div class="ig-artifact-title">${escHtml(filename)}</div>
+              <div class="ig-artifact-rel">via ${escHtml(art.relation_type)}</div>
+            </div>
+          </div>`;
+      }
+    }
+    html += `</div>`;
+
+    document.getElementById('ig-panel-body').innerHTML = html;
+  }
+
+  // ── Navigate to actor from panel relationship link ─────────────────────────
+  window.navigateToActor = function(peerId, peerName) {
+    const node = cy.getElementById(String(peerId));
+    if (node.length) {
+      cy.animate({ center: { eles: node }, zoom: Math.max(cy.zoom(), 1.2) }, { duration: 400 });
+      cy.elements().unselect();
+      node.select();
+      openPanel(peerId, peerName);
+      highlightNeighbourhood(node);
+    }
+  };
+
+  // ── HTML escape ────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+              .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+  }
+
+  // ── Toolbar button handlers ────────────────────────────────────────────────
+  document.getElementById('btn-hard-only').addEventListener('click', function () {
+    hardOnly = !hardOnly;
+    this.classList.toggle('ig-btn--active', hardOnly);
+    reload();
+  });
+
+  document.getElementById('btn-show-all').addEventListener('click', function () {
+    showAll = !showAll;
+    this.classList.toggle('ig-btn--active', showAll);
+    reload();
+  });
+
+  document.getElementById('btn-fit').addEventListener('click', function () {
+    if (cy) cy.fit(undefined, 40);
+  });
+
+  document.getElementById('btn-relayout').addEventListener('click', function () {
+    if (!cy) return;
+    const n = cy.nodes().length;
+    const cfg = n <= 150
+      ? {
+          name:            'cose',
+          randomize:       true,
+          animate:         true,
+          animationDuration: 500,
+          nodeRepulsion:   () => 4500,
+          idealEdgeLength: () => 80,
+          gravity:         0.25,
+          numIter:         400,
+        }
+      : {
+          name:          'concentric',
+          animate:       true,
+          animationDuration: 400,
+          padding:       40,
+          concentric:    (node) => {
+            const c = node.data('community_id');
+            return c !== null && c !== undefined ? (100 - (c % 20)) : 0;
+          },
+          levelWidth: () => 2,
+        };
+    cy.layout(cfg).run();
+  });
+
+  document.getElementById('btn-panel-close').addEventListener('click', function () {
+    closePanel();
+    clearHighlight();
+  });
+
+  // ── Search ────────────────────────────────────────────────────────────────
+  let searchTimer = null;
+  document.getElementById('ig-search').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => doSearch(this.value.trim()), 200);
+  });
+
+  function doSearch(query) {
+    if (!cy) return;
+    clearHighlight();
+    if (!query) return;
+    const lower = query.toLowerCase();
+    const hits = cy.nodes().filter(n =>
+      n.data('label').toLowerCase().includes(lower)
+    );
+    if (hits.length === 0) return;
+    cy.elements().addClass('faded');
+    hits.removeClass('faded').addClass('highlighted');
+    cy.animate({ fit: { eles: hits, padding: 80 } }, { duration: 400 });
+  }
+
+  // ── Recalculate graph metrics ─────────────────────────────────────────────
+  document.getElementById('ig-recalc-btn').addEventListener('click', async function () {
+    this.textContent = '↺ Running…';
+    this.disabled = true;
+    try {
+      const res = await fetch('/api/graph/recalculate', { method: 'POST' });
+      const data = await res.json();
+      this.textContent = '✓ Done';
+      setTimeout(() => reload(), 800);
+    } catch (e) {
+      this.textContent = '✗ Failed';
+    }
+    setTimeout(() => {
+      this.textContent = '↺ Recalculate Graph';
+      this.disabled = false;
+    }, 3000);
+  });
+
+  // ── Reload graph ──────────────────────────────────────────────────────────
+  function reload() {
+    closePanel();
+    document.getElementById('ig-loading').style.display = 'flex';
+    loadGraph();
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  loadGraph();
+
+})();
+</script>
+{% endblock %}

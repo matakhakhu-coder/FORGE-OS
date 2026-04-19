@@ -1,13 +1,29 @@
 """FORAGE Feedback Engine
 
 Enables context-aware scoring where case outcomes and actor behavior drive future gravity.
+
+Phase 63 Fix 4 — Metabolic Guard
+─────────────────────────────────
+register_case_feedback() and apply_feedback() now enforce a strict NULL case_id
+rejection policy. A gravity score with no case context is not preservable data —
+it is a computation whose denominator is unknown. Rejected writes are logged at
+CRITICAL level with full calling context so the broken caller is immediately
+identifiable in the pipeline log.
+
+Two-layer guard:
+  1. apply_feedback()        — semantic: skip register call if no case_id present
+  2. register_case_feedback() — write chokepoint: hard abort with diagnostic log
 """
 
+import inspect
+import logging
 import sqlite3
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from core.db.connection import get_connection
+
+_feedback_log = logging.getLogger("forge.feedback_engine")
 
 DEFAULT_ACTOR_WEIGHT = 1.0
 MIN_ACTOR_WEIGHT = 0.2
@@ -105,6 +121,30 @@ def actor_influence(actors: List[Dict[str, Any]], conn: Optional[sqlite3.Connect
 
 
 def register_case_feedback(case: Dict[str, Any], conn: Optional[sqlite3.Connection] = None) -> None:
+    # ── Phase 63 Fix 4: NULL case_id rejection gate ───────────────────────────
+    # case_id is the PRIMARY KEY of case_feedback. A NULL PK has no schema
+    # identity — it cannot be addressed, updated, or JOINed. A gravity score
+    # without a case frame is a ratio with no denominator; it has no analytical
+    # value and must not be persisted. Fail loudly so the broken caller is
+    # visible in the pipeline log immediately.
+    case_id = case.get("case_id")
+    if not case_id or not str(case_id).strip():
+        caller = inspect.stack()[1]
+        _feedback_log.critical(
+            "[case_feedback] WRITE REJECTED — case_id is NULL/empty. "
+            "Hollow data blocked from case_feedback. "
+            "decision=%r  gravity=%.4f  signal_id=%r  "
+            "caller=%s:%d in %s()",
+            case.get("decision"),
+            float(case.get("gravity_score") or 0.0),
+            case.get("signal_id"),
+            caller.filename,
+            caller.lineno,
+            caller.function,
+        )
+        return  # abort — do not write
+    # ─────────────────────────────────────────────────────────────────────────
+
     own_conn = conn is None
     if own_conn:
         conn = get_connection()
@@ -113,7 +153,7 @@ def register_case_feedback(case: Dict[str, Any], conn: Optional[sqlite3.Connecti
         cur = conn.cursor()
         cur.execute(
             "INSERT OR REPLACE INTO case_feedback (case_id, gravity_score, decision, assigned_at) VALUES (?, ?, ?, ?)",
-            (case.get("case_id"), float(case.get("gravity_score", 0.0)), case.get("decision"), datetime.utcnow().isoformat()),
+            (case_id, float(case.get("gravity_score", 0.0)), case.get("decision"), datetime.utcnow().isoformat()),
         )
         conn.commit()
     finally:
@@ -147,7 +187,25 @@ def apply_feedback(signal: Dict[str, Any], actors: List[Dict[str, Any]], case: D
             w = update_actor_weight(actor["actor_id"], delta, conn=conn)
             updated.append({"actor_id": actor["actor_id"], "weight": w})
 
-        register_case_feedback(case, conn=conn)
+        # ── Phase 63 Fix 4: semantic gate — only record when a real case exists ─
+        # Actor weight updates above run for all decisions (correct — weighting
+        # actors based on signal outcomes improves future gravity regardless of
+        # whether a formal case is opened). Case feedback, however, is only
+        # meaningful when a case_id exists (gravity > 0.8 → CREATE CASE path).
+        # FLAG MONITOR and STORE ONLY results have no case identity and must
+        # not be written to case_feedback. register_case_feedback() enforces
+        # the same rule as a write-layer safety net.
+        if case.get("case_id"):
+            register_case_feedback(case, conn=conn)
+        else:
+            _feedback_log.warning(
+                "[apply_feedback] case_feedback write skipped — no case_id in "
+                "case_result. decision=%r gravity=%.4f signal_id=%r",
+                case.get("decision"),
+                float(case.get("gravity_score") or 0.0),
+                case.get("signal_id"),
+            )
+        # ─────────────────────────────────────────────────────────────────────
 
         influence = actor_influence(actors, conn=conn)
 

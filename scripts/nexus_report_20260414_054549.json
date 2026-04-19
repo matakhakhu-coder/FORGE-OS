@@ -1,0 +1,239 @@
+{
+  "nexus_signals": 6,
+  "nexus_items": [
+    {
+      "signal_id": "d4f57482-1574-41a9-b94b-aaa98ce6d912",
+      "title": "[PDF] NPA_annual: NPA%20Annual%20Report%202022_web",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.2333,
+      "gravity_score": 0.1,
+      "timestamp": "2026-04-11 18:25:53",
+      "actor_count": 10,
+      "actors": [
+        {
+          "id": 60,
+          "name": "NPA",
+          "type": "institution"
+        },
+        {
+          "id": 86,
+          "name": "Kwazulu",
+          "type": "person"
+        },
+        {
+          "id": 232,
+          "name": "Northern Cape SAPS",
+          "type": "institution"
+        },
+        {
+          "id": 313,
+          "name": "State",
+          "type": "institution"
+        },
+        {
+          "id": 393,
+          "name": "Langa",
+          "type": "person"
+        },
+        {
+          "id": 774,
+          "name": "Provincial",
+          "type": "institution"
+        },
+        {
+          "id": 837,
+          "name": "the Eastern Cape Crime Statistic",
+          "type": "institution"
+        },
+        {
+          "id": 874,
+          "name": "Pretoria",
+          "type": "institution"
+        },
+        {
+          "id": 876,
+          "name": "Gauteng",
+          "type": "institution"
+        },
+        {
+          "id": 883,
+          "name": "Limpopo Department of Health",
+          "type": "government"
+        }
+      ],
+      "relationships": [
+        "Provincial --INVESTIGATES--> the Eastern Cape Crime Statistic  [0.6167]",
+        "Provincial --INVESTIGATES--> State  [0.6167]",
+        "Provincial --INVESTIGATES--> Gauteng  [0.6167]",
+        "Provincial --INVESTIGATES--> Pretoria  [0.6167]",
+        "Provincial --INVESTIGATES--> Kwazulu  [0.6167]",
+        "Provincial --INVESTIGATES--> Langa  [0.6167]",
+        "Provincial --INVESTIGATES--> Northern Cape SAPS  [0.6167]",
+        "Provincial --INVESTIGATES--> Limpopo Department of Health  [0.6167]",
+        "Provincial --INVESTIGATES--> NPA  [0.6167]"
+      ]
+    },
+    {
+      "signal_id": "6f4da171-4106-43e2-ae93-0b7dc1bfcda2",
+      "title": "[PDF] SIU: MEDIA-STATEMENT-EC-HEALTH-AND-MIDVAAL-PROCLAMATION-11-JULY-2",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.2258,
+      "gravity_score": 0.1,
+      "timestamp": "2026-04-11 17:55:10",
+      "actor_count": 4,
+      "actors": [
+        {
+          "id": 85,
+          "name": "Treasury",
+          "type": "institution"
+        },
+        {
+          "id": 109,
+          "name": "SIU",
+          "type": "institution"
+        },
+        {
+          "id": 419,
+          "name": "Midvaal",
+          "type": "institution"
+        },
+        {
+          "id": 476,
+          "name": "The National Department of Health",
+          "type": "institution"
+        }
+      ],
+      "relationships": [
+        "SIU --INVESTIGATES--> The National Department of Health  [0.9]",
+        "SIU --INVESTIGATES--> Midvaal  [0.9]",
+        "SIU --INVESTIGATES--> Treasury  [0.9]"
+      ]
+    },
+    {
+      "signal_id": "a7465335-fc01-4be4-837f-6285b2e7d180",
+      "title": "[PDF] SIU: MEDIA-STATEMENT-GAUTENG-HEALTH-ZAKHENI-STATEMENT-29-JUNE-202",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.2258,
+      "gravity_score": 0.1,
+      "timestamp": "2026-04-11 17:55:16",
+      "actor_count": 4,
+      "actors": [
+        {
+          "id": 109,
+          "name": "SIU",
+          "type": "institution"
+        },
+        {
+          "id": 142,
+          "name": "PPE",
+          "type": "institution"
+        },
+        {
+          "id": 476,
+          "name": "The National Department of Health",
+          "type": "institution"
+        },
+        {
+          "id": 564,
+          "name": "CFO",
+          "type": "institution"
+        }
+      ],
+      "relationships": [
+        "SIU --INVESTIGATES--> CFO  [0.9]",
+        "SIU --INVESTIGATES--> PPE  [0.9]",
+        "PPE --CONTRACTED--> The National Department of Health  [0.9]"
+      ]
+    },
+    {
+      "signal_id": "cc33faa5-ab3c-48f5-8f2f-7ab1beaa2c69",
+      "title": "[PDF] COURT-ORDER-MPHAPHULI: COURT-ORDER-MPHAPHULI",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.4716,
+      "gravity_score": null,
+      "timestamp": "2026-04-12 09:09:00",
+      "actor_count": 3,
+      "actors": [
+        {
+          "id": 109,
+          "name": "SIU",
+          "type": "institution"
+        },
+        {
+          "id": 706,
+          "name": "MEC",
+          "type": "institution"
+        },
+        {
+          "id": 875,
+          "name": "South Africa",
+          "type": "institution"
+        }
+      ],
+      "relationships": [
+        "MEC --ACCUSED_OF--> SIU  [0.9]",
+        "South Africa --ACCUSED_OF--> MEC  [0.7358]",
+        "South Africa --ACCUSED_OF--> SIU  [0.7358]"
+      ]
+    },
+    {
+      "signal_id": "fc8e78b5-0bca-4d1d-ac7f-fe04ec0e855d",
+      "title": "[PDF] SIU: MEDIA-STATEMENT-DWS-and-SAP-repayment-16-MARCH-2022",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.2256,
+      "gravity_score": 0.1,
+      "timestamp": "2026-04-11 17:54:31",
+      "actor_count": 2,
+      "actors": [
+        {
+          "id": 590,
+          "name": "DWS",
+          "type": "institution"
+        },
+        {
+          "id": 801,
+          "name": "SAP",
+          "type": "institution"
+        }
+      ],
+      "relationships": [
+        "DWS --MEMBER_OF--> SAP  [0.9]"
+      ]
+    },
+    {
+      "signal_id": "f3b06e41-9268-418a-b0b6-e1c2a4632d00",
+      "title": "[PDF] MEDIA-STATEMENT-LIMPOPO-DEPT-OF-HEALTH-PROC-R55-OF-22-22-MARCH-2022: MEDIA-STATEMENT-LIMPOPO-DEPT-OF-HEALTH-PROC-R55-OF-22-22-MAR",
+      "source": "pdf_infiltrator",
+      "relevance_score": 1.4716,
+      "gravity_score": null,
+      "timestamp": "2026-04-12 09:09:01",
+      "actor_count": 2,
+      "actors": [
+        {
+          "id": 51,
+          "name": "National Treasury",
+          "type": "institution"
+        },
+        {
+          "id": 109,
+          "name": "SIU",
+          "type": "institution"
+        }
+      ],
+      "relationships": [
+        "SIU --INVESTIGATES--> National Treasury  [0.9]"
+      ]
+    }
+  ],
+  "total_entity_relationships": 142,
+  "by_relation_type": {
+    "co_occurrence": 103,
+    "INVESTIGATES": 25,
+    "ACCUSED_OF": 9,
+    "CONTRACTED": 3,
+    "MEMBER_OF": 2
+  },
+  "min_actors_threshold": 2,
+  "tier_filter": "all",
+  "generated_at": "2026-04-14T05:45:49.677078+00:00"
+}

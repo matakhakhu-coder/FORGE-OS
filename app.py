@@ -175,6 +175,9 @@ def create_app() -> Flask:
         if lens not in ('live', 'seed', 'all'):
             lens = 'live'
 
+        # Case-level filter — when set, scope events + actors to one case
+        case_id = request.args.get('case_id', type=int)
+
         artifact_where = ""
         event_where = ""
         artifact_params = []
@@ -207,13 +210,23 @@ def create_app() -> Flask:
             LIMIT  6
         """, artifact_params).fetchall()
 
-        recent_events = db.execute(f"""
-            SELECT e.event_id, e.title, e.date, e.category, e.location
-            FROM   events e
-            {event_where}
-            ORDER  BY e.date DESC
-            LIMIT  5
-        """, event_params).fetchall()
+        if case_id:
+            recent_events = db.execute("""
+                SELECT e.event_id, e.title, e.date, e.category, e.location
+                FROM   events e
+                JOIN   case_events ce ON ce.event_id = e.event_id
+                WHERE  ce.case_id = ?
+                ORDER  BY e.date DESC
+                LIMIT  10
+            """, (case_id,)).fetchall()
+        else:
+            recent_events = db.execute(f"""
+                SELECT e.event_id, e.title, e.date, e.category, e.location
+                FROM   events e
+                {event_where}
+                ORDER  BY e.date DESC
+                LIMIT  5
+            """, event_params).fetchall()
 
         type_breakdown = db.execute(f"""
             SELECT type, COUNT(*) AS cnt
@@ -296,17 +309,33 @@ def create_app() -> Flask:
         except Exception:
             correlated = []
 
-        # Phase 24: top actors by global influence score
+        # Phase 24: top actors by global influence score (case-scoped when case_id set)
         intelligence_leads = []
         try:
-            leads_rows = db.execute(
-                "SELECT m.actor_id, a.name, a.type, "
-                "m.influence_score, m.betweenness, m.pagerank, "
-                "m.community_id, m.computed_at "
-                "FROM actor_network_metrics m "
-                "JOIN actors a ON a.actor_id = m.actor_id "
-                "ORDER BY m.influence_score DESC LIMIT 5"
-            ).fetchall()
+            if case_id:
+                leads_rows = db.execute("""
+                    SELECT m.actor_id, a.name, a.type,
+                           m.influence_score, m.betweenness, m.pagerank,
+                           m.community_id, m.computed_at
+                    FROM   actor_network_metrics m
+                    JOIN   actors a ON a.actor_id = m.actor_id
+                    WHERE  m.actor_id IN (
+                        SELECT DISTINCT ea.actor_id
+                        FROM   event_actors ea
+                        JOIN   case_events ce ON ce.event_id = ea.event_id
+                        WHERE  ce.case_id = ?
+                    )
+                    ORDER  BY m.influence_score DESC LIMIT 10
+                """, (case_id,)).fetchall()
+            else:
+                leads_rows = db.execute(
+                    "SELECT m.actor_id, a.name, a.type, "
+                    "m.influence_score, m.betweenness, m.pagerank, "
+                    "m.community_id, m.computed_at "
+                    "FROM actor_network_metrics m "
+                    "JOIN actors a ON a.actor_id = m.actor_id "
+                    "ORDER BY m.influence_score DESC LIMIT 10"
+                ).fetchall()
             intelligence_leads = [dict(r) for r in leads_rows]
         except Exception:
             pass
@@ -336,6 +365,23 @@ def create_app() -> Flask:
         except Exception:
             stream_counts = {}
 
+        # Active cases for the case-filter selector
+        active_cases = []
+        selected_case = None
+        try:
+            active_cases = [dict(r) for r in db.execute(
+                "SELECT case_id, name, status FROM cases "
+                "WHERE LOWER(status)='active' ORDER BY case_id DESC"
+            ).fetchall()]
+            if case_id:
+                row = db.execute(
+                    "SELECT case_id, name FROM cases WHERE case_id=?", (case_id,)
+                ).fetchone()
+                if row:
+                    selected_case = dict(row)
+        except Exception:
+            pass
+
         return render_template(
             "index.html",
             stats=stats,
@@ -348,6 +394,9 @@ def create_app() -> Flask:
             intelligence_leads=intelligence_leads,
             sentinel_alerts_dash=sentinel_alerts_dash,
             stream_counts=stream_counts,
+            active_cases=active_cases,
+            selected_case=selected_case,
+            selected_case_id=case_id,
         )
 
     # -----------------------------------------------------------------------
@@ -985,7 +1034,7 @@ def create_app() -> Flask:
 
         # Phase 16: active cases for the map popup pin-to-case widget
         active_cases = db.execute("""
-            SELECT case_id, title, status
+            SELECT case_id, name, status
             FROM   cases
             WHERE  status = 'active'
             ORDER  BY created_at DESC
@@ -1091,7 +1140,7 @@ def create_app() -> Flask:
 
         db   = get_db()
         case = db.execute(
-            "SELECT case_id, title, status FROM cases WHERE case_id=?", (case_id,)
+            "SELECT case_id, name, status FROM cases WHERE case_id=?", (case_id,)
         ).fetchone()
         if not case:
             return jsonify({"error": "Case not found"}), 404
@@ -1139,7 +1188,7 @@ def create_app() -> Flask:
             "features": features,
             "metadata": {
                 "case_id":   case_id,
-                "case_title": case["title"],
+                "case_title": case["name"],
                 "total":     len(features),
             },
         }
@@ -2043,7 +2092,7 @@ def create_app() -> Flask:
 
         # Phase 16 — active cases for the "Pin to Case" dropdown
         active_cases = db.execute("""
-            SELECT case_id, title, status
+            SELECT case_id, name, status
             FROM   cases
             WHERE  status = 'active'
             ORDER  BY created_at DESC
@@ -2214,7 +2263,7 @@ def create_app() -> Flask:
         """Toggle-pin a FORAGE signal into a FORGE case."""
         from flask import jsonify
         db     = get_db()
-        case   = db.execute("SELECT case_id, title FROM cases WHERE case_id=?", (case_id,)).fetchone()
+        case   = db.execute("SELECT case_id, name FROM cases WHERE case_id=?", (case_id,)).fetchone()
         signal = db.execute("SELECT signal_id FROM signals WHERE signal_id=?", (signal_id,)).fetchone()
         if not case:   return jsonify({"error": "Case not found"}), 404
         if not signal: return jsonify({"error": "Signal not found"}), 404
@@ -2230,18 +2279,18 @@ def create_app() -> Flask:
         if existing:
             db.execute("DELETE FROM case_signals WHERE case_id=? AND signal_id=?", (case_id, signal_id))
             db.commit()
-            return jsonify({"pinned": False, "case_id": case_id, "signal_id": signal_id, "case_title": case["title"]})
+            return jsonify({"pinned": False, "case_id": case_id, "signal_id": signal_id, "case_title": case["name"]})
         else:
             db.execute("INSERT INTO case_signals (case_id, signal_id, note) VALUES (?, ?, ?)", (case_id, signal_id, note))
             db.commit()
-            return jsonify({"pinned": True, "case_id": case_id, "signal_id": signal_id, "case_title": case["title"]})
+            return jsonify({"pinned": True, "case_id": case_id, "signal_id": signal_id, "case_title": case["name"]})
 
     @app.route("/api/cases/<int:case_id>/signals")
     def api_case_signals(case_id: int):
         """Returns all signals pinned to a case as JSON, ordered chronologically."""
         from flask import jsonify
         db   = get_db()
-        case = db.execute("SELECT case_id, title, status FROM cases WHERE case_id=?", (case_id,)).fetchone()
+        case = db.execute("SELECT case_id, name, status FROM cases WHERE case_id=?", (case_id,)).fetchone()
         if not case: return jsonify({"error": "Case not found"}), 404
         rows = db.execute("""
             SELECT s.signal_id, s.source, s.external_id, s.title, s.content,
@@ -2252,7 +2301,7 @@ def create_app() -> Flask:
             WHERE  cs.case_id = ?
             ORDER  BY s.timestamp ASC
         """, (case_id,)).fetchall()
-        return jsonify({"case_id": case_id, "case_title": case["title"],
+        return jsonify({"case_id": case_id, "case_title": case["name"],
                         "total": len(rows), "signals": [dict(r) for r in rows]})
 
     @app.route("/api/signals/<signal_id>/cases")
@@ -2263,7 +2312,7 @@ def create_app() -> Flask:
         sig = db.execute("SELECT signal_id FROM signals WHERE signal_id=?", (signal_id,)).fetchone()
         if not sig: return jsonify({"error": "Signal not found"}), 404
         rows = db.execute("""
-            SELECT c.case_id, c.title, c.status, cs.pinned_at, cs.note
+            SELECT c.case_id, c.name, c.status, cs.pinned_at, cs.note
             FROM   case_signals cs
             JOIN   cases c ON c.case_id = cs.case_id
             WHERE  cs.signal_id = ?
@@ -2876,7 +2925,7 @@ def create_app() -> Flask:
         hypothesis = f"Pattern: {alert['summary'][:200]}"
         try:
             cur = db.execute(
-                "INSERT INTO cases (title, description, hypothesis, status, case_type, source_type) "
+                "INSERT INTO cases (name, description, hypothesis, status, case_type, source_type) "
                 "VALUES (?, ?, ?, 'active', 'signal', 'live') ",
                 (case_title,
                  f"Auto-generated from Sentinel alert #{alert_id}. "
@@ -2955,13 +3004,17 @@ def create_app() -> Flask:
     @app.route("/api/feed")
     def api_feed():
         """
-        Phase 29.3: Unified, ranked intelligence feed.
+        CT-1 / Phase 29.3: Unified, ranked intelligence feed with optional
+        gravity-based contextual tunneling.
 
         Query params
         ───────────
-          limit  (int, default 50, max 200)
-          stream (str)  — filter to a single stream; omit for all
-          offset (int)  — for infinite scroll pagination
+          limit      (int, default 50, max 200)
+          stream     (str)   — filter to a single stream; omit for all
+          offset     (int)   — for infinite scroll pagination
+          case_id    (int)   — activate CT-1 gravity scoring against this case
+          gravity    (int)   — gravity weight 0–100 (default 50 when case_id set)
+          lens       (str)   — 'live' | 'seed' | 'all'
 
         Item types returned
         ───────────────────
@@ -2970,24 +3023,17 @@ def create_app() -> Flask:
           CORRELATION       — non-FIRMS pairs with score >= 0.85; stream_weight = 1.0
           INTELLIGENCE_LEAD — actors in the top 10% by influence_score (90th-pct subquery)
 
-        feed_score formula
-        ──────────────────
-          (relevance_score × 0.40)
-        + (is_priority     × 0.30)
-        + (sentinel_flag   × 0.20)   ← 1.0 if sentinel alert within 100 km / 6 h
-        + (stream_weight   × 0.10)
+        CT-1 gravity blending (when case_id provided)
+        ──────────────────────────────────────────────
+          gravity_score  = actor_match×0.50 + location_match×0.30 + keyword_match×0.20
+          final_score    = (1 - gw) × feed_score + gw × gravity_score
+          where gw       = gravity / 100  (default 0.50)
 
         FIRMS noise-reduction (Phase 29.3)
         ───────────────────────────────────
-        FIRMS wildfire pixel-pairs are structurally perfect spatiotemporal matches
-        and flood all three scored sections. We apply source-level filters:
-
           SENTINEL_ALERT : exclude any alert whose summary references [firms]
           CORRELATION    : exclude any pair where either signal is source='firms'
-          SIGNAL (FIRMS) : show only if EITHER:
-                           (a) is_priority = 1  (high-intensity threshold hit), OR
-                           (b) isolated — no other firms signal within 50 km / 24 h
-                           AND not already represented by a sentinel or correlation
+          SIGNAL (FIRMS) : show only if is_priority=1 OR isolated, and not redundant
         """
         from flask import jsonify
 
@@ -3008,6 +3054,17 @@ def create_app() -> Flask:
             source_type_clause = "s.source_type = ?"
             source_type_param = lens
             sentinel_allowed = (lens == 'live')
+
+        # ── CT-1: gravity params ─────────────────────────────────────────────
+        try:
+            ct_case_id = int(request.args.get("case_id", 0)) or None
+        except (ValueError, TypeError):
+            ct_case_id = None
+        try:
+            ct_gravity = max(0, min(100, int(request.args.get("gravity", 50))))
+        except (ValueError, TypeError):
+            ct_gravity = 50
+        gravity_weight = ct_gravity / 100.0  # 0.0–1.0
 
         items = []
 
@@ -3346,6 +3403,21 @@ def create_app() -> Flask:
         except Exception:
             pass
 
+        # ── CT-1: gravity scoring pass ────────────────────────────────────────
+        ct_context = None
+        if ct_case_id:
+            try:
+                from core.gravity import build_context, score_item, blend_score
+                ct_context = build_context(db, ct_case_id)
+                for item in items:
+                    gs = score_item(item, ct_context)
+                    item["gravity_score"] = gs
+                    item["feed_score"]    = blend_score(
+                        item["feed_score"], gs, gravity_weight
+                    )
+            except Exception:
+                ct_context = None  # degrade gracefully to Phase 29.3 behaviour
+
         # ── Sort: feed_score DESC, then timestamp DESC as tiebreaker ─────────
         def _sort_key(item):
             ts = item.get("timestamp") or "1970-01-01"
@@ -3358,11 +3430,14 @@ def create_app() -> Flask:
         page  = items[offset : offset + limit]
 
         return jsonify({
-            "total":    total,
-            "offset":   offset,
-            "limit":    limit,
-            "has_more": (offset + limit) < total,
-            "items":    page,
+            "total":      total,
+            "offset":     offset,
+            "limit":      limit,
+            "has_more":   (offset + limit) < total,
+            "items":      page,
+            "ct_active":  ct_case_id is not None and ct_context is not None,
+            "ct_case_id": ct_case_id,
+            "gravity":    ct_gravity if ct_case_id else None,
         })
 
     @app.route("/api/anomaly/run", methods=["POST"])
@@ -3407,6 +3482,334 @@ def create_app() -> Flask:
             "breakdown": [dict(r) for r in breakdown],
         })
 
+    # ── CT-1: Case anchors ────────────────────────────────────────────────────
+
+    @app.route("/api/cases/<int:case_id>/anchors")
+    def api_case_anchors(case_id: int):
+        """
+        CT-1: Return the gravity anchors for a case — actors, location count,
+        keywords, and signal stats. Used by the feed UI to display the CT banner.
+        """
+        from flask import jsonify
+        db = get_db()
+        case = db.execute(
+            "SELECT case_id, name, status FROM cases WHERE case_id = ?",
+            (case_id,)
+        ).fetchone()
+        if not case:
+            return jsonify({"error": "Case not found"}), 404
+
+        try:
+            from core.gravity import build_context
+            ctx = build_context(db, case_id)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+        actor_rows = db.execute("""
+            SELECT a.actor_id, a.name, a.type
+            FROM   case_actors ca
+            JOIN   actors a ON a.actor_id = ca.actor_id
+            WHERE  ca.case_id = ?
+        """, (case_id,)).fetchall()
+
+        return jsonify({
+            "case_id":       case_id,
+            "case_title":    case["name"],
+            "case_status":   case["status"],
+            "actors":        [dict(r) for r in actor_rows],
+            "signal_count":  db.execute(
+                "SELECT COUNT(*) FROM case_signals WHERE case_id = ?",
+                (case_id,)
+            ).fetchone()[0],
+            "location_count": len(ctx["locations"]),
+            "keyword_count":  len(ctx["keywords"]),
+            "keywords_sample": sorted(ctx["keywords"])[:20],
+        })
+
+    # ── CT-1: Fetch suggestions ───────────────────────────────────────────────
+
+    @app.route("/api/cases/<int:case_id>/fetch-suggestions")
+    def api_case_fetch_suggestions(case_id: int):
+        """
+        CT-1: Return the top 20 signals NOT already pinned to this case,
+        ranked by gravity_score against the case context. Helps the analyst
+        discover evidence they may have missed.
+        """
+        from flask import jsonify
+        db = get_db()
+        if not db.execute(
+            "SELECT 1 FROM cases WHERE case_id = ?", (case_id,)
+        ).fetchone():
+            return jsonify({"error": "Case not found"}), 404
+
+        try:
+            from core.gravity import build_context, score_item
+            ctx = build_context(db, case_id)
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+        # Get signals not yet pinned to this case
+        candidate_rows = db.execute("""
+            SELECT s.signal_id, s.title, s.content, s.source, s.stream,
+                   s.timestamp, s.lat, s.lng, s.is_priority,
+                   COALESCE(s.relevance_score, 0.5) AS relevance_score
+            FROM   signals s
+            WHERE  s.status IN ('raw', 'promoted')
+              AND  s.signal_id NOT IN (
+                       SELECT signal_id FROM case_signals WHERE case_id = ?
+                   )
+            ORDER  BY s.relevance_score DESC, s.timestamp DESC
+            LIMIT  500
+        """, (case_id,)).fetchall()
+
+        scored = []
+        for r in candidate_rows:
+            item = {
+                "item_type":      "SIGNAL",
+                "signal_id":      r["signal_id"],
+                "title":          r["title"] or "(untitled)",
+                "summary":        (r["content"] or "")[:200],
+                "source":         r["source"] or "",
+                "stream":         r["stream"] or "GLOBAL",
+                "timestamp":      r["timestamp"],
+                "is_priority":    r["is_priority"],
+                "relevance_score": float(r["relevance_score"] or 0),
+                "lat":            r["lat"],
+                "lng":            r["lng"],
+            }
+            item["gravity_score"] = score_item(item, ctx)
+            scored.append(item)
+
+        scored.sort(key=lambda x: x["gravity_score"], reverse=True)
+        top = [s for s in scored if s["gravity_score"] > 0][:20]
+
+        return jsonify({
+            "case_id":    case_id,
+            "total":      len(top),
+            "suggestions": top,
+        })
+
+    # ── CT-1: Surface signals with gravity column ─────────────────────────────
+
+    @app.route("/api/surface/signals/context")
+    def api_surface_signals_context():
+        """
+        CT-1: Signal monitor feed with gravity_score column relative to
+        case_id. Backs the ⊡ Context Signals view in signals.html.
+
+        Query params
+        ────────────
+          case_id  (int, required) — active case to score against
+          limit    (int, default 50, max 200)
+          offset   (int, default 0)
+          stream   (str) — optional stream filter
+        """
+        from flask import jsonify
+        db = get_db()
+
+        try:
+            case_id = int(request.args.get("case_id", 0))
+        except (ValueError, TypeError):
+            return jsonify({"error": "case_id required"}), 400
+        if not case_id:
+            return jsonify({"error": "case_id required"}), 400
+
+        limit  = min(int(request.args.get("limit",  50)), 200)
+        offset = max(int(request.args.get("offset",  0)),   0)
+        stream_filter = request.args.get("stream", "").strip().upper() or None
+
+        stream_clause = "AND s.stream = ?" if stream_filter else ""
+        params = [stream_filter] if stream_filter else []
+
+        rows = db.execute(f"""
+            SELECT s.signal_id, s.title, s.content, s.source, s.stream,
+                   s.timestamp, s.lat, s.lng, s.is_priority, s.status,
+                   COALESCE(s.relevance_score, 0.5) AS relevance_score,
+                   COUNT(cs.case_id) AS pinned_case_count
+            FROM   signals s
+            LEFT   JOIN case_signals cs ON cs.signal_id = s.signal_id
+            WHERE  s.status IN ('raw', 'promoted')
+            {stream_clause}
+            GROUP  BY s.signal_id
+            ORDER  BY s.is_priority DESC, s.relevance_score DESC
+            LIMIT  500
+        """, params).fetchall()
+
+        try:
+            from core.gravity import build_context, score_item
+            ctx = build_context(db, case_id)
+        except Exception:
+            ctx = {}
+
+        items = []
+        for r in rows:
+            item = {
+                "signal_id":       r["signal_id"],
+                "title":           r["title"] or "(untitled)",
+                "summary":         (r["content"] or "")[:160],
+                "source":          r["source"] or "",
+                "stream":          r["stream"] or "GLOBAL",
+                "timestamp":       r["timestamp"],
+                "lat":             r["lat"],
+                "lng":             r["lng"],
+                "is_priority":     r["is_priority"],
+                "relevance_score": float(r["relevance_score"] or 0),
+                "pinned_case_count": r["pinned_case_count"],
+                "item_type":       "SIGNAL",
+                "gravity_score":   score_item(
+                    {"item_type": "SIGNAL", "signal_id": r["signal_id"],
+                     "title": r["title"], "summary": (r["content"] or "")[:160],
+                     "lat": r["lat"], "lng": r["lng"]},
+                    ctx
+                ) if ctx else 0.0,
+            }
+            items.append(item)
+
+        items.sort(key=lambda x: (x["gravity_score"], x["relevance_score"]), reverse=True)
+        page = items[offset: offset + limit]
+
+        return jsonify({
+            "case_id":  case_id,
+            "total":    len(items),
+            "offset":   offset,
+            "limit":    limit,
+            "has_more": (offset + limit) < len(items),
+            "items":    page,
+        })
+
+    # ── E-2: Case evidence graph ──────────────────────────────────────────────
+
+    @app.route("/api/cases/<int:case_id>/evidence-graph")
+    def api_case_evidence_graph(case_id: int):
+        """
+        E-2: Return nodes (actors) and edges (entity_relationships) scoped to
+        the actors pinned to this case.
+
+        Nodes: all actors in case_actors for this case, enriched with
+               actor_network_metrics (influence, betweenness, community).
+        Edges: entity_relationships where BOTH subject AND object are case actors.
+               Also includes one-hop edges where only one end is a case actor
+               (flag: 'bridging': true) — surfaces connected actors not yet in case.
+
+        Response is Cytoscape.js-compatible:
+          { nodes: [{data: {...}}], edges: [{data: {...}}] }
+        """
+        from flask import jsonify
+        db = get_db()
+
+        if not db.execute(
+            "SELECT 1 FROM cases WHERE case_id = ?", (case_id,)
+        ).fetchone():
+            return jsonify({"error": "Case not found"}), 404
+
+        # Case actors
+        case_actor_rows = db.execute("""
+            SELECT a.actor_id, a.name, a.type,
+                   m.influence_score, m.betweenness, m.pagerank, m.community_id
+            FROM   case_actors ca
+            JOIN   actors a ON a.actor_id = ca.actor_id
+            LEFT JOIN actor_network_metrics m ON m.actor_id = a.actor_id
+            WHERE  ca.case_id = ?
+        """, (case_id,)).fetchall()
+
+        case_actor_ids = {r["actor_id"] for r in case_actor_rows}
+
+        if not case_actor_ids:
+            return jsonify({"nodes": [], "edges": [], "case_id": case_id,
+                            "total_actors": 0, "total_edges": 0})
+
+        # All edges touching at least one case actor
+        placeholders = ",".join("?" * len(case_actor_ids))
+        id_list = list(case_actor_ids)
+
+        edge_rows = db.execute(f"""
+            SELECT er.subject_actor_id, er.object_actor_id,
+                   er.relation_type, er.confidence,
+                   ar.title AS artifact_title,
+                   ar.artifact_id
+            FROM   entity_relationships er
+            LEFT JOIN artifacts ar ON ar.artifact_id = er.source_artifact_id
+            WHERE  er.subject_actor_id IN ({placeholders})
+               OR  er.object_actor_id  IN ({placeholders})
+        """, id_list + id_list).fetchall()
+
+        # Collect bridging actor ids (one-hop neighbours not in case)
+        bridging_ids = set()
+        for e in edge_rows:
+            if e["subject_actor_id"] not in case_actor_ids:
+                bridging_ids.add(e["subject_actor_id"])
+            if e["object_actor_id"] not in case_actor_ids:
+                bridging_ids.add(e["object_actor_id"])
+
+        # Fetch bridging actor data
+        bridging_nodes = []
+        if bridging_ids:
+            bph = ",".join("?" * len(bridging_ids))
+            bridging_rows = db.execute(f"""
+                SELECT a.actor_id, a.name, a.type,
+                       m.influence_score, m.betweenness, m.pagerank, m.community_id
+                FROM   actors a
+                LEFT JOIN actor_network_metrics m ON m.actor_id = a.actor_id
+                WHERE  a.actor_id IN ({bph})
+            """, list(bridging_ids)).fetchall()
+            bridging_nodes = [dict(r) for r in bridging_rows]
+
+        # Build Cytoscape node list
+        nodes = []
+        for r in case_actor_rows:
+            nodes.append({"data": {
+                "id":           str(r["actor_id"]),
+                "label":        r["name"],
+                "type":         r["type"] or "unknown",
+                "influence":    round(float(r["influence_score"] or 0), 4),
+                "betweenness":  round(float(r["betweenness"] or 0), 4),
+                "pagerank":     round(float(r["pagerank"] or 0), 4),
+                "community":    r["community_id"],
+                "in_case":      True,
+            }})
+        for r in bridging_nodes:
+            nodes.append({"data": {
+                "id":           str(r["actor_id"]),
+                "label":        r["name"],
+                "type":         r["type"] or "unknown",
+                "influence":    round(float(r["influence_score"] or 0), 4),
+                "betweenness":  round(float(r["betweenness"] or 0), 4),
+                "pagerank":     round(float(r["pagerank"] or 0), 4),
+                "community":    r["community_id"],
+                "in_case":      False,
+            }})
+
+        # Build Cytoscape edge list
+        edges = []
+        seen_edges: set = set()
+        for e in edge_rows:
+            key = (e["subject_actor_id"], e["object_actor_id"], e["relation_type"])
+            if key in seen_edges:
+                continue
+            seen_edges.add(key)
+            bridging = (
+                e["subject_actor_id"] not in case_actor_ids or
+                e["object_actor_id"]  not in case_actor_ids
+            )
+            edges.append({"data": {
+                "id":             f"{e['subject_actor_id']}-{e['object_actor_id']}-{e['relation_type']}",
+                "source":         str(e["subject_actor_id"]),
+                "target":         str(e["object_actor_id"]),
+                "relation":       e["relation_type"],
+                "confidence":     round(float(e["confidence"] or 0), 3),
+                "artifact_title": e["artifact_title"],
+                "artifact_id":    e["artifact_id"],
+                "bridging":       bridging,
+            }})
+
+        return jsonify({
+            "case_id":     case_id,
+            "total_actors": len(nodes),
+            "total_edges":  len(edges),
+            "nodes":        nodes,
+            "edges":        edges,
+        })
+
     @app.route("/api/graph/metrics")
     def api_graph_metrics():
         from flask import jsonify
@@ -3438,6 +3841,178 @@ def create_app() -> Flask:
             return jsonify(result)
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Path B: Actor Intelligence Graph
+    # /intel-graph        — full-page Cytoscape.js visualization
+    # /api/actor-network  — nodes (actors+metrics) + edges (entity_relationships)
+    # /api/actor/<id>/panel — click-panel data: signals, artifacts, risk
+    # -----------------------------------------------------------------------
+
+    @app.route("/intel-graph")
+    def intel_graph():
+        db = get_db()
+        stats = {
+            "actors":       db.execute("SELECT COUNT(*) FROM actors").fetchone()[0],
+            "hard_edges":   db.execute(
+                "SELECT COUNT(*) FROM entity_relationships "
+                "WHERE relation_type != 'co_occurrence'"
+            ).fetchone()[0],
+            "co_edges":     db.execute(
+                "SELECT COUNT(*) FROM entity_relationships "
+                "WHERE relation_type = 'co_occurrence'"
+            ).fetchone()[0],
+            "communities":  db.execute(
+                "SELECT COUNT(DISTINCT community_id) FROM actor_network_metrics "
+                "WHERE community_id IS NOT NULL"
+            ).fetchone()[0],
+        }
+        return render_template("intel_graph.html", stats=stats)
+
+    @app.route("/api/actor-network")
+    def api_actor_network():
+        from flask import jsonify, request as req
+        db = get_db()
+
+        hard_only = req.args.get("hard_only", "false").lower() == "true"
+        show_all  = req.args.get("show_all",  "false").lower() == "true"
+
+        # Hard edge = any named investigative relationship (not co-occurrence)
+        if hard_only:
+            edges_rows = db.execute("""
+                SELECT relationship_id, subject_actor_id, object_actor_id,
+                       relation_type, confidence, source_artifact_id
+                FROM entity_relationships
+                WHERE relation_type != 'co_occurrence'
+            """).fetchall()
+        else:
+            edges_rows = db.execute("""
+                SELECT relationship_id, subject_actor_id, object_actor_id,
+                       relation_type, confidence, source_artifact_id
+                FROM entity_relationships
+            """).fetchall()
+
+        edges = [dict(r) for r in edges_rows]
+
+        # Actors that appear in the selected edge set
+        connected_ids = set()
+        for e in edges:
+            connected_ids.add(e["subject_actor_id"])
+            connected_ids.add(e["object_actor_id"])
+
+        actor_rows = db.execute("""
+            SELECT a.actor_id, a.name, a.type, a.description,
+                   COALESCE(m.influence_score, 0) AS influence_score,
+                   m.community_id, m.pagerank
+            FROM   actors a
+            LEFT   JOIN actor_network_metrics m ON a.actor_id = m.actor_id
+            ORDER  BY a.name
+        """).fetchall()
+
+        nodes = []
+        for a in actor_rows:
+            if not show_all and a["actor_id"] not in connected_ids:
+                continue
+            desc = a["description"] or ""
+            nodes.append({
+                "id":              a["actor_id"],
+                "label":           a["name"] or f"Actor #{a['actor_id']}",
+                "actor_type":      a["type"] or "unknown",
+                "influence_score": round(float(a["influence_score"] or 0), 4),
+                "community_id":    a["community_id"],
+                "pagerank":        round(float(a["pagerank"] or 0), 6),
+                "is_high_risk":    "HIGH_RISK" in desc,
+            })
+
+        return jsonify({"nodes": nodes, "edges": edges,
+                        "meta": {"total_actors": len(actor_rows),
+                                 "shown_nodes": len(nodes),
+                                 "edges": len(edges)}})
+
+    @app.route("/api/actor/<int:actor_id>/panel")
+    def api_actor_panel(actor_id: int):
+        from flask import jsonify
+        db = get_db()
+
+        actor = db.execute("""
+            SELECT a.actor_id, a.name, a.type, a.description, a.confidence_score,
+                   COALESCE(m.influence_score, 0) AS influence_score,
+                   m.community_id, m.betweenness, m.pagerank
+            FROM   actors a
+            LEFT   JOIN actor_network_metrics m ON a.actor_id = m.actor_id
+            WHERE  a.actor_id = ?
+        """, (actor_id,)).fetchone()
+        if not actor:
+            return jsonify({"error": "Actor not found"}), 404
+
+        desc = actor["description"] or ""
+        inf  = float(actor["influence_score"] or 0)
+        if "HIGH_RISK" in desc:
+            risk_level = "HIGH_RISK"
+        elif inf > 0.3 or (actor["confidence_score"] or 0) > 0.7:
+            risk_level = "ELEVATED"
+        else:
+            risk_level = "STANDARD"
+
+        # Linked signals (junction tables populated by entity_resolver + pipeline)
+        signals = db.execute("""
+            SELECT DISTINCT s.signal_id, s.title, s.timestamp,
+                            s.stream, s.relevance_score, s.source
+            FROM   signals s
+            WHERE  s.signal_id IN (
+                SELECT signal_id FROM actor_signals WHERE actor_id = ?
+                UNION
+                SELECT signal_id FROM signal_actors  WHERE actor_id = ?
+            )
+            ORDER  BY s.relevance_score DESC, s.timestamp DESC
+            LIMIT  10
+        """, (actor_id, actor_id)).fetchall()
+
+        # PDF evidence: artifacts referenced by entity_relationships for this actor
+        artifacts = db.execute("""
+            SELECT DISTINCT a.artifact_id, a.title, a.description AS pdf_url,
+                            a.file_path, a.source_type, er.relation_type
+            FROM   entity_relationships er
+            JOIN   artifacts a ON er.source_artifact_id = a.artifact_id
+            WHERE  (er.subject_actor_id = ? OR er.object_actor_id = ?)
+              AND  a.file_path IS NOT NULL
+            ORDER  BY a.artifact_id DESC
+            LIMIT  10
+        """, (actor_id, actor_id)).fetchall()
+
+        # Named relationships (excludes co_occurrence noise)
+        relationships = db.execute("""
+            SELECT er.relation_type, er.confidence, er.extraction_method,
+                   CASE WHEN er.subject_actor_id = ?
+                        THEN 'outbound' ELSE 'inbound' END AS direction,
+                   CASE WHEN er.subject_actor_id = ?
+                        THEN ao.name ELSE as2.name END      AS peer_name,
+                   CASE WHEN er.subject_actor_id = ?
+                        THEN er.object_actor_id
+                        ELSE er.subject_actor_id END        AS peer_id
+            FROM   entity_relationships er
+            JOIN   actors ao  ON ao.actor_id  = er.object_actor_id
+            JOIN   actors as2 ON as2.actor_id = er.subject_actor_id
+            WHERE  (er.subject_actor_id = ? OR er.object_actor_id = ?)
+              AND  er.relation_type != 'co_occurrence'
+            ORDER  BY er.confidence DESC
+            LIMIT  20
+        """, (actor_id, actor_id, actor_id, actor_id, actor_id)).fetchall()
+
+        return jsonify({
+            "actor": {
+                "id":              actor["actor_id"],
+                "name":            actor["name"],
+                "type":            actor["type"],
+                "description":     actor["description"],
+                "influence_score": round(inf, 4),
+                "community_id":    actor["community_id"],
+                "risk_level":      risk_level,
+            },
+            "signals":       [dict(r) for r in signals],
+            "artifacts":     [dict(r) for r in artifacts],
+            "relationships": [dict(r) for r in relationships],
+        })
 
     @app.route("/api/relationships", methods=["GET"])
     def api_relationships():
@@ -3808,15 +4383,15 @@ def create_app() -> Flask:
     def cases():
         db = get_db()
 
-        lens = request.args.get('lens', 'live').lower()
+        lens = request.args.get('lens', 'all').lower()
         if lens not in ('live', 'seed', 'all'):
-            lens = 'live'
+            lens = 'all'
 
         case_where = '' if lens == 'all' else 'WHERE c.source_type = ?'
         params = [] if lens == 'all' else [lens]
 
         cases_list = db.execute(f"""
-            SELECT c.case_id, c.title, c.description, c.status, c.created_at,
+            SELECT c.case_id, c.name, c.description, c.status, c.created_at,
                    COUNT(DISTINCT ca.artifact_id) AS artifact_count,
                    COUNT(DISTINCT ce.event_id)    AS event_count,
                    COUNT(DISTINCT cac.actor_id)   AS actor_count
@@ -3842,7 +4417,7 @@ def create_app() -> Flask:
             return redirect(url_for("cases"))
         db = get_db()
         cur = db.execute(
-            "INSERT INTO cases (title, description, hypothesis, case_type, status, source_type) VALUES (?, ?, ?, ?, ?, 'live')",
+            "INSERT INTO cases (name, description, hypothesis, case_type, status, source_type) VALUES (?, ?, ?, ?, ?, 'live')",
             (title, description, hypothesis, case_type, status),
         )
         db.commit()
@@ -3853,7 +4428,9 @@ def create_app() -> Flask:
     def case_detail(case_id: int):
         db = get_db()
         case = db.execute(
-            "SELECT * FROM cases WHERE case_id = ?", (case_id,)
+            "SELECT case_id, name, description, status, created_at, "
+            "hypothesis, case_type, source_type, auto_generated, trigger_signal_id "
+            "FROM cases WHERE case_id = ?", (case_id,)
         ).fetchone()
         if not case:
             flash("Case not found.", "error")
@@ -3897,7 +4474,7 @@ def create_app() -> Flask:
         """, (case_id,)).fetchall()
 
         all_cases = db.execute(
-            "SELECT case_id, title, status FROM cases ORDER BY created_at DESC"
+            "SELECT case_id, name, status FROM cases ORDER BY created_at DESC"
         ).fetchall()
 
         # Phase 16: FORAGE signals pinned to this case, chronological.
@@ -3934,6 +4511,201 @@ def create_app() -> Flask:
             all_cases=all_cases,
         )
 
+    # -----------------------------------------------------------------------
+    # Path B: Case Workbench — /workbench/<case_id>
+    # Dedicated view: Evidence Timeline + Actor Roster + Overlap Panel + PDF.js
+    # -----------------------------------------------------------------------
+
+    @app.route("/workbench/<int:case_id>")
+    def case_workbench(case_id: int):
+        db   = get_db()
+        case = db.execute(
+            "SELECT case_id, name, description, status, created_at, "
+            "hypothesis, case_type, source_type, auto_generated, trigger_signal_id "
+            "FROM cases WHERE case_id=?", (case_id,)
+        ).fetchone()
+        if not case:
+            flash("Case not found.", "error")
+            return redirect(url_for("cases"))
+
+        # ── Roster: actors + influence scores + risk ─────────────────────────
+        roster = db.execute("""
+            SELECT ac.actor_id, ac.name, ac.type, ac.description,
+                   COALESCE(m.influence_score, 0)  AS influence_score,
+                   COALESCE(m.community_id, NULL)  AS community_id,
+                   COALESCE(m.pagerank, 0)          AS pagerank,
+                   cac.note, cac.pinned_at,
+                   (SELECT COUNT(*) FROM entity_relationships er
+                    WHERE (er.subject_actor_id = ac.actor_id
+                        OR er.object_actor_id  = ac.actor_id)
+                      AND er.relation_type != 'co_occurrence') AS rel_count
+            FROM   case_actors cac
+            JOIN   actors ac ON ac.actor_id = cac.actor_id
+            LEFT   JOIN actor_network_metrics m ON m.actor_id = ac.actor_id
+            WHERE  cac.case_id = ?
+            ORDER  BY COALESCE(m.influence_score, 0) DESC, ac.name
+        """, (case_id,)).fetchall()
+
+        # ── Timeline: signals + artifacts merged chronologically ─────────────
+        raw_signals = db.execute("""
+            SELECT 'signal' AS kind,
+                   s.signal_id    AS item_id,
+                   s.title,
+                   s.content      AS body,
+                   s.timestamp    AS effective_ts,
+                   s.source,
+                   s.stream,
+                   COALESCE(s.relevance_score, 0) AS relevance_score,
+                   s.is_priority,
+                   NULL           AS file_path,
+                   NULL           AS artifact_type,
+                   cs.note        AS pin_note
+            FROM   case_signals cs
+            JOIN   signals s ON s.signal_id = cs.signal_id
+            WHERE  cs.case_id = ?
+        """, (case_id,)).fetchall()
+
+        raw_artifacts = db.execute("""
+            SELECT 'artifact'     AS kind,
+                   CAST(a.artifact_id AS TEXT) AS item_id,
+                   a.title,
+                   a.description  AS body,
+                   COALESCE(a.date, ca.pinned_at) AS effective_ts,
+                   a.source,
+                   NULL           AS stream,
+                   0.0            AS relevance_score,
+                   0              AS is_priority,
+                   a.file_path,
+                   a.type         AS artifact_type,
+                   ca.note        AS pin_note
+            FROM   case_artifacts ca
+            JOIN   artifacts a ON a.artifact_id = ca.artifact_id
+            WHERE  ca.case_id = ?
+        """, (case_id,)).fetchall()
+
+        # Merge and sort — items without timestamp go to the bottom
+        def _sort_ts(row):
+            ts = row["effective_ts"]
+            return ts if ts else "9999-99-99"
+
+        timeline = sorted(
+            [dict(r) for r in raw_signals] + [dict(r) for r in raw_artifacts],
+            key=_sort_ts
+        )
+
+        # Pre-compute media URL for document artifacts
+        for item in timeline:
+            fp = item.get("file_path") or ""
+            if fp:
+                # Strip leading media/ to get the path relative to MEDIA_DIR
+                rel = fp.replace("\\", "/")
+                if rel.startswith("media/"):
+                    rel = rel[len("media/"):]
+                item["media_url"] = f"/media/{rel}"
+            else:
+                item["media_url"] = None
+
+        # ── Overlap: actors in this case who appear in OTHER active cases ─────
+        overlap = db.execute("""
+            SELECT ac.actor_id, ac.name, ac.type,
+                   COALESCE(m.influence_score, 0) AS influence_score,
+                   COUNT(DISTINCT ca2.case_id)    AS overlap_count,
+                   GROUP_CONCAT(
+                       c2.case_id || '||' || c2.name, ';;'
+                   ) AS other_cases_raw
+            FROM   case_actors ca1
+            JOIN   actors ac  ON ac.actor_id  = ca1.actor_id
+            LEFT   JOIN actor_network_metrics m ON m.actor_id = ac.actor_id
+            JOIN   case_actors ca2 ON ca2.actor_id = ca1.actor_id
+                                   AND ca2.case_id != ca1.case_id
+            JOIN   cases c2   ON c2.case_id   = ca2.case_id
+                               AND LOWER(c2.status) = 'active'
+            WHERE  ca1.case_id = ?
+            GROUP  BY ac.actor_id
+            ORDER  BY overlap_count DESC, COALESCE(m.influence_score, 0) DESC
+        """, (case_id,)).fetchall()
+
+        # Parse the GROUP_CONCAT into structured lists
+        overlap_parsed = []
+        for row in overlap:
+            actor_dict = dict(row)
+            cases_raw = (row["other_cases_raw"] or "").split(";;")
+            parsed_cases = []
+            for raw in cases_raw:
+                if "||" in raw:
+                    cid_str, ctitle = raw.split("||", 1)
+                    try:
+                        parsed_cases.append({"case_id": int(cid_str), "title": ctitle})
+                    except ValueError:
+                        pass
+            actor_dict["other_cases"] = parsed_cases
+            del actor_dict["other_cases_raw"]
+            desc = db.execute(
+                "SELECT description FROM actors WHERE actor_id=?",
+                (actor_dict["actor_id"],)
+            ).fetchone()
+            actor_dict["is_high_risk"] = (
+                "HIGH_RISK" in (desc["description"] or "") if desc else False
+            )
+            overlap_parsed.append(actor_dict)
+
+        stats = {
+            "signals":   len(raw_signals),
+            "artifacts": len(raw_artifacts),
+            "actors":    len(roster),
+            "overlap":   len(overlap_parsed),
+        }
+
+        return render_template(
+            "case_workbench.html",
+            case=case,
+            roster=roster,
+            timeline=timeline,
+            overlap=overlap_parsed,
+            stats=stats,
+        )
+
+    @app.route("/api/cases/<int:case_id>/overlap")
+    def api_case_overlap(case_id: int):
+        """Cross-case actor overlap — JSON for the overlap panel."""
+        from flask import jsonify
+        db   = get_db()
+        case = db.execute("SELECT case_id FROM cases WHERE case_id=?", (case_id,)).fetchone()
+        if not case:
+            return jsonify({"error": "Case not found"}), 404
+
+        rows = db.execute("""
+            SELECT ac.actor_id, ac.name, ac.type,
+                   COALESCE(m.influence_score, 0) AS influence_score,
+                   COUNT(DISTINCT ca2.case_id)    AS overlap_count,
+                   GROUP_CONCAT(c2.case_id || '||' || c2.name, ';;') AS other_cases_raw
+            FROM   case_actors ca1
+            JOIN   actors ac  ON ac.actor_id  = ca1.actor_id
+            LEFT   JOIN actor_network_metrics m ON m.actor_id = ac.actor_id
+            JOIN   case_actors ca2 ON ca2.actor_id = ca1.actor_id
+                                   AND ca2.case_id != ca1.case_id
+            JOIN   cases c2   ON c2.case_id = ca2.case_id AND LOWER(c2.status) = 'active'
+            WHERE  ca1.case_id = ?
+            GROUP  BY ac.actor_id
+            ORDER  BY overlap_count DESC
+        """, (case_id,)).fetchall()
+
+        result = []
+        for row in rows:
+            d = dict(row)
+            parsed = []
+            for raw in (d.pop("other_cases_raw") or "").split(";;"):
+                if "||" in raw:
+                    cid_str, ctitle = raw.split("||", 1)
+                    try:
+                        parsed.append({"case_id": int(cid_str), "title": ctitle})
+                    except ValueError:
+                        pass
+            d["other_cases"] = parsed
+            result.append(d)
+
+        return jsonify({"case_id": case_id, "actors": result, "total": len(result)})
+
     @app.route("/cases/<int:case_id>/edit", methods=["POST"])
     def case_edit(case_id: int):
         title       = request.form.get("title", "").strip()
@@ -3946,7 +4718,7 @@ def create_app() -> Flask:
             return redirect(url_for("case_detail", case_id=case_id))
         db = get_db()
         db.execute(
-            "UPDATE cases SET title=?, description=?, hypothesis=?, case_type=?, status=? WHERE case_id=?",
+            "UPDATE cases SET name=?, description=?, hypothesis=?, case_type=?, status=? WHERE case_id=?",
             (title, description, hypothesis, case_type, status, case_id),
         )
         db.commit()
@@ -3957,12 +4729,12 @@ def create_app() -> Flask:
     def case_delete(case_id: int):
         db = get_db()
         case = db.execute(
-            "SELECT title FROM cases WHERE case_id=?", (case_id,)
+            "SELECT name FROM cases WHERE case_id=?", (case_id,)
         ).fetchone()
         if case:
             db.execute("DELETE FROM cases WHERE case_id=?", (case_id,))
             db.commit()
-            flash(f"Case '{case['title']}' deleted.", "success")
+            flash(f"Case '{case['name']}' deleted.", "success")
         return redirect(url_for("cases"))
 
     # ── Pin / Unpin API ──────────────────────────────────────────────────────
@@ -4178,7 +4950,9 @@ def create_app() -> Flask:
         """
         db   = get_db()
         case = db.execute(
-            "SELECT * FROM cases WHERE case_id=?", (case_id,)
+            "SELECT case_id, name, description, status, created_at, "
+            "hypothesis, case_type, source_type, auto_generated, trigger_signal_id "
+            "FROM cases WHERE case_id=?", (case_id,)
         ).fetchone()
         if not case:
             flash("Case not found.", "error")
@@ -4341,7 +5115,7 @@ def create_app() -> Flask:
         db = get_db()
 
         pinned_in = db.execute(
-            f"""SELECT c.case_id, c.title, c.status
+            f"""SELECT c.case_id, c.name, c.status
                 FROM {table} j
                 JOIN cases c ON c.case_id = j.case_id
                 WHERE j.{id_col} = ?""",
@@ -4387,7 +5161,7 @@ def create_app() -> Flask:
         from flask import jsonify
         db = get_db()
         rows = db.execute(
-            "SELECT case_id, title, status FROM cases ORDER BY created_at DESC"
+            "SELECT case_id, name, status FROM cases ORDER BY created_at DESC"
         ).fetchall()
         return jsonify({"cases": [dict(r) for r in rows]})
 
@@ -5647,7 +6421,7 @@ def create_app() -> Flask:
         )
         try:
             cur = db.execute(
-                "INSERT INTO cases (title, description, hypothesis, status, case_type) "
+                "INSERT INTO cases (name, description, hypothesis, status, case_type) "
                 "VALUES (?,?,?,'active','signal')",
                 (auto_title, description, hypothesis)
             )
@@ -5685,7 +6459,7 @@ def create_app() -> Flask:
 
         def _run():
             try:
-                from mega_ingest import run_all_collectors
+                from tools.mega_ingest import run_all_collectors
                 asyncio.run(run_all_collectors())
             except Exception as exc:
                 import logging
@@ -5708,7 +6482,7 @@ def create_app() -> Flask:
 
         def _run():
             try:
-                from mega_ingest import run_full_ingest
+                from tools.mega_ingest import run_full_ingest
                 run_full_ingest(batch_size=50, sleep_interval=0.1)
             except Exception as exc:
                 import logging
@@ -5734,7 +6508,7 @@ def create_app() -> Flask:
 
         def _run():
             try:
-                from mega_ingest import run_engines_processors
+                from tools.mega_ingest import run_engines_processors
                 run_engines_processors()
             except Exception as exc:
                 import logging
@@ -6132,6 +6906,171 @@ def create_app() -> Flask:
     def intel():
         """Phase 39: Unified FMS Intelligence Dashboard."""
         return render_template("intel.html")
+
+    # ── FORGE Security Manifest — Quarantine Manager routes ──────────────────
+    #    forge_security v1.0 | detonator.py routes files to quarantine/
+    #    These routes serve the Contagion Ward UI and its JSON API.
+    # ─────────────────────────────────────────────────────────────────────────
+
+    @app.route("/quarantine")
+    def quarantine_manager():
+        """
+        Contagion Ward — display all files that failed the PDF Air-Lock.
+
+        Each quarantined file has a matching .meta.json sidecar written by
+        forge_security.detonator._quarantine() containing:
+          { original_name, quarantined_at, reason, size_bytes }
+
+        Files without a sidecar are still shown with inferred metadata.
+        """
+        import json as _json
+        from pathlib import Path as _Path
+        from datetime import datetime as _dt, timezone as _tz
+
+        qdir = _Path("quarantine")
+        files = []
+
+        if qdir.exists():
+            for p in sorted(qdir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+                # Skip sidecar files themselves
+                if p.suffix == ".json" and p.stem.endswith(".meta"):
+                    continue
+                if p.name.startswith("."):
+                    continue
+
+                # Try to read sidecar metadata
+                sidecar = _Path(str(p) + ".meta.json")
+                meta = {}
+                if sidecar.exists():
+                    try:
+                        meta = _json.loads(sidecar.read_text(encoding="utf-8"))
+                    except Exception:
+                        pass
+
+                reason = meta.get("reason", "Unknown failure")
+                size_bytes = meta.get("size_bytes") or p.stat().st_size
+                original_name = meta.get("original_name", p.name)
+                quarantined_at_raw = meta.get("quarantined_at", "")
+
+                # Human-readable timestamp
+                try:
+                    dt = _dt.fromisoformat(quarantined_at_raw.replace("Z", "+00:00"))
+                    ts_human = dt.strftime("%Y-%m-%d %H:%M UTC")
+                    ts_full  = dt.isoformat()
+                except Exception:
+                    mtime = _dt.fromtimestamp(p.stat().st_mtime, tz=_tz.utc)
+                    ts_human = mtime.strftime("%Y-%m-%d %H:%M UTC")
+                    ts_full  = mtime.isoformat()
+
+                # Human-readable size
+                if size_bytes >= 1_048_576:
+                    size_human = f"{size_bytes / 1_048_576:.1f} MB"
+                elif size_bytes >= 1_024:
+                    size_human = f"{size_bytes / 1_024:.0f} KB"
+                else:
+                    size_human = f"{size_bytes} B"
+
+                # Classify failure type for UI tagging
+                r_lower = reason.lower()
+                if "magic" in r_lower or "not a valid pdf" in r_lower or "%pdf" in r_lower:
+                    fail_type = "magic"
+                elif "too large" in r_lower or "size" in r_lower:
+                    fail_type = "size"
+                elif "pages" in r_lower or "page" in r_lower:
+                    fail_type = "pages"
+                elif "pikepdf" in r_lower or "parse" in r_lower or "open" in r_lower:
+                    fail_type = "parse"
+                else:
+                    fail_type = "unknown"
+
+                files.append({
+                    "filename":          p.name,
+                    "original_name":     original_name,
+                    "reason":            reason,
+                    "fail_type":         fail_type,
+                    "size_bytes":        size_bytes,
+                    "size_human":        size_human,
+                    "quarantined_at":    ts_human,
+                    "quarantined_at_full": ts_full,
+                })
+
+        # Count all-time successful detonations (stored in logs/pip_audit_* as a proxy;
+        # a real implementation would persist this counter — default 0 for now)
+        total_detonated = 0
+        try:
+            log_dir = _Path("logs")
+            if log_dir.exists():
+                # Count how many times forensic-process succeeded (approximation via
+                # a lightweight counter file written by the detonator wrapper in app)
+                counter_file = log_dir / "detonation_success_count.txt"
+                if counter_file.exists():
+                    total_detonated = int(counter_file.read_text().strip())
+        except Exception:
+            pass
+
+        return render_template(
+            "quarantine.html",
+            files=files,
+            total_detonated=total_detonated,
+        )
+
+    @app.route("/api/quarantine/<path:filename>/delete", methods=["POST"])
+    def api_quarantine_delete(filename: str):
+        """Permanently delete a single file (and its sidecar) from quarantine/."""
+        from flask import jsonify as _jsonify
+        from pathlib import Path as _Path
+
+        # Security: prevent path traversal — filename must not contain separators
+        if "/" in filename or "\\" in filename or ".." in filename:
+            return _jsonify({"error": "Invalid filename"}), 400
+
+        qdir = _Path("quarantine")
+        target = qdir / filename
+
+        # Only delete files that actually live inside quarantine/
+        try:
+            target.resolve().relative_to(qdir.resolve())
+        except ValueError:
+            return _jsonify({"error": "Path traversal denied"}), 403
+
+        if not target.exists():
+            return _jsonify({"error": "File not found"}), 404
+
+        try:
+            target.unlink()
+            # Remove sidecar too
+            sidecar = _Path(str(target) + ".meta.json")
+            if sidecar.exists():
+                sidecar.unlink()
+            return _jsonify({"status": "deleted", "filename": filename})
+        except OSError as exc:
+            return _jsonify({"error": str(exc)}), 500
+
+    @app.route("/api/quarantine/purge-all", methods=["POST"])
+    def api_quarantine_purge_all():
+        """Permanently delete every file in quarantine/ and return count."""
+        from flask import jsonify as _jsonify
+        from pathlib import Path as _Path
+
+        qdir = _Path("quarantine")
+        if not qdir.exists():
+            return _jsonify({"status": "purged", "deleted": 0})
+
+        deleted = 0
+        errors  = []
+        for p in list(qdir.iterdir()):
+            if p.name.startswith("."):
+                continue
+            try:
+                p.unlink()
+                deleted += 1
+            except OSError as exc:
+                errors.append(str(exc))
+
+        if errors:
+            return _jsonify({"status": "partial", "deleted": deleted,
+                             "errors": errors[:5]}), 207
+        return _jsonify({"status": "purged", "deleted": deleted})
 
     return app
 

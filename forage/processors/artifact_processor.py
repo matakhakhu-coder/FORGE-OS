@@ -47,11 +47,20 @@ Usage
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import re
 import sqlite3
 import sys
 import uuid
+
+# ── Windows cp1252 fix: force UTF-8 output so unicode in log strings works ───
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
+                                  errors="replace", line_buffering=True)
+if hasattr(sys.stderr, "buffer"):
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8",
+                                  errors="replace", line_buffering=True)
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -503,25 +512,32 @@ class ProcessorManager:
         sid    = str(uuid.uuid4())
         ext_id = f"artifact:{artifact_id}:{(row['title'] or '')[:40]}"
         conf   = _confidence(row["raw_text_cache"] or row["description"] or "")
+        # Artifact-derived signals receive a relevance boost above 1.0 so they
+        # pass the triple_extractor gate (requires relevance_score > 1.0).
+        # Floor: conf is always >= 0.25, so rel_score >= 1.25. (P3.2-10 fix)
+        rel_score = round(1.0 + conf, 3)
         try:
             conn.execute("""
                 INSERT OR IGNORE INTO signals
                     (signal_id, source, external_id, title, content,
                      lat, lng, timestamp, status, is_priority,
-                     confidence_score, source_artifact_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), 'raw', 0, ?, ?)
+                     confidence_score, relevance_score, source_artifact_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), 'raw', 0, ?, ?, ?)
             """, (sid, row["source"] or "artifact", ext_id,
                   row["title"], (row["description"] or "")[:1000],
-                  row["latitude"], row["longitude"], conf, artifact_id))
+                  row["latitude"], row["longitude"], conf, rel_score, artifact_id))
         except Exception:
+            # Fallback: minimal columns — still carries source_artifact_id and
+            # relevance_score so provenance and triple_extractor gate are intact.
             conn.execute("""
                 INSERT OR IGNORE INTO signals
                     (signal_id, source, external_id, title, content,
-                     lat, lng, timestamp, status, is_priority)
-                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), 'raw', 0)
+                     lat, lng, timestamp, status, is_priority,
+                     relevance_score, source_artifact_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), 'raw', 0, ?, ?)
             """, (sid, row["source"] or "artifact", ext_id,
                   row["title"], (row["description"] or "")[:1000],
-                  row["latitude"], row["longitude"]))
+                  row["latitude"], row["longitude"], rel_score, artifact_id))
         return sid
 
     def _clean_text(self, raw: str) -> str:
@@ -543,6 +559,12 @@ class ProcessorManager:
 
         title = signal.get("title", "") or "GDELT Signal"
         content = self._clean_text(signal.get("content", ""))
+
+        # Intake gate: reject title-only stubs with no extractable content.
+        # Sub-200-char records produce zero NER triples and flood the pipeline.
+        if len(content) < 200:
+            return -1  # caller treats -1 as "skipped, not an error"
+
         source = signal.get("source", "unverified")
         if source not in {"verified", "unverified", "government", "leaked", "citizen", "media"}:
             source = "unverified"
@@ -749,16 +771,59 @@ class ProcessorManager:
                   status_filter: str = "pending",
                   limit: int = 500,
                   dry_run: bool = False,
-                  base_dir: Path | None = None) -> dict:
-        conn = self._conn()
-        rows = conn.execute(
-            "SELECT artifact_id, type, file_path, raw_text_cache, title "
-            "FROM artifacts WHERE processing_status = ? "
-            "ORDER BY created_at DESC LIMIT ?",
-            (status_filter, limit),
-        ).fetchall()
+                  base_dir: Path | None = None,
+                  close_after: bool = True,
+                  keywords: list[str] | None = None) -> dict:
+        """
+        keywords: optional list of search terms.  When supplied, the batch
+        SELECT adds a LIKE filter across title, source_url, and file_path so
+        only high-value artifacts matching at least one term are returned.
+        This is the "queue-jump" mechanism for precision ingress runs.
 
-        log(f"Batch: {len(rows)} artifacts with status='{status_filter}'")
+        Example: keywords=["khasho","npa","court","siu","prosecutor"]
+        """
+        conn = self._conn()
+
+        if keywords:
+            # Build: (title LIKE ? OR source_url LIKE ? OR file_path LIKE ?)
+            # for each keyword — joined with OR across all keywords.
+            like_clauses = []
+            like_params:  list[str] = []
+            for kw in keywords:
+                pat = f"%{kw.strip().lower()}%"
+                like_clauses.append(
+                    "(LOWER(COALESCE(title,'')) LIKE ? "
+                    "OR LOWER(COALESCE(source_url,'')) LIKE ? "
+                    "OR LOWER(COALESCE(file_path,'')) LIKE ? "
+                    "OR LOWER(COALESCE(raw_text_cache,'')) LIKE ?)"
+                )
+                like_params.extend([pat, pat, pat, pat])
+            keyword_clause = "AND (" + " OR ".join(like_clauses) + ")"
+            params = [status_filter] + like_params + [limit]
+            sql = f"""SELECT artifact_id, type, file_path, raw_text_cache, title
+                      FROM   artifacts
+                      WHERE  processing_status = ?
+                        {keyword_clause}
+                      ORDER BY
+                          CASE WHEN LENGTH(COALESCE(raw_text_cache,'')) > 200
+                               THEN 0 ELSE 1 END ASC,
+                          artifact_id ASC
+                      LIMIT ?"""
+            rows = conn.execute(sql, params).fetchall()
+            log(f"Batch [keyword={keywords}]: {len(rows)} artifacts "
+                f"with status='{status_filter}'")
+        else:
+            rows = conn.execute(
+                """SELECT artifact_id, type, file_path, raw_text_cache, title
+                   FROM   artifacts
+                   WHERE  processing_status = ?
+                   ORDER BY
+                       CASE WHEN LENGTH(COALESCE(raw_text_cache,'')) > 200 THEN 0 ELSE 1 END ASC,
+                       artifact_id ASC
+                   LIMIT ?""",
+                (status_filter, limit),
+            ).fetchall()
+            log(f"Batch: {len(rows)} artifacts with status='{status_filter}'")
         summary = {"processed": 0, "entities": 0,
                    "done": 0, "failed": 0, "skipped": 0, "pending": 0}
 
@@ -782,18 +847,109 @@ class ProcessorManager:
                     f"{summary['done']} done, {summary['failed']} failed")
 
         log(f"Batch complete: {summary}")
-        self.close()
+        if close_after:
+            self.close()
         return summary
+
+    def run_loop(self,
+                 status_filter: str = "pending",
+                 batch_size: int = 500,
+                 max_artifacts: int | None = None,
+                 mem_limit_mb: int = 2048,
+                 dry_run: bool = False,
+                 base_dir: Path | None = None,
+                 keywords: list[str] | None = None) -> dict:
+        """
+        Drain the queue for `status_filter` in `batch_size` increments,
+        looping until 0 rows remain, `max_artifacts` is hit, or memory
+        exceeds `mem_limit_mb`.
+
+        Keeps a single DB connection alive across all batches (faster than
+        re-opening per batch).  Calls self.close() once at the end.
+        """
+        import time
+        total: dict = {"processed": 0, "entities": 0,
+                       "done": 0, "failed": 0, "skipped": 0, "pending": 0}
+        batch_num   = 0
+        t_start     = time.monotonic()
+
+        # Probe psutil once so we don't re-import inside the hot loop
+        try:
+            import psutil as _psutil
+            _proc = _psutil.Process()
+        except ImportError:
+            _psutil = None  # type: ignore
+            _proc   = None
+
+        log(f"Loop start: status={status_filter!r}  batch_size={batch_size}"
+            f"  max_artifacts={max_artifacts}  mem_limit={mem_limit_mb} MB")
+
+        while True:
+            # ── hard cap ──────────────────────────────────────────────────
+            if max_artifacts is not None and total["processed"] >= max_artifacts:
+                log(f"Loop: reached max_artifacts={max_artifacts} — stopping.")
+                break
+
+            remaining = batch_size
+            if max_artifacts is not None:
+                remaining = min(batch_size, max_artifacts - total["processed"])
+
+            # ── pull and process one batch (keep connection open) ─────────
+            summary = self.run_batch(
+                status_filter=status_filter,
+                limit=remaining,
+                dry_run=dry_run,
+                base_dir=base_dir,
+                close_after=False,          # keep connection alive
+                keywords=keywords,
+            )
+            batch_num += 1
+
+            for k, v in summary.items():
+                total[k] = total.get(k, 0) + v
+
+            processed_this_batch = summary.get("processed", 0)
+            elapsed = time.monotonic() - t_start
+            rate    = total["processed"] / elapsed if elapsed > 0 else 0
+            log(f"Loop batch {batch_num}: this={processed_this_batch} "
+                f"total={total['processed']}  done={total['done']}  "
+                f"skipped={total['skipped']}  entities={total['entities']}  "
+                f"rate={rate:.1f}/s  elapsed={elapsed:.0f}s")
+
+            # ── queue exhausted ───────────────────────────────────────────
+            if processed_this_batch == 0:
+                log("Loop: 0 artifacts in last batch — queue exhausted.")
+                break
+
+            # ── memory guard ─────────────────────────────────────────────
+            if _proc is not None:
+                try:
+                    rss_mb = _proc.memory_info().rss / 1_048_576
+                    if rss_mb > mem_limit_mb:
+                        log(f"Loop: RSS {rss_mb:.0f} MB > {mem_limit_mb} MB — "
+                            f"stopping to prevent OOM.")
+                        break
+                except Exception:
+                    pass
+
+        elapsed = time.monotonic() - t_start
+        log(f"Loop complete in {elapsed:.0f}s: {total}")
+        self.close()
+        return total
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def _cli_run(db_path: Path | None, status_filter: str,
-             artifact_id: int | None, dry_run: bool) -> int:
+             artifact_id: int | None, dry_run: bool,
+             run_all: bool = False, batch_size: int = 500,
+             max_artifacts: int | None = None,
+             mem_limit_mb: int = 2048,
+             keywords: list[str] | None = None) -> int:
     resolved = _resolve_db(str(db_path) if db_path else None)
     log(f"Database : {resolved}")
-    log(f"OCR      : {'available ✓' if OCRPipeline().available() else 'NOT available'}")
-    log(f"PDF      : {'fitz/PyMuPDF ✓' if PDFPipeline._fitz_available() else 'pypdf ✓' if PDFPipeline._pypdf_available() else 'NOT available'}")
+    log(f"OCR      : {'available' if OCRPipeline().available() else 'NOT available'}")
+    log(f"PDF      : {'fitz/PyMuPDF' if PDFPipeline._fitz_available() else 'pypdf' if PDFPipeline._pypdf_available() else 'NOT available'}")
 
     try:
         pm = ProcessorManager(db_path=resolved)
@@ -808,29 +964,77 @@ def _cli_run(db_path: Path | None, status_filter: str,
         pm.close()
         return 0 if result["status"] in ("done", "skipped") else 1
 
-    summary = pm.run_batch(
-        status_filter=status_filter,
-        dry_run=dry_run,
-        base_dir=resolved.parent,
-    )
+    if run_all or max_artifacts is not None:
+        summary = pm.run_loop(
+            status_filter=status_filter,
+            batch_size=batch_size,
+            max_artifacts=max_artifacts,
+            mem_limit_mb=mem_limit_mb,
+            dry_run=dry_run,
+            base_dir=resolved.parent,
+            keywords=keywords,
+        )
+    else:
+        summary = pm.run_batch(
+            status_filter=status_filter,
+            limit=batch_size,
+            dry_run=dry_run,
+            base_dir=resolved.parent,
+            keywords=keywords,
+        )
     return 0 if summary.get("failed", 0) == 0 else 1
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="FORAGE Artifact Processor — PDF + OCR + NER pipeline"
+        description="FORAGE Artifact Processor — PDF + OCR + NER pipeline",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Single batch (default 500 artifacts)
+  python forage/processors/artifact_processor.py --status A1-PENDING
+
+  # Loop until queue exhausted
+  python forage/processors/artifact_processor.py --status A1-PENDING --all
+
+  # Loop with hard cap and larger batches
+  python forage/processors/artifact_processor.py --status A1-PENDING --all --max-artifacts 20000 --batch-size 1000
+
+  # Precision strike: queue-jump to NPA/SIU high-value artifacts only
+  python forage/processors/artifact_processor.py --status A1-PENDING --all --keyword "khasho,npa,court,siu,prosecutor"
+"""
     )
     parser.add_argument("--status", default="pending",
-                        choices=["pending","failed","done","skipped","processing"])
+                        choices=["pending","failed","done","skipped","processing",
+                                 "A1-PENDING"])
     parser.add_argument("--artifact-id", type=int, default=None, dest="artifact_id")
-    parser.add_argument("--db", type=Path, default=None)
-    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--db",          type=Path, default=None)
+    parser.add_argument("--dry-run",     action="store_true")
+    parser.add_argument("--all",         action="store_true",
+                        help="Loop through all matching artifacts until queue empty")
+    parser.add_argument("--batch-size",  type=int, default=500, dest="batch_size",
+                        help="Artifacts per DB commit cycle (default: 500)")
+    parser.add_argument("--max-artifacts", type=int, default=None, dest="max_artifacts",
+                        help="Hard cap on total artifacts processed in this run")
+    parser.add_argument("--mem-limit",   type=int, default=2048, dest="mem_limit_mb",
+                        help="RSS memory ceiling in MB before loop stops (default: 2048)")
+    parser.add_argument("--keyword", type=str, default=None, dest="keyword",
+                        help="Comma-separated search terms: only artifacts whose "
+                             "title/source_url/file_path/text matches are queued. "
+                             "Example: --keyword \"khasho,npa,court,siu,prosecutor\"")
     args = parser.parse_args()
+    kw_list = [k.strip() for k in args.keyword.split(",") if k.strip()] \
+              if args.keyword else None
     sys.exit(_cli_run(
         db_path=args.db,
         status_filter=args.status,
         artifact_id=args.artifact_id,
         dry_run=args.dry_run,
+        run_all=args.all,
+        batch_size=args.batch_size,
+        max_artifacts=args.max_artifacts,
+        mem_limit_mb=args.mem_limit_mb,
+        keywords=kw_list,
     ))
 
 
@@ -839,6 +1043,10 @@ def process_all():
     print("[Artifact Processor] Executing...")
     try:
         pm = ProcessorManager(db_path=None)
+        # Primary pass: standard pending artifacts
         pm.run_batch(status_filter="pending")
+        # Rescue pass: A1-PENDING artifacts promoted by rescue_artifacts.py
+        # (272k NPA/SIU documents — re-process raw_text_cache with current NER)
+        pm.run_batch(status_filter="A1-PENDING")
     except Exception as e:
         print(f"[Artifact Processor] Error: {e}")

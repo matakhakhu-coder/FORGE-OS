@@ -51,7 +51,7 @@ The automated collection subsystem. Runs on schedule or via `mega_ingest.py`.
 
 All collectors are idempotent — `INSERT OR IGNORE` on `external_id`. Safe to run repeatedly.
 
-### Collection Orchestration — `mega_ingest.py`
+### Collection Orchestration — `tools/mega_ingest.py`
 
 Three-phase runner:
 
@@ -268,23 +268,119 @@ Priority signals start at 1.5 × initial_score
 
 ---
 
+## DIRECTORY STRUCTURE
+
+```
+FORGE/
+├── app.py                        ← Primary web application entry point (Flask)
+├── FORGE_OS_MANIFEST.md          ← This document
+├── README.md                     ← Project overview & quickstart
+├── requirements.txt              ← Python dependencies
+├── env.example                   ← Environment variable template
+├── .env                          ← Runtime secrets (not committed)
+├── .gitignore
+├── database.db                   ← SQLite database (WAL mode, ~650MB)
+│
+├── core/                         ← Synthesis & orchestration layer
+│   ├── gravity.py
+│   ├── api/                      ← Flask route definitions
+│   ├── conclave/                 ← Context, engine, registry
+│   ├── db/                       ← DB connection & wiki helpers
+│   ├── diagnostics/              ← Health check endpoints
+│   ├── fms/                      ← Forge Module System bootstrap
+│   └── pipeline/                 ← Ingest, intelligence, synthesizer
+│
+├── forage/                       ← Collection & processing layer
+│   ├── collectors/               ← 9 live data collectors (GDELT, FIRMS, USGS, RSS…)
+│   ├── engines/                  ← 14 analysis engines (decay, graph, gravity…)
+│   ├── processors/               ← 10 enrichment processors (NER, entity, sentinel…)
+│   └── utils/                    ← Pipeline logging & admiralty helpers
+│
+├── forge_modules/                ← Analytical capability modules
+│   ├── coalition_detector/
+│   ├── counterintel/
+│   ├── emergence_engine/
+│   ├── geo_enrichment/
+│   ├── graph_sync/
+│   └── signal_enrichment/
+│
+├── forge_security/               ← Input sanitisation & security layer
+│
+├── tools/                        ← Standalone utility & runner scripts
+│   ├── mega_ingest.py            ← Four-phase pipeline runner (main operator tool)
+│   ├── nexus_bridge.py           ← Actor–signal relationship bridge
+│   ├── coalition_interceptor.py  ← Coalition pattern interceptor
+│   ├── anchor_npa.py             ← NPA actor anchor utility
+│   ├── capture_npa_signal.py     ← NPA signal capture
+│   ├── check_coalitions.py       ← Coalition debug checker
+│   ├── sentinel_signal_simulator.py
+│   ├── run_coalition_debug.py
+│   ├── seed_data.py / seed_cases.py / seed_cache.py
+│   ├── flight_log_matcher.py
+│   ├── backfill_streams.py
+│   ├── purge_signals.py
+│   ├── schema_diag.py
+│   ├── vec_a_direct_ocr.py
+│   ├── test_ocr.py
+│   └── compile_red_folder.py
+│
+├── migrations/                   ← Schema migrations & database repair scripts
+│   ├── schema.sql                ← Canonical schema definition
+│   ├── migrate_archive.py
+│   ├── migrate_graph.py
+│   ├── migrate_layer_separation.py
+│   ├── fix_schema.py
+│   ├── fix_wiki_links.py
+│   ├── repair_db.py
+│   └── repair_nexus_graph.py
+│
+├── maintenance/                  ← Idempotent housekeeping scripts
+│   ├── cleanup_actors.py
+│   ├── cleanup_firms.py
+│   └── system_decontamination.py
+│
+├── bin/                          ← Windows batch worker launchers
+│   ├── decay_worker.bat          ← Runs decay_engine every 6 hours
+│   └── wiki_worker.bat           ← Runs full wiki synthesis pipeline
+│
+├── docs/                         ← Supplementary documentation
+│   ├── FORGE_DEBUG_SECURITY.md
+│   ├── FORGE_PIPELINE_CONTRACTS.md
+│   ├── ROADMAP.md
+│   └── structure.txt
+│
+├── .archive/                     ← Superseded versioned files (reference only)
+│   └── nexus_bridge_v0.py
+│
+├── tests/                        ← Unit & integration tests
+├── wiki/                         ← Auto-generated knowledge base articles
+├── surface/                      ← Pattern & emergence detection layer
+├── scripts/                      ← Ancillary shell/batch scripts
+├── static/                       ← CSS, JS, media assets
+├── templates/                    ← Jinja2 HTML templates
+├── logs/                         ← Runtime logs
+└── media/                        ← Ingested documents & media files
+```
+
+---
+
 ## DEPLOYMENT NOTES
 
 **Run sequence (clean start):**
 ```powershell
-python app.py --init-db       # initialise schema
-python fix_schema.py          # apply column patches + relationship tables
-python mega_ingest.py         # collect + synthesise
-python app.py                 # serve
+python app.py --init-db              # initialise schema
+python migrations\fix_schema.py      # apply column patches + relationship tables
+python tools\mega_ingest.py          # collect + synthesise
+python app.py                        # serve
 ```
 
 **Scheduled operations:**
 ```
-mega_ingest.py    → run every 15–30 minutes for live collection
-decay_engine.py   → run every 6 hours (decay_worker.bat)
+tools\mega_ingest.py    → run every 15–30 minutes for live collection
+forage\engines\decay_engine.py   → run every 6 hours (bin\decay_worker.bat)
 ```
 
-**Database:** Single file at `database.db` in project root. WAL mode enabled. Timeout: 60s. Do not open with external SQLite tools while `mega_ingest.py` is running.
+**Database:** Single file at `database.db` in project root. WAL mode enabled. Timeout: 60s. Do not open with external SQLite tools while `tools\mega_ingest.py` is running.
 
 ---
 

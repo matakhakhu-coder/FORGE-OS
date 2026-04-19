@@ -71,7 +71,7 @@ class ArchiveEngine:
         try:
             # ── Pre-flight checks ─────────────────────────────────────────
             case = conn.execute(
-                "SELECT case_id, title, status FROM cases WHERE case_id = ?",
+                "SELECT case_id, name, status FROM cases WHERE case_id = ?",
                 (case_id,)
             ).fetchone()
 
@@ -308,7 +308,7 @@ class ArchiveEngine:
             result = {
                 "status":           "success",
                 "case_id":          case_id,
-                "case_title":       case["title"],
+                "case_title":       case["name"],
                 "archived_signals": len(excl_signals),
                 "shared_signals":   len(shared_signals),
                 "archived_events":  len(excl_events),
@@ -333,7 +333,7 @@ class ArchiveEngine:
                     len(excl_signals) + len(excl_events) + len(excl_artifacts),
                     duration,
                     _json.dumps({"case_id": case_id,
-                                 "case_title": case["title"]}),
+                                 "case_title": case["name"]}),
                 ))
                 conn2.commit()
                 conn2.close()

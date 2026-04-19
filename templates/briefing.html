@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BRIEFING — {{ case.title }}</title>
+  <title>BRIEFING — {{ case.name }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   <style>
     /* ── Briefing-specific overrides ──────────────────────────────────────── */
@@ -400,7 +400,7 @@
       <span class="briefing-header__case-id mono">CASE #{{ case.case_id }}</span>
       <span class="case-status-badge case-status-badge--{{ case.status }}">{{ case.status }}</span>
     </div>
-    <h1 class="briefing-header__title">{{ case.title }}</h1>
+    <h1 class="briefing-header__title">{{ case.name }}</h1>
     {% if case.description %}
     <p class="briefing-header__description">{{ case.description }}</p>
     {% endif %}

@@ -1,425 +1,305 @@
-#!/usr/bin/env python3
 """
-FORAGE — RSS News Signal Collector
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Ingests disaster and crisis alerts from the GDACS (Global Disaster Alert and
-Coordination System) public RSS feed and stores them in the FORGE signals table.
+FORGE — Cluster Engine  (forage/engines/cluster_engine.py)
+══════════════════════════════════════════════════════════
 
-Feed:   GDACS Combined RSS Feed
-URL:    https://www.gdacs.org/xml/rss.xml
-Docs:   https://www.gdacs.org/xml/gdacs_rss_documentation.pdf
+Groups raw signals into cohesive event clusters so downstream engines
+(Sentinel, CorrelationEngine, feed surface) work from grouped events
+rather than individual noisy data points.
 
-Additional feed options (set FORAGE_RSS_URL env var to override):
-  All events:    https://www.gdacs.org/xml/rss.xml
-  Earthquakes:   https://www.gdacs.org/xml/rss_eq.xml
-  Tropical:      https://www.gdacs.org/xml/rss_tc.xml
-  Floods:        https://www.gdacs.org/xml/rss_fl.xml
-  Volcanoes:     https://www.gdacs.org/xml/rss_vo.xml
-  Drought:       https://www.gdacs.org/xml/rss_dr.xml
+Clustering strategy (applied in priority order per signal)
+──────────────────────────────────────────────────────────
+  1. Geographic  — signals with lat/lng are binned into a spatial grid.
+     Bin size depends on source class:
+       WIDE sources  (firms, usgs, GDACS): 1.0° grid  ≈ 111 km
+       TIGHT sources (all others):         0.5° grid  ≈  55 km
+     Time bucket: epoch_day // 2  (48-hour windows, avoids midnight splits)
+     cluster_id:  geo_{lat_bin}_{lng_bin}_{day_bucket}
+
+  2. Actor-linked — signals with known actors (via signal_actors) that
+     have no coordinates are grouped by frozenset(actor_ids).
+     cluster_id:  act_{sorted_actor_ids_hex}
+
+  3. Source-month fallback — ungeolocated signals with no actors.
+     cluster_id:  src_{source}_{yyyymm}
 
 Design decisions
 ────────────────
-• Idempotent: the RSS <guid> or <link> element is used as external_id.
-  INSERT OR IGNORE ensures re-running never creates duplicates.
+  • Idempotent: only signals with cluster_id IS NULL are processed.
+    Re-running never reclassifies already-clustered signals.
+  • Bulk update: all writes in a single transaction per batch for speed.
+  • No pairwise comparison: pure grid-cell bucketing is O(n), safe at 150K.
+  • FIRMS wildfire pixels get 1° wide cells — a regional fire event
+    typically spans multiple pixels inside a 111 km radius.
 
-• Priority detection: a configurable keyword list is checked against the
-  combined title+description text (case-insensitive).  Matches set
-  is_priority=1 so the topbar bell fires.  Default keywords cover the
-  threat categories most likely to require immediate analyst attention.
-
-• Coordinates: GDACS items optionally carry <geo:lat>/<geo:long> or
-  <georss:point> tags.  Both formats are parsed; if neither is present
-  the lat/lng columns remain NULL.
-
-• metadata_json: the full dict of all RSS item fields is stored verbatim
-  so no information is discarded.
-
-• The script is zero-dependency — it uses only Python stdlib (urllib,
-  xml.etree.ElementTree) so it runs without pip install.
-
-Usage
-─────
-    # Run once manually
-    python forage/collectors/rss_collector.py
-
-    # Override feed URL (e.g. earthquakes only)
-    FORAGE_RSS_URL=https://www.gdacs.org/xml/rss_eq.xml \\
-        python forage/collectors/rss_collector.py
-
-    # Schedule with cron (every 15 minutes)
-    */15 * * * * cd /path/to/FORGE && python forage/collectors/rss_collector.py >> logs/forage_rss.log 2>&1
-
-    # Override database path
-    FORGE_DB=/custom/path/database.db python forage/collectors/rss_collector.py
-
-Priority keywords (override with FORAGE_PRIORITY_KEYWORDS env var,
-comma-separated):
-    Nuclear, Tsunami, Explosion, Crisis, Chemical, Biological,
-    Radiological, Attack, Mass Casualty, Red Alert
+Compatible with mega_ingest.py _run_engine() — exposes:
+    ClusterEngine(db_path=Path).run() -> dict
 """
 
-import json
-import os
-import re
+from __future__ import annotations
+
+import hashlib
+import math
 import sqlite3
 import sys
-import uuid
 from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
-import xml.etree.ElementTree as ET
+from typing import Dict, List, Optional, Set, Tuple
 
-# ── Feed configuration ────────────────────────────────────────────────────────
+# ── Constants ─────────────────────────────────────────────────────────────────
 
-DEFAULT_FEED_URL = "https://www.gdacs.org/xml/rss.xml"
-FEED_URL         = os.environ.get("FORAGE_RSS_URL", DEFAULT_FEED_URL)
-SOURCE_TAG       = "GDACS"
-TIMEOUT_SEC      = 25
+# Sources where signals represent area-wide sensor readings — use a wide grid
+_WIDE_SOURCES: frozenset = frozenset({"firms", "usgs", "GDACS", "earthquake"})
+_GRID_WIDE  = 1.0   # degrees (~111 km)
+_GRID_TIGHT = 0.5   # degrees (~55 km)
 
-# ── Priority keywords ─────────────────────────────────────────────────────────
 
-_DEFAULT_KEYWORDS = [
-    "nuclear", "tsunami", "explosion", "crisis", "chemical",
-    "biological", "radiological", "attack", "mass casualty", "red alert",
-    "level red", "extreme", "catastrophic", "major disaster",
-]
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _load_keywords() -> list[str]:
-    env = os.environ.get("FORAGE_PRIORITY_KEYWORDS", "")
-    if env.strip():
-        return [k.strip().lower() for k in env.split(",") if k.strip()]
-    return _DEFAULT_KEYWORDS
+def _geo_bin(value: float, step: float) -> float:
+    """Snap a coordinate to the nearest grid boundary."""
+    return math.floor(value / step) * step
 
-PRIORITY_KEYWORDS = _load_keywords()
 
-# ── XML namespace map ─────────────────────────────────────────────────────────
-# GDACS uses several optional namespaces; we register them all so XPath
-# find() calls work without brittle string concatenation.
-
-NS = {
-    "geo":     "http://www.w3.org/2003/01/geo/wgs84_pos#",
-    "georss":  "http://www.georss.org/georss",
-    "gdacs":   "http://www.gdacs.org",
-    "dc":      "http://purl.org/dc/elements/1.1/",
-    "content": "http://purl.org/rss/1.0/modules/content/",
-}
-
-# ── Database path resolution ──────────────────────────────────────────────────
-
-def _resolve_db() -> Path:
-    env = os.environ.get("FORGE_DB")
-    if env:
-        return Path(env).resolve()
-    here    = Path(__file__).resolve()
-    db_path = here.parent.parent.parent / "database.db"
-    return db_path
-
-DB_PATH = _resolve_db()
-
-# ── Logging helpers ───────────────────────────────────────────────────────────
-
-def _ts() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-def log(msg: str)  -> None: print(f"[{_ts()}] [rss_collector] {msg}", flush=True)
-def warn(msg: str) -> None: print(f"[{_ts()}] [rss_collector] WARN  {msg}", file=sys.stderr, flush=True)
-def err(msg: str)  -> None: print(f"[{_ts()}] [rss_collector] ERROR {msg}", file=sys.stderr, flush=True)
-
-# ── RSS fetch ─────────────────────────────────────────────────────────────────
-
-def fetch_feed(url: str = FEED_URL) -> ET.Element:
-    """Download and parse the RSS XML.  Returns the root Element."""
-    headers = {
-        "User-Agent": "FORGE-OS/1.0 FORAGE-RSSCollector (+local)",
-        "Accept":     "application/rss+xml, application/xml, text/xml",
-    }
-    req = Request(url, headers=headers)
+def _day_bucket(timestamp_str: Optional[str]) -> int:
+    """
+    Convert an ISO timestamp string to a 48-hour epoch bucket.
+    Signals within the same 48-hour window share the same bucket,
+    avoiding hard midnight splits on rolling events.
+    Returns 0 on parse failure.
+    """
+    if not timestamp_str:
+        return 0
     try:
-        with urlopen(req, timeout=TIMEOUT_SEC) as resp:
-            raw = resp.read()
-    except HTTPError as exc:
-        raise RuntimeError(f"HTTP {exc.code} fetching RSS feed: {exc.reason}") from exc
-    except URLError as exc:
-        raise RuntimeError(f"Network error fetching RSS feed: {exc.reason}") from exc
-
-    try:
-        return ET.fromstring(raw)
-    except ET.ParseError as exc:
-        raise RuntimeError(f"Failed to parse RSS XML: {exc}") from exc
-
-# ── RSS item → signal record ──────────────────────────────────────────────────
-
-def _find_text(elem: ET.Element, *paths: str) -> str | None:
-    """Try each XPath in turn, return first non-empty text found."""
-    for path in paths:
-        try:
-            node = elem.find(path, NS)
-        except Exception:
-            node = None
-        if node is not None and node.text and node.text.strip():
-            return node.text.strip()
-    return None
-
-def _parse_coords(item: ET.Element) -> tuple[float | None, float | None]:
-    """
-    Extract coordinates from:
-      <geo:lat>/<geo:long>  — two separate elements
-      <georss:point>lat lng — space-separated pair
-    Returns (lat, lng) or (None, None).
-    """
-    lat = _find_text(item, "geo:lat")
-    lng = _find_text(item, "geo:long")
-    if lat and lng:
-        try:
-            return float(lat), float(lng)
-        except ValueError:
-            pass
-
-    point = _find_text(item, "georss:point")
-    if point:
-        parts = point.split()
-        if len(parts) == 2:
-            try:
-                return float(parts[0]), float(parts[1])
-            except ValueError:
-                pass
-
-    return None, None
-
-def _parse_timestamp(item: ET.Element) -> str:
-    """Return ISO-ish datetime string from <pubDate> or now()."""
-    pub = _find_text(item, "pubDate")
-    if pub:
-        try:
-            dt = parsedate_to_datetime(pub)
-            return dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-        except Exception:
-            pass
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-
-def _build_external_id(item: ET.Element) -> str | None:
-    """
-    GDACS <guid> is a stable URL like
-    https://www.gdacs.org/report.aspx?eventtype=EQ&eventid=1234567
-    Use it verbatim.  Fall back to <link> if <guid> is absent.
-    """
-    return _find_text(item, "guid") or _find_text(item, "link")
-
-def _collect_metadata(item: ET.Element) -> dict:
-    """Gather all useful fields into a flat dict for metadata_json."""
-    meta: dict = {}
-
-    simple_tags = ["title", "link", "guid", "pubDate", "description",
-                   "author", "category"]
-    for tag in simple_tags:
-        val = _find_text(item, tag)
-        if val:
-            meta[tag] = val
-
-    # GDACS-specific extensions
-    gdacs_tags = [
-        ("gdacs:eventtype",   "eventtype"),
-        ("gdacs:eventid",     "eventid"),
-        ("gdacs:alertlevel",  "alertlevel"),
-        ("gdacs:alertscore",  "alertscore"),
-        ("gdacs:severity",    "severity"),
-        ("gdacs:population",  "population"),
-        ("gdacs:country",     "country"),
-        ("gdacs:iso3",        "iso3"),
-        ("gdacs:fromdate",    "fromdate"),
-        ("gdacs:todate",      "todate"),
-        ("gdacs:iscurrent",   "iscurrent"),
-        ("gdacs:version",     "version"),
-        ("gdacs:cap",         "cap_url"),
-    ]
-    for xpath, key in gdacs_tags:
-        val = _find_text(item, xpath)
-        if val:
-            meta[key] = val
-
-    # Coordinates
-    lat, lng = _parse_coords(item)
-    if lat is not None:
-        meta["lat"] = lat
-        meta["lng"] = lng
-
-    return meta
-
-def _is_priority(title: str, description: str) -> int:
-    """Return 1 if any priority keyword matches the combined text."""
-    combined = (title + " " + description).lower()
-    for kw in PRIORITY_KEYWORDS:
-        if kw in combined:
-            return 1
-    return 0
-
-def _strip_html(text: str) -> str:
-    """Remove HTML tags from RSS description text."""
-    return re.sub(r"<[^>]+>", " ", text).strip()
-    text = re.sub(r"\s{2,}", " ", text)
-    return text
-
-def item_to_signal(item: ET.Element) -> dict | None:
-    """
-    Convert a single RSS <item> into a FORGE signal dict.
-    Returns None if the item is too malformed to be useful.
-    """
-    try:
-        external_id = _build_external_id(item)
-        if not external_id:
-            warn("Item has no guid or link — skipping")
-            return None
-
-        title_raw = _find_text(item, "title") or "Untitled GDACS alert"
-        title     = _strip_html(title_raw)[:255]
-
-        desc_raw  = (_find_text(item, "description") or
-                     _find_text(item, "content:encoded") or "")
-        content   = _strip_html(desc_raw)[:1000]
-
-        lat, lng  = _parse_coords(item)
-        ts        = _parse_timestamp(item)
-        meta      = _collect_metadata(item)
-        priority  = _is_priority(title, content)
-
-        return {
-            "signal_id":     str(uuid.uuid4()),
-            "source":        SOURCE_TAG,
-            "external_id":   external_id,
-            "title":         title,
-            "content":       content,
-            "lat":           lat,
-            "lng":           lng,
-            "timestamp":     ts,
-            "status":        "raw",
-            "metadata_json": json.dumps(meta, ensure_ascii=False),
-            "is_priority":   priority,
-        }
-    except Exception as exc:
-        warn(f"Skipping malformed item: {exc}")
-        return None
-
-# ── Database operations ───────────────────────────────────────────────────────
-
-def _open_db(path: Path) -> sqlite3.Connection:
-    if not path.exists():
-        raise FileNotFoundError(
-            f"FORGE database not found at {path}.\n"
-            "Run:  python app.py --init-db\n"
-            "Or set FORGE_DB=/path/to/database.db"
-        )
-    conn = sqlite3.connect(str(path))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL;")
-    conn.execute("PRAGMA foreign_keys=ON;")
-    return conn
-
-def _ensure_signals_table(conn: sqlite3.Connection) -> None:
-    """
-    Create / migrate the signals table so the collector works stand-alone,
-    before `python app.py --migrate` has been run.
-    """
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS signals (
-            signal_id     TEXT    PRIMARY KEY,
-            source        TEXT    NOT NULL,
-            external_id   TEXT    NOT NULL UNIQUE,
-            title         TEXT    NOT NULL,
-            content       TEXT,
-            lat           REAL,
-            lng           REAL,
-            timestamp     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            status        TEXT    NOT NULL DEFAULT 'raw'
-                          CHECK(status IN ('raw','reviewed','promoted','dismissed')),
-            metadata_json TEXT,
-            cluster_id    TEXT,
-            is_priority   INTEGER NOT NULL DEFAULT 0
-        )
-    """)
-    # Idempotent column additions for databases that predate Phase 14
-    existing = {r[1] for r in conn.execute("PRAGMA table_info(signals)")}
-    for col, defn in [("cluster_id", "TEXT"), ("is_priority", "INTEGER NOT NULL DEFAULT 0")]:
-        if col not in existing:
-            conn.execute(f"ALTER TABLE signals ADD COLUMN {col} {defn}")
-    conn.commit()
-
-def insert_signals(conn: sqlite3.Connection, signals: list[dict]) -> tuple[int, int]:
-    """
-    Bulk-insert via INSERT OR IGNORE — duplicate external_ids are silently
-    skipped.  Returns (inserted_count, skipped_count).
-    """
-    inserted = skipped = 0
-    for sig in signals:
-        cur = conn.execute("""
-            INSERT OR IGNORE INTO signals
-                (signal_id, source, external_id, title, content,
-                 lat, lng, timestamp, status, metadata_json, is_priority)
-            VALUES
-                (:signal_id, :source, :external_id, :title, :content,
-                 :lat, :lng, :timestamp, :status, :metadata_json, :is_priority)
-        """, sig)
-        if cur.rowcount > 0:
-            inserted += 1
-        else:
-            skipped += 1
-    conn.commit()
-    return inserted, skipped
-
-# ── Main entry point ──────────────────────────────────────────────────────────
-
-def run() -> int:
-    """Execute one collection cycle.  Returns exit code (0 = success, 1 = error)."""
-    log(f"Starting RSS collection — feed: {FEED_URL}")
-    log(f"Priority keywords ({len(PRIORITY_KEYWORDS)}): {', '.join(PRIORITY_KEYWORDS)}")
-    log(f"Database: {DB_PATH}")
-
-    try:
-        root = fetch_feed()
-    except RuntimeError as exc:
-        err(str(exc))
-        return 1
-
-    # RSS structure: <rss><channel><item>…</item></channel></rss>
-    channel = root.find("channel")
-    if channel is None:
-        err("RSS root has no <channel> element — unexpected feed format")
-        return 1
-
-    items = channel.findall("item")
-    log(f"Feed contains {len(items)} items")
-
-    if not items:
-        log("No items in feed — nothing to do.")
+        ts = timestamp_str[:10]              # 'YYYY-MM-DD'
+        dt = datetime.strptime(ts, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        epoch_days = int(dt.timestamp() // 86400)
+        return epoch_days // 2              # 48-h bucket
+    except Exception:
         return 0
 
-    signals = [s for i in items if (s := item_to_signal(i)) is not None]
-    priority_new = sum(1 for s in signals if s["is_priority"] == 1)
-    log(f"Mapped {len(signals)}/{len(items)} items → signals "
-        f"({priority_new} flagged as priority)")
 
+def _actor_key(actor_ids: Set[int]) -> str:
+    """
+    Stable hash of a frozenset of actor_ids used as the actor cluster key.
+    Uses first 12 hex chars of SHA-1 of the sorted id string — short enough
+    to be readable, collision-resistant enough for <1M signals.
+    """
+    joined = ",".join(str(i) for i in sorted(actor_ids))
+    return hashlib.sha1(joined.encode()).hexdigest()[:12]
+
+
+def _month_bucket(timestamp_str: Optional[str]) -> str:
+    """Return 'YYYYMM' from a timestamp string, '000000' on failure."""
+    if not timestamp_str:
+        return "000000"
     try:
-        conn = _open_db(DB_PATH)
-    except FileNotFoundError as exc:
-        err(str(exc))
-        return 1
+        return timestamp_str[:7].replace("-", "")   # 'YYYY-MM' -> 'YYYYMM'
+    except Exception:
+        return "000000"
 
+
+def _log(msg: str) -> None:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
-        _ensure_signals_table(conn)
-        inserted, skipped = insert_signals(conn, signals)
-    finally:
-        conn.close()
+        print(f"[{ts}] [cluster_engine] {msg}", flush=True)
+    except UnicodeEncodeError:
+        safe = msg.encode("utf-8", errors="replace").decode("ascii", errors="replace")
+        print(f"[{ts}] [cluster_engine] {safe}", flush=True)
 
-    log(f"Done — inserted: {inserted}, skipped (duplicate): {skipped}")
-    if inserted > 0 and priority_new > 0:
-        log(f"⚠  PRIORITY SIGNALS INSERTED — check Signal Monitor at /signals")
-    return 0
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Main engine class
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ClusterEngine:
+    """
+    Assigns cluster_id to all unclustered signals.
+
+    Usage (via mega_ingest _run_engine):
+        ClusterEngine(db_path=Path('database.db')).run()
+
+    Usage standalone:
+        python -m forage.engines.cluster_engine
+    """
+
+    def __init__(self, db_path: Path):
+        self.db_path = Path(db_path)
+
+    # ── Public interface ──────────────────────────────────────────────────────
+
+    def run(self, batch_size: int = 25_000, only_null: bool = True) -> dict:
+        """
+        Cluster all unclustered signals and return a summary dict.
+
+        Parameters
+        ──────────
+        batch_size : int
+            Signals loaded per SQLite fetch (controls peak RAM).
+        only_null : bool
+            If True (default), only process signals where cluster_id IS NULL.
+            If False, recluster ALL signals (use with caution on large DBs).
+        """
+        conn = sqlite3.connect(str(self.db_path), timeout=60)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA synchronous=NORMAL;")
+
+        try:
+            return self._cluster(conn, batch_size, only_null)
+        finally:
+            conn.close()
+
+    # ── Internal pipeline ─────────────────────────────────────────────────────
+
+    def _cluster(self, conn: sqlite3.Connection,
+                 batch_size: int, only_null: bool) -> dict:
+
+        null_clause = "WHERE cluster_id IS NULL" if only_null else ""
+
+        total_signals = conn.execute(
+            f"SELECT COUNT(*) FROM signals {null_clause}"
+        ).fetchone()[0]
+
+        _log(f"Signals to cluster: {total_signals:,} "
+             f"({'NULL only' if only_null else 'ALL'})")
+
+        if total_signals == 0:
+            return {"status": "ok", "clustered": 0, "clusters_created": 0,
+                    "message": "Nothing to cluster."}
+
+        # ── Build actor lookup once — signal_id → frozenset(actor_ids) ────────
+        _log("Loading actor linkage map...")
+        actor_map: Dict[str, Set[int]] = {}
+        for row in conn.execute(
+            "SELECT signal_id, actor_id FROM signal_actors"
+        ).fetchall():
+            actor_map.setdefault(row["signal_id"], set()).add(row["actor_id"])
+
+        _log(f"Actor map: {len(actor_map):,} signals with actors")
+
+        # ── Process in time-ordered batches ───────────────────────────────────
+        # NOTE: offset is always 0 — each commit removes rows from the NULL
+        # set, so the next SELECT naturally sees the next unclustered batch.
+        # Using a non-zero offset would skip rows as the result set shrinks.
+        total_clustered = 0
+        all_keys: set   = set()
+
+        geo_count   = 0
+        actor_count = 0
+        src_count   = 0
+
+        while True:
+            rows = conn.execute(
+                f"""SELECT signal_id, source, lat, lng, timestamp
+                    FROM signals {null_clause}
+                    ORDER BY timestamp ASC
+                    LIMIT ?""",
+                (batch_size,),
+            ).fetchall()
+
+            if not rows:
+                break
+
+            updates: List[Tuple[str, str]] = []   # (cluster_id, signal_id)
+
+            for row in rows:
+                sig_id    = row["signal_id"]
+                source    = (row["source"] or "").lower()
+                lat       = row["lat"]
+                lng       = row["lng"]
+                ts        = row["timestamp"]
+
+                # Strategy 1 — Geographic
+                if lat is not None and lng is not None:
+                    try:
+                        flat, flng = float(lat), float(lng)
+                        grid = (_GRID_WIDE
+                                if source in _WIDE_SOURCES
+                                else _GRID_TIGHT)
+                        lb   = round(_geo_bin(flat,  grid), 2)
+                        lgb  = round(_geo_bin(flng,  grid), 2)
+                        day  = _day_bucket(ts)
+                        key  = f"geo_{lb}_{lgb}_{day}"
+                        geo_count += 1
+                    except (TypeError, ValueError):
+                        key = self._fallback_key(source, ts)
+                        src_count += 1
+
+                # Strategy 2 — Actor-linked (no coords)
+                elif sig_id in actor_map and actor_map[sig_id]:
+                    key = f"act_{_actor_key(actor_map[sig_id])}"
+                    actor_count += 1
+
+                # Strategy 3 — Source + month fallback
+                else:
+                    key = self._fallback_key(source, ts)
+                    src_count += 1
+
+                all_keys.add(key)
+                updates.append((key, sig_id))
+
+            # Bulk write this batch
+            conn.execute("BEGIN")
+            conn.executemany(
+                "UPDATE signals SET cluster_id=? WHERE signal_id=?",
+                updates,
+            )
+            conn.execute("COMMIT")
+
+            total_clustered += len(updates)
+
+            _log(f"  Batch complete: {total_clustered:,}/{total_signals:,} "
+                 f"clustered ({len(all_keys):,} distinct clusters)")
+
+        summary = {
+            "status":           "ok",
+            "clustered":        total_clustered,
+            "clusters_created": len(all_keys),
+            "by_strategy": {
+                "geographic":  geo_count,
+                "actor_linked": actor_count,
+                "source_month": src_count,
+            },
+        }
+        _log(f"Done: {summary}")
+        return summary
+
+    @staticmethod
+    def _fallback_key(source: str, timestamp: Optional[str]) -> str:
+        """Source + month bucket for signals with no location and no actors."""
+        src = re.sub(r"[^a-z0-9]", "", (source or "unknown").lower())[:20]
+        mon = _month_bucket(timestamp)
+        return f"src_{src}_{mon}"
+
+
+# ── Allow `import re` at the top-level for _fallback_key ─────────────────────
+import re   # noqa: E402  (placed after class to keep docstring at top)
+
+
+# ── Standalone runner ─────────────────────────────────────────────────────────
+
+def _resolve_db() -> Path:
+    env = __import__("os").environ.get("FORGE_DB")
+    if env:
+        return Path(env).resolve()
+    return Path(__file__).resolve().parent.parent.parent / "database.db"
+
 
 if __name__ == "__main__":
-    sys.exit(run())
+    import argparse
 
-# --- MEGA RUNNER ADAPTER ---
-def run_all():
-    print(f"[{__name__}] Executing run_all...")
-    # Call your actual processing logic here
+    parser = argparse.ArgumentParser(description="FORGE Cluster Engine")
+    parser.add_argument("--db",      type=Path, default=None)
+    parser.add_argument("--all",     action="store_true",
+                        help="Recluster ALL signals, not just NULL ones")
+    parser.add_argument("--batch",   type=int,  default=25_000)
+    args = parser.parse_args()
+
+    db_path = args.db.resolve() if args.db else _resolve_db()
+    result  = ClusterEngine(db_path=db_path).run(
+        batch_size=args.batch,
+        only_null=not args.all,
+    )
+    import json
+    print(json.dumps(result, indent=2))
+    sys.exit(0 if result.get("status") == "ok" else 1)

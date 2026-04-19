@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_security_badges.html" import security_provenance_strip %}
 {% block title %}{{ artifact.title }}{% endblock %}
 
 {% block content %}
@@ -29,6 +30,11 @@
     <span class="source-badge source-badge--{{ artifact.source }}">
       {{ SOURCE_META[artifact.source].label if artifact.source in SOURCE_META else artifact.source }}
     </span>
+    {% endif %}
+    {# ── Forensic Provenance — Air-Lock badge for document/PDF artifacts ── #}
+    {% if artifact['type'] in ('document', 'pdf') %}
+    &nbsp;·&nbsp;
+    {{ security_provenance_strip(has_pdf=True, has_signals=False) }}
     {% endif %}
   </div>
   <h1 class="page-header__title">{{ artifact.title }}</h1>

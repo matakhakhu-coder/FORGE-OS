@@ -1,0 +1,391 @@
+Folder PATH listing for volume Windows-SSD
+Volume serial number is 660A-B91D
+C:.
+¦   .gitignore
+¦   26
+¦   anchor_npa.py
+¦   app.py
+¦   app.py.phase28.bak
+¦   backfill_streams.py
+¦   capture_npa_signal.py
+¦   check_coalitions.py
+¦   cleanup_actors.py
+¦   cleanup_firms.py
+¦   database.db
+¦   database.db-shm
+¦   database.db-wal
+¦   decay_worker.bat
+¦   env.example
+¦   fix_schema.py
+¦   fix_wiki_links.py
+¦   folder_tree.txt
+¦   FORGE_DEBUG_SECURITY.md
+¦   FORGE_OS_MANIFEST.md
+¦   FORGE_PIPELINE_CONTRACTS.md
+¦   forge_tree.txt
+¦   init_wiki.py
+¦   mega_ingest.py
+¦   migrate_archive.py
+¦   migrate_graph.py
+¦   migrate_layer_separation.py
+¦   patch_collectors_async.py
+¦   purge_signals.py
+¦   python
+¦   README.md
+¦   repair_db.py
+¦   requirements.txt
+¦   ROADMAP.md
+¦   run_coalition_debug.py
+¦   schema.sql
+¦   seed_cache.py
+¦   seed_cases.py
+¦   seed_data.py
+¦   sentinel_signal_simulator.py
+¦   structure.txt
+¦   system_decontamination.py
+¦   tables.txt
+¦   test_ocr.py
+¦   tree.txt
+¦   wiki_worker.bat
+¦   {t}')
+¦   
++---core
+¦   ¦   gravity.py
+¦   ¦   
+¦   +---api
+¦   ¦   ¦   context.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---routes
+¦   ¦   ¦   ¦   wiki_routes.py
+¦   ¦   ¦   ¦   __init__.py
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---__pycache__
+¦   ¦   ¦           wiki_routes.cpython-313.pyc
+¦   ¦   ¦           __init__.cpython-313.pyc
+¦   ¦   ¦           
+¦   ¦   +---__pycache__
+¦   ¦           context.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---conclave
+¦   ¦   ¦   context.py
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   registry.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           context.cpython-313.pyc
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           registry.cpython-313.pyc
+¦   ¦           
+¦   +---db
+¦   ¦   ¦   connection.py
+¦   ¦   ¦   wiki.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           connection.cpython-313.pyc
+¦   ¦           wiki.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---diagnostics
+¦   ¦   ¦   health.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           health.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---fms
+¦   ¦   ¦   activation.py
+¦   ¦   ¦   bootstrap.py
+¦   ¦   ¦   loader.py
+¦   ¦   ¦   readiness.py
+¦   ¦   ¦   validator.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           activation.cpython-313.pyc
+¦   ¦           bootstrap.cpython-313.pyc
+¦   ¦           loader.cpython-313.pyc
+¦   ¦           readiness.cpython-313.pyc
+¦   ¦           validator.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---governance
+¦   +---media
+¦   ¦   +---documents
+¦   ¦           058da3b2dcd34ea88ce6fa77af7a1376_PAIA_Manual_for_NPA1.pdf
+¦   ¦           cacc92ed67c4469c8993ea6b68ae0bad_CAPE_TOWN_MAN_SENTENCED_FOR_POSSESSION_DISTRIBUTION_IMPORTATION_AND_CREATION_OF_CHILD_PORNOGRAPHY.pdf
+¦   ¦           
+¦   +---meta
+¦   +---pipeline
+¦   ¦   ¦   ingest.py
+¦   ¦   ¦   intelligence.py
+¦   ¦   ¦   synthesizer.py
+¦   ¦   ¦   wiki_logger.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           ingest.cpython-313.pyc
+¦   ¦           intelligence.cpython-313.pyc
+¦   ¦           synthesizer.cpython-313.pyc
+¦   ¦           wiki_logger.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---proto
++---forage
+¦   +---collectors
+¦   ¦   ¦   civic_intel_collector.py
+¦   ¦   ¦   earthquake_collector.py
+¦   ¦   ¦   firms_collector.py
+¦   ¦   ¦   gdelt_collector.py
+¦   ¦   ¦   gdelt_collector.py.bak
+¦   ¦   ¦   rss_collector.py
+¦   ¦   ¦   usgs_collector.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           civic_intel_collector.cpython-313.pyc
+¦   ¦           earthquake_collector.cpython-313.pyc
+¦   ¦           firms_collector.cpython-313.pyc
+¦   ¦           gdelt_collector.cpython-313.pyc
+¦   ¦           rss_collector.cpython-313.pyc
+¦   ¦           usgs_collector.cpython-313.pyc
+¦   ¦           
+¦   +---engines
+¦   ¦   ¦   anomaly_engine.py
+¦   ¦   ¦   archive_engine.py
+¦   ¦   ¦   case_engine.py
+¦   ¦   ¦   cluster_engine.py
+¦   ¦   ¦   correlation_engine.py
+¦   ¦   ¦   decay_engine.py
+¦   ¦   ¦   engines__init__.py
+¦   ¦   ¦   entity_engine.py
+¦   ¦   ¦   escalation_engine.py
+¦   ¦   ¦   evolution_engine.py
+¦   ¦   ¦   feedback_engine.py
+¦   ¦   ¦   graph_engine.py
+¦   ¦   ¦   gravity_engine.py
+¦   ¦   ¦   relationship_engine.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           anomaly_engine.cpython-313.pyc
+¦   ¦           archive_engine.cpython-313.pyc
+¦   ¦           case_engine.cpython-313.pyc
+¦   ¦           cluster_engine.cpython-313.pyc
+¦   ¦           correlation_engine.cpython-313.pyc
+¦   ¦           decay_engine.cpython-313.pyc
+¦   ¦           entity_engine.cpython-313.pyc
+¦   ¦           escalation_engine.cpython-313.pyc
+¦   ¦           evolution_engine.cpython-313.pyc
+¦   ¦           feedback_engine.cpython-313.pyc
+¦   ¦           graph_engine.cpython-313.pyc
+¦   ¦           gravity_engine.cpython-313.pyc
+¦   ¦           relationship_engine.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---processors
+¦   ¦   ¦   --init-db
+¦   ¦   ¦   artifact_processor.py
+¦   ¦   ¦   entity_resolver.py
+¦   ¦   ¦   event_constructor.py
+¦   ¦   ¦   forensic_processor.py
+¦   ¦   ¦   ner_processor.py
+¦   ¦   ¦   processors__init__.py
+¦   ¦   ¦   sentinel.py
+¦   ¦   ¦   signal_interpreter.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           artifact_processor.cpython-313.pyc
+¦   ¦           cluster_engine.cpython-313.pyc
+¦   ¦           entity_resolver.cpython-313.pyc
+¦   ¦           event_constructor.cpython-313.pyc
+¦   ¦           forensic_processor.cpython-313.pyc
+¦   ¦           ner_processor.cpython-313.pyc
+¦   ¦           sentinel.cpython-313.pyc
+¦   ¦           signal_interpreter.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---utils
+¦       ¦   pipeline_logger.py
+¦       ¦   __init__.py
+¦       ¦   
+¦       +---__pycache__
+¦               pipeline_logger.cpython-313.pyc
+¦               
++---forge_modules
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---coalition_detector
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---counterintel
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---emergence_engine
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---geo_enrichment
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---graph_sync
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---signal_enrichment
+¦   ¦   ¦   engine.py
+¦   ¦   ¦   manifest.json
+¦   ¦   ¦   module.py
+¦   ¦   ¦   __init__.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           engine.cpython-313.pyc
+¦   ¦           module.cpython-313.pyc
+¦   ¦           __init__.cpython-313.pyc
+¦   ¦           
+¦   +---__pycache__
+¦           __init__.cpython-313.pyc
+¦           
++---media
+¦   +---audio
+¦   +---documents
+¦   ¦   +---wiki
+¦   +---images
+¦   +---videos
++---static
+¦   +---css
+¦   ¦       main.css
+¦   ¦       main.css.phase28.bak
+¦   ¦       
+¦   +---graph
+¦   +---js
+¦   +---map
++---surface
+¦   ¦   queries.py
+¦   ¦   routes.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           queries.cpython-313.pyc
+¦           routes.cpython-313.pyc
+¦           __init__.cpython-313.pyc
+¦           
++---templates
+¦       actor.html
+¦       actors.html
+¦       actor_detail.html
+¦       admin.html
+¦       admin_event_new.html
+¦       archive.html
+¦       artifact_detail.html
+¦       asset.html
+¦       base.html
+¦       base.html.phase28.bak
+¦       briefing.html
+¦       cases.html
+¦       case_detail.html
+¦       diagnostics.html
+¦       discovery.html
+¦       dossier.html
+¦       edit_actor.html
+¦       edit_artifact.html
+¦       edit_event.html
+¦       event.html
+¦       events.html
+¦       event_detail.html
+¦       evolution.html
+¦       feed.html
+¦       gallery.html
+¦       graph.html
+¦       index.html
+¦       index.html.phase28.bak
+¦       intel.html
+¦       layout.html
+¦       map.html
+¦       search.html
+¦       signals.html
+¦       surface.html
+¦       timeline.html
+¦       wiki_article.html
+¦       wiki_graph.html
+¦       wiki_index.html
+¦       _forensic_panel.html
+¦       _network_panel.html
+¦       _pin_widget_js.html
+¦       _relationship_panel.html
+¦       _sentinel_alerts.html
+¦       
++---utils
+¦   ¦   forge_db.py
+¦   ¦   rss_parser.py
+¦   ¦   __init__.py
+¦   ¦   
+¦   +---__pycache__
+¦           forge_db.cpython-313.pyc
+¦           rss_parser.cpython-313.pyc
+¦           __init__.cpython-313.pyc
+¦           
++---wiki
+¦   ¦   routes.py
+¦   ¦   
+¦   +---engines
+¦   ¦   ¦   wiki_link_engine.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           wiki_link_engine.cpython-313.pyc
+¦   ¦           
+¦   +---processors
+¦   ¦   ¦   wiki_compiler.py
+¦   ¦   ¦   
+¦   ¦   +---__pycache__
+¦   ¦           wiki_compiler.cpython-313.pyc
+¦   ¦           
+¦   +---__pycache__
+¦           routes.cpython-313.pyc
+¦           
++---__pycache__
+        app.cpython-313.pyc
+        mega_ingest.cpython-313.pyc
+        migrate_layer_separation.cpython-313.pyc
+        

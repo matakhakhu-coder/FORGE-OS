@@ -172,6 +172,20 @@ def ingest_signal(signal: dict) -> dict:
         except Exception as e:
             print(f"[Entity Error] {e}")
 
+        # CT-1: Contextual Tunneling — if Conclave confidence was too low to
+        # materialize new actors (confidence < 0.4), fall back to pre-existing
+        # signal→actor links from the NER bridge and backfill runs.
+        # This ensures event_actors is populated even when Conclave is sparse.
+        if not actor_ids and signal.get("signal_id"):
+            try:
+                rows = conn.execute(
+                    "SELECT actor_id FROM signal_actors WHERE signal_id = ?",
+                    (signal.get("signal_id"),)
+                ).fetchall()
+                actor_ids = [r[0] for r in rows]
+            except Exception as e:
+                print(f"[CT-1 Fallback Error] {e}")
+
         # 2a. Link signal → actors
         if actor_ids:
             try:
@@ -193,9 +207,34 @@ def ingest_signal(signal: dict) -> dict:
             except Exception as e:
                 print(f"[Relationship Error - Event] {e}")
 
-        # Legacy stub: preserve previous behavior without breaking
-        if signal.get("signal_id"):
-            apply_conclave_stub(signal.get("signal_id"), conn)
+        # 4. Patch conclave_meta with actor_ids + event_id for graph_sync
+        if signal.get("signal_id") and (actor_ids or event_id):
+            try:
+                row = conn.execute(
+                    "SELECT conclave_meta FROM signals WHERE signal_id=?",
+                    (signal.get("signal_id"),)
+                ).fetchone()
+                existing_meta = {}
+                if row and row[0]:
+                    try:
+                        existing_meta = json.loads(row[0])
+                    except (json.JSONDecodeError, TypeError):
+                        existing_meta = {}
+                existing_meta["actors"] = actor_ids
+                if event_id:
+                    existing_meta["event_id"] = event_id
+                # Phase 68 — Record investigative uplift in conclave_meta for audit
+                if interpreted.get("investigative_tier"):
+                    existing_meta["investigative_uplift"] = interpreted.get("investigative_uplift", 0.0)
+                    existing_meta["investigative_tier"]    = interpreted.get("investigative_tier", "")
+                    existing_meta["matched_inv_keywords"]  = interpreted.get("matched_inv_keywords", [])
+                conn.execute(
+                    "UPDATE signals SET conclave_meta = ? WHERE signal_id = ?",
+                    (json.dumps(existing_meta), signal.get("signal_id")),
+                )
+                conn.commit()
+            except Exception as e:
+                print(f"[Meta Patch Error] {e}")
 
     finally:
         conn.close()
@@ -222,35 +261,6 @@ def ingest_signal(signal: dict) -> dict:
     return result
 
 
-def apply_conclave_stub(signal_id, db):
-    """Temporary Conclave stub — does not change existing decision flow."""
-    result = AnalysisResult(
-        entities=[],
-        intent="unknown",
-        gravity=0.1,
-        recommendation="IGNORE",
-        confidence=0.1,
-        provenance={"stage": "stub"},
-    )
-
-    try:
-        db.execute(
-            """
-            UPDATE signals
-            SET gravity_score = ?, processed_at = ?, conclave_meta = ?
-            WHERE signal_id = ?
-            """,
-            (
-                result.gravity,
-                datetime.datetime.utcnow().isoformat() + "Z",
-                json.dumps(result.provenance),
-                signal_id,
-            ),
-        )
-        db.commit()
-    except Exception:
-        # non-fatal: we don't want Conclave stub to break ingestion
-        pass
 
 
 def ingest_and_persist(signal: dict) -> dict:

@@ -22,13 +22,59 @@ SEVERITY_WEIGHTS = {
     "high": ["attack", "violence", "arrest", "raid"],
     "medium": ["investigation", "protest", "sanction"],
     "low": ["report", "meeting", "statement"],
+    # Phase 64 Epsilon-III — Investigative Journalism Tier
+    # These keywords signal deep OSINT/investigative content that the kinetic
+    # scoring model previously underweighted. Each maps to a gravity boost:
+    #   inv_critical (+0.85): structural criminal enterprise indicators
+    #   inv_high     (+0.55): corruption / judicial interference signals
+    #   inv_medium   (+0.35): financial crime / accountability journalism
+    "inv_critical": [
+        "racketeering", "money-laundering", "money laundering",
+        "shell company", "shell structure", "judicial interference",
+        "trafficking", "syndicate",
+    ],
+    "inv_high": [
+        "bribes", "bribery", "convicted", "smuggling", "unaccounted for",
+        "fraudulent contract", "corrupt", "poaching syndicate",
+        "elite capture", "forged documents",
+    ],
+    "inv_medium": [
+        "charges", "indicted", "laundering", "corporate opacity",
+        "transparency deficit", "no eia", "legislative vacuum",
+        "ministerial interference", "community revenue",
+    ],
 }
 
 
 def _score_severity(text: str) -> float:
+    """Return clamped severity score. See score_severity_detailed() for audit trail."""
+    return score_severity_detailed(text)["severity"]
+
+
+def score_severity_detailed(text: str) -> dict:
+    """
+    Phase 68 — Auditable severity scoring.
+
+    Returns a dict:
+      severity              float   clamped [0.0, 1.0]
+      investigative_uplift  float   sum of inv_* tier contributions (pre-clamp)
+      investigative_tier    str     'inv_critical' | 'inv_high' | 'inv_medium' | ''
+      matched_inv_keywords  list    which investigative keywords fired
+    """
     if not text:
-        return 0.0
+        return {
+            "severity": 0.0,
+            "investigative_uplift": 0.0,
+            "investigative_tier": "",
+            "matched_inv_keywords": [],
+        }
+
     score = 0.0
+    inv_uplift = 0.0
+    matched_inv: list[str] = []
+    highest_inv_tier = ""
+    tier_rank = {"inv_critical": 3, "inv_high": 2, "inv_medium": 1, "": 0}
+
     txt = text.lower()
     for weight, terms in SEVERITY_WEIGHTS.items():
         for term in terms:
@@ -39,9 +85,37 @@ def _score_severity(text: str) -> float:
                     score += 0.6
                 elif weight == "medium":
                     score += 0.3
+                # Phase 64 Epsilon-III — Investigative Journalism Tier
+                elif weight == "inv_critical":
+                    contribution = 0.85
+                    score     += contribution
+                    inv_uplift += contribution
+                    matched_inv.append(term)
+                    if tier_rank["inv_critical"] > tier_rank.get(highest_inv_tier, 0):
+                        highest_inv_tier = "inv_critical"
+                elif weight == "inv_high":
+                    contribution = 0.55
+                    score     += contribution
+                    inv_uplift += contribution
+                    matched_inv.append(term)
+                    if tier_rank["inv_high"] > tier_rank.get(highest_inv_tier, 0):
+                        highest_inv_tier = "inv_high"
+                elif weight == "inv_medium":
+                    contribution = 0.35
+                    score     += contribution
+                    inv_uplift += contribution
+                    matched_inv.append(term)
+                    if tier_rank["inv_medium"] > tier_rank.get(highest_inv_tier, 0):
+                        highest_inv_tier = "inv_medium"
                 else:
                     score += 0.1
-    return min(score, 1.0)
+
+    return {
+        "severity":              round(min(score, 1.0), 4),
+        "investigative_uplift":  round(min(inv_uplift, 1.0), 4),
+        "investigative_tier":    highest_inv_tier,
+        "matched_inv_keywords":  matched_inv,
+    }
 
 
 def _extract_actors(text: str) -> List[str]:
@@ -88,7 +162,10 @@ class SignalInterpreter:
 
         actors = _extract_actors(text)
         ev_type = _infer_event_type(text)
-        severity = _score_severity(text)
+
+        # Phase 68: use detailed scoring to capture investigative uplift audit trail
+        severity_detail = score_severity_detailed(text)
+        severity = severity_detail["severity"]
 
         # actor_importance: more actors = higher importance, capped at 1.0
         actor_importance = min(len(actors) * 0.3, 1.0)
@@ -96,7 +173,9 @@ class SignalInterpreter:
         # frequency: use is_priority flag and known high-value sources
         source = str(signal.get("source", "")).upper()
         is_priority = int(signal.get("is_priority", 0) or 0)
-        high_value_sources = {"NPA", "GDELT", "CIVIC", "SAPS", "GOVERNMENT"}
+        # Phase 64 Epsilon-III: OXPECKERS added — award-winning investigative
+        # environmental journalism; treated as high-value analytical source.
+        high_value_sources = {"NPA", "GDELT", "CIVIC", "SAPS", "GOVERNMENT", "OXPECKERS"}
         freq_base = 0.4 if source in high_value_sources else 0.2
         frequency = min(freq_base + (0.3 * is_priority), 1.0)
 
@@ -105,10 +184,13 @@ class SignalInterpreter:
             "NPA": 0.9, "GOVERNMENT": 0.85, "GDELT": 0.7,
             "CIVIC": 0.75, "USGS": 0.95, "FIRMS": 0.9,
             "RSS": 0.65, "GDACS": 0.8,
+            # Phase 64 Epsilon-III: Oxpeckers — Africa's first investigative
+            # environmental journalism unit; ACE Award 2025 winner.
+            "OXPECKERS": 0.85,
         }
         source_credibility = credibility_map.get(source, 0.5)
 
-        return {
+        result = {
             "type": "event" if ev_type != "unknown" else "unknown",
             "actors": actors,
             "event_type": ev_type,
@@ -118,6 +200,12 @@ class SignalInterpreter:
             "source_credibility": round(source_credibility, 2),
             "raw_signal_id": signal.get("signal_id"),
         }
+        # Phase 68: propagate investigative uplift metadata for conclave_meta audit
+        if severity_detail["investigative_tier"]:
+            result["investigative_uplift"]      = severity_detail["investigative_uplift"]
+            result["investigative_tier"]         = severity_detail["investigative_tier"]
+            result["matched_inv_keywords"]       = severity_detail["matched_inv_keywords"]
+        return result
 
     def batch_interpret(self, signals: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         return [self.interpret(s) for s in signals]

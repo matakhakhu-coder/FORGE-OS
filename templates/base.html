@@ -198,6 +198,14 @@
       {% endif %}
     </a>
 
+    {# CT-1: Focus Case pill — shown when an analyst has a case in context #}
+    <div id="js-focus-pill" class="topbar__focus-pill" style="display:none;"
+         title="Focus case active — click × to clear">
+      <span class="topbar__focus-dot"></span>
+      <span class="mono topbar__focus-label" id="js-focus-label">FOCUS</span>
+      <button class="topbar__focus-clear" onclick="clearFocusCase()" title="Clear context">×</button>
+    </div>
+
     <div class="topbar__meta" id="js-clock">——</div>
 
     {# ── POV Aesthetic Toggle ─────────────────────────────────────────────── #}
@@ -286,6 +294,12 @@
             <span class="nav-icon">◫</span> Graph
           </a>
         </li>
+        <li>
+          <a href="{{ url_for('intel_graph') }}"
+             class="{{ 'active' if request.endpoint == 'intel_graph' }}">
+            <span class="nav-icon">⬡</span> Intel Graph
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -332,6 +346,15 @@
     <div class="sidebar__section">
       <div class="sidebar__label">System</div>
       <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('quarantine_manager') }}"
+             class="{{ 'active' if request.endpoint == 'quarantine_manager' }}">
+            <span class="nav-icon nav-icon--quarantine">⛔</span> Quarantine
+            {% if quarantine_count %}
+            <span class="nav-sentinel-badge" style="margin-left:auto;background:rgba(122,26,26,0.25);color:#f87171;border:1px solid rgba(185,28,28,0.3);">{{ quarantine_count }}</span>
+            {% endif %}
+          </a>
+        </li>
         <li>
           <a href="{{ url_for('diagnostics', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'diagnostics' }}">
@@ -442,9 +465,222 @@
       }
     } catch(e) {}
   })();
+
+  // ── CT-1: Focus Case ─────────────────────────────────────────────────────
+  function setFocusCase(caseId, caseName) {
+    try {
+      localStorage.setItem('forge_focus_case',
+        JSON.stringify({ case_id: caseId, name: caseName }));
+    } catch(e) {}
+    _applyFocusPill();
+  }
+
+  function clearFocusCase() {
+    try { localStorage.removeItem('forge_focus_case'); } catch(e) {}
+    _applyFocusPill();
+  }
+
+  function getFocusCase() {
+    try {
+      const raw = localStorage.getItem('forge_focus_case');
+      return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
+  }
+
+  function _applyFocusPill() {
+    const pill  = document.getElementById('js-focus-pill');
+    const label = document.getElementById('js-focus-label');
+    if (!pill) return;
+    const fc = getFocusCase();
+    if (fc && fc.case_id) {
+      const t = fc.name || ('Case #' + fc.case_id);
+      label.textContent = t.length > 22 ? t.slice(0, 22) + '…' : t;
+      pill.style.display = '';
+    } else {
+      pill.style.display = 'none';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', _applyFocusPill);
 </script>
 
+{# ═══════════════════════════════════════════════════════════════════════════
+   FORGE SECURITY MANIFEST — Client Runtime
+   ─────────────────────────────────────────────────────────────────────────
+   forge.toast(message, type)  — global toast notification engine
+   forge.fetch(url, opts)      — hardened fetch with DetonationError handling
+   ═══════════════════════════════════════════════════════════════════════════ #}
+<div id="forge-toast-stack" aria-live="polite" aria-atomic="false"
+     role="region" aria-label="Notifications"></div>
 
+<script>
+/* ── forge.toast — Global Notification Engine ─────────────────────────────── */
+window.forge = window.forge || {};
+
+(function (forge) {
+  'use strict';
+
+  const DURATION = 5000;  // ms before auto-dismiss
+
+  const ICONS = {
+    success:    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
+    error:      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
+    quarantine: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>',
+    info:       '<circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/>',
+    warning:    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>',
+  };
+
+  const LABELS = {
+    success:    'Confirmed',
+    error:      'Error',
+    quarantine: 'Quarantine Alert',
+    info:       'Information',
+    warning:    'Warning',
+  };
+
+  /**
+   * Display a toast notification.
+   * @param {string} message  — text to display
+   * @param {string} type     — 'success'|'error'|'quarantine'|'info'|'warning'
+   * @param {number} duration — ms before auto-dismiss (default 5000)
+   */
+  forge.toast = function (message, type, duration) {
+    type     = type     || 'info';
+    duration = duration || (type === 'quarantine' ? 8000 : DURATION);
+
+    const stack = document.getElementById('forge-toast-stack');
+    if (!stack) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'forge-toast forge-toast--' + type;
+    toast.style.setProperty('--toast-duration', duration + 'ms');
+    toast.setAttribute('role', type === 'error' || type === 'quarantine' ? 'alert' : 'status');
+    toast.innerHTML = [
+      '<svg class="forge-toast__icon" xmlns="http://www.w3.org/2000/svg" fill="none"',
+      '  viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">',
+      ICONS[type] || ICONS.info,
+      '</svg>',
+      '<div class="forge-toast__body">',
+      '  <div class="forge-toast__type">' + (LABELS[type] || type) + '</div>',
+      '  <div class="forge-toast__msg">' + _escapeHtml(message) + '</div>',
+      '</div>',
+      '<button class="forge-toast__close" aria-label="Dismiss notification">×</button>',
+    ].join('');
+
+    // Dismiss on click anywhere on the toast
+    toast.addEventListener('click', () => _dismiss(toast));
+
+    stack.appendChild(toast);
+
+    // Animate in (needs a frame to start transition)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => toast.classList.add('forge-toast--in'));
+    });
+
+    // Auto-dismiss
+    const timer = setTimeout(() => _dismiss(toast), duration);
+    toast._forgeTimer = timer;
+  };
+
+  function _dismiss(toast) {
+    clearTimeout(toast._forgeTimer);
+    toast.classList.remove('forge-toast--in');
+    toast.classList.add('forge-toast--out');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+  }
+
+  function _escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+}(window.forge));
+
+/* ── forge.fetch — Hardened Fetch with DetonationError handling ───────────── */
+(function (forge) {
+  'use strict';
+
+  /**
+   * Drop-in for window.fetch that automatically handles DetonationError (HTTP 400)
+   * and generic server errors, surfacing them as quarantine toast alerts rather
+   * than silent failures or generic crash screens.
+   *
+   * Usage (same as fetch):
+   *   const data = await forge.fetch('/api/artifacts/42/forensic-process', { method:'POST' });
+   *
+   * On DetonationError the promise rejects AND shows a quarantine toast.
+   * On other errors it shows an error toast.
+   * On success it passes the parsed JSON through.
+   */
+  forge.fetch = async function (url, opts) {
+    let resp;
+    try {
+      resp = await window.fetch(url, opts);
+    } catch (netErr) {
+      forge.toast(
+        'Network error — FORGE server unreachable. Check if the process is running.',
+        'error'
+      );
+      throw netErr;
+    }
+
+    let data;
+    try {
+      data = await resp.json();
+    } catch (_) {
+      data = {};
+    }
+
+    /* ── DetonationError — HTTP 400 with error string containing "DetonationError" */
+    if (resp.status === 400) {
+      const errMsg = (data.error || '');
+      const isDetonation = errMsg.includes('DetonationError') ||
+                           errMsg.includes('Magic-byte') ||
+                           errMsg.includes('Too many pages') ||
+                           errMsg.includes('File too large') ||
+                           errMsg.includes('pikepdf');
+
+      if (isDetonation) {
+        // Strip the DetonationError: prefix for display
+        const clean = errMsg.replace(/^DetonationError:\s*/i, '');
+        forge.toast(
+          '⛔ FILE QUARANTINED FOR OPERATIONAL SECURITY\n' + clean +
+          '\n\nThe artifact has been moved to the Contagion Ward and will ' +
+          'not be processed. Review the Quarantine Manager for details.',
+          'quarantine',
+          9000
+        );
+      } else {
+        forge.toast('Request rejected (400): ' + (data.error || 'Bad request'), 'error');
+      }
+
+      const err = new Error(errMsg || 'HTTP 400');
+      err.status     = 400;
+      err.data        = data;
+      err.isDetonation = isDetonation;
+      throw err;
+    }
+
+    /* ── Generic server error */
+    if (!resp.ok) {
+      forge.toast(
+        'Server error (' + resp.status + '): ' + (data.error || resp.statusText),
+        'error'
+      );
+      const err = new Error(data.error || 'HTTP ' + resp.status);
+      err.status = resp.status;
+      err.data   = data;
+      throw err;
+    }
+
+    return data;
+  };
+
+}(window.forge));
+</script>
 
 {% block scripts %}{% endblock %}
 </body>

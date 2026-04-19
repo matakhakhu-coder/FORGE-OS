@@ -1,0 +1,783 @@
+{% extends "base.html" %}
+{% from "_security_badges.html" import quarantine_warning_badge %}
+{% block title %}Contagion Ward — Quarantine Manager{% endblock %}
+
+{% block head_extra %}
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   QUARANTINE MANAGER — "THE CONTAGION WARD"
+   Styled to match FORGE design system v3 exactly.
+   All CSS custom properties pull from main.css :root tokens.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page-level warning band ─────────────────────────────────────────────── */
+.qm-threat-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-6);
+  background: rgba(122, 26, 26, 0.18);
+  border-bottom: 1px solid rgba(185, 28, 28, 0.35);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f87171;
+}
+.qm-threat-banner__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: qm-pulse 1.8s ease-in-out infinite;
+}
+@keyframes qm-pulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0   rgba(239,68,68,0.5); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+}
+.qm-threat-banner__text strong { color: #fca5a5; }
+.qm-threat-banner__separator { margin: 0 var(--sp-2); color: rgba(248,113,113,0.4); }
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.qm-header {
+  padding: var(--sp-6) var(--sp-6) var(--sp-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.qm-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.qm-header__title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--sp-1);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.qm-header__title-icon {
+  color: #ef4444;
+  opacity: 0.85;
+}
+.qm-header__sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 640px;
+}
+.qm-count-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(122,26,26,0.25);
+  border: 1px solid rgba(185,28,28,0.3);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: #f87171;
+  letter-spacing: 0.06em;
+  margin-left: var(--sp-3);
+}
+
+/* ── Controls row ────────────────────────────────────────────────────────── */
+.qm-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-6);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+.qm-controls__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.qm-filter-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.qm-filter-btn:hover,
+.qm-filter-btn.active {
+  border-color: #ef4444;
+  color: #f87171;
+  background: rgba(122,26,26,0.15);
+}
+.qm-spacer { flex: 1; }
+.qm-purge-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid rgba(185,28,28,0.5);
+  border-radius: var(--r-sm);
+  background: rgba(122,26,26,0.15);
+  color: #f87171;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.qm-purge-all-btn:hover {
+  background: rgba(185,28,28,0.25);
+  border-color: #ef4444;
+}
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.qm-table-wrap {
+  padding: var(--sp-6);
+  overflow-x: auto;
+}
+.qm-empty {
+  text-align: center;
+  padding: var(--sp-16) var(--sp-8);
+  font-family: var(--font-mono);
+  color: var(--text-ghost);
+  font-size: 0.72rem;
+  line-height: 2;
+}
+.qm-empty__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--sp-4);
+  opacity: 0.35;
+}
+table.qm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+.qm-table thead th {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.qm-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.12s;
+}
+.qm-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+.qm-table tbody td {
+  padding: var(--sp-3) var(--sp-3);
+  vertical-align: middle;
+}
+.qm-table .td-filename {
+  font-weight: 500;
+  color: var(--text-primary);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qm-table .td-reason {
+  color: #f87171;
+  max-width: 300px;
+}
+.qm-table .td-reason-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qm-table .td-size {
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.qm-table .td-time {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.qm-table .td-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Row-level failure type tag ──────────────────────────────────────────── */
+.qm-fail-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.qm-fail-tag--magic   { background: rgba(124,45,18,0.25);  color: #fb923c; border-color: rgba(124,45,18,0.4); }
+.qm-fail-tag--size    { background: rgba(67,20,7,0.25);    color: #fbbf24; border-color: rgba(67,20,7,0.4); }
+.qm-fail-tag--pages   { background: rgba(30,58,138,0.20);  color: #93c5fd; border-color: rgba(30,58,138,0.35); }
+.qm-fail-tag--parse   { background: rgba(88,28,135,0.20);  color: #c4b5fd; border-color: rgba(88,28,135,0.35); }
+.qm-fail-tag--unknown { background: rgba(30,41,59,0.40);   color: var(--text-dim); border-color: var(--border-dim); }
+
+/* ── Delete / expand buttons ─────────────────────────────────────────────── */
+.qm-detail-btn {
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.12s;
+  margin-right: var(--sp-1);
+}
+.qm-detail-btn:hover {
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+.qm-delete-btn {
+  background: transparent;
+  border: 1px solid rgba(185,28,28,0.35);
+  border-radius: var(--r-sm);
+  color: #f87171;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.qm-delete-btn:hover {
+  background: rgba(185,28,28,0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+/* ── Detail expansion row ────────────────────────────────────────────────── */
+.qm-detail-row { display: none; }
+.qm-detail-row.open { display: table-row; }
+.qm-detail-row td {
+  background: var(--bg-void);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.qm-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--sp-4);
+}
+.qm-detail-field__label {
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.qm-detail-field__value {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+/* ── Confirm overlay ─────────────────────────────────────────────────────── */
+.qm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.qm-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.qm-confirm-box {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(185,28,28,0.5);
+  border-radius: var(--r-md);
+  padding: var(--sp-6);
+  max-width: 440px;
+  width: 90%;
+  box-shadow: 0 0 40px rgba(185,28,28,0.15);
+}
+.qm-confirm-box__title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f87171;
+  margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.qm-confirm-box__body {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--sp-5);
+}
+.qm-confirm-box__filename {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #fca5a5;
+  background: rgba(122,26,26,0.2);
+  border: 1px solid rgba(185,28,28,0.3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  margin: var(--sp-3) 0;
+  word-break: break-all;
+}
+.qm-confirm-box__warning {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: #fbbf24;
+  letter-spacing: 0.06em;
+  padding: var(--sp-2) var(--sp-3);
+  background: rgba(120,80,0,0.12);
+  border: 1px solid rgba(180,120,0,0.2);
+  border-radius: var(--r-sm);
+  margin-bottom: var(--sp-4);
+}
+.qm-confirm-box__actions {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: flex-end;
+}
+.qm-btn-cancel {
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.qm-btn-cancel:hover {
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+.qm-btn-destroy {
+  padding: var(--sp-2) var(--sp-5);
+  border: 1px solid #ef4444;
+  border-radius: var(--r-sm);
+  background: rgba(185,28,28,0.2);
+  color: #fca5a5;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.qm-btn-destroy:hover {
+  background: rgba(185,28,28,0.4);
+  color: #fff;
+}
+
+/* ── Stat cards row ──────────────────────────────────────────────────────── */
+.qm-stats-row {
+  display: flex;
+  gap: 1px;
+  background: var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.qm-stat-card {
+  flex: 1;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.qm-stat-card__val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #f87171;
+  line-height: 1;
+}
+.qm-stat-card__val--ok { color: #4ade80; }
+.qm-stat-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# ── Threat Banner ─────────────────────────────────────────────────────────── #}
+<div class="qm-threat-banner" role="alert" aria-live="polite">
+  <span class="qm-threat-banner__pulse" aria-hidden="true"></span>
+  <strong>CONTAGION WARD</strong>
+  <span class="qm-threat-banner__separator">◈</span>
+  <span>
+    Quarantined artifacts are <strong>read-only</strong>.
+    No intelligence from these files has entered the FORGE stream.
+    All items here failed the <strong>PDF Air-Lock</strong> pre-processing check.
+  </span>
+</div>
+
+{# ── Page Header ───────────────────────────────────────────────────────────── #}
+<div class="qm-header">
+  <div class="qm-header__eyebrow">System › Security › Quarantine</div>
+  <h1 class="qm-header__title">
+    <svg class="qm-header__title-icon" width="22" height="22" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+      <line x1="12" y1="8" x2="12" y2="13"/>
+      <circle cx="12" cy="16" r="0.8" fill="currentColor"/>
+    </svg>
+    Quarantine Manager
+    {% if files %}
+    <span class="qm-count-chip">{{ files | length }} file{{ 's' if files | length != 1 }}</span>
+    {% endif %}
+  </h1>
+  <p class="qm-header__sub">
+    Files listed below were rejected by <code>forge_security.detonator.detonate_pdf()</code>
+    and routed here automatically. Review failure reasons before authorising permanent deletion.
+    Quarantined files cannot be processed by OCR or attached to investigations.
+  </p>
+</div>
+
+{# ── Stats Row ─────────────────────────────────────────────────────────────── #}
+<div class="qm-stats-row">
+  <div class="qm-stat-card">
+    <span class="qm-stat-card__val">{{ files | length }}</span>
+    <span class="qm-stat-card__label">Total Quarantined</span>
+  </div>
+  <div class="qm-stat-card">
+    <span class="qm-stat-card__val">
+      {{ files | selectattr('fail_type', 'eq', 'magic') | list | length }}
+    </span>
+    <span class="qm-stat-card__label">Magic Byte Failures</span>
+  </div>
+  <div class="qm-stat-card">
+    <span class="qm-stat-card__val">
+      {{ files | selectattr('fail_type', 'eq', 'size') | list | length }}
+    </span>
+    <span class="qm-stat-card__label">Oversized</span>
+  </div>
+  <div class="qm-stat-card">
+    <span class="qm-stat-card__val">
+      {{ files | selectattr('fail_type', 'eq', 'parse') | list | length }}
+    </span>
+    <span class="qm-stat-card__label">Parse Failures</span>
+  </div>
+  <div class="qm-stat-card">
+    <span class="qm-stat-card__val qm-stat-card__val--ok">
+      {{ total_detonated }}
+    </span>
+    <span class="qm-stat-card__label">Successfully Cleared (all-time)</span>
+  </div>
+</div>
+
+{# ── Controls ──────────────────────────────────────────────────────────────── #}
+<div class="qm-controls">
+  <span class="qm-controls__label">Filter:</span>
+  <button class="qm-filter-btn active" data-filter="all"
+          onclick="qmFilter('all', this)">All</button>
+  <button class="qm-filter-btn" data-filter="magic"
+          onclick="qmFilter('magic', this)">Magic Byte</button>
+  <button class="qm-filter-btn" data-filter="size"
+          onclick="qmFilter('size', this)">Oversized</button>
+  <button class="qm-filter-btn" data-filter="parse"
+          onclick="qmFilter('parse', this)">Parse Error</button>
+  <button class="qm-filter-btn" data-filter="pages"
+          onclick="qmFilter('pages', this)">Page Limit</button>
+
+  <div class="qm-spacer"></div>
+
+  {% if files %}
+  <button class="qm-purge-all-btn" onclick="qmConfirmPurgeAll()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+         stroke-width="1.5" aria-hidden="true">
+      <polyline points="2 4 4 4 14 4"/>
+      <path d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M13 4l-1 9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1L3 4"/>
+    </svg>
+    Purge All ({{ files | length }})
+  </button>
+  {% endif %}
+</div>
+
+{# ── Table ─────────────────────────────────────────────────────────────────── #}
+<div class="qm-table-wrap">
+  {% if not files %}
+  <div class="qm-empty">
+    <span class="qm-empty__icon">◈</span>
+    Quarantine is clear — no artifacts have been rejected by the Air-Lock.<br>
+    <span style="color:var(--text-dim);">The intelligence stream is clean.</span>
+  </div>
+  {% else %}
+  <table class="qm-table" id="qm-table" aria-label="Quarantined artifacts">
+    <thead>
+      <tr>
+        <th>Filename</th>
+        <th>Failure Reason</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>Quarantined</th>
+        <th style="text-align:right;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in files %}
+      <tr class="qm-row" data-fail-type="{{ f.fail_type }}">
+        <td class="td-filename" title="{{ f.filename }}">{{ f.filename }}</td>
+        <td class="td-reason">
+          <span class="td-reason-text" title="{{ f.reason }}">{{ f.reason }}</span>
+        </td>
+        <td>
+          <span class="qm-fail-tag qm-fail-tag--{{ f.fail_type }}">
+            {{ f.fail_type | upper }}
+          </span>
+        </td>
+        <td class="td-size">{{ f.size_human }}</td>
+        <td class="td-time">{{ f.quarantined_at }}</td>
+        <td class="td-actions">
+          <button class="qm-detail-btn"
+                  onclick="qmToggleDetail('detail-{{ loop.index }}')"
+                  aria-expanded="false"
+                  aria-controls="detail-{{ loop.index }}">
+            Details
+          </button>
+          <button class="qm-delete-btn"
+                  onclick="qmConfirmDelete('{{ f.filename | e }}', '{{ f.reason | e }}')"
+                  data-filename="{{ f.filename | e }}">
+            Force Delete
+          </button>
+        </td>
+      </tr>
+      <tr class="qm-detail-row" id="detail-{{ loop.index }}"
+          aria-label="Details for {{ f.filename }}">
+        <td colspan="6">
+          <div class="qm-detail-grid">
+            <div>
+              <div class="qm-detail-field__label">Original Filename</div>
+              <div class="qm-detail-field__value">{{ f.original_name or f.filename }}</div>
+            </div>
+            <div>
+              <div class="qm-detail-field__label">Size (exact)</div>
+              <div class="qm-detail-field__value">{{ f.size_bytes | default('—') }} bytes</div>
+            </div>
+            <div>
+              <div class="qm-detail-field__label">Quarantined At (UTC)</div>
+              <div class="qm-detail-field__value">{{ f.quarantined_at_full or f.quarantined_at }}</div>
+            </div>
+            <div>
+              <div class="qm-detail-field__label">Failure Category</div>
+              <div class="qm-detail-field__value">{{ f.fail_type | upper }}</div>
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <div class="qm-detail-field__label">Full Reason</div>
+              <div class="qm-detail-field__value">{{ f.reason }}</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+{# ── Confirm Delete Overlay ────────────────────────────────────────────────── #}
+<div class="qm-overlay" id="qm-overlay" role="dialog" aria-modal="true"
+     aria-labelledby="qm-confirm-title">
+  <div class="qm-confirm-box">
+    <div class="qm-confirm-box__title" id="qm-confirm-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Confirm Permanent Deletion
+    </div>
+    <div class="qm-confirm-box__body">
+      You are about to permanently delete the following quarantined artifact from disk.
+      This action cannot be undone.
+    </div>
+    <div class="qm-confirm-box__filename" id="qm-confirm-filename">—</div>
+    <div class="qm-confirm-box__warning">
+      ⚠ Failure reason: <span id="qm-confirm-reason">—</span>
+    </div>
+    <div class="qm-confirm-box__actions">
+      <button class="qm-btn-cancel" onclick="qmCloseOverlay()">Cancel</button>
+      <button class="qm-btn-destroy" id="qm-btn-destroy" onclick="qmExecuteDelete()">
+        Force Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ── Quarantine Manager — JS Controller ───────────────────────────────────── */
+(function () {
+  'use strict';
+
+  let _pendingFilename = null;
+
+  /* ── Filter ──────────────────────────────────────────────────────────────── */
+  window.qmFilter = function (type, btn) {
+    // Toggle active class
+    document.querySelectorAll('.qm-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.qm-row').forEach(row => {
+      const match = type === 'all' || row.dataset.failType === type;
+      row.style.display = match ? '' : 'none';
+
+      // Also hide/show paired detail rows
+      const detailId = row.nextElementSibling && row.nextElementSibling.classList.contains('qm-detail-row')
+        ? row.nextElementSibling
+        : null;
+      if (detailId) detailId.style.display = match ? '' : 'none';
+    });
+  };
+
+  /* ── Detail expand/collapse ──────────────────────────────────────────────── */
+  window.qmToggleDetail = function (id) {
+    const row = document.getElementById(id);
+    if (!row) return;
+    const isOpen = row.classList.toggle('open');
+    // Update aria-expanded on the trigger button
+    const btn = document.querySelector(`[aria-controls="${id}"]`);
+    if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (btn) btn.textContent = isOpen ? 'Collapse' : 'Details';
+  };
+
+  /* ── Single-file delete overlay ──────────────────────────────────────────── */
+  window.qmConfirmDelete = function (filename, reason) {
+    _pendingFilename = filename;
+    document.getElementById('qm-confirm-filename').textContent = filename;
+    document.getElementById('qm-confirm-reason').textContent = reason || 'Unknown';
+    document.getElementById('qm-overlay').classList.add('open');
+    document.getElementById('qm-btn-destroy').focus();
+  };
+
+  window.qmCloseOverlay = function () {
+    document.getElementById('qm-overlay').classList.remove('open');
+    _pendingFilename = null;
+  };
+
+  /* Close overlay on backdrop click */
+  document.getElementById('qm-overlay').addEventListener('click', function (e) {
+    if (e.target === this) qmCloseOverlay();
+  });
+  /* Close on Escape */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') qmCloseOverlay();
+  });
+
+  /* ── Execute delete ──────────────────────────────────────────────────────── */
+  window.qmExecuteDelete = async function () {
+    if (!_pendingFilename) return;
+
+    const btn = document.getElementById('qm-btn-destroy');
+    btn.disabled = true;
+    btn.textContent = 'Deleting…';
+
+    try {
+      const resp = await fetch(
+        '/api/quarantine/' + encodeURIComponent(_pendingFilename) + '/delete',
+        { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } }
+      );
+      const data = await resp.json();
+
+      if (resp.ok && data.status === 'deleted') {
+        forge.toast('Artifact permanently deleted from quarantine.', 'success');
+        // Remove the two rows (data row + detail row) from the DOM
+        document.querySelectorAll('.qm-row').forEach(row => {
+          const delBtn = row.querySelector('.qm-delete-btn');
+          if (delBtn && delBtn.dataset.filename === _pendingFilename) {
+            const detail = row.nextElementSibling;
+            if (detail && detail.classList.contains('qm-detail-row')) detail.remove();
+            row.remove();
+          }
+        });
+        // Update count chip
+        const remaining = document.querySelectorAll('.qm-row').length;
+        const chip = document.querySelector('.qm-count-chip');
+        if (chip) chip.textContent = remaining + ' file' + (remaining !== 1 ? 's' : '');
+        if (remaining === 0) {
+          document.querySelector('.qm-table-wrap').innerHTML =
+            '<div class="qm-empty"><span class="qm-empty__icon">◈</span>' +
+            'Quarantine is now clear.<br>' +
+            '<span style="color:var(--text-dim);">The intelligence stream is clean.</span></div>';
+        }
+        qmCloseOverlay();
+      } else {
+        forge.toast('Deletion failed: ' + (data.error || 'server error'), 'error');
+      }
+    } catch (err) {
+      forge.toast('Network error during deletion — check server logs.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Force Delete';
+    }
+  };
+
+  /* ── Purge all ───────────────────────────────────────────────────────────── */
+  window.qmConfirmPurgeAll = function () {
+    const count = document.querySelectorAll('.qm-row').length;
+    if (!count) return;
+    if (!confirm(
+      'PURGE ALL ' + count + ' QUARANTINED FILES?\n\n' +
+      'This will permanently delete every file in the Contagion Ward from disk.\n' +
+      'This action cannot be undone.\n\nType "PURGE" in the next prompt to confirm.'
+    )) return;
+    const conf = prompt('Type PURGE to confirm:');
+    if (conf !== 'PURGE') {
+      forge.toast('Purge cancelled — confirmation text did not match.', 'info');
+      return;
+    }
+    fetch('/api/quarantine/purge-all', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.status === 'purged') {
+        forge.toast('Quarantine purged — ' + d.deleted + ' files destroyed.', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        forge.toast('Purge incomplete: ' + (d.error || 'server error'), 'error');
+      }
+    })
+    .catch(() => forge.toast('Network error during purge.', 'error'));
+  };
+
+}());
+</script>
+{% endblock %}

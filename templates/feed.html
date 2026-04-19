@@ -15,6 +15,27 @@
   </p>
 </div>
 
+{# ── CT-1 Banner (hidden until a case context is active) ─────────────────── #}
+<div id="js-ct-banner" class="ct-banner" style="display:none;">
+  <div class="ct-banner__inner">
+    <span class="ct-banner__icon">⊛</span>
+    <div class="ct-banner__info">
+      <span class="ct-banner__label mono">CONTEXT TUNNEL ACTIVE</span>
+      <span class="ct-banner__title" id="js-ct-case-title">—</span>
+    </div>
+    <div class="ct-banner__controls">
+      <label class="ct-gravity-label mono" for="js-gravity-slider">
+        Gravity <span id="js-gravity-val">50</span>%
+      </label>
+      <input type="range" id="js-gravity-slider" class="ct-gravity-slider"
+             min="0" max="100" value="50" step="5">
+    </div>
+    <a id="js-ct-case-link" href="#" class="btn btn--ct btn--sm">↗ Case</a>
+    <button class="btn btn--ghost btn--sm" onclick="exitContextTunnel()"
+            title="Return to global firehose">⊕ Global View</button>
+  </div>
+</div>
+
 {# ── Feed Header Controls ─────────────────────────────────────────────────── #}
 <div class="feed-header">
   <div>
@@ -108,6 +129,9 @@
     loading:  false,
     hasMore:  true,
     counts:   { total: 0, alerts: 0, signals: 0, corr: 0, leads: 0 },
+    // CT-1
+    caseId:   null,
+    gravity:  50,
   };
 
   // ── DOM refs ───────────────────────────────────────────────────────────────
@@ -117,6 +141,75 @@
   var countEl   = document.getElementById('js-feed-count');
   var metaEl    = document.getElementById('js-feed-meta');
   var statusBar = document.getElementById('js-status-bar');
+  var ctBanner  = document.getElementById('js-ct-banner');
+  var gravSlider= document.getElementById('js-gravity-slider');
+  var gravVal   = document.getElementById('js-gravity-val');
+
+  // ── CT-1: init from URL params or localStorage ────────────────────────────
+  (function initCT() {
+    var qs = new URLSearchParams(window.location.search);
+    var urlCaseId = parseInt(qs.get('case_id') || '0', 10) || null;
+    var urlGravity = parseInt(qs.get('gravity') || '50', 10);
+
+    if (urlCaseId) {
+      state.caseId  = urlCaseId;
+      state.gravity = urlGravity;
+      showBanner(urlCaseId, urlGravity);
+    } else {
+      // Try localStorage focus case
+      var fc = (typeof getFocusCase === 'function') ? getFocusCase() : null;
+      if (fc && fc.case_id) {
+        state.caseId  = fc.case_id;
+        state.gravity = 50;
+        showBanner(fc.case_id, 50);
+      }
+    }
+  })();
+
+  function showBanner(caseId, gravity) {
+    if (!ctBanner) return;
+    fetch('/api/cases/' + caseId + '/anchors')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var titleEl = document.getElementById('js-ct-case-title');
+        var linkEl  = document.getElementById('js-ct-case-link');
+        if (titleEl) titleEl.textContent = d.case_title || ('Case #' + caseId);
+        if (linkEl)  linkEl.href = '/cases/' + caseId;
+        ctBanner.style.display = '';
+      })
+      .catch(function () { ctBanner.style.display = ''; });
+
+    if (gravSlider) {
+      gravSlider.value = gravity;
+      if (gravVal) gravVal.textContent = gravity;
+    }
+  }
+
+  window.exitContextTunnel = function () {
+    state.caseId  = null;
+    state.gravity = 50;
+    if (ctBanner) ctBanner.style.display = 'none';
+    // Strip case_id from URL without reload
+    var url = new URL(window.location.href);
+    url.searchParams.delete('case_id');
+    url.searchParams.delete('gravity');
+    window.history.replaceState({}, '', url.toString());
+    state.offset  = 0;
+    state.hasMore = true;
+    fetchPage(true);
+  };
+
+  if (gravSlider) {
+    gravSlider.addEventListener('input', function () {
+      state.gravity = parseInt(this.value, 10);
+      if (gravVal) gravVal.textContent = state.gravity;
+    });
+    gravSlider.addEventListener('change', function () {
+      state.offset  = 0;
+      state.hasMore = true;
+      fetchPage(true);
+    });
+  }
 
   // ── Fetch a page of feed items ─────────────────────────────────────────────
   function fetchPage(reset) {
@@ -127,8 +220,9 @@
 
     var lens = new URLSearchParams(window.location.search).get('lens') || 'live';
     var params = '?limit=' + state.limit + '&offset=' + state.offset + '&lens=' + encodeURIComponent(lens);
-    if (state.stream) params += '&stream=' + encodeURIComponent(state.stream);
-    if (state.topic)  params += '&topic='  + encodeURIComponent(state.topic);
+    if (state.stream)  params += '&stream='  + encodeURIComponent(state.stream);
+    if (state.topic)   params += '&topic='   + encodeURIComponent(state.topic);
+    if (state.caseId)  params += '&case_id=' + state.caseId + '&gravity=' + state.gravity;
 
     fetch('/api/feed' + params)
       .then(function (r) { return r.json(); })
@@ -262,6 +356,16 @@
     scoreChip.title = 'Feed score (relevance×0.4 + priority×0.3 + sentinel×0.2 + stream×0.1)';
     scoreChip.textContent = 'S:' + (item.feed_score || 0).toFixed(3);
     header.appendChild(scoreChip);
+
+    // CT-1: gravity badge (only shown when context tunnel active)
+    if (state.caseId && item.gravity_score != null) {
+      var gPct = Math.round((item.gravity_score || 0) * 100);
+      var gBadge = document.createElement('span');
+      gBadge.className = 'ct-gravity-badge' + (gPct >= 50 ? ' ct-gravity-badge--hot' : '');
+      gBadge.title = 'Gravity score — case context relevance';
+      gBadge.textContent = '⊛ ' + gPct + '%';
+      header.appendChild(gBadge);
+    }
 
     // Timestamp
     var ts = document.createElement('span');
