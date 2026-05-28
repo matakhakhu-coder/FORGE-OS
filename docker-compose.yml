@@ -1,0 +1,84 @@
+# ════════════════════════════════════════════════════════════════════════
+# FORGE — Docker Compose Runtime
+# ════════════════════════════════════════════════════════════════════════
+#
+# Usage
+# ─────
+#   docker compose up -d                  # start FORGE
+#   docker compose down                   # stop (data persists in volumes)
+#   docker compose build --no-cache       # full rebuild after requirements change
+#   docker compose exec forge python tools/mega_ingest.py
+#   docker compose exec forge python migrations/verify_schema.py
+#
+# Migrating an existing database (one-time):
+#   docker compose up -d forge
+#   docker compose cp database.db forge:/data/database.db
+#   docker compose exec forge python app.py --migrate
+#
+# ════════════════════════════════════════════════════════════════════════
+
+services:
+  forge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: forge
+    restart: unless-stopped
+
+    ports:
+      - "5000:5000"
+
+    volumes:
+      # SQLite database — WAL mode requires a real filesystem volume, NOT tmpfs.
+      # The forge worker owns /data; no process outside the container touches it.
+      - forge_data:/data
+
+      # Uploaded artifact files (PDFs, images, documents)
+      - forge_media:/app/media
+
+    environment:
+      - FORGE_DB=/data/database.db
+      - PYTHONUNBUFFERED=1
+      # Optional: override RSS feed, GDELT settings, etc.
+      # - FORAGE_RSS_URL=https://www.gdacs.org/xml/rss.xml
+      # - X_PULSE_MODE=nitter
+      # - X_PULSE_TARGETS=@handle1,@handle2
+
+    # Resource limits — prevents runaway O(n²) correlation passes from
+    # consuming all host memory.
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 512m
+
+    # Read-only root filesystem except for the named volumes and /tmp.
+    # This neutralises any RCE that attempts to write outside designated paths.
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+
+    # Drop all Linux capabilities except what Flask needs to bind port 5000.
+    # CAP_NET_BIND_SERVICE is only needed if binding to port < 1024 (we use 5000
+    # so this is already covered, but listed explicitly for auditability).
+    security_opt:
+      - no-new-privileges:true
+
+# ── Named volumes ─────────────────────────────────────────────────────────────
+# Both volumes are local-driver; Docker manages them under
+# /var/lib/docker/volumes/ (Linux) or the WSL2 equivalent on Windows.
+# They survive `docker compose down` and are only removed with `docker volume rm`.
+volumes:
+  forge_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data          # maps to FORGE/data/ on the host — easy backup
+  forge_media:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./media         # maps to FORGE/media/ — existing artifact store

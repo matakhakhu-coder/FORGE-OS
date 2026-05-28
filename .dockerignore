@@ -1,0 +1,27 @@
+# Live database — mounted as a volume; never baked into the image
+database.db
+database.db-wal
+database.db-shm
+data/
+
+# Development and editor artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+*.log
+
+# Archive and scratch
+.archive/
+*.tmp
+
+# Git metadata (not needed at runtime)
+.git/
+.gitignore
+
+# Test and CI artifacts
+.pytest_cache/
+htmlcov/
+*.coverage
