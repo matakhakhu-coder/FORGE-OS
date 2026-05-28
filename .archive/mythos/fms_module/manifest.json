@@ -1,0 +1,11 @@
+{
+    "name":         "mythos",
+    "version":      "0.1.0",
+    "description":  "Mythos Anthology — atomic node network for mythology media production. Manages character, narrative, dialogue, and media nodes with recursive rebuild orchestration.",
+    "author":       "FORGE-MYTHOS",
+    "engines":      ["mythos_rebuild_engine"],
+    "hooks":        ["on_signal", "on_actor_create"],
+    "routes":       [],
+    "schema":       "forge_modules/mythos/schema.sql",
+    "capabilities": ["character_registry", "narrative_synthesis", "dialogue_persona", "media_tracking", "recursive_rebuild"]
+}
