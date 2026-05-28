@@ -329,6 +329,69 @@
   letter-spacing: 0.04em;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   SECTION 4 — FLUX SOCINT STRIP
+   ══════════════════════════════════════════════════════════════════════════ */
+.sf-flux-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2, 0.4rem);
+  padding: 0.45rem 1.25rem;
+  border-top: 1px solid rgba(99,102,241,0.2);
+  background: rgba(99,102,241,0.04);
+  min-height: 40px;
+}
+.sf-flux-strip__label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: rgba(99,102,241,0.7);
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sf-flux-seed {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(99,102,241,0.08);
+  color: var(--accent, #fbbf24);
+  border: 1px solid rgba(99,102,241,0.2);
+  white-space: nowrap;
+  cursor: default;
+  transition: background 0.12s;
+}
+.sf-flux-seed:hover { background: rgba(99,102,241,0.15); }
+.sf-flux-seed--velocity {
+  color: #4ade80;
+  background: rgba(74,222,128,0.06);
+  border-color: rgba(74,222,128,0.2);
+  animation: sf-flux-pulse 2s ease-in-out infinite;
+}
+@keyframes sf-flux-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  50%       { box-shadow: 0 0 5px 1px rgba(74,222,128,0.3); }
+}
+.sf-flux-strip__link {
+  margin-left: auto;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  color: rgba(99,102,241,0.7);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sf-flux-strip__link:hover { color: var(--accent, #fbbf24); }
+.sf-flux-strip__empty {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  color: var(--text-ghost, #444);
+  letter-spacing: 0.04em;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .sf-top  { grid-template-columns: 1fr; }
@@ -395,6 +458,19 @@
   </div>
   <div class="sf-stream" id="sf-stream">
     <div class="sf-loading">Loading…</div>
+  </div>
+
+  {# ══════════════════════════════════════════════════════════════════════════
+     SECTION 4 — FLUX SOCINT STRIP
+     Compact latent-seed tag bar. Full analysis at /flux/discovery.
+     ══════════════════════════════════════════════════════════════════════════ #}
+  <div class="sf-section-header" style="border-top:1px solid rgba(99,102,241,0.2);background:rgba(99,102,241,0.03);">
+    <span class="sf-section-header__led" style="background:rgba(99,102,241,0.8);box-shadow:0 0 5px rgba(99,102,241,0.6);"></span>
+    FLUX · LATENT SEEDS
+    <span class="sf-section-header__count" id="sf-flux-count"></span>
+  </div>
+  <div class="sf-flux-strip" id="sf-flux-strip">
+    <span class="sf-flux-strip__empty" id="sf-flux-empty">Loading FLUX data…</span>
   </div>
 
 </div>
@@ -633,11 +709,49 @@
       });
   }
 
+  // ── FLUX Latent Seeds Strip ────────────────────────────────────────────────
+  function loadFlux() {
+    fetch('/api/flux/discovery')
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) {
+        if (!data) return;
+        var seeds  = (data.seeds || []).slice(0, 20);  // cap at 20 tags in strip
+        var strip  = document.getElementById('sf-flux-strip');
+        var empty  = document.getElementById('sf-flux-empty');
+        var cntEl  = document.getElementById('sf-flux-count');
+
+        cntEl.textContent = seeds.length + ' seeds';
+
+        if (!seeds.length) {
+          empty.textContent = 'No latent seeds yet — run x_pulse then discovery.py';
+          return;
+        }
+        empty.style.display = 'none';
+
+        var html = '<span class="sf-flux-strip__label">⟁ FLUX</span>';
+        seeds.forEach(function(s) {
+          var vel   = (s.velocity || 0) >= 2.0;
+          var cls   = vel ? ' sf-flux-seed--velocity' : '';
+          var tip   = '#' + s.tag + ' · j=' + (s.jaccard_score||0).toFixed(3)
+                    + ' v=' + (s.velocity||0).toFixed(2)
+                    + ' n=' + (s.total_count||0)
+                    + ' d' + s.discovery_depth;
+          html += '<span class="sf-flux-seed' + cls + '" title="' + tip + '">'
+                + (vel ? '▲ ' : '') + '#' + esc(s.tag)
+                + '</span>';
+        });
+        html += '<a class="sf-flux-strip__link" href="/flux/discovery">View Centrifugal Net →</a>';
+        strip.innerHTML = html;
+      })
+      .catch(function() {});
+  }
+
   // ── Boot ───────────────────────────────────────────────────────────────────
   loadMap();
   loadTop();
   loadFeed();
   loadStream();
+  loadFlux();
 
   // Auto-refresh every 60 seconds
   setInterval(function() {
@@ -645,6 +759,7 @@
     loadTop();
     loadFeed();
     loadStream();
+    loadFlux();
   }, 60000);
 
 })();

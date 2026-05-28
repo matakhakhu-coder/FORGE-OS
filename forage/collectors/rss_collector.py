@@ -58,6 +58,17 @@ comma-separated):
     Radiological, Attack, Mass Casualty, Red Alert
 """
 
+__manifest__ = {
+    "id":          "rss_collector",
+    "name":        "GDACS RSS Collector",
+    "description": "Ingests global disaster and crisis alerts from the GDACS combined RSS feed. Flags nuclear, tsunami, explosion, and mass casualty events as priority signals.",
+    "icon":        "📻",
+    "entry":       "forage/collectors/rss_collector.py",
+    "args":        [],
+    "job_key":     "rss_collector",
+    "version":     "1.0.0",
+}
+
 import json
 import time
 import os

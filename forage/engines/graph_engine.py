@@ -37,22 +37,12 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-# Phase 32: path-safe pipeline logger import
-def _log_run_safe(*args, **kwargs):
-    """Inline log_run that works whether called as a module or direct script."""
-    import sys as _sys, importlib.util as _ilu
-    from pathlib import Path as _P
-    _logger_path = _P(__file__).resolve().parent.parent.parent / "forage" / "utils" / "pipeline_logger.py"
-    if str(_logger_path.parent.parent) not in _sys.path:
-        _sys.path.insert(0, str(_logger_path.parent.parent))
-    try:
-        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_logger_path))
-        _mod  = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        _mod.log_run(*args, **kwargs)
-    except Exception:
+# P1-07: standard import — importlib.spec_from_file_location removed
+try:
+    from forage.utils.pipeline_logger import log_run
+except ImportError:
+    def log_run(*args, **kwargs):  # type: ignore[misc]
         pass  # logging must never crash the pipeline
-log_run = _log_run_safe
 from typing import Optional
 
 REPORT_TOP_N      = 10
@@ -190,6 +180,11 @@ class GraphEngine:
             conn.execute(
                 "ALTER TABLE actor_network_metrics "
                 "ADD COLUMN influence_score REAL NOT NULL DEFAULT 0"
+            )
+        if "community_id_socint" not in existing:
+            conn.execute(
+                "ALTER TABLE actor_network_metrics "
+                "ADD COLUMN community_id_socint INTEGER DEFAULT NULL"
             )
         conn.commit()
 
@@ -416,6 +411,90 @@ class GraphEngine:
                 )
         return written
 
+    def _compute_socint_communities(self, conn: sqlite3.Connection,
+                                        dry_run: bool = False) -> dict:
+        """
+        C-SOCINT pass — community detection on the stylometric_match subgraph.
+
+        Loads only edges with relation_type='stylometric_match' from
+        entity_relationships (written by flux/processors/resonance.py when
+        resonance_score >= GRAPH_INJECT_THRESHOLD=0.70).
+
+        Runs greedy_modularity_communities on that undirected subgraph and
+        writes the resulting community IDs to actor_network_metrics.community_id_socint.
+        The main community_id column (co-occurrence graph) is never touched.
+        """
+        try:
+            import networkx as nx
+            from networkx.algorithms.community import greedy_modularity_communities
+        except ImportError:
+            warn("NetworkX not available — C-SOCINT pass skipped")
+            return {"skipped": True, "reason": "networkx_missing"}
+
+        try:
+            rows = conn.execute(
+                "SELECT subject_actor_id AS a, object_actor_id AS b, "
+                "confidence AS weight "
+                "FROM entity_relationships "
+                "WHERE relation_type = 'stylometric_match'"
+            ).fetchall()
+        except Exception as exc:
+            warn(f"C-SOCINT: could not load stylometric_match edges: {exc}")
+            return {"skipped": True, "reason": str(exc)}
+
+        if not rows:
+            log("C-SOCINT: no stylometric_match edges — pass skipped")
+            return {"edges": 0, "communities": 0}
+
+        G = nx.Graph()
+        for row in rows:
+            G.add_edge(row["a"], row["b"], weight=float(row["weight"]))
+
+        log(f"C-SOCINT graph: {G.number_of_nodes()} nodes, "
+            f"{G.number_of_edges()} edges")
+
+        community_map: dict = {}
+        try:
+            if nx.is_connected(G):
+                communities = greedy_modularity_communities(G, weight="weight")
+            else:
+                largest_cc  = max(nx.connected_components(G), key=len)
+                sub         = G.subgraph(largest_cc)
+                communities = greedy_modularity_communities(sub, weight="weight")
+            for cid, community in enumerate(communities):
+                for node in community:
+                    community_map[node] = cid
+        except Exception as exc:
+            warn(f"C-SOCINT community detection failed: {exc}")
+            return {"edges": G.number_of_edges(), "communities": 0,
+                    "error": str(exc)}
+
+        n_communities = len(set(community_map.values()))
+        log(f"C-SOCINT: {n_communities} communities across "
+            f"{len(community_map)} actors")
+
+        if not dry_run:
+            for actor_id, cid in community_map.items():
+                try:
+                    conn.execute(
+                        "INSERT INTO actor_network_metrics "
+                        "    (actor_id, community_id_socint) "
+                        "VALUES (?, ?) "
+                        "ON CONFLICT(actor_id) DO UPDATE SET "
+                        "    community_id_socint = excluded.community_id_socint",
+                        (actor_id, cid),
+                    )
+                except Exception as exc:
+                    warn(f"C-SOCINT write failed for actor {actor_id}: {exc}")
+            conn.commit()
+
+        return {
+            "edges":       G.number_of_edges(),
+            "communities": n_communities,
+            "written":     len(community_map),
+            "dry_run":     dry_run,
+        }
+
     def run(self, dry_run: bool = False) -> dict:
         _t0 = __import__("time").monotonic()
         log(f"Database : {self._db_path}")
@@ -451,6 +530,10 @@ class GraphEngine:
                              if m["community_id"] is not None})
 
         written = self._write_metrics(conn, core_metrics, influence, dry_run=dry_run)
+
+        log("Running C-SOCINT community pass (stylometric_match subgraph)...")
+        socint_result = self._compute_socint_communities(conn, dry_run=dry_run)
+
         conn.close()
 
         summary = {
@@ -458,6 +541,8 @@ class GraphEngine:
             "edges": G.number_of_edges(), "rel_edges": len(rel_edges),
             "corr_pairs": len(corr_pairs), "communities": n_communities,
             "written": written, "dry_run": dry_run,
+            "socint_communities": socint_result.get("communities", 0),
+            "socint_edges":       socint_result.get("edges", 0),
             "computed_at": datetime.now(timezone.utc).isoformat(),
         }
         log(f"Complete: {summary}")
@@ -492,17 +577,17 @@ class GraphEngine:
         if not rows:
             print("No metrics computed yet.")
             return
-        print(f"\n{'─'*80}")
+        print(f"\n{'-'*80}")
         print(f"  FORGE — Top {REPORT_TOP_N} Actors by Global Influence Score")
         print(f"  Computed: {meta['ts']}  |  Total actors: {meta['n']}")
-        print(f"{'─'*80}")
+        print(f"{'-'*80}")
         print(f"  {'Actor':<28} {'Type':<14} {'Influence':>9} {'Betwn':>7} {'PRank':>7} {'Com':>4}")
-        print(f"{'─'*80}")
+        print(f"{'-'*80}")
         for r in rows:
             print(f"  {r['name']:<28} {r['type']:<14} "
                   f"{r['influence_score']:>9.4f} {r['betweenness']:>7.4f} "
                   f"{r['pagerank']:>7.4f} {str(r['community_id'] or '-'):>4}")
-        print(f"{'─'*80}\n")
+        print(f"{'-'*80}\n")
 
 
 if __name__ == "__main__":

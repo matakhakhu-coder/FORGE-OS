@@ -57,9 +57,10 @@ def register_wiki_routes(app):
 
     @app.route('/api/wiki/synthesize', methods=['GET', 'POST'])
     def synthesize():
-        from core.pipeline.synthesizer import run_synthesis
-        result = run_synthesis()
-        return jsonify(result)
+        from wiki.processors.wiki_compiler import WikiCompiler, DB_PATH
+        compiler = WikiCompiler(DB_PATH)
+        compiler.run()
+        return jsonify({'status': 'ok'})
 
     @app.route("/api/wiki/get/<actor_id>", methods=["GET"])
     def get_entries(actor_id):

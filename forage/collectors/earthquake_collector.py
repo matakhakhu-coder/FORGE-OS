@@ -43,6 +43,17 @@ climbing up two directories to reach the FORGE root where database.db lives.
 Override with:   FORGE_DB=/custom/path/to/database.db python earthquake_collector.py
 """
 
+__manifest__ = {
+    "id":          "earthquake_collector",
+    "name":        "Earthquake Collector",
+    "description": "Fetches seismic events from the USGS Earthquake Hazards Programme GeoJSON feed. Monitors M2.5+ events in the past hour for situational awareness.",
+    "icon":        "🌍",
+    "entry":       "forage/collectors/earthquake_collector.py",
+    "args":        [],
+    "job_key":     "earthquake_collector",
+    "version":     "1.0.0",
+}
+
 import json
 import time
 import os

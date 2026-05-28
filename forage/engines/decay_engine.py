@@ -50,22 +50,11 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-# Phase 32: path-safe pipeline logger import
-def _log_run_safe(*args, **kwargs):
-    """Inline log_run that works whether called as a module or direct script."""
-    import sys as _sys, importlib.util as _ilu
-    from pathlib import Path as _P
-    _logger_path = _P(__file__).resolve().parent.parent.parent / "forage" / "utils" / "pipeline_logger.py"
-    if str(_logger_path.parent.parent) not in _sys.path:
-        _sys.path.insert(0, str(_logger_path.parent.parent))
-    try:
-        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_logger_path))
-        _mod  = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        _mod.log_run(*args, **kwargs)
-    except Exception:
+try:
+    from forage.utils.pipeline_logger import log_run
+except ImportError:
+    def log_run(*args, **kwargs):  # type: ignore[misc]
         pass  # logging must never crash the pipeline
-log_run = _log_run_safe
 from typing import Optional
 
 # ── Decay constants ────────────────────────────────────────────────────────────

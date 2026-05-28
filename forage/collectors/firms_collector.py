@@ -68,6 +68,17 @@ Environment variables:
     FORGE_DB            — override database path
 """
 
+__manifest__ = {
+    "id":          "firms_collector",
+    "name":        "NASA FIRMS Fire Collector",
+    "description": "Ingests active fire and thermal anomaly detections from NASA FIRMS MODIS/VIIRS satellite feeds. Covers sub-Saharan Africa by default.",
+    "icon":        "🔥",
+    "entry":       "forage/collectors/firms_collector.py",
+    "args":        [],
+    "job_key":     "firms_collector",
+    "version":     "1.0.0",
+}
+
 import argparse
 import csv
 import io

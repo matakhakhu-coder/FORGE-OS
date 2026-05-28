@@ -5,7 +5,8 @@
   Import into any template with:
 
     {% from "_security_badges.html" import detonation_badge, sanitized_badge,
-       quarantine_warning_badge, security_provenance_strip %}
+       quarantine_warning_badge, security_provenance_strip,
+       socint_verified_badge, socint_corpus_badge %}
 
   Macros
   ------
@@ -23,6 +24,16 @@
   security_provenance_strip(has_pdf=True, has_signals=True)
       Composite inline strip combining both badges.  Use in workbench
       artifact card headers and signal list items.
+
+  socint_verified_badge(score=None, compact=False)
+      Shown on actor cards / signal rows when a stylometric resonance score
+      exists (socint_resonance IS NOT NULL). score=float shows the value.
+      compact=True → waveform icon only, no label text.
+
+  socint_corpus_badge(sample_count=0, compact=False)
+      Shown on actor dossiers when the rolling tweet corpus is active.
+      Indicates the actor's writing style is being profiled by FLUX.
+      compact=True → icon only.
   ============================================================================
 #}
 
@@ -101,4 +112,57 @@
     {{ sanitized_badge(compact=compact) }}
   {% endif %}
 </div>
+{% endmacro %}
+
+
+{# ── SOCINT Verified Badge ────────────────────────────────────────────────── #}
+{#
+  Shown when an actor has at least one stylometric resonance score computed.
+  score   — float [0.0–1.0] displayed as "0.87", or omitted if None.
+  compact — True renders the waveform icon only (for tight card layouts).
+#}
+{% macro socint_verified_badge(score=None, compact=False) %}
+<span class="sec-badge sec-badge--socint"
+      title="FLUX SOCINT — Stylometric resonance detected{{ ' · score ' ~ '%.2f'|format(score) if score is not none else '' }}"
+      aria-label="SOCINT verified">
+  <svg class="sec-badge__icon" viewBox="0 0 16 16" fill="none"
+       xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    {# Waveform: pulse signal icon #}
+    <polyline points="1,8 3,5 5,11 7,3 9,13 11,6 13,10 15,8"
+              stroke="currentColor" stroke-width="1.3"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
+  {% if not compact %}
+  <span class="sec-badge__label">SOCINT
+    {%- if score is not none %} {{ '%.2f'|format(score) }}{% endif %}</span>
+  {% endif %}
+</span>
+{% endmacro %}
+
+
+{# ── SOCINT Corpus Badge ───────────────────────────────────────────────────── #}
+{#
+  Shown on actor dossiers when the FLUX corpus is active (samples indexed).
+  sample_count — integer number of tweet samples in the rolling corpus.
+  compact      — True renders icon only.
+#}
+{% macro socint_corpus_badge(sample_count=0, compact=False) %}
+<span class="sec-badge sec-badge--socint-corpus"
+      title="FLUX corpus active — {{ sample_count }} X post{{ 's' if sample_count != 1 }} indexed"
+      aria-label="SOCINT corpus active">
+  <svg class="sec-badge__icon" viewBox="0 0 16 16" fill="none"
+       xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    {# Cylinder / database stack icon #}
+    <ellipse cx="8" cy="4.5" rx="5.5" ry="2"
+             stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <path d="M2.5 4.5 L2.5 11.5 C2.5 12.6 5 13.5 8 13.5
+             C11 13.5 13.5 12.6 13.5 11.5 L13.5 4.5"
+          stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <path d="M2.5 8 C2.5 9.1 5 10 8 10 C11 10 13.5 9.1 13.5 8"
+          stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="2 1"/>
+  </svg>
+  {% if not compact %}
+  <span class="sec-badge__label">Corpus {{ sample_count }}</span>
+  {% endif %}
+</span>
 {% endmacro %}

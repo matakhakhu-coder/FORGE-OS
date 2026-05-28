@@ -1,7 +1,13 @@
+import html
+import logging
+import re
 import uuid
 import hashlib
 import datetime
 from pathlib import Path
+from urllib.parse import unquote_plus
+
+_log = logging.getLogger("forge.ingest")
 
 from PIL import Image
 from werkzeug.utils import secure_filename
@@ -19,8 +25,12 @@ from forage.engines.gravity_engine import score_signal
 from forage.engines.case_engine import evaluate_case
 from forage.engines.feedback_engine import apply_feedback
 from forage.engines.escalation_engine import handle_escalation
-from forage.engines.entity_engine import materialize_entities
+from forage.engines.entity_engine import materialize_entities, stitch_entity_cooccurrence
 from forage.engines.relationship_engine import link_signal_actors, link_event_actors
+
+# Bleach Protocol — strips HTML residue before any downstream engine sees the text.
+# Cap of 500 chars inside <> prevents catastrophic backtracking on malformed input.
+_HTML_TAG_RE = re.compile(r'<[^>]{0,500}>', re.DOTALL)
 
 # FMS — Forge Module System integration (graceful fallback if not yet installed)
 try:
@@ -44,6 +54,32 @@ ALLOWED_EXTENSIONS: dict[str, str] = {
 }
 
 IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
+
+
+def sanitize_text(text: str) -> str:
+    """
+    Stable 1.1 — Centralized text refinery.
+
+    Cleans raw collector text before it enters the signal store.
+    Two-pass sanitization:
+      1. html.unescape()      — resolves &nbsp; &amp; &lt; &gt; &quot; etc.
+      2. unquote_plus()       — decodes %20-style URL fragments that leak from
+                                PDF filenames and scrape hrefs into signal text.
+      3. Whitespace collapse  — normalizes runs of spaces/tabs left by both passes.
+
+    Safe to call on any string — returns the input unchanged if it contains
+    nothing to clean. Used by civic_intel and gdelt collectors at signal
+    construction time so all downstream engines (NER, triple_extractor,
+    evolution) operate on clean text from the very first ingestion.
+    """
+    if not text:
+        return text
+    cleaned = _HTML_TAG_RE.sub(' ', text)        # strip literal tags first
+    cleaned = html.unescape(cleaned)             # decode &amp; &lt; etc.
+    cleaned = _HTML_TAG_RE.sub(' ', cleaned)     # strip any tags exposed by unescape
+    cleaned = unquote_plus(cleaned)              # decode %20-style URL fragments
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned).strip()
+    return cleaned
 
 
 def get_media_subdir(filename: str) -> str | None:
@@ -102,8 +138,8 @@ def ingest_signal(signal: dict) -> dict:
     if _FMS_AVAILABLE:
         try:
             _get_fms_context().fire_hook("on_signal", signal)
-        except Exception:
-            pass
+        except Exception as _e:
+            _log.warning("[FMS Hook Error] on_signal: %s", _e)
 
     interpreted = SignalInterpreter().interpret(signal)
 
@@ -156,21 +192,21 @@ def ingest_signal(signal: dict) -> dict:
                     """,
                     (
                         conclusion.gravity,
-                        datetime.datetime.utcnow().isoformat() + "Z",
+                        datetime.datetime.now(datetime.timezone.utc).isoformat() + "Z",
                         json.dumps(conclusion.provenance),
                         signal.get("signal_id"),
                     ),
                 )
                 conn.commit()
             except Exception as e:
-                print(f"[Conclave Persist Error] {e}")
+                _log.error("[Conclave Persist Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
         # 2. Materialize entities
         actor_ids = []
         try:
             actor_ids = materialize_entities(conclusion, signal.get("signal_id"), conn) or []
         except Exception as e:
-            print(f"[Entity Error] {e}")
+            _log.error("[Entity Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
         # CT-1: Contextual Tunneling — if Conclave confidence was too low to
         # materialize new actors (confidence < 0.4), fall back to pre-existing
@@ -184,28 +220,45 @@ def ingest_signal(signal: dict) -> dict:
                 ).fetchall()
                 actor_ids = [r[0] for r in rows]
             except Exception as e:
-                print(f"[CT-1 Fallback Error] {e}")
+                _log.error("[CT-1 Fallback Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
         # 2a. Link signal → actors
         if actor_ids:
             try:
                 link_signal_actors(signal.get("signal_id"), actor_ids, conn)
             except Exception as e:
-                print(f"[Relationship Error - Signal] {e}")
+                _log.error("[Relationship Error - Signal] signal=%s: %s", signal.get("signal_id", "?"), e)
+
+        # 2b. Stitch NER co-occurrence edges (member_of) into graph_edges.
+        # Only fires when signal_entities rows exist for this signal — i.e. the
+        # sovereign_pipeline NER batch has already run.  Cold signals that have
+        # not yet been through NER are silently skipped; edges are stitched on
+        # the next ingest cycle that encounters a signal with entity rows.
+        _sid = signal.get("signal_id")
+        if _sid and actor_ids:
+            try:
+                _has_ner = conn.execute(
+                    "SELECT 1 FROM signal_entities WHERE signal_id=? LIMIT 1",
+                    (_sid,),
+                ).fetchone()
+                if _has_ner:
+                    stitch_entity_cooccurrence(_sid, conn)
+            except Exception as e:
+                _log.debug("[Stitch Error] signal=%s: %s", _sid, e)
 
         # 3. Then escalate
         event_id = None
         try:
             event_id = handle_escalation(conclusion, signal.get("signal_id"), conn)
         except Exception as e:
-            print(f"[Escalation Error] {e}")
+            _log.error("[Escalation Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
         # 3a. Link event → actors
         if event_id and actor_ids:
             try:
                 link_event_actors(event_id, actor_ids, conn)
             except Exception as e:
-                print(f"[Relationship Error - Event] {e}")
+                _log.error("[Relationship Error - Event] signal=%s event=%s: %s", signal.get("signal_id", "?"), event_id, e)
 
         # 4. Patch conclave_meta with actor_ids + event_id for graph_sync
         if signal.get("signal_id") and (actor_ids or event_id):
@@ -234,7 +287,7 @@ def ingest_signal(signal: dict) -> dict:
                 )
                 conn.commit()
             except Exception as e:
-                print(f"[Meta Patch Error] {e}")
+                _log.error("[Meta Patch Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
     finally:
         conn.close()
@@ -255,8 +308,8 @@ def ingest_signal(signal: dict) -> dict:
     if _FMS_AVAILABLE:
         try:
             _get_fms_context().fire_hook("on_ingest", signal, result)
-        except Exception:
-            pass
+        except Exception as _e:
+            _log.warning("[FMS Hook Error] on_ingest: %s", _e)
 
     return result
 
@@ -267,36 +320,39 @@ def ingest_and_persist(signal: dict) -> dict:
     """Higher-level helper that persists and returns ingestion results."""
     result = ingest_signal(signal)
 
-    # optionally persist summary into the FORGE database if storage is needed
     conn = get_connection()
-    cursor = conn.cursor()
-    now = datetime.datetime.utcnow().isoformat() + "Z"
+    try:
+        cursor = conn.cursor()
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat() + "Z"
 
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS ingestion_log (
-            id TEXT PRIMARY KEY,
-            processed_at TEXT,
-            signal_hash TEXT,
-            gravity_score REAL
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ingestion_log (
+                id TEXT PRIMARY KEY,
+                processed_at TEXT,
+                signal_hash TEXT,
+                gravity_score REAL
+            )
+            """
         )
-        """
-    )
 
-    cursor.execute(
-        """
-        INSERT OR IGNORE INTO ingestion_log (id, processed_at, signal_hash, gravity_score)
-        VALUES (?, ?, ?, ?)
-        """,
-        (
-            str(uuid.uuid4()),
-            now,
-            hashlib.sha256(repr(result["raw_signal"]).encode("utf-8")).hexdigest(),
-            float(result.get("gravity_score", 0)),
-        ),
-    )
+        cursor.execute(
+            """
+            INSERT OR IGNORE INTO ingestion_log (id, processed_at, signal_hash, gravity_score)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                str(uuid.uuid4()),
+                now,
+                hashlib.sha256(repr(result["raw_signal"]).encode("utf-8")).hexdigest(),
+                float(result.get("gravity_score", 0)),
+            ),
+        )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+    except Exception as e:
+        _log.error("[Ingest Persist Error] signal=%s: %s", signal.get("signal_id", "?"), e)
+    finally:
+        conn.close()
 
     return result

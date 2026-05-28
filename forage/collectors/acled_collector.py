@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 FORGE — ACLED Collector  (forage/collectors/acled_collector.py)
 ═══════════════════════════════════════════════════════════════
@@ -35,7 +36,16 @@ Usage
   python forage/collectors/acled_collector.py --country "South Africa" --days 3
 """
 
-from __future__ import annotations
+__manifest__ = {
+    "id":          "acled_collector",
+    "name":        "ACLED Conflict Collector",
+    "description": "Polls the ACLED API for conflict, protest, and violence events in South Africa. Requires ACLED_KEY and ACLED_EMAIL env vars.",
+    "icon":        "⚔",
+    "entry":       "forage/collectors/acled_collector.py",
+    "args":        [],
+    "job_key":     "acled_collector",
+    "version":     "1.0.0",
+}
 
 import argparse
 import asyncio

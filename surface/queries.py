@@ -173,6 +173,150 @@ def get_signal_stream(db, limit: int = 50) -> list[dict]:
         return []
 
 
+# ── SOCINT DOSSIER ────────────────────────────────────────────────────────────
+# Source: actors.socint_profile (JSON), socint_resonance
+
+def get_actor_socint_profile(db, actor_id: int) -> dict:
+    """
+    SOCINT corpus statistics for one actor.
+
+    Reads actors.socint_profile (JSON) and returns corpus health metrics.
+    Returns an empty dict when no SOCINT data exists for this actor.
+
+    Returned keys
+    -------------
+    corpus_ready     : bool   — gate passed (>= 7 samples, >= 2000 chars)
+    sample_count     : int    — number of tweet samples in rolling corpus
+    total_chars      : int    — total character count across all samples
+    x_handles        : list   — X handles observed for this actor
+    x_display_names  : list   — display names observed for this actor
+    """
+    import json
+    try:
+        row = db.execute(
+            "SELECT socint_profile FROM actors WHERE actor_id = ?",
+            (actor_id,),
+        ).fetchone()
+    except Exception:
+        return {}
+
+    if not row or not row["socint_profile"]:
+        return {}
+
+    try:
+        profile = json.loads(row["socint_profile"])
+    except Exception:
+        return {}
+
+    corpus      = profile.get("corpus", [])
+    total_chars = sum(len(s) for s in corpus)
+
+    return {
+        "corpus_ready":     len(corpus) >= 7 and total_chars >= 2000,
+        "sample_count":     len(corpus),
+        "total_chars":      total_chars,
+        "x_handles":        profile.get("x_handles", []),
+        "x_display_names":  profile.get("x_display_names", []),
+    }
+
+
+def get_socint_matches(db, actor_id: int, limit: int = 3) -> list[dict]:
+    """
+    Top-N stylometric match peers for one actor from socint_resonance.
+
+    The table uses a actor_a < actor_b CHECK constraint, so a single actor
+    can appear in either column — the CASE expression resolves the peer.
+
+    Returned keys per row
+    ---------------------
+    peer_id         : int   — actor_id of the matching actor
+    peer_name       : str   — name of the matching actor
+    peer_type       : str   — actor type classification
+    resonance_score : float — stylometric resonance [0.0–1.0]
+    computed_at     : str   — ISO timestamp of last score computation
+    """
+    try:
+        rows = db.execute("""
+            SELECT
+                CASE WHEN sr.actor_a = ? THEN sr.actor_b
+                     ELSE                     sr.actor_a
+                END                     AS peer_id,
+                a.name                  AS peer_name,
+                a.type                  AS peer_type,
+                sr.resonance_score,
+                sr.computed_at
+            FROM   socint_resonance sr
+            JOIN   actors a
+                ON a.actor_id = CASE WHEN sr.actor_a = ? THEN sr.actor_b
+                                     ELSE                     sr.actor_a END
+            WHERE  sr.actor_a = ? OR sr.actor_b = ?
+            ORDER  BY sr.resonance_score DESC
+            LIMIT  ?
+        """, (actor_id, actor_id, actor_id, actor_id, limit)).fetchall()
+        return [dict(r) for r in rows]
+    except Exception:
+        return []
+
+
+# ── FLUX DISCOVERY ───────────────────────────────────────────────────────────
+# Source: flux_latent_seeds + flux_tag_cooccurrence
+
+def get_flux_discovery(db, limit: int = 60) -> list[dict]:
+    """
+    Tag cloud data for the FLUX discovery surface.
+
+    Returns active latent seeds ordered by composite score
+    (jaccard_score × velocity DESC). Each row includes:
+        tag, parent_seed, discovery_depth,
+        jaccard_score, velocity, total_count, last_seen.
+
+    Returns empty list when flux_latent_seeds doesn't exist yet.
+    """
+    try:
+        rows = db.execute("""
+            SELECT
+                tag,
+                parent_seed,
+                discovery_depth,
+                ROUND(jaccard_score, 4)          AS jaccard_score,
+                ROUND(velocity, 4)               AS velocity,
+                ROUND(jaccard_score * velocity, 4) AS composite_score,
+                total_count,
+                last_seen
+            FROM   flux_latent_seeds
+            WHERE  is_active = 1
+            ORDER  BY jaccard_score * velocity DESC
+            LIMIT  ?
+        """, (limit,)).fetchall()
+        return [dict(r) for r in rows]
+    except Exception:
+        return []
+
+
+def get_flux_cooccurrence_summary(db, limit: int = 30) -> list[dict]:
+    """
+    Top co-occurring tag pairs across all pulses, for the neighborhood graph.
+
+    Returns rows of: seed_tag, co_tag, total_count — ordered by count DESC.
+    Excludes the __total__ sentinel rows.
+    """
+    try:
+        rows = db.execute("""
+            SELECT
+                seed_tag,
+                co_tag,
+                SUM(count) AS total_count
+            FROM  flux_tag_cooccurrence
+            WHERE co_tag != '__total__'
+            GROUP BY seed_tag, co_tag
+            ORDER BY total_count DESC
+            LIMIT ?
+        """, (limit,)).fetchall()
+        return [dict(r) for r in rows]
+    except Exception:
+        return []
+
+
 # ── MOCK DATA (fallback when tables are empty) ────────────────────────────────
 
 MOCK_TOP = [

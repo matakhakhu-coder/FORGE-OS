@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 core/gravity.py — CT-1: Contextual Tunneling gravity scorer.
 
@@ -19,6 +20,7 @@ Usage
   item['final_score'] = blend_score(item['feed_score'], item['gravity_score'], gw)
 """
 
+import json
 import math
 import re
 
@@ -35,6 +37,123 @@ _STOPWORDS = frozenset([
     "investigation", "investigations", "signal", "signals", "alert", "alerts",
     "related", "involving", "according", "between", "during", "against",
 ])
+
+
+# ── Outbreak GAZETTEER ────────────────────────────────────────────────────────
+# Warm Start: location names → (lat, lng) for auto-seeding context_anchors.
+# Covers primary disease surveillance zones: SE Asia H5N1 belt, African VHF/mpox
+# corridor, South Asian cholera basin, MENA conflict zones, Latin America arboviral.
+
+_OUTBREAK_LOCATIONS: dict[str, tuple[float, float]] = {
+    # Southeast Asia — H5N1 / avian influenza primary zone
+    "vietnam":          ( 14.058,  108.278),
+    "hanoi":            ( 21.028,  105.854),
+    "ho chi minh":      ( 10.823,  106.630),
+    "cambodia":         ( 12.566,  104.991),
+    "phnom penh":       ( 11.562,  104.916),
+    "laos":             ( 17.958,  102.620),
+    "vientiane":        ( 17.967,  102.600),
+    "thailand":         ( 15.870,  100.993),
+    "bangkok":          ( 13.756,  100.502),
+    "myanmar":          ( 21.916,   95.956),
+    "yangon":           ( 16.866,   96.195),
+    "indonesia":        ( -0.789,  113.921),
+    "jakarta":          ( -6.208,  106.846),
+    "philippines":      ( 12.880,  121.774),
+    "manila":           ( 14.599,  120.984),
+    "malaysia":         (  4.211,  101.976),
+    "kuala lumpur":     (  3.149,  101.696),
+    # East Asia
+    "china":            ( 35.861,  104.195),
+    "beijing":          ( 39.904,  116.407),
+    "guangdong":        ( 23.380,  113.760),
+    "hong kong":        ( 22.319,  114.169),
+    "taiwan":           ( 23.698,  120.961),
+    "japan":            ( 36.205,  138.252),
+    "south korea":      ( 36.638,  127.979),
+    "mongolia":         ( 46.863,  103.847),
+    # South Asia — cholera / nipah / dengue basin
+    "india":            ( 20.594,   78.963),
+    "mumbai":           ( 19.076,   72.878),
+    "delhi":            ( 28.704,   77.102),
+    "kerala":           ( 10.850,   76.271),
+    "bangladesh":       ( 23.685,   90.357),
+    "dhaka":            ( 23.810,   90.413),
+    "pakistan":         ( 30.376,   69.344),
+    "afghanistan":      ( 33.939,   67.710),
+    "nepal":            ( 28.394,   84.124),
+    # Sub-Saharan Africa — VHF / mpox / cholera / meningitis corridor
+    "drc":              ( -4.038,   21.759),
+    "democratic republic":(-4.038,  21.759),
+    "congo":            ( -0.228,   15.827),
+    "kinshasa":         ( -4.325,   15.322),
+    "uganda":           (  1.373,   32.290),
+    "kampala":          (  0.347,   32.582),
+    "kenya":            ( -0.023,   37.906),
+    "nairobi":          ( -1.286,   36.818),
+    "ethiopia":         (  9.145,   40.489),
+    "sudan":            ( 12.863,   30.218),
+    "south sudan":      (  7.963,   31.617),
+    "nigeria":          (  9.082,    8.675),
+    "lagos":            (  6.524,    3.379),
+    "ghana":            (  7.946,   -1.023),
+    "cameroon":         (  3.848,   11.502),
+    "niger":            ( 17.607,    8.082),
+    "mali":             ( 17.570,   -3.996),
+    "guinea":           ( 11.787,  -15.180),
+    "sierra leone":     (  8.460,  -11.780),
+    "liberia":          (  6.428,   -9.430),
+    "ivory coast":      (  7.540,   -5.547),
+    "senegal":          ( 14.497,  -14.452),
+    "zimbabwe":         (-19.015,   29.155),
+    "zambia":           (-13.133,   27.849),
+    "mozambique":       (-18.665,   35.530),
+    # Middle East / MENA
+    "yemen":            ( 15.552,   48.516),
+    "syria":            ( 34.802,   38.997),
+    "iraq":             ( 33.224,   43.679),
+    "iran":             ( 32.427,   53.688),
+    "lebanon":          ( 33.854,   35.862),
+    "jordan":           ( 30.586,   36.239),
+    "saudi arabia":     ( 23.886,   45.079),
+    # Central Asia
+    "kazakhstan":       ( 48.019,   66.924),
+    "kyrgyzstan":       ( 41.204,   74.766),
+    "uzbekistan":       ( 41.377,   64.585),
+    "tajikistan":       ( 38.861,   71.276),
+    # Eastern Europe
+    "ukraine":          ( 48.379,   31.165),
+    "moldova":          ( 47.412,   28.370),
+    # Latin America — arboviral / cholera / Chagas zone
+    "brazil":           (-14.235,  -51.925),
+    "amazon":           ( -3.465,  -62.216),
+    "colombia":         (  4.571,  -74.297),
+    "venezuela":        (  6.424,  -66.590),
+    "peru":             ( -9.190,  -75.015),
+    "bolivia":          (-16.290,  -63.589),
+    "haiti":            ( 18.972,  -72.285),
+    "mexico":           ( 23.634, -102.553),
+    # Pacific
+    "papua new guinea": ( -6.315,  143.956),
+}
+
+
+def extract_location_anchors(text: str) -> list:
+    """
+    Scan free text for known outbreak-surveillance location names.
+    Returns a list of {"lat": float, "lng": float, "label": str} dicts
+    in order of first match; deduplicates by label.
+    """
+    if not text:
+        return []
+    lower = text.lower()
+    seen: set = set()
+    results = []
+    for name, (lat, lng) in _OUTBREAK_LOCATIONS.items():
+        if name in lower and name not in seen:
+            seen.add(name)
+            results.append({"lat": lat, "lng": lng, "label": name})
+    return results
 
 
 # ── Keyword helpers ───────────────────────────────────────────────────────────
@@ -117,9 +236,9 @@ def build_context(db, case_id: int) -> dict:
     """, (case_id,)).fetchall()
     locations = [(float(r["lat"]), float(r["lng"])) for r in loc_rows]
 
-    # Keywords from case metadata
+    # Keywords from case metadata + Warm Start bootstrap from context_anchors
     case_row = db.execute(
-        "SELECT name, description, hypothesis FROM cases WHERE case_id = ?",
+        "SELECT name, description, hypothesis, context_anchors FROM cases WHERE case_id = ?",
         (case_id,),
     ).fetchone()
     keywords: set = set()
@@ -127,6 +246,16 @@ def build_context(db, case_id: int) -> dict:
         keywords |= _extract_keywords(case_row["name"]        or "")
         keywords |= _extract_keywords(case_row["description"] or "")
         keywords |= _extract_keywords(case_row["hypothesis"]  or "")
+        # Warm Start: if no location anchors yet from pinned signals, seed from
+        # context_anchors (GAZETTEER coords stored at case-creation time).
+        if not locations:
+            raw_anchors = case_row["context_anchors"]
+            if raw_anchors:
+                try:
+                    for anchor in json.loads(raw_anchors):
+                        locations.append((float(anchor["lat"]), float(anchor["lng"])))
+                except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+                    pass
 
     # Enrich keywords from pinned signal titles (first 30)
     sig_title_rows = db.execute("""

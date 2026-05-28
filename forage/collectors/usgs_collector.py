@@ -58,6 +58,17 @@ Priority thresholds (env overrides):
     FORAGE_USGS_FEED        — feed variant key (default significant_day)
 """
 
+__manifest__ = {
+    "id":          "usgs_collector",
+    "name":        "USGS Seismic Collector",
+    "description": "Ingests significant earthquake events from the USGS Earthquake Hazards Programme GeoJSON API. Default feed covers significant events in the past 24 hours. M6.0+ events are flagged priority.",
+    "icon":        "📈",
+    "entry":       "forage/collectors/usgs_collector.py",
+    "args":        [],
+    "job_key":     "usgs_collector",
+    "version":     "1.0.0",
+}
+
 import argparse
 import json
 import time as _time_mod

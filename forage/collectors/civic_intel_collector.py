@@ -32,6 +32,17 @@ Dependencies:
 Author: FORGE Phase 31 / 32.5
 """
 
+__manifest__ = {
+    "id":          "civic_intel_collector",
+    "name":        "Civic Intelligence Collector",
+    "description": "Hybrid OSINT collector for South African investigative sources. Pulls from 12 RSS, Google News, and HTML-scrape targets including amaBhungane, Daily Maverick, Hawks, NPA, and SAPS.",
+    "icon":        "🏛",
+    "entry":       "forage/collectors/civic_intel_collector.py",
+    "args":        [],
+    "job_key":     "civic_intel_collector",
+    "version":     "1.0.0",
+}
+
 import hashlib
 import json
 import re
@@ -58,6 +69,12 @@ def _log_run_safe(*args, **kwargs):
     except Exception:
         pass
 log_run = _log_run_safe
+
+# ── Refinery (Stable 1.1) ─────────────────────────────────────────────────
+try:
+    from core.pipeline.ingest import sanitize_text as _sanitize
+except ImportError:
+    def _sanitize(t): return t  # noqa: E731
 
 # ── Optional dependencies ──────────────────────────────────────────────────
 try:
@@ -477,8 +494,8 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         "signal_id":       str(uuid.uuid4()),
         "source":          source["source_key"],
         "external_id":     ext_id,
-        "title":           title[:400],
-        "content":         content,
+        "title":           _sanitize(title)[:400],
+        "content":         _sanitize(content),
         "lat":             source.get("default_lat"),
         "lng":             source.get("default_lng"),
         "timestamp":       published,

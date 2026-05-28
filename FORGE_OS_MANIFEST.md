@@ -34,6 +34,72 @@ FORGE operates across three data layers, toggled via the `lens` parameter on eve
 
 ---
 
+## COLLECTION LAYER — FLUX (SOCINT ROOT)
+
+FLUX is the Social Intelligence (SOCINT) parallel root of FORGE. It operates independently of FORAGE — separate collector, separate processors, separate schema tables — integrating with the core pipeline via the FMS `on_ingest` hook only. No changes to `core/pipeline/ingest.py`.
+
+### X (Twitter) Dual-Mode Collector — `flux/collectors/x_pulse.py`
+
+| Mode | Transport | Description |
+|---|---|---|
+| Primary | Nitter RSS (`xml.etree.ElementTree`) | Scrapes Nitter instances for target account tweets |
+| Fallback | X API v2 → v1.1 | Guest token endpoint; falls back to v1.1 on 403 |
+
+- **Deduplication:** `INSERT OR IGNORE` on `external_id` (tweet ID from URL)
+- **Dual-write:** Every tweet writes to `signals` (global pipeline) AND `socint_signals` (FLUX-specific)
+- **Manifest:** `id = "x_pulse"` — autodiscovered by `_load_collector_registry()` alongside FORAGE collectors
+- **Target rotation:** `NITTER_INSTANCES` list rotated on failure; configurable via `FLUX_NITTER_INSTANCES` env var
+
+### Stylometric Engine — `flux/processors/stylometric.py`
+
+Zero external dependencies. Runs on Python stdlib only.
+
+**Resonance Formula:**
+```
+R = 0.35 × sequence_similarity   (difflib on normalized text)
+  + 0.25 × cashtag_jaccard        ($TICKER set overlap)
+  + 0.20 × emoji_bigram_cosine    (ordered emoji-pair vector cosine)
+  + 0.10 × caps_proximity         (ALL-CAPS density alignment)
+  + 0.10 × leet_proximity         (leetspeak substitution density)
+```
+
+**Corpus gate:** >= 7 tweet samples AND >= 2000 total characters before any score is emitted.
+
+**Thresholds:**
+| Constant | Value | Purpose |
+|---|---|---|
+| `RESONANCE_THRESHOLD` | 0.65 | Minimum score to write `socint_resonance` row |
+| `GRAPH_INJECT_THRESHOLD` | 0.70 | Minimum score to inject `stylometric_match` edge into `entity_relationships` |
+
+### FMS Module — `forge_modules/flux/`
+
+| File | Role |
+|---|---|
+| `manifest.json` | Module declaration — name, version, engines, hooks, capabilities |
+| `engine.py` | `flux_socint_engine` — returns `AnalysisResult` for x_pulse signals; gravity capped at 0.55 (behavioural signals must not inflate OSINT escalation rates) |
+| `module.py` | `register(conclave)` — attaches engine + `on_ingest` hook; all imports inside function per FMS contract |
+
+**`on_ingest` hook (post-Conclave, x_pulse only):**
+1. Resolves linked actors from `signal_actors`
+2. Extracts full stylometric fingerprint
+3. Appends tweet content to each actor's rolling corpus (`actors.socint_profile`)
+4. Scores against corpus when gate passes
+5. Writes `socint_resonance` score + `socint_tags` (cashtags, hashtags, emojis, leet/aggression density) back to `signals` row
+
+### Resonance Batch Engine — `flux/processors/resonance.py`
+
+O(n²) pairwise actor comparison run on-demand or scheduled.
+
+| Phase | Description |
+|---|---|
+| 1 — Load | `_load_actor_fingerprints()` — loads only actors with corpus-ready profiles |
+| 2 — Compare | `_run_pairwise()` — all actor pairs; writes to `socint_resonance`; injects `stylometric_match` edges above threshold |
+| 3 — Community | `_run_socint_communities()` — NetworkX `greedy_modularity_communities` on stylometric subgraph → `community_id_socint` in `actor_network_metrics` |
+
+`_ordered_pair(a, b) = (min(a,b), max(a,b))` enforces `actor_a < actor_b` at application layer (DB CHECK constraint is backstop).
+
+---
+
 ## COLLECTION LAYER — FORAGE
 
 The automated collection subsystem. Runs on schedule or via `mega_ingest.py`.
@@ -162,9 +228,25 @@ Post-collection enrichment pipeline.
 | `actor_events` | Manual analyst links: actor ↔ event |
 | `signal_actors` | Automated pipeline links: signal ↔ actor (via relationship_engine) |
 | `event_actors` | Automated pipeline links: event ↔ actor (via relationship_engine) |
-| `entity_relationships` | Named relationships between actors (Phase 22) |
-| `actor_network_metrics` | Computed graph metrics per actor (Phase 21) |
+| `entity_relationships` | Named relationships between actors (Phase 22). `relation_type='stylometric_match'` rows written by FLUX |
+| `actor_network_metrics` | Computed graph metrics per actor. Includes `community_id_socint` (C-SOCINT pass) |
 | `case_actors` | Actors pinned to case workspaces |
+
+### FLUX / SOCINT Tables
+
+| Table | Purpose |
+|---|---|
+| `socint_signals` | FLUX-specific signal store. FK to `signals.signal_id`. Stores x_handle, cashtags, hashtags, emoji_count, leet_density |
+| `socint_resonance` | Pairwise actor stylometric scores. `actor_a < actor_b` CHECK constraint. `resonance_score REAL [0.0–1.0]` |
+
+### FLUX Columns on Core Tables
+
+| Table | Column | Type | Description |
+|---|---|---|---|
+| `signals` | `socint_tags` | TEXT (JSON) | Cashtags, hashtags, emojis, leet/aggression density extracted at ingest |
+| `signals` | `socint_resonance` | REAL | Best resonance score across all linked actors for this signal |
+| `actors` | `socint_profile` | TEXT (JSON) | Rolling tweet corpus + x_handles + x_display_names |
+| `actor_network_metrics` | `community_id_socint` | INTEGER | C-SOCINT community assignment (stylometric subgraph) |
 
 ### Signal Fields of Note
 
@@ -226,6 +308,7 @@ Post-collection enrichment pipeline.
 | `/api/evolution/run` | Trigger evolution engine scan |
 | `/api/sentinel/run` | Trigger sentinel alert pass |
 | `/api/diagnostics` | Full pipeline health JSON |
+| `/api/actor/<id>/socint` | FLUX SOCINT dossier — corpus stats + top 3 stylometric matches for one actor |
 
 ---
 
@@ -296,7 +379,19 @@ FORGE/
 │   ├── processors/               ← 10 enrichment processors (NER, entity, sentinel…)
 │   └── utils/                    ← Pipeline logging & admiralty helpers
 │
-├── forge_modules/                ← Analytical capability modules
+├── flux/                         ← FLUX SOCINT root (parallel to forage/)
+│   ├── __init__.py               ← Package root, __version__ = "0.1.0"
+│   ├── collectors/
+│   │   └── x_pulse.py            ← X dual-mode collector (Nitter RSS + guest API)
+│   └── processors/
+│       ├── stylometric.py        ← Fingerprint engine + corpus management (stdlib only)
+│       └── resonance.py          ← O(n²) batch resonance engine + C-SOCINT community pass
+│
+├── forge_modules/                ← Analytical capability modules (FMS auto-discovered)
+│   ├── flux/                     ← FLUX FMS module
+│   │   ├── manifest.json         ← Module contract declaration
+│   │   ├── engine.py             ← flux_socint_engine (AnalysisResult for x_pulse)
+│   │   └── module.py             ← register(conclave) — engine + on_ingest hook
 │   ├── coalition_detector/
 │   ├── counterintel/
 │   ├── emergence_engine/
@@ -326,6 +421,7 @@ FORGE/
 │
 ├── migrations/                   ← Schema migrations & database repair scripts
 │   ├── schema.sql                ← Canonical schema definition
+│   ├── add_socint_columns.py     ← Phase A FLUX migration: socint_signals, socint_resonance, FLUX columns
 │   ├── migrate_archive.py
 │   ├── migrate_graph.py
 │   ├── migrate_layer_separation.py
@@ -400,5 +496,5 @@ Third-party libraries:
 
 ---
 
-*Document generated from live system analysis — FORGE Phase 32+*  
-*Build date: 2026-03-19*
+*Document generated from live system analysis — FORGE Stable 1.1.2 + Project FLUX*  
+*Build date: 2026-05-02*

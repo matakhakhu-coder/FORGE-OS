@@ -12,7 +12,7 @@ Both tables carry UNIQUE constraints so INSERT OR IGNORE is safe to
 call repeatedly — re-processing a signal never creates duplicate rows.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def link_signal_actors(signal_id: str, actor_ids: list, db) -> int:
@@ -28,7 +28,7 @@ def link_signal_actors(signal_id: str, actor_ids: list, db) -> int:
                 INSERT OR IGNORE INTO signal_actors (signal_id, actor_id, role, created_at)
                 VALUES (?, ?, 'mentioned', ?)
                 """,
-                (signal_id, actor_id, datetime.utcnow()),
+                (signal_id, actor_id, datetime.now(timezone.utc)),
             )
             inserted += cur.rowcount
         except Exception as e:
@@ -49,7 +49,7 @@ def link_event_actors(event_id: int, actor_ids: list, db) -> int:
                 INSERT OR IGNORE INTO event_actors (event_id, actor_id, role, created_at)
                 VALUES (?, ?, 'involved', ?)
                 """,
-                (event_id, actor_id, datetime.utcnow()),
+                (event_id, actor_id, datetime.now(timezone.utc)),
             )
             inserted += cur.rowcount
         except Exception as e:

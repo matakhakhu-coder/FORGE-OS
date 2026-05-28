@@ -49,18 +49,11 @@ from typing import Optional
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DB_PATH  = BASE_DIR / "database.db"
 
-# ── Phase 32: path-safe pipeline logger ───────────────────────────────────
-def _log_run_safe(*args, **kwargs):
-    import importlib.util as _ilu
-    _lp = Path(__file__).resolve().parent.parent.parent / "forage" / "utils" / "pipeline_logger.py"
-    try:
-        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_lp))
-        _mod  = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        _mod.log_run(*args, **kwargs)
-    except Exception:
-        pass
-log_run = _log_run_safe
+try:
+    from forage.utils.pipeline_logger import log_run
+except ImportError:
+    def log_run(*args, **kwargs):  # type: ignore[misc]
+        pass  # logging must never crash the pipeline
 
 # ── Stop words ─────────────────────────────────────────────────────────────
 # English + Afrikaans common terms + generic signal noise

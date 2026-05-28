@@ -1,62 +1,84 @@
 # FORGE — Roadmap
 
-## Current Phase: CT-1 — Contextual Tunneling
+## CT-1 — Contextual Tunneling  [COMPLETE]
 
 > Gravity-based feed and signal filtering anchored to an active case context.
 > All changes are additive — no DB schema changes, no existing routes removed.
 
----
+All steps verified live in the codebase as of 2026-05-09:
 
-### Step 1 — core/gravity.py
-- [ ] Copy `core/gravity.py` into the project at `core/gravity.py`
-
----
-
-### Step 2 — app.py
-- [ ] Delete the existing `@app.route("/api/feed")` function (lines ~2955–3366)
-- [ ] Open `app_routes_patch.py` and paste the full block (from `# ── PASTE THIS BLOCK` to end of file) into `create_app()`, after the `@app.route("/api/anomaly/baselines")` route
-
-New routes this adds:
-- `GET /api/cases/<id>/anchors`
-- `GET /api/cases/<id>/fetch-suggestions`
-- `GET /api/feed` (gravity-aware replacement)
-- `GET /api/surface/signals/context`
+- [x] `core/gravity.py` — `build_context()`, `score_item()`, `blend_score()` implemented
+- [x] `/api/feed` — CT-1 gravity scoring wired (case_id + gravity params)
+- [x] `/api/cases/<id>/anchors` — returns actor/location/keyword context for CT banner
+- [x] `/api/cases/<id>/fetch-suggestions` — top 20 unlinked signals ranked by gravity
+- [x] `/api/surface/signals/context` — signal monitor with gravity_score column
+- [x] `feed.html` — CT banner, gravity slider, exitContextTunnel(), JS state machine
+- [x] `case_detail.html` — "Context Feed" and "Context Signals" buttons, setFocusCase()
+- [x] `base.html` — focus-case pill in topbar, setFocusCase/getFocusCase/clearFocusCase
+- [x] `static/css/main.css` — ct-banner, ct-gravity-slider, topbar__focus-pill styles
 
 ---
 
-### Step 3 — Templates
+## Current Phase: Execution Injection 02
 
-#### 3a. feed.html
-- [ ] Replace `templates/feed.html` with the delivered version (superset, nothing removed)
+### Objective A — CT-1  [COMPLETE — see above]
 
-#### 3b. signals.html
-- [ ] Replace `templates/signals.html` with the delivered version (Phase 14 filter logic preserved)
+### Objective B — Schema Authority
 
-#### 3c. case_detail.html
-- [ ] **Edit 1** — Replace the `page-header__eyebrow` div (line ~28) with `PATCH 1` from `case_detail_patch.html`
-- [ ] **Edit 2** — Replace the `page-header__actions` div (line ~36) with `PATCH 2` from `case_detail_patch.html` (adds ⊛ Context Feed and ⊡ Context Signals buttons)
-- [ ] **Edit 3** — Inside `{% block scripts %}`, paste the `PATCH 3` script block from `case_detail_patch.html` at the very top, before the existing Phase 30E script
+- [x] `migrations/schema.sql` — canonical schema generated from live DB (2026-05-09)
+- [x] `migrations/verify_schema.py` — schema verification utility (37 tables, 128 required columns)
 
-#### 3d. base.html
-- [ ] **Edit 1** — Find `<div class="topbar__meta" id="js-clock">——</div>` and insert `PATCH 1` div from `base_patch.html` immediately before it
-- [ ] **Edit 2** — Find the closing `</script>` of the base.html inline script block (line ~444) and paste `PATCH 2` script content from `base_patch.html` just before it
+Run verification at any time:
+```
+python migrations/verify_schema.py
+```
+
+### Objective C — FLUX Wave Integration
+
+- [x] `run_flux_wave()` added to `tools/sovereign_pipeline.py` as Phase 5B
+- [x] Corpus preflight guard prevents O(n²) explosion on sparse corpus
+- [x] `--no-flux` flag added to CLI (mirrors `--no-dork` pattern)
+- [x] FLUX stats included in final pipeline summary
+
+**Phase 5B execution order (after Phase 6 Bridge Pass B):**
+```
+5B.1  Corpus preflight  — checks actors_ready >= 2, pairs <= 50,000
+5B.2  corpus_builder    — bridges socint_signals → actors.socint_profile
+5B.3  resonance         — O(n²) pairwise stylometric scoring
+5B.4  discovery         — Jaccard + velocity → flux_latent_seeds
+```
+
+**Graceful skip conditions:**
+- No `socint_signals` rows (x_pulse has never run)
+- Fewer than 2 actors with corpus-ready profiles after corpus_builder
+- Pair count exceeds 50,000 safety cap
 
 ---
 
-### Step 4 — CSS
-- [ ] Append the full contents of `static/ct_styles.css` to `static/css/main.css`
+## Next Priorities
+
+### Rank 1 — Actor Naming Quality
+`signal_interpreter.py _extract_actors()` inserts type-key strings (`"location"`) as
+actor names instead of matched text. Fix: change `actors.add(name)` to extract actual
+matched substring from the regex group.
+
+### Rank 2 — Confidence Gate Calibration
+`entity_engine.materialize_entities()` gates at `confidence >= 0.4` but
+`feedback_engine` defaults produce 0.1–0.2. Gate should be reviewed downward to 0.25
+or the feedback engine weights normalized upward.
+
+### Rank 3 — P3.2-05 OCR Run
+6,458 scanned PDFs with `< 100 chars` in `raw_text_cache`.
+Run: `python forage/collectors/pdf_infiltrator.py --status A1-PENDING`
+
+### Rank 4 — TD-13 SAFLII Bridge
+Case Alpha institutional bridge gap (CoE = 0.28).
+SAFLII bridge hunt needed for the legal accountability thread.
+
+### Rank 5 — Test Foundation
+0% coverage on Conclave critical path. Need pytest fixtures and 15–20 tests
+covering: `ingest_signal()`, `get_or_create_actor()`, CT-1 gravity scoring.
 
 ---
 
-### Verification Checklist
-- [ ] Open a case (e.g. `/cases/42`) — Focus Active indicator appears, topbar pulses
-- [ ] Click **⊛ Context Feed** — CT banner shows, gravity-filtered feed loads
-- [ ] Drag Gravity slider to 80 — feed tightens to direct actor/location matches only
-- [ ] Click **⊕ Global View** — full firehose returns, case context preserved
-- [ ] Click **⊡ Context Signals** — Signal Monitor opens with Gravity column and case filter
-- [ ] Test `/api/feed` without `case_id` — must behave exactly as Phase 29.3 (no gravity)
-- [ ] Test `/signals` without `case_id` — must behave exactly as Phase 14
-
----
-
-_Last updated: Phase 41 committed — CT-1 integration pending._
+_Last updated: 2026-05-09 — Execution Injection 02 complete._

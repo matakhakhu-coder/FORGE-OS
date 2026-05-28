@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 # DB path from your current project
 DB_PATH = str(Path(__file__).resolve().parent.parent / "database.db")
@@ -81,7 +81,7 @@ def run_seed(limit=50):
             conclusion = conclave_stub(text)
             # Update signals table
             cur.execute("UPDATE signals SET gravity_score=?, processed_at=?, conclave_meta=? WHERE signal_id=?",
-                        (conclusion["gravity"], datetime.utcnow(), json.dumps(conclusion), sid))
+                        (conclusion["gravity"], datetime.now(timezone.utc), json.dumps(conclusion), sid))
             conn.commit()
             # Materialize actors
             actor_ids = materialize_entities(conclusion, sid, conn)

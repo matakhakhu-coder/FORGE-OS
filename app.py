@@ -16,11 +16,16 @@ Phase 3 changes
 """
 
 import os
+import re
 import sys
+import signal as _signal
 import sqlite3
 import argparse
+import subprocess
+import threading
 import uuid
 from pathlib import Path
+from typing import Any, Dict
 from core.api.context import inject_globals
 from core.api.routes.wiki_routes import register_wiki_routes, wiki_bp
 from core.db.connection import get_connection
@@ -57,6 +62,287 @@ SOURCE_META = {
 
 
 # ---------------------------------------------------------------------------
+# Phase 72 — Telemetry Registry: pipeline_jobs
+# ---------------------------------------------------------------------------
+#
+# A persistent, real-time job registry for the Control Room. Every long-
+# running pipeline action (artifact drain, promote_staged, triple_extractor,
+# wiki_pipeline) is registered here on dispatch and updated with progress,
+# stage, and final status by the worker thread.
+#
+# Design notes
+# ------------
+# • WAL mode is enabled at table-init time so telemetry writes never block
+#   the ingestion pipe.
+# • _update_job() opens its own short-lived connection (≤1ms held) — never
+#   shares the request-scoped Flask connection.
+# • _KILL_FLAGS is the in-process kill mechanism; subprocess jobs are killed
+#   via os.kill on the stored PID.
+# ---------------------------------------------------------------------------
+
+_PIPELINE_JOBS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS pipeline_jobs (
+    job_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    job_key      TEXT    NOT NULL,
+    status       TEXT    NOT NULL DEFAULT 'pending',
+    stage        TEXT,
+    progress     REAL    DEFAULT 0.0,
+    message      TEXT,
+    pid          INTEGER,
+    records_in   INTEGER DEFAULT 0,
+    records_out  INTEGER DEFAULT 0,
+    started_at   TEXT,
+    updated_at   TEXT,
+    finished_at  TEXT
+)
+"""
+
+# In-process kill flags — module-level dict, thread-safe for set/check ops
+_KILL_FLAGS: Dict[int, bool] = {}
+
+
+# ---------------------------------------------------------------------------
+# Stable 1.1 — Collector Autodiscovery Registry
+# ---------------------------------------------------------------------------
+#
+# Scans forage/collectors/*.py at boot, extracts __manifest__ dicts using
+# ast.literal_eval (no imports, no execution), and builds two module-level
+# structures:
+#
+#   _COLLECTOR_REGISTRY  — dict[id -> manifest]  healthy collectors only
+#   _DEAD_NODES          — list of dicts          broken/missing manifests
+#
+# Required manifest fields: id, name, description, icon, entry, job_key
+# The entry path is validated to be within forage/collectors/ to prevent
+# path traversal at dispatch time.
+# ---------------------------------------------------------------------------
+
+_COLLECTOR_REGISTRY: Dict[str, Dict] = {}
+_DEAD_NODES: list = []
+
+_MANIFEST_REQUIRED = {"id", "name", "description", "icon", "entry", "job_key"}
+
+
+def _load_collector_registry() -> None:
+    """
+    Idempotent boot-time scan. Populates _COLLECTOR_REGISTRY and _DEAD_NODES.
+    A broken or missing manifest never raises — it is quarantined as a Dead Node.
+
+    Scans two collector roots:
+        forage/collectors/  — OSINT collectors (original)
+        flux/collectors/    — SOCINT collectors (FLUX Phase F)
+
+    Security: each collector's entry path must resolve inside one of these
+    two allowed roots. Any entry that escapes both is rejected as a Dead Node.
+    """
+    import ast as _ast
+    import logging as _log
+
+    _COLLECTOR_REGISTRY.clear()
+    _DEAD_NODES.clear()
+
+    log = _log.getLogger("forge.autodiscovery")
+
+    # ── Collector root directories ────────────────────────────────────────────
+    collector_roots: list[Path] = [
+        BASE_DIR / "forage" / "collectors",
+        BASE_DIR / "flux"   / "collectors",
+    ]
+
+    # Security: resolved allowed paths for entry validation
+    allowed_roots: list[Path] = [p.resolve() for p in collector_roots if p.exists()]
+
+    for collectors_dir in collector_roots:
+        if not collectors_dir.exists():
+            log.debug(f"[autodiscovery] Skipping missing root: {collectors_dir}")
+            continue
+
+        for py_path in sorted(collectors_dir.glob("*.py")):
+            if py_path.name.startswith("_"):
+                continue
+            stem = py_path.stem
+            try:
+                source = py_path.read_text(encoding="utf-8")
+                tree   = _ast.parse(source, filename=str(py_path))
+                manifest = None
+                for node in _ast.walk(tree):
+                    if isinstance(node, _ast.Assign):
+                        for target in node.targets:
+                            if (isinstance(target, _ast.Name)
+                                    and target.id == "__manifest__"):
+                                manifest = _ast.literal_eval(node.value)
+                if manifest is None:
+                    raise ValueError("No __manifest__ dict found in module body")
+
+                # Schema validation
+                missing = _MANIFEST_REQUIRED - set(manifest.keys())
+                if missing:
+                    raise ValueError(f"Manifest missing required fields: {missing}")
+
+                # Security: entry must resolve inside one of the allowed roots
+                entry_path = (BASE_DIR / manifest["entry"]).resolve()
+                if not any(
+                    str(entry_path).startswith(str(allowed))
+                    for allowed in allowed_roots
+                ):
+                    raise ValueError(
+                        f"entry path escapes all collector roots: {manifest['entry']}"
+                    )
+                if not entry_path.exists():
+                    raise ValueError(f"entry script not found: {manifest['entry']}")
+
+                _COLLECTOR_REGISTRY[manifest["id"]] = manifest
+                log.info(
+                    f"[autodiscovery] Registered: {manifest['id']} "
+                    f"— {manifest['name']} ({collectors_dir.parent.name}/{collectors_dir.name})"
+                )
+
+            except SyntaxError as exc:
+                _DEAD_NODES.append({
+                    "id":     stem,
+                    "file":   py_path.name,
+                    "reason": f"SyntaxError in script: {exc}",
+                })
+                log.warning(
+                    f"[autodiscovery] Dead Node: {py_path.name} — SyntaxError: {exc}"
+                )
+            except Exception as exc:
+                _DEAD_NODES.append({
+                    "id":     stem,
+                    "file":   py_path.name,
+                    "reason": str(exc),
+                })
+                log.warning(f"[autodiscovery] Dead Node: {py_path.name} — {exc}")
+
+    log.info(
+        f"[autodiscovery] Registry complete — "
+        f"{len(_COLLECTOR_REGISTRY)} healthy, {len(_DEAD_NODES)} dead nodes"
+    )
+
+
+def _telemetry_init() -> None:
+    """
+    Idempotent: creates pipeline_jobs table + indexes, marks orphaned
+    pending/running jobs as failed (stale-job recovery on server restart).
+    Called once at app boot from create_app().
+    """
+    try:
+        conn = sqlite3.connect(str(DB_PATH), timeout=10)
+        try:
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute(_PIPELINE_JOBS_SCHEMA)
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_pj_status ON pipeline_jobs (status)"
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_pj_key    ON pipeline_jobs (job_key)"
+            )
+            # Stale-job recovery — any pending/running survivor of a previous
+            # process is marked failed with a clear cause.
+            conn.execute(
+                """
+                UPDATE pipeline_jobs
+                SET    status      = 'failed',
+                       message     = 'Server restarted while job was active',
+                       finished_at = datetime('now'),
+                       updated_at  = datetime('now')
+                WHERE  status IN ('pending', 'running')
+                """
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception as exc:
+        import logging as _log
+        _log.getLogger("forge.telemetry").warning(
+            f"[telemetry init] non-fatal: {exc}"
+        )
+
+
+def _create_job(job_key: str, message: str = "") -> int:
+    """Insert a new job row in 'pending' state. Returns job_id."""
+    conn = sqlite3.connect(str(DB_PATH), timeout=10)
+    try:
+        cur = conn.execute(
+            """
+            INSERT INTO pipeline_jobs
+                   (job_key, status, message, started_at, updated_at)
+            VALUES (?,        'pending', ?,     datetime('now'), datetime('now'))
+            """,
+            (job_key, message),
+        )
+        conn.commit()
+        return int(cur.lastrowid)
+    finally:
+        conn.close()
+
+
+def _update_job(job_id: int, **fields: Any) -> None:
+    """
+    Fire-and-forget telemetry update. Never raises — a telemetry failure
+    must never crash a worker. Refuses to overwrite terminal states
+    (completed/failed/killed) so late-arriving callbacks can't clobber a
+    finished job.
+    """
+    if not fields:
+        return
+    # Sentinel: 'now' means datetime('now') for finished_at field
+    sets: list[str] = []
+    values: list[Any] = []
+    for k, v in fields.items():
+        if v == "now":
+            sets.append(f"{k} = datetime('now')")
+        else:
+            sets.append(f"{k} = ?")
+            values.append(v)
+    sets.append("updated_at = datetime('now')")
+    values.append(job_id)
+    sql = (
+        f"UPDATE pipeline_jobs SET {', '.join(sets)} "
+        f"WHERE job_id = ? AND status NOT IN ('completed','failed','killed')"
+    )
+    try:
+        conn = sqlite3.connect(str(DB_PATH), timeout=5)
+        try:
+            conn.execute(sql, values)
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass  # telemetry must never crash a worker
+
+
+def _finalize_job(job_id: int, status: str, message: str = "",
+                  records_out: int = 0, progress: float = 1.0) -> None:
+    """
+    Force-write a terminal state. Bypasses the 'no overwrite terminal'
+    guard so the same call can mark completed/failed/killed unconditionally.
+    """
+    try:
+        conn = sqlite3.connect(str(DB_PATH), timeout=5)
+        try:
+            conn.execute(
+                """
+                UPDATE pipeline_jobs
+                SET    status      = ?,
+                       message     = ?,
+                       records_out = ?,
+                       progress    = ?,
+                       finished_at = datetime('now'),
+                       updated_at  = datetime('now')
+                WHERE  job_id      = ?
+                """,
+                (status, message[:500] if message else "",
+                 records_out, progress, job_id),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass
+
+
+# ---------------------------------------------------------------------------
 # Application factory
 # ---------------------------------------------------------------------------
 
@@ -74,11 +360,11 @@ def create_app() -> Flask:
 
     def get_db() -> sqlite3.Connection:
         if "db" not in g:
-            db = g._database = get_connection()
-            db.row_factory = sqlite3.Row
-            db.execute("PRAGMA journal_mode=WAL;")
-            db.execute("PRAGMA foreign_keys=ON;")
-        return g._database
+            g.db = get_connection()
+            g.db.row_factory = sqlite3.Row
+            g.db.execute("PRAGMA journal_mode=WAL;")
+            g.db.execute("PRAGMA foreign_keys=ON;")
+        return g.db
 
     @app.teardown_appcontext
     def close_db(exception=None):
@@ -89,6 +375,12 @@ def create_app() -> Flask:
     app.get_db = get_db  # type: ignore[attr-defined]
 
     app.context_processor(inject_globals(get_db))
+
+    # ── Phase 72: Telemetry registry init + stale-job recovery ────────────
+    _telemetry_init()
+
+    # ── Stable 1.1: Collector Autodiscovery ────────────────────────────────
+    _load_collector_registry()
 
     # ── FMS: auto-attach all READY modules at startup (Phase 38) ───────────
     # Replaces observability-only scan. Discovers, validates, and attaches
@@ -2142,30 +2434,182 @@ def create_app() -> Flask:
             active_cases=[dict(r) for r in active_cases],
         )
 
+    # ── Smart promotion helpers ───────────────────────────────────────────────
+
+    import re as _re
+
+    _TITLE_STRIP = _re.compile(
+        r'^(?:'
+        r'@\w[\w.]*\s*:\s*'       # @handle: tweet text
+        r'|GDELT\s*[—–-]\s*'      # GDELT — headline
+        r'|USGS\s*[—–-]\s*'       # USGS — M4.5 earthquake
+        r'|RSS\s*[—–-]\s*'        # RSS — article title
+        r'|FIRMS\s*[—–-]\s*'      # FIRMS — fire activity
+        r'|ACLED\s*[—–-]\s*'      # ACLED — event
+        r'|x_pulse\s*[—–-]\s*'   # x_pulse — tweet
+        r')',
+        _re.IGNORECASE,
+    )
+
+    # Ordered: first match wins. Keywords are lowercased for comparison.
+    _CATEGORY_RULES: list[tuple[list[str], str]] = [
+        (["election", "vote", "voter", "ballot", "anc policy", "da policy",
+          "eff policy", "party manifesto", "general election", "by-election",
+          "iec", "electoral commission"], "Election"),
+        (["parliament", "national assembly", "national council of provinces",
+          "ncop", "legislature", "legislation", "bill passed",
+          "portfolio committee", "standing committee"], "Legislative"),
+        (["sandf", "south african national defence", "saaf", "sa navy",
+          "military", "defence force", "army", "air force"], "Military"),
+        (["protest", "strike", "shutdown", "riot", "looting", "civil unrest",
+          "demonstration", "march", "picket", "stay-away", "stayaway",
+          "community uprising"], "Civil Unrest"),
+        (["murder", "killed", "crime", "robbery", "hijack", "hijacking",
+          "arrested", "arrested for", "drug", "gang", "gang-related",
+          "shooting", "attacked", "cash-in-transit", "cit heist", "police operation",
+          "corruption", "bribery", "fraud"], "Security"),
+        (["rand", "rands", "economy", "inflation", "budget", "reserve bank",
+          "sarb", "national treasury", "load shedding", "load-shedding",
+          "eskom", "stage 4", "stage 6", "tax", "gdp", "economic growth",
+          "unemployment", "investment", "forex", "jse", "interest rate",
+          "repo rate", "cpi"], "Economic"),
+        (["diplomatic", "diplomat", "embassy", "foreign minister", "bilateral",
+          "summit", "un security council", "brics", "au summit",
+          "geopolitical", "sanctions", "trade deal"], "Diplomatic"),
+        (["social grant", "sassa", "welfare", "poverty", "healthcare",
+          "education", "community", "housing", "rncs", "social development"], "Social"),
+    ]
+
+    def _infer_category(title: str, content: str, stream: str, source: str) -> str:
+        """Return the best-fit event category from signal metadata."""
+        text = (title + " " + (content or "")).lower()
+        for keywords, category in _CATEGORY_RULES:
+            if any(kw in text for kw in keywords):
+                return category
+        # Stream fallback
+        if stream == "CRIME_INTEL":
+            return "Security"
+        return "Other"
+
+    def _clean_title(raw: str) -> str:
+        """Strip collector prefixes and normalise the event title."""
+        cleaned = _TITLE_STRIP.sub("", (raw or "").strip())
+        # If stripping consumed everything, fall back to original
+        if not cleaned:
+            cleaned = raw or ""
+        # Sentence-case if the title is ALL CAPS
+        if cleaned == cleaned.upper() and len(cleaned) > 6:
+            cleaned = cleaned.capitalize()
+        return cleaned[:200]
+
+    def _build_summary(signal: dict) -> str:
+        """
+        Build an enriched summary combining signal content, source context,
+        and SOCINT metadata (hashtags, cashtags) where available.
+        """
+        import json as _json
+        lines: list[str] = []
+
+        content = (signal.get("content") or "").strip()
+        if content:
+            lines.append(content)
+
+        # Parse metadata_json for extra context
+        try:
+            meta = _json.loads(signal.get("metadata_json") or "{}")
+        except Exception:
+            meta = {}
+
+        # x_pulse: show handle + tags
+        x_handle = meta.get("x_handle", "")
+        hashtags  = meta.get("hashtags",  [])
+        cashtags  = meta.get("cashtags",  [])
+
+        if x_handle:
+            tag_str = " ".join(f"#{h}" for h in hashtags[:8])
+            cash_str = " ".join(cashtags[:4])
+            context_parts = [f"via {x_handle}"]
+            if tag_str:
+                context_parts.append(tag_str)
+            if cash_str:
+                context_parts.append(cash_str)
+            lines.append("[" + " · ".join(context_parts) + "]")
+
+        # Source + stream badge for non-FLUX signals
+        source = signal.get("source", "")
+        stream = signal.get("stream", "")
+        score  = signal.get("relevance_score")
+        if source and not x_handle:
+            meta_parts = [f"Source: {source.upper()}"]
+            if stream:
+                meta_parts.append(f"Stream: {stream}")
+            if score is not None:
+                meta_parts.append(f"Relevance: {round(float(score), 2)}")
+            lines.append("[" + " · ".join(meta_parts) + "]")
+
+        return "\n".join(lines)[:1000]
+
     @app.route("/admin/event/new")
     def admin_event_new():
         """
-        Pre-filled event creation form.
-        Accepts query-string params that mirror the admin add_event field names:
-            title, summary, date, location, latitude, longitude, category
-        Sources can pre-populate these from a signal's data so the analyst
-        only needs to review and submit, not re-type everything.
+        Pre-filled event creation form — smart mode.
+
+        When a signal_id is provided, fetches the full signal from the DB
+        and applies intelligent inference:
+          • title   — stripped of collector prefixes, normalised
+          • category — inferred from content keywords, stream, source
+          • summary  — enriched with source metadata and SOCINT tags
+          • date     — extracted from signal timestamp
+          • coords   — pulled directly from signal lat/lng
+
+        Query-string params serve as fallback when no signal_id is given.
         """
+        import json as _json
         db = get_db()
 
-        # Harvest prefill values from query string (all optional, all safe)
-        prefill = {
-            "title":     request.args.get("title",     ""),
-            "summary":   request.args.get("summary",   ""),
-            "date":      request.args.get("date",      ""),
-            "location":  request.args.get("location",  ""),
-            "latitude":  request.args.get("latitude",  ""),
-            "longitude": request.args.get("longitude", ""),
-            "category":  request.args.get("category",  "Other"),
-        }
+        signal_id   = request.args.get("signal_id", "")
+        source_signal: dict | None = None
 
-        # Signal ID to mark as promoted on successful submit (optional)
-        signal_id = request.args.get("signal_id", "")
+        if signal_id:
+            row = db.execute(
+                """
+                SELECT signal_id, title, content, source, stream,
+                       relevance_score, timestamp, lat, lng,
+                       metadata_json, status, is_priority
+                FROM   signals WHERE signal_id = ?
+                """,
+                (signal_id,),
+            ).fetchone()
+            if row:
+                source_signal = dict(row)
+
+        if source_signal:
+            # ── Smart inference from full signal record ────────────────────
+            prefill = {
+                "title":    _clean_title(source_signal.get("title", "")),
+                "summary":  _build_summary(source_signal),
+                "date":     (source_signal.get("timestamp") or "")[:10],
+                "location": request.args.get("location", ""),
+                "latitude":  str(source_signal["lat"])  if source_signal.get("lat")  else "",
+                "longitude": str(source_signal["lng"])  if source_signal.get("lng")  else "",
+                "category": _infer_category(
+                    source_signal.get("title",   ""),
+                    source_signal.get("content", ""),
+                    source_signal.get("stream",  ""),
+                    source_signal.get("source",  ""),
+                ),
+            }
+        else:
+            # ── Fallback: honour raw query-string params ───────────────────
+            prefill = {
+                "title":     request.args.get("title",     ""),
+                "summary":   request.args.get("summary",   ""),
+                "date":      request.args.get("date",      ""),
+                "location":  request.args.get("location",  ""),
+                "latitude":  request.args.get("latitude",  ""),
+                "longitude": request.args.get("longitude", ""),
+                "category":  request.args.get("category",  "Other"),
+            }
 
         event_categories = [
             "Election", "Security", "Civil Unrest", "Legislative",
@@ -2176,6 +2620,7 @@ def create_app() -> Flask:
             "admin_event_new.html",
             prefill=prefill,
             signal_id=signal_id,
+            source_signal=source_signal,
             event_categories=event_categories,
             admin_password=ADMIN_PASSWORD,
         )
@@ -2549,19 +2994,37 @@ def create_app() -> Flask:
             # ── add actor ────────────────────────────────────────────────────
             if action == "add_actor":
                 name        = request.form.get("ac_name", "").strip()
-                atype       = request.form.get("ac_type", "person")
+                atype       = request.form.get("ac_type", "unknown").strip().lower()
                 description = request.form.get("ac_description", "").strip() or None
+
+                _VALID_ACTOR_TYPES = frozenset([
+                    "person", "institution", "media", "movement",
+                    "government", "location", "political_party",
+                    "organization", "unknown", "other", "paramilitary",
+                ])
 
                 if not name:
                     flash("Actor name is required.", "error")
                     return redirect(url_for("admin"))
 
-                db.execute(
-                    "INSERT INTO actors (name, type, description, source_type) VALUES (?, ?, ?, 'live')",
-                    (name, atype, description),
-                )
-                db.commit()
-                flash(f"Actor '{name}' added successfully.", "success")
+                if atype not in _VALID_ACTOR_TYPES:
+                    flash(
+                        f"Invalid actor type '{atype}'. "
+                        f"Allowed: {', '.join(sorted(_VALID_ACTOR_TYPES))}",
+                        "error",
+                    )
+                    return redirect(url_for("admin"))
+
+                try:
+                    db.execute(
+                        "INSERT INTO actors (name, type, description, source_type) VALUES (?, ?, ?, 'live')",
+                        (name, atype, description),
+                    )
+                    db.commit()
+                    flash(f"Actor '{name}' added successfully.", "success")
+                except Exception as _e:
+                    db.rollback()
+                    flash(f"Could not add actor: {_e}", "error")
                 return redirect(url_for("admin"))
 
         # ── GET — build admin dashboard data ───────────────────────────────
@@ -2589,7 +3052,11 @@ def create_app() -> Flask:
             "Economic","Diplomatic","Military","Social","Other",
         ]
 
-        actor_types_list = ["person","institution","government","movement","media","paramilitary","other"]
+        actor_types_list = [
+            "person", "institution", "government", "organization",
+            "movement", "media", "political_party", "location",
+            "other", "paramilitary", "unknown",
+        ]
 
         actors_list = db.execute(
             "SELECT actor_id, name, type FROM actors ORDER BY name"
@@ -2926,7 +3393,7 @@ def create_app() -> Flask:
         try:
             cur = db.execute(
                 "INSERT INTO cases (name, description, hypothesis, status, case_type, source_type) "
-                "VALUES (?, ?, ?, 'active', 'signal', 'live') ",
+                "VALUES (?, ?, ?, 'active', 'general', 'live') ",
                 (case_title,
                  f"Auto-generated from Sentinel alert #{alert_id}. "
                  f"Type: {alert['alert_type']} | "
@@ -3954,15 +4421,16 @@ def create_app() -> Flask:
         else:
             risk_level = "STANDARD"
 
-        # Linked signals (junction tables populated by entity_resolver + pipeline)
+        # Linked signals — signal_actors (pipeline) + socint_signals (FLUX)
         signals = db.execute("""
             SELECT DISTINCT s.signal_id, s.title, s.timestamp,
                             s.stream, s.relevance_score, s.source
             FROM   signals s
             WHERE  s.signal_id IN (
-                SELECT signal_id FROM actor_signals WHERE actor_id = ?
-                UNION
                 SELECT signal_id FROM signal_actors  WHERE actor_id = ?
+                UNION
+                SELECT signal_id FROM socint_signals WHERE actor_id = ?
+                  AND  signal_id IS NOT NULL
             )
             ORDER  BY s.relevance_score DESC, s.timestamp DESC
             LIMIT  10
@@ -4420,9 +4888,24 @@ def create_app() -> Flask:
             "INSERT INTO cases (name, description, hypothesis, case_type, status, source_type) VALUES (?, ?, ?, ?, ?, 'live')",
             (title, description, hypothesis, case_type, status),
         )
+        new_case_id = cur.lastrowid
         db.commit()
+        # Warm Start: auto-seed context_anchors from GAZETTEER scan of case text
+        try:
+            from core.gravity import extract_location_anchors
+            import json as _json
+            seed_text = " ".join(filter(None, [title, description, hypothesis]))
+            anchors = extract_location_anchors(seed_text)
+            if anchors:
+                db.execute(
+                    "UPDATE cases SET context_anchors = ? WHERE case_id = ?",
+                    (_json.dumps(anchors), new_case_id),
+                )
+                db.commit()
+        except Exception:
+            pass
         flash(f"Case '{title}' created.", "success")
-        return redirect(url_for("case_detail", case_id=cur.lastrowid))
+        return redirect(url_for("case_detail", case_id=new_case_id))
 
     @app.route("/cases/<int:case_id>")
     def case_detail(case_id: int):
@@ -4706,6 +5189,122 @@ def create_app() -> Flask:
 
         return jsonify({"case_id": case_id, "actors": result, "total": len(result)})
 
+    # ── Stable 1.2: Case-Scoped Conclave (Context Tunnel) ────────────────────
+
+    @app.route("/api/cases/<int:case_id>/run_conclave", methods=["POST"])
+    def api_case_run_conclave(case_id: int):
+        """
+        Context Tunnel Conclave — synthesizes ONLY the intelligence belonging
+        to this case.
+
+        Sequence
+        ────────
+        1. Fetch all signal_ids from case_signals WHERE case_id=N
+        2. Run NER + triple extraction scoped to those signals
+        3. Compile a case-scoped wiki from case_actors seed entities
+        4. Returns a pipeline_jobs job_id for telemetry tracking
+
+        The global Control Room engines are untouched — this is additive.
+        """
+        from flask import jsonify
+        import threading
+        import datetime as _dt
+
+        db = get_db()
+        if not db.execute(
+            "SELECT 1 FROM cases WHERE case_id = ?", (case_id,)
+        ).fetchone():
+            return jsonify({"error": "Case not found"}), 404
+
+        # Snapshot of signal IDs scoped to this case
+        sig_rows = db.execute(
+            "SELECT signal_id FROM case_signals WHERE case_id = ?", (case_id,)
+        ).fetchall()
+        signal_ids = [r["signal_id"] for r in sig_rows]
+
+        actor_rows = db.execute(
+            "SELECT actor_id FROM case_actors WHERE case_id = ?", (case_id,)
+        ).fetchall()
+        actor_ids = [r["actor_id"] for r in actor_rows]
+
+        if not signal_ids:
+            return jsonify({
+                "error": "No signals pinned to this case yet. "
+                         "Run a collector from the Workbench first.",
+                "signal_count": 0,
+            }), 422
+
+        job_id = _create_job(
+            f"conclave_case_{case_id}",
+            f"Context Tunnel: {len(signal_ids)} signals, "
+            f"{len(actor_ids)} actors"
+        )
+
+        def _tunnel_worker(jid: int, sids: list, aids: list, cid: int):
+            """Background synthesis — NER, triples, wiki scoped to this case."""
+            try:
+                from core.db.connection import get_connection as _gc
+                conn = _gc()
+
+                # ── 1. NER pass over case signals ─────────────────────────
+                _update_job(jid, message="Context Tunnel: running NER pass…")
+                try:
+                    from forage.processors.ner_processor import process_all as _ner
+                    _ner(signal_ids=sids, db_path=str(DB_PATH))
+                    _update_job(jid, message=f"NER complete ({len(sids)} signals)")
+                except Exception as exc:
+                    _update_job(jid, message=f"NER skipped: {exc}")
+
+                # ── 2. Triple extraction scoped to case signals ───────────
+                _update_job(jid, message="Context Tunnel: extracting triples…")
+                try:
+                    from forage.processors.triple_extractor import run as _triples
+                    triples_written = _triples(signal_ids=sids, db_path=str(DB_PATH))
+                    _update_job(jid, message=(
+                        f"Triples: {triples_written or 0} relationships extracted"
+                    ))
+                except Exception as exc:
+                    _update_job(jid, message=f"Triples skipped: {exc}")
+
+                # ── 3. Case-scoped wiki compilation from seed actors ──────
+                _update_job(jid, message="Context Tunnel: compiling case wiki…")
+                try:
+                    from forage.processors.wiki_compiler import compile_case as _wiki
+                    wiki_count = _wiki(
+                        case_id=cid, actor_ids=aids, db_path=str(DB_PATH)
+                    )
+                    _update_job(jid, message=(
+                        f"Wiki: {wiki_count or 0} articles compiled for case {cid}"
+                    ))
+                except Exception as exc:
+                    _update_job(jid, message=f"Wiki skipped: {exc}")
+
+                conn.close()
+                _finalize_job(
+                    jid, "completed",
+                    f"Context Tunnel complete — {len(sids)} signals synthesized",
+                    records_out=len(sids),
+                    progress=1.0,
+                )
+
+            except Exception as exc:
+                _finalize_job(jid, "failed", f"Context Tunnel error: {exc}")
+
+        threading.Thread(
+            target=_tunnel_worker,
+            args=(job_id, signal_ids, actor_ids, case_id),
+            daemon=True,
+        ).start()
+
+        return jsonify({
+            "status":       "started",
+            "job_id":       job_id,
+            "job_key":      f"conclave_case_{case_id}",
+            "case_id":      case_id,
+            "signal_count": len(signal_ids),
+            "actor_count":  len(actor_ids),
+        })
+
     @app.route("/cases/<int:case_id>/edit", methods=["POST"])
     def case_edit(case_id: int):
         title       = request.form.get("title", "").strip()
@@ -4717,13 +5316,61 @@ def create_app() -> Flask:
             flash("Case title is required.", "error")
             return redirect(url_for("case_detail", case_id=case_id))
         db = get_db()
+        # Warm Start: recompute context_anchors whenever case text changes
+        anchors_json = None
+        try:
+            from core.gravity import extract_location_anchors
+            import json as _json
+            seed_text = " ".join(filter(None, [title, description, hypothesis]))
+            anchors = extract_location_anchors(seed_text)
+            anchors_json = _json.dumps(anchors) if anchors else None
+        except Exception:
+            pass
         db.execute(
-            "UPDATE cases SET name=?, description=?, hypothesis=?, case_type=?, status=? WHERE case_id=?",
-            (title, description, hypothesis, case_type, status, case_id),
+            "UPDATE cases SET name=?, description=?, hypothesis=?, case_type=?, status=?, context_anchors=? WHERE case_id=?",
+            (title, description, hypothesis, case_type, status, anchors_json, case_id),
         )
         db.commit()
         flash("Case updated.", "success")
         return redirect(url_for("case_detail", case_id=case_id))
+
+    @app.route("/api/cases/<int:case_id>/seed", methods=["POST"])
+    def api_case_seed(case_id: int):
+        """
+        Warm Start seed endpoint — manually trigger or override context_anchors.
+
+        Body JSON (all fields optional):
+          { "seed_text": "...", "anchors": [{"lat": 14.0, "lng": 108.3, "label": "vietnam"}] }
+
+        If `anchors` is provided it is stored as-is (explicit override).
+        If only `seed_text` is provided, the GAZETTEER is scanned and results stored.
+        Both fields may be sent together; explicit `anchors` takes precedence.
+        Returns JSON: { ok: true, anchors: [...], count: N }
+        """
+        from flask import jsonify
+        import json as _json
+        from core.gravity import extract_location_anchors
+
+        body = request.get_json(silent=True) or {}
+        db = get_db()
+
+        case = db.execute("SELECT case_id FROM cases WHERE case_id = ?", (case_id,)).fetchone()
+        if not case:
+            return jsonify({"ok": False, "error": "Case not found"}), 404
+
+        explicit = body.get("anchors")
+        if explicit is not None:
+            anchors = explicit
+        else:
+            seed_text = body.get("seed_text", "")
+            anchors = extract_location_anchors(seed_text)
+
+        db.execute(
+            "UPDATE cases SET context_anchors = ? WHERE case_id = ?",
+            (_json.dumps(anchors) if anchors else None, case_id),
+        )
+        db.commit()
+        return jsonify({"ok": True, "anchors": anchors, "count": len(anchors)})
 
     @app.route("/cases/<int:case_id>/delete", methods=["POST"])
     def case_delete(case_id: int):
@@ -5978,6 +6625,7 @@ def create_app() -> Flask:
                 "sentinel_alerts_total": db.execute("SELECT COUNT(*) FROM sentinel_alerts").fetchone()[0],
                 "actors":                db.execute("SELECT COUNT(*) FROM actors").fetchone()[0],
                 "cases":                 db.execute("SELECT COUNT(*) FROM cases").fetchone()[0],
+                "artifacts_pending":     db.execute("SELECT COUNT(*) FROM artifacts WHERE processing_status='pending'").fetchone()[0],
             }
             try:
                 db_size = _os.path.getsize(str(DB_PATH)) / (1024 * 1024)
@@ -6422,7 +7070,7 @@ def create_app() -> Flask:
         try:
             cur = db.execute(
                 "INSERT INTO cases (name, description, hypothesis, status, case_type) "
-                "VALUES (?,?,?,'active','signal')",
+                "VALUES (?,?,?,'active','general')",
                 (auto_title, description, hypothesis)
             )
             case_id = cur.lastrowid
@@ -6442,6 +7090,206 @@ def create_app() -> Flask:
             })
         except Exception as exc:
             return jsonify({"error": str(exc)}), 500
+
+    # -----------------------------------------------------------------------
+    # Stable 1.1 — Collector Autodiscovery: registry + per-collector dispatch
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/registry", methods=["GET"])
+    def api_control_registry():
+        """
+        Return the full collector registry — healthy collectors and dead nodes.
+        The frontend uses this to stamp Control Room buttons and health cards
+        dynamically, replacing hard-coded COLLECTOR_ORDER arrays.
+        """
+        from flask import jsonify
+        collectors = list(_COLLECTOR_REGISTRY.values())
+        return jsonify({
+            "collectors": collectors,
+            "dead_nodes": _DEAD_NODES,
+            "total":      len(collectors),
+            "dead_count": len(_DEAD_NODES),
+        })
+
+    # ── Stable 1.2: Soft Scoped Intake — auto-pin membrane ───────────────────
+    def _auto_pin_to_case(case_id: int, collector_source: str,
+                          job_start_iso: str, pinned_count_ref: list) -> None:
+        """
+        Post-collection gravity membrane.
+
+        After a scoped collector run completes, fetch every signal this source
+        inserted since job_start_iso, score each against the case context via
+        CT-1 (build_context + score_item), and INSERT OR IGNORE into
+        case_signals for any signal above AUTO_PIN_THRESHOLD.
+
+        Runs inside the reader daemon thread — never blocks Flask.
+        pinned_count_ref is a single-element list used as a mutable out-param.
+        """
+        AUTO_PIN_THRESHOLD = 0.10   # low bar: analyst explicitly asked for this
+        try:
+            from core.db.connection import get_connection as _gc
+            from core.gravity import build_context, score_item
+            conn = _gc()
+            try:
+                ctx = build_context(conn, case_id)
+                rows = conn.execute(
+                    """
+                    SELECT signal_id, title, content, lat, lng
+                    FROM   signals
+                    WHERE  source   = ?
+                      AND  timestamp >= ?
+                    """,
+                    (collector_source, job_start_iso),
+                ).fetchall()
+
+                pinned = 0
+                for r in rows:
+                    item = {
+                        "item_type": "SIGNAL",
+                        "signal_id": r["signal_id"],
+                        "title":     r["title"] or "",
+                        "summary":   (r["content"] or "")[:200],
+                        "lat":       r["lat"],
+                        "lng":       r["lng"],
+                    }
+                    gs = score_item(item, ctx)
+                    if gs >= AUTO_PIN_THRESHOLD:
+                        conn.execute(
+                            """
+                            INSERT OR IGNORE INTO case_signals
+                                (case_id, signal_id, note)
+                            VALUES (?, ?, ?)
+                            """,
+                            (case_id, r["signal_id"],
+                             f"auto-pinned by collector (gravity {gs:.3f})"),
+                        )
+                        pinned += 1
+
+                conn.commit()
+                pinned_count_ref[0] = pinned
+                print(f"[Scoped Intake] case {case_id} ← {pinned}/{len(rows)} "
+                      f"signals auto-pinned (src={collector_source})")
+            finally:
+                conn.close()
+        except Exception as exc:
+            print(f"[Scoped Intake] auto-pin failed for case {case_id}: {exc}")
+
+    @app.route("/api/control/run_collector/<collector_id>", methods=["POST"])
+    def api_control_run_collector(collector_id: str):
+        """
+        Generic per-collector dispatch. Looks up collector_id in the
+        registry — never constructs a path from the URL parameter directly.
+        Spawns python <entry> as a subprocess, registers a pipeline_jobs row,
+        and starts a generic stdout reader thread.
+
+        Stable 1.2 — Scoped Intake:
+          POST body may include {"case_id": N} (optional).
+          When present, the reader thread runs _auto_pin_to_case() after
+          completion — the CT-1 gravity membrane auto-populates case_signals.
+          Collectors remain fully case-agnostic (no argv changes).
+        """
+        from flask import jsonify
+        import threading
+        import datetime as _dt
+
+        manifest = _COLLECTOR_REGISTRY.get(collector_id)
+        if manifest is None:
+            if any(d["id"] == collector_id for d in _DEAD_NODES):
+                return jsonify({
+                    "error": f"Collector '{collector_id}' is a Dead Node and cannot be dispatched.",
+                    "dead": True,
+                }), 422
+            return jsonify({"error": f"Unknown collector: {collector_id}"}), 404
+
+        # ── Case context (optional — None = global Control Room dispatch) ──
+        body          = request.get_json(silent=True) or {}
+        context_case  = body.get("case_id")
+        try:
+            context_case_id = int(context_case) if context_case is not None else None
+        except (TypeError, ValueError):
+            context_case_id = None
+
+        # ISO timestamp captured before spawn — used as the query window
+        job_start_iso = _dt.datetime.now(_dt.UTC).strftime("%Y-%m-%d %H:%M:%S")
+
+        job_key = manifest["job_key"]
+        job_id  = _create_job(job_key, f"Queued: {manifest['name']}")
+
+        def _reader(proc, jid):
+            """Generic stdout reader — streams output into job message."""
+            _pinned = [0]
+            try:
+                for raw in proc.stdout:
+                    line = raw.decode("utf-8", errors="replace").rstrip()
+                    if line:
+                        _update_job(jid, message=line[-300:])
+                rc = proc.wait()
+                if rc == 0:
+                    # ── Soft Scoped Intake membrane ───────────────────────
+                    if context_case_id is not None:
+                        _update_job(jid, message=(
+                            f"{manifest['name']} finished — running "
+                            f"Scoped Intake for case {context_case_id}…"
+                        ))
+                        _auto_pin_to_case(
+                            context_case_id,
+                            manifest["id"],   # collector source key
+                            job_start_iso,
+                            _pinned,
+                        )
+                        _finalize_job(
+                            jid, "completed",
+                            f"{manifest['name']} done — "
+                            f"{_pinned[0]} signals auto-pinned to case "
+                            f"{context_case_id}",
+                        )
+                    else:
+                        _finalize_job(jid, "completed",
+                                      f"{manifest['name']} finished (exit 0)")
+                else:
+                    _finalize_job(jid, "failed",
+                                  f"{manifest['name']} exited with code {rc}")
+            except Exception as exc:
+                _finalize_job(jid, "failed", f"Reader thread error: {exc}")
+
+        try:
+            if _KILL_FLAGS.pop(job_id, False):
+                _finalize_job(job_id, "killed", "Terminated before start")
+                return jsonify({"status": "killed", "job_id": job_id}), 200
+
+            cmd = [sys.executable,
+                   str(BASE_DIR / manifest["entry"])] + manifest.get("args", [])
+
+            popen_kwargs = dict(
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=str(BASE_DIR),
+            )
+            if os.name == "nt":
+                popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore[attr-defined]
+
+            proc = subprocess.Popen(cmd, **popen_kwargs)
+            _update_job(job_id, status="running", pid=proc.pid,
+                        message=f"PID {proc.pid} — {manifest['name']} started"
+                                + (f" [case {context_case_id}]"
+                                   if context_case_id else ""))
+
+            threading.Thread(target=_reader, args=(proc, job_id),
+                             daemon=True).start()
+
+        except Exception as exc:
+            _finalize_job(job_id, "failed", f"Failed to spawn: {exc}")
+            return jsonify({"status": "error", "error": str(exc),
+                            "job_id": job_id}), 500
+
+        return jsonify({
+            "status":         "started",
+            "job":            job_key,
+            "job_id":         job_id,
+            "collector_id":   collector_id,
+            "name":           manifest["name"],
+            "context_case_id": context_case_id,
+        })
 
     # -----------------------------------------------------------------------
     # Phase 34: Control Room — pipeline execution endpoints
@@ -6844,6 +7692,464 @@ def create_app() -> Flask:
         threading.Thread(target=_run, daemon=True).start()
         return jsonify({"status": "started", "job": "run_counterintel"})
 
+    # =======================================================================
+    # Phase 72 — Telemetry-Backed Processing Endpoints
+    # -----------------------------------------------------------------------
+    # Four new pipeline actions wired into pipeline_jobs registry:
+    #   • run_artifact_processor   (subprocess + stdout reader)
+    #   • run_promote_staged       (in-process thread)
+    #   • run_triple_extractor     (in-process thread)
+    #   • run_wiki_pipeline        (in-process thread, 3 sub-stages)
+    #
+    # Plus telemetry endpoints:
+    #   • GET  /api/control/jobs/active     — list non-terminal + recent jobs
+    #   • POST /api/control/kill_job/<id>   — terminate running job
+    # =======================================================================
+
+    # -----------------------------------------------------------------------
+    # Artifact Drain — subprocess.Popen with stdout reader thread
+    # -----------------------------------------------------------------------
+
+    # Match "Loop batch N: this=X total=Y done=Z skipped=W entities=V rate=R/s ..."
+    _ARTIFACT_PROGRESS_RE = re.compile(
+        r'Loop\s+batch\s+\d+\s*:\s*this=(\d+)\s+total=(\d+)\s+done=(\d+)\s+skipped=(\d+)'
+    )
+    # Match per-artifact processing line: "Extracting: somefile.pdf (type=pdf)"
+    # or "Progress N/M — title..." — used to tag poisoned artifacts.
+    _ARTIFACT_FILE_RE = re.compile(
+        r'Extracting:\s+(\S+\.\S+)|Processing\s+single\s+artifact:\s+(\d+)',
+        re.IGNORECASE,
+    )
+
+    def _stream_artifact_processor(proc: subprocess.Popen, job_id: int,
+                                   max_artifacts: int) -> None:
+        """
+        Wrapper thread: parses stdout, drives pipeline_jobs row.
+        Progress is computed as total_processed / max_artifacts (the cap we
+        passed on the command line) — gives a reliable 0→1 trajectory even
+        though the artifact_processor itself doesn't print a remaining count.
+
+        Captures the most recent artifact filename/id seen so that on
+        ERROR/Traceback we can record the poisoned artifact identity for
+        UI quarantine.
+        """
+        done = 0
+        last_artifact_seen: str = ""
+        try:
+            for raw in proc.stdout:                           # type: ignore[union-attr]
+                if _KILL_FLAGS.pop(job_id, False):
+                    try:
+                        proc.terminate()
+                    except Exception:
+                        pass
+                    _finalize_job(
+                        job_id, "killed",
+                        "Terminated by operator", records_out=done,
+                        progress=(done / max_artifacts) if max_artifacts else 0.0,
+                    )
+                    return
+
+                line = raw.decode("utf-8", errors="replace").rstrip() \
+                       if isinstance(raw, bytes) else str(raw).rstrip()
+                if not line:
+                    continue
+
+                # Track latest artifact identifier — used to tag Tracebacks
+                m_file = _ARTIFACT_FILE_RE.search(line)
+                if m_file:
+                    last_artifact_seen = m_file.group(1) or m_file.group(2) or ""
+
+                m = _ARTIFACT_PROGRESS_RE.search(line)
+                if m:
+                    # m.group(2) = cumulative "total" processed count
+                    done = int(m.group(2))
+                    progress = min(done / max_artifacts, 1.0) if max_artifacts else 0.0
+                    _update_job(
+                        job_id,
+                        status="running",
+                        progress=progress,
+                        message=line[-300:],   # tail — last 300 chars of log line
+                        records_out=done,
+                    )
+                elif "ERROR" in line or "Traceback" in line:
+                    poison = f" [poison: {last_artifact_seen}]" if last_artifact_seen else ""
+                    _update_job(
+                        job_id,
+                        message=f"[ERR]{poison} {line[-260:]}",
+                    )
+                elif line.startswith("[") and "Loop complete" in line:
+                    # Final summary line — capture for completion message
+                    _update_job(job_id, message=line[-300:])
+
+            rc = proc.wait()
+            if rc == 0:
+                _finalize_job(
+                    job_id, "completed",
+                    f"Drain complete — {done} artifacts processed",
+                    records_out=done, progress=1.0,
+                )
+            else:
+                _finalize_job(
+                    job_id, "failed",
+                    f"Process exited with code {rc}",
+                    records_out=done,
+                    progress=(done / max_artifacts) if max_artifacts else 0.0,
+                )
+        except Exception as exc:
+            _finalize_job(job_id, "failed",
+                          f"Reader thread crash: {exc}", records_out=done)
+
+
+    @app.route("/api/control/run_artifact_processor", methods=["POST"])
+    def api_control_run_artifact_processor():
+        """
+        Drain the artifact queue. Spawns python -m forage.processors.artifact_processor
+        as a subprocess so the Flask process never accumulates spaCy memory.
+
+        Body (JSON, optional):
+          { "batch_size": 500, "max_artifacts": 5000, "status": "pending" }
+        """
+        from flask import jsonify, request as req
+        body = req.get_json(silent=True) or {}
+        batch_size    = int(body.get("batch_size", 500))
+        max_artifacts = int(body.get("max_artifacts", 5000))
+        status_filter = str(body.get("status", "pending"))
+
+        # Sanity clamps — protect the OS from absurd inputs
+        batch_size    = max(1,  min(batch_size,    5000))
+        max_artifacts = max(1,  min(max_artifacts, 200000))
+
+        job_id = _create_job(
+            "artifact_processor",
+            f"Queued: --status {status_filter} --batch-size {batch_size} "
+            f"--max-artifacts {max_artifacts}",
+        )
+
+        cmd = [
+            sys.executable, "-u", "-m", "forage.processors.artifact_processor",
+            "--status", status_filter,
+            "--all",
+            "--batch-size", str(batch_size),
+            "--max-artifacts", str(max_artifacts),
+        ]
+
+        try:
+            # Windows-friendly subprocess: combine stderr into stdout so the
+            # reader thread sees Tracebacks. CREATE_NEW_PROCESS_GROUP allows
+            # a clean SIGTERM/CTRL_BREAK_EVENT delivery from the kill endpoint.
+            popen_kwargs = dict(
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=str(BASE_DIR),
+            )
+            if os.name == "nt":
+                popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore[attr-defined]
+
+            proc = subprocess.Popen(cmd, **popen_kwargs)
+            _update_job(job_id, status="running", pid=proc.pid,
+                        message=f"PID {proc.pid} — drain started")
+
+            threading.Thread(
+                target=_stream_artifact_processor,
+                args=(proc, job_id, max_artifacts),
+                daemon=True,
+            ).start()
+        except Exception as exc:
+            _finalize_job(job_id, "failed", f"Failed to spawn: {exc}")
+            return jsonify({"status": "error", "error": str(exc),
+                            "job_id": job_id}), 500
+
+        return jsonify({
+            "status":        "started",
+            "job":           "run_artifact_processor",
+            "job_id":        job_id,
+            "batch_size":    batch_size,
+            "max_artifacts": max_artifacts,
+        })
+
+
+    # -----------------------------------------------------------------------
+    # Promote Staged Entities — in-process thread
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/run_promote_staged", methods=["POST"])
+    def api_control_run_promote_staged():
+        """
+        Promote high-fidelity PERSON entities from signal_entities into actors.
+        Backed by scripts/promote_staged_entities.run().
+        """
+        from flask import jsonify
+        job_id = _create_job("promote_staged", "Queued: actor promotion gate")
+
+        def _run():
+            try:
+                if _KILL_FLAGS.pop(job_id, False):
+                    _finalize_job(job_id, "killed", "Terminated before start")
+                    return
+                _update_job(job_id, status="running",
+                            stage="scanning",
+                            progress=0.1,
+                            message="Loading PERSON candidates from A-tier sources")
+                from scripts.promote_staged_entities import run as _promote_run
+                result = _promote_run(
+                    db_path=DB_PATH,
+                    min_signals=1,
+                    dry_run=False,
+                    verbose=False,
+                ) or {}
+                inserted = int(result.get("inserted", 0))
+                examined = int(result.get("examined", inserted))
+                _finalize_job(
+                    job_id, "completed",
+                    f"Promoted {inserted} new actors (examined {examined})",
+                    records_out=inserted, progress=1.0,
+                )
+            except Exception as exc:
+                _finalize_job(job_id, "failed", f"{exc}")
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[promote_staged] {exc}", exc_info=True
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_promote_staged",
+                        "job_id": job_id})
+
+
+    # -----------------------------------------------------------------------
+    # Triple Extractor — in-process thread
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/run_triple_extractor", methods=["POST"])
+    def api_control_run_triple_extractor():
+        """
+        Run NLP relationship extraction over signals. Body (optional):
+          { "limit": 2000, "pdf_only": false }
+        """
+        from flask import jsonify, request as req
+        body = req.get_json(silent=True) or {}
+        limit    = max(1, min(int(body.get("limit", 2000)), 50000))
+        pdf_only = bool(body.get("pdf_only", False))
+
+        job_id = _create_job(
+            "triple_extractor",
+            f"Queued: limit={limit} pdf_only={pdf_only}",
+        )
+
+        def _run():
+            try:
+                if _KILL_FLAGS.pop(job_id, False):
+                    _finalize_job(job_id, "killed", "Terminated before start")
+                    return
+                _update_job(job_id, status="running",
+                            stage="extracting",
+                            progress=0.1,
+                            message=f"Extracting triples — limit={limit}")
+                from forage.processors.triple_extractor import _run_extraction
+                result = _run_extraction(
+                    db_path=DB_PATH,
+                    limit=limit,
+                    dry_run=False,
+                    since=None,
+                    pdf_only=pdf_only,
+                ) or {}
+                triples = int(result.get("triples_inserted",
+                                        result.get("triples", 0)))
+                examined = int(result.get("signals_processed",
+                                          result.get("examined", 0)))
+                _finalize_job(
+                    job_id, "completed",
+                    f"{triples} triples · {examined} signals scanned",
+                    records_out=triples, progress=1.0,
+                )
+            except Exception as exc:
+                _finalize_job(job_id, "failed", f"{exc}")
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[triple_extractor] {exc}", exc_info=True
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_triple_extractor",
+                        "job_id": job_id})
+
+
+    # -----------------------------------------------------------------------
+    # Wiki Pipeline — in-process, 3 sequential sub-stages
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/run_wiki_pipeline", methods=["POST"])
+    def api_control_run_wiki_pipeline():
+        """
+        Three-stage wiki synthesis:
+          1) schema_init   — wiki schema guard
+          2) wiki_compiler — entity-driven dossier synthesis
+          3) link_engine   — bidirectional cross-reference graph
+        Stage transitions are kill-checkpoints (no mid-stage interruption).
+        """
+        from flask import jsonify
+        job_id = _create_job("wiki_pipeline", "Queued: 3-stage wiki synthesis")
+
+        def _run():
+            articles = 0
+            try:
+                # ── Stage 1: schema_init ─────────────────────────────────
+                if _KILL_FLAGS.pop(job_id, False):
+                    _finalize_job(job_id, "killed", "Terminated before start")
+                    return
+                _update_job(job_id, status="running",
+                            stage="schema_init [1/3]", progress=0.05,
+                            message="Initializing wiki schema")
+                from core.db.wiki import init_wiki_db
+                init_wiki_db()
+                _update_job(job_id, progress=0.10, message="Schema ready")
+
+                # ── Stage 2: wiki_compiler ───────────────────────────────
+                if _KILL_FLAGS.pop(job_id, False):
+                    _finalize_job(job_id, "killed",
+                                  "Terminated between schema_init and compiler")
+                    return
+                _update_job(job_id,
+                            stage="wiki_compiler [2/3]", progress=0.15,
+                            message="Synthesizing dossiers from signal_entities")
+                from wiki.processors.wiki_compiler import WikiCompiler
+                WikiCompiler(DB_PATH).run()
+
+                # Probe article count for records_out telemetry
+                try:
+                    _conn = sqlite3.connect(str(DB_PATH), timeout=5)
+                    articles = int(_conn.execute(
+                        "SELECT COUNT(*) FROM wiki_articles"
+                    ).fetchone()[0])
+                    _conn.close()
+                except Exception:
+                    pass
+                _update_job(job_id, progress=0.85,
+                            records_out=articles,
+                            message=f"Compiler done — {articles} dossiers")
+
+                # ── Stage 3: link_engine ─────────────────────────────────
+                if _KILL_FLAGS.pop(job_id, False):
+                    _finalize_job(job_id, "killed",
+                                  "Terminated between compiler and link_engine",
+                                  records_out=articles, progress=0.85)
+                    return
+                _update_job(job_id,
+                            stage="link_engine [3/3]", progress=0.90,
+                            message="Building cross-reference graph")
+                from wiki.engines.wiki_link_engine import WikiLinkEngine
+                WikiLinkEngine(DB_PATH).run()
+
+                _finalize_job(
+                    job_id, "completed",
+                    f"Wiki pipeline complete — {articles} dossiers linked",
+                    records_out=articles, progress=1.0,
+                )
+            except Exception as exc:
+                _finalize_job(job_id, "failed", f"{exc}",
+                              records_out=articles)
+                import logging as _log
+                _log.getLogger("forge.control").error(
+                    f"[wiki_pipeline] {exc}", exc_info=True
+                )
+
+        threading.Thread(target=_run, daemon=True).start()
+        return jsonify({"status": "started", "job": "run_wiki_pipeline",
+                        "job_id": job_id})
+
+
+    # -----------------------------------------------------------------------
+    # Telemetry — list active jobs / kill a running job
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/control/jobs/active", methods=["GET"])
+    def api_control_jobs_active():
+        """
+        Return all non-terminal jobs plus the most recent terminal job per
+        job_key from the last 6 hours. The frontend Poller calls this every
+        ~1.5s while jobs are live; the response drives the progress UI.
+        """
+        from flask import jsonify
+        try:
+            db = get_db()
+            # Non-terminal jobs (full set)
+            live = db.execute(
+                """
+                SELECT job_id, job_key, status, stage, progress, message,
+                       pid, records_in, records_out,
+                       started_at, updated_at, finished_at
+                FROM   pipeline_jobs
+                WHERE  status IN ('pending', 'running')
+                ORDER  BY job_id DESC
+                """
+            ).fetchall()
+            # Most-recent terminal job per job_key (last 6h) — for "just finished"
+            recent = db.execute(
+                """
+                SELECT job_id, job_key, status, stage, progress, message,
+                       pid, records_in, records_out,
+                       started_at, updated_at, finished_at
+                FROM   pipeline_jobs
+                WHERE  status IN ('completed', 'failed', 'killed')
+                  AND  finished_at >= datetime('now', '-6 hours')
+                  AND  job_id IN (
+                        SELECT MAX(job_id) FROM pipeline_jobs
+                        WHERE  status IN ('completed', 'failed', 'killed')
+                        GROUP  BY job_key
+                  )
+                ORDER  BY finished_at DESC
+                """
+            ).fetchall()
+            jobs = [dict(r) for r in live] + [dict(r) for r in recent]
+            return jsonify({"jobs": jobs, "count": len(jobs)})
+        except Exception as exc:
+            return jsonify({"error": str(exc), "jobs": []}), 500
+
+
+    @app.route("/api/control/kill_job/<int:job_id>", methods=["POST"])
+    def api_control_kill_job(job_id: int):
+        """
+        Terminate a running/pending job:
+          • Subprocess jobs (artifact_processor): os.kill on stored PID.
+          • In-process jobs: set _KILL_FLAGS[job_id]=True; worker checks at
+            stage boundaries.
+        """
+        from flask import jsonify
+        try:
+            db = get_db()
+            row = db.execute(
+                "SELECT pid, status, job_key FROM pipeline_jobs "
+                "WHERE  job_id = ?",
+                (job_id,)
+            ).fetchone()
+            if row is None:
+                return jsonify({"error": "job not found"}), 404
+            if row["status"] not in ("running", "pending"):
+                return jsonify({
+                    "error": f"job not killable (status={row['status']})"
+                }), 400
+
+            # Subprocess path — deliver SIGTERM (or CTRL_BREAK_EVENT on Windows)
+            pid = row["pid"]
+            if pid:
+                try:
+                    if os.name == "nt":
+                        os.kill(pid, _signal.CTRL_BREAK_EVENT)  # type: ignore[attr-defined]
+                    else:
+                        os.kill(pid, _signal.SIGTERM)
+                except (ProcessLookupError, OSError):
+                    pass  # already dead — still mark killed
+
+            # In-process path — flag for next checkpoint
+            _KILL_FLAGS[job_id] = True
+
+            _finalize_job(job_id, "killed", "Terminated by operator")
+            return jsonify({"status": "killed", "job_id": job_id,
+                            "job_key": row["job_key"]})
+        except Exception as exc:
+            return jsonify({"error": str(exc)}), 500
+
+
     # -----------------------------------------------------------------------
     # Phase 39: FMS UI Discovery + Intel Dashboard
     # -----------------------------------------------------------------------
@@ -7082,16 +8388,21 @@ def create_app() -> Flask:
 SCHEMA_STATEMENTS = [
     """
     CREATE TABLE IF NOT EXISTS actors (
-        actor_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-        name        TEXT    NOT NULL,
-        type        TEXT    NOT NULL
-                    CHECK(type IN (
-                        'person','institution','media','movement','government',
-                        'location','political_party','organization','unknown'
-                    )),
-        description TEXT,
-        source_type TEXT    NOT NULL DEFAULT 'live',
-        created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+        actor_id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        name             TEXT    NOT NULL,
+        type             TEXT    NOT NULL
+                         CHECK(type IN (
+                             'person','institution','media','movement','government',
+                             'location','political_party','organization','unknown',
+                             'other','paramilitary'
+                         )),
+        description      TEXT,
+        source_type      TEXT    NOT NULL DEFAULT 'live',
+        created_at       TEXT    NOT NULL DEFAULT (datetime('now')),
+        confidence_score REAL    NOT NULL DEFAULT 0.5
+                         CHECK(confidence_score >= 0.0 AND confidence_score <= 1.0),
+        automated        INTEGER NOT NULL DEFAULT 0,
+        socint_profile   TEXT    DEFAULT NULL
     )
     """,
     """
@@ -7106,20 +8417,23 @@ SCHEMA_STATEMENTS = [
     """,
     """
     CREATE TABLE IF NOT EXISTS events (
-        event_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-        title       TEXT    NOT NULL,
-        summary     TEXT,
-        date        TEXT,
-        location    TEXT,
-        latitude    REAL,
-        longitude   REAL,
-        category    TEXT
-                    CHECK(category IN (
-                        'Election','Security','Civil Unrest','Legislative',
-                        'Economic','Diplomatic','Military','Social','Other'
-                    )),
-        source_type TEXT    NOT NULL DEFAULT 'live',
-        created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+        event_id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        title            TEXT    NOT NULL,
+        summary          TEXT,
+        description      TEXT,
+        date             TEXT,
+        location         TEXT,
+        latitude         REAL,
+        longitude        REAL,
+        category         TEXT
+                         CHECK(category IN (
+                             'Election','Security','Civil Unrest','Legislative',
+                             'Economic','Diplomatic','Military','Social','Other'
+                         )),
+        source_type      TEXT    NOT NULL DEFAULT 'live',
+        confidence_score REAL             DEFAULT 0.0,
+        automated        INTEGER NOT NULL DEFAULT 0,
+        created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
     )
     """, 
     """
@@ -7173,15 +8487,16 @@ SCHEMA_STATEMENTS = [
     """,
     """
     CREATE TABLE IF NOT EXISTS actor_network_metrics (
-        actor_id        INTEGER PRIMARY KEY REFERENCES actors(actor_id) ON DELETE CASCADE,
-        betweenness     REAL    NOT NULL DEFAULT 0,
-        eigenvector     REAL    NOT NULL DEFAULT 0,
-        pagerank        REAL    NOT NULL DEFAULT 0,
-        community_id    INTEGER,
-        node_count      INTEGER,
-        edge_count      INTEGER,
-        influence_score REAL    NOT NULL DEFAULT 0,
-        computed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+        actor_id             INTEGER PRIMARY KEY REFERENCES actors(actor_id) ON DELETE CASCADE,
+        betweenness          REAL    NOT NULL DEFAULT 0,
+        eigenvector          REAL    NOT NULL DEFAULT 0,
+        pagerank             REAL    NOT NULL DEFAULT 0,
+        community_id         INTEGER,
+        community_id_socint  INTEGER DEFAULT NULL,
+        node_count           INTEGER,
+        edge_count           INTEGER,
+        influence_score      REAL    NOT NULL DEFAULT 0,
+        computed_at          TEXT    NOT NULL DEFAULT (datetime('now'))
     )
     """,
     """
@@ -7256,19 +8571,22 @@ SCHEMA_STATEMENTS = [
     # ── Phase 8: Case Workspaces ────────────────────────────────────────────
     """
     CREATE TABLE IF NOT EXISTS cases (
-        case_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-        title       TEXT    NOT NULL,
-        description TEXT,
-        hypothesis  TEXT,
-        case_type   TEXT    DEFAULT 'general'
-                    CHECK(case_type IN (
-                        'general','financial','geopolitical','criminal',
-                        'infrastructure','cyber','humanitarian','other'
-                    )),
-        status      TEXT    NOT NULL DEFAULT 'active'
-                    CHECK(status IN ('active','closed','archived')),
-        source_type TEXT    NOT NULL DEFAULT 'live',
-        created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
+        case_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        name              TEXT    NOT NULL,
+        description       TEXT,
+        hypothesis        TEXT,
+        case_type         TEXT    DEFAULT 'general'
+                          CHECK(case_type IN (
+                              'general','financial','geopolitical','criminal',
+                              'infrastructure','cyber','humanitarian','other'
+                          )),
+        status            TEXT    NOT NULL DEFAULT 'active'
+                          CHECK(status IN ('active','closed','archived')),
+        source_type       TEXT    NOT NULL DEFAULT 'live',
+        created_at        TEXT    NOT NULL DEFAULT (datetime('now')),
+        auto_generated    INTEGER NOT NULL DEFAULT 0,
+        trigger_signal_id TEXT,
+        context_anchors   TEXT
     )
     """,
     # Phase 16: case_signals — FORAGE→FORGE synthesis junction
@@ -7389,9 +8707,18 @@ SCHEMA_STATEMENTS = [
                            CHECK(stream IN
                                ('GLOBAL','CRIME_INTEL','INFRASTRUCTURE','PRIORITY')),
         relevance_score    REAL    NOT NULL DEFAULT 1.0,
-        source_type        TEXT    NOT NULL DEFAULT 'live'
+        source_type        TEXT    NOT NULL DEFAULT 'live',
+        -- Stable 1.1: Conclave cognition columns
+        gravity_score      REAL,
+        processed_at       TEXT,
+        conclave_meta      TEXT,
+        -- Stable 1.2: HealthMap dedup counter
+        duplicate_count    INTEGER NOT NULL DEFAULT 0,
+        -- FLUX SOCINT columns
+        socint_tags        TEXT    DEFAULT NULL,
+        socint_resonance   REAL    DEFAULT NULL
     )
-    """,   
+    """,
     """
     CREATE TABLE IF NOT EXISTS signal_entities (
         entity_id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -7401,6 +8728,225 @@ SCHEMA_STATEMENTS = [
         count       INTEGER NOT NULL DEFAULT 1,
         created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
         UNIQUE (signal_id, text, label)
+    )
+    """,
+    # ── Phase 63 / Stable 1.1: Actor–Signal and Actor–Event junction tables ──
+    # signal_actors links pipeline-extracted actors to the signals that
+    # surfaced them.  event_actors links actors to the escalated events they
+    # were associated with.  Both carry FK constraints so dangling rows are
+    # cleaned automatically when parent rows are deleted.
+    """
+    CREATE TABLE IF NOT EXISTS signal_actors (
+        id         INTEGER  PRIMARY KEY AUTOINCREMENT,
+        signal_id  TEXT     NOT NULL
+                   REFERENCES signals(signal_id) ON DELETE CASCADE,
+        actor_id   INTEGER  NOT NULL
+                   REFERENCES actors(actor_id)   ON DELETE CASCADE,
+        role       TEXT     DEFAULT 'mentioned',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (signal_id, actor_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS event_actors (
+        id         INTEGER  PRIMARY KEY AUTOINCREMENT,
+        event_id   INTEGER  NOT NULL
+                   REFERENCES events(event_id)   ON DELETE CASCADE,
+        actor_id   INTEGER  NOT NULL
+                   REFERENCES actors(actor_id)   ON DELETE CASCADE,
+        role       TEXT     DEFAULT 'involved',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (event_id, actor_id)
+    )
+    """,
+    # ── Graph Substrate (Injection 04 / Sprint 2) ─────────────────────────────
+    # graph_nodes MUST precede graph_edges — FK dependency.
+    """
+    CREATE TABLE IF NOT EXISTS graph_nodes (
+        node_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        node_type     TEXT    NOT NULL,
+        ref_id        TEXT    NOT NULL,
+        label         TEXT,
+        metadata_json TEXT,
+        created_at    TEXT    DEFAULT (datetime('now')),
+        UNIQUE(node_type, ref_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS graph_edges (
+        edge_id            INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_node_id     INTEGER NOT NULL,
+        target_node_id     INTEGER NOT NULL,
+        relation_type      TEXT    NOT NULL,
+        weight             REAL    DEFAULT 1.0,
+        confidence         REAL    DEFAULT 1.0,
+        source_event_id    INTEGER,
+        source_signal_id   TEXT,
+        source_artifact_id INTEGER,
+        created_at         TEXT    DEFAULT (datetime('now')),
+        UNIQUE(source_node_id, target_node_id, relation_type),
+        FOREIGN KEY(source_node_id) REFERENCES graph_nodes(node_id) ON DELETE CASCADE,
+        FOREIGN KEY(target_node_id) REFERENCES graph_nodes(node_id) ON DELETE CASCADE
+    )
+    """,
+    # ── Signal flags ──────────────────────────────────────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS signal_flags (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        signal_id   TEXT    NOT NULL REFERENCES signals(signal_id) ON DELETE CASCADE,
+        flag_type   TEXT    NOT NULL,
+        flag_label  TEXT    NOT NULL,
+        confidence  REAL    NOT NULL DEFAULT 0.5
+                    CHECK(confidence >= 0.0 AND confidence <= 1.0),
+        cluster_id  TEXT,
+        detail_json TEXT,
+        created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (signal_id, flag_type)
+    )
+    """,
+    # ── Actor coalition & network emergence ───────────────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS actor_coalitions (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        actor_id        INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        coalition_label TEXT    NOT NULL,
+        co_occurrence   INTEGER NOT NULL DEFAULT 0,
+        member_count    INTEGER NOT NULL DEFAULT 1,
+        threshold_used  INTEGER NOT NULL DEFAULT 5,
+        computed_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (actor_id, coalition_label)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS actor_weights (
+        actor_id   INTEGER PRIMARY KEY,
+        weight     REAL    NOT NULL DEFAULT 1.0,
+        updated_at TEXT    NOT NULL
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS network_emergence (
+        id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+        actor_id            INTEGER NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        window_start        TEXT    NOT NULL,
+        window_end          TEXT    NOT NULL,
+        link_count          INTEGER NOT NULL DEFAULT 0,
+        previous_link_count INTEGER NOT NULL DEFAULT 0,
+        growth_rate         REAL    NOT NULL DEFAULT 0.0,
+        emergence_score     REAL    NOT NULL DEFAULT 0.0,
+        created_at          TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    # ── FLUX SOCINT tables ────────────────────────────────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS socint_signals (
+        id            INTEGER  PRIMARY KEY AUTOINCREMENT,
+        source        TEXT     NOT NULL DEFAULT 'x_pulse',
+        actor_id      INTEGER  REFERENCES actors(actor_id) ON DELETE SET NULL,
+        signal_id     TEXT     REFERENCES signals(signal_id) ON DELETE SET NULL,
+        content       TEXT     NOT NULL,
+        metadata_json TEXT     DEFAULT NULL,
+        timestamp     TEXT     NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS socint_resonance (
+        id            INTEGER  PRIMARY KEY AUTOINCREMENT,
+        actor_a       INTEGER  NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        actor_b       INTEGER  NOT NULL REFERENCES actors(actor_id) ON DELETE CASCADE,
+        score         REAL     NOT NULL DEFAULT 0.0,
+        features_json TEXT     DEFAULT NULL,
+        updated_at    TEXT     NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(actor_a, actor_b),
+        CHECK(score >= 0.0 AND score <= 1.0),
+        CHECK(actor_a < actor_b)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS flux_latent_seeds (
+        tag             TEXT    PRIMARY KEY,
+        parent_seed     TEXT,
+        discovery_depth INTEGER NOT NULL DEFAULT 1,
+        jaccard_score   REAL    NOT NULL DEFAULT 0.0,
+        velocity        REAL    NOT NULL DEFAULT 1.0,
+        total_count     INTEGER NOT NULL DEFAULT 0,
+        first_seen      TEXT    NOT NULL,
+        last_seen       TEXT    NOT NULL,
+        is_active       INTEGER NOT NULL DEFAULT 1
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS flux_tag_cooccurrence (
+        pulse_id TEXT    NOT NULL,
+        pulse_ts TEXT    NOT NULL,
+        seed_tag TEXT    NOT NULL,
+        co_tag   TEXT    NOT NULL,
+        count    INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (pulse_id, seed_tag, co_tag)
+    )
+    """,
+    # ── Wiki intelligence tables ──────────────────────────────────────────────
+    # wiki_articles MUST precede wiki_links — FK dependency on slug.
+    """
+    CREATE TABLE IF NOT EXISTS wiki_articles (
+        id                 INTEGER  PRIMARY KEY AUTOINCREMENT,
+        slug               TEXT     UNIQUE,
+        title              TEXT     NOT NULL,
+        summary            TEXT,
+        content            TEXT,
+        content_html       TEXT,
+        tags               TEXT,
+        behavior           TEXT,
+        features           TEXT,
+        max_pulse_strength REAL,
+        source_type        TEXT     DEFAULT 'live',
+        last_updated       DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS wiki_entries (
+        id        INTEGER  PRIMARY KEY,
+        actor_id  TEXT,
+        event_id  TEXT,
+        artifact  TEXT,
+        timestamp DATETIME,
+        narrative TEXT,
+        context   TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS wiki_links (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_slug     TEXT,
+        target_slug     TEXT,
+        connection_type TEXT DEFAULT 'related',
+        FOREIGN KEY(source_slug) REFERENCES wiki_articles(slug),
+        FOREIGN KEY(target_slug) REFERENCES wiki_articles(slug)
+    )
+    """,
+    # ── Pipeline jobs & case feedback ─────────────────────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS pipeline_jobs (
+        job_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+        job_key     TEXT    NOT NULL,
+        status      TEXT    NOT NULL DEFAULT 'pending',
+        stage       TEXT,
+        progress    REAL    DEFAULT 0.0,
+        message     TEXT,
+        pid         INTEGER,
+        records_in  INTEGER DEFAULT 0,
+        records_out INTEGER DEFAULT 0,
+        started_at  TEXT,
+        updated_at  TEXT,
+        finished_at TEXT
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS case_feedback (
+        case_id       TEXT PRIMARY KEY,
+        gravity_score REAL,
+        decision      TEXT,
+        assigned_at   TEXT
     )
     """,
 ]
@@ -7476,38 +9022,10 @@ def init_db():
 def migrate_db():
     print(f"[FORGE] Running migrations on {DB_PATH} …")
     conn = _open_db()
-    # Phase 33: discovery_targets table
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS discovery_targets (
-            id              INTEGER PRIMARY KEY AUTOINCREMENT,
-            entity_name     TEXT    NOT NULL UNIQUE,
-            suggested_query TEXT    NOT NULL,
-            evidence_count  INTEGER NOT NULL DEFAULT 0,
-            evidence_json   TEXT,
-            candidate_score REAL    NOT NULL DEFAULT 0.0,
-            status          TEXT    NOT NULL DEFAULT 'pending'
-                            CHECK(status IN ('pending','approved','ignored')),
-            created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
-            actioned_at     TEXT
-        )
-    """)
-    conn.commit()
-
-    # Phase 32: pipeline_runs table
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS pipeline_runs (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            component   TEXT    NOT NULL,
-            status      TEXT    NOT NULL
-                        CHECK(status IN ('success','error')),
-            records_in  INTEGER,
-            records_out INTEGER,
-            duration_s  REAL,
-            detail_json TEXT,
-            run_at      TEXT    NOT NULL DEFAULT (datetime('now'))
-        )
-    """)
-    conn.commit()
+    # discovery_targets and pipeline_runs are now in SCHEMA_STATEMENTS —
+    # the CREATE TABLE IF NOT EXISTS stanzas that were here are removed to
+    # eliminate the divergence.  Both tables are created by init_db() and
+    # by the SCHEMA_STATEMENTS loop at the end of this function.
 
     def _columns(table):
         return {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
@@ -7549,6 +9067,16 @@ def migrate_db():
         ("artifacts",      "device_make",         "TEXT"),
         ("artifacts",      "device_model",        "TEXT"),
         ("artifacts",      "exif_datetime",       "TEXT"),
+        # C-4 Remediation — columns required by escalation_engine.create_event()
+        ("events",         "description",         "TEXT"),
+        ("events",         "confidence_score",    "REAL DEFAULT 0.0"),
+        ("events",         "automated",           "INTEGER NOT NULL DEFAULT 0"),
+        # ENT-01 Remediation — columns required by entity_engine.get_or_create_actor()
+        # fix_schema.py adds these as FLOAT/BOOLEAN; migrate_db uses REAL/INTEGER for
+        # consistency with the rest of the schema. Both work — SQLite type affinity is flexible.
+        ("actors",         "confidence_score",    "REAL NOT NULL DEFAULT 0.5"),
+        ("actors",         "automated",           "INTEGER NOT NULL DEFAULT 0"),
+        ("actors",         "socint_profile",      "TEXT DEFAULT NULL"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):
@@ -7694,6 +9222,35 @@ def migrate_db():
             created_at       TEXT    NOT NULL DEFAULT (datetime('now'))
         )
     """)
+
+    # ── Stable 1.1: Schema Harmonization — heal any existing database ────────
+    #
+    # cases.title → cases.name  (SQLite 3.25+ RENAME COLUMN; safe on fresh DBs)
+    try:
+        _cols = {r[1] for r in conn.execute("PRAGMA table_info(cases)")}
+        if "title" in _cols and "name" not in _cols:
+            conn.execute("ALTER TABLE cases RENAME COLUMN title TO name")
+            print("  [migrate] cases ← renamed column: title → name")
+    except Exception as _e:
+        print(f"  [migrate] cases rename skipped: {_e}")
+
+    # New columns on cases and signals — idempotent via column presence check
+    _stable11 = [
+        ("cases",   "auto_generated",    "INTEGER NOT NULL DEFAULT 0"),
+        ("cases",   "trigger_signal_id", "TEXT"),
+        ("cases",   "context_anchors",        "TEXT"),
+        ("signals", "gravity_score",          "REAL"),
+        ("signals", "processed_at",           "TEXT"),
+        ("signals", "conclave_meta",          "TEXT"),
+        ("signals", "duplicate_count",        "INTEGER NOT NULL DEFAULT 0"),
+    ]
+    for _tbl, _col, _ctype in _stable11:
+        _existing = {r[1] for r in conn.execute(f"PRAGMA table_info({_tbl})")}
+        if _col not in _existing:
+            print(f"  [migrate] {_tbl} ← adding column: {_col} {_ctype}")
+            conn.execute(f"ALTER TABLE {_tbl} ADD COLUMN {_col} {_ctype}")
+    conn.commit()
+    # ── End Stable 1.1 ────────────────────────────────────────────────────────
 
     for stmt in SCHEMA_STATEMENTS:
         conn.execute(stmt)

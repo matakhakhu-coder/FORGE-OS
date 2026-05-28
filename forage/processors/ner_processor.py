@@ -74,7 +74,7 @@ def _load_model(spacy_mod):
         nlp = spacy_mod.load(model)
         # Disable components we don't need for speed
         disabled = [p for p in nlp.pipe_names if p not in ("tok2vec", "ner")]
-        return spacy_mod.load(model, disable=disabled)
+        nlp = spacy_mod.load(model, disable=disabled)
     except OSError:
         print(
             f"[ner_processor] ERROR: spaCy model '{model}' not found.\n"
@@ -82,6 +82,17 @@ def _load_model(spacy_mod):
             file=sys.stderr,
         )
         sys.exit(1)
+
+    # Inject SA EntityRuler before statistical NER so government abbreviations
+    # (SIU, NPA, Hawks, DPCI, Treasury…) are correctly tagged ORG — matching
+    # the same pattern used by triple_extractor.py (Phase 44).
+    try:
+        from forage.processors.sa_entity_ruler import build_sa_ruler
+        nlp = build_sa_ruler(nlp)
+    except Exception as exc:
+        warn(f"SA EntityRuler failed to load (non-fatal): {exc}")
+
+    return nlp
 
 # ── Config ────────────────────────────────────────────────────────────────────
 

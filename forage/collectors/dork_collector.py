@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 """
 FORGE -- Dork Collector  (forage/collectors/dork_collector.py)
 ===============================================================
@@ -20,7 +21,16 @@ Rate limit: 1 request per second, max 20 actors per run.
 Author: FORGE Phase 42
 """
 
-from __future__ import annotations
+__manifest__ = {
+    "id":          "dork_collector",
+    "name":        "Dork Collector",
+    "description": "Actor-driven document hunter. Targets high-gravity actors (influence > 0.6) and constructs Google News RSS queries for procurement, NPA, and corruption coverage.",
+    "icon":        "🕵",
+    "entry":       "forage/collectors/dork_collector.py",
+    "args":        [],
+    "job_key":     "dork_collector",
+    "version":     "1.0.0",
+}
 
 import asyncio
 import hashlib
@@ -34,7 +44,9 @@ from pathlib import Path
 from typing import Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH  = BASE_DIR / "database.db"
+# P3-01: honour FORGE_DB env var; fall back to repo-root default
+import os as _os
+DB_PATH  = Path(_os.environ["FORGE_DB"]).resolve() if _os.environ.get("FORGE_DB") else BASE_DIR / "database.db"
 
 GRAVITY_THRESHOLD  = 0.6   # Only hunt for actors tied to high-gravity signals
 MAX_ACTORS_PER_RUN = 20    # Rate-limit: cap actors processed per run
@@ -74,9 +86,11 @@ def _get_session():
         _SESSION = _requests.Session()
         _SESSION.verify = False
         _SESSION.headers.update({
+            # P3-03: rotate through realistic browser UA strings — never self-identify
             "User-Agent": (
-                "Mozilla/5.0 (compatible; FORGE-OSINT/1.0; "
-                "+https://github.com/matakhakhu-coder/FORGE)"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
             ),
         })
     return _SESSION

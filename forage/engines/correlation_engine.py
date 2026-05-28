@@ -54,22 +54,11 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-# Phase 32: path-safe pipeline logger import
-def _log_run_safe(*args, **kwargs):
-    """Inline log_run that works whether called as a module or direct script."""
-    import sys as _sys, importlib.util as _ilu
-    from pathlib import Path as _P
-    _logger_path = _P(__file__).resolve().parent.parent.parent / "forage" / "utils" / "pipeline_logger.py"
-    if str(_logger_path.parent.parent) not in _sys.path:
-        _sys.path.insert(0, str(_logger_path.parent.parent))
-    try:
-        _spec = _ilu.spec_from_file_location("pipeline_logger", str(_logger_path))
-        _mod  = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        _mod.log_run(*args, **kwargs)
-    except Exception:
+try:
+    from forage.utils.pipeline_logger import log_run
+except ImportError:
+    def log_run(*args, **kwargs):  # type: ignore[misc]
         pass  # logging must never crash the pipeline
-log_run = _log_run_safe
 from typing import Optional
 
 # ── Thresholds (edit here to tune globally) ───────────────────────────────────
@@ -283,9 +272,10 @@ class CorrelationEngine:
         total_pairs  = n * (n - 1) // 2
         log(f"Evaluating {total_pairs:,} pairs…")
 
-        written   = 0
-        found     = 0
-        batch     = []
+        written    = 0
+        found      = 0
+        batch      = []
+        edge_batch = []
 
         for i in range(n):
             a = signals[i]
@@ -309,20 +299,25 @@ class CorrelationEngine:
                 found += 1
 
                 if dry_run:
-                    log(f"  [DRY] {a['signal_id'][:8]}…↔{b['signal_id'][:8]}… "
-                        f"score={score:.3f} dist={dist:.1f}km Δt={tdiff:.1f}h")
+                    log(f"  [DRY] {a['signal_id'][:8]}...{b['signal_id'][:8]}... "
+                        f"score={score:.3f} dist={dist:.1f}km dt={tdiff:.1f}h")
                     continue
 
                 # Canonical ordering: always store smaller ID first
                 id_a, id_b = sorted([a["signal_id"], b["signal_id"]])
                 batch.append((id_a, id_b, score, dist, tdiff, ss, ts_s))
+                edge_batch.append((id_a, id_b, score))
 
                 if len(batch) >= BATCH_SIZE:
                     written += self._flush(conn, batch)
-                    batch = []
+                    self._flush_graph_edges(conn, edge_batch)
+                    batch      = []
+                    edge_batch = []
 
         if batch and not dry_run:
             written += self._flush(conn, batch)
+        if edge_batch and not dry_run:
+            self._flush_graph_edges(conn, edge_batch)
 
         conn.close()
 
@@ -361,6 +356,54 @@ class CorrelationEngine:
                 pass  # FK violation — signal deleted between load and flush
         conn.commit()
         return written
+
+    def _flush_graph_edges(self, conn: sqlite3.Connection, edge_batch: list) -> None:
+        """
+        For each (signal_a, signal_b, score) pair, look up actors linked to
+        both signals via signal_actors, resolve their graph_nodes, and insert
+        correlated_with edges into graph_edges.  No return value — failures
+        are swallowed so the main correlation write is never blocked.
+        """
+        now = datetime.now(timezone.utc).isoformat()
+        for id_a, id_b, score in edge_batch:
+            actors_a = conn.execute(
+                "SELECT actor_id FROM signal_actors WHERE signal_id=?", (id_a,)
+            ).fetchall()
+            actors_b = conn.execute(
+                "SELECT actor_id FROM signal_actors WHERE signal_id=?", (id_b,)
+            ).fetchall()
+            if not actors_a or not actors_b:
+                continue
+            for aa in actors_a:
+                node_a = conn.execute(
+                    "SELECT node_id FROM graph_nodes "
+                    "WHERE node_type='actor' AND ref_id=?",
+                    (aa["actor_id"],),
+                ).fetchone()
+                if not node_a:
+                    continue
+                for ab in actors_b:
+                    node_b = conn.execute(
+                        "SELECT node_id FROM graph_nodes "
+                        "WHERE node_type='actor' AND ref_id=?",
+                        (ab["actor_id"],),
+                    ).fetchone()
+                    if not node_b:
+                        continue
+                    try:
+                        conn.execute(
+                            """
+                            INSERT OR IGNORE INTO graph_edges
+                                (source_node_id, target_node_id, relation_type,
+                                 weight, source_signal_id, created_at)
+                            VALUES (?, ?, 'correlated_with', ?, ?, ?)
+                            """,
+                            (node_a["node_id"], node_b["node_id"],
+                             score, id_a, now),
+                        )
+                    except Exception:
+                        pass
+        conn.commit()
 
     def report(self) -> None:
         """Print top correlations to stdout."""

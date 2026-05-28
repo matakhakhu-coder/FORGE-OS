@@ -18,7 +18,7 @@ Two-layer guard:
 import inspect
 import logging
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from core.db.connection import get_connection
@@ -71,7 +71,7 @@ def get_actor_weight(actor_id: int, conn: Optional[sqlite3.Connection] = None) -
             w = DEFAULT_ACTOR_WEIGHT
             cur.execute(
                 "INSERT OR REPLACE INTO actor_weights (actor_id, weight, updated_at) VALUES (?, ?, ?)",
-                (actor_id, w, datetime.utcnow().isoformat()),
+                (actor_id, w, datetime.now(timezone.utc).isoformat()),
             )
             conn.commit()
             return w
@@ -92,7 +92,7 @@ def update_actor_weight(actor_id: int, delta: float, conn: Optional[sqlite3.Conn
         cur = conn.cursor()
         cur.execute(
             "INSERT OR REPLACE INTO actor_weights (actor_id, weight, updated_at) VALUES (?, ?, ?)",
-            (actor_id, updated, datetime.utcnow().isoformat()),
+            (actor_id, updated, datetime.now(timezone.utc).isoformat()),
         )
         conn.commit()
         return updated
@@ -153,7 +153,7 @@ def register_case_feedback(case: Dict[str, Any], conn: Optional[sqlite3.Connecti
         cur = conn.cursor()
         cur.execute(
             "INSERT OR REPLACE INTO case_feedback (case_id, gravity_score, decision, assigned_at) VALUES (?, ?, ?, ?)",
-            (case_id, float(case.get("gravity_score", 0.0)), case.get("decision"), datetime.utcnow().isoformat()),
+            (case_id, float(case.get("gravity_score", 0.0)), case.get("decision"), datetime.now(timezone.utc).isoformat()),
         )
         conn.commit()
     finally:

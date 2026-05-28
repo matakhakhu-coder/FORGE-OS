@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 EVENT_TRIGGERS = [
@@ -18,7 +18,7 @@ def _contains_trigger(text: str) -> bool:
 def _timestamp_from_signal(signal: Dict[str, Any]) -> str:
     ts = signal.get("timestamp") or signal.get("date") or signal.get("created_at")
     if not ts:
-        return datetime.utcnow().isoformat() + "Z"
+        return datetime.now(timezone.utc).isoformat() + "Z"
     return ts
 
 

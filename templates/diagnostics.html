@@ -68,6 +68,10 @@
     <div class="diag-vital__val mono" id="js-v-cases">—</div>
     <div class="diag-vital__label">Cases</div>
   </div>
+  <div class="diag-vital diag-vital--alert" id="js-v-pending-wrap">
+    <div class="diag-vital__val mono" id="js-v-pending">—</div>
+    <div class="diag-vital__label">Pending Artifacts</div>
+  </div>
   <div class="diag-vital">
     <div class="diag-vital__val mono" id="js-v-db">—</div>
     <div class="diag-vital__label">DB Size</div>
@@ -97,12 +101,24 @@
               min-height:1.2em;">
   </div>
 
-  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+  {# ── COLLECTORS — auto-discovered via /api/control/registry ──────────── #}
+  <div class="diag-section__sub" style="margin-top:0.5rem; font-size:0.7rem; letter-spacing:0.08em; color:var(--text-ghost);">
+    COLLECTORS
+  </div>
+  <div id="cr-collector-panel" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem;">
+    <span style="font-family:var(--font-mono,monospace); font-size:0.72rem; color:var(--text-dim);">loading…</span>
+  </div>
+
+  {# ── PIPELINE ORCHESTRATION ─────────────────────────────────────────────── #}
+  <div class="diag-section__sub" style="margin-top:0.75rem; font-size:0.7rem; letter-spacing:0.08em; color:var(--text-ghost);">
+    PIPELINE ORCHESTRATION
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem;">
     <button class="cr-btn btn btn--sm btn--ghost"
             data-endpoint="/api/control/run_collectors"
-            data-label="Run Collectors"
-            title="Spawn all FORAGE collectors: GDELT, RSS, USGS, FIRMS, Civic Intel, Earthquake">
-      📡 Run Collectors
+            data-label="Run All Collectors"
+            title="Spawn all FORAGE collectors in sequence: GDELT, RSS, USGS, FIRMS, Civic Intel, Earthquake">
+      📡 Run All Collectors
     </button>
     <button class="cr-btn btn btn--sm btn--ghost"
             data-endpoint="/api/control/run_ingest"
@@ -140,6 +156,79 @@
             title="Detect emerging actor networks — compares 24h actor-event link growth against the prior 24h baseline and scores by growth rate">
       🌐 Run Emergence Engine
     </button>
+  </div>
+
+  {# ── Phase 72: Processing & Synthesis (telemetry-tracked) ──────────────── #}
+  <div class="diag-section__sub" style="margin-top:1.25rem; padding-top:0.75rem; border-top:1px dashed rgba(255,255,255,0.08); font-size:0.7rem; letter-spacing:0.08em; color:var(--text-ghost);">
+    PROCESSING &amp; SYNTHESIS — real-time telemetry below
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; align-items:center;">
+    {# Artifact Drain — expandable config panel #}
+    <div class="cr-drain-group" style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+      <button class="cr-btn cr-btn-tracked btn btn--sm btn--ghost"
+              data-endpoint="/api/control/run_artifact_processor"
+              data-label="Drain Artifacts"
+              data-job-key="artifact_processor"
+              data-config-target="cr-drain-config"
+              title="Process pending artifacts (PDF, OCR, NER) in safe 5k chunks. Click to expand config.">
+        🗂 Drain Artifacts
+      </button>
+      <div id="cr-drain-config" style="display:none; align-items:center; gap:0.4rem;
+                                       font-family:var(--font-mono,monospace); font-size:0.7rem;
+                                       color:var(--text-dim);">
+        <label>Batch:
+          <input id="cr-drain-batch" type="number" min="1" max="5000" value="500"
+                 style="width:60px; background:var(--bg-2,#111); color:var(--fg,#e0e0e0);
+                        border:1px solid rgba(255,255,255,0.14); border-radius:3px;
+                        padding:0.2rem 0.35rem; font-family:inherit; font-size:inherit;">
+        </label>
+        <label>Max:
+          <input id="cr-drain-max"   type="number" min="1" max="200000" value="5000"
+                 style="width:80px; background:var(--bg-2,#111); color:var(--fg,#e0e0e0);
+                        border:1px solid rgba(255,255,255,0.14); border-radius:3px;
+                        padding:0.2rem 0.35rem; font-family:inherit; font-size:inherit;">
+        </label>
+        <button class="cr-drain-run btn btn--sm btn--ghost"
+                style="border-color:#9ece6a; color:#9ece6a;
+                       font-family:var(--font-mono,monospace); font-size:0.7rem;">▶ Run</button>
+      </div>
+    </div>
+
+    <button class="cr-btn cr-btn-tracked btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_promote_staged"
+            data-label="Promote Staged"
+            data-job-key="promote_staged"
+            title="Promote high-fidelity PERSON entities from signal_entities into the actors table. Closes the gap between observed names and linkable graph nodes.">
+      ⬆ Promote Staged
+    </button>
+    <button class="cr-btn cr-btn-tracked btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_triple_extractor"
+            data-label="Triple Extractor"
+            data-job-key="triple_extractor"
+            title="Extract subject-predicate-object relationships from signals into the entity_relationships graph.">
+      🔺 Triple Extractor
+    </button>
+    <button class="cr-btn cr-btn-tracked btn btn--sm btn--ghost"
+            data-endpoint="/api/control/run_wiki_pipeline"
+            data-label="Wiki Pipeline"
+            data-job-key="wiki_pipeline"
+            title="3-stage synthesis: schema_init → wiki_compiler → link_engine. Generates dossiers from high-frequency signal entities and builds the cross-reference graph.">
+      📚 Wiki Pipeline
+    </button>
+  </div>
+
+  {# ── Active Jobs Panel — populated by Poller ──────────────────────────── #}
+  <div id="cr-jobs-panel" style="display:none; margin-top:1rem;
+                                  border:1px solid rgba(122,162,247,0.2);
+                                  border-radius:4px; padding:0.75rem 1rem;
+                                  background:rgba(122,162,247,0.03);">
+    <div class="mono" style="font-size:0.7rem; color:var(--text-dim); letter-spacing:0.08em;
+                              margin-bottom:0.6rem; display:flex; align-items:center; justify-content:space-between;">
+      <span>⟳ ACTIVE JOBS</span>
+      <span id="cr-jobs-count" style="color:var(--text-ghost);"></span>
+    </div>
+    <div id="cr-jobs-list"></div>
   </div>
 </div>
 
@@ -203,6 +292,57 @@
 .cr-btn.cr-running { border-color: #7aa2f7 !important; color: #7aa2f7 !important; }
 .cr-btn.cr-done    { border-color: #9ece6a !important; color: #9ece6a !important; }
 .cr-btn.cr-error   { border-color: #f7768e !important; color: #f7768e !important; }
+
+/* ── Phase 72: Job Telemetry UI ────────────────────────────────────────── */
+.cr-job-row {
+  display: grid;
+  grid-template-columns: 14rem 1fr 4rem 2.5rem;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+}
+.cr-job-row:last-child { border-bottom: none; }
+.cr-job-label   { color: var(--fg, #e0e0e0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-job-message { color: var(--text-dim); font-size: 0.68rem; margin-top: 0.2rem;
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-job-pct     { color: var(--text-ghost); text-align: right; }
+
+.cr-progress-bar {
+  height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px;
+  overflow: hidden; position: relative;
+}
+.cr-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #7aa2f7, #9ece6a);
+  transition: width 0.4s ease;
+}
+.cr-job-row[data-status="failed"]    .cr-progress-fill { background: #f7768e; }
+.cr-job-row[data-status="killed"]    .cr-progress-fill { background: #e0af68; }
+.cr-job-row[data-status="completed"] .cr-progress-fill { background: #9ece6a; }
+
+.cr-kill-btn {
+  background: transparent; border: 1px solid rgba(247,118,142,0.3);
+  color: #f7768e; cursor: pointer; padding: 0.15rem 0.45rem;
+  border-radius: 3px; font-family: inherit; font-size: 0.7rem;
+}
+.cr-kill-btn:hover { background: rgba(247,118,142,0.1); border-color: #f7768e; }
+.cr-kill-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Wiki step indicator (3-stage) */
+.cr-wiki-stages {
+  display: flex; align-items: center; gap: 0.3rem;
+  font-size: 0.65rem; color: var(--text-ghost);
+  margin-top: 0.2rem; flex-wrap: wrap;
+}
+.cr-wiki-step {
+  padding: 0.1rem 0.4rem; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px; white-space: nowrap;
+}
+.cr-wiki-step.active   { border-color: #7aa2f7; color: #7aa2f7; }
+.cr-wiki-step.done     { border-color: #9ece6a; color: #9ece6a; }
+.cr-wiki-step-arrow    { color: rgba(255,255,255,0.15); }
 </style>
 
 {# ── Component status board ───────────────────────────────────────────────── #}
@@ -239,25 +379,45 @@
 (function () {
   'use strict';
 
-  // ── Component display names ────────────────────────────────────────────────
+  // ── Component display names (Phase 72: modernized) ────────────────────────
   var LABELS = {
-    usgs_collector:        'USGS Earthquakes',
-    earthquake_collector:  'USGS Hourly',
-    gdelt_collector:       'GDELT News',
-    firms_collector:       'NASA FIRMS Fire',
+    // Active collectors
+    pdf_infiltrator:       'PDF Infiltrator',
+    dork_collector:        'Dork Collector',
     rss_collector:         'GDACS RSS',
     civic_intel_collector: 'Civic Intel',
+    // Legacy (severed in Phase 3.3 — kept for historical run-log entries)
+    usgs_collector:        'USGS Earthquakes (legacy)',
+    earthquake_collector:  'USGS Hourly (legacy)',
+    gdelt_collector:       'GDELT News (legacy)',
+    firms_collector:       'NASA FIRMS Fire (legacy)',
+    // Processors
+    artifact_processor:    'Artifact Processor',
+    triple_extractor:      'Triple Extractor',
+    promote_staged:        'Promote Staged Entities',
+    ner_processor:         'NER Processor',
+    // Engines
     correlation_engine:    'Correlation Engine',
     sentinel:              'Sentinel',
     decay_engine:          'Decay Engine',
     graph_engine:          'Graph Engine',
+    cluster_engine:        'Cluster Engine',
+    anomaly_engine:        'Anomaly Engine',
+    evolution_engine:      'Evolution Engine',
+    coalition_detector:    'Coalition Detector',
+    counterintel_engine:   'CounterIntel Engine',
+    emergence_engine:      'Emergence Engine',
+    // Synthesis
+    wiki_compiler:         'Wiki Compiler',
+    wiki_link_engine:      'Wiki Link Engine',
+    wiki_pipeline:         'Wiki Pipeline',
   };
-  var COLLECTOR_ORDER = [
-    'usgs_collector','earthquake_collector','gdelt_collector',
-    'firms_collector','rss_collector','civic_intel_collector',
-  ];
+  var COLLECTOR_ORDER = [];   // populated dynamically from /api/control/registry
   var ENGINE_ORDER = [
-    'correlation_engine','sentinel','decay_engine','graph_engine',
+    'artifact_processor','triple_extractor','promote_staged',
+    'correlation_engine','graph_engine','sentinel','decay_engine',
+    'coalition_detector','counterintel_engine','emergence_engine',
+    'wiki_compiler','wiki_link_engine',
   ];
 
   function esc(s) {
@@ -325,12 +485,22 @@
     set('js-v-sentinel', s.sentinel_alerts_new);
     set('js-v-actors',   s.actors);
     set('js-v-cases',    s.cases);
+    set('js-v-pending',  s.artifacts_pending);
     var dbEl = document.getElementById('js-v-db');
     if (dbEl) dbEl.textContent = s.db_size_mb ? s.db_size_mb + ' MB' : '—';
     // Alert sentinel wrap if backlog > 100
     if ((s.sentinel_alerts_new || 0) > 100) {
       var w = document.getElementById('js-v-sentinel-wrap');
       if (w) w.classList.add('diag-vital--alert-active');
+    }
+    // Highlight pending artifacts vital when drain is needed (>1000 backlog)
+    var pw = document.getElementById('js-v-pending-wrap');
+    if (pw) {
+      if ((s.artifacts_pending || 0) > 1000) {
+        pw.classList.add('diag-vital--alert-active');
+      } else {
+        pw.classList.remove('diag-vital--alert-active');
+      }
     }
   }
 
@@ -422,9 +592,61 @@
   }
 
   document.getElementById('js-refresh').addEventListener('click', load);
-  load();
 
-  // ── Phase 34: Control Room button handlers ─────────────────────────────────
+  // ── Stable 1.1 — Collector Autodiscovery: fetch registry, stamp buttons, then board ──
+  function loadCollectorRegistry() {
+    var panel = document.getElementById('cr-collector-panel');
+    fetch('/api/control/registry')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        // Populate COLLECTOR_ORDER for health board card rendering
+        COLLECTOR_ORDER = (data.collectors || []).map(function (c) { return c.id; });
+        // Build button markup for each healthy collector
+        var html = '';
+        (data.collectors || []).forEach(function (c) {
+          html +=
+            '<button class="cr-btn cr-btn-tracked btn btn--sm btn--ghost"' +
+            ' data-endpoint="/api/control/run_collector/' + esc(c.id) + '"' +
+            ' data-label="' + esc(c.name) + '"' +
+            ' data-job-key="' + esc(c.job_key || c.id) + '"' +
+            ' title="' + esc(c.description) + '">' +
+            esc(c.icon || '▶') + ' ' + esc(c.name) +
+            '</button>';
+        });
+        // Stamp dead node chips — non-clickable, red, with reason tooltip
+        (data.dead_nodes || []).forEach(function (d) {
+          html +=
+            '<span class="cr-dead-node"' +
+            ' title="Dead Node — ' + esc(d.file) + ': ' + esc(d.reason) + '"' +
+            ' style="display:inline-flex;align-items:center;padding:0.3rem 0.65rem;' +
+            'border:1px solid rgba(247,118,142,0.27);border-radius:4px;' +
+            'font-size:0.72rem;color:rgba(247,118,142,0.55);' +
+            'cursor:not-allowed;font-family:var(--font-mono,monospace);">⚠ ' +
+            esc(d.id) + '</span>';
+        });
+        if (panel) {
+          panel.innerHTML = html ||
+            '<span style="font-family:var(--font-mono,monospace);font-size:0.72rem;color:var(--text-dim);">no collectors discovered</span>';
+          // Wire the newly-stamped buttons into the existing click handler
+          panel.querySelectorAll('.cr-btn').forEach(function (b) { _crWire(b); });
+        }
+      })
+      .catch(function () {
+        if (panel) {
+          panel.innerHTML =
+            '<span style="font-family:var(--font-mono,monospace);font-size:0.72rem;color:#f7768e;">registry fetch failed</span>';
+        }
+      })
+      .finally(function () {
+        load();   // render board (uses COLLECTOR_ORDER, now populated or empty on failure)
+      });
+  }
+
+  loadCollectorRegistry();
+
+  var _crWire = function () {};   // wires click handler onto one button; populated by IIFE below
+
+  // ── Phase 34 + 72: Control Room button handlers ───────────────────────────
   (function () {
     var statusBar = document.getElementById('cr-status-bar');
 
@@ -440,48 +662,227 @@
       btn.textContent = btn.dataset.label;
     }
 
-    document.querySelectorAll('.cr-btn').forEach(function (btn) {
-      btn.dataset.label = btn.textContent.trim();
+    function buildBody(btn) {
+      // Phase 72: artifact drain reads its config inputs as JSON body
+      if (btn.dataset.jobKey === 'artifact_processor') {
+        var batch = parseInt(document.getElementById('cr-drain-batch').value, 10) || 500;
+        var max   = parseInt(document.getElementById('cr-drain-max').value, 10)   || 5000;
+        return JSON.stringify({ batch_size: batch, max_artifacts: max });
+      }
+      return null;
+    }
 
-      btn.addEventListener('click', function () {
-        var endpoint = btn.dataset.endpoint;
-        var label    = btn.dataset.label;
+    function dispatch(btn) {
+      var endpoint = btn.dataset.endpoint;
+      var label    = btn.dataset.label;
+      var body     = buildBody(btn);
 
-        document.querySelectorAll('.cr-btn').forEach(function (b) { b.disabled = true; });
-        btn.classList.add('cr-running');
-        btn.textContent = '⏳ ' + label + ' …';
-        setStatus('▶ Dispatching: ' + label, '#7aa2f7');
+      document.querySelectorAll('.cr-btn').forEach(function (b) { b.disabled = true; });
+      btn.classList.add('cr-running');
+      btn.textContent = '⏳ ' + label + ' …';
+      setStatus('▶ Dispatching: ' + label, '#7aa2f7');
 
-        fetch(endpoint, { method: 'POST' })
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data.status === 'started') {
-              btn.classList.remove('cr-running');
-              btn.classList.add('cr-done');
-              btn.textContent = '✓ ' + label;
-              setStatus(
-                '✓ ' + label + ' started — results appear in the run log once complete.',
-                '#9ece6a'
-              );
-              setTimeout(load, 3000);
-            } else {
-              throw new Error(data.error || 'Unexpected response');
-            }
-          })
-          .catch(function (err) {
+      var fetchOpts = { method: 'POST' };
+      if (body) {
+        fetchOpts.headers = { 'Content-Type': 'application/json' };
+        fetchOpts.body    = body;
+      }
+
+      fetch(endpoint, fetchOpts)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.status === 'started') {
             btn.classList.remove('cr-running');
-            btn.classList.add('cr-error');
-            btn.textContent = '✗ ' + label;
-            setStatus('✗ Error — ' + err.message, '#f7768e');
-          })
-          .finally(function () {
-            setTimeout(function () {
-              document.querySelectorAll('.cr-btn').forEach(resetBtn);
-            }, 2500);
-          });
+            btn.classList.add('cr-done');
+            btn.textContent = '✓ ' + label;
+            setStatus(
+              '✓ ' + label + ' started — telemetry below shows live progress.',
+              '#9ece6a'
+            );
+            // Phase 72: if response carries job_id, start the Poller
+            if (data.job_id !== undefined) {
+              JobPoller.start();
+            } else {
+              setTimeout(load, 3000);
+            }
+          } else {
+            throw new Error(data.error || 'Unexpected response');
+          }
+        })
+        .catch(function (err) {
+          btn.classList.remove('cr-running');
+          btn.classList.add('cr-error');
+          btn.textContent = '✗ ' + label;
+          setStatus('✗ Error — ' + err.message, '#f7768e');
+        })
+        .finally(function () {
+          setTimeout(function () {
+            document.querySelectorAll('.cr-btn').forEach(resetBtn);
+          }, 2500);
+        });
+    }
+
+    function wireBtn(btn) {
+      btn.dataset.label = btn.dataset.label || btn.textContent.trim();
+      btn.addEventListener('click', function (ev) {
+        // Phase 72: Drain Artifacts has a config target — first click expands
+        // the panel; second click (via inline ▶ Run button) actually dispatches.
+        var configTarget = btn.dataset.configTarget;
+        if (configTarget) {
+          var panel = document.getElementById(configTarget);
+          if (panel) {
+            panel.style.display = (panel.style.display === 'none' || !panel.style.display)
+                                  ? 'inline-flex' : 'none';
+          }
+          return;  // do NOT dispatch on the toggle click
+        }
+        dispatch(btn);
       });
-    });
+    }
+
+    document.querySelectorAll('.cr-btn').forEach(wireBtn);
+    _crWire = wireBtn;   // expose for dynamically-stamped collector buttons
+
+    // Drain Artifacts inline ▶ Run button — fires dispatch on the parent
+    var drainRun = document.querySelector('.cr-drain-run');
+    if (drainRun) {
+      drainRun.addEventListener('click', function () {
+        var btn = document.querySelector('.cr-btn[data-job-key="artifact_processor"]');
+        if (btn) dispatch(btn);
+      });
+    }
   })();
+
+  // ── Phase 72: Job Poller (settled-interval, no overlap) ───────────────────
+  var JobPoller = (function () {
+    var _timer  = null;
+    var _active = false;
+
+    var WIKI_STAGES = {
+      'schema_init [1/3]':   { idx: 0, label: 'schema' },
+      'wiki_compiler [2/3]': { idx: 1, label: 'compiler' },
+      'link_engine [3/3]':   { idx: 2, label: 'links' }
+    };
+    var WIKI_STEP_ORDER = ['schema', 'compiler', 'links'];
+
+    function tick() {
+      fetch('/api/control/jobs/active')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var jobs = (data && data.jobs) || [];
+          renderJobs(jobs);
+          var live = jobs.some(function (j) {
+            return j.status === 'running' || j.status === 'pending';
+          });
+          if (live) {
+            _timer = setTimeout(tick, 1500);          // settled interval
+          } else {
+            _active = false;
+            // One final vitals refresh — pending artifact count drops after drain
+            load();
+          }
+        })
+        .catch(function () {
+          _timer = setTimeout(tick, 4000);            // back off on network error
+        });
+    }
+
+    function start() { if (_active) return; _active = true; tick(); }
+    function stop()  { clearTimeout(_timer); _active = false; }
+
+    function renderJobs(jobs) {
+      var panel = document.getElementById('cr-jobs-panel');
+      var list  = document.getElementById('cr-jobs-list');
+      var count = document.getElementById('cr-jobs-count');
+      if (!panel || !list) return;
+
+      if (!jobs.length) {
+        panel.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+      panel.style.display = 'block';
+      var live = jobs.filter(function (j) {
+        return j.status === 'running' || j.status === 'pending';
+      }).length;
+      count.textContent = live + ' live · ' + jobs.length + ' total';
+
+      list.innerHTML = jobs.map(function (j) {
+        var pct  = Math.round((j.progress || 0) * 100);
+        var lbl  = LABELS[j.job_key] || j.job_key;
+        var icon = ({ running: '⟳', pending: '·', completed: '✓',
+                      failed: '✗', killed: '⊘' })[j.status] || '·';
+        var killable = (j.status === 'running' || j.status === 'pending');
+
+        var stageHtml = '';
+        if (j.job_key === 'wiki_pipeline') {
+          stageHtml = renderWikiStages(j);
+        } else if (j.stage) {
+          stageHtml = '<div class="cr-job-message">' + esc(j.stage) + '</div>';
+        }
+        var msg = j.message ? esc(String(j.message).slice(0, 140)) : '';
+
+        return '<div class="cr-job-row" data-status="' + esc(j.status) + '" data-job-id="' + j.job_id + '">' +
+          '<div>' +
+            '<div class="cr-job-label">' + icon + ' ' + esc(lbl) + '</div>' +
+            stageHtml +
+            (msg ? '<div class="cr-job-message">' + msg + '</div>' : '') +
+          '</div>' +
+          '<div>' +
+            '<div class="cr-progress-bar"><div class="cr-progress-fill" style="width:' + pct + '%;"></div></div>' +
+            (j.records_out ? '<div class="cr-job-message">↑ ' + j.records_out.toLocaleString() + ' out</div>' : '') +
+          '</div>' +
+          '<div class="cr-job-pct">' + pct + '%</div>' +
+          '<div>' +
+            (killable
+              ? '<button class="cr-kill-btn" data-kill-id="' + j.job_id + '" title="Terminate">✕</button>'
+              : '<span style="color:var(--text-ghost); font-size:0.65rem;">' + esc(j.status.toUpperCase()) + '</span>') +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      // Wire kill buttons (re-bound each render — DOM is replaced)
+      list.querySelectorAll('.cr-kill-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id    = btn.dataset.killId;
+          var label = btn.closest('.cr-job-row')
+                        .querySelector('.cr-job-label').textContent.trim();
+          if (!confirm('Terminate ' + label + '?\nProgress to this point is preserved in the run log.')) return;
+          btn.disabled = true;
+          fetch('/api/control/kill_job/' + id, { method: 'POST' })
+            .then(function (r) { return r.json(); })
+            .then(function () { tick(); })
+            .catch(function () { btn.disabled = false; });
+        });
+      });
+    }
+
+    function renderWikiStages(j) {
+      var info = WIKI_STAGES[j.stage] || { idx: -1 };
+      var html = '<div class="cr-wiki-stages">';
+      WIKI_STEP_ORDER.forEach(function (step, i) {
+        var cls = '';
+        var glyph = '○';
+        if (j.status === 'completed') { cls = 'done'; glyph = '✓'; }
+        else if (i < info.idx)        { cls = 'done'; glyph = '✓'; }
+        else if (i === info.idx)      { cls = 'active'; glyph = '⟳'; }
+        if (i > 0) html += '<span class="cr-wiki-step-arrow">›</span>';
+        html += '<span class="cr-wiki-step ' + cls + '">' + glyph + ' ' + step + '</span>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    return { start: start, stop: stop, tick: tick };
+  })();
+
+  // On page load, check for any in-flight jobs and start polling if any exist
+  fetch('/api/control/jobs/active')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (data && data.jobs && data.jobs.length) JobPoller.start();
+    })
+    .catch(function () { /* silent */ });
 
   // ── Phase 35: Archive Case handler ─────────────────────────────────────────
   (function () {

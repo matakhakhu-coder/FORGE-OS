@@ -1,6 +1,6 @@
 from core.db.connection import get_connection
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 class WikiLogger:
     def __init__(self):
@@ -16,7 +16,7 @@ class WikiLogger:
                 actor_id,
                 event_id,
                 artifact,
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
                 narrative,
                 json.dumps(context) if context else "{}"
             ))

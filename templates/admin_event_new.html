@@ -22,11 +22,62 @@
     </div>
     <h1 class="page-header__title">Promote Signal to FORGE Event</h1>
     <p class="page-header__meta">
-      Review the pre-populated fields below. Edit as needed, then submit to create
-      a new FORGE event. The originating signal will be marked as <strong>promoted</strong>.
+      Fields are pre-filled using signal content analysis — category is inferred
+      from keywords, title is cleaned of collector prefixes. Review, edit as needed,
+      then submit.
     </p>
   </div>
 </div>
+
+{# ══════════════════════════════════════════════════════════════════════════════
+   SOURCE SIGNAL CARD — inline context so analyst doesn't need to navigate back
+══════════════════════════════════════════════════════════════════════════════ #}
+{% if source_signal %}
+<div style="
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid
+    {% if source_signal.is_priority %}#f7768e
+    {% elif source_signal.stream == 'CRIME_INTEL' %}#e0af68
+    {% else %}rgba(122,162,247,0.5){% endif %};
+  border-radius: 4px;
+">
+  <div style="display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-2);">
+    <span class="mono" style="font-size:0.6rem; letter-spacing:0.12em; color:var(--text-ghost); text-transform:uppercase;">
+      Source Signal
+    </span>
+    <span class="mono" style="font-size:0.6rem; padding:1px 6px; border-radius:2px;
+      background:rgba(122,162,247,0.1); border:1px solid rgba(122,162,247,0.2); color:#7aa2f7;">
+      {{ source_signal.source | upper }}
+    </span>
+    {% if source_signal.stream %}
+    <span class="mono" style="font-size:0.6rem; padding:1px 6px; border-radius:2px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--text-dim);">
+      {{ source_signal.stream }}
+    </span>
+    {% endif %}
+    {% if source_signal.is_priority %}
+    <span class="mono" style="font-size:0.6rem; color:#f7768e; letter-spacing:0.08em;">▲ PRIORITY</span>
+    {% endif %}
+    <span class="mono" style="font-size:0.6rem; color:var(--text-ghost); margin-left:auto;">
+      {{ (source_signal.timestamp or '')[:16] }} UTC
+    </span>
+  </div>
+  <div style="font-size:0.78rem; color:var(--text); font-weight:500; margin-bottom:var(--sp-2); line-height:1.4;">
+    {{ source_signal.title }}
+  </div>
+  {% if source_signal.content and source_signal.content != source_signal.title %}
+  <div style="font-size:0.72rem; color:var(--text-dim); line-height:1.5; white-space:pre-wrap;">{{ source_signal.content[:400] }}{% if (source_signal.content | length) > 400 %}…{% endif %}</div>
+  {% endif %}
+  {% if source_signal.lat and source_signal.lng %}
+  <div class="mono" style="font-size:0.62rem; color:var(--text-ghost); margin-top:var(--sp-2);">
+    ⊕ {{ source_signal.lat }}, {{ source_signal.lng }}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
 
 {# ══════════════════════════════════════════════════════════════════════════════
    PROMOTION FORM
@@ -54,7 +105,9 @@
              value="{{ prefill.title | e }}"
              placeholder="Descriptive event title"
              required>
-      <span class="form-hint mono">Required. Edit to clarify or standardise.</span>
+      <span class="form-hint mono">
+        Collector prefix stripped. Edit to match analytical naming convention.
+      </span>
     </div>
 
     {# ── Summary / Content ────────────────────────────────────────────────── #}
@@ -77,7 +130,14 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="ev_category">Category</label>
+        <label class="form-label" for="ev_category">
+          Category
+          {% if source_signal and prefill.category != 'Other' %}
+          <span class="mono" style="font-size:0.58rem; padding:1px 5px; border-radius:2px;
+            background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.2);
+            color:#4ade80; margin-left:var(--sp-2);">⚡ inferred</span>
+          {% endif %}
+        </label>
         <select id="ev_category" name="ev_category" class="form-select">
           {% for cat in event_categories %}
           <option value="{{ cat }}"

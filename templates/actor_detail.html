@@ -328,8 +328,105 @@
     </div>
     {% endif %}
 
+    {# FLUX SOCINT panel — loaded asynchronously via /api/actor/<id>/socint #}
+    <div class="meta-panel" id="socint-panel" style="margin-top:var(--sp-4); display:none;">
+      <div class="meta-panel__header">
+        <span>FLUX SOCINT</span>
+        <span id="socint-corpus-badge" style="float:right; font-size:0.65rem;"></span>
+      </div>
+      <div class="meta-panel__body" id="socint-panel-body"
+           style="padding:var(--sp-3) var(--sp-4);">
+      </div>
+    </div>
+
   </aside>
 
 </div>
+
+<script>
+(function () {
+  "use strict";
+  var actorId = {{ actor.actor_id | tojson }};
+  fetch("/api/actor/" + actorId + "/socint")
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (!data || (!data.profile || !data.profile.sample_count) && !data.matches.length) return;
+
+      var panel     = document.getElementById("socint-panel");
+      var body      = document.getElementById("socint-panel-body");
+      var corpusBadge = document.getElementById("socint-corpus-badge");
+      var p = data.profile || {};
+      var m = data.matches  || [];
+
+      /* Corpus status line */
+      if (p.sample_count) {
+        var ready = p.corpus_ready;
+        corpusBadge.innerHTML =
+          ready
+          ? '<span style="color:var(--accent);">&#x2713; corpus ready</span>'
+          : '<span style="color:var(--text-dim);">building&hellip;</span>';
+
+        var html = "";
+        html += '<div style="margin-bottom:var(--sp-3);">';
+        html +=   '<div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:var(--sp-1);">Corpus</div>';
+        html +=   '<div style="font-size:0.8rem;">';
+        html +=     '<span class="mono" style="color:var(--accent);">' + p.sample_count + '</span>';
+        html +=     '<span style="color:var(--text-dim); font-size:0.65rem;"> samples &bull; ' + p.total_chars.toLocaleString() + ' chars</span>';
+        html +=   "</div>";
+
+        /* X handles */
+        if (p.x_handles && p.x_handles.length) {
+          html += '<div style="margin-top:var(--sp-2); font-size:0.68rem;">';
+          p.x_handles.forEach(function (h) {
+            html += '<span class="mono" style="color:var(--text-dim); margin-right:var(--sp-2);">' + h + '</span>';
+          });
+          html += "</div>";
+        }
+        html += "</div>";
+
+        /* Stylometric matches */
+        if (m.length) {
+          html += '<div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:var(--sp-1);">Top Stylometric Matches</div>';
+          m.forEach(function (match) {
+            var score  = match.resonance_score ? match.resonance_score.toFixed(3) : "—";
+            var pct    = match.resonance_score ? Math.round(match.resonance_score * 100) : 0;
+            html += '<div style="padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dim);">';
+            html +=   '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:var(--sp-2);">';
+            html +=     '<a href="/actor/' + match.peer_id + '" style="font-size:0.78rem; line-height:1.3;">' + match.peer_name + '</a>';
+            html +=     '<span class="mono" style="font-size:0.7rem; color:var(--accent); flex-shrink:0;">' + score + '</span>';
+            html +=   "</div>";
+            html +=   '<div style="margin-top:var(--sp-1); height:3px; background:var(--border-dim); border-radius:2px;">';
+            html +=     '<div style="height:100%; width:' + pct + '%; background:var(--accent); border-radius:2px;"></div>';
+            html +=   "</div>";
+            html +=   '<div style="font-size:0.6rem; color:var(--text-dim); margin-top:var(--sp-1);">' + match.peer_type + "</div>";
+            html += "</div>";
+          });
+        } else if (ready) {
+          html += '<div style="font-size:0.7rem; color:var(--text-dim);">No resonance pairs above threshold yet.</div>';
+        } else {
+          html += '<div style="font-size:0.68rem; color:var(--text-dim);">Corpus below gate — scores pending.</div>';
+        }
+
+        body.innerHTML = html;
+        panel.style.display = "";
+      } else if (m.length) {
+        /* matches but no profile (edge case) */
+        var html2 = "";
+        m.forEach(function (match) {
+          var score = match.resonance_score ? match.resonance_score.toFixed(3) : "—";
+          html2 += '<div style="padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dim);">';
+          html2 +=   '<div style="display:flex; justify-content:space-between;">';
+          html2 +=     '<a href="/actor/' + match.peer_id + '" style="font-size:0.78rem;">' + match.peer_name + '</a>';
+          html2 +=     '<span class="mono" style="font-size:0.7rem; color:var(--accent);">' + score + '</span>';
+          html2 +=   "</div>";
+          html2 += "</div>";
+        });
+        body.innerHTML = html2;
+        panel.style.display = "";
+      }
+    })
+    .catch(function () { /* SOCINT unavailable — panel stays hidden */ });
+}());
+</script>
 
 {% endblock %}

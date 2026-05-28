@@ -172,9 +172,9 @@ def _safe_import(module_path: str, attr: str):
         log.warning(f"[engine] Could not import {module_path}.{attr}: {exc}")
         return None
 
-ArtifactProcessor  = _safe_import("forage.processors.artifact_processor", "ProcessorManager")
+ArtifactProcessor  = _safe_import("forage.processors.artifact_processor", "process_all")
 ClusterEngine      = _safe_import("forage.engines.cluster_engine",      "ClusterEngine")
-NERProcessor       = _safe_import("forage.processors.ner_processor",    "NERProcessor")
+NERProcessor       = _safe_import("forage.processors.ner_processor",    "process_all")
 TripleExtractor    = _safe_import("forage.processors.triple_extractor",  "TripleExtractor")
 AnomalyEngine      = _safe_import("forage.engines.anomaly_engine",      "AnomalyEngine")
 CorrelationEngine  = _safe_import("forage.engines.correlation_engine",  "CorrelationEngine")
@@ -315,12 +315,10 @@ def run_engines_processors() -> dict:
     log.info("[engines] Executing analysis pipeline...")
     results: dict[str, dict] = {}
 
-    # artifact_processor has a different constructor signature
     if ArtifactProcessor is not None:
         try:
             start = time.monotonic()
-            pm = ArtifactProcessor(db_path=DB_PATH)
-            pm.process_all()
+            ArtifactProcessor()
             results["artifact_processor"] = {
                 "status": "ok",
                 "duration_s": round(time.monotonic() - start, 2),
@@ -331,6 +329,21 @@ def run_engines_processors() -> dict:
             results["artifact_processor"] = {"status": "error", "error": str(exc)}
     else:
         results["artifact_processor"] = {"status": "unavailable"}
+
+    if NERProcessor is not None:
+        try:
+            start = time.monotonic()
+            NERProcessor()
+            results["ner_processor"] = {
+                "status": "ok",
+                "duration_s": round(time.monotonic() - start, 2),
+            }
+            log.info(f"[engine:ner_processor] ok")
+        except Exception as exc:
+            log.error(f"[engine:ner_processor] FAILED: {exc}")
+            results["ner_processor"] = {"status": "error", "error": str(exc)}
+    else:
+        results["ner_processor"] = {"status": "unavailable"}
 
     # ── Vision status: report NULL cluster_id count before clustering ───────────
     # This gives the analyst a perception-restoration metric on every run.
@@ -351,7 +364,6 @@ def run_engines_processors() -> dict:
     # Standard class-based engines
     engine_sequence = [
         (ClusterEngine,     "cluster_engine"),
-        (NERProcessor,      "ner_processor"),
         (AnomalyEngine,     "anomaly_engine"),
         (CorrelationEngine, "correlation_engine"),
         (DecayEngine,       "decay_engine"),
@@ -623,6 +635,105 @@ def bridge_dork_to_cases() -> dict:
         f"{skipped_actor} actors not in registry · "
         f"{skipped_case} actors with no case link"
     )
+    return summary
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Phase 2.7 — PDF Portal Signal → Case Evidence Bridge  (P3-08)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def bridge_pdf_signals_to_cases() -> dict:
+    """
+    P3-08: Auto-pin pdf_infiltrator signals to relevant cases by following the
+    actor overlap: signal → signal_actors → actor_id → case_actors → case_id.
+
+    For each PDF portal signal that has at least one linked actor, find all
+    cases that share that actor (via case_actors). Pin the signal to those
+    cases in case_signals.
+
+    Idempotent: case_signals has UNIQUE(case_id, signal_id) — safe to re-run.
+    Falls back to event_actors → case_events path when case_actors is empty.
+    """
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL;")
+
+    # PDF portal signals with at least one actor
+    pdf_sigs = conn.execute("""
+        SELECT DISTINCT s.signal_id
+        FROM   signals s
+        JOIN   signal_actors sa ON sa.signal_id = s.signal_id
+        WHERE  s.source IN ('pdf_infiltrator', 'dork')
+          AND  s.source != 'dork'   -- dork handled by bridge_dork_to_cases
+    """).fetchall()
+
+    # Simpler: all pdf_infiltrator signals
+    pdf_sigs = conn.execute("""
+        SELECT DISTINCT s.signal_id
+        FROM   signals s
+        JOIN   signal_actors sa ON sa.signal_id = s.signal_id
+        WHERE  s.source = 'pdf_infiltrator'
+    """).fetchall()
+
+    log.info(f"[bridge_pdf] Processing {len(pdf_sigs)} pdf_infiltrator signals with actors...")
+
+    pinned     = 0
+    skipped    = 0
+
+    for sig_row in pdf_sigs:
+        sig_id = sig_row["signal_id"]
+
+        # Actors linked to this signal
+        actor_ids = [
+            r["actor_id"] for r in conn.execute(
+                "SELECT actor_id FROM signal_actors WHERE signal_id = ?", (sig_id,)
+            )
+        ]
+        if not actor_ids:
+            continue
+
+        # Find cases that contain any of these actors
+        placeholders = ",".join("?" for _ in actor_ids)
+        case_ids = conn.execute(f"""
+            SELECT DISTINCT case_id
+            FROM   case_actors
+            WHERE  actor_id IN ({placeholders})
+        """, actor_ids).fetchall()
+
+        if not case_ids:
+            # Fallback: event_actors -> case_events path
+            case_ids = conn.execute(f"""
+                SELECT DISTINCT ce.case_id
+                FROM   event_actors ea
+                JOIN   case_events  ce ON ce.event_id = ea.event_id
+                WHERE  ea.actor_id IN ({placeholders})
+            """, actor_ids).fetchall()
+
+        if not case_ids:
+            skipped += 1
+            continue
+
+        for case_row in case_ids:
+            try:
+                conn.execute("""
+                    INSERT OR IGNORE INTO case_signals
+                        (case_id, signal_id, note)
+                    VALUES (?, ?, 'auto-linked via pdf actor bridge (P3-08)')
+                """, (case_row["case_id"], sig_id))
+                pinned += 1
+            except Exception:
+                pass
+
+    conn.commit()
+    conn.close()
+
+    summary = {
+        "status":       "ok",
+        "pdf_signals":  len(pdf_sigs),
+        "pinned":       pinned,
+        "skipped":      skipped,
+    }
+    log.info(f"[bridge_pdf] {pinned} signal-case links created · {skipped} signals with no case overlap")
     return summary
 
 
@@ -949,6 +1060,10 @@ if __name__ == "__main__":
     # ── Phase 2.6: Dork Signal → Case Evidence Bridge ─────────────────────
     if not args.collect_only and not args.engines_only:
         bridge_dork_to_cases()
+
+    # ── Phase 2.7: PDF Portal Signal → Case Evidence Bridge (P3-08) ──────────
+    if not args.collect_only and not args.engines_only:
+        bridge_pdf_signals_to_cases()
 
     # ── Phase 2.75: Co-occurrence → entity_relationships Bridge ──────────────
     if not args.collect_only and not args.engines_only:

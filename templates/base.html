@@ -344,6 +344,18 @@
     </div>
 
     <div class="sidebar__section">
+      <div class="sidebar__label">FLUX</div>
+      <ul class="sidebar__nav">
+        <li>
+          <a href="{{ url_for('surface.flux_discovery_page') }}"
+             class="{{ 'active' if request.endpoint == 'surface.flux_discovery_page' }}">
+            <span class="nav-icon">⟁</span> Centrifugal Net
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar__section">
       <div class="sidebar__label">System</div>
       <ul class="sidebar__nav">
         <li>

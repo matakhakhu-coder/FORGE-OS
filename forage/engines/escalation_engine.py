@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # Thresholds calibrated to FORAGE signal gravity range (0.0–0.70 typical).
@@ -58,7 +58,7 @@ def create_event(conclusion, signal_id, db):
     """, (
         f"Detected: {conclusion.intent}",
         f"Auto-generated from signal {signal_id}",
-        datetime.utcnow(),
+        datetime.now(timezone.utc),
         conclusion.confidence
     ))
 
@@ -81,12 +81,12 @@ def create_case(conclusion, signal_id, db):
     cursor = db.cursor()
 
     cursor.execute("""
-        INSERT INTO cases (title, description, created_at, auto_generated, trigger_signal_id)
+        INSERT INTO cases (name, description, created_at, auto_generated, trigger_signal_id)
         VALUES (?, ?, ?, 1, ?)
     """, (
         f"Case: {conclusion.intent}",
         f"Escalated from signal {signal_id}",
-        datetime.utcnow(),
+        datetime.now(timezone.utc),
         signal_id
     ))
 

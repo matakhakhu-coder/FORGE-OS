@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 FORGE — GDELT DOC API Collector  (forage/collectors/gdelt_collector.py)
 ═══════════════════════════════════════════════════════════════════════
@@ -28,7 +29,16 @@ Usage
   python forage/collectors/gdelt_collector.py --query "Hawks arrest" --hours 6
 """
 
-from __future__ import annotations
+__manifest__ = {
+    "id":          "gdelt_collector",
+    "name":        "GDELT DOC Collector",
+    "description": "Queries the GDELT Document API for South Africa-targeted news articles. Runs 5 keyword queries covering corruption, state capture, Eskom, protests, and investigations. No API key required.",
+    "icon":        "📡",
+    "entry":       "forage/collectors/gdelt_collector.py",
+    "args":        [],
+    "job_key":     "gdelt_collector",
+    "version":     "1.0.0",
+}
 
 import argparse
 import asyncio
@@ -48,6 +58,13 @@ from typing import Optional
 from urllib.parse import urlencode, quote_plus
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError, URLError
+
+# Stable 1.1 — Refinery
+try:
+    from core.pipeline.ingest import sanitize_text as _sanitize
+except ImportError:
+    def _sanitize(t):  # type: ignore[misc]
+        return t
 
 log = logging.getLogger("forge.collectors.gdelt")
 
@@ -324,8 +341,8 @@ def _build_signal(article: dict, stream: str, base_relevance: float) -> Optional
         "signal_id":        signal_id,
         "source":           "gdelt",
         "external_id":      ext_id,
-        "title":            title[:200],
-        "content":          content,
+        "title":            _sanitize(title)[:200],
+        "content":          _sanitize(content),
         "lat":              None,   # GDELT DOC doesn't geo-code articles
         "lng":              None,
         "timestamp":        timestamp,

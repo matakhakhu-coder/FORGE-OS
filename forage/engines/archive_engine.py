@@ -47,6 +47,103 @@ class ArchiveEngine:
         conn.execute("PRAGMA foreign_keys=ON;")
         return conn
 
+    def _ensure_archive_schema(self, conn: sqlite3.Connection) -> None:
+        """
+        Idempotently create the three archive tables if they don't exist.
+        Called at the start of archive_case() so the engine self-heals on
+        databases that were initialised before the archive feature was added.
+        """
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS signals_archive (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                signal_id           TEXT    NOT NULL,
+                source              TEXT,
+                external_id         TEXT,
+                title               TEXT,
+                content             TEXT,
+                lat                 REAL,
+                lng                 REAL,
+                timestamp           TEXT,
+                status              TEXT,
+                metadata_json       TEXT,
+                cluster_id          TEXT,
+                is_priority         INTEGER,
+                confidence_score    REAL,
+                source_artifact_id  INTEGER,
+                stream              TEXT,
+                relevance_score     REAL,
+                source_type         TEXT,
+                archived_case_id    INTEGER NOT NULL,
+                archived_at         TEXT    NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(signal_id, archived_case_id)
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS events_archive (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_id            INTEGER NOT NULL,
+                title               TEXT,
+                summary             TEXT,
+                date                TEXT,
+                location            TEXT,
+                latitude            REAL,
+                longitude           REAL,
+                category            TEXT,
+                source_type         TEXT,
+                created_at          TEXT,
+                archived_case_id    INTEGER NOT NULL,
+                archived_at         TEXT    NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(event_id, archived_case_id)
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS artifacts_archive (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                artifact_id         INTEGER NOT NULL,
+                title               TEXT,
+                description         TEXT,
+                type                TEXT,
+                date                TEXT,
+                location            TEXT,
+                latitude            REAL,
+                longitude           REAL,
+                tags                TEXT,
+                source              TEXT,
+                source_type         TEXT,
+                file_path           TEXT,
+                thumbnail           TEXT,
+                event_id            INTEGER,
+                created_at          TEXT,
+                raw_text_cache      TEXT,
+                processing_status   TEXT,
+                file_hash_sha256    TEXT,
+                file_hash_md5       TEXT,
+                file_size_bytes     INTEGER,
+                exif_json           TEXT,
+                gps_lat             REAL,
+                gps_lng             REAL,
+                device_make         TEXT,
+                device_model        TEXT,
+                exif_datetime       TEXT,
+                archived_case_id    INTEGER NOT NULL,
+                archived_at         TEXT    NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(artifact_id, archived_case_id)
+            )
+        """)
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_sig_arch_case "
+            "ON signals_archive(archived_case_id)"
+        )
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_evt_arch_case "
+            "ON events_archive(archived_case_id)"
+        )
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_art_arch_case "
+            "ON artifacts_archive(archived_case_id)"
+        )
+        conn.commit()
+
     # ── Public entry point ────────────────────────────────────────────────
 
     def archive_case(self, case_id: int) -> dict:
@@ -69,6 +166,9 @@ class ArchiveEngine:
         conn  = self._connect()
 
         try:
+            # Ensure archive tables exist (self-heals on older databases)
+            self._ensure_archive_schema(conn)
+
             # ── Pre-flight checks ─────────────────────────────────────────
             case = conn.execute(
                 "SELECT case_id, name, status FROM cases WHERE case_id = ?",

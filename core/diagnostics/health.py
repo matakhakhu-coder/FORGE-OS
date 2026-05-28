@@ -20,7 +20,7 @@ def compute_pipeline_health(db) -> str:
             GROUP BY component
         """).fetchall()
 
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         stale_threshold = datetime.timedelta(hours=6)
 
         health = "ok"

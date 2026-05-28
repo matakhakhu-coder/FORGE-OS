@@ -3,7 +3,8 @@
 Decides whether to create a case from gravity-scored signals.
 """
 
-from datetime import datetime
+import uuid
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 
@@ -16,9 +17,9 @@ def construct_case(signal: Dict[str, Any], linked_actors: List[Dict[str, Any]], 
         "linked_actors": linked_actors,
         "linked_events": linked_events,
         "signal_cluster": cluster_id or signal.get("cluster_id"),
-        "timeline_start": signal.get("timestamp") or datetime.utcnow().isoformat(),
+        "timeline_start": signal.get("timestamp") or datetime.now(timezone.utc).isoformat(),
         "source_signal_id": signal.get("signal_id"),
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
@@ -45,7 +46,7 @@ def evaluate_case(signal: Dict[str, Any], linked_actors: List[Dict[str, Any]] = 
             "linked_actors": linked_actors,
             "linked_events": linked_events,
             "signal_cluster": cluster_id or signal.get("cluster_id"),
-            "timeline_start": signal.get("timestamp") or datetime.utcnow().isoformat(),
+            "timeline_start": signal.get("timestamp") or datetime.now(timezone.utc).isoformat(),
         }
 
     return {
@@ -56,5 +57,5 @@ def evaluate_case(signal: Dict[str, Any], linked_actors: List[Dict[str, Any]] = 
         "linked_actors": linked_actors,
         "linked_events": linked_events,
         "signal_cluster": cluster_id or signal.get("cluster_id"),
-        "timeline_start": signal.get("timestamp") or datetime.utcnow().isoformat(),
+        "timeline_start": signal.get("timestamp") or datetime.now(timezone.utc).isoformat(),
     }

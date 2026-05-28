@@ -96,6 +96,76 @@
   white-space: nowrap;
 }
 .wb-btn:hover { border-color: var(--border-mid); color: var(--text-primary); }
+.wb-btn--tunnel {
+  border-color: rgba(187,154,247,0.45);
+  color: #bb9af7;
+}
+.wb-btn--tunnel:hover { border-color: #bb9af7; color: #d4baff; }
+.wb-btn--tunnel.wb-running { border-color: #7aa2f7; color: #7aa2f7; animation: wb-pulse 1.2s infinite; }
+.wb-btn--tunnel.wb-done    { border-color: #9ece6a; color: #9ece6a; }
+.wb-btn--tunnel.wb-error   { border-color: #f7768e; color: #f7768e; }
+@keyframes wb-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+/* ── Intake bar ───────────────────────────────────────────────── */
+#wb-intake {
+  flex-shrink: 0;
+  padding: 0.35rem var(--sp-6);
+  background: rgba(26,27,38,0.7);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.wb-intake__label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  white-space: nowrap;
+  margin-right: 0.25rem;
+}
+.wb-intake__sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border-subtle);
+  margin: 0 0.25rem;
+}
+.wb-collector-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border-dim);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.wb-collector-btn:hover      { border-color: var(--border-mid); color: var(--text-primary); }
+.wb-collector-btn:disabled   { opacity: 0.4; cursor: not-allowed; }
+.wb-collector-btn.wb-running { border-color: #7aa2f7 !important; color: #7aa2f7 !important; animation: wb-pulse 1.2s infinite; }
+.wb-collector-btn.wb-done    { border-color: #9ece6a !important; color: #9ece6a !important; }
+.wb-collector-btn.wb-error   { border-color: #f7768e !important; color: #f7768e !important; }
+.wb-dead-node {
+  display: inline-flex; align-items: center; padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(247,118,142,0.25); border-radius: 3px;
+  font-size: 0.62rem; color: rgba(247,118,142,0.5);
+  cursor: not-allowed; font-family: var(--font-mono);
+}
+#wb-intake-status {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-left: auto;
+  min-height: 1em;
+}
 
 /* ── 3-column body ────────────────────────────────────────────── */
 #wb-body {
@@ -616,7 +686,21 @@
       <a href="{{ url_for('case_detail', case_id=case.case_id) }}" class="wb-btn">◫ Board</a>
       <a href="{{ url_for('case_briefing', case_id=case.case_id) }}" class="wb-btn" target="_blank">⎙ Briefing</a>
       <a href="{{ url_for('intel_graph') }}" class="wb-btn">⬡ Intel Graph</a>
+      <button id="wb-tunnel-btn" class="wb-btn wb-btn--tunnel"
+              title="Run Context Tunnel — NER + triple extraction + wiki synthesis scoped to this case's signals">
+        ⟳ Context Tunnel
+      </button>
     </div>
+  </div>
+
+  {# ── Scoped Intake Bar — collector buttons auto-stamped from registry ─── #}
+  <div id="wb-intake">
+    <span class="wb-intake__label">Collect into case</span>
+    <div id="wb-collector-panel" style="display:contents;">
+      <span style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-ghost);">loading…</span>
+    </div>
+    <span class="wb-intake__sep"></span>
+    <span id="wb-intake-status"></span>
   </div>
 
   {# ── 3-column body ────────────────────────────────────────────── #}
@@ -1210,6 +1294,160 @@
   // ── Auto-load graph on page ready (graph tab is default) ─────────────────
   document.addEventListener('DOMContentLoaded', function () {
     loadGraph();
+  });
+
+})();
+</script>
+
+{# ── Stable 1.2: Scoped Intake + Context Tunnel JS ──────────────────────── #}
+<script>
+(function () {
+  'use strict';
+
+  var CASE_ID    = {{ case.case_id }};
+  var statusEl   = document.getElementById('wb-intake-status');
+  var panel      = document.getElementById('wb-collector-panel');
+  var tunnelBtn  = document.getElementById('wb-tunnel-btn');
+
+  function setStatus(msg, colour) {
+    if (!statusEl) return;
+    statusEl.textContent  = msg;
+    statusEl.style.color  = colour || 'var(--text-dim)';
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Scoped collector dispatch ─────────────────────────────────────────────
+  function dispatchCollector(btn) {
+    var endpoint = btn.dataset.endpoint;
+    var label    = btn.dataset.label;
+
+    // Disable all collector buttons for the duration of the run
+    panel.querySelectorAll('.wb-collector-btn').forEach(function (b) {
+      b.disabled = true;
+    });
+    btn.classList.add('wb-running');
+    btn.textContent = '⏳ ' + label + '…';
+    setStatus('▶ Collecting into case ' + CASE_ID + ' — ' + label, '#7aa2f7');
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ case_id: CASE_ID }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.status === 'started') {
+          btn.classList.remove('wb-running');
+          btn.classList.add('wb-done');
+          btn.textContent = '✓ ' + label;
+          setStatus(
+            '✓ ' + label + ' running — signals will auto-pin to this case on completion.',
+            '#9ece6a'
+          );
+        } else {
+          throw new Error(data.error || 'Unexpected response');
+        }
+      })
+      .catch(function (err) {
+        btn.classList.remove('wb-running');
+        btn.classList.add('wb-error');
+        btn.textContent = '✗ ' + label;
+        setStatus('✗ ' + label + ' — ' + err.message, '#f7768e');
+      })
+      .finally(function () {
+        setTimeout(function () {
+          panel.querySelectorAll('.wb-collector-btn').forEach(function (b) {
+            b.disabled = false;
+            b.classList.remove('wb-running', 'wb-done', 'wb-error');
+            b.textContent = b.dataset.label;
+          });
+        }, 4000);
+      });
+  }
+
+  // ── Stamp collector buttons from registry ─────────────────────────────────
+  function loadCollectorRegistry() {
+    fetch('/api/control/registry')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var html = '';
+        (data.collectors || []).forEach(function (c) {
+          html +=
+            '<button class="wb-collector-btn"' +
+            ' data-endpoint="/api/control/run_collector/' + esc(c.id) + '"' +
+            ' data-label="' + esc(c.name) + '"' +
+            ' title="Collect \'' + esc(c.name) + '\' into Case ' + CASE_ID +
+            ' — signals auto-pin via CT-1 gravity filter\n' + esc(c.description) + '">' +
+            esc(c.icon || '▶') + ' ' + esc(c.name) +
+            '</button>';
+        });
+        (data.dead_nodes || []).forEach(function (d) {
+          html +=
+            '<span class="wb-dead-node" title="Dead Node — ' +
+            esc(d.file) + ': ' + esc(d.reason) + '">⚠ ' + esc(d.id) + '</span>';
+        });
+        if (panel) {
+          panel.innerHTML = html ||
+            '<span style="font-family:var(--font-mono);font-size:0.62rem;' +
+            'color:var(--text-ghost);">no collectors discovered</span>';
+          panel.querySelectorAll('.wb-collector-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () { dispatchCollector(btn); });
+          });
+        }
+      })
+      .catch(function () {
+        if (panel) panel.innerHTML =
+          '<span style="font-family:var(--font-mono);font-size:0.62rem;' +
+          'color:#f7768e;">registry unavailable</span>';
+      });
+  }
+
+  // ── Context Tunnel button ─────────────────────────────────────────────────
+  if (tunnelBtn) {
+    tunnelBtn.addEventListener('click', function () {
+      tunnelBtn.disabled = true;
+      tunnelBtn.classList.add('wb-running');
+      tunnelBtn.textContent = '⏳ Tunneling…';
+      setStatus('⟳ Context Tunnel running — NER + triples + wiki scoped to this case…', '#bb9af7');
+
+      fetch('/api/cases/' + CASE_ID + '/run_conclave', { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.status === 'started') {
+            tunnelBtn.classList.remove('wb-running');
+            tunnelBtn.classList.add('wb-done');
+            tunnelBtn.textContent = '✓ Tunnel Running';
+            setStatus(
+              '✓ Context Tunnel started — ' + data.signal_count +
+              ' signals, ' + data.actor_count + ' actors being synthesized.',
+              '#9ece6a'
+            );
+          } else {
+            throw new Error(data.error || 'Unexpected response');
+          }
+        })
+        .catch(function (err) {
+          tunnelBtn.classList.remove('wb-running');
+          tunnelBtn.classList.add('wb-error');
+          tunnelBtn.textContent = '✗ Tunnel Failed';
+          setStatus('✗ Context Tunnel — ' + err.message, '#f7768e');
+        })
+        .finally(function () {
+          setTimeout(function () {
+            tunnelBtn.disabled = false;
+            tunnelBtn.classList.remove('wb-running', 'wb-done', 'wb-error');
+            tunnelBtn.textContent = '⟳ Context Tunnel';
+          }, 5000);
+        });
+    });
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    loadCollectorRegistry();
   });
 
 })();

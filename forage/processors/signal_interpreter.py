@@ -118,11 +118,27 @@ def score_severity_detailed(text: str) -> dict:
     }
 
 
+# Strings matched by ACTOR_PATTERNS that are category indicators, not proper
+# actor names. These must not be inserted as actor records in the graph.
+_GENERIC_ACTOR_TERMS = frozenset({
+    "government", "minister", "department",
+    "inc", "inc.", "ltd", "ltd.", "corporation", "company", "firm",
+})
+
+
 def _extract_actors(text: str) -> List[str]:
-    actors = set()
-    for name, pattern in ACTOR_PATTERNS.items():
-        if pattern.search(text):
-            actors.add(name)
+    """
+    Extract proper actor name strings from text using ACTOR_PATTERNS.
+
+    Uses findall() to capture the actual matched text (e.g. "Cape Town",
+    "National Prosecuting Authority") rather than the dict key ("location",
+    "NPA"). Generic category words are filtered via _GENERIC_ACTOR_TERMS.
+    """
+    actors: set[str] = set()
+    for pattern in ACTOR_PATTERNS.values():
+        for match in pattern.findall(text):
+            if match and match.lower().rstrip(".") not in _GENERIC_ACTOR_TERMS:
+                actors.add(match)
     return sorted(actors)
 
 
