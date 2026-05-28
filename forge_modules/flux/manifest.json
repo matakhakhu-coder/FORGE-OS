@@ -1,0 +1,11 @@
+{
+    "name":         "flux",
+    "version":      "0.1.0",
+    "description":  "FLUX SOCINT module — stylometric fingerprinting and behavioural resonance scoring for X (Twitter) signals via x_pulse collector.",
+    "author":       "FORGE-FLUX",
+    "engines":      ["flux_socint_engine"],
+    "hooks":        ["on_ingest"],
+    "routes":       [],
+    "schema":       null,
+    "capabilities": ["stylometric_analysis", "resonance_scoring", "socint_enrichment"]
+}

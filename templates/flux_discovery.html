@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% block title %}FLUX Discovery{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-header__eyebrow">FLUX · SOCINT · PHASE I</div>
+  <h1 class="page-header__title">
+    <span style="color:var(--accent);">⟁</span> Centrifugal Net
+  </h1>
+  <p class="page-header__sub">
+    Tag co-occurrence clusters surfaced from X pulse collection.
+    Latent seeds are tags that consistently co-occur with monitored targets —
+    the "wider net" pulled in by the butterfly expansion engine.
+  </p>
+</div>
+
+{# ── Status bar ────────────────────────────────────────────────────────────── #}
+<div class="disc-stats" id="js-stats" style="margin-bottom:var(--sp-6);">
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" id="js-stat-seeds" style="color:var(--accent);">—</span>
+    <span class="disc-stat__label">Latent Seeds</span>
+  </div>
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" id="js-stat-velocity" style="color:#4ade80;">—</span>
+    <span class="disc-stat__label">Velocity Spikes</span>
+  </div>
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" id="js-stat-depth1" style="color:var(--text-dim);">—</span>
+    <span class="disc-stat__label">Depth-1 Tags</span>
+  </div>
+  <div class="disc-stat">
+    <span class="disc-stat__val mono" id="js-stat-depth2" style="color:var(--text-ghost);">—</span>
+    <span class="disc-stat__label">Depth-2 Tags</span>
+  </div>
+  <div class="disc-stat" style="margin-left:auto;">
+    <button class="btn btn--primary btn--sm" id="js-run-discovery" title="Run discovery engine">
+      ↻ Run Discovery
+    </button>
+  </div>
+</div>
+
+{# ── Engine run banner ─────────────────────────────────────────────────────── #}
+<div id="js-run-banner" style="display:none; margin-bottom:var(--sp-4);
+     padding:var(--sp-3) var(--sp-4); background:rgba(99,102,241,0.08);
+     border:1px solid rgba(99,102,241,0.25); border-radius:4px;">
+  <span class="mono" id="js-run-msg" style="font-size:0.78rem; color:var(--accent);">
+    Running discovery engine…
+  </span>
+</div>
+
+{# ── Tag cloud ─────────────────────────────────────────────────────────────── #}
+<section class="detail-section">
+  <h2 class="detail-section__title">Tag Cloud — Latent Interest</h2>
+  <p class="detail-section__desc">
+    Tag size reflects composite score (Jaccard × velocity).
+    Colour encodes discovery depth:
+    <span style="color:var(--accent);">■ depth 1</span>
+    <span style="color:rgba(99,102,241,0.6); margin-left:var(--sp-3);">■ depth 2</span>.
+    Velocity spike tags pulse.
+  </p>
+  <div id="js-tag-cloud" style="
+    display:flex; flex-wrap:wrap; gap:var(--sp-2);
+    padding:var(--sp-5); min-height:120px;
+    background:var(--bg-card); border:1px solid var(--border-dim);
+    border-radius:4px; align-items:center;">
+    <span style="color:var(--text-ghost); font-size:0.75rem;" id="js-cloud-empty">
+      No latent seeds yet — run <code>python flux/collectors/x_pulse.py</code>
+      followed by <code>python flux/processors/discovery.py</code>.
+    </span>
+  </div>
+</section>
+
+{# ── Frontier table ────────────────────────────────────────────────────────── #}
+<section class="detail-section" style="margin-top:var(--sp-6);">
+  <h2 class="detail-section__title">
+    Expansion Frontier
+    <span class="detail-section__count" id="js-frontier-count">0</span>
+  </h2>
+  <p class="detail-section__desc">
+    All active latent seeds ordered by composite score.
+    Tags with velocity ≥ 2.0 have had recent signal gravity escalated.
+  </p>
+  <div id="js-frontier-table">
+    <div style="color:var(--text-ghost); font-size:0.75rem;">Loading…</div>
+  </div>
+</section>
+
+{# ── Co-occurrence neighbourhood ───────────────────────────────────────────── #}
+<section class="detail-section" style="margin-top:var(--sp-6);">
+  <h2 class="detail-section__title">Signal Neighbourhood</h2>
+  <p class="detail-section__desc">
+    Top tag pairs by raw co-occurrence count across all collected pulses.
+  </p>
+  <div id="js-cooc-table">
+    <div style="color:var(--text-ghost); font-size:0.75rem;">Loading…</div>
+  </div>
+</section>
+
+<style>
+.flux-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  cursor: default;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.flux-tag:hover { opacity: 0.75; }
+.flux-tag--velocity { animation: flux-pulse 1.8s ease-in-out infinite; }
+@keyframes flux-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  50%       { box-shadow: 0 0 6px 2px rgba(74,222,128,0.35); }
+}
+.flux-frontier-row {
+  display: grid;
+  grid-template-columns: 160px 140px 70px 80px 70px 80px 1fr;
+  gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border-dim);
+  font-size: 0.75rem;
+}
+.flux-frontier-row:first-child {
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: var(--sp-3);
+}
+.flux-cooc-row {
+  display: grid;
+  grid-template-columns: 160px 160px 80px;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border-dim);
+  font-size: 0.75rem;
+}
+</style>
+
+<script>
+(function () {
+  "use strict";
+
+  var COLOR_D1 = "var(--accent)";
+  var COLOR_D2 = "rgba(99,102,241,0.7)";
+  var COLOR_BG_D1 = "rgba(251,191,36,0.08)";
+  var COLOR_BG_D2 = "rgba(99,102,241,0.08)";
+
+  function scoreToFontSize(score, minScore, maxScore) {
+    if (maxScore === minScore) return 13;
+    var norm = (score - minScore) / (maxScore - minScore);
+    return Math.round(10 + norm * 18); // 10px – 28px
+  }
+
+  function renderCloud(seeds) {
+    var cloud  = document.getElementById("js-tag-cloud");
+    var empty  = document.getElementById("js-cloud-empty");
+    if (!seeds.length) { empty.style.display = ""; return; }
+    empty.style.display = "none";
+
+    var scores = seeds.map(function (s) { return s.composite_score || 0; });
+    var minS   = Math.min.apply(null, scores);
+    var maxS   = Math.max.apply(null, scores);
+
+    var html = "";
+    seeds.forEach(function (s) {
+      var fs    = scoreToFontSize(s.composite_score || 0, minS, maxS);
+      var col   = s.discovery_depth === 1 ? COLOR_D1 : COLOR_D2;
+      var bgcol = s.discovery_depth === 1 ? COLOR_BG_D1 : COLOR_BG_D2;
+      var spike = (s.velocity || 0) >= 2.0 ? " flux-tag--velocity" : "";
+      var title = (
+        "#" + s.tag + " · jaccard=" + (s.jaccard_score||0).toFixed(3)
+        + " · vel=" + (s.velocity||0).toFixed(2)
+        + " · n=" + (s.total_count||0)
+        + " · depth=" + s.discovery_depth
+      );
+      html += (
+        '<span class="flux-tag' + spike + '"'
+        + ' title="' + title + '"'
+        + ' style="font-size:' + fs + 'px;color:' + col + ';background:' + bgcol + ';">'
+        + "#" + s.tag
+        + "</span>"
+      );
+    });
+    cloud.innerHTML = html;
+  }
+
+  function renderFrontier(seeds) {
+    var el = document.getElementById("js-frontier-table");
+    document.getElementById("js-frontier-count").textContent = seeds.length;
+    if (!seeds.length) {
+      el.innerHTML = '<div style="color:var(--text-ghost);font-size:0.75rem;">No latent seeds yet.</div>';
+      return;
+    }
+    var html = (
+      '<div class="flux-frontier-row">'
+      + "<span>Tag</span><span>Parent Seed</span><span>Depth</span>"
+      + "<span>Jaccard</span><span>Velocity</span><span>Count</span><span>Last Seen</span>"
+      + "</div>"
+    );
+    seeds.forEach(function (s) {
+      var velColor = (s.velocity||0) >= 2.0 ? "#4ade80" : "var(--text-dim)";
+      var velLabel = (s.velocity||0) >= 2.0
+        ? '<span style="color:#4ade80;">▲ ' + (s.velocity||0).toFixed(2) + "</span>"
+        : (s.velocity||0).toFixed(2);
+      var date = s.last_seen ? s.last_seen.slice(0, 10) : "—";
+      html += (
+        '<div class="flux-frontier-row">'
+        + '<span class="mono" style="color:var(--accent);">#' + s.tag + "</span>"
+        + '<span class="mono" style="color:var(--text-dim);">' + (s.parent_seed||"—") + "</span>"
+        + '<span class="mono">' + s.discovery_depth + "</span>"
+        + '<span class="mono">' + (s.jaccard_score||0).toFixed(3) + "</span>"
+        + '<span class="mono">' + velLabel + "</span>"
+        + '<span class="mono">' + (s.total_count||0) + "</span>"
+        + '<span class="mono" style="color:var(--text-ghost);font-size:0.68rem;">' + date + "</span>"
+        + "</div>"
+      );
+    });
+    el.innerHTML = html;
+  }
+
+  function renderCooc(edges) {
+    var el = document.getElementById("js-cooc-table");
+    if (!edges.length) {
+      el.innerHTML = '<div style="color:var(--text-ghost);font-size:0.75rem;">No co-occurrence data yet.</div>';
+      return;
+    }
+    var html = (
+      '<div class="flux-cooc-row" style="color:var(--text-dim);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;">'
+      + "<span>Seed Tag</span><span>Co-Occurring Tag</span><span>Count</span>"
+      + "</div>"
+    );
+    edges.forEach(function (e) {
+      html += (
+        '<div class="flux-cooc-row">'
+        + '<span class="mono" style="color:var(--text-muted);">' + e.seed_tag + "</span>"
+        + '<span class="mono" style="color:var(--accent);">#' + e.co_tag + "</span>"
+        + '<span class="mono">' + e.total_count + "</span>"
+        + "</div>"
+      );
+    });
+    el.innerHTML = html;
+  }
+
+  function renderStats(seeds) {
+    document.getElementById("js-stat-seeds").textContent     = seeds.length;
+    document.getElementById("js-stat-velocity").textContent  = seeds.filter(function (s) { return (s.velocity||0) >= 2.0; }).length;
+    document.getElementById("js-stat-depth1").textContent    = seeds.filter(function (s) { return s.discovery_depth === 1; }).length;
+    document.getElementById("js-stat-depth2").textContent    = seeds.filter(function (s) { return s.discovery_depth === 2; }).length;
+  }
+
+  function loadData() {
+    fetch("/api/flux/discovery")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        renderStats(data.seeds || []);
+        renderCloud(data.seeds || []);
+        renderFrontier(data.seeds || []);
+        renderCooc(data.edges || []);
+      })
+      .catch(function () {});
+  }
+
+  // Run discovery engine button
+  document.getElementById("js-run-discovery").addEventListener("click", function () {
+    var banner = document.getElementById("js-run-banner");
+    var msg    = document.getElementById("js-run-msg");
+    banner.style.display = "";
+    msg.textContent = "Running discovery engine…";
+
+    fetch("/api/flux/run-discovery", { method: "POST" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) { msg.textContent = "Error — check server logs."; return; }
+        msg.textContent = (
+          "Done — candidates: " + (data.candidates_found || 0)
+          + "  seeds written: " + (data.seeds_written || 0)
+          + "  escalations: "  + (data.escalations || 0)
+        );
+        loadData(); // refresh
+      })
+      .catch(function () { msg.textContent = "Request failed."; });
+  });
+
+  loadData();
+}());
+</script>
+
+{% endblock %}
