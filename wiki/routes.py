@@ -36,7 +36,7 @@ def get_db_connection():
 
     db_path = Path(current_app.root_path) / 'database.db'
 
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
 
     conn.row_factory = sqlite3.Row
 

@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Constraint:** Zero Node.js at build or runtime. Ever. No npm. No webpack.
 - **Anchor document:** `FORGE_OS_MANIFEST.md` — if code conflicts with the manifest, the code is wrong.
 - **Tech debt ledger:** `docs/tech_debt.md` — update when debt is resolved or discovered.
-- **Current stable:** `Stable 1.1.2` (post-Phase 72 substrate hardening). FLUX phases A–I complete.
+- **Current stable:** `Stable 1.1.3` (post-Phase 72 + document brief engine + codebase audit). FLUX phases A–I complete.
 
 ---
 
@@ -252,3 +252,5 @@ Full ledger in `docs/tech_debt.md`. Active high-priority items:
 | P3.2-05 | 6,458 scanned PDFs with `< 100 chars` in `raw_text_cache` | HIGH | OCR pipeline exists; needs `--status A1-PENDING` run |
 | TD-13 | Case Alpha institutional bridge gap (CoE = 0.28) | HIGH | SAFLII bridge hunt needed |
 | TD-20 | `graph_nodes` (463k rows) vs `actors` (1,011) imbalance | MEDIUM | Provenance audit; prune stale rows |
+| DB-01 | ~~`sqlite3.connect()` missing `timeout=60` in 8 active files~~ | ~~HIGH~~ | **RESOLVED 2026-05-30** — `core/db/connection.py`, `app.py`, `decay_engine.py`, `ner_processor.py`, `rss_collector.py`, `pipeline_logger.py`, `wiki/routes.py`, `wiki_compiler.py`. `decay_engine` and `ner_processor` also hardened with `try/finally: conn.close()`. ~40 migration/tool scripts remain unfixed (low risk — manual execution only). |
+| DB-02 | `__future__` placement after line 3 in 51 files | LOW | CLAUDE.md convention, no runtime impact. Defer to cleanup pass. Affected areas: `core/fms/`, `forage/engines/`, `forage/processors/`, `forge_modules/`, `flux/`, `surface/`, `wiki/` |

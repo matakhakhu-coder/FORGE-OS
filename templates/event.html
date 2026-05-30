@@ -32,6 +32,10 @@
        class="btn btn--dossier" target="_blank">
       ⎙ Generate Dossier
     </a>
+    <a href="{{ url_for('document_event', event_id=event.event_id) }}"
+       class="btn btn--dossier" target="_blank">
+      ✦ Rich Brief
+    </a>
     <div class="pin-widget" id="js-pin-widget-event">
       <button class="pin-widget__btn" id="js-pin-toggle"
               data-entity-type="event" data-entity-id="{{ event.event_id }}">

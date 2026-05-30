@@ -59,6 +59,10 @@
        class="btn btn--dossier" target="_blank">
       ⎙ Generate Dossier
     </a>
+    <a href="{{ url_for('document_actor', actor_id=actor.actor_id) }}"
+       class="btn btn--dossier" target="_blank">
+      ✦ Rich Brief
+    </a>
     {# ── Pin to case widget ───────────────────────────────────────────────── #}
     <div class="pin-widget" id="js-pin-widget-actor">
       <button class="pin-widget__btn" id="js-pin-toggle"

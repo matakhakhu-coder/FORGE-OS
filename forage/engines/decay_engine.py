@@ -88,7 +88,7 @@ def _open_db(path: Path) -> sqlite3.Connection:
             f"Database not found at {path}.\n"
             "Run: python app.py --init-db"
         )
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), timeout=60)
     conn.row_factory  = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
@@ -145,72 +145,73 @@ class DecayEngine:
         log(f"Dry run  : {dry_run}")
 
         conn = _open_db(self._db_path)
-        _ensure_schema(conn)
+        try:
+            _ensure_schema(conn)
 
-        # Load all non-dismissed signals with their timestamps and stream
-        rows = conn.execute(
-            "SELECT signal_id, timestamp, stream, is_priority, relevance_score "
-            "FROM signals "
-            "WHERE status != 'dismissed'"
-        ).fetchall()
+            # Load all non-dismissed signals with their timestamps and stream
+            rows = conn.execute(
+                "SELECT signal_id, timestamp, stream, is_priority, relevance_score "
+                "FROM signals "
+                "WHERE status != 'dismissed'"
+            ).fetchall()
 
-        log(f"Signals to process: {len(rows)}")
+            log(f"Signals to process: {len(rows)}")
 
-        now_utc   = datetime.now(timezone.utc)
-        updates   = []
-        buckets   = {"fresh": 0, "fading": 0, "stale": 0}
+            now_utc   = datetime.now(timezone.utc)
+            updates   = []
+            buckets   = {"fresh": 0, "fading": 0, "stale": 0}
 
-        for row in rows:
-            # Parse timestamp — handle both formats
-            raw_ts = row["timestamp"] or ""
-            try:
-                if "T" in raw_ts:
-                    ts = datetime.fromisoformat(raw_ts.replace("Z", "+00:00"))
+            for row in rows:
+                # Parse timestamp — handle both formats
+                raw_ts = row["timestamp"] or ""
+                try:
+                    if "T" in raw_ts:
+                        ts = datetime.fromisoformat(raw_ts.replace("Z", "+00:00"))
+                    else:
+                        ts = datetime.strptime(raw_ts[:19], "%Y-%m-%d %H:%M:%S")
+                        ts = ts.replace(tzinfo=timezone.utc)
+                except Exception:
+                    warn(f"Could not parse timestamp '{raw_ts}' for {row['signal_id'][:8]}...")
+                    continue
+
+                hours_elapsed = (now_utc - ts).total_seconds() / 3600.0
+                if hours_elapsed < 0:
+                    hours_elapsed = 0.0
+
+                stream      = row["stream"] or "GLOBAL"
+                is_priority = row["is_priority"] or 0
+                new_score   = compute_relevance(hours_elapsed, stream, is_priority)
+
+                # Classify for reporting
+                if new_score >= 0.6:
+                    buckets["fresh"] += 1
+                elif new_score >= 0.2:
+                    buckets["fading"] += 1
                 else:
-                    ts = datetime.strptime(raw_ts[:19], "%Y-%m-%d %H:%M:%S")
-                    ts = ts.replace(tzinfo=timezone.utc)
-            except Exception:
-                warn(f"Could not parse timestamp '{raw_ts}' for {row['signal_id'][:8]}…")
-                continue
+                    buckets["stale"] += 1
 
-            hours_elapsed = (now_utc - ts).total_seconds() / 3600.0
-            if hours_elapsed < 0:
-                hours_elapsed = 0.0
+                if dry_run:
+                    continue
 
-            stream      = row["stream"] or "GLOBAL"
-            is_priority = row["is_priority"] or 0
-            new_score   = compute_relevance(hours_elapsed, stream, is_priority)
+                updates.append((new_score, row["signal_id"]))
 
-            # Classify for reporting
-            if new_score >= 0.6:
-                buckets["fresh"] += 1
-            elif new_score >= 0.2:
-                buckets["fading"] += 1
-            else:
-                buckets["stale"] += 1
+                # Batch commit
+                if len(updates) >= BATCH_SIZE:
+                    conn.executemany(
+                        "UPDATE signals SET relevance_score = ? WHERE signal_id = ?",
+                        updates
+                    )
+                    conn.commit()
+                    updates = []
 
-            if dry_run:
-                continue
-
-            updates.append((new_score, row["signal_id"]))
-
-            # Batch commit
-            if len(updates) >= BATCH_SIZE:
+            if updates and not dry_run:
                 conn.executemany(
                     "UPDATE signals SET relevance_score = ? WHERE signal_id = ?",
                     updates
                 )
                 conn.commit()
-                updates = []
-
-        if updates and not dry_run:
-            conn.executemany(
-                "UPDATE signals SET relevance_score = ? WHERE signal_id = ?",
-                updates
-            )
-            conn.commit()
-
-        conn.close()
+        finally:
+            conn.close()
 
         summary = {
             "status":    "done",

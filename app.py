@@ -6542,6 +6542,601 @@ def create_app() -> Flask:
         )
 
     # -----------------------------------------------------------------------
+    # Route: /document — Arkadia-style rich document briefs (case-independent)
+    # -----------------------------------------------------------------------
+
+    # Palette rotated across chart slices / entity cards
+    _DOC_PALETTE = [
+        ("rgba(6,182,212,0.75)",   "#06b6d4"),   # cyan
+        ("rgba(217,70,239,0.75)",  "#d946ef"),   # fuchsia
+        ("rgba(139,92,246,0.75)",  "#8b5cf6"),   # violet
+        ("rgba(245,158,11,0.75)",  "#f59e0b"),   # amber
+        ("rgba(16,185,129,0.75)",  "#10b981"),   # emerald
+        ("rgba(244,63,94,0.75)",   "#f43f5e"),   # rose
+        ("rgba(59,130,246,0.75)",  "#3b82f6"),   # blue
+        ("rgba(249,115,22,0.75)",  "#f97316"),   # orange
+    ]
+
+    def _doc_rgba(i: int) -> str:
+        return _DOC_PALETTE[i % len(_DOC_PALETTE)][0]
+
+    def _doc_hex(i: int) -> str:
+        return _DOC_PALETTE[i % len(_DOC_PALETTE)][1]
+
+    def _build_actor_document(actor, ctx: dict) -> dict:
+        """Convert _dossier_actor_data output into document_brief template context."""
+        import collections, datetime as _dt
+
+        events           = ctx.get("events", [])
+        artifact_footprint = ctx.get("artifact_footprint", [])
+        co_actors        = ctx.get("co_actors", [])
+        role_timeline    = ctx.get("role_timeline", [])
+
+        # ── Stats ────────────────────────────────────────────────────────────
+        role_counts: dict = collections.Counter(r["role"] or "unspecified" for r in role_timeline)
+        art_type_counts: dict = collections.Counter(
+            (a["type"] or "unknown") for a in artifact_footprint
+        )
+        stats = [
+            {"value": len(events),            "label": "Events Linked",    "sublabel": "Verified appearances",  "color": "#06b6d4"},
+            {"value": len(artifact_footprint), "label": "Evidence Items",   "sublabel": "Artifact footprint",    "color": "#d946ef"},
+            {"value": len(co_actors),          "label": "Co-Actors",        "sublabel": "Network connections",   "color": "#8b5cf6"},
+            {"value": len(role_counts),        "label": "Distinct Roles",   "sublabel": "Operational profile",   "color": "#f59e0b"},
+        ]
+
+        # ── Primary section ──────────────────────────────────────────────────
+        top_roles = sorted(role_counts.items(), key=lambda x: -x[1])[:8]
+        role_tags = [
+            {"label": role.title(), "value": f"{cnt} event{'s' if cnt != 1 else ''}", "color": _doc_hex(i)}
+            for i, (role, cnt) in enumerate(top_roles)
+        ]
+        primary_section = {
+            "title": "Activity & Role Profile",
+            "body": (
+                f"This actor has been identified across {len(events)} event{'s' if len(events) != 1 else ''} "
+                f"in the intelligence corpus, accumulating {len(artifact_footprint)} linked evidence items. "
+                f"Role distribution across those events reveals {len(role_counts)} distinct operational "
+                f"context{'s' if len(role_counts) != 1 else ''}, providing a functional profile of how "
+                f"this entity operates within documented incidents."
+            ),
+            "tags": role_tags,
+        }
+
+        # ── Primary chart: role distribution (polar area) ────────────────────
+        if role_counts:
+            labels_r, data_r = zip(*sorted(role_counts.items(), key=lambda x: -x[1]))
+        else:
+            labels_r, data_r = (["No roles recorded"],), ([1],)
+        primary_chart = {
+            "labels":        list(labels_r),
+            "data":          list(data_r),
+            "colors":        [_doc_rgba(i) for i in range(len(labels_r))],
+            "dataset_label": "Events per Role",
+        }
+
+        # ── Flow section ─────────────────────────────────────────────────────
+        flow_section = {
+            "title": "Intelligence Pipeline",
+            "body": (
+                "Raw signals ingested by FORGE collectors are scored, enriched via NER extraction, "
+                "and materialised into the actor registry. Event linkages and artifact evidence form "
+                "the dossier substrate below."
+            ),
+            "nodes": [
+                {"label": "Raw Signals",    "sublabel": "Collector ingest",   "color_start": "#334155", "color_end": "#475569"},
+                {"label": "Actor Identified","sublabel": "Confidence ≥ 0.2",  "color_start": "#0e7490", "color_end": "#1d4ed8"},
+                {"label": "Event Network",  "sublabel": "Participation graph","color_start": "#c2410c", "color_end": "#d97706"},
+                {"label": "Evidence Trail", "sublabel": "Artifact footprint", "color_start": "#a21caf", "color_end": "#7c3aed"},
+                {"label": "Association Map","sublabel": "Co-actor linkage",   "color_start": "#065f46", "color_end": "#0f766e"},
+            ],
+            "cards": [
+                {
+                    "color": "#06b6d4",
+                    "title": "Event Involvement (Gravity-Ranked)",
+                    "body": (
+                        f"{len(events)} events linked via actor_events table. Roles include: "
+                        f"{', '.join(list(role_counts.keys())[:5]) or 'none recorded'}. "
+                        "Each event carries an independent gravity score from the ingest pipeline."
+                    ),
+                },
+                {
+                    "color": "#d946ef",
+                    "title": "Evidence Footprint",
+                    "body": (
+                        f"{len(artifact_footprint)} evidence items across "
+                        f"{len(art_type_counts)} type{'s' if len(art_type_counts) != 1 else ''}: "
+                        f"{', '.join(list(art_type_counts.keys())[:5]) or 'none'}. "
+                        "Artifacts are attached via event linkage, not direct actor assignment."
+                    ),
+                },
+            ],
+        }
+
+        # ── Entity grid: top events ───────────────────────────────────────────
+        card_colors = ["#06b6d4","#d946ef","#8b5cf6","#f59e0b","#10b981","#f43f5e"]
+        event_cards = []
+        for i, ev in enumerate(events[:6]):
+            summary = (ev["summary"] or "")[:160]
+            if len(ev["summary"] or "") > 160:
+                summary += "…"
+            event_cards.append({
+                "color":   card_colors[i % len(card_colors)],
+                "eyebrow": f"{ev['category'] or 'EVENT'} · {ev['date'] or '—'}",
+                "title":   ev["title"] or "Untitled Event",
+                "body":    summary or "No summary recorded.",
+                "meta":    f"ID #{ev['event_id']} · {ev['artifact_count']} artifact{'s' if ev['artifact_count'] != 1 else ''} · Role: {ev['role'] or 'unspecified'}",
+                "wide":    False,
+            })
+        if not event_cards:
+            event_cards.append({
+                "color": "#475569", "eyebrow": "NO DATA",
+                "title": "No Events Linked",
+                "body":  "This actor has not yet been associated with any events in the corpus.",
+                "meta":  "", "wide": False,
+            })
+
+        entity_section = {
+            "title":    "Event Timeline",
+            "subtitle": "Documented events in which this actor has been identified, ordered chronologically.",
+            "cards":    event_cards,
+        }
+
+        # ── Secondary chart: artifact type distribution (doughnut) ────────────
+        if art_type_counts:
+            labels_a, data_a = zip(*sorted(art_type_counts.items(), key=lambda x: -x[1]))
+            secondary_chart: dict | None = {
+                "labels":        list(labels_a),
+                "data":          list(data_a),
+                "colors":        [_doc_rgba(i) for i in range(len(labels_a))],
+                "dataset_label": "Artifacts by Type",
+            }
+        else:
+            secondary_chart = None
+
+        top_source_counts: dict = collections.Counter(
+            a["source"] for a in artifact_footprint if a["source"]
+        )
+        top_src = top_source_counts.most_common(1)
+        callout_body = (
+            f"Primary evidence source: {top_src[0][0]} ({top_src[0][1]} items)."
+            if top_src else "No artifact sources recorded."
+        )
+
+        secondary_section: dict | None = {
+            "title": "Evidence Composition",
+            "body": (
+                f"The artifact footprint spans {len(art_type_counts)} evidence type{'s' if len(art_type_counts) != 1 else ''}. "
+                "Distribution across categories reveals collection patterns and potential intelligence gaps."
+            ),
+            "callout": {
+                "title": "Dominant Source",
+                "body":  callout_body,
+            },
+        } if artifact_footprint else None
+
+        return dict(
+            subject_type="actor",
+            doc_title=actor["name"],
+            doc_subtitle=actor["description"] or None,
+            back_url=url_for("actor_detail", actor_id=actor["actor_id"]),
+            stats=stats,
+            primary_section=primary_section,
+            primary_chart=primary_chart,
+            flow_section=flow_section,
+            entity_section=entity_section,
+            secondary_section=secondary_section,
+            secondary_chart=secondary_chart,
+        )
+
+    def _build_event_document(event, ctx: dict) -> dict:
+        """Convert _dossier_event_data output into document_brief template context."""
+        import collections
+
+        artifacts       = ctx.get("artifacts", [])
+        actors          = ctx.get("actors", [])
+        source_breakdown= ctx.get("source_breakdown", [])
+        related_by_actor= ctx.get("related_by_actor", [])
+
+        actor_type_counts: dict = collections.Counter(
+            (a["type"] or "unknown") for a in actors
+        )
+
+        # ── Stats ────────────────────────────────────────────────────────────
+        stats = [
+            {"value": len(artifacts),        "label": "Evidence Items",  "sublabel": "Artifact records",     "color": "#06b6d4"},
+            {"value": len(actors),            "label": "Actors Linked",   "sublabel": "Identified parties",   "color": "#d946ef"},
+            {"value": len(source_breakdown),  "label": "Source Feeds",    "sublabel": "Distinct origins",     "color": "#f59e0b"},
+            {"value": len(related_by_actor),  "label": "Related Events",  "sublabel": "Via shared actors",    "color": "#10b981"},
+        ]
+
+        # ── Primary section ──────────────────────────────────────────────────
+        actor_tags = [
+            {"label": a["name"], "value": f"{a['type'] or 'unknown'} · {a['role'] or 'no role'}", "color": _doc_hex(i)}
+            for i, a in enumerate(actors[:8])
+        ]
+        primary_section = {
+            "title": "Actor Involvement",
+            "body": (
+                f"{len(actors)} actor{'s' if len(actors) != 1 else ''} identified in connection with this event, "
+                f"spanning {len(actor_type_counts)} entity type{'s' if len(actor_type_counts) != 1 else ''}. "
+                f"The event is documented by {len(artifacts)} evidence item{'s' if len(artifacts) != 1 else ''} "
+                f"drawn from {len(source_breakdown)} source{'s' if len(source_breakdown) != 1 else ''}."
+            ),
+            "tags": actor_tags,
+        }
+
+        # ── Primary chart: source distribution (polar area) ──────────────────
+        if source_breakdown:
+            src_labels = [row["source"] for row in source_breakdown[:8]]
+            src_data   = [row["cnt"]    for row in source_breakdown[:8]]
+        else:
+            src_labels, src_data = ["No sources"], [1]
+        primary_chart = {
+            "labels":        src_labels,
+            "data":          src_data,
+            "colors":        [_doc_rgba(i) for i in range(len(src_labels))],
+            "dataset_label": "Artifacts per Source",
+        }
+
+        # ── Flow section ─────────────────────────────────────────────────────
+        flow_section = {
+            "title": "Evidence Chain",
+            "body": (
+                "Open-source collectors feed raw signals that are grouped into this event record "
+                "by the FORGE event constructor. Actors are materialised via NER; artifacts are "
+                "attached directly. Related events surface through shared actor traversal."
+            ),
+            "nodes": [
+                {"label": "Intel Sources",  "sublabel": "OSINT collectors",  "color_start": "#334155", "color_end": "#475569"},
+                {"label": "Event Record",   "sublabel": "Canonical entry",   "color_start": "#0e7490", "color_end": "#1d4ed8"},
+                {"label": "Actor Web",      "sublabel": f"{len(actors)} parties",  "color_start": "#c2410c", "color_end": "#d97706"},
+                {"label": "Artifacts",      "sublabel": f"{len(artifacts)} items", "color_start": "#a21caf", "color_end": "#7c3aed"},
+                {"label": "Cross-Reference","sublabel": f"{len(related_by_actor)} related", "color_start": "#065f46", "color_end": "#0f766e"},
+            ],
+            "cards": [
+                {
+                    "color": "#f59e0b",
+                    "title": "Source Distribution",
+                    "body": (
+                        f"Top source{'s' if len(source_breakdown) > 1 else ''}: "
+                        + ", ".join(f"{r['source']} ({r['cnt']})" for r in source_breakdown[:4])
+                        + "." if source_breakdown else "No source data recorded."
+                    ),
+                },
+                {
+                    "color": "#8b5cf6",
+                    "title": "Actor Type Breakdown",
+                    "body": (
+                        "; ".join(f"{t.title()}: {c}" for t, c in actor_type_counts.most_common(5))
+                        or "No actors recorded."
+                    ),
+                },
+            ],
+        }
+
+        # ── Entity grid: artifacts ────────────────────────────────────────────
+        card_colors = ["#06b6d4","#d946ef","#8b5cf6","#f59e0b","#10b981","#f43f5e"]
+        artifact_cards = []
+        for i, art in enumerate(artifacts[:6]):
+            body = (art["description"] or "")[:160]
+            if len(art["description"] or "") > 160:
+                body += "…"
+            artifact_cards.append({
+                "color":   card_colors[i % len(card_colors)],
+                "eyebrow": f"{art['type'] or 'ARTIFACT'} · {art['source'] or '—'}",
+                "title":   art["title"] or "Untitled Artifact",
+                "body":    body or "No description recorded.",
+                "meta":    f"ID #{art['artifact_id']} · {art['date'] or 'No date'}",
+                "wide":    False,
+            })
+        if not artifact_cards:
+            artifact_cards.append({
+                "color": "#475569", "eyebrow": "NO DATA",
+                "title": "No Artifacts Recorded",
+                "body":  "No evidence items have been attached to this event.",
+                "meta":  "", "wide": False,
+            })
+
+        entity_section = {
+            "title":    "Evidence Inventory",
+            "subtitle": "Artifacts and source documents linked directly to this event record.",
+            "cards":    artifact_cards,
+        }
+
+        # ── Secondary chart: actor type distribution (doughnut) ───────────────
+        secondary_chart: dict | None = None
+        if actor_type_counts:
+            labels_at, data_at = zip(*sorted(actor_type_counts.items(), key=lambda x: -x[1]))
+            secondary_chart = {
+                "labels":        list(labels_at),
+                "data":          list(data_at),
+                "colors":        [_doc_rgba(i) for i in range(len(labels_at))],
+                "dataset_label": "Actors by Type",
+            }
+
+        secondary_section: dict | None = None
+        if actors:
+            dominant = actor_type_counts.most_common(1)
+            secondary_section = {
+                "title": "Actor Type Analysis",
+                "body": (
+                    f"The {len(actors)} actor{'s' if len(actors) != 1 else ''} linked to this event span "
+                    f"{len(actor_type_counts)} entity classification{'s' if len(actor_type_counts) != 1 else ''}. "
+                    "The doughnut chart reveals the organisational composition of documented participation."
+                ),
+                "callout": {
+                    "title": "Dominant Actor Class",
+                    "body": (
+                        f"{dominant[0][0].title()} entities account for the largest share "
+                        f"({dominant[0][1]} of {len(actors)} actors). "
+                        "Cross-reference with related events to assess whether this pattern holds network-wide."
+                    ) if dominant else "Actor types could not be determined.",
+                },
+            }
+
+        return dict(
+            subject_type="event",
+            doc_title=event["title"],
+            doc_subtitle=event["summary"] or None,
+            back_url=url_for("event_detail", event_id=event["event_id"]),
+            stats=stats,
+            primary_section=primary_section,
+            primary_chart=primary_chart,
+            flow_section=flow_section,
+            entity_section=entity_section,
+            secondary_section=secondary_section,
+            secondary_chart=secondary_chart,
+        )
+
+    def _document_signals_data(db, stream: str | None, days: int) -> dict:
+        """Query aggregate signal data for a stream brief (no case required)."""
+        period_clause = f"datetime('now', '-{days} days')"
+
+        base_where = f"created_at >= {period_clause}"
+        if stream:
+            base_where += f" AND stream = '{stream}'"
+
+        total = db.execute(
+            f"SELECT COUNT(*) AS n FROM signals WHERE {base_where}"
+        ).fetchone()["n"]
+
+        high_gravity = db.execute(
+            f"SELECT COUNT(*) AS n FROM signals WHERE {base_where} AND gravity_score >= 0.5"
+        ).fetchone()["n"]
+
+        stream_dist = db.execute(
+            f"SELECT stream, COUNT(*) AS cnt FROM signals WHERE {base_where} "
+            f"GROUP BY stream ORDER BY cnt DESC"
+        ).fetchall()
+
+        source_dist = db.execute(
+            f"SELECT source, COUNT(*) AS cnt FROM signals WHERE {base_where} AND source IS NOT NULL "
+            f"GROUP BY source ORDER BY cnt DESC LIMIT 8"
+        ).fetchall()
+
+        unique_sources = db.execute(
+            f"SELECT COUNT(DISTINCT source) AS n FROM signals WHERE {base_where}"
+        ).fetchone()["n"]
+
+        gravity_tiers = db.execute(
+            f"""SELECT
+                SUM(CASE WHEN gravity_score >= 0.7 THEN 1 ELSE 0 END) AS high,
+                SUM(CASE WHEN gravity_score >= 0.35 AND gravity_score < 0.7 THEN 1 ELSE 0 END) AS med,
+                SUM(CASE WHEN gravity_score < 0.35 THEN 1 ELSE 0 END) AS low
+            FROM signals WHERE {base_where}"""
+        ).fetchone()
+
+        top_signals = db.execute(
+            f"SELECT signal_id, title, source, stream, gravity_score, created_at, content "
+            f"FROM signals WHERE {base_where} "
+            f"ORDER BY gravity_score DESC LIMIT 6"
+        ).fetchall()
+
+        return {
+            "total":         total,
+            "high_gravity":  high_gravity,
+            "unique_sources":unique_sources,
+            "days":          days,
+            "stream":        stream,
+            "stream_dist":   stream_dist,
+            "source_dist":   source_dist,
+            "gravity_tiers": gravity_tiers,
+            "top_signals":   top_signals,
+        }
+
+    def _build_signals_document(data: dict) -> dict:
+        """Convert _document_signals_data output into document_brief template context."""
+        stream  = data["stream"]
+        total   = data["total"]
+        days    = data["days"]
+
+        doc_title = f"{stream} Stream Brief" if stream else "Signal Intelligence Brief"
+
+        stats = [
+            {"value": total,                 "label": "Total Signals",    "sublabel": f"Last {days} days",     "color": "#06b6d4"},
+            {"value": data["high_gravity"],  "label": "High Gravity",     "sublabel": "Score ≥ 0.50",          "color": "#f43f5e"},
+            {"value": data["unique_sources"],"label": "Unique Sources",   "sublabel": "Distinct origins",      "color": "#8b5cf6"},
+            {"value": days,                  "label": "Day Window",       "sublabel": "Collection period",     "color": "#f59e0b"},
+        ]
+
+        # Stream distribution body
+        stream_lines = ", ".join(
+            f"{r['stream'] or 'unclassified'} ({r['cnt']})"
+            for r in data["stream_dist"]
+        ) or "No stream data."
+
+        primary_section = {
+            "title": "Stream Distribution",
+            "body": (
+                f"{total} signal{'s' if total != 1 else ''} ingested over the past {days} days "
+                f"across {len(data['stream_dist'])} stream{'s' if len(data['stream_dist']) != 1 else ''}. "
+                f"Breakdown: {stream_lines}. "
+                f"{data['high_gravity']} signal{'s' if data['high_gravity'] != 1 else ''} "
+                f"scored above the 0.50 gravity threshold, flagging elevated operational significance."
+            ),
+            "tags": [
+                {"label": r["stream"] or "unclassified", "value": f"{r['cnt']} signals", "color": _doc_hex(i)}
+                for i, r in enumerate(data["stream_dist"][:8])
+            ],
+        }
+
+        # Primary chart: stream distribution (polar area)
+        if data["stream_dist"]:
+            sd_labels = [r["stream"] or "unclassified" for r in data["stream_dist"]]
+            sd_data   = [r["cnt"] for r in data["stream_dist"]]
+        else:
+            sd_labels, sd_data = ["No data"], [1]
+        primary_chart = {
+            "labels":        sd_labels,
+            "data":          sd_data,
+            "colors":        [_doc_rgba(i) for i in range(len(sd_labels))],
+            "dataset_label": "Signals per Stream",
+        }
+
+        # Flow section
+        flow_section = {
+            "title": "FORGE Ingest Pipeline",
+            "body": (
+                "Signals originate from open-source collectors and are scored via the gravity engine "
+                "(urgency/importance model). NER extraction materialises entities; stream classification "
+                "routes signals to the appropriate decay schedule."
+            ),
+            "nodes": [
+                {"label": "Collectors",    "sublabel": "OSINT / FLUX",     "color_start": "#334155", "color_end": "#475569"},
+                {"label": "Signal Ingest", "sublabel": "Dedup + normalise","color_start": "#0e7490", "color_end": "#1d4ed8"},
+                {"label": "Gravity Score", "sublabel": "0.0 – 1.0",        "color_start": "#c2410c", "color_end": "#d97706"},
+                {"label": "Entity Extract","sublabel": "NER / spaCy",      "color_start": "#a21caf", "color_end": "#7c3aed"},
+                {"label": "Stream Route",  "sublabel": "Decay scheduling", "color_start": "#065f46", "color_end": "#0f766e"},
+            ],
+            "cards": [
+                {
+                    "color": "#06b6d4",
+                    "title": "Top Sources",
+                    "body": (
+                        ", ".join(f"{r['source']} ({r['cnt']})" for r in data["source_dist"][:5])
+                        or "No source data available."
+                    ),
+                },
+                {
+                    "color": "#f59e0b",
+                    "title": "Gravity Tier Breakdown",
+                    "body": (
+                        f"High (≥0.70): {data['gravity_tiers']['high'] or 0} · "
+                        f"Medium (0.35–0.70): {data['gravity_tiers']['med'] or 0} · "
+                        f"Low (<0.35): {data['gravity_tiers']['low'] or 0}"
+                    ),
+                },
+            ],
+        }
+
+        # Entity grid: top signals by gravity
+        card_colors = ["#06b6d4","#d946ef","#8b5cf6","#f59e0b","#10b981","#f43f5e"]
+        sig_cards = []
+        for i, sig in enumerate(data["top_signals"]):
+            body = (sig["content"] or sig["title"] or "")[:160]
+            if len(sig["content"] or sig["title"] or "") > 160:
+                body += "…"
+            grav = sig["gravity_score"]
+            grav_str = f"{grav:.2f}" if grav is not None else "—"
+            sig_cards.append({
+                "color":   card_colors[i % len(card_colors)],
+                "eyebrow": f"{sig['stream'] or 'UNCLASSIFIED'} · Gravity {grav_str}",
+                "title":   sig["title"] or f"Signal #{sig['signal_id']}",
+                "body":    body or "No content available.",
+                "meta":    f"ID #{sig['signal_id']} · Source: {sig['source'] or '—'} · {sig['created_at'] or '—'}",
+                "wide":    False,
+            })
+        if not sig_cards:
+            sig_cards.append({
+                "color": "#475569", "eyebrow": "NO DATA",
+                "title": "No Signals in Window",
+                "body":  f"No signals recorded in the past {days} days for the selected filter.",
+                "meta":  "", "wide": False,
+            })
+
+        entity_section = {
+            "title":    "Top Signals by Gravity",
+            "subtitle": f"Highest-scoring signals ingested in the last {days} days, ranked by gravity score.",
+            "cards":    sig_cards,
+        }
+
+        # Secondary chart: gravity tier doughnut
+        tiers = data["gravity_tiers"]
+        secondary_chart: dict | None = {
+            "labels": ["High ≥ 0.70", "Medium 0.35–0.70", "Low < 0.35"],
+            "data":   [tiers["high"] or 0, tiers["med"] or 0, tiers["low"] or 0],
+            "colors": ["rgba(244,63,94,0.8)", "rgba(245,158,11,0.8)", "rgba(148,163,184,0.6)"],
+            "dataset_label": "Signals by Gravity Tier",
+        } if total > 0 else None
+
+        secondary_section: dict | None = {
+            "title": "Gravity Tier Analysis",
+            "body": (
+                "Gravity score distribution reflects the operational weight of ingested signals. "
+                "High-tier signals trigger ESCALATE flags; medium-tier triggers MONITOR. "
+                "Low-tier signals enter passive decay."
+            ),
+            "callout": {
+                "title": "Escalation Threshold",
+                "body": (
+                    f"{data['high_gravity']} of {total} signals ({int(data['high_gravity']/total*100) if total else 0}%) "
+                    f"scored ≥ 0.50 (ESCALATE boundary). "
+                    "High concentrations in this tier indicate elevated threat tempo in the selected window."
+                ),
+            },
+        } if total > 0 else None
+
+        return dict(
+            subject_type="signals",
+            doc_title=doc_title,
+            doc_subtitle=f"Aggregate signal intelligence across the last {days} days" + (f" · Stream: {stream}" if stream else ""),
+            back_url=url_for("signals"),
+            stats=stats,
+            primary_section=primary_section,
+            primary_chart=primary_chart,
+            flow_section=flow_section,
+            entity_section=entity_section,
+            secondary_section=secondary_section,
+            secondary_chart=secondary_chart,
+        )
+
+    @app.route("/document/actor/<int:actor_id>")
+    def document_actor(actor_id: int):
+        db = get_db()
+        actor, ctx = _dossier_actor_data(db, actor_id)
+        if not actor:
+            return render_template("archive.html", page="404"), 404
+        import datetime
+        context = _build_actor_document(actor, ctx)
+        context["generated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        return render_template("document_brief.html", **context)
+
+    @app.route("/document/event/<int:event_id>")
+    def document_event(event_id: int):
+        db = get_db()
+        event, ctx = _dossier_event_data(db, event_id)
+        if not event:
+            return render_template("archive.html", page="404"), 404
+        import datetime
+        context = _build_event_document(event, ctx)
+        context["generated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        return render_template("document_brief.html", **context)
+
+    @app.route("/document/signals")
+    def document_signals():
+        import datetime
+        db     = get_db()
+        stream = request.args.get("stream")
+        try:
+            days = max(1, min(int(request.args.get("days", 7)), 90))
+        except (TypeError, ValueError):
+            days = 7
+        data    = _document_signals_data(db, stream or None, days)
+        context = _build_signals_document(data)
+        context["generated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        return render_template("document_brief.html", **context)
+
+    # -----------------------------------------------------------------------
     # Route: /admin — add_actor POST handler addition (Phase 7)
     # -----------------------------------------------------------------------
 
@@ -9001,7 +9596,7 @@ END;
 
 
 def _open_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(DB_PATH), timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")

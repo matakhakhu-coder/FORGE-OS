@@ -45,7 +45,7 @@ def materialize_entities(conclusion, signal_id, db_conn):
         try:
             aid = get_or_create_actor(e, db_conn)
             actor_ids.append(aid)
-        except:
+        except Exception:
             continue
     # update signal with actor references
     cur = db_conn.cursor()

@@ -288,7 +288,31 @@ Post-collection enrichment pipeline.
 | `/discovery` | Evolution engine candidates — emerging entities awaiting approval |
 | `/evolution` | Parsed intelligence from Google News RSS sources |
 | `/diagnostics` | System Control Room — pipeline health, run logs, engine status |
-| `/dossier/actor/<id>` | Printable actor dossier |
+| `/dossier/actor/<id>` | Printable actor dossier — print-first, A4, minimal chrome |
+| `/dossier/event/<id>` | Printable event dossier |
+| `/document/actor/<id>` | Arkadia-style rich intelligence brief — dark theme, Chart.js charts, flow pipeline diagram, evidence grid |
+| `/document/event/<id>` | Rich event intelligence brief |
+| `/document/signals` | Signal stream brief — case-independent aggregate (`?stream=CRIME_INTEL&days=14` params). Reads raw `signals` table directly; no case pinning required |
+
+### Document Brief Engine — `templates/document_brief.html`
+
+A case-independent, rich-output document layer. Generates self-contained HTML intelligence briefs for any subject (actor, event, or signal stream) without requiring the subject to be pinned to a case.
+
+**Route builders** (all inside `create_app()` closure in `app.py`):
+
+| Function | Input | Output |
+|---|---|---|
+| `_build_actor_document(actor, ctx)` | `_dossier_actor_data()` output | Polar-area role distribution, artifact-type doughnut, event timeline grid |
+| `_build_event_document(event, ctx)` | `_dossier_event_data()` output | Source distribution polar-area, actor-type doughnut, evidence inventory grid |
+| `_document_signals_data(db, stream, days)` | Raw `signals` table | Stream distribution, gravity tier breakdown, top signals by gravity |
+| `_build_signals_document(data)` | Above | Full document_brief context dict |
+
+**Navigation entry points:**
+- Actor detail page → "✦ Rich Brief" button (next to "Generate Dossier")
+- Event detail page → "✦ Rich Brief" button (next to "Generate Dossier")
+- Signal Monitor page → "✦ Rich Brief" button in actions bar
+
+**No schema changes required.** Queries existing `signals`, `actors`, `events`, `artifacts`, `actor_events`, `source_breakdown` tables only.
 
 ### API Surface (selected)
 

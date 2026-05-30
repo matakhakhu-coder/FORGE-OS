@@ -37,7 +37,7 @@ def log_run(
     logging failure never crashes a collector or engine.
     """
     try:
-        conn = sqlite3.connect(str(db_path))
+        conn = sqlite3.connect(str(db_path), timeout=60)
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("""
             CREATE TABLE IF NOT EXISTS pipeline_runs (

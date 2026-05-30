@@ -369,6 +369,37 @@ Items introduced or resolved during the Substrate Transition, Reconstruction, an
 
 ---
 
+## Codebase Audit — 2026-05-30
+
+Full static analysis run across all `.py` files, `templates/*.html`, and inline JS. 10 issues found, 9 fixed, 1 deferred.
+
+### Resolved
+
+- [x] **DB-01 · `sqlite3.connect()` missing `timeout=60` in 8 active pipeline files** — 2026-05-30
+  - `core/db/connection.py:72` — main Flask DB connection (CRITICAL: requests could hang forever under WAL contention)
+  - `app.py:9599` — `_open_db()` (init / diagnostics path)
+  - `forage/engines/decay_engine.py` — 6-hour background worker; also added `try/finally: conn.close()` around full `run()` body
+  - `forage/processors/ner_processor.py` — pipeline processor; also wrapped `run_ner_pipeline()` in `try/finally: conn.close()`, removed two dangling early `conn.close()` calls
+  - `forage/collectors/rss_collector.py` — active ingest collector
+  - `forage/utils/pipeline_logger.py` — called on every ingested signal
+  - `wiki/routes.py` — Flask blueprint DB connection
+  - `wiki/processors/wiki_compiler.py` — both `compile_from_entities()` and `compile_from_local_files()` connection sites
+
+- [x] **DB-03 · Bare `except:` in `tools/seed_cache.py:48`** — 2026-05-30
+  - Changed `except:` → `except Exception:`. Bare except catches `SystemExit`, `KeyboardInterrupt`, and generator-internal `StopIteration` — silent swallowing of these masks crashes.
+
+### Deferred
+
+- [ ] **DB-02 · `from __future__ import annotations` placed after line 3 in 51 files** — LOW
+  - Compiler confirms no runtime impact (`python -m compileall` exits 0). CLAUDE.md convention says line 2, before docstring. Fixing 51 files adds noise with zero functional gain. Defer to a dedicated cleanup pass.
+  - Affected areas: `core/fms/`, `forage/engines/`, `forage/processors/`, `forge_modules/*/`, `flux/`, `surface/`, `wiki/`, `scripts/`, `tools/`, `migrations/`
+
+### Still outstanding (not in scope of this audit)
+
+- ~40 additional `sqlite3.connect()` calls without `timeout=` in migration, maintenance, and one-off tool scripts. These run manually outside the Flask/WAL context and represent minimal deadlock risk, but should be fixed during a dedicated migration/tool hardening pass.
+
+---
+
 ## Debt Summary Table
 
 | ID    | Area                      | Severity | Status  | Effort        |

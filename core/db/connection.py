@@ -69,7 +69,7 @@ def get_connection():
     encoded  = urllib.parse.quote(uri_path, safe="/:")
     db_uri   = f"file:{encoded}?mode=rw"
 
-    conn = sqlite3.connect(db_uri, uri=True)   # triggers _hardened_connect
+    conn = sqlite3.connect(db_uri, uri=True, timeout=60)   # triggers _hardened_connect
     conn.row_factory = sqlite3.Row
 
     # WAL mode persists on disk; safe to re-assert on every connection.

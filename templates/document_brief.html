@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORGE BRIEF — {{ doc_title }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    }
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 320px;
+      max-height: 420px;
+    }
+    .flow-node {
+      border-radius: 0.5rem;
+      padding: 0.875rem 1rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      flex: 1;
+      min-width: 110px;
+      margin: 0.375rem;
+    }
+    .flow-arrow {
+      font-size: 1.25rem;
+      color: #06b6d4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    @media (min-width: 768px) {
+      .chart-container { height: 370px; }
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .sticky { position: static; }
+      body { background: #ffffff; color: #0f172a; }
+      .glass-card {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+      }
+      .bg-slate-800, .bg-slate-900 { background: #f1f5f9 !important; }
+      .text-slate-300, .text-slate-400 { color: #475569 !important; }
+      .text-white { color: #0f172a !important; }
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen pb-20">
+
+{# ══════════════════════════════════════════════════════════════════
+   STICKY HEADER
+   ══════════════════════════════════════════════════════════════════ #}
+<header class="w-full bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tight">FORGE</h1>
+      <p class="text-xs md:text-sm text-slate-400 font-medium uppercase tracking-widest">
+        Intelligence Brief
+        &nbsp;·&nbsp;
+        <span class="text-cyan-500">{{ subject_type | upper }}</span>
+      </p>
+    </div>
+    <div class="flex items-center gap-3 no-print">
+      <a href="{{ back_url }}" class="text-xs text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-full transition-colors">
+        ← Back
+      </a>
+      <button onclick="window.print()" class="text-xs bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-1.5 rounded-full transition-colors font-medium">
+        ⎙ Export PDF
+      </button>
+      <span class="hidden md:inline text-xs bg-slate-800 text-cyan-400 px-3 py-1.5 rounded-full border border-cyan-900 font-mono">
+        ZA-DIVERGENT · POPIA
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 md:px-6 mt-8 space-y-12">
+
+  {# ══════════════════════════════════════════════════════════════════
+     HERO — Title + generation timestamp + stats cards
+     ══════════════════════════════════════════════════════════════════ #}
+  <section class="text-center max-w-4xl mx-auto">
+    <div class="text-xs text-slate-500 uppercase tracking-widest mb-3 font-mono">
+      {{ subject_type | upper }} BRIEF &nbsp;·&nbsp; GENERATED {{ generated_at }}
+    </div>
+
+    <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight text-white">
+      {{ doc_title }}
+    </h2>
+
+    {% if doc_subtitle %}
+    <p class="text-base md:text-lg text-slate-300 mb-10 leading-relaxed max-w-3xl mx-auto">
+      {{ doc_subtitle }}
+    </p>
+    {% endif %}
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+      {% for stat in stats %}
+      <div class="glass-card rounded-xl p-5 md:p-6">
+        <div class="text-3xl md:text-4xl font-black mb-1" style="color: {{ stat.color }};">
+          {{ stat.value }}
+        </div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide">{{ stat.label }}</div>
+        {% if stat.sublabel %}
+        <div class="text-sm font-semibold text-white mt-1">{{ stat.sublabel }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ══════════════════════════════════════════════════════════════════
+     PRIMARY ANALYSIS — Description/profile + polar area chart
+     ══════════════════════════════════════════════════════════════════ #}
+  <section class="glass-card rounded-2xl p-6 md:p-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <h3 class="text-2xl font-bold mb-4 text-white border-l-4 border-fuchsia-500 pl-4">
+          {{ primary_section.title }}
+        </h3>
+        <p class="text-slate-300 mb-6 leading-relaxed">{{ primary_section.body }}</p>
+
+        {% if primary_section.tags %}
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+          {% for tag in primary_section.tags %}
+          <li class="bg-slate-800/80 px-4 py-2.5 rounded-lg">
+            <span class="font-bold" style="color: {{ tag.color }};">{{ tag.label }}:</span>
+            <span class="text-slate-300 ml-1">{{ tag.value }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      <div class="w-full flex justify-center">
+        <div class="chart-container">
+          <canvas id="primaryChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ══════════════════════════════════════════════════════════════════
+     FLOW PIPELINE — Architecture / data flow diagram
+     ══════════════════════════════════════════════════════════════════ #}
+  <section class="glass-card rounded-2xl p-6 md:p-10">
+    <h3 class="text-2xl font-bold mb-4 text-white border-l-4 border-cyan-400 pl-4">
+      {{ flow_section.title }}
+    </h3>
+    <p class="text-slate-300 mb-8 max-w-4xl leading-relaxed">{{ flow_section.body }}</p>
+
+    <div class="flex flex-col md:flex-row flex-wrap justify-center items-center w-full bg-slate-800/50 p-5 rounded-xl border border-slate-700/60">
+      {% for node in flow_section.nodes %}
+        {% if not loop.first %}
+        <div class="flow-arrow my-1 md:my-0 md:mx-1">➜</div>
+        {% endif %}
+        <div class="flow-node" style="background: linear-gradient(135deg, {{ node.color_start }}, {{ node.color_end }});">
+          {{ node.label }}
+          <br>
+          <span class="text-xs font-normal opacity-75">{{ node.sublabel }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if flow_section.cards %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
+      {% for card in flow_section.cards %}
+      <div class="bg-slate-800/80 p-5 rounded-lg border-t-2" style="border-color: {{ card.color }};">
+        <h4 class="font-bold mb-2" style="color: {{ card.color }};">{{ card.title }}</h4>
+        <p class="text-sm text-slate-300 leading-relaxed">{{ card.body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+
+  {# ══════════════════════════════════════════════════════════════════
+     ENTITY / EVIDENCE GRID — Cards for top events, artifacts, signals
+     ══════════════════════════════════════════════════════════════════ #}
+  {% if entity_section and entity_section.cards %}
+  <section>
+    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-white">
+      {{ entity_section.title }}
+    </h3>
+    {% if entity_section.subtitle %}
+    <p class="text-center text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+      {{ entity_section.subtitle }}
+    </p>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for card in entity_section.cards %}
+      <div class="glass-card p-6 rounded-xl border-t-4 {% if card.wide %}md:col-span-2{% endif %} flex flex-col"
+           style="border-color: {{ card.color }};">
+        <div class="text-xs uppercase font-bold mb-1 tracking-widest" style="color: {{ card.color }};">
+          {{ card.eyebrow }}
+        </div>
+        <h4 class="text-base font-bold text-white mb-3 leading-snug">{{ card.title }}</h4>
+        <p class="text-sm text-slate-300 leading-relaxed flex-1">{{ card.body }}</p>
+        {% if card.meta %}
+        <div class="text-xs text-slate-500 mt-3 font-mono">{{ card.meta }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ══════════════════════════════════════════════════════════════════
+     SECONDARY ANALYSIS — Doughnut chart + callout block
+     ══════════════════════════════════════════════════════════════════ #}
+  {% if secondary_section %}
+  <section class="glass-card rounded-2xl p-6 md:p-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div class="order-2 lg:order-1 w-full flex justify-center">
+        <div class="chart-container">
+          <canvas id="secondaryChart"></canvas>
+        </div>
+      </div>
+
+      <div class="order-1 lg:order-2">
+        <h3 class="text-2xl font-bold mb-4 text-white border-l-4 border-amber-400 pl-4">
+          {{ secondary_section.title }}
+        </h3>
+        <p class="text-slate-300 mb-6 leading-relaxed">{{ secondary_section.body }}</p>
+
+        {% if secondary_section.callout %}
+        <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700">
+          <h4 class="text-emerald-400 font-bold mb-3 uppercase tracking-wider text-sm flex items-center gap-2">
+            <span class="text-lg">✦</span> {{ secondary_section.callout.title }}
+          </h4>
+          <p class="text-sm text-slate-400 leading-relaxed">{{ secondary_section.callout.body }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ══════════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════════ #}
+  <footer class="text-center text-xs text-slate-600 font-mono pb-8 space-y-1">
+    <div>FORGE INTELLIGENCE ARCHIVE — ZA-DIVERGENT OPERATION</div>
+    <div>Handle Under POPIA Protocols &nbsp;·&nbsp; Generated {{ generated_at }}</div>
+  </footer>
+
+</main>
+
+<script>
+function wrapLabel(label, maxLen) {
+  maxLen = maxLen || 16;
+  if (typeof label !== 'string' || label.length <= maxLen) return label;
+  const words = label.split(' ');
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    if ((cur + w).length > maxLen) {
+      if (cur.trim()) lines.push(cur.trim());
+      cur = w + ' ';
+    } else {
+      cur += w + ' ';
+    }
+  }
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+
+const CHART_DEFAULTS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'right',
+      labels: {
+        color: '#cbd5e1',
+        font: { size: 11, family: 'system-ui' },
+        padding: 12,
+        boxWidth: 14,
+      }
+    },
+    tooltip: {
+      callbacks: {
+        title: function(items) {
+          const lbl = items[0].chart.data.labels[items[0].dataIndex];
+          return Array.isArray(lbl) ? lbl.join(' ') : lbl;
+        }
+      }
+    }
+  }
+};
+
+/* ── Primary: polar area ─────────────────────────────────────────── */
+const pd = {{ primary_chart | tojson }};
+if (pd && pd.data && pd.data.length > 0) {
+  const ctx1 = document.getElementById('primaryChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'polarArea',
+    data: {
+      labels: pd.labels.map(l => wrapLabel(l, 18)),
+      datasets: [{
+        label: pd.dataset_label || 'Distribution',
+        data: pd.data,
+        backgroundColor: pd.colors,
+        borderColor: '#1e293b',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        r: {
+          ticks: { display: false },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          angleLines: { color: 'rgba(255,255,255,0.12)' }
+        }
+      }
+    }
+  });
+}
+
+/* ── Secondary: doughnut ─────────────────────────────────────────── */
+{% if secondary_chart %}
+const sd = {{ secondary_chart | tojson }};
+if (sd && sd.data && sd.data.length > 0) {
+  const ctx2 = document.getElementById('secondaryChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: sd.labels.map(l => wrapLabel(l, 20)),
+      datasets: [{
+        label: sd.dataset_label || 'Distribution',
+        data: sd.data,
+        backgroundColor: sd.colors,
+        borderColor: '#0f172a',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      cutout: '58%',
+    }
+  });
+}
+{% endif %}
+</script>
+
+</body>
+</html>

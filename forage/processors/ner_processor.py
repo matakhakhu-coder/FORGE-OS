@@ -141,7 +141,7 @@ def _open_db(path: Path) -> sqlite3.Connection:
             f"FORGE database not found at {path}.\n"
             "Run: python app.py --init-db"
         )
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
@@ -279,73 +279,73 @@ def run(db_path: Path | None = None,
         print(f"[ner_processor] ERROR: {exc}", file=sys.stderr)
         return 1
 
-    if not dry_run:
-        ensure_schema(conn)
+    try:
+        if not dry_run:
+            ensure_schema(conn)
 
-    # Build query for signals to process
-    if signal_id:
-        rows = conn.execute(
-            "SELECT signal_id, title, content FROM signals WHERE signal_id = ?",
-            (signal_id,),
-        ).fetchall()
-    elif reprocess:
-        rows = conn.execute(
-            "SELECT signal_id, title, content FROM signals ORDER BY timestamp DESC"
-        ).fetchall()
-    else:
-        # Only signals that have no entities yet
-        rows = conn.execute(
-            """
-            SELECT s.signal_id, s.title, s.content
-            FROM   signals s
-            LEFT   JOIN signal_entities se ON se.signal_id = s.signal_id
-            WHERE  se.signal_id IS NULL
-            ORDER  BY s.timestamp DESC
-            """
-        ).fetchall()
+        # Build query for signals to process
+        if signal_id:
+            rows = conn.execute(
+                "SELECT signal_id, title, content FROM signals WHERE signal_id = ?",
+                (signal_id,),
+            ).fetchall()
+        elif reprocess:
+            rows = conn.execute(
+                "SELECT signal_id, title, content FROM signals ORDER BY timestamp DESC"
+            ).fetchall()
+        else:
+            # Only signals that have no entities yet
+            rows = conn.execute(
+                """
+                SELECT s.signal_id, s.title, s.content
+                FROM   signals s
+                LEFT   JOIN signal_entities se ON se.signal_id = s.signal_id
+                WHERE  se.signal_id IS NULL
+                ORDER  BY s.timestamp DESC
+                """
+            ).fetchall()
 
-    total      = len(rows)
-    processed  = 0
-    ents_added = 0
+        total      = len(rows)
+        processed  = 0
+        ents_added = 0
 
-    log(f"Signals to process: {total}")
-    if total == 0:
-        log("Nothing to do.")
-        conn.close()
-        return 0
+        log(f"Signals to process: {total}")
+        if total == 0:
+            log("Nothing to do.")
+            return 0
 
-    for i, row in enumerate(rows):
-        sid     = row["signal_id"]
-        title   = row["title"]   or ""
-        content = row["content"] or ""
+        for i, row in enumerate(rows):
+            sid     = row["signal_id"]
+            title   = row["title"]   or ""
+            content = row["content"] or ""
 
-        entities   = extract_entities(nlp, title, content)
-        confidence = compute_confidence(title, content)
+            entities   = extract_entities(nlp, title, content)
+            confidence = compute_confidence(title, content)
 
-        if dry_run:
-            if entities or i < 5:
-                log(f"  [DRY] {sid[:8]}… | conf={confidence:.2f} | "
-                    f"{len(entities)} entities: "
-                    f"{[(e['text'], e['label']) for e in entities[:3]]}")
-            processed += 1
-            ents_added += len(entities)
-            continue
+            if dry_run:
+                if entities or i < 5:
+                    log(f"  [DRY] {sid[:8]}... | conf={confidence:.2f} | "
+                        f"{len(entities)} entities: "
+                        f"{[(e['text'], e['label']) for e in entities[:3]]}")
+                processed += 1
+                ents_added += len(entities)
+                continue
 
-        n = insert_entities(conn, sid, entities)
-        update_confidence(conn, sid, title, content)
-        ents_added += n
-        processed  += 1
+            n = insert_entities(conn, sid, entities)
+            update_confidence(conn, sid, title, content)
+            ents_added += n
+            processed  += 1
 
-        # Commit in batches
-        if processed % BATCH_SIZE == 0:
+            # Commit in batches
+            if processed % BATCH_SIZE == 0:
+                conn.commit()
+                log(f"  Progress: {processed}/{total} signals "
+                    f"({ents_added} new entities so far)")
+
+        if not dry_run:
             conn.commit()
-            log(f"  Progress: {processed}/{total} signals "
-                f"({ents_added} new entities so far)")
-
-    if not dry_run:
-        conn.commit()
-
-    conn.close()
+    finally:
+        conn.close()
     log(f"Complete — {processed} signals processed, {ents_added} entities inserted.")
     if dry_run:
         log("Dry run — no writes made.")

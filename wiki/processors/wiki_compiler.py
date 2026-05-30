@@ -40,9 +40,9 @@ class WikiCompiler:
     def compile_from_entities(self, min_mentions=3):
         """Turn high-frequency entities into Auto-Wiki pages."""
         logging.info(f"Synthesizing articles for entities with >= {min_mentions} mentions...")
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=60)
         conn.row_factory = sqlite3.Row
-        
+
         # 1. Find entities that deserve a page
         entities = conn.execute("""
             SELECT text, label, SUM(count) as total_mentions
@@ -116,8 +116,8 @@ class WikiCompiler:
     def compile_from_local_files(self):
         """Ingest manual Markdown dossiers from media/documents/wiki/"""
         logging.info(f"Checking for manual wiki entries in {WIKI_SRC_DIR}...")
-        conn = sqlite3.connect(self.db_path)
-        
+        conn = sqlite3.connect(self.db_path, timeout=60)
+
         updated_count = 0
         for md_file in WIKI_SRC_DIR.glob("*.md"):
             title = md_file.stem.replace('-', ' ').replace('_', ' ').title()
