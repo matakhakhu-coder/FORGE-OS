@@ -114,8 +114,16 @@ The automated collection subsystem. Runs on schedule or via `mega_ingest.py`.
 | `rss_collector.py` | GDACS Combined RSS | Disaster/crisis alerts | 14-keyword priority list |
 | `earthquake_collector.py` | USGS GeoJSON (1hr, M2.5+) | Seismic events | Magnitude threshold |
 | `usgs_collector.py` | USGS GeoJSON (1day, M2.5+) | Seismic events (extended) | M6.0+ priority |
+| `ndbc_collector.py` | NOAA NDBC buoy network | Marine meteorology (wave height, wind, SST, pressure) | WVHT ≥ 4.0 m or WSPD ≥ 15.0 m/s |
 
 All collectors are idempotent — `INSERT OR IGNORE` on `external_id`. Safe to run repeatedly.
+
+**NDBC collector — dual-mode:**
+- First run per station → `realtime2/{id}.txt` (up to 45 days of hourly observations, backfill)
+- Subsequent runs → RSS feed (last ~5 observations, low overhead)
+- Station IDs configured via `NDBC_STATIONS` env var (comma-separated). Browse: ndbc.noaa.gov/obs.shtml
+- Stream: `INFRASTRUCTURE` — slowest decay rate (0.006 λ), appropriate for persistent marine conditions
+- CLI: `python forage/collectors/ndbc_collector.py --stations 41049,13008 [--backfill] [--list-meta]`
 
 ### Collection Orchestration — `tools/mega_ingest.py`
 

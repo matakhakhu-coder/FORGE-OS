@@ -237,6 +237,7 @@ CORPUS_MIN_ITEMS=7  CORPUS_MIN_CHARS=2000  RESONANCE_THRESHOLD=0.65
 | `X_PULSE_MODE` | `"nitter"` | `"nitter"` (RSS) or `"guest_api"` (GraphQL) |
 | `X_BEARER_TOKEN` | — | Required for `guest_api` mode |
 | `X_PULSE_TARGETS` | — | `handle1,handle2,#hashtag1,$CASHTAG1` |
+| `NDBC_STATIONS` | — | Comma-separated NDBC station IDs, e.g. `"41049,13008"`. Browse stations at ndbc.noaa.gov/obs.shtml |
 
 ---
 
