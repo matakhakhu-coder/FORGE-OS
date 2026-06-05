@@ -45,8 +45,12 @@
     {% endfor %}
   </div>
 
-  {# Phase 18: Heatmap toggle — right side of header #}
-  <div style="display:flex;align-items:center;gap:var(--sp-2);margin-left:auto;padding-right:var(--sp-3);">
+  {# Relevance toggle + Heatmap toggle — right side of header #}
+  <div style="display:flex;align-items:center;gap:var(--sp-3);margin-left:auto;padding-right:var(--sp-3);">
+    <button class="map-time-bar__toggle" id="js-relevance-toggle" title="Toggle between full corpus and case-committed signals with graph edges">
+      <span id="js-relevance-icon">◈</span>
+      <span class="mono" id="js-relevance-label">Corpus</span>
+    </button>
     <button class="map-time-bar__toggle" id="js-heatmap-toggle" title="Toggle signal density heatmap">
       <span id="js-heatmap-icon">◉</span>
       <span class="mono" id="js-heatmap-label">Heatmap</span>
@@ -1049,6 +1053,210 @@
     console.error('[FORGE Map] failed to load layer:', err);
     markerCount.textContent = 'Error loading layers — check console';
   });
+
+  /* ── Relevance toggle — Corpus ↔ Intel (case-graph) mode ─────────────────────
+     OFF (Corpus): full signal corpus, existing Supercluster behaviour
+     ON  (Intel):  only case-pinned signals + entity_relationship polylines
+  ─────────────────────────────────────────────────────────────────────────── */
+  (function () {
+    const btn   = document.getElementById('js-relevance-toggle');
+    const icon  = document.getElementById('js-relevance-icon');
+    const label = document.getElementById('js-relevance-label');
+    if (!btn) return;
+
+    // Accent colour per relation type
+    const REL_COLOURS = {
+      'LEADS':           '#c8943a',
+      'INVESTIGATED_BY': '#e05c5c',
+      'INVESTIGATED_FOR':'#e05c5c',
+      'INVESTIGATES':    '#e05c5c',
+      'EMPLOYED_BY':     '#818cf8',
+      'CONTRACTED':      '#34d399',
+      'stylometric_match':'#bb86fc',
+    };
+    const relColour = t => REL_COLOURS[t] || '#4a6070';
+
+    // Case colour palette — up to 8 cases get distinct colours
+    const CASE_PALETTE = [
+      '#c8943a','#e05c5c','#34d399','#818cf8',
+      '#bb86fc','#fb923c','#38bdf8','#a3e635',
+    ];
+    const _caseColours = {};
+    let _caseColourIdx = 0;
+    function caseColour(caseId) {
+      if (!_caseColours[caseId]) {
+        _caseColours[caseId] = CASE_PALETTE[_caseColourIdx % CASE_PALETTE.length];
+        _caseColourIdx++;
+      }
+      return _caseColours[caseId];
+    }
+
+    /* Marker icon for a case-pinned signal */
+    function makeIntelIcon(caseId, gravity, isPriority) {
+      const col  = caseColour(caseId);
+      const g    = Math.max(gravity || 0, 0.05);
+      const r    = 5 + Math.round(g * 6);   // 5–11 px based on gravity
+      const svg  = `<svg xmlns="http://www.w3.org/2000/svg" width="${r*4}" height="${r*4}"
+          viewBox="-${r*2} -${r*2} ${r*4} ${r*4}">
+        <circle cx="0" cy="0" r="${r+4}" fill="${col}" opacity="0.12"/>
+        <circle cx="0" cy="0" r="${r}" fill="${PAL.bg}" stroke="${col}" stroke-width="1.8"/>
+        <circle cx="0" cy="0" r="${Math.max(r-3,2)}" fill="${col}" opacity="0.7"/>
+        ${isPriority ? `<circle cx="0" cy="0" r="${r+8}" fill="none" stroke="${col}" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.5"/>` : ''}
+      </svg>`;
+      return L.divIcon({
+        html:        svg,
+        className:   'forge-intel-marker',
+        iconSize:    [r*4, r*4],
+        iconAnchor:  [r*2, r*2],
+        popupAnchor: [0, -(r+4)],
+      });
+    }
+
+    /* Info panel for a case-pinned signal */
+    function openIntelPanel(p) {
+      const col   = caseColour(p.case_id);
+      const gPct  = Math.round((p.gravity_score || 0) * 100);
+      const gCol  = gPct >= 40 ? '#e05c5c' : gPct >= 25 ? '#c8943a' : '#4a6070';
+      openInfoPanel(`
+        <div class="map-popup">
+          <div class="map-popup__header" style="border-left-color:${col}">
+            <div class="map-popup__meta" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-mono);font-size:0.58rem;color:${col};
+                           background:${col}22;padding:1px 6px;border-radius:3px;
+                           border:1px solid ${col}55;">
+                ◈ ${p.case_name}
+              </span>
+              <span class="signal-source-tag" style="font-size:0.6rem;">${p.source}</span>
+              <span style="font-family:var(--font-mono);font-size:0.6rem;color:${gCol};">
+                ▲ ${gPct}%
+              </span>
+            </div>
+            <h3 class="map-popup__title" style="font-size:0.87rem;margin-top:6px;">${p.title}</h3>
+            <div class="map-popup__meta" style="margin-top:4px;">
+              <span class="mono" style="color:var(--text-dim);font-size:0.63rem;">${p.timestamp || ''}</span>
+            </div>
+          </div>
+          ${p.content ? `<div class="map-popup__body">
+            <p class="map-popup__summary" style="font-size:0.77rem;">${p.content}${p.content.length >= 200 ? '…' : ''}</p>
+          </div>` : ''}
+          <div class="map-popup__footer">
+            <a href="/case/${p.case_id}" class="map-popup__link btn btn--primary" style="text-align:center;">
+              Open Case →
+            </a>
+          </div>
+        </div>`);
+    }
+
+    /* Graph edge polyline layer */
+    let _graphEdgeLayer = null;
+
+    function buildGraphEdgeLayer(features) {
+      if (_graphEdgeLayer) map.removeLayer(_graphEdgeLayer);
+      _graphEdgeLayer = L.layerGroup();
+
+      features.forEach(function (f) {
+        const p    = f.properties;
+        const col  = relColour(p.relation_type);
+        const wt   = 1 + (p.confidence || 0.5) * 3;
+        // manual edges = solid; spacy/auto-extracted = dotted (unverified candidate)
+        const isAuto  = p.extraction_method === 'spacy' || p.extraction_method === 'llm';
+        const dash    = isAuto ? '5 6' : null;
+        const opacity = isAuto ? 0.42 : (0.55 + (p.confidence || 0.5) * 0.35);
+        const line = L.polyline(
+          f.geometry.coordinates.map(c => [c[1], c[0]]),
+          { color: col, weight: wt, opacity, dashArray: dash }
+        );
+        const verifiedLabel = isAuto
+          ? `<span style="color:#4a6070;font-size:0.55rem;"> (auto — unverified)</span>`
+          : `<span style="color:#34d399;font-size:0.55rem;"> ✓ verified</span>`;
+        line.bindTooltip(
+          `<div style="font-family:var(--font-mono);font-size:0.65rem;line-height:1.5;">
+            <div style="color:${col};letter-spacing:0.06em;">${p.relation_type}${verifiedLabel}</div>
+            <div style="color:#cfdce8;margin-top:2px;">${p.actor_a}</div>
+            <div style="color:var(--text-dim);">→ ${p.actor_b}</div>
+            <div style="color:var(--text-dim);margin-top:2px;">conf: ${Math.round((p.confidence||0)*100)}%</div>
+          </div>`,
+          { sticky: true, className: 'map-corr-tip-wrap' }
+        );
+        _graphEdgeLayer.addLayer(line);
+      });
+
+      map.addLayer(_graphEdgeLayer);
+    }
+
+    /* Intel signal layer (replaces Supercluster in relevant mode) */
+    let _intelLayer = null;
+
+    function buildIntelLayer(features) {
+      if (_intelLayer) map.removeLayer(_intelLayer);
+      _intelLayer = L.layerGroup();
+
+      features.forEach(function (f) {
+        const p   = f.properties;
+        const lat = f.geometry.coordinates[1];
+        const lng = f.geometry.coordinates[0];
+        const m   = L.marker([lat, lng], {
+          icon:         makeIntelIcon(p.case_id, p.gravity_score, p.is_priority),
+          zIndexOffset: 300,
+        });
+        m.on('click', function (e) {
+          L.DomEvent.stopPropagation(e);
+          openIntelPanel(p);
+        });
+        _intelLayer.addLayer(m);
+      });
+
+      map.addLayer(_intelLayer);
+
+      const n = features.length;
+      signalCount.textContent = `intel: ${n} case-pinned signal${n !== 1 ? 's' : ''}`;
+      signalCount.style.color = '#c8943a';
+      markerCount.textContent = `${Object.keys(_caseColours).length} case${Object.keys(_caseColours).length !== 1 ? 's' : ''} on map`;
+    }
+
+    /* Toggle handler */
+    let intelOn = false;
+
+    btn.addEventListener('click', function () {
+      intelOn = !intelOn;
+      btn.classList.toggle('map-time-bar__toggle--active', intelOn);
+      icon.textContent  = intelOn ? '◈' : '◈';
+      label.textContent = intelOn ? 'Intel' : 'Corpus';
+
+      if (intelOn) {
+        // Hide corpus signal layer
+        if (_scLayer && map.hasLayer(_scLayer)) map.removeLayer(_scLayer);
+
+        label.textContent = 'Loading…';
+
+        Promise.all([
+          fetch('/api/signals/geojson?mode=relevant').then(r => r.json()),
+          fetch('/api/map/graph-edges').then(r => r.json()),
+        ]).then(function ([signalsGJ, edgesGJ]) {
+          buildIntelLayer(signalsGJ.features);
+          if (edgesGJ.features.length > 0) buildGraphEdgeLayer(edgesGJ.features);
+          label.textContent = 'Intel';
+        }).catch(function () {
+          label.textContent = 'Error';
+          intelOn = false;
+          btn.classList.remove('map-time-bar__toggle--active');
+        });
+
+      } else {
+        // Restore corpus signal layer
+        if (_intelLayer)     { map.removeLayer(_intelLayer);     _intelLayer = null; }
+        if (_graphEdgeLayer) { map.removeLayer(_graphEdgeLayer); _graphEdgeLayer = null; }
+        if (_scLayer && map.hasLayer(signalLayer)) map.addLayer(_scLayer);
+
+        // Reset status bar
+        const n = _scFeatures.length;
+        signalCount.textContent = `signals: ${n}${n === 2000 ? ' (capped)' : ''}`;
+        signalCount.style.color = '';
+        markerCount.textContent = `${allFeatures.length} event${allFeatures.length !== 1 ? 's' : ''} mapped`;
+        label.textContent = 'Corpus';
+      }
+    });
+  })();
 
   /* ── Phase 18/20: Heatmap toggle — fully lazy, zero cost on load ─────────────── */
   (function () {

@@ -28,6 +28,25 @@ from forage.engines.escalation_engine import handle_escalation
 from forage.engines.entity_engine import materialize_entities, stitch_entity_cooccurrence
 from forage.engines.relationship_engine import link_signal_actors, link_event_actors
 
+# Phase P3: Relationship extractor — imported once at module level per Pipeline Contract Rule 1.1
+# (imports inside hot-path functions execute on every signal — O(n) sys.modules lookups)
+try:
+    from forage.processors.relationship_extractor import extract_from_ingest as _rel_extract
+    _REL_EXTRACT_AVAILABLE = True
+except ImportError:
+    _REL_EXTRACT_AVAILABLE = False
+
+# Phase P1: DB path for heartbeat + enrichment queue — resolved once at module load
+import sqlite3 as _sqlite3
+_FORGE_DB_PATH = str(Path(__file__).resolve().parent.parent.parent / "database.db")
+
+# Phase P2: Sources whose RSS content is typically stub-length and worth enriching
+_ENRICHABLE_SOURCES = frozenset({
+    "amabhungane", "dailymaverick_corruption", "dailymaverick",
+    "timeslive_corruption", "news24_crime", "hawks_media",
+    "groundup", "amabhungane_rss",
+})
+
 # Bleach Protocol — strips HTML residue before any downstream engine sees the text.
 # Cap of 500 chars inside <> prevents catastrophic backtracking on malformed input.
 _HTML_TAG_RE = re.compile(r'<[^>]{0,500}>', re.DOTALL)
@@ -208,6 +227,19 @@ def ingest_signal(signal: dict) -> dict:
         except Exception as e:
             _log.error("[Entity Error] signal=%s: %s", signal.get("signal_id", "?"), e)
 
+        # Phase P3: Auto-extract candidate relationships after entity materialisation
+        # Silently swallowed on failure — never blocks ingest.
+        if _REL_EXTRACT_AVAILABLE:
+            try:
+                _rel_extract(
+                    signal_id=signal.get("signal_id", ""),
+                    title=signal.get("title", ""),
+                    content=signal.get("content", ""),
+                    conn=conn,
+                )
+            except Exception as _re:
+                _log.debug("[RelExtract Hook] signal=%s: %s", signal.get("signal_id", "?"), _re)
+
         # CT-1: Contextual Tunneling — if Conclave confidence was too low to
         # materialize new actors (confidence < 0.4), fall back to pre-existing
         # signal→actor links from the NER bridge and backfill runs.
@@ -354,5 +386,48 @@ def ingest_and_persist(signal: dict) -> dict:
         _log.error("[Ingest Persist Error] signal=%s: %s", signal.get("signal_id", "?"), e)
     finally:
         conn.close()
+
+    # ── Phase P1: Pipeline Heartbeat ─────────────────────────────────────────
+    # Non-blocking. Uses module-level _sqlite3 and _FORGE_DB_PATH (resolved
+    # once at import time). timeout=5 so a DB lock never stalls ingest.
+    try:
+        _hb = _sqlite3.connect(_FORGE_DB_PATH, timeout=5)
+        _hb.execute(
+            "INSERT INTO pipeline_health (event_type, signal_count, source, recorded_at)"
+            " VALUES (?, 1, ?, datetime('now'))",
+            ("ingest", signal.get("source", "unknown")),
+        )
+        _hb.commit()
+        _hb.close()
+    except Exception:
+        pass   # heartbeat failure must never surface to caller
+
+    # ── Phase P2: Enrichment Queue ───────────────────────────────────────────
+    # If content is stub-length and source is enrichable, queue for full-text
+    # fetch. Worker drains asynchronously — never inline with ingest.
+    _sig_content = signal.get("content") or ""
+    _sig_id      = signal.get("signal_id")
+    _sig_source  = signal.get("source", "")
+    if (
+        _sig_id
+        and len(_sig_content.strip()) < 200
+        and _sig_source in _ENRICHABLE_SOURCES
+    ):
+        _article_url = signal.get("external_id") or signal.get("url") or ""
+        if _article_url and (
+            _article_url.startswith("http://") or _article_url.startswith("https://")
+        ):
+            try:
+                _eq = _sqlite3.connect(_FORGE_DB_PATH, timeout=5)
+                _eq.execute(
+                    "INSERT OR IGNORE INTO enrichment_queue"
+                    " (signal_id, url, source, queued_at, status)"
+                    " VALUES (?, ?, ?, datetime('now'), 'pending')",
+                    (_sig_id, _article_url, _sig_source),
+                )
+                _eq.commit()
+                _eq.close()
+            except Exception:
+                pass   # enrichment queue failure is non-fatal
 
     return result

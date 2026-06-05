@@ -401,6 +401,60 @@ class Sentinel:
 
     # ── Write alerts (with deduplication) ────────────────────────────────────
 
+    def _rule_pipeline_stall(self, conn: sqlite3.Connection) -> int:
+        """
+        Rule P1 — Pipeline Stall Detection
+        Source: pipeline_health table (written by ingest_signal on every call)
+        Trigger: no ingest event recorded in > 24 hours
+        Fallback: if pipeline_health table doesn't exist yet, check signals
+                  table directly (last scored signal > 48h ago).
+        Confidence: 1.0 — a stall is binary. Either it's stalled or it isn't.
+        """
+        try:
+            gap_hours = None
+
+            # Primary: check pipeline_health table
+            try:
+                row = conn.execute(
+                    "SELECT ROUND((julianday('now') - julianday(MAX(recorded_at))) * 24, 1) AS gap"
+                    " FROM pipeline_health WHERE event_type = 'ingest'"
+                ).fetchone()
+                if row and row[0] is not None:
+                    gap_hours = float(row[0])
+            except Exception:
+                pass
+
+            # Fallback: check signals table for last scored signal
+            if gap_hours is None:
+                row2 = conn.execute(
+                    "SELECT ROUND((julianday('now') - julianday(MAX(timestamp))) * 24, 1) AS gap"
+                    " FROM signals WHERE gravity_score IS NOT NULL"
+                ).fetchone()
+                if row2 and row2[0] is not None:
+                    gap_hours = float(row2[0])
+
+            if gap_hours is None or gap_hours < 24:
+                return 0
+
+            summary = (
+                f"Pipeline Stall Detected: No ingest activity in {gap_hours:.1f} hours. "
+                f"Signal corpus may be stale. Check: python tools/mega_ingest.py"
+            )
+            self._alerts.append({
+                "alert_type":       "pipeline_stall",
+                "confidence_score": 1.0,
+                "location_lat":     None,
+                "location_lon":     None,
+                "signal_count":     0,
+                "summary":          summary,
+            })
+            log(f"[Sentinel P1] Pipeline stall: {gap_hours:.1f}h since last ingest")
+            return 1
+
+        except Exception as exc:
+            log(f"[Sentinel P1] pipeline_stall rule error: {exc}")
+            return 0
+
     def _write_alerts(self, conn: sqlite3.Connection, dry_run: bool = False) -> int:
         """
         Write staged alerts to sentinel_alerts.
@@ -481,8 +535,9 @@ class Sentinel:
         n1 = self._rule_correlation_escalation(conn)
         n2 = self._rule_cluster_spike(conn)
         n3 = self._rule_actor_mention(conn)
+        n4 = self._rule_pipeline_stall(conn)
 
-        total_staged = n1 + n2 + n3
+        total_staged = n1 + n2 + n3 + n4
         log(f"Total staged: {total_staged}")
 
         written = self._write_alerts(conn, dry_run=dry_run)

@@ -1519,11 +1519,80 @@ def create_app() -> Flask:
         source        = request.args.get("source",        "").strip()
         hours         = request.args.get("hours",         type=int)
         priority_only = request.args.get("priority_only", type=int, default=0)
+        mode          = request.args.get("mode",          "").strip().lower()  # "relevant" = case-pinned only
 
         lens = request.args.get('lens', 'live').lower()
         if lens not in ('live', 'seed', 'all'):
             lens = 'live'
 
+        from urllib.parse import quote_plus as _qp
+        features = []
+
+        # ── Relevant mode: only signals pinned to a case ─────────────────────
+        if mode == "relevant":
+            rows = db.execute("""
+                SELECT DISTINCT
+                       s.signal_id, s.source, s.title, s.content,
+                       ROUND(s.lat, 6) AS lat,
+                       ROUND(s.lng, 6) AS lng,
+                       s.timestamp, s.status,
+                       s.is_priority, s.cluster_id, s.stream,
+                       COALESCE(s.relevance_score, 1.0) AS relevance_score,
+                       s.gravity_score,
+                       cs.case_id,
+                       c.name AS case_name
+                FROM   signals s
+                JOIN   case_signals cs ON s.signal_id = cs.signal_id
+                JOIN   cases c         ON cs.case_id  = c.case_id
+                WHERE  s.lat IS NOT NULL
+                  AND  s.lng IS NOT NULL
+                  AND  s.lat != 0
+                  AND  s.lng != 0
+                ORDER  BY s.gravity_score DESC NULLS LAST
+            """).fetchall()
+
+            for r in rows:
+                features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type":        "Point",
+                        "coordinates": [r["lng"], r["lat"]],
+                    },
+                    "properties": {
+                        "signal_id":       r["signal_id"],
+                        "source":          r["source"]          or "",
+                        "title":           r["title"]           or "",
+                        "content":         (r["content"]        or "")[:200],
+                        "timestamp":       r["timestamp"]       or "",
+                        "status":          r["status"]          or "raw",
+                        "is_priority":     r["is_priority"]     or 0,
+                        "cluster_id":      r["cluster_id"]      or None,
+                        "stream":          r["stream"]          or "GLOBAL",
+                        "relevance_score": round(float(r["relevance_score"] or 1.0), 3),
+                        "gravity_score":   round(float(r["gravity_score"] or 0.0), 3),
+                        "case_id":         r["case_id"],
+                        "case_name":       r["case_name"]       or "",
+                        "mode":            "relevant",
+                        "promote_url": (
+                            f"/admin/event/new"
+                            f"?title={_qp(r['title'] or '')}"
+                            f"&signal_id={r['signal_id']}"
+                        ),
+                    },
+                })
+
+            geojson = {
+                "type":     "FeatureCollection",
+                "features": features,
+                "metadata": {"total": len(features), "mode": "relevant"},
+            }
+            return Response(
+                _json.dumps(geojson, ensure_ascii=False),
+                mimetype="application/geo+json",
+                headers={"Access-Control-Allow-Origin": "*"},
+            )
+
+        # ── Default (corpus) mode ────────────────────────────────────────────
         clauses = [
             "status IN ('raw', 'promoted')",
             "lat IS NOT NULL",
@@ -1558,8 +1627,6 @@ def create_app() -> Flask:
             LIMIT  2000
         """, params).fetchall()
 
-        from urllib.parse import quote_plus as _qp
-        features = []
         for r in rows:
             features.append({
                 "type": "Feature",
@@ -1606,6 +1673,87 @@ def create_app() -> Flask:
 
         return Response(
             _json.dumps(geojson, ensure_ascii=False),
+            mimetype="application/geo+json",
+            headers={"Access-Control-Allow-Origin": "*"},
+        )
+
+    # -----------------------------------------------------------------------
+    # Map: /api/map/graph-edges — Case-graph polyline layer
+    # Returns LineString features for every entity_relationship whose two
+    # actors each have at least one case-pinned signal with coordinates.
+    # Each actor is positioned at the geographic centroid of its case-pinned
+    # signals.  Used by map.html "Relevant" (Intel) toggle.
+    # -----------------------------------------------------------------------
+
+    @app.route("/api/map/graph-edges")
+    def api_map_graph_edges():
+        import json as _json
+        from flask import Response
+        db = get_db()
+
+        # Actor centroids: avg lat/lng of their case-pinned signals
+        actor_rows = db.execute("""
+            SELECT sa.actor_id,
+                   AVG(s.lat) AS lat,
+                   AVG(s.lng) AS lng,
+                   COUNT(DISTINCT s.signal_id) AS signal_count
+            FROM signal_actors sa
+            JOIN signals s        ON sa.signal_id = s.signal_id
+            JOIN case_signals cs  ON s.signal_id  = cs.signal_id
+            WHERE s.lat IS NOT NULL
+              AND s.lng IS NOT NULL
+              AND s.lat != 0
+              AND s.lng != 0
+            GROUP BY sa.actor_id
+        """).fetchall()
+
+        centroids = {r["actor_id"]: (r["lat"], r["lng"], r["signal_count"])
+                     for r in actor_rows}
+
+        rel_rows = db.execute("""
+            SELECT er.relation_type,
+                   ROUND(er.confidence, 3) AS confidence,
+                   er.extraction_method,
+                   a.name  AS actor_a,
+                   b.name  AS actor_b,
+                   er.subject_actor_id AS aid_a,
+                   er.object_actor_id  AS aid_b
+            FROM entity_relationships er
+            JOIN actors a ON er.subject_actor_id = a.actor_id
+            JOIN actors b ON er.object_actor_id  = b.actor_id
+        """).fetchall()
+
+        features = []
+        for r in rel_rows:
+            ca = centroids.get(r["aid_a"])
+            cb = centroids.get(r["aid_b"])
+            if not ca or not cb:
+                continue
+            # Skip relationships where both actors geocode to the exact same
+            # default centroid (collector artifact) — they produce zero-length edges
+            if abs(ca[0] - cb[0]) < 0.001 and abs(ca[1] - cb[1]) < 0.001:
+                continue
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [round(ca[1], 5), round(ca[0], 5)],
+                        [round(cb[1], 5), round(cb[0], 5)],
+                    ],
+                },
+                "properties": {
+                    "relation_type":      r["relation_type"],
+                    "confidence":         r["confidence"],
+                    "extraction_method":  r["extraction_method"] or "manual",
+                    "actor_a":            r["actor_a"],
+                    "actor_b":            r["actor_b"],
+                },
+            })
+
+        return Response(
+            _json.dumps({"type": "FeatureCollection", "features": features},
+                        ensure_ascii=False),
             mimetype="application/geo+json",
             headers={"Access-Control-Allow-Origin": "*"},
         )
