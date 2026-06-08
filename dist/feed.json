@@ -1,8 +1,48 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "08 Jun 2026 06:14 UTC",
+  "generated_at": "08 Jun 2026 06:24 UTC",
   "items": [
+    {
+      "kind": "article",
+      "title": "The Madlanga Pattern: HAWKS and Limpopo's Municipal Fraud Network",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T06:22:40.084960+00:00",
+      "summary": "The April 2026 arrest of Julius Mkhwanazi by the SAPS Madlanga task team is not an isolated enforcement action — it is the latest node in a multi-target HAWKS operation against Limpopo's municipal procurement network that has been running since at least 2025.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/madlanga-hawks-limpopo-municipal-fraud.html"
+    },
+    {
+      "kind": "article",
+      "title": "Emfuleni's Grief: The Murder of a Municipal Official and a Family Left Waiting",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T06:22:40.084960+00:00",
+      "summary": "Martha Rantsofu, an Emfuleni Local Municipality official, was killed under circumstances that her family describes as targeted. Nine months later, her brother has spoken publicly — not to announce an arrest, but to describe a family still waiting for answers from an investigation that has produced none.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/emfuleni-martha-rantsofu-murder-investigation.html"
+    },
+    {
+      "kind": "article",
+      "title": "The Highest Level: A Security Official's Allegations Against the Police Minister",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T06:22:40.084960+00:00",
+      "summary": "A senior South African security official has publicly alleged that the Minister of Police is colluding with organised crime syndicates. If the allegation has a factual basis, it would represent the most significant state capture signal in the current corpus.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/saps-police-minister-crime-syndicate-allegation.html"
+    },
+    {
+      "kind": "article",
+      "title": "Dockets and Disappearances: How SAPS Officials Sabotage Murder Investigations",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T06:22:40.084960+00:00",
+      "summary": "An IOL investigation has documented a systemic pattern of SAPS officials actively undermining murder investigations — missing dockets, intimidated witnesses, and deliberate procedural failures. The report provides the institutional framework for understanding why the Magaqa probe stalled and why Martha Rantsofu's family is still waiting.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/saps-murder-investigation-sabotage-pattern.html"
+    },
     {
       "kind": "article",
       "title": "Operation Magaqa: Anatomy of a Cover-Up",
