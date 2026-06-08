@@ -202,7 +202,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">08 Jun 2026 07:21 UTC</span>
+        <span class="site-ts mono">08 Jun 2026 11:33 UTC</span>
       </div>
     </div>
   </header>
@@ -227,7 +227,7 @@
     <button class="ig-btn" onclick="resetLayout()">Reset</button>
     <div class="ig-spacer"></div>
     <input id="ig-search" type="text" placeholder="Search actor…">
-    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 07:21 UTC</span>
+    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 11:33 UTC</span>
   </div>
 
   <div id="ig-body">
@@ -274,7 +274,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 08 Jun 2026 07:21 UTC
+        Generated 08 Jun 2026 11:33 UTC
       </div>
     </div>
   </footer>
@@ -361,43 +361,41 @@
           'border-width':     1,
           'border-color':     'data(color)',
           'border-opacity':   0.35,
-          'label':            '',
+          /* ── Always-visible label with pill background ── */
+          'label':                    'data(label)',
+          'color':                    'rgba(168, 192, 210, 0.70)',
+          'font-family':              'IBM Plex Mono, monospace',
+          'font-size':                '8px',
+          'font-weight':              400,
+          'text-valign':              'bottom',
+          'text-halign':              'center',
+          'text-margin-y':            4,
+          'text-background-color':    '#080e14',
+          'text-background-opacity':  0.68,
+          'text-background-padding':  '2px',
+          'text-background-shape':    'roundrectangle',
+          'text-max-width':           '88px',
+          'text-wrap':                'ellipsis',
+          'min-zoomed-font-size':     6,
         }
       },
       {
-        selector: 'node.labeled',
+        selector: 'node.hovered',
         style: {
-          'label':               'data(label)',
-          'color':               '#b8ccd8',
-          'font-family':         'IBM Plex Mono, monospace',
-          'font-size':           '9px',
-          'font-weight':         400,
-          'text-valign':         'bottom',
-          'text-halign':         'center',
-          'text-margin-y':       5,
-          'text-outline-color':  '#05080b',
-          'text-outline-width':  2.5,
-          'text-max-width':      '90px',
-          'text-wrap':           'ellipsis',
+          'color':                    '#c8dce8',
+          'font-size':                '9px',
+          'text-background-opacity':  0.85,
         }
       },
       {
         selector: 'node:selected',
         style: {
-          'border-width':   2,
-          'border-opacity': 1,
-          'border-color':   '#e0aa4a',
-          'label':               'data(label)',
-          'color':               '#e0aa4a',
-          'font-family':         'IBM Plex Mono, monospace',
-          'font-size':           '9px',
-          'text-valign':         'bottom',
-          'text-halign':         'center',
-          'text-margin-y':       5,
-          'text-outline-color':  '#05080b',
-          'text-outline-width':  2.5,
-          'text-max-width':      '90px',
-          'text-wrap':           'ellipsis',
+          'border-width':             2,
+          'border-opacity':           1,
+          'border-color':             '#e0aa4a',
+          'color':                    '#e0aa4a',
+          'font-size':                '9px',
+          'text-background-opacity':  0.85,
         }
       },
       {
@@ -434,12 +432,9 @@
         selector: '.faded',
         style: { 'opacity': 0.08 }
       },
-      {
-        selector: '.faded.labeled',
-        style: { 'label': '' }
-      }
+
     ],
-    layout: { name: 'cose', animate: true, animationDuration: 700, idealEdgeLength: 160, nodeRepulsion: 14000, gravity: 0.4 },
+    layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
     userZoomingEnabled:    true,
     userPanningEnabled:    true,
     boxSelectionEnabled:   false,
@@ -447,19 +442,21 @@
   });
 
   cy.one('layoutstop', function () {
+    cy.fit(cy.elements(), 80);
+    if (cy.zoom() > 0.85) { cy.zoom(0.85); cy.center(); }
     document.getElementById('ig-loading').style.display = 'none';
   });
 
   /* ── Hover labels ───────────────────────────────────────────────────────── */
   cy.on('mouseover', 'node', function (evt) {
-    evt.target.addClass('labeled');
-    evt.target.neighborhood('node').addClass('labeled');
+    evt.target.addClass('hovered');
+    evt.target.neighborhood('node').addClass('hovered');
   });
   cy.on('mouseout', 'node', function (evt) {
     var n = evt.target;
-    if (!n.selected()) n.removeClass('labeled');
+    if (!n.selected()) n.removeClass('hovered');
     n.neighborhood('node').each(function (nb) {
-      if (!nb.selected()) nb.removeClass('labeled');
+      if (!nb.selected()) nb.removeClass('hovered');
     });
   });
 
@@ -481,7 +478,7 @@
 
   cy.on('tap', function (evt) {
     if (evt.target === cy) {
-      cy.elements().removeClass('faded').removeClass('labeled');
+      cy.elements().removeClass('faded').removeClass('hovered');
       closePanel();
     }
   });
