@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eskom Procurement Fraud -- R21bn Diesel Contract — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/site.css">
+  
+<style>
+/* ── Screen layout ──────────────────────────────────────────────────────────── */
+.cd-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.cd-back {
+  margin-bottom: var(--sp-5);
+}
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+/* ── Classification bar ─────────────────────────────────────────────────────── */
+.cd-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(200,148,58,0.06);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-radius: var(--r-sm);
+  color: var(--accent-muted);
+  margin-bottom: var(--sp-6);
+}
+
+/* ── Case header ────────────────────────────────────────────────────────────── */
+.cd-header { margin-bottom: var(--sp-6); }
+.cd-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-case-id {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.cd-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(200,148,58,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(200,148,58,0.25);
+}
+.cd-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.cd-header__created {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+/* ── Scorecard row ──────────────────────────────────────────────────────────── */
+.cd-scorecard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+.cd-score {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+}
+.cd-score__val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.cd-score__lbl {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-coe-track {
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+}
+.cd-coe-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* ── Section ────────────────────────────────────────────────────────────────── */
+.cd-section {
+  margin-bottom: var(--sp-8);
+}
+.cd-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+/* ── Hypothesis block ───────────────────────────────────────────────────────── */
+.cd-hypothesis {
+  background: rgba(200,148,58,0.05);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ── Description block ──────────────────────────────────────────────────────── */
+.cd-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ── Signal evidence ────────────────────────────────────────────────────────── */
+.cd-signals { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.cd-signal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: var(--sp-3);
+}
+.cd-signal__gravity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.cd-signal__score {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-signal__bar {
+  width: 24px;
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cd-signal__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+.cd-signal__body {}
+.cd-signal__title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+  line-height: 1.3;
+}
+.cd-signal__summary {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-2);
+}
+.cd-signal__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-signal__source {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+}
+.cd-signal__note {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent-muted);
+  font-style: italic;
+}
+
+/* ── Actors ─────────────────────────────────────────────────────────────────── */
+.cd-actors { display: flex; flex-direction: column; gap: var(--sp-3); }
+.cd-actor {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+}
+.cd-actor__dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cd-actor__name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-actor__type {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-actor__confidence {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+/* ── Print button ───────────────────────────────────────────────────────────── */
+.cd-print-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-8);
+}
+.cd-print-bar__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+.cd-print-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-void);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-5);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cd-print-btn:hover { background: var(--accent-bright); }
+
+/* ── PRINT STYLES ───────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide everything site-chrome */
+  .site-header, .class-banner, .site-footer,
+  .cd-back, .cd-print-bar, .site-nav { display: none !important; }
+
+  body, html {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 10pt;
+  }
+
+  .site-main { padding: 0 !important; }
+  .cd-shell   { max-width: 100%; padding: 0 1cm !important; }
+
+  /* Print header */
+  .cd-shell::before {
+    content: "ZA-DIVERGENT INTELLIGENCE BRIEF — OPEN SOURCE — UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    text-align: center;
+    border-bottom: 1pt solid #999;
+    padding-bottom: 6pt;
+    margin-bottom: 16pt;
+    color: #666;
+  }
+  .cd-shell::after {
+    content: "ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN SOURCE · UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    text-align: center;
+    border-top: 1pt solid #999;
+    padding-top: 6pt;
+    margin-top: 16pt;
+    color: #666;
+  }
+
+  .cd-classification {
+    background: #f5f0e8 !important;
+    border: 1pt solid #c8943a !important;
+    color: #7a5c1e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-header__title { font-size: 18pt; color: #111 !important; }
+
+  .cd-score {
+    background: #f8f8f8 !important;
+    border: 1pt solid #ddd !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-score__val  { color: #7a5c1e !important; }
+  .cd-score__lbl  { color: #666 !important; }
+
+  .cd-hypothesis {
+    background: #fdf8f0 !important;
+    border-left: 3pt solid #c8943a !important;
+    color: #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-description { color: #333 !important; }
+
+  .cd-signal {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-signal__title   { color: #111 !important; }
+  .cd-signal__summary { color: #444 !important; }
+
+  .cd-actor {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-actor__name { color: #111 !important; }
+
+  .cd-section__title { color: #666 !important; }
+  .cd-coe-fill, .cd-signal__bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="../index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <nav class="site-nav">
+        <a href="../index.html" class="site-nav__link ">Timeline</a>
+        <a href="../cases.html" class="site-nav__link site-nav__link--active">Cases</a>
+        <a href="../graph.html" class="site-nav__link ">Graph</a>
+        <a href="../map.html" class="site-nav__link ">Map</a>
+      </nav>
+      <div class="site-header__meta">
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">08 Jun 2026 06:14 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="cd-shell">
+
+  <div class="cd-back">
+    <a href="../cases.html" class="btn-back">← All Cases</a>
+  </div>
+
+  <div class="cd-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Unclassified · For Analyst Use
+  </div>
+
+  <div class="cd-header">
+    <div class="cd-header__row">
+      <span class="cd-case-id">CASE-09</span>
+      <span class="cd-status">Active Investigation</span>
+    </div>
+    <h1 class="cd-header__title">Eskom Procurement Fraud -- R21bn Diesel Contract</h1>
+    <div class="cd-header__created mono">Opened 03 Jun 2026 - 04:48 · Updated 03 Jun 2026 - 04:48 · 08 Jun 2026 06:14 UTC</div>
+  </div>
+
+  <div class="cd-scorecard">
+    
+    
+    <div class="cd-score">
+      <div class="cd-score__val">0.35</div>
+      <div class="cd-score__lbl">Evidence Weight</div>
+      <div class="cd-coe-track">
+        <div class="cd-coe-fill" style="width:34%; background:#c8943a;"></div>
+      </div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">6</div>
+      <div class="cd-score__lbl">Pinned Signals</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">2</div>
+      <div class="cd-score__lbl">Linked Actors</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">0.44</div>
+      <div class="cd-score__lbl">Peak Signal</div>
+    </div>
+  </div>
+
+  <div class="cd-print-bar">
+    <span class="cd-print-bar__label">Download this case brief as PDF</span>
+    <button class="cd-print-btn" onclick="window.print()">⬇ Download Brief</button>
+  </div>
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Case Summary</div>
+    <div class="cd-description">AmaBhungane (May 2026): Minenhle Mavuso (24, BA Psychology) operated front company for R21bn Eskom diesel supply contract (2024). CIPC: zero registrations for Mavuso or Milo Hair Beaute. HAWKS signals confirm systematic bogus-supplier fraud pattern. ABB state capture reparations (R2.5bn) establish institutional vulnerability.</div>
+  </div>
+  
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Analyst Hypothesis</div>
+    <div class="cd-hypothesis">Mavuso is a leaf node. Authorizing official approved her supplier registration and contract award. Upstream chain leads to Eskom executive or political interference.</div>
+  </div>
+  
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Evidence — 6 Signals</div>
+    <div class="cd-signals">
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.44</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:44%; background:#c8943a;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">Inside Eskom’s dodgy R21-billion diesel contract</div>
+          
+          <div class="cd-signal__summary">AmaBhungane has exposed a R21 billion Eskom diesel procurement contract linked to Minenhle Mavuso, a 24-year-old BA Psychology graduate who simultaneously operated an online hair products store. Mavuso is alleged to have…</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">AMABHUNGANE</span>
+            <span class="cd-signal__source mono">10 May 2026 - 01:33</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.41</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:41%; background:#c8943a;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">Eskom contractor employee arrested for fraud and corruption involving a bogus supplier - eskom.co.za</div>
+          
+          <div class="cd-signal__summary">Eskom contractor employee arrested for fraud and corruption involving a bogus supplier    eskom.co.za</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">HAWKS_MEDIA</span>
+            <span class="cd-signal__source mono">17 Mar 2023 - 07:00</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.37</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:37%; background:#c8943a;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">Eskom employee arrested for fraud involving bogus supplier - Algoa FM</div>
+          
+          <div class="cd-signal__summary">Eskom employee arrested for fraud involving bogus supplier    Algoa FM</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">HAWKS_MEDIA</span>
+            <span class="cd-signal__source mono">18 Mar 2023 - 07:00</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.34</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:33%; background:#c8943a;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">Resistance and lack of coordination in government allow continued corruption at Eskom, says retired SAPS brigadier - Daily Maverick</div>
+          
+          <div class="cd-signal__summary">Resistance and lack of coordination in government allow continued corruption at Eskom, says retired SAPS brigadier    Daily Maverick</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">DAILYMAVERICK_CORRUPTION</span>
+            <span class="cd-signal__source mono">16 Nov 2023 - 08:00</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.33</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:32%; background:#c8943a;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">A Step Towards Accountability For State Capture Corruption At Eskom: ABB To Pay Over R2.5 Billion In Punitive Reparations To South Africa - npa.gov.za</div>
+          
+          <div class="cd-signal__summary">A Step Towards Accountability For State Capture Corruption At Eskom: ABB To Pay Over R2.5 Billion In Punitive Reparations To South Africa    npa.gov.za</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">NPA_MEDIA</span>
+            <span class="cd-signal__source mono">01 Dec 2022 - 08:00</span>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">0.20</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:20%; background:#2980b9;"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">CIPC FINDING: Minenhle Mavuso / Milo Hair Beaute -- No company registration found</div>
+          
+          <div class="cd-signal__summary">CIPC public records search returned zero registration entries for Minenhle Mavuso and zero for Milo Hair Beaute. An unregistered entity holding a R21-billion government procurement contract is a structural fraud indicato…</div>
+          
+          <div class="cd-signal__meta">
+            <span class="cd-signal__source">CIPC_COLLECTOR</span>
+            <span class="cd-signal__source mono">03 Jun 2026 - 04:48</span>
+            
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Linked Actors — 2</div>
+    <div class="cd-actors">
+      
+      
+      
+      <div class="cd-actor">
+        <div class="cd-actor__dot" style="background:#2980b9;"></div>
+        <div>
+          <div class="cd-actor__name">Eskom</div>
+          <div class="cd-actor__type">institution</div>
+        </div>
+        <div class="cd-actor__confidence">50% conf</div>
+      </div>
+      
+      
+      
+      <div class="cd-actor">
+        <div class="cd-actor__dot" style="background:#c8943a;"></div>
+        <div>
+          <div class="cd-actor__name">Minenhle Mavuso</div>
+          <div class="cd-actor__type">person</div>
+        </div>
+        <div class="cd-actor__confidence">40% conf</div>
+      </div>
+      
+    </div>
+  </div>
+  
+
+  <div class="cd-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5); margin-top:var(--sp-8);">
+    <div class="cd-section__title">Methodology</div>
+    <div class="cd-description" style="font-size:0.75rem;">
+      All signals sourced from open-source media, public records, and official statements.
+      Evidence weight is derived from signal gravity scores (urgency × source credibility × recency).
+      Actor relationships are manually verified unless noted as automated extraction.
+      This brief is produced by the FORGE OSINT engine and reviewed by ZA-DIVERGENT analysts.
+    </div>
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
+      </div>
+      <div class="site-footer__right mono">
+        Generated 08 Jun 2026 06:14 UTC
+      </div>
+    </div>
+  </footer>
+
+  <script src="../static/js/site.js"></script>
+  
+</body>
+</html>

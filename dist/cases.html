@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligence Cases — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<style>
+.cases-shell {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.cases-header { margin-bottom: var(--sp-8); }
+.cases-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.cases-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-2);
+}
+.cases-header__sub {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+}
+
+/* ── Stats bar ──────────────────────────────────────────────────────────── */
+.cases-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-8);
+  flex-wrap: wrap;
+}
+.cases-stats__item { display: flex; flex-direction: column; gap: 2px; }
+.cases-stats__val  { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; color: var(--accent); }
+.cases-stats__lbl  { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+
+/* ── Cases grid ─────────────────────────────────────────────────────────── */
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--sp-5);
+}
+
+.case-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  transition: border-color var(--t-mid), background var(--t-mid);
+  text-decoration: none;
+  color: inherit;
+}
+.case-card:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-mid);
+}
+.case-card--active   { border-left: 3px solid var(--accent); }
+.case-card--critical { border-left: 3px solid var(--crime); }
+
+.case-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.case-card__id {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+}
+.case-card__status {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.case-card__status--active   { background: rgba(200,148,58,0.12); color: var(--accent); border: 1px solid rgba(200,148,58,0.25); }
+.case-card__status--critical { background: rgba(192,57,43,0.12);  color: var(--crime);  border: 1px solid rgba(192,57,43,0.25); }
+
+.case-card__name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.case-card__desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── CoE gauge ──────────────────────────────────────────────────────────── */
+.case-coe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.case-coe__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.case-coe__title {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.case-coe__val {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+.case-coe__track {
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.case-coe__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.case-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: auto;
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border-subtle);
+}
+.case-card__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+}
+.case-card__cta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <nav class="site-nav">
+        <a href="index.html" class="site-nav__link ">Timeline</a>
+        <a href="cases.html" class="site-nav__link site-nav__link--active">Cases</a>
+        <a href="graph.html" class="site-nav__link ">Graph</a>
+        <a href="map.html" class="site-nav__link ">Map</a>
+      </nav>
+      <div class="site-header__meta">
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">08 Jun 2026 06:14 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="cases-shell">
+
+  <div class="cases-header">
+    <div class="cases-header__eyebrow">Active Intelligence · ZA-DIVERGENT</div>
+    <h1 class="cases-header__title">Intelligence Cases</h1>
+    <p class="cases-header__sub">
+      Open investigations with pinned evidence, linked actors, and analyst assessments.
+      Each case packages the evidence chain into a downloadable brief.
+    </p>
+  </div>
+
+  <div class="cases-stats">
+    <div class="cases-stats__item">
+      <span class="cases-stats__val">4</span>
+      <span class="cases-stats__lbl">Active cases</span>
+    </div>
+    <div class="cases-stats__item">
+      <span class="cases-stats__val">20</span>
+      <span class="cases-stats__lbl">Pinned signals</span>
+    </div>
+    <div class="cases-stats__item">
+      <span class="cases-stats__val">8</span>
+      <span class="cases-stats__lbl">Tracked actors</span>
+    </div>
+    <div class="cases-stats__item">
+      <span class="cases-stats__val">08 Jun 2026 06:14 UTC</span>
+      <span class="cases-stats__lbl">Last updated</span>
+    </div>
+  </div>
+
+  <div class="cases-grid">
+    
+    
+    
+    <a href="cases/limpopo-municipal-procurement-fraud-april-2026-hawks-operati.html" class="case-card case-card--active">
+
+      <div class="case-card__header">
+        <span class="case-card__id">CASE-07</span>
+        <span class="case-card__status case-card__status--active">Active</span>
+        
+      </div>
+
+      <div class="case-card__name">Limpopo Municipal Procurement Fraud — April 2026 HAWKS Operations</div>
+
+      <div class="case-card__desc">Coordinated HAWKS enforcement in Limpopo, April 2026. Two operations in 3 days: April 16 (four municipal officials) and April 18 (Julius Mkhwanazi, SAPS Madlang…</div>
+
+      <div class="case-coe">
+        <div class="case-coe__label">
+          <span class="case-coe__title">Evidence Weight</span>
+          <span class="case-coe__val">0.42</span>
+        </div>
+        <div class="case-coe__track">
+          <div class="case-coe__fill" style="width:42%; background:var(--accent);"></div>
+        </div>
+      </div>
+
+      <div class="case-card__footer">
+        <span class="case-card__meta">3 signals</span>
+        <span class="case-card__meta">3 actors</span>
+        <span class="case-card__meta">18 Apr 2026 - 07:00</span>
+        <span class="case-card__cta">View case →</span>
+      </div>
+
+    </a>
+    
+    
+    
+    <a href="cases/kzn-hawks-institutional-integrity-evidence-tampering-and-nar.html" class="case-card case-card--active">
+
+      <div class="case-card__header">
+        <span class="case-card__id">CASE-10</span>
+        <span class="case-card__status case-card__status--active">Active</span>
+        
+        <span class="case-card__status case-card__status--critical">High Signal</span>
+        
+      </div>
+
+      <div class="case-card__name">KZN HAWKS Institutional Integrity -- Evidence Tampering and Narcotics Diversion</div>
+
+      <div class="case-card__desc">Multi-signal pattern of institutional capture within the KZN Directorate for Priority Crime Investigation (HAWKS). Signals span: (1) R200m narcotics missing, KZ…</div>
+
+      <div class="case-coe">
+        <div class="case-coe__label">
+          <span class="case-coe__title">Evidence Weight</span>
+          <span class="case-coe__val">0.42</span>
+        </div>
+        <div class="case-coe__track">
+          <div class="case-coe__fill" style="width:41%; background:var(--accent);"></div>
+        </div>
+      </div>
+
+      <div class="case-card__footer">
+        <span class="case-card__meta">6 signals</span>
+        <span class="case-card__meta">1 actors</span>
+        <span class="case-card__meta">06 May 2026 - 19:02</span>
+        <span class="case-card__cta">View case →</span>
+      </div>
+
+    </a>
+    
+    
+    
+    <a href="cases/operation-magaqa-political-interference-in-anc-ylssg-murder-.html" class="case-card case-card--active">
+
+      <div class="case-card__header">
+        <span class="case-card__id">CASE-08</span>
+        <span class="case-card__status case-card__status--active">Active</span>
+        
+        <span class="case-card__status case-card__status--critical">High Signal</span>
+        
+      </div>
+
+      <div class="case-card__name">Operation Magaqa: Political Interference in ANC YLSSG Murder Probe</div>
+
+      <div class="case-card__desc">Sindiso Magaqa (ANC Youth League SG) murdered 2017. ANC MP Fadiel Adams arrested May 2026 for alleged interference in the murder investigation. Five News24/Dail…</div>
+
+      <div class="case-coe">
+        <div class="case-coe__label">
+          <span class="case-coe__title">Evidence Weight</span>
+          <span class="case-coe__val">0.37</span>
+        </div>
+        <div class="case-coe__track">
+          <div class="case-coe__fill" style="width:36%; background:var(--accent);"></div>
+        </div>
+      </div>
+
+      <div class="case-card__footer">
+        <span class="case-card__meta">5 signals</span>
+        <span class="case-card__meta">2 actors</span>
+        <span class="case-card__meta">06 May 2026 - 13:46</span>
+        <span class="case-card__cta">View case →</span>
+      </div>
+
+    </a>
+    
+    
+    
+    <a href="cases/eskom-procurement-fraud-r21bn-diesel-contract.html" class="case-card case-card--active">
+
+      <div class="case-card__header">
+        <span class="case-card__id">CASE-09</span>
+        <span class="case-card__status case-card__status--active">Active</span>
+        
+        <span class="case-card__status case-card__status--critical">High Signal</span>
+        
+      </div>
+
+      <div class="case-card__name">Eskom Procurement Fraud -- R21bn Diesel Contract</div>
+
+      <div class="case-card__desc">AmaBhungane (May 2026): Minenhle Mavuso (24, BA Psychology) operated front company for R21bn Eskom diesel supply contract (2024). CIPC: zero registrations for M…</div>
+
+      <div class="case-coe">
+        <div class="case-coe__label">
+          <span class="case-coe__title">Evidence Weight</span>
+          <span class="case-coe__val">0.35</span>
+        </div>
+        <div class="case-coe__track">
+          <div class="case-coe__fill" style="width:34%; background:var(--accent);"></div>
+        </div>
+      </div>
+
+      <div class="case-card__footer">
+        <span class="case-card__meta">6 signals</span>
+        <span class="case-card__meta">2 actors</span>
+        <span class="case-card__meta">03 Jun 2026 - 04:48</span>
+        <span class="case-card__cta">View case →</span>
+      </div>
+
+    </a>
+    
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
+      </div>
+      <div class="site-footer__right mono">
+        Generated 08 Jun 2026 06:14 UTC
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/js/site.js"></script>
+  
+</body>
+</html>
