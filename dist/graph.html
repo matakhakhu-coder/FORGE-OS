@@ -195,14 +195,13 @@
         <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
       </div>
       <nav class="site-nav">
-        <a href="index.html" class="site-nav__link ">Feed</a>
-        <a href="timeline.html" class="site-nav__link ">Timeline</a>
+        <a href="index.html" class="site-nav__link ">Timeline</a>
         <a href="graph.html" class="site-nav__link site-nav__link--active">Graph</a>
         <a href="map.html" class="site-nav__link ">Map</a>
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">08 Jun 2026 05:33 UTC</span>
+        <span class="site-ts mono">08 Jun 2026 05:46 UTC</span>
       </div>
     </div>
   </header>
@@ -227,7 +226,7 @@
     <button class="ig-btn" onclick="resetLayout()">Reset</button>
     <div class="ig-spacer"></div>
     <input id="ig-search" type="text" placeholder="Search actor…">
-    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 05:33 UTC</span>
+    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 05:46 UTC</span>
   </div>
 
   <div id="ig-body">
@@ -274,7 +273,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 08 Jun 2026 05:33 UTC
+        Generated 08 Jun 2026 05:46 UTC
       </div>
     </div>
   </footer>
@@ -343,7 +342,6 @@
         description: e.description || '',
         color:      EDGE_COLOR[e.relation] || '#3d5060',
         width:      e.method === 'manual' ? 2.5 : 1.5,
-        dash:       e.method === 'manual' ? 'none' : '6 4',
       }
     });
   });
@@ -386,9 +384,9 @@
           'width':              'data(width)',
           'line-color':         'data(color)',
           'target-arrow-color': 'data(color)',
-          'target-arrow-shape':'triangle',
+          'target-arrow-shape': 'triangle',
           'curve-style':        'bezier',
-          'line-dash-pattern':  'data(dash)',
+          'line-style':         'solid',
           'opacity':            0.7,
           'label':              'data(relation)',
           'font-family':        'IBM Plex Mono, monospace',
@@ -396,6 +394,14 @@
           'color':              '#3d5060',
           'text-outline-color': '#05080b',
           'text-outline-width': 1.5,
+        }
+      },
+      {
+        selector: 'edge[method != "manual"]',
+        style: {
+          'line-style':        'dashed',
+          'line-dash-pattern': [6, 4],
+          'opacity':           0.45,
         }
       },
       {
@@ -414,7 +420,7 @@
     autounselectify:       false,
   });
 
-  cy.ready(function () {
+  cy.one('layoutstop', function () {
     document.getElementById('ig-loading').style.display = 'none';
   });
 
