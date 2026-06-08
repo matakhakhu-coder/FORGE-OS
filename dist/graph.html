@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligence Graph — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"
+        crossorigin="anonymous"></script>
+<style>
+  .site-main { padding: 0; }
+
+  #ig-root {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 88px);
+    background: var(--bg-void);
+  }
+
+  /* ── Toolbar ────────────────────────────────────────────────────────────── */
+  #ig-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-5);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-dim);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+  .ig-title {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: var(--sp-3);
+  }
+  .ig-stat {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+  }
+  .ig-stat strong { color: var(--text-secondary); }
+  .ig-sep { width: 1px; height: 16px; background: var(--border-dim); }
+  .ig-spacer { flex: 1; }
+  .ig-btn {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    padding: var(--sp-1) var(--sp-3);
+    cursor: pointer;
+    transition: all var(--t-fast);
+    white-space: nowrap;
+  }
+  .ig-btn:hover { color: var(--text-primary); border-color: var(--border-mid); }
+  #ig-search {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: var(--sp-2) var(--sp-3);
+    width: 180px;
+    outline: none;
+    transition: border-color var(--t-fast);
+  }
+  #ig-search:focus { border-color: var(--accent-muted); }
+  #ig-search::placeholder { color: var(--text-ghost); }
+
+  /* ── Canvas ─────────────────────────────────────────────────────────────── */
+  #ig-body { display: flex; flex: 1; overflow: hidden; position: relative; }
+  #ig-cy   { flex: 1; background: var(--bg-void); }
+
+  /* ── Loading ────────────────────────────────────────────────────────────── */
+  #ig-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--bg-void); z-index: 20;
+    gap: var(--sp-4); pointer-events: none;
+  }
+  .ig-loading__label {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .ig-spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border-subtle);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: ig-spin 0.8s linear infinite;
+  }
+  @keyframes ig-spin { to { transform: rotate(360deg); } }
+
+  /* ── Detail panel ───────────────────────────────────────────────────────── */
+  #ig-panel {
+    width: 260px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-dim);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  #ig-panel.open { display: flex; }
+  .ig-panel__header {
+    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+    border-bottom: 1px solid var(--border-dim);
+    display: flex; align-items: center; gap: var(--sp-2);
+  }
+  .ig-panel__type {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .ig-panel__name {
+    font-family: var(--font-display); font-size: 1rem;
+    font-weight: 600; color: var(--text-primary);
+    padding: var(--sp-3) var(--sp-4) 0;
+  }
+  .ig-panel__meta {
+    padding: var(--sp-2) var(--sp-4) var(--sp-3);
+    font-family: var(--font-mono); font-size: 0.6rem;
+    color: var(--text-dim); line-height: 1.8;
+  }
+  .ig-panel__rels-title {
+    font-family: var(--font-mono); font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+    padding: var(--sp-3) var(--sp-4) var(--sp-2);
+    border-top: 1px solid var(--border-dim);
+  }
+  .ig-panel__rel {
+    padding: var(--sp-2) var(--sp-4);
+    font-size: 0.78rem; color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    line-height: 1.4;
+  }
+  .ig-panel__rel-type {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.06em; color: var(--text-dim); display: block;
+    margin-bottom: 2px;
+  }
+  #ig-panel-close {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--text-dim); cursor: pointer; padding: 2px 6px;
+    border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+    background: transparent;
+  }
+  #ig-panel-close:hover { color: var(--text-primary); }
+
+  /* ── Legend ─────────────────────────────────────────────────────────────── */
+  #ig-legend {
+    position: absolute; bottom: var(--sp-5); left: var(--sp-5);
+    background: rgba(8,13,18,0.90);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-sm);
+    padding: var(--sp-3) var(--sp-4);
+    z-index: 5; pointer-events: none;
+  }
+  .ig-legend__title {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: var(--sp-3);
+  }
+  .ig-legend__row {
+    display: flex; align-items: center;
+    gap: var(--sp-2); margin-bottom: var(--sp-2);
+  }
+  .ig-legend__row:last-child { margin-bottom: 0; }
+  .ig-legend__dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .ig-legend__line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+  .ig-legend__lbl  { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <nav class="site-nav">
+        <a href="index.html" class="site-nav__link ">Feed</a>
+        <a href="timeline.html" class="site-nav__link ">Timeline</a>
+        <a href="graph.html" class="site-nav__link site-nav__link--active">Graph</a>
+        <a href="map.html" class="site-nav__link ">Map</a>
+      </nav>
+      <div class="site-header__meta">
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">08 Jun 2026 05:33 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div id="ig-root">
+
+  <div id="ig-toolbar">
+    <span class="ig-title">Intel Graph</span>
+    <div class="ig-sep"></div>
+    <span class="ig-stat"><strong id="ig-node-count">13</strong> actors</span>
+    <span class="ig-stat"><strong id="ig-edge-count">10</strong> relationships</span>
+    <div class="ig-sep"></div>
+    <button class="ig-btn" onclick="cy.fit()">Fit</button>
+    <button class="ig-btn" onclick="resetLayout()">Reset</button>
+    <div class="ig-spacer"></div>
+    <input id="ig-search" type="text" placeholder="Search actor…">
+    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 05:33 UTC</span>
+  </div>
+
+  <div id="ig-body">
+    <div id="ig-cy"></div>
+
+    <div id="ig-loading">
+      <div class="ig-spinner"></div>
+      <span class="ig-loading__label">Building graph…</span>
+    </div>
+
+    <div id="ig-legend">
+      <div class="ig-legend__title">Actor Type</div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#c8943a"></div><span class="ig-legend__lbl">Person</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#2980b9"></div><span class="ig-legend__lbl">Institution</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#27ae60"></div><span class="ig-legend__lbl">Government</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#c0392b"></div><span class="ig-legend__lbl">Political Party</span></div>
+      <div class="ig-legend__title" style="margin-top:var(--sp-3);">Relationship</div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#e74c3c"></div><span class="ig-legend__lbl">Investigated / Arrested</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#3498db"></div><span class="ig-legend__lbl">Leads / Commands</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#e67e22"></div><span class="ig-legend__lbl">Contracted / Funded</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#27ae60"></div><span class="ig-legend__lbl">Employed / Affiliated</span></div>
+    </div>
+
+    <div id="ig-panel">
+      <div class="ig-panel__header">
+        <span class="ig-panel__type" id="ig-panel-type">—</span>
+        <button id="ig-panel-close" onclick="closePanel()">✕</button>
+      </div>
+      <div class="ig-panel__name" id="ig-panel-name">—</div>
+      <div class="ig-panel__meta" id="ig-panel-meta"></div>
+      <div class="ig-panel__rels-title">Relationships</div>
+      <div id="ig-panel-rels"></div>
+    </div>
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
+      </div>
+      <div class="site-footer__right mono">
+        Generated 08 Jun 2026 05:33 UTC
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/js/site.js"></script>
+  
+<script>
+(function () {
+  'use strict';
+
+  var GRAPH_DATA = {"edges": [{"confidence": 0.3, "description": "Auto-extracted from signal 44eaffe0-987 | title: Npa Top Leadership Structure Is Almost Complete As President Ramaphosa Appoints ", "method": "spacy", "relation": "LEADS", "source": 5, "target": 17}, {"confidence": 0.325, "description": "Auto-extracted from signal 5f4655ab-683 | Two suspects arrested for possession of mandrax worth R3.5 Million : HAWKS Date ", "method": "spacy", "relation": "INVESTIGATED_BY", "source": 9, "target": 10}, {"confidence": 0.3, "description": "Auto-extracted from signal 467dc7b0-28e | title: Ramaphosa appoints Puleng Dimpane as acting SAPS commissioner - Daily Maverick", "method": "spacy", "relation": "LEADS", "source": 9, "target": 17}, {"confidence": 0.344, "description": "", "method": "spacy", "relation": "CONTRACTED", "source": 17, "target": 9}, {"confidence": 0.35, "description": "SAPS Madlanga task team arrested Mkhwanazi April 2026, fraud/corruption. Source: timeslive_corruption S-04.", "method": "manual", "relation": "INVESTIGATED_BY", "source": 40, "target": 10}, {"confidence": 0.2, "description": "Suspected Limpopo municipal official \u2014 UNVERIFIED. Pending SAFLII cross-reference.", "method": "manual", "relation": "EMPLOYED_BY", "source": 40, "target": 14}, {"confidence": 0.8, "description": "Godfrey Lebeya is National Head of DPCI/HAWKS. Public record.", "method": "manual", "relation": "LEADS", "source": 41, "target": 10}, {"confidence": 0.65, "description": "Arrested for alleged interference in Magaqa murder probe. Daily Maverick + News24, May 2026.", "method": "manual", "relation": "INVESTIGATED_FOR", "source": 46, "target": 47}, {"confidence": 0.5, "description": "Emfuleni Local Municipality official. Source: Daily Maverick May 2026.", "method": "manual", "relation": "EMPLOYED_BY", "source": 48, "target": 14}, {"confidence": 0.4, "description": "Front company operator in R21bn Eskom diesel fraud. Source: amabhungane May 2026.", "method": "manual", "relation": "CONTRACTED", "source": 49, "target": 19}], "nodes": [{"confidence": 0.8, "id": 47, "name": "Sindiso Magaqa", "type": "person"}, {"confidence": 0.65, "id": 46, "name": "Fadiel Adams", "type": "person"}, {"confidence": 0.6, "id": 41, "name": "Godfrey Lebeya", "type": "person"}, {"confidence": 0.5, "id": 5, "name": "National Prosecuting Authority", "type": "institution"}, {"confidence": 0.5, "id": 9, "name": "South African Police Service", "type": "institution"}, {"confidence": 0.5, "id": 10, "name": "Directorate for Priority Crime Investigation", "type": "institution"}, {"confidence": 0.5, "id": 12, "name": "African National Congress", "type": "institution"}, {"confidence": 0.5, "id": 14, "name": "South African Municipalities", "type": "institution"}, {"confidence": 0.5, "id": 17, "name": "Cyril Ramaphosa", "type": "person"}, {"confidence": 0.5, "id": 19, "name": "Eskom", "type": "institution"}, {"confidence": 0.5, "id": 48, "name": "Martha Rantsofu", "type": "person"}, {"confidence": 0.4, "id": 49, "name": "Minenhle Mavuso", "type": "person"}, {"confidence": 0.35, "id": 40, "name": "Julius Mkhwanazi", "type": "person"}]};
+
+  /* ── Actor type colours ─────────────────────────────────────────────────── */
+  var TYPE_COLOR = {
+    person:         '#c8943a',
+    institution:    '#2980b9',
+    government:     '#27ae60',
+    political_party:'#c0392b',
+    organization:   '#16a085',
+    movement:       '#8e44ad',
+    paramilitary:   '#7f8c8d',
+    media:          '#2c3e50',
+    other:          '#3d5060',
+    unknown:        '#3d5060',
+  };
+
+  /* ── Edge colours by relation type ─────────────────────────────────────── */
+  var EDGE_COLOR = {
+    INVESTIGATED_FOR:  '#e74c3c',
+    INVESTIGATED_BY:   '#e74c3c',
+    ARRESTS:           '#e74c3c',
+    LEADS:             '#3498db',
+    COMMANDS:          '#3498db',
+    CONTRACTED:        '#e67e22',
+    FUNDED_BY:         '#e67e22',
+    EMPLOYED_BY:       '#27ae60',
+    AFFILIATED_WITH:   '#9b59b6',
+    ASSOCIATED_WITH:   '#9b59b6',
+  };
+
+  /* ── Build Cytoscape elements ───────────────────────────────────────────── */
+  var elements = [];
+
+  GRAPH_DATA.nodes.forEach(function (n) {
+    elements.push({
+      data: {
+        id:         'n' + n.id,
+        label:      n.name,
+        type:       n.type,
+        confidence: n.confidence,
+        color:      TYPE_COLOR[n.type] || '#3d5060',
+        size:       Math.max(22, Math.min(48, (n.confidence || 0.5) * 60)),
+      }
+    });
+  });
+
+  GRAPH_DATA.edges.forEach(function (e, i) {
+    elements.push({
+      data: {
+        id:         'e' + i,
+        source:     'n' + e.source,
+        target:     'n' + e.target,
+        relation:   e.relation,
+        confidence: e.confidence,
+        method:     e.method,
+        description: e.description || '',
+        color:      EDGE_COLOR[e.relation] || '#3d5060',
+        width:      e.method === 'manual' ? 2.5 : 1.5,
+        dash:       e.method === 'manual' ? 'none' : '6 4',
+      }
+    });
+  });
+
+  /* ── Init Cytoscape ─────────────────────────────────────────────────────── */
+  var cy = window.cy = cytoscape({
+    container: document.getElementById('ig-cy'),
+    elements:  elements,
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'background-color':    'data(color)',
+          'label':               'data(label)',
+          'color':               '#cfdce8',
+          'font-family':         'IBM Plex Sans, sans-serif',
+          'font-size':           '10px',
+          'text-valign':         'bottom',
+          'text-margin-y':       4,
+          'text-outline-color':  '#05080b',
+          'text-outline-width':  2,
+          'width':               'data(size)',
+          'height':              'data(size)',
+          'border-width':        2,
+          'border-color':        'data(color)',
+          'border-opacity':      0.5,
+        }
+      },
+      {
+        selector: 'node:selected',
+        style: {
+          'border-width':   3,
+          'border-opacity': 1,
+          'border-color':   '#e0aa4a',
+        }
+      },
+      {
+        selector: 'edge',
+        style: {
+          'width':              'data(width)',
+          'line-color':         'data(color)',
+          'target-arrow-color': 'data(color)',
+          'target-arrow-shape':'triangle',
+          'curve-style':        'bezier',
+          'line-dash-pattern':  'data(dash)',
+          'opacity':            0.7,
+          'label':              'data(relation)',
+          'font-family':        'IBM Plex Mono, monospace',
+          'font-size':          '8px',
+          'color':              '#3d5060',
+          'text-outline-color': '#05080b',
+          'text-outline-width': 1.5,
+        }
+      },
+      {
+        selector: 'edge:selected',
+        style: { 'opacity': 1, 'line-color': '#e0aa4a', 'target-arrow-color': '#e0aa4a' }
+      },
+      {
+        selector: '.faded',
+        style: { 'opacity': 0.15 }
+      }
+    ],
+    layout: { name: 'cose', animate: true, animationDuration: 600, idealEdgeLength: 120, nodeRepulsion: 8000 },
+    userZoomingEnabled:    true,
+    userPanningEnabled:    true,
+    boxSelectionEnabled:   false,
+    autounselectify:       false,
+  });
+
+  cy.ready(function () {
+    document.getElementById('ig-loading').style.display = 'none';
+  });
+
+  /* ── Node click → panel ─────────────────────────────────────────────────── */
+  cy.on('tap', 'node', function (evt) {
+    var node = evt.target;
+    var data = node.data();
+    openPanel(node, data);
+    fadeTo(node);
+  });
+
+  cy.on('tap', 'edge', function (evt) {
+    var e = evt.target;
+    cy.elements().removeClass('faded');
+    e.source().removeClass('faded');
+    e.target().removeClass('faded');
+    e.removeClass('faded');
+  });
+
+  cy.on('tap', function (evt) {
+    if (evt.target === cy) {
+      cy.elements().removeClass('faded');
+      closePanel();
+    }
+  });
+
+  function fadeTo(node) {
+    var connected = node.closedNeighborhood();
+    cy.elements().addClass('faded');
+    connected.removeClass('faded');
+  }
+
+  function openPanel(node, data) {
+    var panel = document.getElementById('ig-panel');
+    document.getElementById('ig-panel-type').textContent = data.type || '—';
+    document.getElementById('ig-panel-name').textContent = data.label;
+    document.getElementById('ig-panel-meta').innerHTML =
+      'Confidence: ' + ((data.confidence || 0) * 100).toFixed(0) + '%<br>' +
+      'Type: ' + (data.type || '—');
+
+    var relsEl = document.getElementById('ig-panel-rels');
+    relsEl.innerHTML = '';
+
+    node.connectedEdges().forEach(function (edge) {
+      var src   = edge.source().data('label');
+      var tgt   = edge.target().data('label');
+      var rel   = edge.data('relation');
+      var desc  = edge.data('description');
+      var meth  = edge.data('method');
+
+      var div = document.createElement('div');
+      div.className = 'ig-panel__rel';
+      div.innerHTML =
+        '<span class="ig-panel__rel-type">' + rel + ' · ' + meth + '</span>' +
+        (src === data.label
+          ? '→ <strong>' + tgt + '</strong>'
+          : '<strong>' + src + '</strong> →') +
+        (desc ? '<br><span style="font-size:0.72rem;opacity:0.6;">' + desc.slice(0, 80) + '</span>' : '');
+      relsEl.appendChild(div);
+    });
+
+    panel.classList.add('open');
+  }
+
+  function closePanel() {
+    document.getElementById('ig-panel').classList.remove('open');
+  }
+  window.closePanel = closePanel;
+
+  /* ── Reset layout ───────────────────────────────────────────────────────── */
+  function resetLayout() {
+    cy.layout({ name: 'cose', animate: true, animationDuration: 400,
+                idealEdgeLength: 120, nodeRepulsion: 8000 }).run();
+  }
+  window.resetLayout = resetLayout;
+
+  /* ── Search ─────────────────────────────────────────────────────────────── */
+  document.getElementById('ig-search').addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    if (!q) { cy.elements().removeClass('faded'); return; }
+    cy.elements().addClass('faded');
+    cy.nodes().filter(function (n) {
+      return n.data('label').toLowerCase().includes(q);
+    }).closedNeighborhood().removeClass('faded');
+  });
+
+})();
+</script>
+
+</body>
+</html>
