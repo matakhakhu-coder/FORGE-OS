@@ -1,8 +1,14 @@
 {
-  "buildCommand": "",
-  "outputDirectory": "dist",
-  "installCommand": "",
-  "framework": null,
+  "version": 2,
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "builds": [
+    {
+      "src": "dist/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/dist/$1" }
+  ]
 }
