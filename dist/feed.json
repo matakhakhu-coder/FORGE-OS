@@ -1,6 +1,141 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "08 Jun 2026 05:08 UTC",
-  "items": []
+  "generated_at": "08 Jun 2026 05:15 UTC",
+  "items": [
+    {
+      "kind": "article",
+      "title": "Operation Magaqa: Anatomy of a Cover-Up",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:15:11.610283+00:00",
+      "summary": "Nine years after the assassination of ANC Youth League Secretary-General Sindiso Magaqa, a pattern of deliberate obstruction has emerged — culminating in the arrest of a sitting MP for interfering with the murder probe.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/operation-magaqa-anatomy-of-a-cover-up.html"
+    },
+    {
+      "kind": "article",
+      "title": "KZN HAWKS: Three Signals, One Pattern",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:15:11.610283+00:00",
+      "summary": "Three independent signals from the KZN Directorate for Priority Crime Investigation — a cocaine theft, a R200m drug disappearance, and commission testimony about protocol failures — converge on a single conclusion: systemic evidence-handling compromise within South Africa's elite crime unit.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/kzn-hawks-three-signals-one-pattern.html"
+    },
+    {
+      "kind": "article",
+      "title": "R21 Billion and a Wig Store: The Eskom Diesel Fraud",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-08T05:15:11.610283+00:00",
+      "summary": "AmaBhungane's investigation into a R21 billion Eskom diesel contract reveals a front company operated by a 24-year-old psychology graduate who simultaneously sold wigs online. The procurement structure raises systemic questions about state-owned enterprise due diligence.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/eskom-r21bn-diesel-fraud-mavuso.html"
+    },
+    {
+      "kind": "signal",
+      "title": "SAPS Madlanga task team arrest Julius Mkhwanazi for fraud and corruption - TimesLIVE",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "Julius Mkhwanazi was arrested by the SAPS Madlanga task team in April 2026 on charges of fraud and corruption. The arrest is part of a broader investigation into Limpopo municipal procurement irregularities. The Madlanga...",
+      "source": "TIMESLIVE_CORRUPTION",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Murdered Emfuleni official Martha Rantsofu’s brother reveals family’s grief as investigations continue - Daily Maverick",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "The brother of murdered Emfuleni Local Municipality official Martha Rantsofu has spoken publicly about the family's grief as the investigation continues. Rantsofu was killed in circumstances that may be linked to her rol...",
+      "source": "DAILYMAVERICK_CORRUPTION",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Fadiel Adams arrested over alleged interference in Magaqa murder probe - Daily Maverick",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "ANC National Council of Provinces MP Fadiel Adams was arrested in May 2026 on charges of allegedly interfering with the investigation into the 2017 murder of ANC Youth League leader Sindiso Magaqa. Adams, a KZN-based NCC...",
+      "source": "DAILYMAVERICK_CORRUPTION",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "KZN Hawks boss should have had lie detector test after R200m drugs vanished, commission hears - TimesLIVE",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "A commission of inquiry has heard testimony that the KZN Hawks provincial head should have been subjected to a polygraph examination after R200 million worth of narcotics vanished from a Hawks evidence facility. The test...",
+      "source": "TIMESLIVE_CORRUPTION",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Sniffing cops say cocaine theft from Hawks office could be an inside job - TimesLIVE",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "Drug-detection canines deployed at the KZN Hawks offices indicated the presence of narcotics after a significant cocaine seizure went missing from an evidence locker. Sources within the unit told TimesLIVE the theft coul...",
+      "source": "TIMESLIVE_CORRUPTION",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "South African security official accuses police minister of colluding with crime syndicates - PBS",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "A senior South African security official levelled allegations at the police minister of colluding with organised crime syndicates, in a disclosure reported by PBS. The allegation, made through official channels, signals ...",
+      "source": "DORK",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "SAPS Corruption: How high-ranking officials sabotaged murder investigations - IOL",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "An investigative report by IOL has detailed how high-ranking SAPS officials systematically undermined murder investigations, with dockets going missing, witnesses intimidated, and case officers reassigned. The pattern sp...",
+      "source": "DORK",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Inside Eskom’s dodgy R21-billion diesel contract",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-08T05:13:04.777572+00:00",
+      "summary": "AmaBhungane has exposed a R21 billion Eskom diesel procurement contract linked to Minenhle Mavuso, a 24-year-old BA Psychology graduate who simultaneously operated an online hair products store. Mavuso is alleged to have...",
+      "source": "AMABHUNGANE",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    }
+  ]
 }
