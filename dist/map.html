@@ -135,7 +135,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">08 Jun 2026 14:04 UTC</span>
+        <span class="site-ts mono">08 Jun 2026 14:15 UTC</span>
       </div>
     </div>
   </header>
@@ -152,7 +152,7 @@
   <div class="map-bar">
     <span class="map-bar__title">Signal Map</span>
     <span class="map-bar__count">8 geo-tagged signals</span>
-    <span class="map-bar__title" style="margin-left:auto;">08 Jun 2026 14:04 UTC</span>
+    <span class="map-bar__title" style="margin-left:auto;">08 Jun 2026 14:15 UTC</span>
   </div>
   <div id="map"></div>
 </div>
@@ -166,7 +166,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 08 Jun 2026 14:04 UTC
+        Generated 08 Jun 2026 14:15 UTC
       </div>
     </div>
   </footer>
@@ -251,28 +251,36 @@
     spider = null;
   }
 
-  /* ── Spiderfy ──────────────────────────────────────────────────────────────── */
+  /* ── Spiderfy — pixel-space projection ────────────────────────────────────── */
   function openSpider(clusterEl, group) {
-    var n      = group.length;
-    var cLat   = group[0].lat;
-    var cLng   = group[0].lng;
-    var cosLat = Math.cos(cLat * Math.PI / 180);
+    var n    = group.length;
+    var cLat = group[0].lat;
+    var cLng = group[0].lng;
 
-    // Radius scales with group size so sub-markers never overlap each other
-    var radius = Math.max(0.055, 0.024 * Math.sqrt(n));
+    // Project cluster centre into screen pixel space at current view
+    var centerPx = map.latLngToContainerPoint([cLat, cLng]);
+
+    // Pixel radius: base 50px + 3px per additional signal
+    // Stays consistent across zoom levels regardless of geographic scale
+    var pixelRadius = 50 + (n * 3);
 
     var legs = [];
     var subs = [];
 
     group.forEach(function (m, i) {
-      // Start at top (−π/2), go clockwise
-      var angle  = -Math.PI / 2 + (2 * Math.PI * i) / n;
-      var sLat   = cLat + radius * Math.cos(angle);
-      var sLng   = cLng + (radius / cosLat) * Math.sin(angle);
-      var color  = STREAM_COLOR[m.stream] || '#7a95aa';
+      // Evenly distribute spokes, starting at top (−π/2), clockwise
+      var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+
+      // Target in pixel space, then project back to geographic coords
+      var targetPx  = L.point(
+        centerPx.x + pixelRadius * Math.cos(angle),
+        centerPx.y + pixelRadius * Math.sin(angle)
+      );
+      var sLatLng = map.containerPointToLatLng(targetPx);
+      var color   = STREAM_COLOR[m.stream] || '#7a95aa';
 
       // Spider leg — dashed, subdued
-      var leg = L.polyline([[cLat, cLng], [sLat, sLng]], {
+      var leg = L.polyline([[cLat, cLng], sLatLng], {
         color:     color,
         weight:    1.5,
         opacity:   0.38,
@@ -280,8 +288,8 @@
       }).addTo(map);
       legs.push(leg);
 
-      // Sub-marker
-      var sm = L.circleMarker([sLat, sLng], {
+      // Sub-marker at projected position
+      var sm = L.circleMarker(sLatLng, {
         radius:      7,
         fillColor:   color,
         color:       color,
@@ -356,8 +364,12 @@
     }
   });
 
-  /* ── Click on canvas background — collapse any open spider ────────────────── */
-  map.on('click', clearSpider);
+  /* ── Collapse spider on background click, zoom, or pan ────────────────────── */
+  // Pixel-projected coordinates become stale the moment the view matrix changes,
+  // so collapse immediately on any movement rather than trying to reproject.
+  map.on('click',     clearSpider);
+  map.on('zoomstart', clearSpider);
+  map.on('movestart', clearSpider);
 
 })();
 </script>
