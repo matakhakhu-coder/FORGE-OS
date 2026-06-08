@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signal Map — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<style>
+  .site-main { padding: 0; }
+  .map-shell  { display: flex; flex-direction: column; height: calc(100vh - 88px); }
+  .map-bar    {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-dim);
+    flex-shrink: 0;
+  }
+  .map-bar__title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .map-bar__count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+  #map { flex: 1; }
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <nav class="site-nav">
+        <a href="index.html" class="site-nav__link ">Feed</a>
+        <a href="map.html" class="site-nav__link site-nav__link--active">Map</a>
+        <a href="feed.json" class="site-nav__link" target="_blank" rel="noopener">JSON</a>
+      </nav>
+      <div class="site-header__meta">
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">08 Jun 2026 05:08 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="map-shell">
+  <div class="map-bar">
+    <span class="map-bar__title">Signal Map</span>
+    <span class="map-bar__count">0 geo-tagged signals</span>
+    <span class="map-bar__title" style="margin-left:auto;">08 Jun 2026 05:08 UTC</span>
+  </div>
+  <div id="map"></div>
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
+      </div>
+      <div class="site-footer__right mono">
+        Generated 08 Jun 2026 05:08 UTC
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/js/site.js"></script>
+  
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(function () {
+  var map = L.map('map', { zoomControl: true }).setView([-28.5, 25], 5);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  var streamColors = {
+    CRIME_INTEL:    '#c0392b',
+    INFRASTRUCTURE: '#2980b9',
+    PRIORITY:       '#c8943a',
+    GLOBAL:         '#27ae60'
+  };
+
+  var markers = [];
+
+  markers.forEach(function (m) {
+    if (!m.lat || !m.lng) return;
+    var color  = streamColors[m.stream] || '#7a95aa';
+    var circle = L.circleMarker([m.lat, m.lng], {
+      radius:      7,
+      fillColor:   color,
+      color:       color,
+      weight:      1.5,
+      opacity:     0.9,
+      fillOpacity: 0.55
+    });
+
+    var ts   = m.published_fmt || m.published_at || '—';
+    var src  = m.source ? '<span style="font-family:monospace;font-size:0.7em;opacity:0.6;">' + m.source + '</span><br>' : '';
+    var grav = m.gravity_score ? '<br><span style="font-family:monospace;font-size:0.65em;opacity:0.5;">G ' + m.gravity_score.toFixed(2) + '</span>' : '';
+
+    circle.bindPopup(
+      '<div style="font-family:IBM Plex Sans,sans-serif;min-width:200px;">' +
+        '<div style="font-size:0.6em;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-bottom:4px;">' +
+          m.stream_label +
+        '</div>' +
+        src +
+        '<strong style="font-size:0.85em;">' + m.title + '</strong>' +
+        grav +
+        '<br><span style="font-size:0.65em;opacity:0.4;">' + ts + '</span>' +
+      '</div>'
+    );
+
+    circle.addTo(map);
+  });
+})();
+</script>
+
+</body>
+</html>
