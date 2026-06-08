@@ -202,7 +202,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">08 Jun 2026 14:48 UTC</span>
+        <span class="site-ts mono">08 Jun 2026 14:55 UTC</span>
       </div>
     </div>
   </header>
@@ -220,14 +220,14 @@
   <div id="ig-toolbar">
     <span class="ig-title">Intel Graph</span>
     <div class="ig-sep"></div>
-    <span class="ig-stat"><strong id="ig-node-count">13</strong> actors</span>
-    <span class="ig-stat"><strong id="ig-edge-count">10</strong> relationships</span>
+    <span class="ig-stat"><strong id="ig-node-count">15</strong> actors</span>
+    <span class="ig-stat"><strong id="ig-edge-count">9</strong> relationships</span>
     <div class="ig-sep"></div>
     <button class="ig-btn" onclick="cy.fit()">Fit</button>
     <button class="ig-btn" onclick="resetLayout()">Reset</button>
     <div class="ig-spacer"></div>
     <input id="ig-search" type="text" placeholder="Search actor…">
-    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 14:48 UTC</span>
+    <span class="ig-stat" style="margin-left:auto;">08 Jun 2026 14:55 UTC</span>
   </div>
 
   <div id="ig-body">
@@ -276,7 +276,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 08 Jun 2026 14:48 UTC
+        Generated 08 Jun 2026 14:55 UTC
       </div>
     </div>
   </footer>
@@ -287,7 +287,7 @@
 (function () {
   'use strict';
 
-  var GRAPH_DATA = {"edges": [{"confidence": 0.3, "description": "Auto-extracted from signal 44eaffe0-987 | title: Npa Top Leadership Structure Is Almost Complete As President Ramaphosa Appoints ", "method": "spacy", "relation": "LEADS", "source": 5, "target": 17}, {"confidence": 0.325, "description": "Auto-extracted from signal 5f4655ab-683 | Two suspects arrested for possession of mandrax worth R3.5 Million : HAWKS Date ", "method": "spacy", "relation": "INVESTIGATED_BY", "source": 9, "target": 10}, {"confidence": 0.3, "description": "Auto-extracted from signal 467dc7b0-28e | title: Ramaphosa appoints Puleng Dimpane as acting SAPS commissioner - Daily Maverick", "method": "spacy", "relation": "LEADS", "source": 9, "target": 17}, {"confidence": 0.344, "description": "", "method": "spacy", "relation": "CONTRACTED", "source": 17, "target": 9}, {"confidence": 0.35, "description": "SAPS Madlanga task team arrested Mkhwanazi April 2026, fraud/corruption. Source: timeslive_corruption S-04.", "method": "manual", "relation": "INVESTIGATED_BY", "source": 40, "target": 10}, {"confidence": 0.2, "description": "Suspected Limpopo municipal official \u2014 UNVERIFIED. Pending SAFLII cross-reference.", "method": "manual", "relation": "EMPLOYED_BY", "source": 40, "target": 14}, {"confidence": 0.8, "description": "Godfrey Lebeya is National Head of DPCI/HAWKS. Public record.", "method": "manual", "relation": "LEADS", "source": 41, "target": 10}, {"confidence": 0.65, "description": "Arrested for alleged interference in Magaqa murder probe. Daily Maverick + News24, May 2026.", "method": "manual", "relation": "INVESTIGATED_FOR", "source": 46, "target": 47}, {"confidence": 0.5, "description": "Emfuleni Local Municipality official. Source: Daily Maverick May 2026.", "method": "manual", "relation": "EMPLOYED_BY", "source": 48, "target": 14}, {"confidence": 0.4, "description": "Front company operator in R21bn Eskom diesel fraud. Source: amabhungane May 2026.", "method": "manual", "relation": "CONTRACTED", "source": 49, "target": 19}], "nodes": [{"confidence": 0.8, "id": 47, "name": "Sindiso Magaqa", "type": "person"}, {"confidence": 0.65, "id": 46, "name": "Fadiel Adams", "type": "person"}, {"confidence": 0.6, "id": 41, "name": "Godfrey Lebeya", "type": "person"}, {"confidence": 0.5, "id": 5, "name": "National Prosecuting Authority", "type": "institution"}, {"confidence": 0.5, "id": 9, "name": "South African Police Service", "type": "institution"}, {"confidence": 0.5, "id": 10, "name": "Directorate for Priority Crime Investigation", "type": "institution"}, {"confidence": 0.5, "id": 12, "name": "African National Congress", "type": "institution"}, {"confidence": 0.5, "id": 14, "name": "South African Municipalities", "type": "institution"}, {"confidence": 0.5, "id": 17, "name": "Cyril Ramaphosa", "type": "person"}, {"confidence": 0.5, "id": 19, "name": "Eskom", "type": "institution"}, {"confidence": 0.5, "id": 48, "name": "Martha Rantsofu", "type": "person"}, {"confidence": 0.4, "id": 49, "name": "Minenhle Mavuso", "type": "person"}, {"confidence": 0.35, "id": 40, "name": "Julius Mkhwanazi", "type": "person"}]};
+  var GRAPH_DATA = {"edges": [{"confidence": 0.35, "description": "SAPS Madlanga task team arrested Mkhwanazi April 2026, fraud/corruption. Source: timeslive_corruption S-04.", "method": "manual", "relation": "INVESTIGATED_BY", "source": 40, "target": 10}, {"confidence": 0.8, "description": "Godfrey Lebeya is National Head of DPCI/HAWKS. Public record.", "method": "manual", "relation": "LEADS", "source": 41, "target": 10}, {"confidence": 0.65, "description": "Arrested for alleged interference in Magaqa murder probe. Daily Maverick + News24, May 2026.", "method": "manual", "relation": "INVESTIGATED_FOR", "source": 46, "target": 47}, {"confidence": 0.4, "description": "Front company operator in R21bn Eskom diesel fraud. Source: amabhungane May 2026.", "method": "manual", "relation": "CONTRACTED", "source": 49, "target": 19}, {"confidence": 0.8, "description": "WHO maintains a permanent country office in Kinshasa and leads outbreak investigation and response coordination in DRC \u2014 the highest-burden disease surveillance zone in the SADC corridor.", "method": "manual", "relation": "INVESTIGATES", "source": 50, "target": 53}, {"confidence": 0.85, "description": "CDC HAN advisories routinely reference and coordinate with WHO Disease Outbreak News declarations on international health events.", "method": "manual", "relation": "AFFILIATED_WITH", "source": 51, "target": 50}, {"confidence": 0.65, "description": "SADC regional health coordination framework includes DRC as a priority surveillance partner given its role as the primary cross-border disease vector into eastern and southern Africa.", "method": "manual", "relation": "LEADS", "source": 52, "target": 53}, {"confidence": 0.75, "description": "ProMED serves as an early-warning noise layer feeding into the WHO Global Outbreak Alert and Response Network (GOARN).", "method": "manual", "relation": "AFFILIATED_WITH", "source": 54, "target": 50}, {"confidence": 0.6, "description": "UNFPA regional office coordinates with SADC on reproductive health emergency response and humanitarian health programming across conflict-affected member states.", "method": "manual", "relation": "AFFILIATED_WITH", "source": 55, "target": 52}], "nodes": [{"confidence": 0.9, "id": 50, "name": "World Health Organization", "type": "institution"}, {"confidence": 0.85, "id": 51, "name": "CDC Health Alert Network", "type": "institution"}, {"confidence": 0.8, "id": 47, "name": "Sindiso Magaqa", "type": "person"}, {"confidence": 0.75, "id": 52, "name": "SADC Health Ministers Meeting", "type": "government"}, {"confidence": 0.72, "id": 53, "name": "DRC Ministry of Health", "type": "government"}, {"confidence": 0.7, "id": 54, "name": "ProMED Mail", "type": "media"}, {"confidence": 0.65, "id": 46, "name": "Fadiel Adams", "type": "person"}, {"confidence": 0.65, "id": 55, "name": "UNFPA Africa Regional Office", "type": "institution"}, {"confidence": 0.6, "id": 41, "name": "Godfrey Lebeya", "type": "person"}, {"confidence": 0.5, "id": 10, "name": "Directorate for Priority Crime Investigation", "type": "institution"}, {"confidence": 0.5, "id": 17, "name": "Cyril Ramaphosa", "type": "person"}, {"confidence": 0.5, "id": 19, "name": "Eskom", "type": "institution"}, {"confidence": 0.5, "id": 48, "name": "Martha Rantsofu", "type": "person"}, {"confidence": 0.4, "id": 49, "name": "Minenhle Mavuso", "type": "person"}, {"confidence": 0.35, "id": 40, "name": "Julius Mkhwanazi", "type": "person"}]};
 
   /* ── Node colours: dark fill + bright border ring (FORGE design language) ── */
   var TYPE_NODE = {
