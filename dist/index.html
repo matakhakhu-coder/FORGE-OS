@@ -233,6 +233,42 @@
   background: var(--border-dim);
 }
 
+/* ── Stream filter bar ──────────────────────────────────────────────────── */
+.tl-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-6);
+}
+.tl-filter {
+  font-family: var(--font-mono);
+  font-size: 0.60rem;
+  letter-spacing: 0.07em;
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--border-dim);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  white-space: nowrap;
+}
+.tl-filter:hover {
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+.tl-filter.active {
+  background: var(--bg-elevated);
+  border-color: var(--accent-muted);
+  color: var(--accent-bright);
+}
+.tl-filter[data-filter="CRIME_INTEL"].active  { border-color: var(--crime);    color: var(--crime); }
+.tl-filter[data-filter="INFRASTRUCTURE"].active { border-color: var(--infra);  color: var(--infra); }
+.tl-filter[data-filter="PRIORITY"].active     { border-color: var(--priority); color: var(--priority); }
+.tl-filter[data-filter="GLOBAL"].active       { border-color: var(--global);   color: var(--global); }
+.tl-filter[data-filter="article"].active      { border-color: var(--accent);   color: var(--accent); }
+
 /* ── Empty state ────────────────────────────────────────────────────────── */
 .tl-empty {
   text-align: center;
@@ -241,6 +277,7 @@
   font-family: var(--font-mono);
   font-size: 0.72rem;
 }
+.tl-month-empty { display: none; }
 </style>
 
 </head>
@@ -261,7 +298,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">08 Jun 2026 14:31 UTC</span>
+        <span class="site-ts mono">08 Jun 2026 14:48 UTC</span>
       </div>
     </div>
   </header>
@@ -297,13 +334,22 @@
       <span class="tl-span__lbl">Latest entry</span>
     </div>
     <div class="tl-span__item" style="margin-left:auto;">
-      <span class="tl-span__val mono">25</span>
+      <span class="tl-span__val mono">26</span>
       <span class="tl-span__lbl">Total items</span>
     </div>
   </div>
   
 
   
+
+  <div class="tl-filters" id="tl-filters">
+    <button class="tl-filter active" data-filter="all">All</button>
+    <button class="tl-filter" data-filter="article">✎ Analysis</button>
+    <button class="tl-filter" data-filter="CRIME_INTEL">Crime &amp; Security</button>
+    <button class="tl-filter" data-filter="INFRASTRUCTURE">Infrastructure</button>
+    <button class="tl-filter" data-filter="PRIORITY">Priority</button>
+    <button class="tl-filter" data-filter="GLOBAL">Global</button>
+  </div>
 
   <div class="tl">
     <div class="tl__spine"></div>
@@ -313,12 +359,14 @@
       <div class="tl__year-badge">2026</div>
 
       
-      <div class="tl__month">
+      <div class="tl__month" data-month="June 2026">
         <div class="tl__month-label mono">June 2026</div>
 
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -348,12 +396,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -383,12 +435,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="GLOBAL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--GLOBAL"></div>
           </div>
@@ -417,12 +473,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -452,12 +512,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -487,12 +551,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -522,12 +590,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="GLOBAL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--GLOBAL"></div>
           </div>
@@ -556,12 +628,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -591,12 +667,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -624,12 +704,16 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="PRIORITY"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -659,12 +743,51 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
             </div>
           </div>
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
+          <div class="tl__node-col">
+            <div class="tl__node tl__node--article"></div>
+          </div>
+          <div class="tl__card tl__card--article">
+            <div class="tl__card-header">
+              
+              <span class="badge badge--article">✎ Analysis</span>
+              
+              <span class="badge badge--stream badge--PRIORITY">Priority Intelligence</span>
+              <span class="tl__card-date mono">08 Jun 2026 - 14:00</span>
+            </div>
+
+            <div class="tl__card-title">
+              
+              <a href="articles/project-aegis-sadc-health-security.html">Project Aegis: SADC Health Security and the Surveillance Gap</a>
+              
+            </div>
+
+            
+            <div class="tl__card-body">Open-source monitoring of disease vectors, humanitarian crises, and cross-border health risks across the SADC corridor and international transit nodes.</div>
+            
+
+            <div class="tl__card-footer">
+              
+              
+              <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
+              
+            </div>
+          </div>
+        </div>
+        
+        
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -697,7 +820,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -730,7 +855,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -763,7 +890,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -796,7 +925,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -829,7 +960,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -862,7 +995,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="article"
+             data-kind="article">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -895,7 +1030,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -930,7 +1067,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -965,7 +1104,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1000,7 +1141,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1035,7 +1178,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1070,7 +1215,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1105,7 +1252,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="CRIME_INTEL"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1140,7 +1289,9 @@
         </div>
         
         
-        <div class="tl__entry">
+        <div class="tl__entry"
+             data-stream="INFRASTRUCTURE"
+             data-kind="signal">
           <div class="tl__node-col">
             <div class="tl__node tl__node--INFRASTRUCTURE"></div>
           </div>
@@ -1198,12 +1349,56 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 08 Jun 2026 14:31 UTC
+        Generated 08 Jun 2026 14:48 UTC
       </div>
     </div>
   </footer>
 
   <script src="static/js/site.js"></script>
   
+<script>
+(function () {
+  'use strict';
+
+  var filters = document.querySelectorAll('.tl-filter');
+  var entries = document.querySelectorAll('.tl__entry');
+  var months  = document.querySelectorAll('.tl__month');
+  var years   = document.querySelectorAll('.tl__year');
+
+  function applyFilter(f) {
+    /* Show / hide individual timeline entries */
+    entries.forEach(function (el) {
+      var match = f === 'all'
+        || el.dataset.stream === f
+        || (f === 'article' && el.dataset.kind === 'article');
+      el.style.display = match ? '' : 'none';
+    });
+
+    /* Collapse month sections that have no visible entries */
+    months.forEach(function (section) {
+      var hasVisible = Array.from(section.querySelectorAll('.tl__entry'))
+        .some(function (e) { return e.style.display !== 'none'; });
+      section.style.display = hasVisible ? '' : 'none';
+    });
+
+    /* Collapse year sections that have no visible months */
+    years.forEach(function (section) {
+      var hasVisible = Array.from(section.querySelectorAll('.tl__month'))
+        .some(function (m) { return m.style.display !== 'none'; });
+      section.style.display = hasVisible ? '' : 'none';
+    });
+  }
+
+  filters.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filters.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      applyFilter(btn.dataset.filter);
+    });
+  });
+
+})();
+</script>
+
 </body>
 </html>
