@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+{% block title %}{{ case.name }}{% endblock %}
+{% block css_path %}../static/css/site.css{% endblock %}
+{% block js_path %}../static/js/site.js{% endblock %}
+{% block home_href %}../index.html{% endblock %}
+{% block nav_timeline %}../index.html{% endblock %}
+{% block nav_cases %}../cases.html{% endblock %}
+{% block nav_cases_active %}site-nav__link--active{% endblock %}
+{% block nav_graph %}../graph.html{% endblock %}
+{% block nav_map %}../map.html{% endblock %}
+
+{% block head_extra %}
+<style>
+/* ── Screen layout ──────────────────────────────────────────────────────────── */
+.cd-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.cd-back {
+  margin-bottom: var(--sp-5);
+}
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+/* ── Classification bar ─────────────────────────────────────────────────────── */
+.cd-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(200,148,58,0.06);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-radius: var(--r-sm);
+  color: var(--accent-muted);
+  margin-bottom: var(--sp-6);
+}
+
+/* ── Case header ────────────────────────────────────────────────────────────── */
+.cd-header { margin-bottom: var(--sp-6); }
+.cd-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-case-id {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.cd-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(200,148,58,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(200,148,58,0.25);
+}
+.cd-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.cd-header__created {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+/* ── Scorecard row ──────────────────────────────────────────────────────────── */
+.cd-scorecard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+.cd-score {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+}
+.cd-score__val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.cd-score__lbl {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-coe-track {
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+}
+.cd-coe-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* ── Section ────────────────────────────────────────────────────────────────── */
+.cd-section {
+  margin-bottom: var(--sp-8);
+}
+.cd-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+/* ── Hypothesis block ───────────────────────────────────────────────────────── */
+.cd-hypothesis {
+  background: rgba(200,148,58,0.05);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ── Description block ──────────────────────────────────────────────────────── */
+.cd-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ── Signal evidence ────────────────────────────────────────────────────────── */
+.cd-signals { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.cd-signal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: var(--sp-3);
+}
+.cd-signal__gravity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.cd-signal__score {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-signal__bar {
+  width: 24px;
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.cd-signal__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+.cd-signal__body {}
+.cd-signal__title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+  line-height: 1.3;
+}
+.cd-signal__summary {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-2);
+}
+.cd-signal__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-signal__source {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+}
+.cd-signal__note {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent-muted);
+  font-style: italic;
+}
+
+/* ── Actors ─────────────────────────────────────────────────────────────────── */
+.cd-actors { display: flex; flex-direction: column; gap: var(--sp-3); }
+.cd-actor {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+}
+.cd-actor__dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cd-actor__name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-actor__type {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-actor__confidence {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+/* ── Print button ───────────────────────────────────────────────────────────── */
+.cd-print-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-8);
+}
+.cd-print-bar__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+.cd-print-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-void);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-5);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cd-print-btn:hover { background: var(--accent-bright); }
+
+/* ── PRINT STYLES ───────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide everything site-chrome */
+  .site-header, .class-banner, .site-footer,
+  .cd-back, .cd-print-bar, .site-nav { display: none !important; }
+
+  body, html {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 10pt;
+  }
+
+  .site-main { padding: 0 !important; }
+  .cd-shell   { max-width: 100%; padding: 0 1cm !important; }
+
+  /* Print header */
+  .cd-shell::before {
+    content: "ZA-DIVERGENT INTELLIGENCE BRIEF — OPEN SOURCE — UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    text-align: center;
+    border-bottom: 1pt solid #999;
+    padding-bottom: 6pt;
+    margin-bottom: 16pt;
+    color: #666;
+  }
+  .cd-shell::after {
+    content: "ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN SOURCE · UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    text-align: center;
+    border-top: 1pt solid #999;
+    padding-top: 6pt;
+    margin-top: 16pt;
+    color: #666;
+  }
+
+  .cd-classification {
+    background: #f5f0e8 !important;
+    border: 1pt solid #c8943a !important;
+    color: #7a5c1e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-header__title { font-size: 18pt; color: #111 !important; }
+
+  .cd-score {
+    background: #f8f8f8 !important;
+    border: 1pt solid #ddd !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-score__val  { color: #7a5c1e !important; }
+  .cd-score__lbl  { color: #666 !important; }
+
+  .cd-hypothesis {
+    background: #fdf8f0 !important;
+    border-left: 3pt solid #c8943a !important;
+    color: #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-description { color: #333 !important; }
+
+  .cd-signal {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-signal__title   { color: #111 !important; }
+  .cd-signal__summary { color: #444 !important; }
+
+  .cd-actor {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-actor__name { color: #111 !important; }
+
+  .cd-section__title { color: #666 !important; }
+  .cd-coe-fill, .cd-signal__bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cd-shell">
+
+  <div class="cd-back">
+    <a href="../cases.html" class="btn-back">← All Cases</a>
+  </div>
+
+  <div class="cd-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Unclassified · For Analyst Use
+  </div>
+
+  <div class="cd-header">
+    <div class="cd-header__row">
+      <span class="cd-case-id">CASE-{{ '%02d'|format(case.case_id) }}</span>
+      <span class="cd-status">Active Investigation</span>
+    </div>
+    <h1 class="cd-header__title">{{ case.name }}</h1>
+    <div class="cd-header__created mono">Opened {{ case.created_fmt }} · Updated {{ case.updated_fmt }} · {{ generated_at }}</div>
+  </div>
+
+  <div class="cd-scorecard">
+    {% set coe_pct = (case.coe * 100)|int %}
+    {% set coe_color = '#c0392b' if coe_pct >= 45 else ('#c8943a' if coe_pct >= 30 else '#2980b9') %}
+    <div class="cd-score">
+      <div class="cd-score__val">{{ '%.2f'|format(case.coe) }}</div>
+      <div class="cd-score__lbl">Evidence Weight</div>
+      <div class="cd-coe-track">
+        <div class="cd-coe-fill" style="width:{{ coe_pct }}%; background:{{ coe_color }};"></div>
+      </div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">{{ case.signal_count }}</div>
+      <div class="cd-score__lbl">Pinned Signals</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">{{ case.actor_count }}</div>
+      <div class="cd-score__lbl">Linked Actors</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">{{ case.max_gravity|round(2) }}</div>
+      <div class="cd-score__lbl">Peak Signal</div>
+    </div>
+  </div>
+
+  <div class="cd-print-bar">
+    <span class="cd-print-bar__label">Download this case brief as PDF</span>
+    <button class="cd-print-btn" onclick="window.print()">⬇ Download Brief</button>
+  </div>
+
+  {% if case.description %}
+  <div class="cd-section">
+    <div class="cd-section__title">Case Summary</div>
+    <div class="cd-description">{{ case.description }}</div>
+  </div>
+  {% endif %}
+
+  {% if case.hypothesis %}
+  <div class="cd-section">
+    <div class="cd-section__title">Analyst Hypothesis</div>
+    <div class="cd-hypothesis">{{ case.hypothesis }}</div>
+  </div>
+  {% endif %}
+
+  {% if signals %}
+  <div class="cd-section">
+    <div class="cd-section__title">Evidence — {{ signals|length }} Signals</div>
+    <div class="cd-signals">
+      {% for s in signals %}
+      {% set g_pct = (s.gravity_score * 100)|int %}
+      {% set g_color = '#c0392b' if g_pct >= 45 else ('#c8943a' if g_pct >= 30 else '#2980b9') %}
+      <div class="cd-signal">
+        <div class="cd-signal__gravity">
+          <span class="cd-signal__score">{{ '%.2f'|format(s.gravity_score) }}</span>
+          <div class="cd-signal__bar">
+            <div class="cd-signal__bar-fill" style="width:{{ g_pct }}%; background:{{ g_color }};"></div>
+          </div>
+        </div>
+        <div class="cd-signal__body">
+          <div class="cd-signal__title">{{ s.title }}</div>
+          {% if s.content %}
+          <div class="cd-signal__summary">{{ s.content[:220] }}{% if s.content|length > 220 %}…{% endif %}</div>
+          {% endif %}
+          <div class="cd-signal__meta">
+            {% if s.source %}<span class="cd-signal__source">{{ s.source|upper }}</span>{% endif %}
+            <span class="cd-signal__source mono">{{ s.published_fmt }}</span>
+            {% if s.note %}<span class="cd-signal__note">{{ s.note }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if actors %}
+  <div class="cd-section">
+    <div class="cd-section__title">Linked Actors — {{ actors|length }}</div>
+    <div class="cd-actors">
+      {% for a in actors %}
+      {% set type_colors = {
+        'person': '#c8943a',
+        'institution': '#2980b9',
+        'government': '#27ae60',
+        'political_party': '#c0392b',
+        'organization': '#16a085',
+        'movement': '#8e44ad',
+        'paramilitary': '#7f8c8d',
+        'media': '#2c3e50',
+      } %}
+      {% set dot_color = type_colors.get(a.type, '#3d5060') %}
+      <div class="cd-actor">
+        <div class="cd-actor__dot" style="background:{{ dot_color }};"></div>
+        <div>
+          <div class="cd-actor__name">{{ a.name }}</div>
+          <div class="cd-actor__type">{{ a.type }}</div>
+        </div>
+        <div class="cd-actor__confidence">{{ (a.confidence * 100)|int }}% conf</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="cd-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5); margin-top:var(--sp-8);">
+    <div class="cd-section__title">Methodology</div>
+    <div class="cd-description" style="font-size:0.75rem;">
+      All signals sourced from open-source media, public records, and official statements.
+      Evidence weight is derived from signal gravity scores (urgency × source credibility × recency).
+      Actor relationships are manually verified unless noted as automated extraction.
+      This brief is produced by the FORGE OSINT engine and reviewed by ZA-DIVERGENT analysts.
+    </div>
+  </div>
+
+</div>
+{% endblock %}

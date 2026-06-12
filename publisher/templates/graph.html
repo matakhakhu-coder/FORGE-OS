@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+{% block title %}Intelligence Graph{% endblock %}
+{% block nav_graph_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"
+        crossorigin="anonymous"></script>
+<style>
+  .site-main { padding: 0; }
+
+  #ig-root {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 88px);
+    background: var(--bg-void);
+  }
+
+  /* ── Toolbar ────────────────────────────────────────────────────────────── */
+  #ig-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-5);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-dim);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+  .ig-title {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: var(--sp-3);
+  }
+  .ig-stat {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+  }
+  .ig-stat strong { color: var(--text-secondary); }
+  .ig-sep { width: 1px; height: 16px; background: var(--border-dim); }
+  .ig-spacer { flex: 1; }
+  .ig-btn {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    padding: var(--sp-1) var(--sp-3);
+    cursor: pointer;
+    transition: all var(--t-fast);
+    white-space: nowrap;
+  }
+  .ig-btn:hover { color: var(--text-primary); border-color: var(--border-mid); }
+  #ig-search {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    padding: var(--sp-2) var(--sp-3);
+    width: 180px;
+    outline: none;
+    transition: border-color var(--t-fast);
+  }
+  #ig-search:focus { border-color: var(--accent-muted); }
+  #ig-search::placeholder { color: var(--text-ghost); }
+
+  /* ── Canvas ─────────────────────────────────────────────────────────────── */
+  #ig-body { display: flex; flex: 1; overflow: hidden; position: relative; }
+  #ig-cy   { flex: 1; background: var(--bg-void); }
+
+  /* ── Loading ────────────────────────────────────────────────────────────── */
+  #ig-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--bg-void); z-index: 20;
+    gap: var(--sp-4); pointer-events: none;
+  }
+  .ig-loading__label {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .ig-spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border-subtle);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: ig-spin 0.8s linear infinite;
+  }
+  @keyframes ig-spin { to { transform: rotate(360deg); } }
+
+  /* ── Detail panel ───────────────────────────────────────────────────────── */
+  #ig-panel {
+    width: 260px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-dim);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  #ig-panel.open { display: flex; }
+  .ig-panel__header {
+    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+    border-bottom: 1px solid var(--border-dim);
+    display: flex; align-items: center; gap: var(--sp-2);
+  }
+  .ig-panel__type {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .ig-panel__name {
+    font-family: var(--font-display); font-size: 1rem;
+    font-weight: 600; color: var(--text-primary);
+    padding: var(--sp-3) var(--sp-4) 0;
+  }
+  .ig-panel__meta {
+    padding: var(--sp-2) var(--sp-4) var(--sp-3);
+    font-family: var(--font-mono); font-size: 0.6rem;
+    color: var(--text-dim); line-height: 1.8;
+  }
+  .ig-panel__rels-title {
+    font-family: var(--font-mono); font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim);
+    padding: var(--sp-3) var(--sp-4) var(--sp-2);
+    border-top: 1px solid var(--border-dim);
+  }
+  .ig-panel__rel {
+    padding: var(--sp-2) var(--sp-4);
+    font-size: 0.78rem; color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    line-height: 1.4;
+  }
+  .ig-panel__rel-type {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.06em; color: var(--text-dim); display: block;
+    margin-bottom: 2px;
+  }
+  #ig-panel-close {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--text-dim); cursor: pointer; padding: 2px 6px;
+    border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+    background: transparent;
+  }
+  #ig-panel-close:hover { color: var(--text-primary); }
+
+  /* ── Legend ─────────────────────────────────────────────────────────────── */
+  #ig-legend {
+    position: absolute; bottom: var(--sp-5); left: var(--sp-5);
+    background: rgba(8,13,18,0.90);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-sm);
+    padding: var(--sp-3) var(--sp-4);
+    z-index: 5; pointer-events: none;
+  }
+  .ig-legend__title {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: var(--sp-3);
+  }
+  .ig-legend__row {
+    display: flex; align-items: center;
+    gap: var(--sp-2); margin-bottom: var(--sp-2);
+  }
+  .ig-legend__row:last-child { margin-bottom: 0; }
+  .ig-legend__dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .ig-legend__line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+  .ig-legend__lbl  { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="ig-root">
+
+  <div id="ig-toolbar">
+    <span class="ig-title">Intel Graph</span>
+    <div class="ig-sep"></div>
+    <span class="ig-stat"><strong id="ig-node-count">{{ graph.nodes|length }}</strong> actors</span>
+    <span class="ig-stat"><strong id="ig-edge-count">{{ graph.edges|length }}</strong> relationships</span>
+    <div class="ig-sep"></div>
+    <button class="ig-btn" onclick="cy.fit()">Fit</button>
+    <button class="ig-btn" onclick="resetLayout()">Reset</button>
+    <div class="ig-spacer"></div>
+    <input id="ig-search" type="text" placeholder="Search actor…">
+    <span class="ig-stat" style="margin-left:auto;">{{ generated_at }}</span>
+  </div>
+
+  <div id="ig-body">
+    <div id="ig-cy"></div>
+
+    <div id="ig-loading">
+      <div class="ig-spinner"></div>
+      <span class="ig-loading__label">Building graph…</span>
+    </div>
+
+    <div id="ig-legend">
+      <div class="ig-legend__title">Actor Type</div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#e0803a"></div><span class="ig-legend__lbl">Person</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#3a6ed4"></div><span class="ig-legend__lbl">Institution</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40a060"></div><span class="ig-legend__lbl">Government</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#c040a0"></div><span class="ig-legend__lbl">Political Party</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40b0c0"></div><span class="ig-legend__lbl">Media</span></div>
+      <div class="ig-legend__title" style="margin-top:var(--sp-3);">Relationship</div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#f7768e"></div><span class="ig-legend__lbl">Investigates</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#7aa2f7"></div><span class="ig-legend__lbl">Leads / Commands</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#9ece6a"></div><span class="ig-legend__lbl">Contracted / Employed</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#e0803a"></div><span class="ig-legend__lbl">Funded / Accused</span></div>
+      <div class="ig-legend__row"><div class="ig-legend__line" style="background:#bb9af7;opacity:0.5;"></div><span class="ig-legend__lbl" style="opacity:0.6;">Auto-extracted</span></div>
+    </div>
+
+    <div id="ig-panel">
+      <div class="ig-panel__header">
+        <span class="ig-panel__type" id="ig-panel-type">—</span>
+        <button id="ig-panel-close" onclick="closePanel()">✕</button>
+      </div>
+      <div class="ig-panel__name" id="ig-panel-name">—</div>
+      <div class="ig-panel__meta" id="ig-panel-meta"></div>
+      <div class="ig-panel__rels-title">Relationships</div>
+      <div id="ig-panel-rels"></div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  'use strict';
+
+  var GRAPH_DATA = {{ graph | tojson }};
+
+  /* ── Node colours: dark fill + bright border ring (FORGE design language) ── */
+  var TYPE_NODE = {
+    person:          { bg: '#2a1500', border: '#e0803a' },
+    institution:     { bg: '#0e1e3a', border: '#3a6ed4' },
+    government:      { bg: '#0a2010', border: '#40a060' },
+    political_party: { bg: '#2a0818', border: '#c040a0' },
+    organization:    { bg: '#0a2a22', border: '#20c090' },
+    movement:        { bg: '#2a0a2a', border: '#c040c0' },
+    paramilitary:    { bg: '#1a1010', border: '#c04040' },
+    media:           { bg: '#0a2a2a', border: '#40b0c0' },
+    other:           { bg: '#141e28', border: '#4a6080' },
+    unknown:         { bg: '#141e28', border: '#4a6080' },
+  };
+
+  /* ── Edge colours — Tokyo Night palette, matches FORGE intel graph ──────── */
+  var EDGE_COLOR = {
+    INVESTIGATES:      '#f7768e',
+    INVESTIGATED_FOR:  '#f7768e',
+    INVESTIGATED_BY:   '#f7768e',
+    ARRESTS:           '#f7768e',
+    LEADS:             '#7aa2f7',
+    COMMANDS:          '#7aa2f7',
+    MEMBER_OF:         '#7aa2f7',
+    CONTRACTED:        '#9ece6a',
+    EMPLOYED_BY:       '#9ece6a',
+    FUNDED_BY:         '#e0803a',
+    ACCUSED_OF:        '#e0803a',
+    AFFILIATED_WITH:   '#bb9af7',
+    ASSOCIATED_WITH:   '#bb9af7',
+  };
+
+  /* ── Build Cytoscape elements ───────────────────────────────────────────── */
+  var elements = [];
+
+  GRAPH_DATA.nodes.forEach(function (n) {
+    var nc = TYPE_NODE[n.type] || TYPE_NODE.unknown;
+    elements.push({
+      data: {
+        id:         'n' + n.id,
+        label:      n.name,
+        type:       n.type,
+        confidence: n.confidence,
+        _bg:        nc.bg,
+        _border:    nc.border,
+        size:       Math.max(12, Math.min(26, (n.confidence || 0.5) * 34)),
+      }
+    });
+  });
+
+  GRAPH_DATA.edges.forEach(function (e, i) {
+    elements.push({
+      data: {
+        id:          'e' + i,
+        source:      'n' + e.source,
+        target:      'n' + e.target,
+        relation:    e.relation,
+        method:      e.method,
+        description: e.description || '',
+        color:       EDGE_COLOR[e.relation] || '#4a6080',
+        width:       Math.max(1, Math.min(3.5, 0.8 + (e.confidence || 0.5) * 2.8)),
+      }
+    });
+  });
+
+  /* ── Init Cytoscape ─────────────────────────────────────────────────────── */
+  var cy = window.cy = cytoscape({
+    container: document.getElementById('ig-cy'),
+    elements:  elements,
+    style: [
+      {
+        selector: 'node',
+        style: {
+          /* Dark fill + bright border ring — FORGE design language */
+          'background-color':         'data(_bg)',
+          'border-color':             'data(_border)',
+          'border-width':             1.5,
+          'width':                    'data(size)',
+          'height':                   'data(size)',
+          /* Always-visible label — pill background for legibility */
+          'label':                    'data(label)',
+          'color':                    '#7a95aa',
+          'font-family':              'IBM Plex Mono, monospace',
+          'font-size':                '8px',
+          'font-weight':              400,
+          'text-valign':              'bottom',
+          'text-halign':              'center',
+          'text-margin-y':            4,
+          'text-background-color':    '#080e14',
+          'text-background-opacity':  0.60,
+          'text-background-padding':  '2px',
+          'text-background-shape':    'roundrectangle',
+          'text-max-width':           '92px',
+          'text-wrap':                'ellipsis',
+          'min-zoomed-font-size':     6,
+          'overlay-opacity':          0,
+        }
+      },
+      {
+        selector: 'node.hovered',
+        style: {
+          'color':                    '#cfdce8',
+          'font-size':                '9px',
+          'font-weight':              600,
+          'text-background-opacity':  0.80,
+          'border-width':             2,
+        }
+      },
+      {
+        selector: 'node:selected',
+        style: {
+          'border-color':             '#c8943a',
+          'border-width':             3,
+          'color':                    '#e0aa4a',
+          'font-size':                '9px',
+          'font-weight':              600,
+          'text-background-opacity':  0.85,
+        }
+      },
+      {
+        selector: 'edge',
+        style: {
+          'width':              'data(width)',
+          'line-color':         'data(color)',
+          'target-arrow-color': 'data(color)',
+          'target-arrow-shape': 'triangle',
+          'arrow-scale':        0.7,
+          'curve-style':        'bezier',
+          'line-style':         'solid',
+          'opacity':            0.82,
+          'label':              '',
+          'overlay-opacity':    0,
+        }
+      },
+      {
+        selector: 'edge[method != "manual"]',
+        style: {
+          'line-style':        'dashed',
+          'line-dash-pattern': [4, 3],
+          'opacity':           0.40,
+        }
+      },
+      {
+        selector: 'edge:selected',
+        style: {
+          'opacity':            1,
+          'line-color':         '#c8943a',
+          'target-arrow-color': '#c8943a',
+          'z-index':            999,
+        }
+      },
+      {
+        selector: '.faded',
+        style: { 'opacity': 0.06 }
+      },
+
+    ],
+    layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
+    userZoomingEnabled:    true,
+    userPanningEnabled:    true,
+    boxSelectionEnabled:   false,
+    autounselectify:       false,
+  });
+
+  cy.one('layoutstop', function () {
+    cy.fit(cy.elements(), 80);
+    if (cy.zoom() > 0.85) { cy.zoom(0.85); cy.center(); }
+    document.getElementById('ig-loading').style.display = 'none';
+  });
+
+  /* ── Hover labels ───────────────────────────────────────────────────────── */
+  cy.on('mouseover', 'node', function (evt) {
+    evt.target.addClass('hovered');
+    evt.target.neighborhood('node').addClass('hovered');
+  });
+  cy.on('mouseout', 'node', function (evt) {
+    var n = evt.target;
+    if (!n.selected()) n.removeClass('hovered');
+    n.neighborhood('node').each(function (nb) {
+      if (!nb.selected()) nb.removeClass('hovered');
+    });
+  });
+
+  /* ── Node click → panel ─────────────────────────────────────────────────── */
+  cy.on('tap', 'node', function (evt) {
+    var node = evt.target;
+    var data = node.data();
+    openPanel(node, data);
+    fadeTo(node);
+  });
+
+  cy.on('tap', 'edge', function (evt) {
+    var e = evt.target;
+    cy.elements().removeClass('faded');
+    e.source().removeClass('faded');
+    e.target().removeClass('faded');
+    e.removeClass('faded');
+  });
+
+  cy.on('tap', function (evt) {
+    if (evt.target === cy) {
+      cy.elements().removeClass('faded').removeClass('hovered');
+      closePanel();
+    }
+  });
+
+  function fadeTo(node) {
+    var connected = node.closedNeighborhood();
+    cy.elements().addClass('faded');
+    connected.removeClass('faded');
+  }
+
+  function openPanel(node, data) {
+    var panel = document.getElementById('ig-panel');
+    document.getElementById('ig-panel-type').textContent = data.type || '—';
+    document.getElementById('ig-panel-name').textContent = data.label;
+    document.getElementById('ig-panel-meta').innerHTML =
+      'Confidence: ' + ((data.confidence || 0) * 100).toFixed(0) + '%<br>' +
+      'Type: ' + (data.type || '—');
+
+    var relsEl = document.getElementById('ig-panel-rels');
+    relsEl.innerHTML = '';
+
+    node.connectedEdges().forEach(function (edge) {
+      var src   = edge.source().data('label');
+      var tgt   = edge.target().data('label');
+      var rel   = edge.data('relation');
+      var desc  = edge.data('description');
+      var meth  = edge.data('method');
+
+      var div = document.createElement('div');
+      div.className = 'ig-panel__rel';
+      div.innerHTML =
+        '<span class="ig-panel__rel-type">' + rel + ' · ' + meth + '</span>' +
+        (src === data.label
+          ? '→ <strong>' + tgt + '</strong>'
+          : '<strong>' + src + '</strong> →') +
+        (desc ? '<br><span style="font-size:0.72rem;opacity:0.6;">' + desc.slice(0, 80) + '</span>' : '');
+      relsEl.appendChild(div);
+    });
+
+    panel.classList.add('open');
+  }
+
+  function closePanel() {
+    document.getElementById('ig-panel').classList.remove('open');
+  }
+  window.closePanel = closePanel;
+
+  /* ── Reset layout ───────────────────────────────────────────────────────── */
+  function resetLayout() {
+    cy.layout({ name: 'cose', animate: true, animationDuration: 400,
+                idealEdgeLength: 120, nodeRepulsion: 8000 }).run();
+  }
+  window.resetLayout = resetLayout;
+
+  /* ── Search ─────────────────────────────────────────────────────────────── */
+  document.getElementById('ig-search').addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    if (!q) { cy.elements().removeClass('faded'); return; }
+    cy.elements().addClass('faded');
+    cy.nodes().filter(function (n) {
+      return n.data('label').toLowerCase().includes(q);
+    }).closedNeighborhood().removeClass('faded');
+  });
+
+})();
+</script>
+{% endblock %}

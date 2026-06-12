@@ -32,3 +32,6 @@ tables.txt
 # OS artefacts
 .DS_Store
 Thumbs.db
+
+# ZA-DIVERGENT publisher worktree temp dir
+.za-pub-worktree/

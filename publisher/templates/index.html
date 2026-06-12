@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block nav_feed_active %}site-nav__link--active{% endblock %}
+
+{% block content %}
+
+{# ── Stream filter pills ─────────────────────────────────────────────────── #}
+<div class="stream-bar">
+  <div class="stream-bar__inner">
+    <button class="pill pill--active js-pill" data-stream="all">
+      All <span class="pill-count">{{ total_count }}</span>
+    </button>
+    {% for key, label in stream_labels.items() %}
+    <button class="pill js-pill pill--{{ key|lower }}" data-stream="{{ key }}">
+      {{ label }}
+      {% if stream_counts.get(key) %}
+      <span class="pill-count">{{ stream_counts[key] }}</span>
+      {% endif %}
+    </button>
+    {% endfor %}
+  </div>
+</div>
+
+{# ── Feed ────────────────────────────────────────────────────────────────── #}
+<div class="feed-wrap">
+
+  {% if not items %}
+  <div class="feed-empty">
+    <div class="feed-empty__icon">⊜</div>
+    <p class="mono">No published intelligence items yet.</p>
+    <p class="mono" style="font-size:0.72rem;margin-top:0.5rem;opacity:0.5;">
+      Mark signals as published via FORGE, then run <code>python tools/publish.py</code>.
+    </p>
+  </div>
+  {% endif %}
+
+  <div class="feed" id="js-feed">
+    {% for item in items %}
+
+    {# ── Signal card ────────────────────────────────────────────────────── #}
+    {% if item.kind == 'signal' %}
+    <div class="card card--signal card--{{ item.stream }} js-card" data-stream="{{ item.stream }}">
+      <div class="card__header">
+        <span class="badge badge--signal">◎ Signal</span>
+        <span class="badge badge--stream badge--{{ item.stream }}">{{ item.stream_label }}</span>
+        {% if item.source %}
+        <span class="card__source mono">{{ item.source }}</span>
+        {% endif %}
+        <span class="card__ts mono">{{ item.published_fmt }}</span>
+      </div>
+      <h3 class="card__title">{{ item.title }}</h3>
+      {% if item.summary %}
+      <p class="card__body">{{ item.summary }}</p>
+      {% endif %}
+      {% if item.gravity_score %}
+      <div class="card__gravity">
+        <div class="gravity-bar">
+          <div class="gravity-bar__fill gravity-bar__fill--{{ item.stream }}"
+               style="width:{{ item.gravity_pct }}%"></div>
+        </div>
+        <span class="mono card__gravity-val">G {{ '%.2f'|format(item.gravity_score) }}</span>
+      </div>
+      {% endif %}
+      {% if item.lat and item.lng %}
+      <div class="card__geo mono">
+        ◉ {{ '%.4f'|format(item.lat) }}, {{ '%.4f'|format(item.lng) }}
+      </div>
+      {% endif %}
+    </div>
+
+    {# ── Article card ───────────────────────────────────────────────────── #}
+    {% else %}
+    <div class="card card--article js-card" data-stream="{{ item.stream }}">
+      <div class="card__header">
+        <span class="badge badge--article">✎ Analysis</span>
+        <span class="badge badge--stream badge--{{ item.stream }}">{{ item.stream_label }}</span>
+        <span class="card__ts mono">{{ item.published_fmt }}</span>
+      </div>
+      <h3 class="card__title">
+        <a href="articles/{{ item.slug }}.html">{{ item.title }}</a>
+      </h3>
+      {% if item.summary %}
+      <p class="card__body">{{ item.summary }}</p>
+      {% endif %}
+      <div class="card__footer">
+        <span class="card__author mono">By {{ item.author }}</span>
+        {% if item.tags %}
+        <div class="card__tags">
+          {% for tag in item.tags %}
+          <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+  </div>{# /feed #}
+
+</div>{# /feed-wrap #}
+
+{% endblock %}

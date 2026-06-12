@@ -10,19 +10,32 @@
 
 Everything in this section can be done in one sitting. Two free API registrations unlock the two highest-value pending layers.
 
-### Step 1 — BI-196 gazette PDF layer ✅ COMPLETE
+### Step 1 — BI-196 gazette PDF layer — wired, source limitation identified
 
-Layer 3 is wired and operational. `bi196_collector` v1.3.0 now crawls
-`opengazettes.org.za` (42,000+ gazette PDFs, 1958–2021, free, no authentication).
-Legal Gazette A/C issues are downloaded, text-extracted via pdfplumber, and
-scanned for BI-196 surname-change blocks.
+`bi196_collector` v1.4.0 is wired to `opengazettes.org.za` (42,000+ gazette
+PDFs, 1958–2021, free, no auth). The collector correctly targets plain
+Government Gazette issues (the type that contains s.26 Births and Deaths
+Registration Act personal notices).
 
-`LAWS_AFRICA_TOKEN` is set (free tier = Cape Town by-laws only). The token is
-preserved — if the account is upgraded to a paid plan, the collector will
-automatically gain access to post-2021 national gazette content via the
-laws.africa API.
+**Limitation discovered:** most SA Government Gazette PDFs in the archive are
+scanned images. pdfplumber extracts near-zero text from them (e.g. 1,476 chars
+from a 40-page, 1.6MB PDF). Without OCR, the PDF pass runs but finds nothing.
 
-To run the PDF pass:
+**The clean unlock is a laws.africa paid subscription** (~USD 50–200/month
+depending on tier). Their archive is fully OCR'd and exposes a search API — a
+single query for `"assume the surname"` returns all surname-change notices across
+all years. The LAWS_AFRICA_TOKEN is already in `.env`; upgrading the account
+activates the national gazette content automatically.
+
+**Current state:** Layers 1, 2, 4 (RSS + actor sweep) are fully operational.
+Layer 3 processes text-layer PDFs correctly but most gazette PDFs require OCR.
+
+To run what works now:
+```powershell
+python forage/collectors/bi196_collector.py
+```
+
+To run only the PDF layer (when laws.africa is upgraded):
 ```powershell
 python forage/collectors/bi196_collector.py --gazette-pdfs-only
 ```
@@ -67,8 +80,8 @@ All four layers fire: RSS scan → gazette PDF crawl → actor cross-reference.
 |---|---|---|
 | `FORGE_SECRET_KEY` | ✅ Set (generated 2026-06-04) | Done |
 | `FORGE_ADMIN_PASSWORD` | ✅ Set (generated 2026-06-04) | Done |
-| `LAWS_AFRICA_TOKEN` | ✅ Set — free tier (Cape Town by-laws only) | Set. Layer 3 rerouted to `opengazettes.org.za` |
-| bi196 Layer 3 gazette PDFs | ✅ Wired — `opengazettes.org.za` (1958–2021, no auth) | Done |
+| `LAWS_AFRICA_TOKEN` | ✅ Set (free tier — Cape Town by-laws only) | Upgrade account for national gazette OCR'd search |
+| bi196 Layer 3 gazette PDFs | ⚠️ Wired (`opengazettes.org.za`) — scanned PDFs limit extraction | Upgrade laws.africa plan OR add pytesseract OCR pass |
 | `ACLED_KEY` + `ACLED_EMAIL` | ⏳ Pending | Step 2 above |
 | `X_BEARER_TOKEN` | — Optional | Only if guest_api X mode needed |
 

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block css_path %}../static/css/site.css{% endblock %}
+{% block js_path %}../static/js/site.js{% endblock %}
+{% block home_href %}../index.html{% endblock %}
+{% block nav_timeline %}../index.html{% endblock %}
+{% block nav_cases %}../cases.html{% endblock %}
+{% block nav_graph %}../graph.html{% endblock %}
+{% block nav_map %}../map.html{% endblock %}
+
+{% block content %}
+<div class="article-shell">
+
+  <div class="article-back">
+    <a href="../index.html" class="btn-back">← Back to Feed</a>
+  </div>
+
+  <div class="class-inline mono">
+    ANALYSIS · ZA-DIVERGENT · OPEN SOURCE
+  </div>
+
+  <header class="article-header">
+    <div class="article-header__eyebrow">
+      <span class="badge badge--article">✎ Analysis</span>
+      <span class="badge badge--stream badge--{{ article.stream }}">{{ article.stream_label }}</span>
+    </div>
+    <h1 class="article-header__title">{{ article.title }}</h1>
+    {% if article.summary %}
+    <p class="article-header__summary">{{ article.summary }}</p>
+    {% endif %}
+    <div class="article-header__meta">
+      <span class="mono article-meta-item">By {{ article.author }}</span>
+      <span class="mono article-meta-item">{{ article.published_fmt }}</span>
+      {% if article.tags %}
+      <div class="card__tags" style="display:inline-flex;">
+        {% for tag in article.tags %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="article-body">
+    {{ body_html | safe }}
+  </div>
+
+  <footer class="article-footer mono">
+    ZA-DIVERGENT ARCHIVE · Generated {{ generated_at }}
+  </footer>
+
+</div>
+{% endblock %}

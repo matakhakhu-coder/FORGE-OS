@@ -88,7 +88,7 @@ __manifest__ = {
     "entry":       "forage/collectors/bi196_collector.py",
     "args":        ["--dry-run", "--actor", "--scan-only", "--gazette-pdfs-only"],
     "job_key":     "bi196_collector",
-    "version":     "1.3.0",
+    "version":     "1.4.0",
 }
 
 import argparse
@@ -124,13 +124,49 @@ GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={query}&hl=en-ZA&gl=ZA&c
 
 # ── Gazette notice regex patterns ─────────────────────────────────────────────
 
-# Matches: "intend to change my surname from OLDNAME to NEWNAME"
-# or:      "change surname from OLDNAME to NEWNAME"
-_SURNAME_CHANGE_RE = re.compile(
-    r"(?:intend\s+to\s+)?change\s+(?:my\s+)?surname\s+from\s+"
+# SA Government Gazette notices (Births and Deaths Registration Act s.26) use
+# the specific wording: "to assume the surname X in lieu of the surname Y"
+# All four forms are matched below.
+
+# Form 1 — SA statutory wording (most common in gazette):
+#   "to assume the surname SITHOLE in lieu of the surname DLAMINI"
+_ASSUME_INLIEU_RE = re.compile(
+    r"assume\s+the\s+surname\s+([A-Z][A-Z\s\-\']{1,40?})\s+in\s+lieu\s+of\s+"
+    r"(?:the\s+surname\s+)?([A-Z][A-Z\s\-\']{1,40})",
+    re.IGNORECASE,
+)
+
+# Form 2 — "assume the surname X instead of Y"
+_ASSUME_INSTEAD_RE = re.compile(
+    r"assume\s+the\s+surname\s+([A-Z][A-Z\s\-\']{1,40?})\s+instead\s+of\s+"
+    r"(?:the\s+surname\s+)?([A-Z][A-Z\s\-\']{1,40})",
+    re.IGNORECASE,
+)
+
+# Form 3 — plain English: "change my/the surname from X to Y"
+_CHANGE_FROM_RE = re.compile(
+    r"change\s+(?:my\s+|the\s+)?surname\s+from\s+"
     r"([A-Z][A-Z\s\-\']{1,40})\s+to\s+([A-Z][A-Z\s\-\']{1,40})",
     re.IGNORECASE,
 )
+
+# Form 4 — Afrikaans: "naam verander van X na Y" / "van naam X na naam Y"
+_AFRIKAANS_RE = re.compile(
+    r"(?:naam\s+verander|van\s+naam)\s+(?:van\s+)?([A-Z][A-Z\s\-\']{1,40})\s+na\s+"
+    r"(?:naam\s+)?([A-Z][A-Z\s\-\']{1,40})",
+    re.IGNORECASE,
+)
+
+# Convenience tuple — checked in priority order
+_SURNAME_PATTERNS = (
+    _ASSUME_INLIEU_RE,
+    _ASSUME_INSTEAD_RE,
+    _CHANGE_FROM_RE,
+    _AFRIKAANS_RE,
+)
+
+# Keep for backward-compat references elsewhere in this file
+_SURNAME_CHANGE_RE = _CHANGE_FROM_RE
 
 # South African ID number: 13 digits, first 6 = YYMMDD
 _SA_ID_RE = re.compile(r"\b(\d{13})\b")
@@ -165,15 +201,47 @@ _GAZETTE_NOTICE_RE = re.compile(
 
 _OPEN_GAZETTES_BASE    = "https://opengazettes.org.za/gazettes/ZA"
 _OPEN_GAZETTES_ARCHIVE = "https://archive.opengazettes.org.za"
-# Gazette URL slug suffixes to prioritise (surname-change notices concentrate here)
-_GAZETTE_PRIORITY_SLUGS = ("legal-notices-a", "legal-notices-c")
-# Broad keyword pre-filter covering English + Afrikaans gazette language
+# Gazette URL slug suffixes to prioritise
+#
+# Gazette A/B/C breakdown (confirmed via PDF inspection):
+#   legal-notices-A  — BUSINESS NOTICES: deeds registry (lost deeds), company
+#                      registrations, POCA forfeiture orders. NOT surname changes.
+#   legal-notices-B  — SALES IN EXECUTION: property auctions. NOT surname changes.
+#   legal-notices-C  — MISC personal/electoral notices. Rarely has surname changes.
+#   (no slug suffix)  — Plain government gazette issues. These contain General
+#                       Notices including surname-change personal notices under
+#                       the Births and Deaths Registration Act s.26. This is the
+#                       correct type.
+#
+# We do NOT include legal-notices-A/B — they're the wrong gazette type and
+# generate false keyword hits from deeds-registry "in lieu of" language.
+_GAZETTE_PRIORITY_SLUGS: tuple[str, ...] = ()    # empty = accept all, then filter below
+
+# Gazette URL exclusion patterns — skip known wrong types
+_GAZETTE_EXCLUDE_SLUGS = (
+    "legal-notices-a",
+    "legal-notices-b",
+    "tender-bulletin",
+    "road-carrier",
+    "liquor-license",
+    "regulation-gazette",
+)
+
+# Tight keyword pre-filter — only the phrase-level terms that appear in actual
+# Births and Deaths Registration Act s.26 personal notices. Deliberately excludes:
+#   "in lieu of"     — deeds registry false positive
+#   "section 26"     — appears in deeds registry and POCA as well
+#   "intend to"      — appears in POCA forfeiture notices
 _BI196_KEYWORDS = (
-    "bi-196", "bi 196",
-    "authority to assume", "change of surname", "change my surname",
-    "intend to", "assume the surname",
-    "section 26", "births and deaths",
-    "verander", "van naam",           # Afrikaans equivalents
+    "bi-196",
+    "bi 196",
+    "authority to assume",
+    "change of surname",
+    "assume the surname",
+    "in lieu of the surname",          # surname-specific (not deed-specific)
+    "births and deaths registration",  # full phrase, avoids partial matches
+    "van naam",                        # Afrikaans: change of surname
+    "naam verander",                   # Afrikaans: name changed
 )
 
 # ── Google News RSS queries ────────────────────────────────────────────────────
@@ -245,12 +313,30 @@ def _extract_pdf_text(pdf_bytes: bytes) -> str:
 # ── Notice parsing ─────────────────────────────────────────────────────────────
 
 def _parse_notice(text: str) -> dict:
-    """Extract structured fields from a gazette notice text blob."""
+    """
+    Extract structured fields from a gazette notice text blob.
+
+    Handles all four SA gazette wording forms:
+      - "assume the surname X in lieu of the surname Y"  (statutory s.26 form)
+      - "assume the surname X instead of Y"
+      - "change my surname from X to Y"
+      - Afrikaans: "naam verander van X na Y"
+    """
     result: dict = {}
-    m = _SURNAME_CHANGE_RE.search(text)
-    if m:
-        result["name_before"] = m.group(1).strip().title()
-        result["name_after"]  = m.group(2).strip().title()
+
+    # Try each pattern in priority order — first match wins
+    for pat in _SURNAME_PATTERNS:
+        m = pat.search(text)
+        if m:
+            # group(1) = new surname, group(2) = old surname for assume-forms
+            # group(1) = old surname, group(2) = new surname for change-from form
+            if pat in (_ASSUME_INLIEU_RE, _ASSUME_INSTEAD_RE, _AFRIKAANS_RE):
+                result["name_after"]  = m.group(1).strip().title()
+                result["name_before"] = m.group(2).strip().title()
+            else:
+                result["name_before"] = m.group(1).strip().title()
+                result["name_after"]  = m.group(2).strip().title()
+            break
 
     ids = _SA_ID_RE.findall(text)
     if ids:
@@ -274,8 +360,11 @@ def _is_bi196_block(text: str) -> bool:
         or "bi 196" in tl
         or "authority to assume" in tl
         or "change of surname" in tl
+        or "assume the surname" in tl          # statutory s.26 wording
+        or "in lieu of the surname" in tl      # statutory s.26 wording
+        or "section 26" in tl                  # Births and Deaths Registration Act
         or ("surname" in tl and "intend" in tl)
-        or (_SURNAME_CHANGE_RE.search(text) is not None)
+        or any(pat.search(text) for pat in _SURNAME_PATTERNS)
     )
 
 
@@ -407,9 +496,12 @@ def _scan_gazette_and_dha(conn: sqlite3.Connection, dry_run: bool) -> int:
 def _fetch_gazette_pdf_urls(year: int, sess) -> list[tuple[str, str]]:
     """
     Fetch the gazette listing page for a given year and return
-    (title, pdf_url) pairs for Legal Notice A/C editions.
-    Falls back to including plain government gazette issues if
-    the priority slugs return zero results.
+    (title, pdf_url) pairs for plain government gazette issues.
+
+    Excludes: legal-notices-A/B (deeds registry/POCA/business — wrong type),
+              tender-bulletin, road-carrier, liquor-license, regulation-gazette.
+    These exclusions are based on confirmed PDF inspection — they contain
+    zero surname-change personal notice content.
     """
     from bs4 import BeautifulSoup as _BS
     listing_url = f"{_OPEN_GAZETTES_BASE}/{year}"
@@ -428,11 +520,21 @@ def _fetch_gazette_pdf_urls(year: int, sess) -> list[tuple[str, str]]:
         and ".pdf" in a["href"].lower()
     ]
 
-    priority = [
+    # Exclude gazette types confirmed to not contain surname-change notices
+    filtered = [
         (t, h) for t, h in all_pairs
-        if any(slug in h.lower() for slug in _GAZETTE_PRIORITY_SLUGS)
+        if not any(excl in h.lower() for excl in _GAZETTE_EXCLUDE_SLUGS)
     ]
-    return priority if priority else all_pairs
+
+    # If priority slugs are defined, narrow further; otherwise use filtered set
+    if _GAZETTE_PRIORITY_SLUGS:
+        priority = [
+            (t, h) for t, h in filtered
+            if any(slug in h.lower() for slug in _GAZETTE_PRIORITY_SLUGS)
+        ]
+        return priority if priority else filtered
+
+    return filtered
 
 
 def _gazette_pdf_pass(conn: sqlite3.Connection, dry_run: bool, max_pdfs: int = MAX_PDFS) -> int:
@@ -507,7 +609,18 @@ def _gazette_pdf_pass(conn: sqlite3.Connection, dry_run: bool, max_pdfs: int = M
 
             pdfs_done += 1
             text = _extract_pdf_text(pdf_bytes)
-            if len(text.strip()) < 100:
+            if len(text.strip()) < 200:
+                # Likely a scanned/image-based gazette PDF — pdfplumber cannot
+                # read these without OCR. Most pre-2015 SA Government Gazette
+                # issues are scanned. OCR support would require pytesseract and
+                # adds ~30–60 s per page; not practical at MAX_PDFS=15 per run.
+                # The laws.africa paid API provides OCR'd full-text search and
+                # is the efficient path for these documents.
+                _log.debug(
+                    "  Sparse text (%d chars) — likely scanned PDF, skipping. "
+                    "Set LAWS_AFRICA_TOKEN with a paid subscription for OCR'd content.",
+                    len(text.strip()),
+                )
                 time.sleep(REQ_DELAY)
                 continue
 
@@ -519,39 +632,84 @@ def _gazette_pdf_pass(conn: sqlite3.Connection, dry_run: bool, max_pdfs: int = M
                 continue
 
             _log.info("  BI-196 keywords found — scanning %d chars", len(text))
-            blocks = _split_gazette_into_blocks(text)
 
-            for block in blocks:
-                if not _is_bi196_block(block):
-                    continue
-                notice_fields = _parse_notice(block)
-                if not (notice_fields.get("name_before") or notice_fields.get("name_after")):
-                    continue
+            # Gazette PDFs often have multi-column layouts whose extracted text
+            # interleaves lines from different columns. Block-splitting fragments
+            # notice sentences. Instead, collapse whitespace and scan the full
+            # text for every surname-change pattern match directly.
+            flat = re.sub(r"\s+", " ", text)   # collapse all whitespace → single space
 
-                name_note = ""
-                nb, na = notice_fields.get("name_before",""), notice_fields.get("name_after","")
-                if nb and na:
-                    name_note = f"{nb} to {na}"
-                title_str = f"BI-196 Gazette Notice — {name_note or title[:50]}"
-                if notice_fields.get("gazette_ref"):
-                    title_str += f" [{notice_fields['gazette_ref']}]"
+            seen_pairs: set[tuple[str, str]] = set()
+            for pat in _SURNAME_PATTERNS:
+                for m in pat.finditer(flat):
+                    if pat in (_ASSUME_INLIEU_RE, _ASSUME_INSTEAD_RE, _AFRIKAANS_RE):
+                        name_after  = m.group(1).strip().title()
+                        name_before = m.group(2).strip().title()
+                    else:
+                        name_before = m.group(1).strip().title()
+                        name_after  = m.group(2).strip().title()
 
-                item = {
-                    "_ext_id": _ext_id_block(block),
-                    "title":   title_str,
-                    "link":    pdf_url,
-                    "desc":    block[:800],
-                    "pub":     datetime.now(timezone.utc).isoformat(),
-                }
-                extra = {
-                    "gazette_notice":    True,
-                    "from_pdf":          True,
-                    "gazette_issue":     title[:100],
-                    "open_gazettes_url": pdf_url,
-                    "gazette_year":      year,
-                }
-                if _write_signal(conn, item, extra, False, dry_run):
-                    written += 1
+                    # Sanity: names should be 2-30 chars, no stray digits
+                    if not (2 <= len(name_before) <= 30 and 2 <= len(name_after) <= 30):
+                        continue
+                    if re.search(r"\d", name_before + name_after):
+                        continue
+                    pair = (name_before, name_after)
+                    if pair in seen_pairs:
+                        continue
+                    seen_pairs.add(pair)
+
+                    # Extract surrounding context (200 chars) for signal content
+                    s = max(0, m.start() - 150)
+                    context = flat[s: m.end() + 150].strip()
+
+                    # Try to pull SA ID from nearby text
+                    id_match = _SA_ID_RE.search(flat[s: m.end() + 200])
+                    id_number = id_match.group(1) if id_match else None
+
+                    # Gazette notice number
+                    gn = _GAZETTE_NOTICE_RE.search(flat[max(0, m.start()-300): m.start()+50])
+                    gazette_ref = None
+                    if gn:
+                        gazette_ref = f"Notice {gn.group(1)}"
+                        if gn.group(2):
+                            gazette_ref += f" of {gn.group(2)}"
+
+                    title_str = f"BI-196 Gazette Notice — {name_before} → {name_after}"
+                    if gazette_ref:
+                        title_str += f" [{gazette_ref}]"
+
+                    # Use (pdf_url + name pair) as dedup key so same person
+                    # doesn't create duplicate signals across re-runs
+                    dedup_key = f"{pdf_url}|{name_before}|{name_after}"
+                    item = {
+                        "_ext_id": "bi196:pdf:" + hashlib.sha1(dedup_key.encode()).hexdigest()[:16],
+                        "title":   title_str,
+                        "link":    pdf_url,
+                        "desc":    context[:800],
+                        "pub":     datetime.now(timezone.utc).isoformat(),
+                    }
+                    extra = {
+                        "gazette_notice":    True,
+                        "from_pdf":          True,
+                        "gazette_issue":     title[:100],
+                        "open_gazettes_url": pdf_url,
+                        "gazette_year":      year,
+                        "name_before":       name_before,
+                        "name_after":        name_after,
+                    }
+                    if id_number:
+                        extra["id_number"] = id_number
+                    if gazette_ref:
+                        extra["gazette_ref"] = gazette_ref
+
+                    if _write_signal(conn, item, extra, False, dry_run):
+                        written += 1
+                        _log.info(
+                            "  [BI-196] %s → %s%s",
+                            name_before, name_after,
+                            f" ID:{id_number}" if id_number else "",
+                        )
 
             time.sleep(REQ_DELAY)
 

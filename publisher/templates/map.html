@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block title %}Signal Map{% endblock %}
+{% block nav_map_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<style>
+  .site-main { padding: 0; }
+  .map-shell  { display: flex; flex-direction: column; height: calc(100vh - 88px); }
+  .map-bar {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.5rem 1.5rem;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-dim);
+    flex-shrink: 0;
+  }
+  .map-bar__title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .map-bar__count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+  #map { flex: 1; }
+
+  /* ── Cluster marker ───────────────────────────────────────────────────────── */
+  .smap-cluster {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(5, 8, 11, 0.92);
+    border: 2px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono), 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .smap-cluster:hover { transform: scale(1.2); }
+  .smap-cluster.active {
+    transform: scale(1.25);
+    box-shadow: 0 0 12px currentColor;
+  }
+
+  /* ── Leaflet popup — Tokyo Night override ─────────────────────────────────── */
+  .leaflet-popup-content-wrapper {
+    background: #0c1219 !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 3px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.85) !important;
+    color: #cfdce8 !important;
+    padding: 0 !important;
+  }
+  .leaflet-popup-tip-container { display: none; }
+  .leaflet-popup-close-button {
+    color: #3d5060 !important;
+    font-size: 18px !important;
+    top: 5px !important; right: 7px !important;
+  }
+  .leaflet-popup-close-button:hover { color: #7a95aa !important; }
+  .leaflet-popup-content { margin: 0 !important; width: auto !important; }
+
+  /* ── Popup content ────────────────────────────────────────────────────────── */
+  .smap-popup {
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-width: 220px; max-width: 290px;
+    padding: 12px 14px 10px;
+  }
+  .smap-popup__stream {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 3px;
+  }
+  .smap-popup__source {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.60rem;
+    color: #7a95aa;
+    margin-bottom: 6px;
+  }
+  .smap-popup__title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #cfdce8;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .smap-popup__meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .smap-popup__gravity {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.62rem; font-weight: 500;
+    padding: 1px 6px; border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+  .smap-popup__time {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.58rem;
+    color: #3d5060;
+  }
+  .smap-popup__link {
+    display: block;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.62rem;
+    color: #c8943a;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+  .smap-popup__link:hover { color: #e0aa4a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-shell">
+  <div class="map-bar">
+    <span class="map-bar__title">Signal Map</span>
+    <span class="map-bar__count">{{ markers|length }} geo-tagged signals</span>
+    <span class="map-bar__title" style="margin-left:auto;">{{ generated_at }}</span>
+  </div>
+  <div id="map"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Map init ──────────────────────────────────────────────────────────────── */
+  var map = L.map('map', { zoomControl: true }).setView([-28.5, 25], 5);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19,
+  }).addTo(map);
+
+  /* ── Stream colours ────────────────────────────────────────────────────────── */
+  var STREAM_COLOR = {
+    CRIME_INTEL:    '#c0392b',
+    INFRASTRUCTURE: '#2980b9',
+    PRIORITY:       '#c8943a',
+    GLOBAL:         '#27ae60',
+  };
+
+  /* ── Gravity score -> badge colour ────────────────────────────────────────── */
+  function gravityColor(g) {
+    if (!g)     return '#7a95aa';
+    if (g >= 0.65) return '#c0392b';
+    if (g >= 0.40) return '#c8943a';
+    return '#2980b9';
+  }
+
+  /* ── Build popup HTML ──────────────────────────────────────────────────────── */
+  function buildPopup(m) {
+    var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
+    var gScore = (m.gravity_score != null) ? m.gravity_score.toFixed(2) : null;
+    var gColor = gravityColor(m.gravity_score);
+    var ts     = m.published_fmt || '—';
+
+    var gravityHtml = gScore
+      ? '<span class="smap-popup__gravity" style="background:' + gColor + '22;color:' + gColor + '">G ' + gScore + '</span>'
+      : '';
+
+    var linkHtml = m.article_slug
+      ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis -></a>'
+      : '';
+
+    return (
+      '<div class="smap-popup">' +
+        '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
+        (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
+        '<div class="smap-popup__title">' + (m.title || '') + '</div>' +
+        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + ts + '</span></div>' +
+        linkHtml +
+      '</div>'
+    );
+  }
+
+  /* ── Group markers by exact coordinate ────────────────────────────────────── */
+  var RAW = {{ markers | tojson }};
+  var groups = {};
+
+  RAW.forEach(function (m) {
+    if (m.lat == null || m.lng == null) return;
+    var key = m.lat.toFixed(5) + ',' + m.lng.toFixed(5);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  });
+
+  /* ── Active spider state ───────────────────────────────────────────────────── */
+  var spider = null;  // { legs[], subs[], clusterEl }
+
+  function clearSpider() {
+    if (!spider) return;
+    spider.legs.forEach(function (l) { map.removeLayer(l); });
+    spider.subs.forEach(function (s) { map.removeLayer(s); });
+    if (spider.clusterEl) spider.clusterEl.classList.remove('active');
+    spider = null;
+  }
+
+  /* ── Spiderfy — pixel-space projection ────────────────────────────────────── */
+  function openSpider(clusterEl, group) {
+    var n    = group.length;
+    var cLat = group[0].lat;
+    var cLng = group[0].lng;
+
+    // Project cluster centre into screen pixel space at current view
+    var centerPx = map.latLngToContainerPoint([cLat, cLng]);
+
+    // Pixel radius: base 50px + 3px per additional signal
+    // Stays consistent across zoom levels regardless of geographic scale
+    var pixelRadius = 50 + (n * 3);
+
+    var legs = [];
+    var subs = [];
+
+    group.forEach(function (m, i) {
+      // Evenly distribute spokes, starting at top (−π/2), clockwise
+      var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+
+      // Target in pixel space, then project back to geographic coords
+      var targetPx  = L.point(
+        centerPx.x + pixelRadius * Math.cos(angle),
+        centerPx.y + pixelRadius * Math.sin(angle)
+      );
+      var sLatLng = map.containerPointToLatLng(targetPx);
+      var color   = STREAM_COLOR[m.stream] || '#7a95aa';
+
+      // Spider leg — dashed, subdued
+      var leg = L.polyline([[cLat, cLng], sLatLng], {
+        color:     color,
+        weight:    1.5,
+        opacity:   0.38,
+        dashArray: '4 5',
+      }).addTo(map);
+      legs.push(leg);
+
+      // Sub-marker at projected position
+      var sm = L.circleMarker(sLatLng, {
+        radius:      7,
+        fillColor:   color,
+        color:       color,
+        weight:      1.5,
+        opacity:     0.9,
+        fillOpacity: 0.60,
+      });
+      sm.bindPopup(buildPopup(m), { maxWidth: 300 });
+      sm.addTo(map);
+      subs.push(sm);
+    });
+
+    if (clusterEl) clusterEl.classList.add('active');
+    spider = { legs: legs, subs: subs, clusterEl: clusterEl };
+  }
+
+  /* ── Render groups ─────────────────────────────────────────────────────────── */
+  Object.keys(groups).forEach(function (key) {
+    var group = groups[key];
+    var lat   = group[0].lat;
+    var lng   = group[0].lng;
+
+    if (group.length === 1) {
+      /* ── Single signal — plain circle marker ── */
+      var m     = group[0];
+      var color = STREAM_COLOR[m.stream] || '#7a95aa';
+      var dot   = L.circleMarker([lat, lng], {
+        radius:      7,
+        fillColor:   color,
+        color:       color,
+        weight:      1.5,
+        opacity:     0.9,
+        fillOpacity: 0.58,
+      });
+      dot.bindPopup(buildPopup(m), { maxWidth: 300 });
+      dot.addTo(map);
+
+    } else {
+      /* ── Stacked signals — cluster badge ── */
+      // Representative color = stream of highest-gravity signal
+      var rep   = group.slice().sort(function (a, b) {
+        return (b.gravity_score || 0) - (a.gravity_score || 0);
+      })[0];
+      var color = STREAM_COLOR[rep.stream] || '#7a95aa';
+
+      var icon = L.divIcon({
+        className:   '',
+        html:        '<div class="smap-cluster" style="color:' + color + '">' + group.length + '</div>',
+        iconSize:    [28, 28],
+        iconAnchor:  [14, 14],
+        popupAnchor: [0, -16],
+      });
+
+      var cm = L.marker([lat, lng], { icon: icon });
+
+      cm.on('click', function (e) {
+        L.DomEvent.stopPropagation(e);
+        var el = cm.getElement()
+          ? cm.getElement().querySelector('.smap-cluster')
+          : null;
+
+        if (spider && spider.clusterEl === el) {
+          // Second click on the same cluster — collapse
+          clearSpider();
+        } else {
+          clearSpider();
+          openSpider(el, group);
+        }
+      });
+
+      cm.addTo(map);
+    }
+  });
+
+  /* ── Collapse spider on background click, zoom, or pan ────────────────────── */
+  // Pixel-projected coordinates become stale the moment the view matrix changes,
+  // so collapse immediately on any movement rather than trying to reproject.
+  map.on('click',     clearSpider);
+  map.on('zoomstart', clearSpider);
+  map.on('movestart', clearSpider);
+
+})();
+</script>
+{% endblock %}

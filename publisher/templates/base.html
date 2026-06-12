@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ZA-DIVERGENT{% endblock %} — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% block css_path %}static/css/site.css{% endblock %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+  {# ── Site header ────────────────────────────────────────────────────────── #}
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="{% block home_href %}index.html{% endblock %}" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <nav class="site-nav">
+        <a href="{% block nav_timeline %}index.html{% endblock %}" class="site-nav__link {% block nav_timeline_active %}{% endblock %}">Timeline</a>
+        <a href="{% block nav_cases %}cases.html{% endblock %}" class="site-nav__link {% block nav_cases_active %}{% endblock %}">Cases</a>
+        <a href="{% block nav_graph %}graph.html{% endblock %}" class="site-nav__link {% block nav_graph_active %}{% endblock %}">Graph</a>
+        <a href="{% block nav_map %}map.html{% endblock %}" class="site-nav__link {% block nav_map_active %}{% endblock %}">Map</a>
+      </nav>
+      <div class="site-header__meta">
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">{{ generated_at }}</span>
+      </div>
+    </div>
+  </header>
+
+  {# ── Classification banner ───────────────────────────────────────────────── #}
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  {# ── Page content ────────────────────────────────────────────────────────── #}
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ── Footer ──────────────────────────────────────────────────────────────── #}
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
+      </div>
+      <div class="site-footer__right mono">
+        Generated {{ generated_at }}
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% block js_path %}static/js/site.js{% endblock %}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
