@@ -171,7 +171,7 @@ def ingest_signal(signal: dict) -> dict:
 
         event = EventConstructor().construct(signal, interpreted)
 
-        gravity_signal = score_signal(interpreted, actors=resolved_entities)
+        gravity_signal = score_signal({**signal, **interpreted}, actors=resolved_entities)
 
         case_result = evaluate_case(gravity_signal, linked_actors=resolved_entities, linked_events=[event] if event else [])
 

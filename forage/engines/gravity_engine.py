@@ -141,6 +141,19 @@ _ACLED_ACTOR_WEIGHTS: Dict[str, float] = {
 _ACLED_FATALITY_CAP = 50.0   # matches acled_collector.FATALITY_CAP
 _ACLED_CREDIBILITY  = 0.85   # peer-reviewed sourced data
 
+# Phase 73 — Investigative source gravity floor.
+# RSS feeds from these outlets arrive headline-only, which starves the
+# standard five-factor model of severity signal even when the underlying
+# story is analytically significant (procurement fraud, commission
+# testimony, institutional failure). Gated on stream + non-zero severity so
+# lifestyle/sport/wire content from the same domains is never boosted.
+_INVESTIGATIVE_SOURCES = frozenset({
+    "amabhungane", "dailymaverick", "dailymaverick_corruption",
+    "news24_crime", "timeslive_corruption", "groundup",
+})
+_INVESTIGATIVE_BOOST_STREAMS = frozenset({"CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"})
+_INVESTIGATIVE_FLOOR = 0.35
+
 
 def _extract_acled_inputs(signal: Dict[str, Any]) -> Optional[Dict[str, float]]:
     """
@@ -385,6 +398,22 @@ def score_signal(
             f"sev={gravity_inputs['severity']:.3f} "
             f"→ {gravity_score:.4f}"
         )
+
+        # ── Investigative source floor (gated) ─────────────────────────────────
+        source = str(signal.get("source", "")).lower()
+        stream = str(signal.get("stream", "")).upper()
+        if (
+            source in _INVESTIGATIVE_SOURCES
+            and stream in _INVESTIGATIVE_BOOST_STREAMS
+            and gravity_inputs["severity"] > 0.0
+            and gravity_score < _INVESTIGATIVE_FLOOR
+        ):
+            log.debug(
+                f"[gravity] investigative floor applied source={source} "
+                f"stream={stream} {gravity_score:.4f} → {_INVESTIGATIVE_FLOOR:.2f}"
+            )
+            gravity_score = _INVESTIGATIVE_FLOOR
+            path = "standard_investigative_floor"
 
     # ── Actor feedback multiplier ─────────────────────────────────────────────
     feedback_influence = 1.0
