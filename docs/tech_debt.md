@@ -473,6 +473,7 @@ Full static analysis run across all `.py` files, `templates/*.html`, and inline 
 | TD-19 | NER possessive entity misparsing | MEDIUM | 🔵 DEFERRED | NER boundary config |
 | TD-20 | graph_nodes vs actors imbalance | MEDIUM | 🔵 DEFERRED | Provenance audit |
 | TD-21 | signal_entities orphan check missing from SOP | LOW | 🔵 DEFERRED | SOP §2.4 update |
+| TD-22 | `ingest_signal()` hangs indefinitely post-`apply_feedback` on some signals | HIGH | ⬜ PENDING | Reproduced 2x on civic_intel_collector_us backlog (signal `3aa4c4ca-...`, ProPublica). Hang occurs after the `apply_feedback` log line, somewhere in entity materialisation / `_rel_extract` / `stitch_entity_cooccurrence` / `handle_escalation` — likely an unbounded network call (relationship_extractor SAFLII lookup is the prime suspect). Workaround used: `tools/_score_us_backlog.py` calls `score_signal()` directly, bypassing the full pipeline. Needs `timeout=` on all `requests` calls in those four modules + investigation of why it reproduces on this specific signal. |
 
 ---
 

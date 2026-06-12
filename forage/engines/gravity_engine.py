@@ -150,6 +150,9 @@ _ACLED_CREDIBILITY  = 0.85   # peer-reviewed sourced data
 _INVESTIGATIVE_SOURCES = frozenset({
     "amabhungane", "dailymaverick", "dailymaverick_corruption",
     "news24_crime", "timeslive_corruption", "groundup",
+    # Phase 74 — US region (civic_intel_collector_us.py)
+    "propublica", "icij", "theintercept", "revealnews", "occrp_us",
+    "us_infrastructure",
 })
 _INVESTIGATIVE_BOOST_STREAMS = frozenset({"CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"})
 _INVESTIGATIVE_FLOOR = 0.35
