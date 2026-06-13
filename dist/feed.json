@@ -1,8 +1,44 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "13 Jun 2026 12:16 UTC",
+  "generated_at": "13 Jun 2026 15:45 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering charge - Mail & Guardian",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-13T15:45:10.925188+00:00",
+      "summary": "Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering charge &nbsp;&nbsp; Mail & Guardian",
+      "source": "DORK",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-13T15:45:10.925188+00:00",
+      "summary": "Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs &nbsp;&nbsp; EWN",
+      "source": "DORK",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "article",
+      "title": "Graft Roundup: Joshco CEO's R2m Cash Stash and a R180m Home Affairs Permit Racket",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-13T15:45:10.925188+00:00",
+      "summary": "Two parallel corruption probes surfaced this cycle: Joshco acting CEO Themba Mathibe granted R50,000 bail after R2m cash was found at his home, and the SIU's exposure of a R180m Home Affairs permit-and-visa marketplace run by officials via spousal accounts.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/graft-roundup-joshco-home-affairs-june-2026.html"
+    },
     {
       "kind": "signal",
       "title": "Zimbabwean truck driver sentenced to 20 years for explosives smuggling at Beitbridge",
