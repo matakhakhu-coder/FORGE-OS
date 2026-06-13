@@ -1,8 +1,31 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "13 Jun 2026 11:43 UTC",
+  "generated_at": "13 Jun 2026 11:53 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Zimbabwean truck driver sentenced to 20 years for explosives smuggling at Beitbridge",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-13T11:52:50.047781+00:00",
+      "summary": "Edgar Maroto, a 42-year-old Zimbabwean truck driver, was sentenced to 20 years in a South African prison by the Musina Magistrate's Court for illegally possessing and attempting to smuggle explosives through the Beitbrid...",
+      "source": "ANALYST_MANUAL",
+      "geo": {
+        "lat": -22.2833,
+        "lng": 30.0
+      }
+    },
+    {
+      "kind": "article",
+      "title": "Beitbridge Border Post: Edgar Maroto Sentenced in Explosives Smuggling Case",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-13T11:52:50.047781+00:00",
+      "summary": "Edgar Maroto sentenced to 20 years by the Magisterial Court Musina for smuggling explosives through Beitbridge Border Post. FORGE has opened Case #13 to assess whether this is part of a wider trafficking pattern through the corridor.",
+      "author": "ZA-DIVERGENT Analyst",
+      "url": "articles/beitbridge-explosives-smuggling-maroto.html"
+    },
     {
       "kind": "signal",
       "title": "UPDATE | Nine cops suspended over ‘Cat’ Matlala’s controversial R360m police tender - News24",
