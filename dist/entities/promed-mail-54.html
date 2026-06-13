@@ -166,6 +166,51 @@
   line-height: 1.75;
 }
 
+.ap-events { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ap-event {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+}
+.ap-event__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-event__role {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+  color: var(--text-secondary);
+}
+.ap-event__category { color: var(--accent); }
+.ap-event__title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+.ap-event__summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
+}
+.ap-event__location {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
 .ap-cases { display: flex; flex-direction: column; gap: var(--sp-2); }
 .ap-case-link {
   display: block;
@@ -196,7 +241,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">13 Jun 2026 11:53 UTC</span>
+        <span class="site-ts mono">13 Jun 2026 12:10 UTC</span>
       </div>
     </div>
   </header>
@@ -224,7 +269,7 @@
       <span class="ap-type">media</span>
     </div>
     <h1 class="ap-header__title">ProMED Mail</h1>
-    <div class="ap-header__meta">13 Jun 2026 11:53 UTC</div>
+    <div class="ap-header__meta">13 Jun 2026 12:10 UTC</div>
   </div>
 
   <div class="ap-layout">
@@ -237,6 +282,8 @@
           Program for Monitoring Emerging Diseases. Open-access early-warning infectious disease surveillance system operated by the International Society for Infectious Diseases. Tier-3 noise layer in Project Aegis.
         </div>
       </div>
+      
+
       
 
       <div class="ap-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5);">
@@ -289,7 +336,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 13 Jun 2026 11:53 UTC
+        Generated 13 Jun 2026 12:10 UTC
       </div>
     </div>
   </footer>
