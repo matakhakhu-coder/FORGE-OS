@@ -35,3 +35,6 @@ Thumbs.db
 
 # ZA-DIVERGENT publisher worktree temp dir
 .za-pub-worktree/
+
+# ACLED OAuth token cache (contains live refresh token)
+forage/collectors/.acled_token_cache.json

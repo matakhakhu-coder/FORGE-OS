@@ -46,7 +46,8 @@ BASE_DIR  = Path(__file__).resolve().parent
 DB_PATH   = BASE_DIR / "database.db"
 MEDIA_DIR = BASE_DIR / "media"
 
-MEDIA_SUBDIRS = ["images", "videos", "documents", "audio"]
+MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]
+ACTOR_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
 ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "forge-admin")
 
@@ -1094,7 +1095,7 @@ def create_app() -> Flask:
         actor_where = '' if lens == 'all' else f"WHERE ac.source_type = '{lens}'"
 
         actors_rows = db.execute(f"""
-            SELECT ac.actor_id, ac.name, ac.type, ac.description,
+            SELECT ac.actor_id, ac.name, ac.type, ac.description, ac.blacklisted,
                    COUNT(DISTINCT all_ev.event_id)    AS event_count,
                    COUNT(DISTINCT a.artifact_id)      AS artifact_count,
                    COUNT(DISTINCT sa.signal_id)       AS signal_count,
@@ -6496,14 +6497,56 @@ def create_app() -> Flask:
             name        = request.form.get("name", "").strip()
             atype       = request.form.get("type", actor["type"])
             description = request.form.get("description", "").strip() or None
+            blacklisted = 1 if request.form.get("blacklisted") == "on" else 0
+            blacklist_reason = request.form.get("blacklist_reason", "").strip() or None
+            image_url = actor["image_url"]
+
+            if request.form.get("remove_image") == "on":
+                if image_url:
+                    old_path = MEDIA_DIR / image_url
+                    if old_path.exists():
+                        old_path.unlink()
+                image_url = None
+
+            photo = request.files.get("image_file")
+            if photo and photo.filename:
+                ext = photo.filename.rsplit(".", 1)[-1].lower() if "." in photo.filename else ""
+                if ext not in ACTOR_PHOTO_EXTENSIONS:
+                    flash("Photo must be PNG, JPG, JPEG, WEBP, or GIF.", "error")
+                    return redirect(url_for("actor_edit", actor_id=actor_id))
+                if image_url:
+                    old_path = MEDIA_DIR / image_url
+                    if old_path.exists():
+                        old_path.unlink()
+                filename = f"{actor_id}.{ext}"
+                (MEDIA_DIR / "actors").mkdir(parents=True, exist_ok=True)
+                photo.save(str(MEDIA_DIR / "actors" / filename))
+                image_url = f"actors/{filename}"
 
             if not name:
                 flash("Name is required.", "error")
                 return redirect(url_for("actor_edit", actor_id=actor_id))
 
             db.execute(
-                "UPDATE actors SET name=?, type=?, description=? WHERE actor_id=?",
-                (name, atype, description, actor_id),
+                """
+                UPDATE actors
+                SET name=?, type=?, description=?, image_url=?,
+                    blacklisted=?, blacklist_reason=?,
+                    blacklist_added_at = CASE
+                        WHEN ? = 1 AND blacklisted = 0 AND blacklist_added_at IS NULL
+                            THEN datetime('now')
+                        WHEN ? = 0 THEN NULL
+                        ELSE blacklist_added_at
+                    END
+                WHERE actor_id=?
+                """,
+                (
+                    name, atype, description, image_url,
+                    blacklisted, blacklist_reason,
+                    blacklisted,
+                    blacklisted,
+                    actor_id,
+                ),
             )
             db.commit()
             flash(f"Actor '{name}' updated.", "success")
@@ -9820,11 +9863,24 @@ def migrate_db():
         ("actors",         "confidence_score",    "REAL NOT NULL DEFAULT 0.5"),
         ("actors",         "automated",           "INTEGER NOT NULL DEFAULT 0"),
         ("actors",         "socint_profile",      "TEXT DEFAULT NULL"),
+        # Analyst-internal flag — surfaced in FORGE UI only, not used by publish.py
+        ("actors",         "blacklisted",         "INTEGER NOT NULL DEFAULT 0"),
+        ("actors",         "blacklist_reason",    "TEXT"),
+        ("actors",         "blacklist_added_at",  "TEXT"),
+        # Analyst-curated portrait/building photo URL — surfaced on the
+        # ZA-DIVERGENT Entity Directory cards and profile pages.
+        ("actors",         "image_url",           "TEXT"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):
             print(f"  [migrate] {table} ← adding column: {column} {col_type}")
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+
+    # Drop blacklist_public — superseded by the graph-eligibility-based
+    # Entity Directory on ZA-DIVERGENT (no per-actor public-exposure flag).
+    if "blacklist_public" in _columns("actors"):
+        print("  [migrate] actors ← dropping column: blacklist_public")
+        conn.execute("ALTER TABLE actors DROP COLUMN blacklist_public")
 
     # Phase 16: case_signals junction table
     conn.execute("""

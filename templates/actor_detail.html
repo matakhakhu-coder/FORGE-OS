@@ -22,6 +22,40 @@
   <h1 class="page-header__title">{{ actor.name }}</h1>
 </div>
 
+{# ── Blacklist banner ──────────────────────────────────────────────────────── #}
+{% if actor.blacklisted %}
+<div class="event-summary-block" style="margin-bottom:var(--sp-8); border-left: 3px solid var(--src-leaked);">
+  <div class="event-summary-block__rule" style="background:var(--src-leaked);"></div>
+  <p class="event-summary-block__text">
+    <strong style="color:var(--src-leaked);">⚠ BLACKLISTED</strong>
+    {% if actor.blacklist_added_at %} — flagged {{ actor.blacklist_added_at }}{% endif %}
+    {% if actor.blacklist_public %} · <span class="mono" style="color:var(--src-leaked);">PUBLIC ON ZA-DIVERGENT</span>{% endif %}
+  </p>
+  {% if actor.blacklist_reason %}
+  <p class="event-summary-block__text" style="margin-top:var(--sp-2);">{{ actor.blacklist_reason }}</p>
+  {% endif %}
+
+  {% if actor.type == 'person' %}
+  <div style="margin-top:var(--sp-4);">
+    <div class="page-header__eyebrow mono" style="color:var(--text-dim);">PERSON PROFILE</div>
+    <p class="event-summary-block__text">
+      {% if actor.description %}{{ actor.description }}{% else %}<em>No profile description on record.</em>{% endif %}
+    </p>
+  </div>
+  {% else %}
+  <div style="margin-top:var(--sp-4);">
+    <div class="page-header__eyebrow mono" style="color:var(--text-dim);">INSTITUTION PROFILE</div>
+    <p class="event-summary-block__text">
+      Type: <span class="actor-type-badge">{{ actor.type }}</span>
+    </p>
+    <p class="event-summary-block__text">
+      {% if actor.description %}{{ actor.description }}{% else %}<em>No profile description on record.</em>{% endif %}
+    </p>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
 {# ── Description ───────────────────────────────────────────────────────────── #}
 {% if actor.description %}
 <div class="event-summary-block" style="margin-bottom:var(--sp-8);">

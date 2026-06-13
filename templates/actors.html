@@ -25,7 +25,7 @@
     <div class="targeting-scan"></div>
     {% endif %}
 
-    <div class="actor-card__type">{{ a.type }}</div>
+    <div class="actor-card__type">{{ a.type }}{% if a.blacklisted %} · <span style="color:var(--src-leaked);">⚠ BLACKLISTED</span>{% endif %}</div>
     <div class="actor-card__name">{{ a.name }}</div>
     {% if a.description %}
     <div class="actor-card__desc">{{ a.description }}</div>

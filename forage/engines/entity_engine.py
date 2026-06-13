@@ -1,18 +1,17 @@
 from __future__ import annotations
+import json
 import logging as _logging
 from datetime import datetime, timezone
 
 _log = _logging.getLogger(__name__)
 
 # Maps FMS entity types to actors table CHECK constraint values.
-# "location" stays as "institution" until a dedicated schema migration adds
-# a 'location' type to the actors CHECK constraint — safe fallback.
 _TYPE_MAP = {
     "person":          "person",
     "institution":     "institution",
     "government":      "institution",
     "political_party": "movement",
-    "location":        "institution",
+    "location":        "location",
     "organization":    "institution",
     "unknown":         "institution",
     # spaCy NER tags
@@ -21,8 +20,8 @@ _TYPE_MAP = {
     "ORG":             "institution",
     "NORP":            "institution",
     "FAC":             "institution",
-    "GPE":             "institution",
-    "LOC":             "institution",
+    "GPE":             "location",
+    "LOC":             "location",
 }
 
 # Names that must never become actor records — category labels, not entities.
@@ -32,6 +31,9 @@ _BLOCKED_ACTOR_NAMES = frozenset({
     "location", "government", "minister", "department",
     "institution", "organization", "unknown",
     "company", "firm", "corporation",
+    # Disease/medical terms and bare pronouns mis-tagged PERSON by spaCy NER
+    "covid-19", "covid", "polio", "mouth", "mouth disease",
+    "humanitarian aid", "undiagnosed", "oscar",
 })
 
 
@@ -122,8 +124,58 @@ def materialize_entities(conclusion, signal_id, db):
         signal_id
     ))
 
+    _apply_blacklist_boost(actor_ids, signal_id, db)
+
     db.commit()
     return actor_ids
+
+
+_BLACKLIST_BOOST = 0.05
+
+
+def _apply_blacklist_boost(actor_ids, signal_id, db):
+    """
+    BL-01: if any materialized actor is flagged blacklisted, nudge this
+    signal's gravity_score up once (idempotent via conclave_meta marker),
+    capped at 1.0. Recorded in conclave_meta for auditability — does not
+    touch socint_tags (FLUX-reserved) or the gravity scorer modules.
+    """
+    if not actor_ids or not signal_id:
+        return
+
+    placeholders = ",".join("?" * len(actor_ids))
+    hit = db.execute(
+        f"SELECT 1 FROM actors WHERE actor_id IN ({placeholders}) "
+        f"AND blacklisted = 1 LIMIT 1",
+        actor_ids,
+    ).fetchone()
+    if not hit:
+        return
+
+    row = db.execute(
+        "SELECT conclave_meta FROM signals WHERE signal_id = ?", (signal_id,)
+    ).fetchone()
+    meta = row["conclave_meta"] if row else None
+    if meta:
+        try:
+            if json.loads(meta).get("blacklist_boost"):
+                return  # already applied — idempotent
+        except (ValueError, TypeError):
+            pass
+
+    db.execute("""
+        UPDATE signals
+        SET gravity_score = MIN(1.0, COALESCE(gravity_score, 0.0) + ?),
+            conclave_meta = json_patch(
+                COALESCE(conclave_meta, '{}'),
+                json_object('blacklist_boost', json('true'), 'blacklist_actors', json(?))
+            )
+        WHERE signal_id = ?
+    """, (
+        _BLACKLIST_BOOST,
+        str([a for a in actor_ids]),
+        signal_id,
+    ))
 
 
 def link_actors(

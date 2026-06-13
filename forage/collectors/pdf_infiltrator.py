@@ -1165,7 +1165,7 @@ def _insert_signal(conn: sqlite3.Connection, pdf_url: str,
              lat, lng, timestamp, status, stream,
              relevance_score, is_priority, metadata_json, source_type)
         VALUES (?,?,?,?,?,
-                -25.7479, 28.2293, ?, 'raw', 'PROCUREMENT',
+                -25.7479, 28.2293, ?, 'raw', 'CRIME_INTEL',
                 1.8, 1, ?, 'live')
     """, (
         sig_id, "pdf_infiltrator", ext_id, title, content,

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Entities{% endblock %}
+{% block nav_entities_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+<style>
+.bl-shell {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.bl-header { margin-bottom: var(--sp-8); }
+.bl-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.bl-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-2);
+}
+.bl-header__sub {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+}
+
+.bl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--sp-5);
+}
+
+.bl-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  transition: border-color var(--t-mid), background var(--t-mid);
+  text-decoration: none;
+  color: inherit;
+}
+.bl-card:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-mid);
+}
+.bl-card__media {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bl-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bl-card__media--placeholder {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.bl-card__type {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.bl-card__name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+.bl-card__desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.bl-empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: var(--sp-8);
+  text-align: center;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+}
+
+.bl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+.bl-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: 999px;
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  transition: border-color var(--t-mid), color var(--t-mid), background var(--t-mid);
+}
+.bl-pill:hover {
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+.bl-pill--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-base);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bl-shell">
+
+  <div class="bl-header">
+    <div class="bl-header__eyebrow">Entity Directory · ZA-DIVERGENT</div>
+    <h1 class="bl-header__title">Entities</h1>
+    <p class="bl-header__sub">
+      Persons and institutions referenced across published investigations.
+      Each entry links to a profile with associated case files and reporting.
+    </p>
+  </div>
+
+  {% if actors %}
+  <div class="bl-filters">
+    <button class="bl-pill bl-pill--active" data-filter="all">All</button>
+    {% for t in entity_types %}
+    <button class="bl-pill" data-filter="{{ t }}">{{ t|title }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="bl-grid">
+    {% for a in actors %}
+    <a href="entities/{{ a.slug }}.html" class="bl-card" data-type="{{ a.type }}">
+      <div class="bl-card__media">
+        {% if a.photo %}
+        <img src="static/photos/{{ a.photo }}" alt="{{ a.name }}" loading="lazy">
+        {% else %}
+        <span class="bl-card__media--placeholder">{{ a.name[0] | upper }}</span>
+        {% endif %}
+      </div>
+      <div class="bl-card__type">{{ a.type }}</div>
+      <div class="bl-card__name">{{ a.name }}</div>
+      {% if a.description %}
+      <div class="bl-card__desc">{{ a.description[:160] }}{% if a.description|length > 160 %}…{% endif %}</div>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bl-empty">No entities published yet.</div>
+  {% endif %}
+
+</div>
+
+<script>
+document.querySelectorAll('.bl-pill').forEach(function (pill) {
+  pill.addEventListener('click', function () {
+    document.querySelectorAll('.bl-pill').forEach(function (p) { p.classList.remove('bl-pill--active'); });
+    pill.classList.add('bl-pill--active');
+    var filter = pill.dataset.filter;
+    document.querySelectorAll('.bl-card').forEach(function (card) {
+      card.style.display = (filter === 'all' || card.dataset.type === filter) ? '' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}

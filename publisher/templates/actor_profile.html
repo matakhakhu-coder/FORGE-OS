@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block title %}{{ actor.name }}{% endblock %}
+{% block css_path %}../static/css/site.css{% endblock %}
+{% block js_path %}../static/js/site.js{% endblock %}
+{% block home_href %}../index.html{% endblock %}
+{% block nav_timeline %}../index.html{% endblock %}
+{% block nav_cases %}../cases.html{% endblock %}
+{% block nav_graph %}../graph.html{% endblock %}
+{% block nav_map %}../map.html{% endblock %}
+{% block nav_entities %}../entities.html{% endblock %}
+{% block nav_entities_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+<style>
+.ap-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.ap-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--sp-8);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .ap-layout { grid-template-columns: 1fr; }
+  .ap-infobox { order: -1; }
+}
+
+.ap-infobox {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  position: sticky;
+  top: var(--sp-8);
+}
+.ap-infobox__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-infobox__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ap-infobox__row:last-child { border-bottom: none; }
+.ap-infobox__label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-infobox__value {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.ap-infobox__cases { display: flex; flex-direction: column; gap: var(--sp-1); }
+.ap-infobox__case-link {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.ap-infobox__case-link:hover { text-decoration: underline; }
+.ap-infobox__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ap-infobox__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ap-infobox__media--placeholder {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.ap-back { margin-bottom: var(--sp-5); }
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+.ap-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  margin-bottom: var(--sp-6);
+}
+
+.ap-header { margin-bottom: var(--sp-6); }
+.ap-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.ap-type {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.ap-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.ap-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+.ap-section { margin-bottom: var(--sp-8); }
+.ap-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.ap-events { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ap-event {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+}
+.ap-event__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-event__role {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+  color: var(--text-secondary);
+}
+.ap-event__category { color: var(--accent); }
+.ap-event__title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+.ap-event__summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
+}
+.ap-event__location {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.ap-cases { display: flex; flex-direction: column; gap: var(--sp-2); }
+.ap-case-link {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  padding: var(--sp-2) 0;
+}
+.ap-case-link:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ap-shell">
+
+  <div class="ap-back">
+    <a href="../entities.html" class="btn-back">← Entities</a>
+  </div>
+
+  <div class="ap-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Entity Profile
+  </div>
+
+  <div class="ap-header">
+    <div class="ap-header__row">
+      <span class="ap-type">{{ actor.type }}</span>
+    </div>
+    <h1 class="ap-header__title">{{ actor.name }}</h1>
+    <div class="ap-header__meta">{{ generated_at }}</div>
+  </div>
+
+  <div class="ap-layout">
+    <div class="ap-main">
+
+      {% if actor.type == 'person' %}
+      <div class="ap-section">
+        <div class="ap-section__title">Person Profile</div>
+        <div class="ap-description">
+          {% if actor.description %}{{ actor.description }}{% else %}No further profile information on record.{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="ap-section">
+        <div class="ap-section__title">Institution Profile</div>
+        <div class="ap-description">
+          {% if actor.description %}{{ actor.description }}{% else %}No further profile information on record.{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if actor.events %}
+      <div class="ap-section">
+        <div class="ap-section__title">Known Events — {{ actor.events|length }}</div>
+        <div class="ap-events">
+          {% for ev in actor.events %}
+          <div class="ap-event">
+            <div class="ap-event__meta">
+              {% if ev.date %}<span class="ap-event__date">{{ ev.date }}</span>{% endif %}
+              {% if ev.role %}<span class="ap-event__role">{{ ev.role | replace('_', ' ') | title }}</span>{% endif %}
+              {% if ev.category %}<span class="ap-event__category">{{ ev.category }}</span>{% endif %}
+            </div>
+            <div class="ap-event__title">{{ ev.title }}</div>
+            {% if ev.summary %}<div class="ap-event__summary">{{ ev.summary }}</div>{% endif %}
+            {% if ev.location %}<div class="ap-event__location">📍 {{ ev.location }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="ap-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5);">
+        <div class="ap-section__title">Methodology</div>
+        <div class="ap-description" style="font-size:0.75rem;">
+          This profile is produced by the FORGE OSINT engine from open-source signals and reviewed by
+          ZA-DIVERGENT analysts before publication. Inclusion in this directory reflects relevance to
+          published investigations and does not constitute a legal finding.
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="ap-infobox">
+      <div class="ap-infobox__media">
+        {% if actor.photo %}
+        <img src="../static/photos/{{ actor.photo }}" alt="{{ actor.name }}">
+        {% else %}
+        <span class="ap-infobox__media--placeholder">{{ actor.name[0] | upper }}</span>
+        {% endif %}
+      </div>
+      <div class="ap-infobox__title">{{ actor.name }}</div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Type</span>
+        <span class="ap-infobox__value">{{ actor.type | title }}</span>
+      </div>
+      {% if actor.cases %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Linked Cases — {{ actor.cases|length }}</span>
+        <div class="ap-infobox__cases">
+          {% for c in actor.cases %}
+          <a href="../cases/{{ c.slug }}.html" class="ap-infobox__case-link">{{ c.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if actor.activity %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">First Observed</span>
+        <span class="ap-infobox__value">{{ actor.activity.first_seen }}</span>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Last Observed</span>
+        <span class="ap-infobox__value">{{ actor.activity.last_seen }}</span>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Linked Signals</span>
+        <span class="ap-infobox__value">{{ actor.activity.signal_count }}</span>
+      </div>
+      {% if actor.activity.dominant_stream %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Primary Stream</span>
+        <span class="ap-infobox__value">{{ stream_labels.get(actor.activity.dominant_stream, actor.activity.dominant_stream) }}</span>
+      </div>
+      {% endif %}
+      {% endif %}
+      {% if actor.relationships %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Named Relationships — {{ actor.relationships|length }}</span>
+        <div class="ap-infobox__cases">
+          {% for rel in actor.relationships %}
+          <a href="{{ rel.other_id }}.html" class="ap-infobox__case-link">{{ rel.relation_type | replace('_', ' ') | title }} — {{ rel.other_name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Source</span>
+        <span class="ap-infobox__value">FORGE OSINT Engine</span>
+      </div>
+    </aside>
+  </div>
+
+</div>
+{% endblock %}

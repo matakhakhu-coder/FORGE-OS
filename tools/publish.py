@@ -19,6 +19,7 @@ import sqlite3
 import subprocess
 import urllib.request
 from datetime import datetime, timezone
+from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
 from markdown_it import MarkdownIt
@@ -26,6 +27,7 @@ from markdown_it import MarkdownIt
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT        = pathlib.Path(__file__).parent.parent
 DB_PATH     = ROOT / "database.db"
+MEDIA_DIR   = ROOT / "media"
 PUBLISHER   = ROOT / "publisher"
 TMPL_DIR    = PUBLISHER / "templates"
 STATIC_SRC  = PUBLISHER / "static"
@@ -33,15 +35,28 @@ DIST        = ROOT / "dist"
 DIST_STATIC = DIST / "static"
 DIST_ART    = DIST / "articles"
 DIST_CASES  = DIST / "cases"
+DIST_ENTITIES = DIST / "entities"
 
 # Vercel deploy hook — triggered after every git push to force immediate deployment
 VERCEL_DEPLOY_HOOK = "https://api.vercel.com/v1/integrations/deploy/prj_ibD3AwjGwVKVA5tA43Evg93d5Xzf/QTHKub0Cbl"
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
-PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala
+PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto)
+
+# Entity infobox: relationship-derived rows (Position/Affiliation from
+# entity_relationships, co-occurrence from graph_edges). Off by default —
+# NER coverage is currently 1.4% of signals (83/5835) and extracted entity
+# text doesn't exact-match actors.name, so this data is too sparse/unreliable
+# to publish. Flip on once NER coverage + name normalization are fixed.
+ENABLE_INFOBOX_RELATIONSHIPS = False
 
 # Maps signal_id → article slug for "Read analysis →" on timeline signal cards
 SIGNAL_ARTICLE_MAP: dict[str, str] = {
+    # Beitbridge / Edgar Maroto (Case #13)
+    "f94b0c85-9fc5-49c2-8dfe-72090074f5bd": "beitbridge-explosives-smuggling-maroto",
+    # Graft roundup: Joshco CEO bail + SIU Home Affairs (13 Jun 2026)
+    "423f421e-9182-469b-b684-3d5e61a68d38": "graft-roundup-joshco-home-affairs-june-2026",
+    "0450004e-732e-4e96-9044-bd5210ae9a33": "graft-roundup-joshco-home-affairs-june-2026",
     # ── SA Crime & Security ────────────────────────────────────────────────────
     # Limpopo / Mkhwanazi
     "c4d50e84-59ff-4a74-b608-1709feb2402b": "madlanga-hawks-limpopo-municipal-fraud",
@@ -397,6 +412,207 @@ def _fetch_case_actors(conn: sqlite3.Connection, case_id: int) -> list[dict]:
     } for r in rows]
 
 
+# ── Entity Directory ─────────────────────────────────────────────────────────
+# Surfaces every actor that appears on the public graph (graph.html) as a
+# static profile card — same eligibility criteria as _build_graph_data, kept
+# in sync deliberately. Neutral framing: this is a directory of entities
+# referenced in published investigations, not an accusation list.
+
+def _fetch_directory_actors(conn: sqlite3.Connection) -> list[dict]:
+    ph = ",".join("?" * len(PUBLISHED_CASE_IDS))
+
+    rows = conn.execute(f"""
+        SELECT DISTINCT a.actor_id, a.name, a.type, a.description,
+               a.confidence_score, a.image_url
+        FROM   actors a
+        WHERE  (
+                 a.actor_id IN (
+                     SELECT actor_id FROM case_actors
+                     WHERE  case_id IN ({ph})
+                 )
+                 OR (a.type = 'person' AND a.confidence_score >= 0.35)
+               )
+          AND  a.name NOT IN ('location','government','company','sa',
+                               'south africa','gauteng','pretoria',
+                               'johannesburg','cape town','kzn',
+                               'kwazulu-natal')
+          AND  a.type NOT IN ('location')
+        ORDER  BY a.confidence_score DESC
+        LIMIT  80
+    """, PUBLISHED_CASE_IDS).fetchall()
+
+    items = []
+    for r in rows:
+        items.append({
+            "actor_id":    r["actor_id"],
+            "name":        r["name"],
+            "type":        r["type"] or "unknown",
+            "description": r["description"],
+            "confidence":  round(r["confidence_score"] or 0.0, 3),
+            "image_url":   r["image_url"],
+            "slug":        _slugify(r["name"]) + "-" + str(r["actor_id"]),
+        })
+    return items
+
+
+def _fetch_actor_events(conn: sqlite3.Connection, actor_id: int) -> list[dict]:
+    """Known events this actor is linked to, most recent first."""
+    rows = conn.execute("""
+        SELECT e.event_id, e.title, e.summary, e.date, e.location,
+               e.category, ae.role
+        FROM   actor_events ae
+        JOIN   events e ON e.event_id = ae.event_id
+        WHERE  ae.actor_id = ?
+        ORDER  BY e.date DESC
+        LIMIT  20
+    """, (actor_id,)).fetchall()
+
+    return [{
+        "event_id": r["event_id"],
+        "title":    r["title"],
+        "summary":  r["summary"],
+        "date":     r["date"],
+        "location": r["location"],
+        "category": r["category"],
+        "role":     r["role"],
+    } for r in rows]
+
+
+def _fetch_actor_cases(conn: sqlite3.Connection, actor_id: int) -> list[dict]:
+    """Published cases (PUBLISHED_CASE_IDS) this actor is linked to."""
+    placeholders = ",".join("?" * len(PUBLISHED_CASE_IDS))
+    rows = conn.execute(f"""
+        SELECT c.case_id, c.name
+        FROM   case_actors ca
+        JOIN   cases c ON c.case_id = ca.case_id
+        WHERE  ca.actor_id = ? AND c.case_id IN ({placeholders})
+    """, (actor_id, *PUBLISHED_CASE_IDS)).fetchall()
+
+    return [{
+        "case_id": r["case_id"],
+        "name":    r["name"],
+        "slug":    _slugify(r["name"])[:60],
+    } for r in rows]
+
+
+def _fetch_actor_activity(conn: sqlite3.Connection, actor_id: int) -> Optional[dict]:
+    """
+    Canon activity-stats infobox row, derived purely from signal_actors +
+    signals — no NER/relationship dependency. Returns None if the actor has
+    no linked signals (nothing to report).
+    """
+    row = conn.execute("""
+        SELECT COUNT(*) AS signal_count,
+               MIN(s.timestamp) AS first_seen,
+               MAX(s.timestamp) AS last_seen,
+               MAX(s.gravity_score) AS max_gravity
+        FROM   signal_actors sa
+        JOIN   signals s ON s.signal_id = sa.signal_id
+        WHERE  sa.actor_id = ?
+    """, (actor_id,)).fetchone()
+
+    if not row or not row["signal_count"]:
+        return None
+
+    stream_row = conn.execute("""
+        SELECT s.stream, COUNT(*) AS c
+        FROM   signal_actors sa
+        JOIN   signals s ON s.signal_id = sa.signal_id
+        WHERE  sa.actor_id = ?
+        GROUP  BY s.stream
+        ORDER  BY c DESC
+        LIMIT  1
+    """, (actor_id,)).fetchone()
+
+    return {
+        "signal_count":   row["signal_count"],
+        "first_seen":     (row["first_seen"] or "")[:10],
+        "last_seen":      (row["last_seen"] or "")[:10],
+        "max_gravity":    round(row["max_gravity"] or 0.0, 3),
+        "dominant_stream": stream_row["stream"] if stream_row else None,
+    }
+
+
+def _fetch_actor_relationships(conn: sqlite3.Connection, actor_id: int) -> list[dict]:
+    """
+    Infobox rows derived from entity_relationships (e.g. LEADS,
+    AFFILIATED_WITH, member_of) — "Position"/"Affiliation" facts.
+
+    Gated by ENABLE_INFOBOX_RELATIONSHIPS: currently off because NER
+    coverage is too sparse (1.4% of signals) and extracted entity text
+    doesn't exact-match actors.name, so entity_relationships for most
+    actors is empty or unreliable. Flip the flag on once that's fixed —
+    no other wiring changes needed.
+    """
+    if not ENABLE_INFOBOX_RELATIONSHIPS:
+        return []
+
+    rows = conn.execute("""
+        SELECT er.relation_type, er.description, er.confidence,
+               a.actor_id AS other_id, a.name AS other_name, a.type AS other_type,
+               CASE WHEN er.subject_actor_id = ? THEN 'subject' ELSE 'object' END AS side
+        FROM   entity_relationships er
+        JOIN   actors a ON a.actor_id = CASE
+                   WHEN er.subject_actor_id = ? THEN er.object_actor_id
+                   ELSE er.subject_actor_id
+               END
+        WHERE  er.subject_actor_id = ? OR er.object_actor_id = ?
+        ORDER  BY er.confidence DESC
+        LIMIT  10
+    """, (actor_id, actor_id, actor_id, actor_id)).fetchall()
+
+    return [{
+        "relation_type": r["relation_type"],
+        "description":   r["description"],
+        "confidence":    round(r["confidence"] or 0.0, 3),
+        "other_id":      r["other_id"],
+        "other_name":    r["other_name"],
+        "other_type":    r["other_type"],
+        "side":          r["side"],
+    } for r in rows]
+
+
+def _check_case_triangulation(
+    conn: sqlite3.Connection,
+    cases: list[dict],
+    signals: list[dict],
+    graph_data: dict,
+) -> None:
+    """Warn if a published case is missing timeline/article, map, or graph
+    presence. Does not fail the build — surfaces gaps for the analyst to
+    close (write article, geotag signal, link actor) on the next pass."""
+    graph_node_ids = {n["id"] for n in graph_data["nodes"]}
+
+    for case in cases:
+        case_id = case["case_id"]
+        name = case["name"]
+
+        sig_rows = conn.execute(
+            "SELECT cs.signal_id AS signal_id, s.lat AS lat, s.lng AS lng FROM case_signals cs "
+            "JOIN signals s ON s.signal_id = cs.signal_id WHERE cs.case_id = ?",
+            (case_id,),
+        ).fetchall()
+        sig_ids = [r["signal_id"] for r in sig_rows]
+
+        has_article = any(
+            SIGNAL_ARTICLE_MAP.get(sid) for sid in sig_ids
+        )
+        has_geo = any(r["lat"] and r["lng"] for r in sig_rows)
+
+        actor_rows = conn.execute(
+            "SELECT actor_id FROM case_actors WHERE case_id = ?", (case_id,)
+        ).fetchall()
+        actor_ids = [r["actor_id"] for r in actor_rows]
+        has_graph_node = any(aid in graph_node_ids for aid in actor_ids)
+
+        if not has_article:
+            print(f"[publish] GATE: case #{case_id} '{name}' — no signal with an article in SIGNAL_ARTICLE_MAP (timeline gap)")
+        if not has_geo:
+            print(f"[publish] GATE: case #{case_id} '{name}' — no geo-tagged signal (map gap)")
+        if not has_graph_node:
+            print(f"[publish] GATE: case #{case_id} '{name}' — no linked actor appears on graph.html (graph gap)")
+
+
 # ── Build dist/ ───────────────────────────────────────────────────────────────
 
 def _build_dist(
@@ -409,6 +625,7 @@ def _build_dist(
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
     DIST_CASES.mkdir(exist_ok=True)
+    DIST_ENTITIES.mkdir(exist_ok=True)
 
     if DIST_STATIC.exists():
         shutil.rmtree(DIST_STATIC)
@@ -523,6 +740,42 @@ def _build_dist(
         )
     print(f"[publish] cases/        - {len(cases)} detail pages")
 
+    # entities.html + individual entity profile pages
+    directory_actors = _fetch_directory_actors(conn)
+    entity_types = sorted({a["type"] for a in directory_actors})
+
+    photos_dir = DIST_STATIC / "photos"
+    photos_dir.mkdir(parents=True, exist_ok=True)
+    for actor in directory_actors:
+        src = actor.pop("image_url", None)
+        actor["photo"] = None
+        if src:
+            src_path = MEDIA_DIR / src
+            if src_path.exists():
+                dest_name = pathlib.Path(src).name
+                shutil.copy2(src_path, photos_dir / dest_name)
+                actor["photo"] = dest_name
+    (DIST / "entities.html").write_text(
+        env.get_template("entities.html").render(
+            actors=directory_actors,
+            entity_types=entity_types,
+            generated_at=now_str,
+        ),
+        encoding="utf-8",
+    )
+    actor_tmpl = env.get_template("actor_profile.html")
+    for actor in directory_actors:
+        actor["cases"] = _fetch_actor_cases(conn, actor["actor_id"])
+        actor["events"] = _fetch_actor_events(conn, actor["actor_id"])
+        actor["activity"] = _fetch_actor_activity(conn, actor["actor_id"])
+        actor["relationships"] = _fetch_actor_relationships(conn, actor["actor_id"])
+        out = DIST_ENTITIES / f"{actor['slug']}.html"
+        out.write_text(
+            actor_tmpl.render(actor=actor, generated_at=now_str, stream_labels=STREAM_LABELS),
+            encoding="utf-8",
+        )
+    print(f"[publish] entities/    - {len(directory_actors)} entity profile pages")
+
     # graph.html
     graph_data = _build_graph_data(conn)
     (DIST / "graph.html").write_text(
@@ -534,6 +787,8 @@ def _build_dist(
         encoding="utf-8",
     )
     print(f"[publish] graph.html    - {len(graph_data['nodes'])} nodes / {len(graph_data['edges'])} edges")
+
+    _check_case_triangulation(conn, cases, signals, graph_data)
 
 
 # ── Git deploy ────────────────────────────────────────────────────────────────

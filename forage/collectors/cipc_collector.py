@@ -238,7 +238,7 @@ def run(actor_name: str | None = None, dry_run: bool = False) -> dict:
         _update_actor_profile(conn, name, reg_found, cipc_data, dry_run)
 
         # Flag: no registration found for a procurement-linked actor
-        if not reg_found and actor.get("actor_id"):
+        if not reg_found and actor["actor_id"]:
             _write_finding_signal(
                 conn, name,
                 "NO CIPC REGISTRATION FOUND",

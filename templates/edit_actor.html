@@ -26,7 +26,7 @@
       <span class="form-panel__header-title">Update Actor Record</span>
     </div>
     <div class="form-panel__body">
-      <form method="POST" action="{{ url_for('actor_edit', actor_id=actor.actor_id) }}">
+      <form method="POST" action="{{ url_for('actor_edit', actor_id=actor.actor_id) }}" enctype="multipart/form-data">
 
         <div class="form-group">
           <label>Admin Password *</label>
@@ -52,6 +52,38 @@
           <label>Description / Intelligence Notes</label>
           <textarea name="description" style="min-height:100px;">{{ actor.description or '' }}</textarea>
         </div>
+
+        <div class="form-group">
+          <label>Photo (portrait for persons, building/logo for institutions)</label>
+          {% if actor.image_url %}
+          <div style="margin-bottom:var(--sp-2);">
+            <img src="{{ url_for('serve_media', filepath=actor.image_url) }}" alt="" style="max-height:120px; border-radius:var(--r-sm); border:1px solid var(--border-dim);">
+          </div>
+          <label style="display:flex; align-items:center; gap:var(--sp-2); cursor:pointer; font-weight:normal;">
+            <input type="checkbox" name="remove_image">
+            Remove current photo
+          </label>
+          {% endif %}
+          <input type="file" name="image_file" accept=".png,.jpg,.jpeg,.webp,.gif">
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:var(--sp-2); cursor:pointer;">
+            <input type="checkbox" name="blacklisted" id="bl-checkbox" {{ 'checked' if actor.blacklisted }}>
+            Blacklisted (analyst flag)
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Blacklist Reason</label>
+          <textarea name="blacklist_reason" style="min-height:60px;" placeholder="Why is this actor flagged?">{{ actor.blacklist_reason or '' }}</textarea>
+        </div>
+
+        {% if actor.blacklist_added_at %}
+        <p style="font-size:0.8rem; color:var(--text-secondary);">Flagged since {{ actor.blacklist_added_at }}</p>
+        {% endif %}
 
         <div class="edit-form-actions">
           <button type="submit" class="btn btn--primary">◉ Save Changes</button>

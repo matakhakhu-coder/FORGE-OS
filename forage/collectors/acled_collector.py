@@ -19,15 +19,25 @@ fields — providing the highest-quality gravity inputs of any collector:
 Actor names from ACLED are passed through to the signal metadata so
 EntityResolver can pick them up during ingest.
 
-ACLED API reference: https://apidocs.acleddata.com/
+ACLED retired API-key auth in favour of OAuth2 (myACLED accounts).
+Reference: https://acleddata.com/api-documentation/getting-started
 Free tier: 10,000 rows/month — sufficient for daily polling at
 ~200 events/day for South Africa + neighbours.
 
 Environment variables
 ─────────────────────
-  ACLED_KEY        API key from https://developer.acleddata.com/
-  ACLED_EMAIL      Registered email address (required by ACLED)
+  ACLED_EMAIL      myACLED account email (register free at
+                    https://acleddata.com/user/re-activate)
+  ACLED_PASSWORD   myACLED account password
   FORGE_DB         Path to FORGE database (default: auto-detect)
+
+Auth flow
+─────────
+  POST https://acleddata.com/oauth/token  (form-encoded: username, password,
+  grant_type=password, client_id=acled, scope=authenticated)
+  → {"access_token", "refresh_token", "expires_in": 86400 (24h)}
+  Tokens are cached to .acled_token_cache.json (gitignored, next to this
+  file) and refreshed automatically (refresh_token valid 14 days).
 
 Usage
 ─────
@@ -39,12 +49,12 @@ Usage
 __manifest__ = {
     "id":          "acled_collector",
     "name":        "ACLED Conflict Collector",
-    "description": "Polls the ACLED API for conflict, protest, and violence events in South Africa. Requires ACLED_KEY and ACLED_EMAIL env vars.",
+    "description": "Polls the ACLED API for conflict, protest, and violence events in South Africa. Requires ACLED_EMAIL and ACLED_PASSWORD env vars (myACLED account).",
     "icon":        "⚔",
     "entry":       "forage/collectors/acled_collector.py",
     "args":        [],
     "job_key":     "acled_collector",
-    "version":     "1.0.0",
+    "version":     "2.0.0",
 }
 
 import argparse
@@ -68,7 +78,15 @@ log = logging.getLogger("forge.collectors.acled")
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-BASE_URL = "https://api.acleddata.com/acled/read"
+OAUTH_TOKEN_URL = "https://acleddata.com/oauth/token"
+BASE_URL        = "https://acleddata.com/api/acled/read"
+OAUTH_CLIENT_ID = "acled"
+
+# Token cache file — never committed (holds a live refresh token)
+TOKEN_CACHE_PATH = Path(__file__).resolve().parent / ".acled_token_cache.json"
+
+# Refresh proactively this many seconds before actual expiry
+TOKEN_REFRESH_MARGIN = 300
 
 # Countries to collect. ACLED uses full names.
 # Extend this list as needed — each country adds ~10–40 events/day.
@@ -188,17 +206,114 @@ def _actor_importance(actor1_type: str, actor2_type: str) -> float:
     return round(max(w1, w2), 4)
 
 
+# ── OAuth2 authentication ────────────────────────────────────────────────────
+
+class ACLEDAuth:
+    """
+    Handles ACLED's OAuth2 password-grant flow with on-disk token caching.
+
+    Access tokens last 24h, refresh tokens 14 days. We cache both plus an
+    absolute expiry timestamp so repeated runs (e.g. daily mega_ingest)
+    don't need to re-authenticate with the password every time.
+    """
+
+    def __init__(self, email: str, password: str, cache_path: Path = TOKEN_CACHE_PATH):
+        self.email      = email
+        self.password   = password
+        self.cache_path = cache_path
+
+    def _post_form(self, data: dict[str, str]) -> dict[str, Any]:
+        body = urlencode(data).encode("utf-8")
+        req = Request(
+            OAUTH_TOKEN_URL,
+            data=body,
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "User-Agent":   "FORGE-OSINT/1.0",
+            },
+            method="POST",
+        )
+        try:
+            with urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read())
+        except HTTPError as e:
+            detail = e.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"ACLED OAuth HTTP {e.code}: {detail}") from e
+        except URLError as e:
+            raise RuntimeError(f"ACLED OAuth network error: {e.reason}") from e
+
+    def _load_cache(self) -> Optional[dict]:
+        try:
+            with open(self.cache_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None
+
+    def _save_cache(self, token: dict) -> None:
+        expires_at = time.time() + float(token.get("expires_in", 86400))
+        cache = {
+            "access_token":  token["access_token"],
+            "refresh_token": token.get("refresh_token"),
+            "expires_at":    expires_at,
+        }
+        try:
+            with open(self.cache_path, "w", encoding="utf-8") as f:
+                json.dump(cache, f)
+        except OSError as exc:
+            log.debug(f"ACLED token cache write failed (non-fatal): {exc}")
+
+    def _login(self) -> dict:
+        log.info("[acled_collector] Authenticating via OAuth password grant")
+        token = self._post_form({
+            "username":   self.email,
+            "password":   self.password,
+            "grant_type": "password",
+            "client_id":  OAUTH_CLIENT_ID,
+            "scope":      "authenticated",
+        })
+        self._save_cache(token)
+        return token
+
+    def _refresh(self, refresh_token: str) -> dict:
+        log.info("[acled_collector] Refreshing OAuth access token")
+        token = self._post_form({
+            "refresh_token": refresh_token,
+            "grant_type":    "refresh_token",
+            "client_id":     OAUTH_CLIENT_ID,
+        })
+        # Some OAuth servers omit refresh_token on refresh — carry the old one forward
+        token.setdefault("refresh_token", refresh_token)
+        self._save_cache(token)
+        return token
+
+    def get_access_token(self) -> str:
+        cache = self._load_cache()
+        now = time.time()
+
+        if cache and cache.get("expires_at", 0) - TOKEN_REFRESH_MARGIN > now:
+            return cache["access_token"]
+
+        if cache and cache.get("refresh_token"):
+            try:
+                token = self._refresh(cache["refresh_token"])
+                return token["access_token"]
+            except RuntimeError as exc:
+                log.warning(f"[acled_collector] Refresh failed, re-authenticating: {exc}")
+
+        token = self._login()
+        return token["access_token"]
+
+
 # ── ACLED API client ──────────────────────────────────────────────────────────
 
 class ACLEDClient:
     """
-    Minimal synchronous ACLED REST client.
+    Minimal synchronous ACLED REST client using OAuth2 Bearer auth.
     Wrapped in async-compatible run_in_executor calls by the collector.
     """
 
-    def __init__(self, api_key: str, email: str):
-        self.api_key = api_key
-        self.email   = email
+    def __init__(self, auth: ACLEDAuth):
+        self.auth = auth
 
     def fetch_events(
         self,
@@ -219,8 +334,6 @@ class ACLEDClient:
           fatalities, notes, source, source_scale
         """
         params = {
-            "key":         self.api_key,
-            "email":       self.email,
             "country":     country,
             "event_date":  since_date,
             "event_date_where": ">=",
@@ -238,13 +351,17 @@ class ACLEDClient:
         url = f"{BASE_URL}?{urlencode(params)}"
         log.debug(f"ACLED fetch: {url}")
 
-        req = Request(url, headers={"User-Agent": "FORGE-OSINT/1.0"})
+        req = Request(url, headers={
+            "User-Agent":    "FORGE-OSINT/1.0",
+            "Authorization": f"Bearer {self.auth.get_access_token()}",
+        })
         try:
             with urlopen(req, timeout=30) as resp:
                 raw = resp.read()
                 return json.loads(raw)
         except HTTPError as e:
-            raise RuntimeError(f"ACLED HTTP {e.code}: {e.reason}") from e
+            detail = e.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"ACLED HTTP {e.code}: {e.reason} | {detail[:500]}") from e
         except URLError as e:
             raise RuntimeError(f"ACLED network error: {e.reason}") from e
 
@@ -471,26 +588,25 @@ class ACLEDCollector:
     def __init__(
         self,
         db_path: Optional[Path] = None,
-        api_key: Optional[str] = None,
         email: Optional[str] = None,
+        password: Optional[str] = None,
         countries: Optional[list[str]] = None,
         lookback_days: int = DEFAULT_LOOKBACK_DAYS,
     ):
         self.db_path      = db_path or _resolve_db()
-        self.api_key      = api_key or os.environ.get("ACLED_KEY", "")
-        self.email        = email   or os.environ.get("ACLED_EMAIL", "")
+        self.email        = email    or os.environ.get("ACLED_EMAIL", "")
+        self.password     = password or os.environ.get("ACLED_PASSWORD", "")
         self.countries    = countries or DEFAULT_COUNTRIES
         self.lookback_days = lookback_days
 
-        if not self.api_key:
-            raise ValueError(
-                "ACLED API key required. Set ACLED_KEY environment variable "
-                "or pass api_key=... to ACLEDCollector(). "
-                "Register free at https://developer.acleddata.com/"
-            )
         if not self.email:
             raise ValueError(
-                "ACLED registered email required. Set ACLED_EMAIL environment variable."
+                "ACLED account email required. Set ACLED_EMAIL environment variable. "
+                "Register free at https://acleddata.com/user/re-activate"
+            )
+        if not self.password:
+            raise ValueError(
+                "ACLED account password required. Set ACLED_PASSWORD environment variable."
             )
 
     def _since_date(self) -> str:
@@ -504,7 +620,8 @@ class ACLEDCollector:
         Suitable for both direct CLI use and asyncio.run() via mega_ingest.
         """
         start     = time.monotonic()
-        client    = ACLEDClient(self.api_key, self.email)
+        auth      = ACLEDAuth(self.email, self.password)
+        client    = ACLEDClient(auth)
         since     = self._since_date()
         all_sigs  : list[dict] = []
         errors    : list[str]  = []
@@ -589,8 +706,8 @@ class ACLEDCollector:
 
 async def collect(
     db_path: Optional[Path] = None,
-    api_key: Optional[str] = None,
     email: Optional[str] = None,
+    password: Optional[str] = None,
     countries: Optional[list[str]] = None,
     lookback_days: int = DEFAULT_LOOKBACK_DAYS,
 ) -> dict:
@@ -602,8 +719,8 @@ async def collect(
     loop = asyncio.get_event_loop()
     collector = ACLEDCollector(
         db_path=db_path,
-        api_key=api_key,
         email=email,
+        password=password,
         countries=countries,
         lookback_days=lookback_days,
     )
@@ -639,12 +756,12 @@ if __name__ == "__main__":
         help="Path to database.db (default: auto-detect)"
     )
     parser.add_argument(
-        "--key", type=str, default=None,
-        help="ACLED API key (default: ACLED_KEY env var)"
+        "--email", type=str, default=None,
+        help="ACLED account email (default: ACLED_EMAIL env var)"
     )
     parser.add_argument(
-        "--email", type=str, default=None,
-        help="ACLED email (default: ACLED_EMAIL env var)"
+        "--password", type=str, default=None,
+        help="ACLED account password (default: ACLED_PASSWORD env var)"
     )
     args = parser.parse_args()
 
@@ -653,8 +770,8 @@ if __name__ == "__main__":
     try:
         collector = ACLEDCollector(
             db_path=_resolve_db(args.db),
-            api_key=args.key,
             email=args.email,
+            password=args.password,
             countries=countries,
             lookback_days=args.days,
         )
