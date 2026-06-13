@@ -92,6 +92,35 @@
   border-radius: var(--r-md);
   background: var(--bg-surface);
 }
+
+.bl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+.bl-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: 999px;
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  transition: border-color var(--t-mid), color var(--t-mid), background var(--t-mid);
+}
+.bl-pill:hover {
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+.bl-pill--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-base);
+}
 </style>
 
 </head>
@@ -113,7 +142,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">13 Jun 2026 09:49 UTC</span>
+        <span class="site-ts mono">13 Jun 2026 09:55 UTC</span>
       </div>
     </div>
   </header>
@@ -138,9 +167,22 @@
   </div>
 
   
+  <div class="bl-filters">
+    <button class="bl-pill bl-pill--active" data-filter="all">All</button>
+    
+    <button class="bl-pill" data-filter="government">Government</button>
+    
+    <button class="bl-pill" data-filter="institution">Institution</button>
+    
+    <button class="bl-pill" data-filter="media">Media</button>
+    
+    <button class="bl-pill" data-filter="person">Person</button>
+    
+  </div>
+
   <div class="bl-grid">
     
-    <a href="entities/world-health-organization-50.html" class="bl-card">
+    <a href="entities/world-health-organization-50.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">World Health Organization</div>
       
@@ -148,7 +190,7 @@
       
     </a>
     
-    <a href="entities/cdc-health-alert-network-51.html" class="bl-card">
+    <a href="entities/cdc-health-alert-network-51.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">CDC Health Alert Network</div>
       
@@ -156,7 +198,7 @@
       
     </a>
     
-    <a href="entities/sindiso-magaqa-47.html" class="bl-card">
+    <a href="entities/sindiso-magaqa-47.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Sindiso Magaqa</div>
       
@@ -164,7 +206,7 @@
       
     </a>
     
-    <a href="entities/sadc-health-ministers-meeting-52.html" class="bl-card">
+    <a href="entities/sadc-health-ministers-meeting-52.html" class="bl-card" data-type="government">
       <div class="bl-card__type">government</div>
       <div class="bl-card__name">SADC Health Ministers Meeting</div>
       
@@ -172,7 +214,7 @@
       
     </a>
     
-    <a href="entities/vusimuzi-cat-matlala-59.html" class="bl-card">
+    <a href="entities/vusimuzi-cat-matlala-59.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Vusimuzi &#34;Cat&#34; Matlala</div>
       
@@ -180,7 +222,7 @@
       
     </a>
     
-    <a href="entities/drc-ministry-of-health-53.html" class="bl-card">
+    <a href="entities/drc-ministry-of-health-53.html" class="bl-card" data-type="government">
       <div class="bl-card__type">government</div>
       <div class="bl-card__name">DRC Ministry of Health</div>
       
@@ -188,7 +230,7 @@
       
     </a>
     
-    <a href="entities/promed-mail-54.html" class="bl-card">
+    <a href="entities/promed-mail-54.html" class="bl-card" data-type="media">
       <div class="bl-card__type">media</div>
       <div class="bl-card__name">ProMED Mail</div>
       
@@ -196,7 +238,7 @@
       
     </a>
     
-    <a href="entities/fannie-masemola-60.html" class="bl-card">
+    <a href="entities/fannie-masemola-60.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Fannie Masemola</div>
       
@@ -204,7 +246,7 @@
       
     </a>
     
-    <a href="entities/fadiel-adams-46.html" class="bl-card">
+    <a href="entities/fadiel-adams-46.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Fadiel Adams</div>
       
@@ -212,7 +254,7 @@
       
     </a>
     
-    <a href="entities/unfpa-africa-regional-office-55.html" class="bl-card">
+    <a href="entities/unfpa-africa-regional-office-55.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">UNFPA Africa Regional Office</div>
       
@@ -220,7 +262,7 @@
       
     </a>
     
-    <a href="entities/godfrey-lebeya-41.html" class="bl-card">
+    <a href="entities/godfrey-lebeya-41.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Godfrey Lebeya</div>
       
@@ -228,7 +270,7 @@
       
     </a>
     
-    <a href="entities/richard-shibiri-61.html" class="bl-card">
+    <a href="entities/richard-shibiri-61.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Richard Shibiri</div>
       
@@ -236,7 +278,7 @@
       
     </a>
     
-    <a href="entities/brown-mogotsi-62.html" class="bl-card">
+    <a href="entities/brown-mogotsi-62.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Brown Mogotsi</div>
       
@@ -244,7 +286,7 @@
       
     </a>
     
-    <a href="entities/national-prosecuting-authority-5.html" class="bl-card">
+    <a href="entities/national-prosecuting-authority-5.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">National Prosecuting Authority</div>
       
@@ -252,7 +294,7 @@
       
     </a>
     
-    <a href="entities/south-african-police-service-9.html" class="bl-card">
+    <a href="entities/south-african-police-service-9.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">South African Police Service</div>
       
@@ -260,7 +302,7 @@
       
     </a>
     
-    <a href="entities/directorate-for-priority-crime-investigation-10.html" class="bl-card">
+    <a href="entities/directorate-for-priority-crime-investigation-10.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">Directorate for Priority Crime Investigation</div>
       
@@ -268,7 +310,7 @@
       
     </a>
     
-    <a href="entities/cyril-ramaphosa-17.html" class="bl-card">
+    <a href="entities/cyril-ramaphosa-17.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Cyril Ramaphosa</div>
       
@@ -276,7 +318,7 @@
       
     </a>
     
-    <a href="entities/eskom-19.html" class="bl-card">
+    <a href="entities/eskom-19.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">Eskom</div>
       
@@ -284,7 +326,7 @@
       
     </a>
     
-    <a href="entities/martha-rantsofu-48.html" class="bl-card">
+    <a href="entities/martha-rantsofu-48.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Martha Rantsofu</div>
       
@@ -292,7 +334,7 @@
       
     </a>
     
-    <a href="entities/national-institute-for-communicable-diseases-south-africa-64.html" class="bl-card">
+    <a href="entities/national-institute-for-communicable-diseases-south-africa-64.html" class="bl-card" data-type="institution">
       <div class="bl-card__type">institution</div>
       <div class="bl-card__name">National Institute for Communicable Diseases (South Africa)</div>
       
@@ -300,7 +342,7 @@
       
     </a>
     
-    <a href="entities/minenhle-mavuso-49.html" class="bl-card">
+    <a href="entities/minenhle-mavuso-49.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Minenhle Mavuso</div>
       
@@ -308,7 +350,7 @@
       
     </a>
     
-    <a href="entities/feroz-khan-63.html" class="bl-card">
+    <a href="entities/feroz-khan-63.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Feroz Khan</div>
       
@@ -316,7 +358,7 @@
       
     </a>
     
-    <a href="entities/julius-mkhwanazi-40.html" class="bl-card">
+    <a href="entities/julius-mkhwanazi-40.html" class="bl-card" data-type="person">
       <div class="bl-card__type">person</div>
       <div class="bl-card__name">Julius Mkhwanazi</div>
       
@@ -329,6 +371,19 @@
 
 </div>
 
+<script>
+document.querySelectorAll('.bl-pill').forEach(function (pill) {
+  pill.addEventListener('click', function () {
+    document.querySelectorAll('.bl-pill').forEach(function (p) { p.classList.remove('bl-pill--active'); });
+    pill.classList.add('bl-pill--active');
+    var filter = pill.dataset.filter;
+    document.querySelectorAll('.bl-card').forEach(function (card) {
+      card.style.display = (filter === 'all' || card.dataset.type === filter) ? '' : 'none';
+    });
+  });
+});
+</script>
+
   </main>
 
   
@@ -338,7 +393,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 13 Jun 2026 09:49 UTC
+        Generated 13 Jun 2026 09:55 UTC
       </div>
     </div>
   </footer>
