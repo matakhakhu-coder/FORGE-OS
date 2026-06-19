@@ -443,7 +443,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 18:49 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 19:14 UTC</span>
       </div>
     </div>
   </header>
@@ -533,7 +533,7 @@
       
       
       
-      <div class="case-entry" data-case-id="15">
+      <div class="case-entry" data-case-id="15" data-slug="mega-account-compromise-credential-stuffing-via-3xk-tech-pro">
         <div class="case-entry__name">MEGA Account Compromise — Credential Stuffing via ...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-strong">Strong</span>
@@ -545,7 +545,7 @@
       
       
       
-      <div class="case-entry" data-case-id="11">
+      <div class="case-entry" data-case-id="11" data-slug="regional-pathogen-surveillance">
         <div class="case-entry__name">Regional Pathogen Surveillance</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-established">Established</span>
@@ -557,7 +557,7 @@
       
       
       
-      <div class="case-entry" data-case-id="7">
+      <div class="case-entry" data-case-id="7" data-slug="limpopo-municipal-procurement-fraud-april-2026-hawks-operati">
         <div class="case-entry__name">Limpopo Municipal Procurement Fraud — April 2026 H...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-established">Established</span>
@@ -569,7 +569,7 @@
       
       
       
-      <div class="case-entry" data-case-id="10">
+      <div class="case-entry" data-case-id="10" data-slug="kzn-hawks-institutional-integrity-evidence-tampering-and-nar">
         <div class="case-entry__name">KZN HAWKS Institutional Integrity -- Evidence Tamp...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-established">Established</span>
@@ -581,7 +581,7 @@
       
       
       
-      <div class="case-entry" data-case-id="8">
+      <div class="case-entry" data-case-id="8" data-slug="operation-magaqa-political-interference-in-anc-ylssg-murder-">
         <div class="case-entry__name">Operation Magaqa: Political Interference in ANC YL...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-established">Established</span>
@@ -593,7 +593,7 @@
       
       
       
-      <div class="case-entry" data-case-id="9">
+      <div class="case-entry" data-case-id="9" data-slug="eskom-procurement-fraud-r21bn-diesel-contract">
         <div class="case-entry__name">Eskom Procurement Fraud -- R21bn Diesel Contract</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-developing">Developing</span>
@@ -605,7 +605,7 @@
       
       
       
-      <div class="case-entry" data-case-id="13">
+      <div class="case-entry" data-case-id="13" data-slug="beitbridge-border-post-explosives-smuggling-edgar-maroto">
         <div class="case-entry__name">Beitbridge Border Post -- Explosives Smuggling (Ed...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-developing">Developing</span>
@@ -617,7 +617,7 @@
       
       
       
-      <div class="case-entry" data-case-id="12">
+      <div class="case-entry" data-case-id="12" data-slug="operation-saps-tender-capture-cat-matlala-r360m-contract">
         <div class="case-entry__name">Operation: SAPS Tender Capture -- Cat Matlala R360...</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe coe-developing">Developing</span>
@@ -820,7 +820,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 18:49 UTC
+        Generated 19 Jun 2026 19:14 UTC
       </div>
     </div>
   </footer>
@@ -828,7 +828,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 18:49 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 19:14 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -1143,7 +1143,7 @@
       var caseId = entry.dataset.caseId;
       // Case centroids are computed from all markers linked to this case
       // For now, just link to the case detail page
-      window.location.href = 'cases/' + entry.querySelector('.case-entry__name').textContent.trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 60) + '.html';
+      window.location.href = 'cases/' + entry.dataset.slug + '.html';
     });
   });
 

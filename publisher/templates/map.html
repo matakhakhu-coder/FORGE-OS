@@ -469,7 +469,7 @@
       {% set coe_pct = (c.coe * 100)|int %}
       {% set coe_label = 'Corroborated' if coe_pct >= 75 else ('Strong' if coe_pct >= 55 else ('Established' if coe_pct >= 35 else ('Developing' if coe_pct >= 20 else 'Preliminary'))) %}
       {% set coe_cls = 'coe-corroborated' if coe_pct >= 75 else ('coe-strong' if coe_pct >= 55 else ('coe-established' if coe_pct >= 35 else ('coe-developing' if coe_pct >= 20 else 'coe-preliminary'))) %}
-      <div class="case-entry" data-case-id="{{ c.case_id }}">
+      <div class="case-entry" data-case-id="{{ c.case_id }}" data-slug="{{ c.slug }}">
         <div class="case-entry__name">{{ c.name[:50] }}{% if c.name|length > 50 %}...{% endif %}</div>
         <div class="case-entry__meta">
           <span class="case-entry__coe {{ coe_cls }}">{{ coe_label }}</span>
@@ -785,7 +785,7 @@
       var caseId = entry.dataset.caseId;
       // Case centroids are computed from all markers linked to this case
       // For now, just link to the case detail page
-      window.location.href = 'cases/' + entry.querySelector('.case-entry__name').textContent.trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 60) + '.html';
+      window.location.href = 'cases/' + entry.dataset.slug + '.html';
     });
   });
 
