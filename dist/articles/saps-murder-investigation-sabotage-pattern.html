@@ -26,10 +26,16 @@
         <a href="../graph.html" class="site-nav__link ">Graph</a>
         <a href="../map.html" class="site-nav__link ">Map</a>
         <a href="../entities.html" class="site-nav__link ">Entities</a>
+        <a href="../watchlist.html" class="site-nav__link ">Watchlist</a>
       </nav>
       <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:38 UTC</span>
       </div>
     </div>
   </header>
@@ -82,6 +88,8 @@
     </div>
   </header>
 
+  
+
   <div class="article-body">
     <p>IOL's investigative report — surfaced in FORGE's dork collection pipeline — details
 how high-ranking SAPS officials have systematically sabotaged murder investigations.
@@ -130,8 +138,18 @@ Police audit reports.</p>
 
   </div>
 
+  <div class="methodology-section">
+    <div class="methodology-section__title">About this analysis</div>
+    <div class="methodology-section__body">
+      This analysis is produced by ZA-DIVERGENT from open-source signals collected and scored by the
+      FORGE OSINT engine. All source material is publicly available. Analytical conclusions reflect the
+      assessment of the author and do not constitute legal findings.
+    </div>
+  </div>
+
   <footer class="article-footer mono">
-    ZA-DIVERGENT ARCHIVE · Generated 19 Jun 2026 16:17 UTC
+    <div class="page-last-updated">Last updated: 19 Jun 2026 16:38 UTC</div>
+    ZA-DIVERGENT ARCHIVE
   </footer>
 
 </div>
@@ -145,7 +163,7 @@ Police audit reports.</p>
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 16:17 UTC
+        Generated 19 Jun 2026 16:38 UTC
       </div>
     </div>
   </footer>
@@ -153,10 +171,44 @@ Police audit reports.</p>
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:38 UTC</span>
   </div>
 
   <script src="../static/js/site.js"></script>
+  <script src="../static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('../search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
   
 </body>
 </html>

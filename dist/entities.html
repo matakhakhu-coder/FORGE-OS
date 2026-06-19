@@ -160,10 +160,16 @@
         <a href="graph.html" class="site-nav__link ">Graph</a>
         <a href="map.html" class="site-nav__link ">Map</a>
         <a href="entities.html" class="site-nav__link site-nav__link--active">Entities</a>
+        <a href="watchlist.html" class="site-nav__link ">Watchlist</a>
       </nav>
       <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:38 UTC</span>
       </div>
     </div>
   </header>
@@ -213,7 +219,10 @@
         <img src="static/photos/50.png" alt="World Health Organization" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="50" data-wl-type="actors" data-wl-title="World Health Organization" data-wl-url="entities/world-health-organization-50.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">World Health Organization</div>
       
       <div class="bl-card__desc">UN specialised agency responsible for international public health. Primary authoritative source for disease outbreak news and global health emergency declaratio…</div>
@@ -223,10 +232,13 @@
     <a href="entities/mega-meganz-98.html" class="bl-card" data-type="organization">
       <div class="bl-card__media">
         
-        <span class="bl-card__media--placeholder">M</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="organization">M(</span>
         
       </div>
-      <div class="bl-card__type">organization</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">organization</div>
+        <button class="wl-toggle" data-wl-id="98" data-wl-type="actors" data-wl-title="MEGA (mega.nz)" data-wl-url="entities/mega-meganz-98.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">MEGA (mega.nz)</div>
       
       <div class="bl-card__desc">Cloud storage and file hosting service headquartered in Auckland, New Zealand. Offers 20GB free storage with end-to-end encryption. Has documented history of cr…</div>
@@ -239,7 +251,10 @@
         <img src="static/photos/51.png" alt="CDC Health Alert Network" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="51" data-wl-type="actors" data-wl-title="CDC Health Alert Network" data-wl-url="entities/cdc-health-alert-network-51.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">CDC Health Alert Network</div>
       
       <div class="bl-card__desc">US Centers for Disease Control and Prevention emergency broadcast system. Issues Health Alert Network (HAN) advisories for public health threats including inter…</div>
@@ -249,10 +264,13 @@
     <a href="entities/friedrich-kraft-95.html" class="bl-card" data-type="person">
       <div class="bl-card__media">
         
-        <span class="bl-card__media--placeholder">F</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="person">FK</span>
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="95" data-wl-type="actors" data-wl-title="Friedrich Kraft" data-wl-url="entities/friedrich-kraft-95.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Friedrich Kraft</div>
       
       <div class="bl-card__desc">CEO of both 3xK Tech GmbH and Plainproxies. Identified by KrebsOnSecurity (January 2026) as the operator of proxy infrastructure linked to the Kimwolf botnet. P…</div>
@@ -265,7 +283,10 @@
         <img src="static/photos/47.jpg" alt="Sindiso Magaqa" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="47" data-wl-type="actors" data-wl-title="Sindiso Magaqa" data-wl-url="entities/sindiso-magaqa-47.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Sindiso Magaqa</div>
       
       <div class="bl-card__desc">Former ANC Youth League Secretary-General. Murdered 2017 in what investigators describe as a political assassination. Subject of the Magaqa murder probe. Confir…</div>
@@ -275,10 +296,13 @@
     <a href="entities/plainproxies-96.html" class="bl-card" data-type="organization">
       <div class="bl-card__media">
         
-        <span class="bl-card__media--placeholder">P</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="organization">P</span>
         
       </div>
-      <div class="bl-card__type">organization</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">organization</div>
+        <button class="wl-toggle" data-wl-id="96" data-wl-type="actors" data-wl-title="Plainproxies" data-wl-url="entities/plainproxies-96.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Plainproxies</div>
       
       <div class="bl-card__desc">Residential proxy service operated by Friedrich Kraft. Distributed the ByteConnect SDK through devices infected by the Kimwolf botnet (2 million Android TV boxe…</div>
@@ -288,10 +312,13 @@
     <a href="entities/kimwolf-botnet-97.html" class="bl-card" data-type="other">
       <div class="bl-card__media">
         
-        <span class="bl-card__media--placeholder">K</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="other">KB</span>
         
       </div>
-      <div class="bl-card__type">other</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">other</div>
+        <button class="wl-toggle" data-wl-id="97" data-wl-type="actors" data-wl-title="Kimwolf Botnet" data-wl-url="entities/kimwolf-botnet-97.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Kimwolf Botnet</div>
       
       <div class="bl-card__desc">Botnet that infected over 2 million unofficial Android TV streaming boxes. Compromised devices were enrolled as proxy relays via the ByteConnect SDK, distribute…</div>
@@ -304,7 +331,10 @@
         <img src="static/photos/52.png" alt="SADC Health Ministers Meeting" loading="lazy">
         
       </div>
-      <div class="bl-card__type">government</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">government</div>
+        <button class="wl-toggle" data-wl-id="52" data-wl-type="actors" data-wl-title="SADC Health Ministers Meeting" data-wl-url="entities/sadc-health-ministers-meeting-52.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">SADC Health Ministers Meeting</div>
       
       <div class="bl-card__desc">Southern African Development Community inter-governmental body coordinating regional health policy, disease surveillance, and cross-border health emergency resp…</div>
@@ -317,7 +347,10 @@
         <img src="static/photos/59.png" alt="Vusimuzi &#34;Cat&#34; Matlala" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="59" data-wl-type="actors" data-wl-title="Vusimuzi &#34;Cat&#34; Matlala" data-wl-url="entities/vusimuzi-cat-matlala-59.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Vusimuzi &#34;Cat&#34; Matlala</div>
       
       <div class="bl-card__desc">Pretoria businessman, &#34;Tender King&#34;. Secured irregular R360m SAPS Medicare24 tender without vetting. Arrested March 2026, tied to 80 corruption cases per SAPS i…</div>
@@ -330,7 +363,10 @@
         <img src="static/photos/53.png" alt="DRC Ministry of Health" loading="lazy">
         
       </div>
-      <div class="bl-card__type">government</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">government</div>
+        <button class="wl-toggle" data-wl-id="53" data-wl-type="actors" data-wl-title="DRC Ministry of Health" data-wl-url="entities/drc-ministry-of-health-53.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">DRC Ministry of Health</div>
       
       <div class="bl-card__desc">Democratic Republic of Congo national health authority. DRC is the primary SADC-adjacent disease vector corridor — mpox, cholera, and Ebola outbreaks in eastern…</div>
@@ -343,7 +379,10 @@
         <img src="static/photos/54.jpg" alt="ProMED Mail" loading="lazy">
         
       </div>
-      <div class="bl-card__type">media</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">media</div>
+        <button class="wl-toggle" data-wl-id="54" data-wl-type="actors" data-wl-title="ProMED Mail" data-wl-url="entities/promed-mail-54.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">ProMED Mail</div>
       
       <div class="bl-card__desc">Program for Monitoring Emerging Diseases. Open-access early-warning infectious disease surveillance system operated by the International Society for Infectious …</div>
@@ -356,7 +395,10 @@
         <img src="static/photos/60.png" alt="Fannie Masemola" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="60" data-wl-type="actors" data-wl-title="Fannie Masemola" data-wl-url="entities/fannie-masemola-60.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Fannie Masemola</div>
       
       <div class="bl-card__desc">National Police Commissioner. Suspended by President Ramaphosa (April 2026) pending outcome of State vs Matlala and 15 others. Served with warrant for involveme…</div>
@@ -369,7 +411,10 @@
         <img src="static/photos/46.png" alt="Fadiel Adams" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="46" data-wl-type="actors" data-wl-title="Fadiel Adams" data-wl-url="entities/fadiel-adams-46.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Fadiel Adams</div>
       
       <div class="bl-card__desc">Member of Parliament, National Coloured Congress (NCC). Western Cape. Arrested May 2026 for alleged interference in Sindiso Magaqa murder investigation. Magaqa …</div>
@@ -382,7 +427,10 @@
         <img src="static/photos/55.png" alt="UNFPA Africa Regional Office" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="55" data-wl-type="actors" data-wl-title="UNFPA Africa Regional Office" data-wl-url="entities/unfpa-africa-regional-office-55.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">UNFPA Africa Regional Office</div>
       
       <div class="bl-card__desc">UN Population Fund regional office covering sub-Saharan Africa. Monitors humanitarian health conditions including reproductive health crises across conflict-aff…</div>
@@ -395,7 +443,10 @@
         <img src="static/photos/41.png" alt="Godfrey Lebeya" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="41" data-wl-type="actors" data-wl-title="Godfrey Lebeya" data-wl-url="entities/godfrey-lebeya-41.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Godfrey Lebeya</div>
       
       <div class="bl-card__desc">National Head, Directorate for Priority Crime Investigation (HAWKS/DPCI). Publicly confirmed position. Cited in corpus regarding HAWKS enforcement posture and a…</div>
@@ -408,7 +459,10 @@
         <img src="static/photos/61.jpg" alt="Richard Shibiri" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="61" data-wl-type="actors" data-wl-title="Richard Shibiri" data-wl-url="entities/richard-shibiri-61.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Richard Shibiri</div>
       
       <div class="bl-card__desc">SAPS Organised Crime unit boss. Dismissed during Madlanga Commission fallout (June 2026). Commission heard he had an alleged personal interest in Matlala&#39;s SAPS…</div>
@@ -421,7 +475,10 @@
         <img src="static/photos/62.jpg" alt="Brown Mogotsi" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="62" data-wl-type="actors" data-wl-title="Brown Mogotsi" data-wl-url="entities/brown-mogotsi-62.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Brown Mogotsi</div>
       
       <div class="bl-card__desc">Political operative linked to both the Matlala SAPS tender probe and the Phala Phala farm robbery saga. Denied bail (June 2026) on charges relating to an allege…</div>
@@ -434,7 +491,10 @@
         <img src="static/photos/65.png" alt="Magisterial Court Musina" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="65" data-wl-type="actors" data-wl-title="Magisterial Court Musina" data-wl-url="entities/magisterial-court-musina-65.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Magisterial Court Musina</div>
       
       <div class="bl-card__desc">Musina Magistrate&#39;s Court — district-level judicial institution in Musina, Limpopo, under the South African Magistrates&#39; Courts system. Handles criminal cases (…</div>
@@ -447,7 +507,10 @@
         <img src="static/photos/66.png" alt="Edgar Maroto" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="66" data-wl-type="actors" data-wl-title="Edgar Maroto" data-wl-url="entities/edgar-maroto-66.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Edgar Maroto</div>
       
       <div class="bl-card__desc">Edgar Maroto, a 42-year-old Zimbabwean truck driver, was sentenced to 20 years in a South African prison for illegally possessing and attempting to smuggle expl…</div>
@@ -460,7 +523,10 @@
         <img src="static/photos/5.png" alt="National Prosecuting Authority" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="5" data-wl-type="actors" data-wl-title="National Prosecuting Authority" data-wl-url="entities/national-prosecuting-authority-5.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">National Prosecuting Authority</div>
       
       <div class="bl-card__desc">National Prosecuting Authority (NPA) -- the state body responsible for instituting criminal proceedings. Named in reporting on the Cat Matlala R360m tender capt…</div>
@@ -473,7 +539,10 @@
         <img src="static/photos/9.png" alt="South African Police Service" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="9" data-wl-type="actors" data-wl-title="South African Police Service" data-wl-url="entities/south-african-police-service-9.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">South African Police Service</div>
       
       <div class="bl-card__desc">South African Police Service (SAPS) -- the national police force. Central institution in the Matlala tender capture case, with senior officers including the Nat…</div>
@@ -486,7 +555,10 @@
         <img src="static/photos/10.png" alt="Directorate for Priority Crime Investigation" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="10" data-wl-type="actors" data-wl-title="Directorate for Priority Crime Investigation" data-wl-url="entities/directorate-for-priority-crime-investigation-10.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Directorate for Priority Crime Investigation</div>
       
       <div class="bl-card__desc">Directorate for Priority Crime Investigation (DPCI / HAWKS) -- SAPS elite anti-corruption and organised crime unit. Lead investigative body in the Limpopo munic…</div>
@@ -499,7 +571,10 @@
         <img src="static/photos/17.png" alt="Cyril Ramaphosa" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="17" data-wl-type="actors" data-wl-title="Cyril Ramaphosa" data-wl-url="entities/cyril-ramaphosa-17.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Cyril Ramaphosa</div>
       
       <div class="bl-card__desc">President of the Republic of South Africa. Acted to suspend National Police Commissioner Fannie Masemola in April 2026 pending the outcome of State vs Matlala a…</div>
@@ -512,7 +587,10 @@
         <img src="static/photos/19.png" alt="Eskom" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="19" data-wl-type="actors" data-wl-title="Eskom" data-wl-url="entities/eskom-19.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Eskom</div>
       
       <div class="bl-card__desc">State-owned electricity utility. Subject of a R21bn diesel procurement fraud investigation examining irregular contract awards within its open-cycle gas turbine…</div>
@@ -525,7 +603,10 @@
         <img src="static/photos/48.png" alt="Martha Rantsofu" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="48" data-wl-type="actors" data-wl-title="Martha Rantsofu" data-wl-url="entities/martha-rantsofu-48.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Martha Rantsofu</div>
       
       <div class="bl-card__desc">Emfuleni Local Municipality official. Murdered (date unclear from corpus). Family speaking to media as investigations continue (Daily Maverick, May 2026). Possi…</div>
@@ -538,7 +619,10 @@
         <img src="static/photos/64.png" alt="National Institute for Communicable Diseases (South Africa)" loading="lazy">
         
       </div>
-      <div class="bl-card__type">institution</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">institution</div>
+        <button class="wl-toggle" data-wl-id="64" data-wl-type="actors" data-wl-title="National Institute for Communicable Diseases (South Africa)" data-wl-url="entities/national-institute-for-communicable-diseases-south-africa-64.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">National Institute for Communicable Diseases (South Africa)</div>
       
       <div class="bl-card__desc">South African national public health institute responsible for communicable disease surveillance, including SADC regional pathogen reporting (HealthMap-tracked …</div>
@@ -551,7 +635,10 @@
         <img src="static/photos/84.png" alt="John Grobler" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="84" data-wl-type="actors" data-wl-title="John Grobler" data-wl-url="entities/john-grobler-84.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">John Grobler</div>
       
       <div class="bl-card__desc">Investigative journalist (Namibia/Oxpeckers Investigations). Byline author on Orange Basin oil and gas governance reporting -- &#34;Namibia&#39;s oil rush: Who benefits…</div>
@@ -564,7 +651,10 @@
         <img src="static/photos/49.jpeg" alt="Minenhle Mavuso" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="49" data-wl-type="actors" data-wl-title="Minenhle Mavuso" data-wl-url="entities/minenhle-mavuso-49.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Minenhle Mavuso</div>
       
       <div class="bl-card__desc">Identified in amabhungane investigation as front company operator in Eskom R21-billion diesel procurement fraud. Age 24 at contracting (2024). BA Psychology gra…</div>
@@ -577,7 +667,10 @@
         <img src="static/photos/63.jpg" alt="Feroz Khan" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="63" data-wl-type="actors" data-wl-title="Feroz Khan" data-wl-url="entities/feroz-khan-63.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Feroz Khan</div>
       
       <div class="bl-card__desc">Senior SAPS officer. Denied role in the release of gold-theft suspect Downes; named during Madlanga Commission testimony on the unravelling KZN HAWKS cocaine ca…</div>
@@ -590,7 +683,10 @@
         <img src="static/photos/40.png" alt="Julius Mkhwanazi" loading="lazy">
         
       </div>
-      <div class="bl-card__type">person</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">person</div>
+        <button class="wl-toggle" data-wl-id="40" data-wl-type="actors" data-wl-title="Julius Mkhwanazi" data-wl-url="entities/julius-mkhwanazi-40.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">Julius Mkhwanazi</div>
       
       <div class="bl-card__desc">Named suspect arrested by SAPS Madlanga anti-corruption task team (Limpopo) for fraud and corruption, April 2026. Possible municipal official. Single source — a…</div>
@@ -600,10 +696,13 @@
     <a href="entities/3xk-tech-gmbh-as200373-94.html" class="bl-card" data-type="organization">
       <div class="bl-card__media">
         
-        <span class="bl-card__media--placeholder">3</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="organization">3(</span>
         
       </div>
-      <div class="bl-card__type">organization</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">organization</div>
+        <button class="wl-toggle" data-wl-id="94" data-wl-type="actors" data-wl-title="3xK Tech GmbH (AS200373)" data-wl-url="entities/3xk-tech-gmbh-as200373-94.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">3xK Tech GmbH (AS200373)</div>
       
       <div class="bl-card__desc">German hosting provider operating under ASN AS200373. CEO Friedrich Kraft also operates Plainproxies, a residential proxy service linked to the Kimwolf botnet (…</div>
@@ -637,7 +736,7 @@ document.querySelectorAll('.bl-pill').forEach(function (pill) {
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 16:17 UTC
+        Generated 19 Jun 2026 16:38 UTC
       </div>
     </div>
   </footer>
@@ -645,10 +744,44 @@ document.querySelectorAll('.bl-pill').forEach(function (pill) {
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:38 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
+  <script src="static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
   
 </body>
 </html>

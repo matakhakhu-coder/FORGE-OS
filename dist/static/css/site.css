@@ -557,6 +557,94 @@ a:hover { color: var(--accent-bright); }
   letter-spacing: 0.06em;
 }
 
+/* ── Watchlist toggle ──────────────────────────────────────────────────────── */
+.wl-toggle {
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  transition: color var(--t-fast);
+  line-height: 1;
+}
+.wl-toggle.wl-active { color: var(--accent-bright); }
+.wl-toggle:hover { color: var(--accent); }
+
+/* ── Correction / update notices ──────────────────────────────────────────── */
+.notice {
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-5);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  border-radius: var(--r-sm);
+}
+.notice strong {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.notice--correction {
+  border-left: 3px solid var(--crime);
+  background: var(--crime-bg);
+}
+.notice--update {
+  border-left: 3px solid var(--infra);
+  background: var(--infra-bg);
+}
+
+/* ── Last updated footer ──────────────────────────────────────────────────── */
+.page-last-updated {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-dim);
+}
+
+/* ── Methodology section ──────────────────────────────────────────────────── */
+.methodology-section {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border-dim);
+}
+.methodology-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-3);
+}
+.methodology-section__body {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Photo placeholder type colors ────────────────────────────────────────── */
+.avatar-placeholder[data-type="person"]          { background: #1a3a5c; color: #5b8db8; }
+.avatar-placeholder[data-type="institution"]     { background: #1a2030; color: #5a7088; }
+.avatar-placeholder[data-type="government"]      { background: #0a2a18; color: #40906a; }
+.avatar-placeholder[data-type="political_party"] { background: #2a1030; color: #9050a0; }
+.avatar-placeholder[data-type="media"]           { background: #2a2010; color: #b09040; }
+.avatar-placeholder[data-type="organization"]    { background: #0a2a24; color: #30a088; }
+.avatar-placeholder[data-type="other"]           { background: #141e28; color: #4a6080; }
+.avatar-placeholder[data-type="unknown"]         { background: #141e28; color: #4a6080; }
+.avatar-placeholder[data-type="movement"]        { background: #1a0a2a; color: #8050b0; }
+.avatar-placeholder[data-type="paramilitary"]    { background: #2a1010; color: #a04040; }
+
+.ap-no-photo {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-ghost);
+  text-align: center;
+  margin-top: var(--sp-1);
+  letter-spacing: 0.06em;
+}
+
 /* ── Print styles ──────────────────────────────────────────────────────────── */
 @page {
   size: A4 portrait;

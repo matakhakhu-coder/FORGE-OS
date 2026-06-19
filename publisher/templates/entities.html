@@ -165,10 +165,13 @@
         {% if a.photo %}
         <img src="static/photos/{{ a.photo }}" alt="{{ a.name }}" loading="lazy">
         {% else %}
-        <span class="bl-card__media--placeholder">{{ a.name[0] | upper }}</span>
+        <span class="bl-card__media--placeholder avatar-placeholder" data-type="{{ a.type }}">{{ a.initials }}</span>
         {% endif %}
       </div>
-      <div class="bl-card__type">{{ a.type }}</div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="bl-card__type">{{ a.type }}</div>
+        <button class="wl-toggle" data-wl-id="{{ a.actor_id }}" data-wl-type="actors" data-wl-title="{{ a.name }}" data-wl-url="entities/{{ a.slug }}.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="bl-card__name">{{ a.name }}</div>
       {% if a.description %}
       <div class="bl-card__desc">{{ a.description[:160] }}{% if a.description|length > 160 %}…{% endif %}</div>

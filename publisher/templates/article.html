@@ -8,6 +8,9 @@
 {% block nav_graph %}../graph.html{% endblock %}
 {% block nav_map %}../map.html{% endblock %}
 {% block nav_entities %}../entities.html{% endblock %}
+{% block search_index %}../search-index.json{% endblock %}
+{% block wl_js_path %}../static/js/watchlist.js{% endblock %}
+{% block nav_watchlist %}../watchlist.html{% endblock %}
 
 {% block content %}
 <div class="article-shell">
@@ -42,12 +45,30 @@
     </div>
   </header>
 
+  {% if notices %}
+  {% for notice in notices %}
+  <div class="notice notice--{{ notice.type }}">
+    <strong>{{ notice.type | title }} ({{ notice.date }}):</strong> {{ notice.text }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
   <div class="article-body">
     {{ body_html | safe }}
   </div>
 
+  <div class="methodology-section">
+    <div class="methodology-section__title">About this analysis</div>
+    <div class="methodology-section__body">
+      This analysis is produced by ZA-DIVERGENT from open-source signals collected and scored by the
+      FORGE OSINT engine. All source material is publicly available. Analytical conclusions reflect the
+      assessment of the author and do not constitute legal findings.
+    </div>
+  </div>
+
   <footer class="article-footer mono">
-    ZA-DIVERGENT ARCHIVE · Generated {{ generated_at }}
+    <div class="page-last-updated">Last updated: {{ generated_at }}</div>
+    ZA-DIVERGENT ARCHIVE
   </footer>
 
 </div>

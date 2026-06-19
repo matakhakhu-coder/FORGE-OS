@@ -238,10 +238,16 @@
         <a href="../graph.html" class="site-nav__link ">Graph</a>
         <a href="../map.html" class="site-nav__link ">Map</a>
         <a href="../entities.html" class="site-nav__link site-nav__link--active">Entities</a>
+        <a href="../watchlist.html" class="site-nav__link ">Watchlist</a>
       </nav>
       <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:38 UTC</span>
       </div>
     </div>
   </header>
@@ -269,8 +275,10 @@
       <span class="ap-type">other</span>
     </div>
     <h1 class="ap-header__title">Kimwolf Botnet</h1>
-    <div class="ap-header__meta">19 Jun 2026 16:17 UTC</div>
+    <div class="ap-header__meta">19 Jun 2026 16:38 UTC</div>
   </div>
+
+  
 
   <div class="ap-layout">
     <div class="ap-main">
@@ -288,24 +296,33 @@
 
       
 
-      <div class="ap-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5);">
-        <div class="ap-section__title">Methodology</div>
-        <div class="ap-description" style="font-size:0.75rem;">
-          This profile is produced by the FORGE OSINT engine from open-source signals and reviewed by
-          ZA-DIVERGENT analysts before publication. Inclusion in this directory reflects relevance to
-          published investigations and does not constitute a legal finding.
+      <div class="methodology-section">
+        <div class="methodology-section__title">Methodology</div>
+        <div class="methodology-section__body">
+          This profile is produced by the FORGE OSINT engine from 0 open-source
+          signals, spanning
+          2026-06-19 to 2026-06-19. All source material is publicly available.
+          Inclusion in this directory reflects relevance to published investigations and does not constitute a legal finding.
         </div>
       </div>
+
+      <div class="page-last-updated">Last updated: 19 Jun 2026 16:38 UTC</div>
 
     </div>
 
     <aside class="ap-infobox">
       <div class="ap-infobox__media">
         
-        <span class="ap-infobox__media--placeholder">K</span>
+        <span class="ap-infobox__media--placeholder avatar-placeholder" data-type="other">KB</span>
         
       </div>
-      <div class="ap-infobox__title">Kimwolf Botnet</div>
+      
+      <div class="ap-no-photo">No photo on record</div>
+      
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="ap-infobox__title" style="margin-bottom:0;">Kimwolf Botnet</div>
+        <button class="wl-toggle" data-wl-id="97" data-wl-type="actors" data-wl-title="Kimwolf Botnet" data-wl-url="entities/kimwolf-botnet-97.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="ap-infobox__row">
         <span class="ap-infobox__label">Type</span>
         <span class="ap-infobox__value">Other</span>
@@ -359,7 +376,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 16:17 UTC
+        Generated 19 Jun 2026 16:38 UTC
       </div>
     </div>
   </footer>
@@ -367,10 +384,44 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:38 UTC</span>
   </div>
 
   <script src="../static/js/site.js"></script>
+  <script src="../static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('../search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
   
 </body>
 </html>

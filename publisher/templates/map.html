@@ -3,7 +3,8 @@
 {% block nav_map_active %}site-nav__link--active{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
   .site-main { padding: 0; }
   .map-shell  { display: flex; flex-direction: column; height: calc(100vh - 88px); }
@@ -108,6 +109,20 @@
     letter-spacing: 0.04em;
   }
   .smap-popup__link:hover { color: #e0aa4a; }
+
+  /* ── Intel link tooltips ─────────────────────────────────────────────────── */
+  .intel-link-tooltip {
+    background: rgba(8,13,18,0.88) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 2px !important;
+    color: #7a95aa !important;
+    font-family: var(--font-mono), monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    padding: 2px 8px !important;
+    box-shadow: none !important;
+  }
+  .intel-link-tooltip::before { display: none; }
 </style>
 {% endblock %}
 
@@ -123,7 +138,8 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function () {
   'use strict';
@@ -168,8 +184,10 @@
       ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis -></a>'
       : '';
 
+    var starHtml = '<button class="wl-toggle" data-wl-id="' + (m.signal_id || '') + '" data-wl-type="signals" data-wl-title="' + (m.title || '').replace(/"/g, '&quot;') + '" data-wl-url="index.html" style="position:absolute;top:8px;right:8px;">&#9734;</button>';
+
     return (
-      '<div class="smap-popup">' +
+      '<div class="smap-popup" style="position:relative;">' + starHtml +
         '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
         (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
         '<div class="smap-popup__title">' + (m.title || '') + '</div>' +
@@ -315,11 +333,30 @@
   });
 
   /* ── Collapse spider on background click, zoom, or pan ────────────────────── */
-  // Pixel-projected coordinates become stale the moment the view matrix changes,
-  // so collapse immediately on any movement rather than trying to reproject.
   map.on('click',     clearSpider);
   map.on('zoomstart', clearSpider);
   map.on('movestart', clearSpider);
+
+  /* ── Intel links — cross-geography case connections ────────────────────────── */
+  var INTEL_LINKS = {{ intel_links | tojson }};
+
+  INTEL_LINKS.forEach(function (link) {
+    var color = STREAM_COLOR[link.stream] || '#7a95aa';
+    L.polyline(
+      [[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]],
+      {
+        color:      color,
+        weight:     1.2,
+        opacity:    0.25,
+        dashArray:  '8 6',
+        className:  'intel-link',
+      }
+    ).bindTooltip(link.case_name, {
+      permanent: false,
+      direction: 'center',
+      className: 'intel-link-tooltip',
+    }).addTo(map);
+  });
 
 })();
 </script>

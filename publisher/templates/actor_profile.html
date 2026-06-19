@@ -9,6 +9,9 @@
 {% block nav_map %}../map.html{% endblock %}
 {% block nav_entities %}../entities.html{% endblock %}
 {% block nav_entities_active %}site-nav__link--active{% endblock %}
+{% block search_index %}../search-index.json{% endblock %}
+{% block wl_js_path %}../static/js/watchlist.js{% endblock %}
+{% block nav_watchlist %}../watchlist.html{% endblock %}
 
 {% block head_extra %}
 <style>
@@ -243,6 +246,14 @@
     <div class="ap-header__meta">{{ generated_at }}</div>
   </div>
 
+  {% if notices %}
+  {% for notice in notices %}
+  <div class="notice notice--{{ notice.type }}">
+    <strong>{{ notice.type | title }} ({{ notice.date }}):</strong> {{ notice.text }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
   <div class="ap-layout">
     <div class="ap-main">
 
@@ -282,14 +293,36 @@
       </div>
       {% endif %}
 
-      <div class="ap-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5);">
-        <div class="ap-section__title">Methodology</div>
-        <div class="ap-description" style="font-size:0.75rem;">
-          This profile is produced by the FORGE OSINT engine from open-source signals and reviewed by
-          ZA-DIVERGENT analysts before publication. Inclusion in this directory reflects relevance to
-          published investigations and does not constitute a legal finding.
+      {% if actor.sources %}
+      <div class="ap-section">
+        <div class="ap-section__title">Sources — {{ actor.sources|length }}</div>
+        <div class="ap-events">
+          {% for src in actor.sources %}
+          <div class="ap-event">
+            <div class="ap-event__meta">
+              {% if src.timestamp %}<span class="ap-event__date">{{ src.timestamp }}</span>{% endif %}
+              <span class="ap-event__category">{{ src.source | replace('_', ' ') | title }}</span>
+            </div>
+            <div class="ap-event__title">
+              <a href="{{ src.url }}" target="_blank" rel="noopener noreferrer" class="ap-infobox__case-link">{{ src.title }}</a>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </div>
+      {% endif %}
+
+      <div class="methodology-section">
+        <div class="methodology-section__title">Methodology</div>
+        <div class="methodology-section__body">
+          This profile is produced by the FORGE OSINT engine from {{ actor.sources|length if actor.sources else 0 }} open-source
+          signal{{ 's' if not actor.sources or actor.sources|length != 1 else '' }}{% if actor.activity and actor.activity.first_seen %}, spanning
+          {{ actor.activity.first_seen }} to {{ actor.activity.last_seen }}{% endif %}. All source material is publicly available.
+          Inclusion in this directory reflects relevance to published investigations and does not constitute a legal finding.
+        </div>
+      </div>
+
+      <div class="page-last-updated">Last updated: {{ generated_at }}</div>
 
     </div>
 
@@ -298,10 +331,16 @@
         {% if actor.photo %}
         <img src="../static/photos/{{ actor.photo }}" alt="{{ actor.name }}">
         {% else %}
-        <span class="ap-infobox__media--placeholder">{{ actor.name[0] | upper }}</span>
+        <span class="ap-infobox__media--placeholder avatar-placeholder" data-type="{{ actor.type }}">{{ actor.initials }}</span>
         {% endif %}
       </div>
-      <div class="ap-infobox__title">{{ actor.name }}</div>
+      {% if not actor.photo %}
+      <div class="ap-no-photo">No photo on record</div>
+      {% endif %}
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="ap-infobox__title" style="margin-bottom:0;">{{ actor.name }}</div>
+        <button class="wl-toggle" data-wl-id="{{ actor.actor_id }}" data-wl-type="actors" data-wl-title="{{ actor.name }}" data-wl-url="entities/{{ actor.slug }}.html" style="margin-left:auto;">☆</button>
+      </div>
       <div class="ap-infobox__row">
         <span class="ap-infobox__label">Type</span>
         <span class="ap-infobox__value">{{ actor.type | title }}</span>

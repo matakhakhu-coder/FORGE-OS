@@ -3,8 +3,9 @@
 {% block nav_graph_active %}site-nav__link--active{% endblock %}
 
 {% block head_extra %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
 <style>
   .site-main { padding: 0; }
 
@@ -421,12 +422,25 @@
     });
   });
 
-  /* ── Node click → panel ─────────────────────────────────────────────────── */
+  /* ── Node click → panel (single-tap) / navigate (double-tap) ────────────── */
+  var _tappedNode = null;
+  var _tapTimeout = null;
+
   cy.on('tap', 'node', function (evt) {
     var node = evt.target;
-    var data = node.data();
-    openPanel(node, data);
-    fadeTo(node);
+    if (_tapTimeout && _tappedNode === node) {
+      clearTimeout(_tapTimeout);
+      _tappedNode = null;
+      var actorId = node.data('id').replace('n', '');
+      window.location.href = 'entities/' + actorId + '.html';
+      return;
+    }
+    _tappedNode = node;
+    _tapTimeout = setTimeout(function () {
+      openPanel(node, node.data());
+      fadeTo(node);
+      _tappedNode = null;
+    }, 280);
   });
 
   cy.on('tap', 'edge', function (evt) {
@@ -478,6 +492,14 @@
         (desc ? '<br><span style="font-size:0.72rem;opacity:0.6;">' + desc.slice(0, 80) + '</span>' : '');
       relsEl.appendChild(div);
     });
+
+    // "View full profile" link
+    var actorId = data.id.replace('n', '');
+    var profileDiv = document.createElement('div');
+    profileDiv.style.padding = 'var(--sp-3) var(--sp-4)';
+    profileDiv.style.borderTop = '1px solid var(--border-dim)';
+    profileDiv.innerHTML = '<a href="entities/' + actorId + '.html" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);letter-spacing:0.04em;">View full profile &rarr;</a>';
+    relsEl.parentElement.appendChild(profileDiv);
 
     panel.classList.add('open');
   }

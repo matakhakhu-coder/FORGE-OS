@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Watchlist{% endblock %}
+
+{% block head_extra %}
+<style>
+.wl-shell {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.wl-header { margin-bottom: var(--sp-8); }
+.wl-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.wl-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-2);
+}
+.wl-header__sub {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+}
+.wl-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--t-mid), background var(--t-mid);
+}
+.wl-item:hover { background: var(--bg-elevated); border-color: var(--border-mid); }
+.wl-item__star { font-size: 1.1rem; color: var(--accent-bright); flex-shrink: 0; }
+.wl-item__title {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.wl-item__meta {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.wl-empty {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-6);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wl-shell">
+  <div class="wl-header">
+    <div class="wl-header__eyebrow">Personal Watchlist · ZA-DIVERGENT</div>
+    <h1 class="wl-header__title">Watchlist</h1>
+    <p class="wl-header__sub">
+      Bookmarked signals and entities. Stored locally in your browser — nothing leaves your device.
+    </p>
+  </div>
+  <div id="wl-list"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% block wl_js %}static/js/watchlist.js{% endblock %}"></script>
+{% endblock %}

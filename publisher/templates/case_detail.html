@@ -9,6 +9,9 @@
 {% block nav_graph %}../graph.html{% endblock %}
 {% block nav_map %}../map.html{% endblock %}
 {% block nav_entities %}../entities.html{% endblock %}
+{% block search_index %}../search-index.json{% endblock %}
+{% block wl_js_path %}../static/js/watchlist.js{% endblock %}
+{% block nav_watchlist %}../watchlist.html{% endblock %}
 
 {% block head_extra %}
 <style>
@@ -164,42 +167,45 @@
   line-height: 1.75;
 }
 
-/* ── Signal evidence ────────────────────────────────────────────────────────── */
-.cd-signals { display: flex; flex-direction: column; gap: var(--sp-3); }
+/* ── Evidence timeline rail ─────────────────────────────────────────────────── */
+.cd-evidence {
+  position: relative;
+  padding-left: 28px;
+}
+.cd-evidence::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border-dim);
+}
 
 .cd-signal {
+  position: relative;
+  margin-bottom: var(--sp-5);
   background: var(--bg-surface);
   border: 1px solid var(--border-dim);
   border-radius: var(--r-md);
   padding: var(--sp-4);
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  gap: var(--sp-3);
+  transition: border-color var(--t-mid);
 }
-.cd-signal__gravity {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-1);
+.cd-signal:hover { border-color: var(--border-mid); }
+
+.cd-signal::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 14px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--border-dim);
+  background: var(--bg-base);
 }
-.cd-signal__score {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.cd-signal__bar {
-  width: 24px;
-  height: 3px;
-  background: var(--border-dim);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.cd-signal__bar-fill {
-  height: 100%;
-  border-radius: 999px;
-}
-.cd-signal__body {}
+.cd-signal--verified::before  { background: #27ae60; border-color: #27ae60; }
+.cd-signal--reported::before  { background: var(--accent); border-color: var(--accent); }
+.cd-signal--unverified::before { background: var(--text-dim); border-color: var(--text-dim); }
+
 .cd-signal__title {
   font-family: var(--font-display);
   font-size: 0.88rem;
@@ -234,6 +240,20 @@
   color: var(--accent-muted);
   font-style: italic;
 }
+.cd-signal__sig {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid;
+}
+.cd-sig-routine    { color: var(--text-dim);  border-color: var(--border-dim); }
+.cd-sig-notable    { color: var(--infra);     border-color: rgba(41,128,185,0.3); }
+.cd-sig-significant { color: var(--accent);   border-color: rgba(200,148,58,0.3); }
+.cd-sig-high       { color: var(--crime);     border-color: rgba(192,57,43,0.3); }
+.cd-sig-critical   { color: #e74c3c;         border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
 
 /* ── Actors ─────────────────────────────────────────────────────────────────── */
 .cd-actors { display: flex; flex-direction: column; gap: var(--sp-3); }
@@ -424,7 +444,7 @@
     {% set coe_color = '#c0392b' if coe_pct >= 45 else ('#c8943a' if coe_pct >= 30 else '#2980b9') %}
     <div class="cd-score">
       <div class="cd-score__val">{{ '%.2f'|format(case.coe) }}</div>
-      <div class="cd-score__lbl">Evidence Weight</div>
+      <div class="cd-score__lbl">Evidence Confidence</div>
       <div class="cd-coe-track">
         <div class="cd-coe-fill" style="width:{{ coe_pct }}%; background:{{ coe_color }};"></div>
       </div>
@@ -465,27 +485,22 @@
   {% if signals %}
   <div class="cd-section">
     <div class="cd-section__title">Evidence — {{ signals|length }} Signals</div>
-    <div class="cd-signals">
+    <div class="cd-evidence">
       {% for s in signals %}
-      {% set g_pct = (s.gravity_score * 100)|int %}
-      {% set g_color = '#c0392b' if g_pct >= 45 else ('#c8943a' if g_pct >= 30 else '#2980b9') %}
-      <div class="cd-signal">
-        <div class="cd-signal__gravity">
-          <span class="cd-signal__score">{{ '%.2f'|format(s.gravity_score) }}</span>
-          <div class="cd-signal__bar">
-            <div class="cd-signal__bar-fill" style="width:{{ g_pct }}%; background:{{ g_color }};"></div>
-          </div>
-        </div>
-        <div class="cd-signal__body">
-          <div class="cd-signal__title">{{ s.title }}</div>
-          {% if s.content %}
-          <div class="cd-signal__summary">{{ s.content[:220] }}{% if s.content|length > 220 %}…{% endif %}</div>
-          {% endif %}
-          <div class="cd-signal__meta">
-            {% if s.source %}<span class="cd-signal__source">{{ s.source|upper }}</span>{% endif %}
-            <span class="cd-signal__source mono">{{ s.published_fmt }}</span>
-            {% if s.note %}<span class="cd-signal__note">{{ s.note }}</span>{% endif %}
-          </div>
+      {% set gs = s.gravity_score %}
+      {% set sig_label = 'Critical' if gs >= 0.75 else ('High' if gs >= 0.55 else ('Significant' if gs >= 0.35 else ('Notable' if gs >= 0.20 else 'Routine'))) %}
+      {% set sig_cls = 'cd-sig-critical' if gs >= 0.75 else ('cd-sig-high' if gs >= 0.55 else ('cd-sig-significant' if gs >= 0.35 else ('cd-sig-notable' if gs >= 0.20 else 'cd-sig-routine'))) %}
+      {% set rel_cls = 'cd-signal--verified' if s.source in ('amabhungane','dailymaverick','saflii','forge_incident','news24_crime') else ('cd-signal--reported' if s.source else 'cd-signal--unverified') %}
+      <div class="cd-signal {{ rel_cls }}">
+        <div class="cd-signal__title">{{ s.title }}</div>
+        {% if s.content %}
+        <div class="cd-signal__summary">{{ s.content[:220] }}{% if s.content|length > 220 %}...{% endif %}</div>
+        {% endif %}
+        <div class="cd-signal__meta">
+          {% if s.source %}<span class="cd-signal__source">{{ s.source|upper }}</span>{% endif %}
+          <span class="cd-signal__source mono">{{ s.published_fmt }}</span>
+          <span class="cd-signal__sig {{ sig_cls }}" title="Editorial weight: {{ '%.2f'|format(gs) }}">{{ sig_label }}</span>
+          {% if s.note %}<span class="cd-signal__note">{{ s.note }}</span>{% endif %}
         </div>
       </div>
       {% endfor %}
@@ -522,15 +537,19 @@
   </div>
   {% endif %}
 
-  <div class="cd-section" style="border-top:1px solid var(--border-dim); padding-top:var(--sp-5); margin-top:var(--sp-8);">
-    <div class="cd-section__title">Methodology</div>
-    <div class="cd-description" style="font-size:0.75rem;">
-      All signals sourced from open-source media, public records, and official statements.
-      Evidence weight is derived from signal gravity scores (urgency × source credibility × recency).
-      Actor relationships are manually verified unless noted as automated extraction.
-      This brief is produced by the FORGE OSINT engine and reviewed by ZA-DIVERGENT analysts.
+  <div class="methodology-section">
+    <div class="methodology-section__title">Methodology</div>
+    <div class="methodology-section__body">
+      This investigation comprises {{ signals|length }} open-source signal{{ 's' if signals|length != 1 else '' }}
+      and {{ actors|length }} linked actor{{ 's' if actors|length != 1 else '' }}.
+      Evidence confidence is derived from signal gravity scores (urgency, source credibility, recency, corroboration).
+      Actor relationships are manually verified unless marked as automated extraction.
+      All source material is publicly available. This brief is produced by the FORGE OSINT engine.
+      Inclusion reflects analytical relevance and does not constitute a legal finding.
     </div>
   </div>
+
+  <div class="page-last-updated">Last updated: {{ generated_at }}</div>
 
 </div>
 {% endblock %}

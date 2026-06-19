@@ -10,7 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/css/site.css">
   
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
   .site-main { padding: 0; }
   .map-shell  { display: flex; flex-direction: column; height: calc(100vh - 88px); }
@@ -147,10 +148,16 @@
         <a href="graph.html" class="site-nav__link ">Graph</a>
         <a href="map.html" class="site-nav__link site-nav__link--active">Map</a>
         <a href="entities.html" class="site-nav__link ">Entities</a>
+        <a href="watchlist.html" class="site-nav__link ">Watchlist</a>
       </nav>
       <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:38 UTC</span>
       </div>
     </div>
   </header>
@@ -167,7 +174,7 @@
   <div class="map-bar">
     <span class="map-bar__title">Signal Map</span>
     <span class="map-bar__count">58 geo-tagged signals</span>
-    <span class="map-bar__title" style="margin-left:auto;">19 Jun 2026 16:17 UTC</span>
+    <span class="map-bar__title" style="margin-left:auto;">19 Jun 2026 16:38 UTC</span>
   </div>
   <div id="map"></div>
 </div>
@@ -181,7 +188,7 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 16:17 UTC
+        Generated 19 Jun 2026 16:38 UTC
       </div>
     </div>
   </footer>
@@ -189,12 +196,47 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:38 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
+  <script src="static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
   
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function () {
   'use strict';
@@ -239,8 +281,10 @@
       ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis -></a>'
       : '';
 
+    var starHtml = '<button class="wl-toggle" data-wl-id="' + (m.signal_id || '') + '" data-wl-type="signals" data-wl-title="' + (m.title || '').replace(/"/g, '&quot;') + '" data-wl-url="index.html" style="position:absolute;top:8px;right:8px;">&#9734;</button>';
+
     return (
-      '<div class="smap-popup">' +
+      '<div class="smap-popup" style="position:relative;">' + starHtml +
         '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
         (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
         '<div class="smap-popup__title">' + (m.title || '') + '</div>' +

@@ -272,6 +272,37 @@
   font-size: 0.72rem;
 }
 .tl-month-empty { display: none; }
+
+/* ── Significance bands ────────────────────────────────────────────────── */
+.tl__card-sig {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid;
+}
+.sig-routine    { color: var(--text-dim);  border-color: var(--border-dim); }
+.sig-notable    { color: var(--infra);     border-color: rgba(41,128,185,0.3); }
+.sig-significant { color: var(--accent);   border-color: rgba(200,148,58,0.3); }
+.sig-high       { color: var(--crime);     border-color: rgba(192,57,43,0.3); }
+.sig-critical   { color: #e74c3c;         border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
+
+/* ── New-since-last-visit badge ────────────────────────────────────────── */
+.badge-new {
+  display: inline-block;
+  font-size: 0.48rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--bg-base);
+  margin-left: var(--sp-2);
+  vertical-align: middle;
+}
 </style>
 {% endblock %}
 
@@ -333,7 +364,8 @@
         {% set node_class = 'article' if item.kind == 'article' else item.stream %}
         <div class="tl__entry"
              data-stream="{{ item.stream if item.kind == 'signal' else 'article' }}"
-             data-kind="{{ item.kind }}">
+             data-kind="{{ item.kind }}"
+             data-published="{{ item.published_at or '' }}">
           <div class="tl__node-col">
             <div class="tl__node tl__node--{{ node_class }}"></div>
           </div>
@@ -363,6 +395,12 @@
             <div class="tl__card-footer">
               {% if item.kind == 'signal' and item.source %}
               <span class="tl__card-src">{{ item.source }}</span>
+              {% endif %}
+              {% if item.kind == 'signal' and item.gravity_score %}
+              {% set gs = item.gravity_score %}
+              {% set sig_label = 'Critical' if gs >= 0.75 else ('High' if gs >= 0.55 else ('Significant' if gs >= 0.35 else ('Notable' if gs >= 0.20 else 'Routine'))) %}
+              {% set sig_cls = 'sig-critical' if gs >= 0.75 else ('sig-high' if gs >= 0.55 else ('sig-significant' if gs >= 0.35 else ('sig-notable' if gs >= 0.20 else 'sig-routine'))) %}
+              <span class="tl__card-sig {{ sig_cls }}" title="Editorial weight: {{ '%.2f'|format(gs) }}">{{ sig_label }}</span>
               {% endif %}
               {% if item.kind == 'article' %}
               <a href="articles/{{ item.slug }}.html" class="tl__card-link">Read analysis →</a>
@@ -430,6 +468,34 @@
       applyFilter(btn.dataset.filter);
     });
   });
+
+  /* ── New since last visit ────────────────────────────────────────────── */
+  var LAST_VISIT_KEY = 'za_divergent_last_visit';
+  var prev = localStorage.getItem(LAST_VISIT_KEY);
+  var now = Date.now();
+
+  if (prev) {
+    var prevTs = parseInt(prev, 10);
+    entries.forEach(function (el) {
+      var pub = el.dataset.published;
+      if (pub) {
+        var pubTs = new Date(pub).getTime();
+        if (pubTs > prevTs) {
+          var dateEl = el.querySelector('.tl__card-date');
+          if (dateEl) {
+            var badge = document.createElement('span');
+            badge.className = 'badge-new';
+            badge.textContent = 'NEW';
+            dateEl.appendChild(badge);
+          }
+        }
+      }
+    });
+  }
+
+  setTimeout(function () {
+    localStorage.setItem(LAST_VISIT_KEY, now.toString());
+  }, 5000);
 
 })();
 </script>

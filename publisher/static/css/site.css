@@ -557,6 +557,150 @@ a:hover { color: var(--accent-bright); }
   letter-spacing: 0.06em;
 }
 
+/* ── Watchlist toggle ──────────────────────────────────────────────────────── */
+.wl-toggle {
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  transition: color var(--t-fast);
+  line-height: 1;
+}
+.wl-toggle.wl-active { color: var(--accent-bright); }
+.wl-toggle:hover { color: var(--accent); }
+
+/* ── Correction / update notices ──────────────────────────────────────────── */
+.notice {
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-5);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  border-radius: var(--r-sm);
+}
+.notice strong {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.notice--correction {
+  border-left: 3px solid var(--crime);
+  background: var(--crime-bg);
+}
+.notice--update {
+  border-left: 3px solid var(--infra);
+  background: var(--infra-bg);
+}
+
+/* ── Last updated footer ──────────────────────────────────────────────────── */
+.page-last-updated {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-dim);
+}
+
+/* ── Methodology section ──────────────────────────────────────────────────── */
+.methodology-section {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border-dim);
+}
+.methodology-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-3);
+}
+.methodology-section__body {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ── Photo placeholder type colors ────────────────────────────────────────── */
+.avatar-placeholder[data-type="person"]          { background: #1a3a5c; color: #5b8db8; }
+.avatar-placeholder[data-type="institution"]     { background: #1a2030; color: #5a7088; }
+.avatar-placeholder[data-type="government"]      { background: #0a2a18; color: #40906a; }
+.avatar-placeholder[data-type="political_party"] { background: #2a1030; color: #9050a0; }
+.avatar-placeholder[data-type="media"]           { background: #2a2010; color: #b09040; }
+.avatar-placeholder[data-type="organization"]    { background: #0a2a24; color: #30a088; }
+.avatar-placeholder[data-type="other"]           { background: #141e28; color: #4a6080; }
+.avatar-placeholder[data-type="unknown"]         { background: #141e28; color: #4a6080; }
+.avatar-placeholder[data-type="movement"]        { background: #1a0a2a; color: #8050b0; }
+.avatar-placeholder[data-type="paramilitary"]    { background: #2a1010; color: #a04040; }
+
+.ap-no-photo {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-ghost);
+  text-align: center;
+  margin-top: var(--sp-1);
+  letter-spacing: 0.06em;
+}
+
+/* ── Print styles ──────────────────────────────────────────────────────────── */
+@page {
+  size: A4 portrait;
+  margin: 20mm 20mm 25mm 20mm;
+}
+@page :first { margin-top: 40mm; }
+
+@media print {
+  html, body {
+    background: #fff !important;
+    color: #0f172a !important;
+    font-family: 'IBM Plex Sans', Georgia, serif;
+    font-size: 10.5pt;
+    line-height: 1.5;
+  }
+
+  .site-header, .site-nav, .class-banner, .site-footer,
+  .stream-bar, .tl-filters, .ig-toolbar, .map-bar, .bl-filters,
+  .tl-span, .badge-new,
+  button, input { display: none !important; }
+
+  main { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
+  h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  .tl__card, .cd-signal, .ap-event, .case-card, tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 8.5pt;
+    color: #475569;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after { content: ""; }
+
+  .print-footer {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 36px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 6px;
+    background: #fff !important;
+    z-index: 9999;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    color: #64748b;
+  }
+  .print-footer__class { color: #b45309; }
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .site-header__inner { padding: 0 var(--sp-4); gap: var(--sp-3); }

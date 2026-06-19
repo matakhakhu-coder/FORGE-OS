@@ -3,30 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}ZA-DIVERGENT{% endblock %} — South African Intelligence Bulletin</title>
+  <title>Watchlist — South African Intelligence Bulletin</title>
   <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% block css_path %}static/css/site.css{% endblock %}">
-  {% block head_extra %}{% endblock %}
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<style>
+.wl-shell {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.wl-header { margin-bottom: var(--sp-8); }
+.wl-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.wl-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-2);
+}
+.wl-header__sub {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  max-width: 560px;
+}
+.wl-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--t-mid), background var(--t-mid);
+}
+.wl-item:hover { background: var(--bg-elevated); border-color: var(--border-mid); }
+.wl-item__star { font-size: 1.1rem; color: var(--accent-bright); flex-shrink: 0; }
+.wl-item__title {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.wl-item__meta {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.wl-empty {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-6);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+}
+</style>
+
 </head>
 <body>
 
-  {# ── Site header ────────────────────────────────────────────────────────── #}
+  
   <header class="site-header">
     <div class="site-header__inner">
       <div class="site-header__brand">
-        <a href="{% block home_href %}index.html{% endblock %}" class="site-logo">ZA-DIVERGENT</a>
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
         <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
       </div>
       <nav class="site-nav">
-        <a href="{% block nav_timeline %}index.html{% endblock %}" class="site-nav__link {% block nav_timeline_active %}{% endblock %}">Timeline</a>
-        <a href="{% block nav_cases %}cases.html{% endblock %}" class="site-nav__link {% block nav_cases_active %}{% endblock %}">Cases</a>
-        <a href="{% block nav_graph %}graph.html{% endblock %}" class="site-nav__link {% block nav_graph_active %}{% endblock %}">Graph</a>
-        <a href="{% block nav_map %}map.html{% endblock %}" class="site-nav__link {% block nav_map_active %}{% endblock %}">Map</a>
-        <a href="{% block nav_entities %}entities.html{% endblock %}" class="site-nav__link {% block nav_entities_active %}{% endblock %}">Entities</a>
-        <a href="{% block nav_watchlist %}watchlist.html{% endblock %}" class="site-nav__link {% block nav_watchlist_active %}{% endblock %}">Watchlist</a>
+        <a href="index.html" class="site-nav__link ">Timeline</a>
+        <a href="cases.html" class="site-nav__link ">Cases</a>
+        <a href="graph.html" class="site-nav__link ">Graph</a>
+        <a href="map.html" class="site-nav__link ">Map</a>
+        <a href="entities.html" class="site-nav__link ">Entities</a>
+        <a href="watchlist.html" class="site-nav__link ">Watchlist</a>
       </nav>
       <div class="site-header__meta">
         <div class="site-search" style="position:relative;">
@@ -35,41 +103,52 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">{{ generated_at }}</span>
+        <span class="site-ts mono">19 Jun 2026 16:38 UTC</span>
       </div>
     </div>
   </header>
 
-  {# ── Classification banner ───────────────────────────────────────────────── #}
+  
   <div class="class-banner">
     OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
   </div>
 
-  {# ── Page content ────────────────────────────────────────────────────────── #}
+  
   <main class="site-main">
-    {% block content %}{% endblock %}
+    
+<div class="wl-shell">
+  <div class="wl-header">
+    <div class="wl-header__eyebrow">Personal Watchlist · ZA-DIVERGENT</div>
+    <h1 class="wl-header__title">Watchlist</h1>
+    <p class="wl-header__sub">
+      Bookmarked signals and entities. Stored locally in your browser — nothing leaves your device.
+    </p>
+  </div>
+  <div id="wl-list"></div>
+</div>
+
   </main>
 
-  {# ── Footer ──────────────────────────────────────────────────────────────── #}
+  
   <footer class="site-footer">
     <div class="site-footer__inner">
       <div class="site-footer__left mono">
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated {{ generated_at }}
+        Generated 19 Jun 2026 16:38 UTC
       </div>
     </div>
   </footer>
 
-  {# ── Print footer (hidden on screen, repeats on every printed page) ────── #}
+  
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · {{ generated_at }}</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:38 UTC</span>
   </div>
 
-  <script src="{% block js_path %}static/js/site.js{% endblock %}"></script>
-  <script src="{% block wl_js_path %}static/js/watchlist.js{% endblock %}"></script>
+  <script src="static/js/site.js"></script>
+  <script src="static/js/watchlist.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
@@ -78,7 +157,7 @@
     var box = document.getElementById('search-results');
     if (!input || !box) return;
     var idx = null;
-    fetch('{% block search_index %}search-index.json{% endblock %}')
+    fetch('search-index.json')
       .then(function (r) { return r.json(); })
       .then(function (docs) {
         idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
@@ -103,6 +182,8 @@
     });
   })();
   </script>
-  {% block scripts %}{% endblock %}
+  
+<script src="static/js/watchlist.js"></script>
+
 </body>
 </html>
