@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}{{ gate_title }} — Pro Access{% endblock %}
+{% block css_path %}../static/css/site.css{% endblock %}
+{% block js_path %}../static/js/site.js{% endblock %}
+{% block wl_js_path %}../static/js/watchlist.js{% endblock %}
+{% block home_href %}../index.html{% endblock %}
+{% block nav_timeline %}../index.html{% endblock %}
+{% block nav_cases %}../cases.html{% endblock %}
+{% block nav_graph %}../graph.html{% endblock %}
+{% block nav_map %}../map.html{% endblock %}
+{% block nav_entities %}../entities.html{% endblock %}
+{% block nav_watchlist %}../watchlist.html{% endblock %}
+{% block search_index %}../search-index.json{% endblock %}
+
+{% block head_extra %}
+<style>
+.gate-shell {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--sp-16) var(--sp-6);
+  text-align: center;
+}
+.gate-icon {
+  font-size: 3rem;
+  color: var(--text-ghost);
+  margin-bottom: var(--sp-5);
+}
+.gate-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-3);
+}
+.gate-body {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--sp-6);
+}
+.gate-cta {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: var(--sp-3) var(--sp-8);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  transition: background var(--t-mid);
+}
+.gate-cta:hover { background: var(--accent-bright); color: var(--bg-base); }
+.gate-sim {
+  margin-top: var(--sp-5);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(192,57,43,0.06);
+  border: 1px solid rgba(192,57,43,0.15);
+  border-radius: var(--r-sm);
+  display: inline-block;
+}
+.gate-sim a { color: var(--crime); }
+.gate-back {
+  margin-top: var(--sp-6);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+.gate-back a { color: var(--text-secondary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gate-shell">
+  <div class="gate-icon">&#9711;</div>
+  <h1 class="gate-title">{{ gate_title }}</h1>
+  <p class="gate-body">{{ gate_description }}</p>
+  <a href="{{ payment_checkout_url or '../subscribe.html' }}" class="gate-cta">
+    {% if not revenue_live %}<span class="sim-badge">SIM</span> {% endif %}Unlock with Pro
+  </a>
+  {% if not revenue_live %}
+  <div class="gate-sim">
+    SIMULATION MODE — content accessible in pro build
+  </div>
+  {% endif %}
+  <div class="gate-back">
+    <a href="{{ back_url or '../index.html' }}">&larr; Back to {{ back_label or 'Timeline' }}</a>
+  </div>
+</div>
+{% endblock %}

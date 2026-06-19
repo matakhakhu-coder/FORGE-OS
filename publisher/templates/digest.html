@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZA-DIVERGENT Intelligence Digest — {{ date_range }}</title>
+<style>
+  body { margin: 0; padding: 0; background: #080d12; color: #cfdce8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'IBM Plex Sans', sans-serif; }
+  .wrapper { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
+  .header { text-align: center; padding: 20px 0 16px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 20px; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #c8943a; letter-spacing: -0.02em; }
+  .tagline { font-family: monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #3d5060; margin-top: 4px; }
+  .date-range { font-family: monospace; font-size: 11px; color: #7a95aa; margin-top: 8px; }
+  .section-title { font-family: monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #3d5060; margin: 20px 0 12px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .signal-card { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .signal-stream { font-family: monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+  .stream-crime { color: #c0392b; }
+  .stream-infra { color: #2980b9; }
+  .stream-priority { color: #c8943a; }
+  .stream-global { color: #27ae60; }
+  .signal-title { font-size: 14px; font-weight: 500; color: #cfdce8; line-height: 1.4; margin-bottom: 4px; }
+  .signal-meta { font-family: monospace; font-size: 10px; color: #3d5060; }
+  .signal-sig { font-family: monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 5px; border-radius: 2px; border: 1px solid; display: inline-block; margin-right: 6px; }
+  .sig-critical { color: #e74c3c; border-color: rgba(231,76,60,0.3); }
+  .sig-high { color: #c0392b; border-color: rgba(192,57,43,0.3); }
+  .sig-significant { color: #c8943a; border-color: rgba(200,148,58,0.3); }
+  .sig-notable { color: #2980b9; border-color: rgba(41,128,185,0.3); }
+  .sig-routine { color: #3d5060; border-color: rgba(255,255,255,0.07); }
+  .footer { text-align: center; padding: 20px 0; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.07); font-family: monospace; font-size: 9px; color: #3d5060; letter-spacing: 0.06em; }
+  .footer a { color: #7a95aa; }
+  .cta { display: inline-block; background: #c8943a; color: #080d12; font-family: monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 8px 24px; border-radius: 2px; text-decoration: none; margin: 16px 0; }
+  .stats-row { display: flex; gap: 16px; margin: 12px 0; }
+  .stat { font-family: monospace; font-size: 10px; color: #7a95aa; }
+  .stat strong { color: #c8943a; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="logo">ZA-DIVERGENT</div>
+    <div class="tagline">Open-Source Intelligence &middot; South Africa &amp; Region</div>
+    <div class="date-range">Intelligence Digest &mdash; {{ date_range }}</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><strong>{{ new_signals|length }}</strong> new signals</div>
+    <div class="stat"><strong>{{ new_articles|length }}</strong> new articles</div>
+    <div class="stat"><strong>{{ active_cases }}</strong> active cases</div>
+  </div>
+
+  {% if new_articles %}
+  <div class="section-title">New Analysis</div>
+  {% for art in new_articles %}
+  <div class="signal-card">
+    <div class="signal-title">{{ art.title }}</div>
+    <div class="signal-meta">By {{ art.author }} &middot; {{ art.published_fmt }}</div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if new_signals %}
+  <div class="section-title">New Signals &mdash; {{ new_signals|length }}</div>
+  {% for s in new_signals[:20] %}
+  <div class="signal-card">
+    {% set stream_cls = 'stream-crime' if s.stream == 'CRIME_INTEL' else ('stream-infra' if s.stream == 'INFRASTRUCTURE' else ('stream-priority' if s.stream == 'PRIORITY' else 'stream-global')) %}
+    <div class="signal-stream {{ stream_cls }}">{{ s.stream_label }}</div>
+    <div class="signal-title">{{ s.title }}</div>
+    <div class="signal-meta">
+      {% set gs = s.gravity_score or 0 %}
+      {% set sig_label = 'Critical' if gs >= 0.75 else ('High' if gs >= 0.55 else ('Significant' if gs >= 0.35 else ('Notable' if gs >= 0.20 else 'Routine'))) %}
+      {% set sig_cls = 'sig-critical' if gs >= 0.75 else ('sig-high' if gs >= 0.55 else ('sig-significant' if gs >= 0.35 else ('sig-notable' if gs >= 0.20 else 'sig-routine'))) %}
+      <span class="signal-sig {{ sig_cls }}">{{ sig_label }}</span>
+      {{ s.source }} &middot; {{ s.published_fmt }}
+    </div>
+  </div>
+  {% endfor %}
+  {% if new_signals|length > 20 %}
+  <div class="signal-meta" style="padding:8px 0;">+ {{ new_signals|length - 20 }} more signals on the full timeline</div>
+  {% endif %}
+  {% endif %}
+
+  <div style="text-align:center; padding: 16px 0;">
+    <a href="{{ site_url }}" class="cta">View Full Bulletin &rarr;</a>
+  </div>
+
+  <div class="footer">
+    OPEN SOURCE INTELLIGENCE &middot; PUBLIC BULLETIN<br>
+    ZA-DIVERGENT ARCHIVE &middot; FORGE OSINT ENGINE<br><br>
+    All material derived from publicly available sources.<br>
+    <a href="{{ site_url }}">{{ site_url }}</a>
+  </div>
+
+</div>
+</body>
+</html>

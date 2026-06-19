@@ -921,6 +921,12 @@ def _build_dist(
         encoding="utf-8",
     )
 
+    # subscribe.html — pricing/feature comparison page
+    (DIST / "subscribe.html").write_text(
+        env.get_template("subscribe.html").render(generated_at=now_str, **rev),
+        encoding="utf-8",
+    )
+
     # search-index.json — flat document list for client-side MiniSearch
     search_docs = []
     for s in signals:
@@ -991,12 +997,149 @@ def _git_deploy(now_str: str) -> None:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
+def _build_gate_pages(
+    env: Environment,
+    conn: sqlite3.Connection,
+    signals: list[dict],
+    articles: list[dict],
+    now_str: str,
+) -> None:
+    """Replace case detail and entity profile pages with gate pages in free tier."""
+    rev = _get_revenue_context()
+    gate_tmpl = env.get_template("gate.html")
+
+    # Gate case detail pages (cases/ directory already built with limited data)
+    cases = _fetch_cases(conn)
+    for case in cases:
+        gate_html = gate_tmpl.render(
+            gate_title=f"Case: {case['name'][:50]}",
+            gate_description="Full case evidence chains, linked actors, and analyst briefs are available to Pro subscribers.",
+            back_url="../cases.html",
+            back_label="Cases",
+            generated_at=now_str,
+            **rev,
+        )
+        out = DIST_CASES / f"{case['slug']}.html"
+        out.write_text(gate_html, encoding="utf-8")
+
+    # Gate entity profile pages (entities/ directory already built)
+    directory_actors = _fetch_directory_actors(conn)
+    for actor in directory_actors:
+        gate_html = gate_tmpl.render(
+            gate_title=f"Entity: {actor['name']}",
+            gate_description="Complete entity dossiers with source signals, known events, and relationship networks are available to Pro subscribers.",
+            back_url="../entities.html",
+            back_label="Entities",
+            generated_at=now_str,
+            **rev,
+        )
+        out = DIST_ENTITIES / f"{actor['slug']}.html"
+        out.write_text(gate_html, encoding="utf-8")
+
+    print(f"[publish] Gate pages: {len(cases)} cases + {len(directory_actors)} entities")
+
+
+def _build_pro_feed(signals: list[dict], conn: sqlite3.Connection) -> list[dict]:
+    """Build enriched signal data for pro-feed.json with case/actor linkages."""
+    pro_items = []
+    for s in signals:
+        gs = s.get("gravity_score") or 0
+        sig_label = ("Critical" if gs >= 0.75 else ("High" if gs >= 0.55
+                     else ("Significant" if gs >= 0.35 else ("Notable" if gs >= 0.20 else "Routine"))))
+        pro_items.append({
+            "title":            s["title"],
+            "stream":           s["stream"],
+            "stream_label":     s["stream_label"],
+            "source":           s["source"],
+            "gravity_score":    s.get("gravity_score"),
+            "significance":     sig_label,
+            "lat":              s.get("lat"),
+            "lng":              s.get("lng"),
+            "published_at":     s.get("published_at"),
+            "published_fmt":    s.get("published_fmt"),
+            "slug":             s.get("slug"),
+            "article_slug":     s.get("article_slug"),
+        })
+    return pro_items
+
+
+def _build_digest(
+    env: Environment,
+    signals: list[dict],
+    articles: list[dict],
+    cases: list[dict],
+    now_str: str,
+    send: bool = False,
+) -> None:
+    """Generate intelligence digest HTML and optionally send via configured provider."""
+    # For now, all published signals/articles are "new" — in production,
+    # filter by last_digest_at timestamp from a state file.
+    state_file = ROOT / "revenue" / ".last_digest"
+    last_digest = None
+    if state_file.exists():
+        last_digest = state_file.read_text().strip()
+
+    if last_digest:
+        new_signals = [s for s in signals if (s.get("published_at") or "") > last_digest]
+        new_articles = [a for a in articles if (a.get("published_at") or "") > last_digest]
+    else:
+        new_signals = signals[:20]
+        new_articles = articles[:5]
+
+    date_range = now_str
+    if new_signals:
+        dates = [s.get("published_fmt", "") for s in new_signals if s.get("published_fmt")]
+        if len(dates) >= 2:
+            date_range = f"{dates[-1]} — {dates[0]}"
+
+    html = env.get_template("digest.html").render(
+        new_signals=new_signals,
+        new_articles=new_articles,
+        active_cases=len(cases),
+        date_range=date_range,
+        site_url="https://forge-os-alpha.vercel.app",
+    )
+
+    DIST.mkdir(exist_ok=True)
+    (DIST / "digest.html").write_text(html, encoding="utf-8")
+    print(f"[digest] Generated digest.html — {len(new_signals)} signals, {len(new_articles)} articles")
+
+    if send:
+        try:
+            from revenue.digest_provider import get_provider
+            provider = get_provider()
+            subject = f"ZA-DIVERGENT Intelligence Digest — {now_str}"
+            provider.send(html, subject)
+        except ImportError:
+            print("[digest] revenue.digest_provider not available — skipping send")
+
+    # Update last-digest timestamp
+    state_file.parent.mkdir(exist_ok=True)
+    state_file.write_text(now_str)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="ZA-DIVERGENT static site publisher")
     parser.add_argument(
         "--deploy",
         action="store_true",
         help="After building, commit dist/ to the publication branch and push to GitHub",
+    )
+    parser.add_argument(
+        "--tier",
+        choices=["free", "pro", "current"],
+        default="current",
+        help="Build tier: 'free' (gated), 'pro' (full), 'current' (default single build as today)",
+    )
+    parser.add_argument(
+        "--digest",
+        action="store_true",
+        help="Generate intelligence digest email (dist/digest.html)",
+    )
+    parser.add_argument(
+        "--send",
+        action="store_true",
+        help="Send the digest via configured provider (requires --digest)",
     )
     args = parser.parse_args()
 
@@ -1009,8 +1152,38 @@ def main() -> None:
     try:
         signals  = _fetch_signals(conn)
         articles = _fetch_articles(conn)
-        print(f"[publish] {len(signals)} published signals / {len(articles)} published articles")
-        _build_dist(env, conn, signals, articles, now_str)
+
+        # ── Tier-aware build ─────────────────────────────────────────────
+        tier = args.tier
+        try:
+            from revenue.config import TIERS
+        except ImportError:
+            TIERS = None
+
+        if tier == "free" and TIERS:
+            tier_cfg = TIERS["free"]
+            limited_signals = signals[:tier_cfg["signals_limit"]] if tier_cfg["signals_limit"] else signals
+            limited_articles = articles[:tier_cfg["articles_limit"]] if tier_cfg["articles_limit"] else articles
+            print(f"[publish] FREE tier: {len(limited_signals)} signals / {len(limited_articles)} articles")
+            _build_dist(env, conn, limited_signals, limited_articles, now_str)
+            # Generate gate pages for gated content
+            _build_gate_pages(env, conn, signals, articles, now_str)
+        else:
+            print(f"[publish] {len(signals)} published signals / {len(articles)} published articles")
+            _build_dist(env, conn, signals, articles, now_str)
+            # Pro API feed
+            if tier == "pro" or tier == "current":
+                pro_feed = _build_pro_feed(signals, conn)
+                (DIST / "pro-feed.json").write_text(
+                    json.dumps(pro_feed, indent=2), encoding="utf-8"
+                )
+                print(f"[publish] pro-feed.json — {len(pro_feed)} signals")
+
+        # ── Digest ───────────────────────────────────────────────────────
+        if args.digest:
+            cases = _fetch_cases(conn)
+            _build_digest(env, signals, articles, cases, now_str, send=args.send)
+
     finally:
         conn.close()
 
