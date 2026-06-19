@@ -41,7 +41,7 @@ DIST_ENTITIES = DIST / "entities"
 VERCEL_DEPLOY_HOOK = "https://api.vercel.com/v1/integrations/deploy/prj_ibD3AwjGwVKVA5tA43Evg93d5Xzf/QTHKub0Cbl"
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
-PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto)
+PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber)
 
 # Entity infobox: relationship-derived rows (Position/Affiliation from
 # entity_relationships, co-occurrence from graph_edges). Off by default —
@@ -87,6 +87,16 @@ SIGNAL_ARTICLE_MAP: dict[str, str] = {
     "2a3a8fee-72a9-4751-8d2a-f9aaa3d25f58": "project-aegis-sadc-health-security",
     # ── Operation Matlala (case 12) ───────────────────────────────────────────
     "abfd0ffb-e1d3-4e99-be3d-420676ebb923": "operation-matlala-saps-tender-capture",
+    # ── MEGA Account Compromise (case 15) ────────────────────────────────────
+    "5544a9d6-bfed-4266-807f-1b2466e4b626": "mega-account-compromise-3xktech-credential-stuffing",
+    "6ab2784d-7e18-4200-899b-91a10cc6c4d6": "mega-account-compromise-3xktech-credential-stuffing",
+    "94611d55-f713-4bb1-8e44-b7cf00ea262c": "mega-account-compromise-3xktech-credential-stuffing",
+    "7b47d7c4-7a97-4867-b3d4-b083077fd17d": "mega-account-compromise-3xktech-credential-stuffing",
+    "cd6b4568-0d3d-4282-8c5d-0a75f143c1bc": "mega-account-compromise-3xktech-credential-stuffing",
+    "7e04f983-b2aa-4c15-a248-32d7470f09d8": "mega-account-compromise-3xktech-credential-stuffing",
+    "1d646ff0-8edb-44a7-a7e0-8bc1e793f8d6": "mega-account-compromise-3xktech-credential-stuffing",
+    "c551e334-f0bf-4379-afbb-53ae14ee0b81": "mega-account-compromise-3xktech-credential-stuffing",
+    "bf73dc5d-7a33-4001-8d40-d9f60a0c78cd": "mega-account-compromise-3xktech-credential-stuffing",
 }
 
 
@@ -102,6 +112,13 @@ md_parser = MarkdownIt()
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _actor_initials(name: str) -> str:
+    parts = name.strip().split()
+    if len(parts) >= 2:
+        return (parts[0][0] + parts[-1][0]).upper()
+    return parts[0][0].upper() if parts else "?"
+
 
 def _slugify(text: str) -> str:
     text = text.lower().strip()
@@ -451,6 +468,7 @@ def _fetch_directory_actors(conn: sqlite3.Connection) -> list[dict]:
             "confidence":  round(r["confidence_score"] or 0.0, 3),
             "image_url":   r["image_url"],
             "slug":        _slugify(r["name"]) + "-" + str(r["actor_id"]),
+            "initials":    _actor_initials(r["name"]),
         })
     return items
 
@@ -531,6 +549,41 @@ def _fetch_actor_activity(conn: sqlite3.Connection, actor_id: int) -> Optional[d
         "max_gravity":    round(row["max_gravity"] or 0.0, 3),
         "dominant_stream": stream_row["stream"] if stream_row else None,
     }
+
+
+def _fetch_actor_sources(conn: sqlite3.Connection, actor_id: int) -> list[dict]:
+    """
+    Citation list for an actor's profile — linked signals that carry a real
+    article URL in metadata_json (populated going forward by
+    civic_intel_collector.py's entry_to_signal). Only signals with a stored
+    URL appear; older signals collected before this fix have no URL and are
+    silently omitted — same "no data = no block" pattern as activity stats.
+    """
+    rows = conn.execute("""
+        SELECT s.title, s.source, s.metadata_json, s.timestamp
+        FROM   signal_actors sa
+        JOIN   signals s ON s.signal_id = sa.signal_id
+        WHERE  sa.actor_id = ? AND s.metadata_json IS NOT NULL
+        ORDER  BY s.timestamp DESC
+    """, (actor_id,)).fetchall()
+
+    sources = []
+    for r in rows:
+        try:
+            meta = json.loads(r["metadata_json"])
+        except (TypeError, ValueError):
+            continue
+        url = meta.get("url")
+        if not url:
+            continue
+        sources.append({
+            "title":     r["title"],
+            "source":    r["source"],
+            "url":       url,
+            "timestamp": (r["timestamp"] or "")[:10],
+        })
+
+    return sources[:10]
 
 
 def _fetch_actor_relationships(conn: sqlite3.Connection, actor_id: int) -> list[dict]:
@@ -649,17 +702,69 @@ def _build_dist(
     )
     print(f"[publish] index.html  - {span.get('total', 0)} timeline items")
 
+    # Fetch cases early — used by both map dashboard and cases.html
+    cases = _fetch_cases(conn)
+
     # map.html
     geo_signals = [s for s in signals if s["lat"] and s["lng"]]
+
+    # Build cross-geography intel links: connect geo-tagged signals within
+    # the same case that are in different locations (>50km apart).
+    intel_links = []
+    ph = ",".join("?" * len(PUBLISHED_CASE_IDS))
+    case_geo_rows = conn.execute(f"""
+        SELECT c.case_id, c.name, s.lat, s.lng, s.stream
+        FROM   case_signals cs
+        JOIN   signals s ON s.signal_id = cs.signal_id
+        JOIN   cases c   ON c.case_id = cs.case_id
+        WHERE  cs.case_id IN ({ph})
+          AND  s.lat IS NOT NULL AND s.lng IS NOT NULL
+          AND  s.published_at IS NOT NULL
+        ORDER  BY cs.case_id, s.timestamp
+    """, PUBLISHED_CASE_IDS).fetchall()
+
+    from itertools import combinations
+    case_points: dict[int, list] = {}
+    for r in case_geo_rows:
+        case_points.setdefault(r["case_id"], []).append(r)
+
+    for cid, points in case_points.items():
+        # Deduplicate by rough location (round to 0.5 degree)
+        seen_locs: set[tuple] = set()
+        unique_pts = []
+        for p in points:
+            loc_key = (round(p["lat"], 0), round(p["lng"], 0))
+            if loc_key not in seen_locs:
+                seen_locs.add(loc_key)
+                unique_pts.append(p)
+        if len(unique_pts) >= 2:
+            for a, b in combinations(unique_pts, 2):
+                intel_links.append({
+                    "from_lat": a["lat"], "from_lng": a["lng"],
+                    "to_lat": b["lat"], "to_lng": b["lng"],
+                    "case_name": a["name"],
+                    "stream": a["stream"] or "GLOBAL",
+                })
+
+    # Compute stream counts for map dashboard filter panel
+    stream_counts = {}
+    for s in geo_signals:
+        st = s.get("stream", "GLOBAL")
+        stream_counts[st] = stream_counts.get(st, 0) + 1
+
     (DIST / "map.html").write_text(
         env.get_template("map.html").render(
             markers=geo_signals,
+            intel_links=intel_links,
+            all_signals=signals,
+            cases=cases,
             stream_labels=STREAM_LABELS,
+            stream_counts=stream_counts,
             generated_at=now_str,
         ),
         encoding="utf-8",
     )
-    print(f"[publish] map.html    - {len(geo_signals)} geo-tagged signals")
+    print(f"[publish] map.html    - {len(geo_signals)} geo-tagged signals, {len(intel_links)} intel links")
 
     # article pages
     tmpl = env.get_template("article.html")
@@ -708,8 +813,7 @@ def _build_dist(
     )
     print("[publish] feed.json")
 
-    # cases.html + individual case pages
-    cases = _fetch_cases(conn)
+    # cases.html + individual case pages (cases already fetched above for map dashboard)
     total_signals = sum(c["signal_count"] for c in cases)
     total_actors  = sum(c["actor_count"]  for c in cases)
 
@@ -765,9 +869,11 @@ def _build_dist(
     )
     actor_tmpl = env.get_template("actor_profile.html")
     for actor in directory_actors:
+        actor["initials"] = _actor_initials(actor["name"])
         actor["cases"] = _fetch_actor_cases(conn, actor["actor_id"])
         actor["events"] = _fetch_actor_events(conn, actor["actor_id"])
         actor["activity"] = _fetch_actor_activity(conn, actor["actor_id"])
+        actor["sources"] = _fetch_actor_sources(conn, actor["actor_id"])
         actor["relationships"] = _fetch_actor_relationships(conn, actor["actor_id"])
         out = DIST_ENTITIES / f"{actor['slug']}.html"
         out.write_text(
@@ -787,6 +893,40 @@ def _build_dist(
         encoding="utf-8",
     )
     print(f"[publish] graph.html    - {len(graph_data['nodes'])} nodes / {len(graph_data['edges'])} edges")
+
+    # watchlist.html — static shell, content from localStorage at runtime
+    (DIST / "watchlist.html").write_text(
+        env.get_template("watchlist.html").render(generated_at=now_str),
+        encoding="utf-8",
+    )
+
+    # search-index.json — flat document list for client-side MiniSearch
+    search_docs = []
+    for s in signals:
+        search_docs.append({
+            "id": s["slug"],
+            "title": s["title"],
+            "kind": "signal",
+            "url": "index.html",
+        })
+    for a in articles:
+        search_docs.append({
+            "id": a["slug"],
+            "title": a["title"],
+            "kind": "article",
+            "url": f"articles/{a['slug']}.html",
+        })
+    for act in directory_actors:
+        search_docs.append({
+            "id": str(act["actor_id"]),
+            "title": act["name"],
+            "kind": "actor",
+            "url": f"entities/{act['slug']}.html",
+        })
+    (DIST / "search-index.json").write_text(
+        json.dumps(search_docs), encoding="utf-8"
+    )
+    print(f"[publish] search-index.json - {len(search_docs)} documents")
 
     _check_case_triangulation(conn, cases, signals, graph_data)
 

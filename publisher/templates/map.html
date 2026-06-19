@@ -7,37 +7,376 @@
       crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
   .site-main { padding: 0; }
-  .map-shell  { display: flex; flex-direction: column; height: calc(100vh - 88px); }
-  .map-bar {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0.5rem 1.5rem;
-    background: var(--bg-surface);
+
+  /* ── Dashboard shell ────────────────────────────────────────────────────── */
+  .md-shell {
+    position: relative;
+    height: calc(100vh - 88px);
+    overflow: hidden;
+  }
+  #map { position: absolute; inset: 0; z-index: 1; }
+
+  /* ── Left sidebar pills ─────────────────────────────────────────────────── */
+  .md-sidebar {
+    position: absolute;
+    top: var(--sp-4); left: var(--sp-4);
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    background: rgba(8,13,18,0.88);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-md);
+    padding: var(--sp-3);
+  }
+  .md-pill {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    padding: var(--sp-2) var(--sp-3);
+    cursor: pointer;
+    transition: all var(--t-fast);
+    white-space: nowrap;
+    text-align: left;
+    width: 100%;
+  }
+  .md-pill:hover { border-color: var(--border-mid); color: var(--text-primary); }
+  .md-pill.active {
+    background: rgba(200,148,58,0.08);
+    border-color: var(--accent-muted);
+    color: var(--accent-bright);
+  }
+  .md-pill__icon { margin-right: var(--sp-2); }
+
+  /* ── Overlay panels ─────────────────────────────────────────────────────── */
+  .md-panel {
+    position: absolute;
+    top: var(--sp-4); left: 100px;
+    z-index: 350;
+    width: 380px;
+    max-height: calc(100vh - 180px);
+    background: rgba(8,13,18,0.94);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-md);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .md-panel.open { display: flex; }
+  .md-panel__header {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
     border-bottom: 1px solid var(--border-dim);
     flex-shrink: 0;
   }
-  .map-bar__title { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
-  .map-bar__count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
-  #map { flex: 1; }
+  .md-panel__dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .md-panel__title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .md-panel__count {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+  .md-panel__close {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: none; border: none;
+    cursor: pointer; padding: 2px 6px;
+  }
+  .md-panel__close:hover { color: var(--text-primary); }
+  .md-panel__body {
+    overflow-y: auto;
+    flex: 1;
+    padding: var(--sp-2) 0;
+  }
 
-  /* ── Cluster marker ───────────────────────────────────────────────────────── */
+  /* ── Wire panel entries ─────────────────────────────────────────────────── */
+  .md-panel__stats {
+    display: flex; gap: var(--sp-4);
+    padding: var(--sp-2) var(--sp-4) var(--sp-3);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .md-panel__stat {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .md-panel__stat--critical { color: #e74c3c; }
+  .md-panel__stat--high { color: var(--crime); }
+  .md-panel__stat--other { color: var(--text-dim); }
+
+  .wire-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background var(--t-fast);
+  }
+  .wire-entry:hover { background: rgba(255,255,255,0.03); }
+  .wire-entry.active { background: rgba(200,148,58,0.06); border-left: 2px solid var(--accent); }
+  .wire-rank {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    width: 16px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 2px;
+  }
+  .wire-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .wire-body { flex: 1; min-width: 0; }
+  .wire-title {
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .wire-meta {
+    display: flex;
+    gap: var(--sp-2);
+    align-items: center;
+  }
+  .wire-sig {
+    font-family: var(--font-mono);
+    font-size: 0.48rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 4px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .wire-sig--critical { color: #e74c3c; border-color: rgba(231,76,60,0.4); }
+  .wire-sig--high     { color: var(--crime); border-color: rgba(192,57,43,0.3); }
+  .wire-sig--significant { color: var(--accent); border-color: rgba(200,148,58,0.3); }
+  .wire-sig--notable  { color: var(--infra); border-color: rgba(41,128,185,0.3); }
+  .wire-sig--routine  { color: var(--text-dim); border-color: var(--border-dim); }
+  .wire-source {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--text-ghost);
+  }
+
+  /* ── Streams panel ──────────────────────────────────────────────────────── */
+  .stream-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .stream-row__dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stream-row__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-primary);
+    flex: 1;
+  }
+  .stream-row__count {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+  .stream-toggle {
+    position: relative;
+    width: 32px; height: 16px;
+    background: var(--border-dim);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background var(--t-mid);
+    flex-shrink: 0;
+  }
+  .stream-toggle.on { background: var(--accent-muted); }
+  .stream-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    transition: transform var(--t-mid);
+  }
+  .stream-toggle.on::after { transform: translateX(16px); background: var(--accent-bright); }
+
+  /* ── Cases panel ────────────────────────────────────────────────────────── */
+  .case-entry {
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: background var(--t-fast);
+  }
+  .case-entry:hover { background: rgba(255,255,255,0.03); }
+  .case-entry__name {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--sp-1);
+  }
+  .case-entry__meta {
+    display: flex;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--text-dim);
+  }
+  .case-entry__coe {
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .coe-corroborated { color: #e74c3c; border-color: rgba(231,76,60,0.3); }
+  .coe-strong       { color: var(--crime); border-color: rgba(192,57,43,0.3); }
+  .coe-established  { color: var(--accent); border-color: rgba(200,148,58,0.3); }
+  .coe-developing   { color: var(--infra); border-color: rgba(41,128,185,0.3); }
+  .coe-preliminary  { color: var(--text-dim); border-color: var(--border-dim); }
+
+  /* ── Right controls ─────────────────────────────────────────────────────── */
+  .md-controls {
+    position: absolute;
+    top: var(--sp-4); right: var(--sp-4);
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    background: rgba(8,13,18,0.88);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-md);
+    padding: var(--sp-3);
+  }
+  .md-ctrl {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    padding: var(--sp-2) var(--sp-3);
+    cursor: pointer;
+    transition: all var(--t-fast);
+    white-space: nowrap;
+    text-align: left;
+  }
+  .md-ctrl:hover { border-color: var(--border-mid); color: var(--text-primary); }
+  .md-ctrl__icon { margin-right: var(--sp-2); }
+
+  /* ── Bottom ticker ──────────────────────────────────────────────────────── */
+  .md-ticker {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 400;
+    height: 32px;
+    background: rgba(8,13,18,0.94);
+    border-top: 1px solid var(--border-dim);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .md-ticker__badge {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bg-base);
+    background: var(--accent);
+    padding: 2px 8px;
+    margin: 0 var(--sp-3) 0 var(--sp-3);
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .md-ticker__dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--crime);
+    animation: ticker-pulse 2s ease infinite;
+  }
+  @keyframes ticker-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .md-ticker__track {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .md-ticker__scroll {
+    display: flex;
+    white-space: nowrap;
+    animation: ticker-scroll var(--ticker-speed, 120s) linear infinite;
+  }
+  @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .md-ticker__item {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    padding: 0 var(--sp-5);
+  }
+  .md-ticker__sep {
+    color: var(--text-ghost);
+    padding: 0 var(--sp-2);
+  }
+
+  /* ── Leaflet overrides ──────────────────────────────────────────────────── */
+  .leaflet-control-zoom { display: none !important; }
+
+  /* ── Cluster marker ─────────────────────────────────────────────────────── */
   .smap-cluster {
     width: 28px; height: 28px;
     border-radius: 50%;
     background: rgba(5, 8, 11, 0.92);
     border: 2px solid currentColor;
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono), 'IBM Plex Mono', monospace;
+    font-family: var(--font-mono), monospace;
     font-size: 10px; font-weight: 500;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .smap-cluster:hover { transform: scale(1.2); }
-  .smap-cluster.active {
-    transform: scale(1.25);
-    box-shadow: 0 0 12px currentColor;
-  }
+  .smap-cluster.active { transform: scale(1.25); box-shadow: 0 0 12px currentColor; }
 
-  /* ── Leaflet popup — Tokyo Night override ─────────────────────────────────── */
+  /* ── Leaflet popup ──────────────────────────────────────────────────────── */
   .leaflet-popup-content-wrapper {
     background: #0c1219 !important;
     border: 1px solid rgba(255,255,255,0.10) !important;
@@ -47,93 +386,125 @@
     padding: 0 !important;
   }
   .leaflet-popup-tip-container { display: none; }
-  .leaflet-popup-close-button {
-    color: #3d5060 !important;
-    font-size: 18px !important;
-    top: 5px !important; right: 7px !important;
-  }
+  .leaflet-popup-close-button { color: #3d5060 !important; font-size: 18px !important; top: 5px !important; right: 7px !important; }
   .leaflet-popup-close-button:hover { color: #7a95aa !important; }
   .leaflet-popup-content { margin: 0 !important; width: auto !important; }
 
-  /* ── Popup content ────────────────────────────────────────────────────────── */
-  .smap-popup {
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-width: 220px; max-width: 290px;
-    padding: 12px 14px 10px;
-  }
-  .smap-popup__stream {
-    font-family: var(--font-mono), monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.55;
-    margin-bottom: 3px;
-  }
-  .smap-popup__source {
-    font-family: var(--font-mono), monospace;
-    font-size: 0.60rem;
-    color: #7a95aa;
-    margin-bottom: 6px;
-  }
-  .smap-popup__title {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: #cfdce8;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .smap-popup__meta {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 4px;
-  }
-  .smap-popup__gravity {
-    font-family: var(--font-mono), monospace;
-    font-size: 0.62rem; font-weight: 500;
-    padding: 1px 6px; border-radius: 2px;
-    letter-spacing: 0.04em;
-  }
-  .smap-popup__time {
-    font-family: var(--font-mono), monospace;
-    font-size: 0.58rem;
-    color: #3d5060;
-  }
-  .smap-popup__link {
-    display: block;
-    margin-top: 8px;
-    padding-top: 7px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    font-family: var(--font-mono), monospace;
-    font-size: 0.62rem;
-    color: #c8943a;
-    text-decoration: none;
-    letter-spacing: 0.04em;
-  }
+  .smap-popup { font-family: 'IBM Plex Sans', sans-serif; min-width: 220px; max-width: 290px; padding: 12px 14px 10px; }
+  .smap-popup__stream { font-family: var(--font-mono), monospace; font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.55; margin-bottom: 3px; }
+  .smap-popup__source { font-family: var(--font-mono), monospace; font-size: 0.60rem; color: #7a95aa; margin-bottom: 6px; }
+  .smap-popup__title { font-size: 0.82rem; font-weight: 500; color: #cfdce8; line-height: 1.4; margin-bottom: 8px; }
+  .smap-popup__meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .smap-popup__gravity { font-family: var(--font-mono), monospace; font-size: 0.62rem; font-weight: 500; padding: 1px 6px; border-radius: 2px; letter-spacing: 0.04em; }
+  .smap-popup__time { font-family: var(--font-mono), monospace; font-size: 0.58rem; color: #3d5060; }
+  .smap-popup__link { display: block; margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.06); font-family: var(--font-mono), monospace; font-size: 0.62rem; color: #c8943a; text-decoration: none; letter-spacing: 0.04em; }
   .smap-popup__link:hover { color: #e0aa4a; }
 
-  /* ── Intel link tooltips ─────────────────────────────────────────────────── */
-  .intel-link-tooltip {
-    background: rgba(8,13,18,0.88) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 2px !important;
-    color: #7a95aa !important;
-    font-family: var(--font-mono), monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
-    padding: 2px 8px !important;
-    box-shadow: none !important;
-  }
+  .intel-link-tooltip { background: rgba(8,13,18,0.88) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 2px !important; color: #7a95aa !important; font-family: var(--font-mono), monospace; font-size: 0.58rem; letter-spacing: 0.06em; padding: 2px 8px !important; box-shadow: none !important; }
   .intel-link-tooltip::before { display: none; }
+
+  /* ── Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .md-panel { left: var(--sp-4); width: calc(100vw - 2 * var(--sp-4)); top: 60px; }
+    .md-sidebar { top: auto; bottom: 40px; left: var(--sp-4); flex-direction: row; }
+    .md-controls { top: var(--sp-4); }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="map-shell">
-  <div class="map-bar">
-    <span class="map-bar__title">Signal Map</span>
-    <span class="map-bar__count">{{ markers|length }} geo-tagged signals</span>
-    <span class="map-bar__title" style="margin-left:auto;">{{ generated_at }}</span>
-  </div>
+<div class="md-shell">
+
+  {# ── Map canvas ─────────────────────────────────────────────────────────── #}
   <div id="map"></div>
+
+  {# ── Left sidebar pills ─────────────────────────────────────────────────── #}
+  <nav class="md-sidebar">
+    <button class="md-pill" data-panel="wire"><span class="md-pill__icon">+</span> Wire</button>
+    <button class="md-pill" data-panel="streams"><span class="md-pill__icon">&#9656;</span> Streams</button>
+    <button class="md-pill" data-panel="cases"><span class="md-pill__icon">&#9650;</span> Cases</button>
+  </nav>
+
+  {# ── Wire panel ─────────────────────────────────────────────────────────── #}
+  <div class="md-panel" id="panel-wire">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--accent);"></div>
+      <span class="md-panel__title">Wire</span>
+      <span class="md-panel__count">{{ markers|length }} total</span>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__stats" id="wire-stats"></div>
+    <div class="md-panel__body" id="wire-list"></div>
+  </div>
+
+  {# ── Streams panel ──────────────────────────────────────────────────────── #}
+  <div class="md-panel" id="panel-streams">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--global);"></div>
+      <span class="md-panel__title">Streams</span>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__body">
+      {% for key, label in stream_labels.items() %}
+      <div class="stream-row" data-stream="{{ key }}">
+        <div class="stream-row__dot" style="background:var(--{{ key|lower if key == 'GLOBAL' else ('crime' if key == 'CRIME_INTEL' else ('infra' if key == 'INFRASTRUCTURE' else ('priority' if key == 'PRIORITY' else 'global'))) }});"></div>
+        <span class="stream-row__label">{{ label }}</span>
+        <span class="stream-row__count">{{ stream_counts.get(key, 0) }}</span>
+        <div class="stream-toggle on" data-stream-toggle="{{ key }}"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Cases panel ────────────────────────────────────────────────────────── #}
+  <div class="md-panel" id="panel-cases">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--crime);"></div>
+      <span class="md-panel__title">Cases</span>
+      <span class="md-panel__count">{{ cases|length }} active</span>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__body">
+      {% for c in cases %}
+      {% set coe_pct = (c.coe * 100)|int %}
+      {% set coe_label = 'Corroborated' if coe_pct >= 75 else ('Strong' if coe_pct >= 55 else ('Established' if coe_pct >= 35 else ('Developing' if coe_pct >= 20 else 'Preliminary'))) %}
+      {% set coe_cls = 'coe-corroborated' if coe_pct >= 75 else ('coe-strong' if coe_pct >= 55 else ('coe-established' if coe_pct >= 35 else ('coe-developing' if coe_pct >= 20 else 'coe-preliminary'))) %}
+      <div class="case-entry" data-case-id="{{ c.case_id }}">
+        <div class="case-entry__name">{{ c.name[:50] }}{% if c.name|length > 50 %}...{% endif %}</div>
+        <div class="case-entry__meta">
+          <span class="case-entry__coe {{ coe_cls }}">{{ coe_label }}</span>
+          <span>{{ c.signal_count }} signals</span>
+          <span>{{ c.actor_count }} actors</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Right controls ─────────────────────────────────────────────────────── #}
+  <div class="md-controls">
+    <button class="md-ctrl" id="ctrl-filter"><span class="md-ctrl__icon">&#9701;</span> Filter</button>
+    <button class="md-ctrl" id="ctrl-zoomin"><span class="md-ctrl__icon">+</span> Zoom In</button>
+    <button class="md-ctrl" id="ctrl-zoomout"><span class="md-ctrl__icon">&minus;</span> Zoom Out</button>
+    <button class="md-ctrl" id="ctrl-reset"><span class="md-ctrl__icon">&#10226;</span> Reset</button>
+  </div>
+
+  {# ── Bottom ticker ──────────────────────────────────────────────────────── #}
+  <div class="md-ticker">
+    <span class="md-ticker__badge"><span class="md-ticker__dot"></span> LATEST</span>
+    <div class="md-ticker__track">
+      <div class="md-ticker__scroll" id="ticker-scroll">
+        {# Rendered twice for seamless infinite loop #}
+        {% for s in all_signals[:40] %}
+        <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
+        {% endfor %}
+        {% for s in all_signals[:40] %}
+        <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
 
@@ -144,16 +515,17 @@
 (function () {
   'use strict';
 
-  /* ── Map init ──────────────────────────────────────────────────────────────── */
-  var map = L.map('map', { zoomControl: true }).setView([-28.5, 25], 5);
+  /* ══════════════════════════════════════════════════════════════════════════
+     MAP INIT
+     ══════════════════════════════════════════════════════════════════════════ */
+  var map = L.map('map', { zoomControl: false }).setView([-28.5, 25], 5);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 19,
   }).addTo(map);
 
-  /* ── Stream colours ────────────────────────────────────────────────────────── */
   var STREAM_COLOR = {
     CRIME_INTEL:    '#c0392b',
     INFRASTRUCTURE: '#2980b9',
@@ -161,56 +533,63 @@
     GLOBAL:         '#27ae60',
   };
 
-  /* ── Gravity score -> badge colour ────────────────────────────────────────── */
   function gravityColor(g) {
-    if (!g)     return '#7a95aa';
+    if (!g)        return '#7a95aa';
     if (g >= 0.65) return '#c0392b';
     if (g >= 0.40) return '#c8943a';
     return '#2980b9';
   }
 
-  /* ── Build popup HTML ──────────────────────────────────────────────────────── */
+  function sigBand(g) {
+    if (g >= 0.75) return { label: 'Critical', cls: 'wire-sig--critical' };
+    if (g >= 0.55) return { label: 'High',     cls: 'wire-sig--high' };
+    if (g >= 0.35) return { label: 'Significant', cls: 'wire-sig--significant' };
+    if (g >= 0.20) return { label: 'Notable',  cls: 'wire-sig--notable' };
+    return { label: 'Routine', cls: 'wire-sig--routine' };
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     POPUP BUILDER
+     ══════════════════════════════════════════════════════════════════════════ */
   function buildPopup(m) {
     var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
     var gScore = (m.gravity_score != null) ? m.gravity_score.toFixed(2) : null;
     var gColor = gravityColor(m.gravity_score);
-    var ts     = m.published_fmt || '—';
 
     var gravityHtml = gScore
       ? '<span class="smap-popup__gravity" style="background:' + gColor + '22;color:' + gColor + '">G ' + gScore + '</span>'
       : '';
-
     var linkHtml = m.article_slug
-      ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis -></a>'
+      ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis &rarr;</a>'
       : '';
 
-    var starHtml = '<button class="wl-toggle" data-wl-id="' + (m.signal_id || '') + '" data-wl-type="signals" data-wl-title="' + (m.title || '').replace(/"/g, '&quot;') + '" data-wl-url="index.html" style="position:absolute;top:8px;right:8px;">&#9734;</button>';
-
     return (
-      '<div class="smap-popup" style="position:relative;">' + starHtml +
+      '<div class="smap-popup">' +
         '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
         (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
         '<div class="smap-popup__title">' + (m.title || '') + '</div>' +
-        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + ts + '</span></div>' +
+        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + (m.published_fmt || '') + '</span></div>' +
         linkHtml +
       '</div>'
     );
   }
 
-  /* ── Group markers by exact coordinate ────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════════════════════
+     MARKERS + SPIDERFY (existing logic preserved)
+     ══════════════════════════════════════════════════════════════════════════ */
   var RAW = {{ markers | tojson }};
   var groups = {};
+  var allMarkerLayers = []; // { layer, stream, lat, lng, idx }
 
-  RAW.forEach(function (m) {
+  RAW.forEach(function (m, idx) {
     if (m.lat == null || m.lng == null) return;
+    m._idx = idx;
     var key = m.lat.toFixed(5) + ',' + m.lng.toFixed(5);
     if (!groups[key]) groups[key] = [];
     groups[key].push(m);
   });
 
-  /* ── Active spider state ───────────────────────────────────────────────────── */
-  var spider = null;  // { legs[], subs[], clusterEl }
-
+  var spider = null;
   function clearSpider() {
     if (!spider) return;
     spider.legs.forEach(function (l) { map.removeLayer(l); });
@@ -219,52 +598,20 @@
     spider = null;
   }
 
-  /* ── Spiderfy — pixel-space projection ────────────────────────────────────── */
   function openSpider(clusterEl, group) {
-    var n    = group.length;
-    var cLat = group[0].lat;
-    var cLng = group[0].lng;
-
-    // Project cluster centre into screen pixel space at current view
+    var n = group.length, cLat = group[0].lat, cLng = group[0].lng;
     var centerPx = map.latLngToContainerPoint([cLat, cLng]);
-
-    // Pixel radius: base 50px + 3px per additional signal
-    // Stays consistent across zoom levels regardless of geographic scale
     var pixelRadius = 50 + (n * 3);
-
-    var legs = [];
-    var subs = [];
+    var legs = [], subs = [];
 
     group.forEach(function (m, i) {
-      // Evenly distribute spokes, starting at top (−π/2), clockwise
       var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-
-      // Target in pixel space, then project back to geographic coords
-      var targetPx  = L.point(
-        centerPx.x + pixelRadius * Math.cos(angle),
-        centerPx.y + pixelRadius * Math.sin(angle)
-      );
+      var targetPx = L.point(centerPx.x + pixelRadius * Math.cos(angle), centerPx.y + pixelRadius * Math.sin(angle));
       var sLatLng = map.containerPointToLatLng(targetPx);
-      var color   = STREAM_COLOR[m.stream] || '#7a95aa';
+      var color = STREAM_COLOR[m.stream] || '#7a95aa';
 
-      // Spider leg — dashed, subdued
-      var leg = L.polyline([[cLat, cLng], sLatLng], {
-        color:     color,
-        weight:    1.5,
-        opacity:   0.38,
-        dashArray: '4 5',
-      }).addTo(map);
-      legs.push(leg);
-
-      // Sub-marker at projected position
-      var sm = L.circleMarker(sLatLng, {
-        radius:      7,
-        fillColor:   color,
-        color:       color,
-        weight:      1.5,
-        opacity:     0.9,
-        fillOpacity: 0.60,
-      });
+      legs.push(L.polyline([[cLat, cLng], sLatLng], { color: color, weight: 1.5, opacity: 0.38, dashArray: '4 5' }).addTo(map));
+      var sm = L.circleMarker(sLatLng, { radius: 7, fillColor: color, color: color, weight: 1.5, opacity: 0.9, fillOpacity: 0.60 });
       sm.bindPopup(buildPopup(m), { maxWidth: 300 });
       sm.addTo(map);
       subs.push(sm);
@@ -274,88 +621,172 @@
     spider = { legs: legs, subs: subs, clusterEl: clusterEl };
   }
 
-  /* ── Render groups ─────────────────────────────────────────────────────────── */
+  // Stream visibility state
+  var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
+
   Object.keys(groups).forEach(function (key) {
     var group = groups[key];
-    var lat   = group[0].lat;
-    var lng   = group[0].lng;
+    var lat = group[0].lat, lng = group[0].lng;
 
     if (group.length === 1) {
-      /* ── Single signal — plain circle marker ── */
-      var m     = group[0];
+      var m = group[0];
       var color = STREAM_COLOR[m.stream] || '#7a95aa';
-      var dot   = L.circleMarker([lat, lng], {
-        radius:      7,
-        fillColor:   color,
-        color:       color,
-        weight:      1.5,
-        opacity:     0.9,
-        fillOpacity: 0.58,
-      });
+      var dot = L.circleMarker([lat, lng], { radius: 7, fillColor: color, color: color, weight: 1.5, opacity: 0.9, fillOpacity: 0.58 });
       dot.bindPopup(buildPopup(m), { maxWidth: 300 });
       dot.addTo(map);
-
+      allMarkerLayers.push({ layer: dot, stream: m.stream, lat: lat, lng: lng, idx: m._idx, popup: buildPopup(m) });
     } else {
-      /* ── Stacked signals — cluster badge ── */
-      // Representative color = stream of highest-gravity signal
-      var rep   = group.slice().sort(function (a, b) {
-        return (b.gravity_score || 0) - (a.gravity_score || 0);
-      })[0];
+      var rep = group.slice().sort(function (a, b) { return (b.gravity_score || 0) - (a.gravity_score || 0); })[0];
       var color = STREAM_COLOR[rep.stream] || '#7a95aa';
-
-      var icon = L.divIcon({
-        className:   '',
-        html:        '<div class="smap-cluster" style="color:' + color + '">' + group.length + '</div>',
-        iconSize:    [28, 28],
-        iconAnchor:  [14, 14],
-        popupAnchor: [0, -16],
-      });
-
+      var icon = L.divIcon({ className: '', html: '<div class="smap-cluster" style="color:' + color + '">' + group.length + '</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
       var cm = L.marker([lat, lng], { icon: icon });
-
       cm.on('click', function (e) {
         L.DomEvent.stopPropagation(e);
-        var el = cm.getElement()
-          ? cm.getElement().querySelector('.smap-cluster')
-          : null;
-
-        if (spider && spider.clusterEl === el) {
-          // Second click on the same cluster — collapse
-          clearSpider();
-        } else {
-          clearSpider();
-          openSpider(el, group);
-        }
+        var el = cm.getElement() ? cm.getElement().querySelector('.smap-cluster') : null;
+        if (spider && spider.clusterEl === el) { clearSpider(); } else { clearSpider(); openSpider(el, group); }
       });
-
       cm.addTo(map);
+      group.forEach(function (m) {
+        allMarkerLayers.push({ layer: cm, stream: m.stream, lat: lat, lng: lng, idx: m._idx, isCluster: true });
+      });
     }
   });
 
-  /* ── Collapse spider on background click, zoom, or pan ────────────────────── */
-  map.on('click',     clearSpider);
+  map.on('click', clearSpider);
   map.on('zoomstart', clearSpider);
   map.on('movestart', clearSpider);
 
-  /* ── Intel links — cross-geography case connections ────────────────────────── */
+  /* ── Intel links ────────────────────────────────────────────────────────── */
   var INTEL_LINKS = {{ intel_links | tojson }};
-
   INTEL_LINKS.forEach(function (link) {
     var color = STREAM_COLOR[link.stream] || '#7a95aa';
-    L.polyline(
-      [[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]],
-      {
-        color:      color,
-        weight:     1.2,
-        opacity:    0.25,
-        dashArray:  '8 6',
-        className:  'intel-link',
+    L.polyline([[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]], {
+      color: color, weight: 1.2, opacity: 0.25, dashArray: '8 6',
+    }).bindTooltip(link.case_name, { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     DASHBOARD PANELS
+     ══════════════════════════════════════════════════════════════════════════ */
+  var activePanel = null;
+
+  function openPanel(name) {
+    document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
+    document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
+    if (activePanel === name) { activePanel = null; return; }
+    var panel = document.getElementById('panel-' + name);
+    var pill = document.querySelector('[data-panel="' + name + '"]');
+    if (panel) panel.classList.add('open');
+    if (pill) pill.classList.add('active');
+    activePanel = name;
+  }
+  window.closePanel = function () {
+    document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
+    document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
+    activePanel = null;
+  };
+
+  document.querySelectorAll('.md-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () { openPanel(pill.dataset.panel); });
+  });
+
+  /* ── Wire panel ─────────────────────────────────────────────────────────── */
+  var sorted = RAW.slice().sort(function (a, b) { return (b.gravity_score || 0) - (a.gravity_score || 0); });
+  var critical = 0, high = 0, other = 0;
+  sorted.forEach(function (m) {
+    var g = m.gravity_score || 0;
+    if (g >= 0.75) critical++;
+    else if (g >= 0.55) high++;
+    else other++;
+  });
+
+  document.getElementById('wire-stats').innerHTML =
+    '<span class="md-panel__stat md-panel__stat--critical">' + critical + ' CRITICAL</span>' +
+    '<span class="md-panel__stat md-panel__stat--high">' + high + ' HIGH</span>' +
+    '<span class="md-panel__stat md-panel__stat--other">' + other + ' OTHER</span>';
+
+  var wireHtml = '';
+  sorted.slice(0, 50).forEach(function (m, i) {
+    var band = sigBand(m.gravity_score || 0);
+    var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
+    wireHtml += '<div class="wire-entry" data-wire-idx="' + m._idx + '">' +
+      '<span class="wire-rank">' + (i + 1) + '</span>' +
+      '<div class="wire-dot" style="background:' + sColor + ';"></div>' +
+      '<div class="wire-body">' +
+        '<div class="wire-title">' + (m.title || '').slice(0, 80) + '</div>' +
+        '<div class="wire-meta">' +
+          '<span class="wire-sig ' + band.cls + '">' + band.label + '</span>' +
+          '<span class="wire-source">' + (m.source || '').toUpperCase() + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('wire-list').innerHTML = wireHtml;
+
+  document.querySelectorAll('.wire-entry').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var idx = parseInt(el.dataset.wireIdx);
+      var m = RAW[idx];
+      if (m && m.lat && m.lng) {
+        map.flyTo([m.lat, m.lng], 10, { duration: 0.8 });
+        document.querySelectorAll('.wire-entry').forEach(function (e) { e.classList.remove('active'); });
+        el.classList.add('active');
+        // Open popup on the closest marker
+        setTimeout(function () {
+          allMarkerLayers.forEach(function (ml) {
+            if (ml.idx === idx && ml.layer && ml.layer.openPopup) {
+              ml.layer.openPopup();
+            }
+          });
+        }, 900);
       }
-    ).bindTooltip(link.case_name, {
-      permanent: false,
-      direction: 'center',
-      className: 'intel-link-tooltip',
-    }).addTo(map);
+    });
+  });
+
+  /* ── Stream filter toggles ──────────────────────────────────────────────── */
+  document.querySelectorAll('.stream-toggle').forEach(function (toggle) {
+    toggle.addEventListener('click', function () {
+      toggle.classList.toggle('on');
+      var stream = toggle.dataset.streamToggle;
+      var visible = toggle.classList.contains('on');
+      streamVisible[stream] = visible;
+
+      allMarkerLayers.forEach(function (ml) {
+        if (ml.stream === stream) {
+          if (visible) {
+            if (!map.hasLayer(ml.layer)) map.addLayer(ml.layer);
+          } else {
+            if (map.hasLayer(ml.layer)) map.removeLayer(ml.layer);
+          }
+        }
+      });
+    });
+  });
+
+  /* ── Right controls ─────────────────────────────────────────────────────── */
+  document.getElementById('ctrl-zoomin').addEventListener('click', function () { map.zoomIn(); });
+  document.getElementById('ctrl-zoomout').addEventListener('click', function () { map.zoomOut(); });
+  document.getElementById('ctrl-reset').addEventListener('click', function () { map.setView([-28.5, 25], 5); });
+  document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
+
+  /* ── Ticker speed — scale with content ──────────────────────────────────── */
+  var ticker = document.getElementById('ticker-scroll');
+  if (ticker) {
+    var w = ticker.scrollWidth / 2;
+    var speed = Math.max(30, Math.min(180, w / 50));
+    ticker.style.setProperty('--ticker-speed', speed + 's');
+    ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
+  }
+
+  /* ── Cases panel — fly to centroid ──────────────────────────────────────── */
+  document.querySelectorAll('.case-entry').forEach(function (entry) {
+    entry.addEventListener('click', function () {
+      // Compute centroid from case signals that have geo
+      var caseId = entry.dataset.caseId;
+      // Case centroids are computed from all markers linked to this case
+      // For now, just link to the case detail page
+      window.location.href = 'cases/' + entry.querySelector('.case-entry__name').textContent.trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 60) + '.html';
+    });
   });
 
 })();
