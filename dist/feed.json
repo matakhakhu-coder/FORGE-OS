@@ -1,8 +1,70 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "13 Jun 2026 17:57 UTC",
+  "generated_at": "19 Jun 2026 14:36 UTC",
   "items": [
+    {
+      "kind": "article",
+      "title": "MEGA Account Compromise: Credential Stuffing via 3xK Tech GmbH Proxy Infrastructure",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:35:12.474027+00:00",
+      "summary": "Automated credential stuffing attack detected across three proxy nodes operated by 3xK Tech GmbH (AS200373). MegaApiClient session indicates active data exfiltration.",
+      "author": "ZA-DIVERGENT Staff",
+      "url": "articles/mega-account-compromise-3xktech-credential-stuffing.html"
+    },
+    {
+      "kind": "signal",
+      "title": "Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Tech GmbH / AS200373)",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:32:59.552637+00:00",
+      "summary": "{\"summary\": \"Automated login to user MEGA cloud storage account detected at 2026-06-19 15:53 SAST. User-Agent: Go-http-client/1.1 (Go standard library HTTP client \\u2014 automated tool, not browser). Source IP: 209.50.17...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 39.0437,
+        "lng": -77.4875
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abuse history",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:32:59.552637+00:00",
+      "summary": "{\"summary\": \"3xK Tech GmbH is a German hosting provider (ASN AS200373) headquartered at Altenhofer Weg 21, Schorfheide, 16244, Germany. Contact: friedrich.kraeft@3xktech.cloud. The network operates datacenter infrastruct...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 39.0437,
+        "lng": -77.4875
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashburn VA)",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:32:59.552637+00:00",
+      "summary": "{\"summary\": \"Second unauthorized MEGA session detected at 2026-06-19 16:19 SAST from IP 104.207.47.133. User-Agent: Unknown. Same operator as original breach IP: 3xK Tech GmbH (AS200373). IPinfo classification: Hosting p...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 39.0437,
+        "lng": -77.4875
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Berlin) — active data exfiltration",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:32:59.552637+00:00",
+      "summary": "{\"summary\": \"CRITICAL \\u2014 Active data exfiltration session detected at 2026-06-19 16:19 SAST. IP: 209.50.190.92. Client: MegaApiClient (MEGA SDK/API client for programmatic bulk file access \\u2014 NOT a browser sessio...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.5244,
+        "lng": 13.4105
+      }
+    },
     {
       "kind": "signal",
       "title": "Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering charge - Mail & Guardian",
