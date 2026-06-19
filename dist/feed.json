@@ -1,8 +1,385 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "19 Jun 2026 14:56 UTC",
+  "generated_at": "19 Jun 2026 15:19 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler charged — yet 3xK Tech infrastructure still active 3 months later",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"On March 19, 2026, BKA (Germany) and ZAC NRW with US/Canadian authorities dismantled the globally distributed infrastructure of Aisuru, Kimwolf, JackSkid, and 'Mossad' sister networks. Peak network: 3+ milli...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 50.9375,
+        "lng": 6.9603
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M+ Android devices, monetised via PlainProxies",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Aisuru retooled from DDoS to residential-proxy-as-a-service, renting access to hundreds of thousands of compromised IoT devices. 2M+ Android devices (mostly off-brand TVs). DDoS records: 22.2 Tbps / 10.6 bil...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 9.0579,
+        "lng": 7.4951
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 source of HTTP DDoS attacks globally",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"In Cloudflare's Q2 2025 DDoS threat report, Drei-K-Tech-GmbH (AS200373) jumped 6 places to become the #1 largest source of HTTP/application-layer DDoS attacks globally, displacing Hetzner (AS24940). DigitalO...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 37.7749,
+        "lng": -122.4194
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200373 against Palo Alto/Cisco VPNs (Nov-Dec 2025)",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"GreyNoise detected massive scanning/credential-spraying campaigns from 3xK Tech IPs. Nov 14-19: 2.3 million sessions hitting Palo Alto GlobalProtect /global-protect/login.esp. Dec 11: 1.7 million login sessi...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 servers seized, 525,303 infections, 86.2M stealing events",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Nov 10-13 2025: Europol/Eurojust with 11 countries dismantled Rhadamanthys infostealer, VenomRAT, and Elysium botnet. 1,025+ servers taken down, 20 domains seized, 1 arrest in Greece. Shadowserver identified...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.0705,
+        "lng": 4.3007
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compromise identified as primary entry point",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"FBI IC3 2025 report records $20.877 billion in losses (up 26% from 2024). First time in 25-year history that complaints exceeded 1 million (1,008,597). 191,561 phishing/spoofing complaints \\u2014 highest cat...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 38.9072,
+        "lng": -77.0369
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human error including weak/reused passwords; avg cost R53 million",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"SA Information Regulator received 2,374 reported breaches in FY2024/25, with 82% (1,947) occurring after April 2025 when the eServices Portal went live (~300/month). Average breach cost R53 million, severe i...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Russian independent media Meduza.io — 2B fake requests in 48 hours",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Qurium forensically identified PlainProxies (operated by Friedrich Kraft via 3xK Tech GmbH) in DDoS attacks on Meduza.io (April 2024). First attack: 2 billion fake requests over 48 hours from 6,300 IP addres...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 59.3293,
+        "lng": 18.0686
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payloads on MEGA Cloud — creating credential theft feedback loop",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"May 2025: Microsoft DCU court order seizes 2,300 Lumma C2 domains. DOJ/FBI seize 2 admin domains. 394,000+ Windows systems infected in 3 months. Critically, Lumma phishing campaigns hosted payloads on MEGA C...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 33.749,
+        "lng": -84.388
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "16 billion login credentials compiled from infostealer logs, phishing kits, and prior breaches — industrial fuel for credential stuffing",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Researchers discovered approximately 16 billion login credentials compiled from infostealer malware logs, phishing kits, and prior data breaches. This is the raw fuel for credential-stuffing-as-a-service ope...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 48.8566,
+        "lng": 2.3522
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 2025) — largest single addition in HIBP history",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Nov 5, 2025: HIBP processed 1,957,476,021 unique emails and 1.3 billion unique passwords from the Synthient Credential Stuffing corpus \\u2014 largest single addition in HIBP history. 625 million passwords we...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -33.8688,
+        "lng": 151.2093
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Julia Levi (ex-Bright Data); HRB 18693, VAT DE344070238",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Friedrich Kraft (also styled Kraeft/Kraft): CEO of PlainProxies, co-founder of ByteConnect Ltd, operator of 3xK Tech GmbH (HRB 18693, VAT ID DE344070238). ByteConnect SDK installed on Kimwolf-compromised dev...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.89,
+        "lng": 13.58
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data less impenetrable than claimed; compounding risk with credential stuffing",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Cryptographic researchers (June 2022) demonstrated that MEGA's encryption design allows theoretical recovery of user RSA private keys and file decryption. MEGA patched the specific attack but acknowledged fu...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 47.3769,
+        "lng": 8.5417
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collateral DDoS on entire privacy infrastructure",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Kimwolf operators migrated C2 servers to I2P (Invisible Internet Project) to evade takedown, then overwhelmed the I2P network itself with the botnet's traffic volume, effectively DDoSing an entire anonymity ...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 60.1699,
+        "lng": 24.9384
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA bypass against 100K organizations",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Europol led takedown of Tycoon 2FA platform: 330+ domains seized. The platform enabled MFA-bypass phishing attacks against ~100,000 organizations including schools, hospitals, and government institutions. Te...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.0705,
+        "lng": 4.3007
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "BreachForums v5 itself breached (March 2026): 340K users exposed — the marketplace where credential dumps are traded got compromised",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"In March 2026, BreachForums v5 was breached, exposing 340,000 unique email addresses with usernames and argon2 password hashes. BreachForums is the primary marketplace where stolen credential dumps and combo...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 43.6532,
+        "lng": -79.3832
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strategic response to credential stuffing epidemic",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"At CYBERUK 2026 in Glasgow, NCSC formally recommended passkeys as the default authentication method, replacing decades of password-based guidance. Separately, NCSC published a dedicated advisory on credentia...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 55.8642,
+        "lng": -4.2518
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "CISA advisory: credential stuffing remains top initial access vector; recommends MFA + credential monitoring",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"The US Cybersecurity and Infrastructure Security Agency (CISA) has repeatedly warned that credential stuffing and password spraying are among the most common initial access vectors in cyber incidents affecti...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 38.8951,
+        "lng": -77.0364
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "NCSC UK: guidance on defending against credential stuffing — password deny lists and throttling",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"The UK National Cyber Security Centre (NCSC) publishes standing guidance on credential stuffing defence. Key recommendations: implement password deny lists using breached credential databases, enforce progre...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 51.5074,
+        "lng": -0.1278
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Internet's largest source of application-layer DDoS attacks",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"In its Q3 2025 DDoS Threat Report, Cloudflare identified 3xK Tech GmbH (AS200373, a.k.a. Drei-K-Tech) as the single largest source of application-layer DDoS attacks on the Internet. The network, operating fr...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 37.7749,
+        "lng": -122.4194
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK converts devices to proxy relays",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"The Kimwolf botnet infected over 2 million unofficial Android TV streaming boxes globally. The malware installed the ByteConnect SDK, distributed through Plainproxies (operated by Friedrich Kraft, CEO of 3xK...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.52,
+        "lng": 13.405
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critical Palo Alto Networks PAN-OS vulnerability",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"In November 2025, security researchers observed that IP addresses belonging to 3xK Tech GmbH (AS200373) were responsible for approximately three-quarters of all Internet scanning traffic targeting a critical...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 37.3861,
+        "lng": -122.0839
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Collection #1: 773 million email/password pairs discovered on MEGA cloud storage (January 2019) — foundational credential stuffing dump",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"In January 2019, security researcher Troy Hunt discovered a massive 87GB data dump on MEGA's own cloud storage service, labelled 'Collection #1.' It contained 773 million unique email addresses and over 21 m...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -36.8485,
+        "lng": 174.7633
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti-sandbox evasion, credential harvesting at scale",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"Lumma Stealer has emerged as the most prevalent infostealer malware in 2026, filling the vacuum left by RedLine Stealer's takedown. It operates on a subscription model starting at $250/month and employs adva...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 55.7558,
+        "lng": 37.6173
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "MEGA confirms 15,500 users compromised in credential stuffing attack — passwords reused from third-party breaches",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"MEGA confirmed that approximately 15,500 user accounts were compromised in a credential stuffing attack where stolen username/password pairs from other breaches were tested against MEGA's login API. The comp...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -36.8485,
+        "lng": 174.7633
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure used for credential theft and ransomware delivery",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"In May 2025, Europol coordinated Operation Endgame \\u2014 described as the largest-ever law enforcement action against botnets. The operation targeted multiple botnet dropper infrastructures including IcedID...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 51.9225,
+        "lng": 4.4792
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "South Africa Information Regulator: POPIA requires breach notification within 72 hours; credential stuffing victims may report",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"Under South Africa's Protection of Personal Information Act (POPIA), organisations must notify the Information Regulator and affected data subjects of security compromises within 72 hours. While credential s...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity enabling 3xK Tech's global proxy infrastructure",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"Hurricane Electric LLC (AS6939), one of the world's largest IPv6 backbone providers and a major transit provider, provides upstream connectivity to 3xK Tech GmbH (AS200373). Other upstream providers include ...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 47.6062,
+        "lng": -122.3321
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating across criminal markets in 2025",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:16:55.438996+00:00",
+      "summary": "{\"summary\": \"KELA's State of Cybercrime 2026 report tracked 2.86 billion compromised credentials circulating across criminal markets in 2025, spanning infostealer malware, breach databases, and underground marketplaces. ...",
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 32.0853,
+        "lng": 34.7818
+      }
+    },
     {
       "kind": "signal",
       "title": "KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet proxy service; Cloudflare named 3xK as Internet's #1 DDoS source (Jul 2025)",
@@ -10,7 +387,11 @@
       "stream_label": "Crime & Security",
       "published_at": "2026-06-19T14:55:27.859775+00:00",
       "summary": "{\"summary\": \"Brian Krebs (KrebsOnSecurity) investigation published January 2026 links 3xK Tech GmbH directly to the Kimwolf botnet infrastructure. Key findings: \\n\\n1. Friedrich Kraft, CEO of 3xK Tech GmbH, is also CEO o...",
-      "source": "FORGE_INCIDENT"
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.9,
+        "lng": 13.55
+      }
     },
     {
       "kind": "signal",
@@ -19,7 +400,11 @@
       "stream_label": "Crime & Security",
       "published_at": "2026-06-19T14:55:27.859775+00:00",
       "summary": "{\"summary\": \"Have I Been Pwned (HIBP) returns zero breaches for the compromised email address, yet the MEGA account was demonstrably compromised via credential stuffing. This anomaly has two primary explanations:\\n\\n1. S...",
-      "source": "FORGE_INCIDENT"
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -33.8688,
+        "lng": 151.2093
+      }
     },
     {
       "kind": "signal",
@@ -28,7 +413,11 @@
       "stream_label": "Crime & Security",
       "published_at": "2026-06-19T14:55:27.859775+00:00",
       "summary": "{\"summary\": \"Credential stuffing operations are economically motivated at industrial scale. The attacker's process is automated and indiscriminate:\\n\\n1. Acquire credential dumps (Collection #1: 773M emails; stealer logs...",
-      "source": "FORGE_INCIDENT"
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 51.5074,
+        "lng": -0.1278
+      }
     },
     {
       "kind": "signal",
@@ -37,7 +426,11 @@
       "stream_label": "Crime & Security",
       "published_at": "2026-06-19T14:55:27.859775+00:00",
       "summary": "{\"summary\": \"Comprehensive infrastructure profile of ASN AS200373 (3xK Tech GmbH) compiled from multiple threat intelligence sources:\\n\\nCLEANTALK: 92,517 IP addresses, 46,302 detected, 10,595 spam-active (22.88% spam ra...",
-      "source": "FORGE_INCIDENT"
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": 52.9,
+        "lng": 13.55
+      }
     },
     {
       "kind": "signal",
@@ -46,7 +439,11 @@
       "stream_label": "Crime & Security",
       "published_at": "2026-06-19T14:43:36.270692+00:00",
       "summary": "{\"summary\": \"Analysis of MEGA GDPR data export confirms the full attack sequence and provides forensic evidence of attacker behaviour. Five sessions total: 2 legitimate (user's Chrome browser + Android app, both ZA-based...",
-      "source": "FORGE_INCIDENT"
+      "source": "FORGE_INCIDENT",
+      "geo": {
+        "lat": -23.9,
+        "lng": 29.45
+      }
     },
     {
       "kind": "article",
@@ -235,268 +632,6 @@
       "published_at": "2026-06-08T14:29:55.530783+00:00",
       "summary": "Country: World Source: Equality Now Please refer to the attached files. Legal protections are failing to protect girls in Africa from child marriage and female genital mutilation, report warns Maseru, Lesotho, April 29, ...",
       "source": "DISEASE_OUTBREAK_COLLECTOR"
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: DR Congo: The impact of Food-related Violence in eastern DRC: Monitoring violence to support anticipation of needs (January - September 2025)",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: Democratic Republic of the Congo Source: Insecurity Insight Please refer to the attached file. Executive Summary Between January and September 2025, Insecurity Insight recorded 102 incidents of violence directly...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": -4.038,
-        "lng": 21.759
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: oPt: Thematic Report: Damage to Gaza's Agriculture Sector and Viability for Rehabilitation (March 2026)",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: occupied Palestinian territory Source: Mercy Corps Please refer to the attached file. After more than two years of virtually unbroken war, Gaza’s agricultural sector has been reduced to a state of devastation. A...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 6.611,
-        "lng": 20.939
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "ProMED: UNFPA Situation Report - Humanitarian Crisis in the Central African Republic (1 - 31 March 2026)",
-      "stream": "GLOBAL",
-      "stream_label": "Africa & World",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Countries: Central African Republic, Sudan Source: United Nations Population Fund Please refer to the attached file. In March 2026, the Central African Republic (CAR) faced overlapping security and climate-related crises...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 6.611,
-        "lng": 20.939
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: oPt: Gaza: Two in three children at risk of infection due to plague of rats and pests",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: occupied Palestinian territory Source: Save the Children Save the Children staff have spoken with families who are too afraid to sleep at night, worried their children will be bitten by rats . ****GAZA, 1 May 20...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 6.611,
-        "lng": 20.939
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: World: 2025 Annual Report of FGM Joint Programme: The Race to 2030: Accelerating Action to End Female Genital Mutilation",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Countries: World, Burkina Faso, Djibouti, Egypt, Eritrea, Ethiopia, Gambia, Guinea, Guinea-Bissau, Indonesia, Kenya, Mali, Mauritania, Nigeria, Senegal, Somalia, Sudan, Uganda, Yemen Sources: UN Children's Fund, United N...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 11.804,
-        "lng": -15.18
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: No accountability one year after Old Fangak hospital bombing / Warring parties must spare last remaining hospitals Jonglei, South Sudan",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: Sudan Source: Médecins Sans Frontières The bombings of Old Fangak and Lankien by South Sudanese government forces cannot go unanswered. ​ On 3 May 2025, MSF hospital in Old Fangak, Jonglei State, was deliberatel...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 6.877,
-        "lng": 31.307
-      }
-    },
-    {
-      "kind": "article",
-      "title": "Project Aegis: SADC Health Security and the Surveillance Gap",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:00:00+00:00",
-      "summary": "Open-source monitoring of disease vectors, humanitarian crises, and cross-border health risks across the SADC corridor and international transit nodes.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/project-aegis-sadc-health-security.html"
-    },
-    {
-      "kind": "article",
-      "title": "The Madlanga Pattern: HAWKS and Limpopo's Municipal Fraud Network",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T06:22:40.084960+00:00",
-      "summary": "The April 2026 arrest of Julius Mkhwanazi by the SAPS Madlanga task team is not an isolated enforcement action — it is the latest node in a multi-target HAWKS operation against Limpopo's municipal procurement network that has been running since at least 2025.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/madlanga-hawks-limpopo-municipal-fraud.html"
-    },
-    {
-      "kind": "article",
-      "title": "Emfuleni's Grief: The Murder of a Municipal Official and a Family Left Waiting",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T06:22:40.084960+00:00",
-      "summary": "Martha Rantsofu, an Emfuleni Local Municipality official, was killed under circumstances that her family describes as targeted. Nine months later, her brother has spoken publicly — not to announce an arrest, but to describe a family still waiting for answers from an investigation that has produced none.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/emfuleni-martha-rantsofu-murder-investigation.html"
-    },
-    {
-      "kind": "article",
-      "title": "The Highest Level: A Security Official's Allegations Against the Police Minister",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T06:22:40.084960+00:00",
-      "summary": "A senior South African security official has publicly alleged that the Minister of Police is colluding with organised crime syndicates. If the allegation has a factual basis, it would represent the most significant state capture signal in the current corpus.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/saps-police-minister-crime-syndicate-allegation.html"
-    },
-    {
-      "kind": "article",
-      "title": "Dockets and Disappearances: How SAPS Officials Sabotage Murder Investigations",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T06:22:40.084960+00:00",
-      "summary": "An IOL investigation has documented a systemic pattern of SAPS officials actively undermining murder investigations — missing dockets, intimidated witnesses, and deliberate procedural failures. The report provides the institutional framework for understanding why the Magaqa probe stalled and why Martha Rantsofu's family is still waiting.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/saps-murder-investigation-sabotage-pattern.html"
-    },
-    {
-      "kind": "article",
-      "title": "Operation Magaqa: Anatomy of a Cover-Up",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:15:11.610283+00:00",
-      "summary": "Nine years after the assassination of ANC Youth League Secretary-General Sindiso Magaqa, a pattern of deliberate obstruction has emerged — culminating in the arrest of a sitting MP for interfering with the murder probe.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/operation-magaqa-anatomy-of-a-cover-up.html"
-    },
-    {
-      "kind": "article",
-      "title": "KZN HAWKS: Three Signals, One Pattern",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:15:11.610283+00:00",
-      "summary": "Three independent signals from the KZN Directorate for Priority Crime Investigation — a cocaine theft, a R200m drug disappearance, and commission testimony about protocol failures — converge on a single conclusion: systemic evidence-handling compromise within South Africa's elite crime unit.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/kzn-hawks-three-signals-one-pattern.html"
-    },
-    {
-      "kind": "article",
-      "title": "R21 Billion and a Wig Store: The Eskom Diesel Fraud",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-08T05:15:11.610283+00:00",
-      "summary": "AmaBhungane's investigation into a R21 billion Eskom diesel contract reveals a front company operated by a 24-year-old psychology graduate who simultaneously sold wigs online. The procurement structure raises systemic questions about state-owned enterprise due diligence.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/eskom-r21bn-diesel-fraud-mavuso.html"
-    },
-    {
-      "kind": "signal",
-      "title": "SAPS Madlanga task team arrest Julius Mkhwanazi for fraud and corruption - TimesLIVE",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "Julius Mkhwanazi was arrested by the SAPS Madlanga task team in April 2026 on charges of fraud and corruption. The arrest is part of a broader investigation into Limpopo municipal procurement irregularities. The Madlanga...",
-      "source": "TIMESLIVE_CORRUPTION",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Murdered Emfuleni official Martha Rantsofu’s brother reveals family’s grief as investigations continue - Daily Maverick",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "The brother of murdered Emfuleni Local Municipality official Martha Rantsofu has spoken publicly about the family's grief as the investigation continues. Rantsofu was killed in circumstances that may be linked to her rol...",
-      "source": "DAILYMAVERICK_CORRUPTION",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Fadiel Adams arrested over alleged interference in Magaqa murder probe - Daily Maverick",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "ANC National Council of Provinces MP Fadiel Adams was arrested in May 2026 on charges of allegedly interfering with the investigation into the 2017 murder of ANC Youth League leader Sindiso Magaqa. Adams, a KZN-based NCC...",
-      "source": "DAILYMAVERICK_CORRUPTION",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "KZN Hawks boss should have had lie detector test after R200m drugs vanished, commission hears - TimesLIVE",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "A commission of inquiry has heard testimony that the KZN Hawks provincial head should have been subjected to a polygraph examination after R200 million worth of narcotics vanished from a Hawks evidence facility. The test...",
-      "source": "TIMESLIVE_CORRUPTION",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Sniffing cops say cocaine theft from Hawks office could be an inside job - TimesLIVE",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "Drug-detection canines deployed at the KZN Hawks offices indicated the presence of narcotics after a significant cocaine seizure went missing from an evidence locker. Sources within the unit told TimesLIVE the theft coul...",
-      "source": "TIMESLIVE_CORRUPTION",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "South African security official accuses police minister of colluding with crime syndicates - PBS",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "A senior South African security official levelled allegations at the police minister of colluding with organised crime syndicates, in a disclosure reported by PBS. The allegation, made through official channels, signals ...",
-      "source": "DORK",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "SAPS Corruption: How high-ranking officials sabotaged murder investigations - IOL",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "An investigative report by IOL has detailed how high-ranking SAPS officials systematically undermined murder investigations, with dockets going missing, witnesses intimidated, and case officers reassigned. The pattern sp...",
-      "source": "DORK",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Inside Eskom’s dodgy R21-billion diesel contract",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-08T05:13:04.777572+00:00",
-      "summary": "AmaBhungane has exposed a R21 billion Eskom diesel procurement contract linked to Minenhle Mavuso, a 24-year-old BA Psychology graduate who simultaneously operated an online hair products store. Mavuso is alleged to have...",
-      "source": "AMABHUNGANE",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
     }
   ]
 }
