@@ -46,7 +46,7 @@ MEMBERSHIP_LABEL: str = "Support Independent OSINT"
 # Each entry: {"text": "...", "url": "...", "label": "SPONSORED"}
 # Empty list = no sponsor slots rendered.
 SPONSOR_SLOTS: list[dict] = [
-    {"text": "Protect your credentials with Bitwarden", "url": "https://bitwarden.com", "label": "SPONSORED"},
+    {"text": "Turn your kid's art into real products — DreamPrint SA", "url": "https://dreamprint-web.vercel.app", "label": "SPONSORED"},
 ]
 
 # ── Paystack (SA payment gateway) ────────────────────────────────────────────
