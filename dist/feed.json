@@ -1,8 +1,17 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "19 Jun 2026 14:36 UTC",
+  "generated_at": "19 Jun 2026 14:44 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, no file exfiltration confirmed",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T14:43:36.270692+00:00",
+      "summary": "{\"summary\": \"Analysis of MEGA GDPR data export confirms the full attack sequence and provides forensic evidence of attacker behaviour. Five sessions total: 2 legitimate (user's Chrome browser + Android app, both ZA-based...",
+      "source": "FORGE_INCIDENT"
+    },
     {
       "kind": "article",
       "title": "MEGA Account Compromise: Credential Stuffing via 3xK Tech GmbH Proxy Infrastructure",
