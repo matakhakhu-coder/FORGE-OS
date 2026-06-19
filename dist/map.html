@@ -348,7 +348,10 @@
   .md-ticker__scroll {
     display: flex;
     white-space: nowrap;
-    animation: ticker-scroll var(--ticker-speed, 120s) linear infinite;
+    animation: ticker-scroll var(--ticker-speed, 45s) linear infinite;
+  }
+  .md-ticker__track:hover .md-ticker__scroll {
+    animation-play-state: paused;
   }
   @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
@@ -359,7 +362,11 @@
     color: var(--text-secondary);
     text-transform: uppercase;
     padding: 0 var(--sp-5);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--t-fast);
   }
+  .md-ticker__item:hover { color: var(--accent-bright); }
   .md-ticker__sep {
     color: var(--text-ghost);
     padding: 0 var(--sp-2);
@@ -444,7 +451,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 23:22 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 23:32 UTC</span>
       </div>
     </div>
   </header>
@@ -645,85 +652,85 @@
       <div class="md-ticker__scroll" id="ticker-scroll">
         
         
-        <span class="md-ticker__item">BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 s</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 s</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 serve</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 serve</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compro</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compro</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Rus</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Rus</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payload</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payload</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">16 billion login credentials compiled from infostealer logs, phishing kits, and </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">16 billion login credentials compiled from infostealer logs, phishing kits, and </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 20</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 20</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Ju</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Ju</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data le</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data le</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collate</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collate</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">BreachForums v5 itself breached (March 2026): 340K users exposed — the marketpla</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">BreachForums v5 itself breached (March 2026): 340K users exposed — the marketpla</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strate</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strate</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">CISA advisory: credential stuffing remains top initial access vector; recommends</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">CISA advisory: credential stuffing remains top initial access vector; recommends</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">NCSC UK: guidance on defending against credential stuffing — password deny lists</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">NCSC UK: guidance on defending against credential stuffing — password deny lists</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Interne</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Interne</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critic</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critic</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Collection #1: 773 million email/password pairs discovered on MEGA cloud storage</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Collection #1: 773 million email/password pairs discovered on MEGA cloud storage</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">MEGA confirms 15,500 users compromised in credential stuffing attack — passwords</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">MEGA confirms 15,500 users compromised in credential stuffing attack — passwords</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">South Africa Information Regulator: POPIA requires breach notification within 72</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">South Africa Information Regulator: POPIA requires breach notification within 72</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">HIBP shows zero breaches for compromised email — stealer logs or unlisted breach</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">HIBP shows zero breaches for compromised email — stealer logs or unlisted breach</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Credential stuffing economics: why empty accounts are targeted — validated crede</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Credential stuffing economics: why empty accounts are targeted — validated crede</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">AS200373 full infrastructure profile: 92,517 IPs, 22.88% spam rate, 72,448 IPs r</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">AS200373 full infrastructure profile: 92,517 IPs, 22.88% spam rate, 72,448 IPs r</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, n</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, n</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Te</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Te</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abu</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abu</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashb</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashb</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Be</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Be</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/graft-roundup-joshco-home-affairs-june-2026.html">Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/graft-roundup-joshco-home-affairs-june-2026.html">Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN</a><span class="md-ticker__sep">&bull;</span>
         
         
         <span class="md-ticker__sponsor">
@@ -733,85 +740,85 @@
         <span class="md-ticker__sep">&bull;</span>
         
         
-        <span class="md-ticker__item">BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 s</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 s</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 serve</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 serve</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compro</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compro</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Rus</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Rus</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payload</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payload</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">16 billion login credentials compiled from infostealer logs, phishing kits, and </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">16 billion login credentials compiled from infostealer logs, phishing kits, and </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 20</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 20</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Ju</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Ju</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data le</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data le</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collate</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collate</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">BreachForums v5 itself breached (March 2026): 340K users exposed — the marketpla</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">BreachForums v5 itself breached (March 2026): 340K users exposed — the marketpla</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strate</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strate</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">CISA advisory: credential stuffing remains top initial access vector; recommends</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">CISA advisory: credential stuffing remains top initial access vector; recommends</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">NCSC UK: guidance on defending against credential stuffing — password deny lists</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">NCSC UK: guidance on defending against credential stuffing — password deny lists</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Interne</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Interne</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critic</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critic</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Collection #1: 773 million email/password pairs discovered on MEGA cloud storage</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Collection #1: 773 million email/password pairs discovered on MEGA cloud storage</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">MEGA confirms 15,500 users compromised in credential stuffing attack — passwords</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">MEGA confirms 15,500 users compromised in credential stuffing attack — passwords</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">South Africa Information Regulator: POPIA requires breach notification within 72</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">South Africa Information Regulator: POPIA requires breach notification within 72</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating </span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html">KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating </a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">HIBP shows zero breaches for compromised email — stealer logs or unlisted breach</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">HIBP shows zero breaches for compromised email — stealer logs or unlisted breach</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Credential stuffing economics: why empty accounts are targeted — validated crede</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Credential stuffing economics: why empty accounts are targeted — validated crede</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">AS200373 full infrastructure profile: 92,517 IPs, 22.88% spam rate, 72,448 IPs r</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">AS200373 full infrastructure profile: 92,517 IPs, 22.88% spam rate, 72,448 IPs r</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, n</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, n</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Te</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Te</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abu</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abu</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashb</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashb</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Be</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/mega-account-compromise-3xktech-credential-stuffing.html">CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Be</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/graft-roundup-joshco-home-affairs-june-2026.html">Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering</a><span class="md-ticker__sep">&bull;</span>
         
-        <span class="md-ticker__item">Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="articles/graft-roundup-joshco-home-affairs-june-2026.html">Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN</a><span class="md-ticker__sep">&bull;</span>
         
         
         <span class="md-ticker__sponsor">
@@ -842,7 +849,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 23:22 UTC
+        Generated 19 Jun 2026 23:32 UTC
       </div>
     </div>
   </footer>
@@ -850,7 +857,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 23:22 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 23:32 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -1153,7 +1160,7 @@
   var ticker = document.getElementById('ticker-scroll');
   if (ticker) {
     var w = ticker.scrollWidth / 2;
-    var speed = Math.max(30, Math.min(180, w / 50));
+    var speed = Math.max(15, Math.min(60, w / 120));
     ticker.style.setProperty('--ticker-speed', speed + 's');
     ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
   }

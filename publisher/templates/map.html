@@ -341,7 +341,10 @@
   .md-ticker__scroll {
     display: flex;
     white-space: nowrap;
-    animation: ticker-scroll var(--ticker-speed, 120s) linear infinite;
+    animation: ticker-scroll var(--ticker-speed, 45s) linear infinite;
+  }
+  .md-ticker__track:hover .md-ticker__scroll {
+    animation-play-state: paused;
   }
   @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
@@ -352,7 +355,11 @@
     color: var(--text-secondary);
     text-transform: uppercase;
     padding: 0 var(--sp-5);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--t-fast);
   }
+  .md-ticker__item:hover { color: var(--accent-bright); }
   .md-ticker__sep {
     color: var(--text-ghost);
     padding: 0 var(--sp-2);
@@ -496,7 +503,7 @@
       <div class="md-ticker__scroll" id="ticker-scroll">
         {# Rendered twice for seamless infinite loop #}
         {% for s in all_signals[:40] %}
-        <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title[:80] }}</a><span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for sponsor in sponsor_slots %}
         <span class="md-ticker__sponsor">
@@ -506,7 +513,7 @@
         <span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for s in all_signals[:40] %}
-        <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title[:80] }}</a><span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for sponsor in sponsor_slots %}
         <span class="md-ticker__sponsor">
@@ -787,7 +794,7 @@
   var ticker = document.getElementById('ticker-scroll');
   if (ticker) {
     var w = ticker.scrollWidth / 2;
-    var speed = Math.max(30, Math.min(180, w / 50));
+    var speed = Math.max(15, Math.min(60, w / 120));
     ticker.style.setProperty('--ticker-speed', speed + 's');
     ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
   }
