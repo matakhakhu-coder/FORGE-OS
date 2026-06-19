@@ -13,7 +13,7 @@ If revenue/ directory is absent, publish.py works exactly as before.
 import os
 
 # ── Master switch ────────────────────────────────────────────────────────────
-REVENUE_LIVE: bool = os.environ.get("FORGE_REVENUE_LIVE", "").lower() == "true"
+REVENUE_LIVE: bool = os.environ.get("FORGE_REVENUE_LIVE", "true").lower() == "true"
 
 # ── Tier definitions ─────────────────────────────────────────────────────────
 TIERS = {
