@@ -163,42 +163,45 @@
   line-height: 1.75;
 }
 
-/* ── Signal evidence ────────────────────────────────────────────────────────── */
-.cd-signals { display: flex; flex-direction: column; gap: var(--sp-3); }
+/* ── Evidence timeline rail ─────────────────────────────────────────────────── */
+.cd-evidence {
+  position: relative;
+  padding-left: 28px;
+}
+.cd-evidence::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border-dim);
+}
 
 .cd-signal {
+  position: relative;
+  margin-bottom: var(--sp-5);
   background: var(--bg-surface);
   border: 1px solid var(--border-dim);
   border-radius: var(--r-md);
   padding: var(--sp-4);
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  gap: var(--sp-3);
+  transition: border-color var(--t-mid);
 }
-.cd-signal__gravity {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-1);
+.cd-signal:hover { border-color: var(--border-mid); }
+
+.cd-signal::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 14px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--border-dim);
+  background: var(--bg-base);
 }
-.cd-signal__score {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.cd-signal__bar {
-  width: 24px;
-  height: 3px;
-  background: var(--border-dim);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.cd-signal__bar-fill {
-  height: 100%;
-  border-radius: 999px;
-}
-.cd-signal__body {}
+.cd-signal--verified::before  { background: #27ae60; border-color: #27ae60; }
+.cd-signal--reported::before  { background: var(--accent); border-color: var(--accent); }
+.cd-signal--unverified::before { background: var(--text-dim); border-color: var(--text-dim); }
+
 .cd-signal__title {
   font-family: var(--font-display);
   font-size: 0.88rem;
@@ -233,6 +236,20 @@
   color: var(--accent-muted);
   font-style: italic;
 }
+.cd-signal__sig {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid;
+}
+.cd-sig-routine    { color: var(--text-dim);  border-color: var(--border-dim); }
+.cd-sig-notable    { color: var(--infra);     border-color: rgba(41,128,185,0.3); }
+.cd-sig-significant { color: var(--accent);   border-color: rgba(200,148,58,0.3); }
+.cd-sig-high       { color: var(--crime);     border-color: rgba(192,57,43,0.3); }
+.cd-sig-critical   { color: #e74c3c;         border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
 
 /* ── Actors ─────────────────────────────────────────────────────────────────── */
 .cd-actors { display: flex; flex-direction: column; gap: var(--sp-3); }
@@ -416,7 +433,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 15:54 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
       </div>
     </div>
   </header>
@@ -445,7 +462,7 @@
       <span class="cd-status">Active Investigation</span>
     </div>
     <h1 class="cd-header__title">Beitbridge Border Post -- Explosives Smuggling (Edgar Maroto)</h1>
-    <div class="cd-header__created mono">Opened 13 Jun 2026 - 11:40 · Updated 13 Jun 2026 - 11:37 · 19 Jun 2026 15:54 UTC</div>
+    <div class="cd-header__created mono">Opened 13 Jun 2026 - 11:40 · Updated 13 Jun 2026 - 11:37 · 19 Jun 2026 16:17 UTC</div>
   </div>
 
   <div class="cd-scorecard">
@@ -494,27 +511,22 @@
   
   <div class="cd-section">
     <div class="cd-section__title">Evidence — 1 Signals</div>
-    <div class="cd-signals">
+    <div class="cd-evidence">
       
       
       
-      <div class="cd-signal">
-        <div class="cd-signal__gravity">
-          <span class="cd-signal__score">0.29</span>
-          <div class="cd-signal__bar">
-            <div class="cd-signal__bar-fill" style="width:29%; background:#2980b9;"></div>
-          </div>
-        </div>
-        <div class="cd-signal__body">
-          <div class="cd-signal__title">Zimbabwean truck driver sentenced to 20 years for explosives smuggling at Beitbridge</div>
-          
-          <div class="cd-signal__summary">Edgar Maroto, a 42-year-old Zimbabwean truck driver, was sentenced to 20 years in a South African prison by the Musina Magistrate&#39;s Court for illegally possessing and attempting to smuggle explosives through the Beitbrid…</div>
-          
-          <div class="cd-signal__meta">
-            <span class="cd-signal__source">ANALYST_MANUAL</span>
-            <span class="cd-signal__source mono">13 Jun 2026 - 11:37</span>
-            <span class="cd-signal__note">Originating signal — Beitbridge interdiction report</span>
-          </div>
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Zimbabwean truck driver sentenced to 20 years for explosives smuggling at Beitbridge</div>
+        
+        <div class="cd-signal__summary">Edgar Maroto, a 42-year-old Zimbabwean truck driver, was sentenced to 20 years in a South African prison by the Musina Magistrate&#39;s Court for illegally possessing and attempting to smuggle explosives through the Beitbrid...</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">ANALYST_MANUAL</span>
+          <span class="cd-signal__source mono">13 Jun 2026 - 11:37</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.29">Notable</span>
+          <span class="cd-signal__note">Originating signal — Beitbridge interdiction report</span>
         </div>
       </div>
       
@@ -574,10 +586,16 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 15:54 UTC
+        Generated 19 Jun 2026 16:17 UTC
       </div>
     </div>
   </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+  </div>
 
   <script src="../static/js/site.js"></script>
   

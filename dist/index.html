@@ -278,6 +278,37 @@
   font-size: 0.72rem;
 }
 .tl-month-empty { display: none; }
+
+/* ── Significance bands ────────────────────────────────────────────────── */
+.tl__card-sig {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid;
+}
+.sig-routine    { color: var(--text-dim);  border-color: var(--border-dim); }
+.sig-notable    { color: var(--infra);     border-color: rgba(41,128,185,0.3); }
+.sig-significant { color: var(--accent);   border-color: rgba(200,148,58,0.3); }
+.sig-high       { color: var(--crime);     border-color: rgba(192,57,43,0.3); }
+.sig-critical   { color: #e74c3c;         border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
+
+/* ── New-since-last-visit badge ────────────────────────────────────────── */
+.badge-new {
+  display: inline-block;
+  font-size: 0.48rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--bg-base);
+  margin-left: var(--sp-2);
+  vertical-align: middle;
+}
 </style>
 
 </head>
@@ -299,7 +330,7 @@
       </nav>
       <div class="site-header__meta">
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 15:54 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 16:17 UTC</span>
       </div>
     </div>
   </header>
@@ -367,7 +398,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:55:27.859775+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -395,6 +427,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-critical" title="Editorial weight: 0.95">Critical</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -404,7 +442,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:55:27.859775+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -432,6 +471,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-high" title="Editorial weight: 0.62">High</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -441,7 +486,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:55:27.859775+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -469,6 +515,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.35">Significant</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -478,7 +530,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:55:27.859775+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -506,6 +559,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-high" title="Editorial weight: 0.68">High</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -515,7 +574,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:43:36.270692+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -543,6 +603,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-critical" title="Editorial weight: 0.88">Critical</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -552,7 +618,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-19T14:35:12.474027+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -578,6 +645,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -587,7 +655,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:32:59.552637+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -615,6 +684,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-critical" title="Editorial weight: 0.82">Critical</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -624,7 +699,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:32:59.552637+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -652,6 +728,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-high" title="Editorial weight: 0.55">High</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -661,7 +743,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:32:59.552637+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -689,6 +772,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-high" title="Editorial weight: 0.72">High</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -698,7 +787,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-19T14:32:59.552637+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -726,6 +816,12 @@
               <span class="tl__card-src">FORGE_INCIDENT</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-critical" title="Editorial weight: 0.92">Critical</span>
+              
+              
               <a href="articles/mega-account-compromise-3xktech-credential-stuffing.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -735,7 +831,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-13T15:45:10.925188+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -763,6 +860,12 @@
               <span class="tl__card-src">DORK</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.53">Significant</span>
+              
+              
               <a href="articles/graft-roundup-joshco-home-affairs-june-2026.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -772,7 +875,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-13T15:45:10.925188+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -800,6 +904,12 @@
               <span class="tl__card-src">DORK</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/graft-roundup-joshco-home-affairs-june-2026.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -809,7 +919,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-13T15:45:10.925188+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -835,6 +946,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/graft-roundup-joshco-home-affairs-june-2026.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -844,7 +956,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-13T11:52:50.047781+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -872,6 +985,12 @@
               <span class="tl__card-src">ANALYST_MANUAL</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-notable" title="Editorial weight: 0.29">Notable</span>
+              
+              
               <a href="articles/beitbridge-explosives-smuggling-maroto.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -881,7 +1000,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-13T11:52:50.047781+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -907,6 +1027,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/beitbridge-explosives-smuggling-maroto.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -916,7 +1037,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-12T07:44:12.553139+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -944,6 +1066,12 @@
               <span class="tl__card-src">NEWS24_CRIME</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.45">Significant</span>
+              
+              
               <a href="articles/operation-matlala-saps-tender-capture.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -953,7 +1081,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-12T07:44:12.553139+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -979,6 +1108,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/operation-matlala-saps-tender-capture.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -988,7 +1118,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1016,6 +1147,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1025,7 +1162,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1053,6 +1191,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.43">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1062,7 +1206,8 @@
         
         <div class="tl__entry"
              data-stream="GLOBAL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--GLOBAL"></div>
           </div>
@@ -1090,6 +1235,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.45">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1099,7 +1250,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1127,6 +1279,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.42">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1136,7 +1294,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1164,6 +1323,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1173,7 +1338,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1201,6 +1367,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1210,7 +1382,8 @@
         
         <div class="tl__entry"
              data-stream="GLOBAL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--GLOBAL"></div>
           </div>
@@ -1238,6 +1411,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.42">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1247,7 +1426,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1275,6 +1455,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1284,7 +1470,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1312,6 +1499,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.43">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1321,7 +1514,8 @@
         
         <div class="tl__entry"
              data-stream="PRIORITY"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T14:29:55.530783+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--PRIORITY"></div>
           </div>
@@ -1349,6 +1543,12 @@
               <span class="tl__card-src">DISEASE_OUTBREAK_COLLECTOR</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1358,7 +1558,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T14:00:00+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1384,6 +1585,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/project-aegis-sadc-health-security.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1393,7 +1595,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T06:22:40.084960+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1419,6 +1622,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/madlanga-hawks-limpopo-municipal-fraud.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1428,7 +1632,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T06:22:40.084960+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1454,6 +1659,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/emfuleni-martha-rantsofu-murder-investigation.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1463,7 +1669,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T06:22:40.084960+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1489,6 +1696,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/saps-police-minister-crime-syndicate-allegation.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1498,7 +1706,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T06:22:40.084960+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1524,6 +1733,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/saps-murder-investigation-sabotage-pattern.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1533,7 +1743,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T05:15:11.610283+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1559,6 +1770,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/operation-magaqa-anatomy-of-a-cover-up.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1568,7 +1780,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T05:15:11.610283+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1594,6 +1807,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/kzn-hawks-three-signals-one-pattern.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1603,7 +1817,8 @@
         
         <div class="tl__entry"
              data-stream="article"
-             data-kind="article">
+             data-kind="article"
+             data-published="2026-06-08T05:15:11.610283+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--article"></div>
           </div>
@@ -1629,6 +1844,7 @@
             <div class="tl__card-footer">
               
               
+              
               <a href="articles/eskom-r21bn-diesel-fraud-mavuso.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1638,7 +1854,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1666,6 +1883,12 @@
               <span class="tl__card-src">TIMESLIVE_CORRUPTION</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.43">Significant</span>
+              
+              
               <a href="articles/madlanga-hawks-limpopo-municipal-fraud.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1675,7 +1898,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1703,6 +1927,12 @@
               <span class="tl__card-src">DAILYMAVERICK_CORRUPTION</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/emfuleni-martha-rantsofu-murder-investigation.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1712,7 +1942,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1740,6 +1971,12 @@
               <span class="tl__card-src">DAILYMAVERICK_CORRUPTION</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/operation-magaqa-anatomy-of-a-cover-up.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1749,7 +1986,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1777,6 +2015,12 @@
               <span class="tl__card-src">TIMESLIVE_CORRUPTION</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.45">Significant</span>
+              
+              
               <a href="articles/kzn-hawks-three-signals-one-pattern.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1786,7 +2030,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1814,6 +2059,12 @@
               <span class="tl__card-src">TIMESLIVE_CORRUPTION</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.44">Significant</span>
+              
+              
               <a href="articles/kzn-hawks-three-signals-one-pattern.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1823,7 +2074,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1851,6 +2103,12 @@
               <span class="tl__card-src">DORK</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.45">Significant</span>
+              
+              
               <a href="articles/saps-police-minister-crime-syndicate-allegation.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1860,7 +2118,8 @@
         
         <div class="tl__entry"
              data-stream="CRIME_INTEL"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--CRIME_INTEL"></div>
           </div>
@@ -1888,6 +2147,12 @@
               <span class="tl__card-src">DORK</span>
               
               
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.49">Significant</span>
+              
+              
               <a href="articles/saps-murder-investigation-sabotage-pattern.html" class="tl__card-link">Read analysis →</a>
               
             </div>
@@ -1897,7 +2162,8 @@
         
         <div class="tl__entry"
              data-stream="INFRASTRUCTURE"
-             data-kind="signal">
+             data-kind="signal"
+             data-published="2026-06-08T05:13:04.777572+00:00">
           <div class="tl__node-col">
             <div class="tl__node tl__node--INFRASTRUCTURE"></div>
           </div>
@@ -1923,6 +2189,12 @@
             <div class="tl__card-footer">
               
               <span class="tl__card-src">AMABHUNGANE</span>
+              
+              
+              
+              
+              
+              <span class="tl__card-sig sig-significant" title="Editorial weight: 0.44">Significant</span>
               
               
               <a href="articles/eskom-r21bn-diesel-fraud-mavuso.html" class="tl__card-link">Read analysis →</a>
@@ -1955,10 +2227,16 @@
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 15:54 UTC
+        Generated 19 Jun 2026 16:17 UTC
       </div>
     </div>
   </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 16:17 UTC</span>
+  </div>
 
   <script src="static/js/site.js"></script>
   
@@ -2002,6 +2280,34 @@
       applyFilter(btn.dataset.filter);
     });
   });
+
+  /* ── New since last visit ────────────────────────────────────────────── */
+  var LAST_VISIT_KEY = 'za_divergent_last_visit';
+  var prev = localStorage.getItem(LAST_VISIT_KEY);
+  var now = Date.now();
+
+  if (prev) {
+    var prevTs = parseInt(prev, 10);
+    entries.forEach(function (el) {
+      var pub = el.dataset.published;
+      if (pub) {
+        var pubTs = new Date(pub).getTime();
+        if (pubTs > prevTs) {
+          var dateEl = el.querySelector('.tl__card-date');
+          if (dateEl) {
+            var badge = document.createElement('span');
+            badge.className = 'badge-new';
+            badge.textContent = 'NEW';
+            dateEl.appendChild(badge);
+          }
+        }
+      }
+    });
+  }
+
+  setTimeout(function () {
+    localStorage.setItem(LAST_VISIT_KEY, now.toString());
+  }, 5000);
 
 })();
 </script>
