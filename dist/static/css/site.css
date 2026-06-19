@@ -645,6 +645,59 @@ a:hover { color: var(--accent-bright); }
   letter-spacing: 0.06em;
 }
 
+/* ── Revenue surfaces ─────────────────────────────────────────────────────── */
+.membership-btn {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: var(--sp-1) var(--sp-4);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  transition: background var(--t-fast);
+  white-space: nowrap;
+}
+.membership-btn:hover { background: var(--accent-bright); color: var(--bg-base); }
+
+.sim-badge {
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  background: var(--crime);
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 2px;
+  margin-right: var(--sp-1);
+  vertical-align: middle;
+}
+
+.md-ticker__sponsor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4);
+}
+.md-ticker__sponsor-label {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-muted);
+  padding: 0px 4px;
+  border-radius: 2px;
+}
+.md-ticker__sponsor a {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.md-ticker__sponsor a:hover { color: var(--accent-bright); }
+
 /* ── Print styles ──────────────────────────────────────────────────────────── */
 @page {
   size: A4 portrait;

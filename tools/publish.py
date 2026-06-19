@@ -24,6 +24,18 @@ from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 from markdown_it import MarkdownIt
 
+# Revenue module — optional, graceful fallback if not present
+import sys as _sys
+_sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
+try:
+    from revenue.config import get_template_context as _get_revenue_context
+except ImportError:
+    def _get_revenue_context() -> dict:
+        return {
+            "revenue_live": False, "membership_url": None, "membership_label": "",
+            "membership_sim": False, "sponsor_slots": [], "payment_checkout_url": None,
+        }
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT        = pathlib.Path(__file__).parent.parent
 DB_PATH     = ROOT / "database.db"
@@ -675,6 +687,9 @@ def _build_dist(
     articles: list[dict],
     now_str: str,
 ) -> None:
+    # Revenue context — merged into every template render
+    rev = _get_revenue_context()
+
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
     DIST_CASES.mkdir(exist_ok=True)
@@ -697,6 +712,7 @@ def _build_dist(
             span=span,
             stream_labels=STREAM_LABELS,
             generated_at=now_str,
+            **rev,
         ),
         encoding="utf-8",
     )
@@ -761,6 +777,7 @@ def _build_dist(
             stream_labels=STREAM_LABELS,
             stream_counts=stream_counts,
             generated_at=now_str,
+            **rev,
         ),
         encoding="utf-8",
     )
@@ -772,7 +789,7 @@ def _build_dist(
         body_html = md_parser.render(art["body_markdown"])
         out = DIST_ART / f"{art['slug']}.html"
         out.write_text(
-            tmpl.render(article=art, body_html=body_html, generated_at=now_str),
+            tmpl.render(article=art, body_html=body_html, generated_at=now_str, **rev),
             encoding="utf-8",
         )
     print(f"[publish] articles/   - {len(articles)} pages")
@@ -823,6 +840,7 @@ def _build_dist(
             total_signals=total_signals,
             total_actors=total_actors,
             generated_at=now_str,
+            **rev,
         ),
         encoding="utf-8",
     )
@@ -839,6 +857,7 @@ def _build_dist(
                 signals=case_signals,
                 actors=case_actors,
                 generated_at=now_str,
+                **rev,
             ),
             encoding="utf-8",
         )
@@ -864,6 +883,7 @@ def _build_dist(
             actors=directory_actors,
             entity_types=entity_types,
             generated_at=now_str,
+            **rev,
         ),
         encoding="utf-8",
     )
@@ -877,7 +897,7 @@ def _build_dist(
         actor["relationships"] = _fetch_actor_relationships(conn, actor["actor_id"])
         out = DIST_ENTITIES / f"{actor['slug']}.html"
         out.write_text(
-            actor_tmpl.render(actor=actor, generated_at=now_str, stream_labels=STREAM_LABELS),
+            actor_tmpl.render(actor=actor, generated_at=now_str, stream_labels=STREAM_LABELS, **rev),
             encoding="utf-8",
         )
     print(f"[publish] entities/    - {len(directory_actors)} entity profile pages")
@@ -889,6 +909,7 @@ def _build_dist(
             graph=graph_data,
             stream_labels=STREAM_LABELS,
             generated_at=now_str,
+            **rev,
         ),
         encoding="utf-8",
     )
@@ -896,7 +917,7 @@ def _build_dist(
 
     # watchlist.html — static shell, content from localStorage at runtime
     (DIST / "watchlist.html").write_text(
-        env.get_template("watchlist.html").render(generated_at=now_str),
+        env.get_template("watchlist.html").render(generated_at=now_str, **rev),
         encoding="utf-8",
     )
 

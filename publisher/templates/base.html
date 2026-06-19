@@ -56,6 +56,13 @@
       <div class="site-footer__left mono">
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN
       </div>
+      {% if membership_url or membership_sim %}
+      <a href="{{ membership_url or '#' }}" target="_blank" rel="noopener"
+         class="membership-btn">
+        {% if membership_sim %}<span class="sim-badge">SIM</span>{% endif %}
+        {{ membership_label }}
+      </a>
+      {% endif %}
       <div class="site-footer__right mono">
         Generated {{ generated_at }}
       </div>

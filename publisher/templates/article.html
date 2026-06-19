@@ -66,6 +66,15 @@
     </div>
   </div>
 
+  {% if membership_url or membership_sim %}
+  <div style="text-align:center;padding:var(--sp-6) 0 var(--sp-4);border-top:1px solid var(--border-dim);margin-top:var(--sp-6);">
+    <a href="{{ membership_url or '#' }}" target="_blank" rel="noopener" class="membership-btn" style="padding:var(--sp-2) var(--sp-6);font-size:0.7rem;">
+      {% if membership_sim %}<span class="sim-badge">SIM</span>{% endif %}
+      {{ membership_label }}
+    </a>
+  </div>
+  {% endif %}
+
   <footer class="article-footer mono">
     <div class="page-last-updated">Last updated: {{ generated_at }}</div>
     ZA-DIVERGENT ARCHIVE

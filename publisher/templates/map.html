@@ -498,8 +498,22 @@
         {% for s in all_signals[:40] %}
         <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
         {% endfor %}
+        {% for sponsor in sponsor_slots %}
+        <span class="md-ticker__sponsor">
+          <span class="md-ticker__sponsor-label">{% if not revenue_live %}SIM · {% endif %}{{ sponsor.label }}</span>
+          <a href="{{ sponsor.url if revenue_live else '#' }}" target="_blank" rel="noopener sponsored">{{ sponsor.text }}</a>
+        </span>
+        <span class="md-ticker__sep">&bull;</span>
+        {% endfor %}
         {% for s in all_signals[:40] %}
         <span class="md-ticker__item">{{ s.title[:80] }}</span><span class="md-ticker__sep">&bull;</span>
+        {% endfor %}
+        {% for sponsor in sponsor_slots %}
+        <span class="md-ticker__sponsor">
+          <span class="md-ticker__sponsor-label">{% if not revenue_live %}SIM · {% endif %}{{ sponsor.label }}</span>
+          <a href="{{ sponsor.url if revenue_live else '#' }}" target="_blank" rel="noopener sponsored">{{ sponsor.text }}</a>
+        </span>
+        <span class="md-ticker__sep">&bull;</span>
         {% endfor %}
       </div>
     </div>
