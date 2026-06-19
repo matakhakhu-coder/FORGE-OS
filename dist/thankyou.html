@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watchlist — South African Intelligence Bulletin</title>
+  <title>Payment Successful — South African Intelligence Bulletin</title>
   <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,70 +11,93 @@
   <link rel="stylesheet" href="static/css/site.css">
   
 <style>
-.wl-shell {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: var(--sp-8) var(--sp-6) var(--sp-16);
-}
-.wl-header { margin-bottom: var(--sp-8); }
-.wl-header__eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: var(--sp-2);
-}
-.wl-header__title {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: var(--sp-2);
-}
-.wl-header__sub {
-  font-size: 0.84rem;
-  color: var(--text-secondary);
+.ty-shell {
   max-width: 560px;
-}
-.wl-item {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  padding: var(--sp-4) var(--sp-5);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-dim);
-  border-radius: var(--r-md);
-  margin-bottom: var(--sp-3);
-  text-decoration: none;
-  color: inherit;
-  transition: border-color var(--t-mid), background var(--t-mid);
-}
-.wl-item:hover { background: var(--bg-elevated); border-color: var(--border-mid); }
-.wl-item__star { font-size: 1.1rem; color: var(--accent-bright); flex-shrink: 0; }
-.wl-item__title {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.3;
-}
-.wl-item__meta {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-dim);
-  margin-top: 2px;
-}
-.wl-empty {
+  margin: 0 auto;
+  padding: var(--sp-16) var(--sp-6);
   text-align: center;
-  padding: var(--sp-12) var(--sp-6);
-  color: var(--text-dim);
+}
+.ty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--sp-5);
+}
+.ty-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-3);
+}
+.ty-body {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--sp-5);
+}
+.ty-ref {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  background: var(--bg-surface);
+  color: var(--accent);
+  background: rgba(200,148,58,0.06);
+  border: 1px solid rgba(200,148,58,0.2);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-md);
+  display: inline-block;
+  margin-bottom: var(--sp-5);
+  word-break: break-all;
+}
+.ty-ref__label {
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: var(--sp-1);
+}
+.ty-status {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #27ae60;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(39,174,96,0.06);
+  border: 1px solid rgba(39,174,96,0.2);
+  border-radius: var(--r-sm);
+  display: inline-block;
+  margin-bottom: var(--sp-6);
+}
+.ty-note {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-4);
   border: 1px solid var(--border-dim);
   border-radius: var(--r-md);
+  text-align: left;
+}
+.ty-cta {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-base);
+  background: var(--accent);
+  padding: var(--sp-3) var(--sp-8);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  transition: background var(--t-mid);
+}
+.ty-cta:hover { background: var(--accent-bright); color: var(--bg-base); }
+.ty-sim-banner {
+  margin-top: var(--sp-5);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(192,57,43,0.06);
+  border: 1px solid rgba(192,57,43,0.15);
+  border-radius: var(--r-sm);
 }
 </style>
 
@@ -116,15 +139,12 @@
   
   <main class="site-main">
     
-<div class="wl-shell">
-  <div class="wl-header">
-    <div class="wl-header__eyebrow">Personal Watchlist · ZA-DIVERGENT</div>
-    <h1 class="wl-header__title">Watchlist</h1>
-    <p class="wl-header__sub">
-      Bookmarked signals and entities. Stored locally in your browser — nothing leaves your device.
-    </p>
-  </div>
-  <div id="wl-list"></div>
+<div class="ty-shell" id="ty-content">
+
+  <div class="ty-icon">&#10003;</div>
+  <h1 class="ty-title" id="ty-title">Processing...</h1>
+  <p class="ty-body" id="ty-body">Verifying your transaction.</p>
+
 </div>
 
   </main>
@@ -190,7 +210,59 @@
   })();
   </script>
   
-<script src="static/js/watchlist.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get('ref') || params.get('reference') || params.get('trxref');
+  var isSim = ref && ref.indexOf('SIM-') === 0;
+  var shell = document.getElementById('ty-content');
+
+  if (!ref) {
+    shell.innerHTML =
+      '<div class="ty-icon" style="color:var(--text-dim);">&#9711;</div>' +
+      '<h1 class="ty-title">No Transaction Found</h1>' +
+      '<p class="ty-body">This page is reached after a successful payment. If you just paid, check your email for a confirmation from Paystack.</p>' +
+      '<a href="index.html" class="ty-cta">Back to Bulletin</a>';
+    return;
+  }
+
+  if (isSim) {
+    // Simulation mode
+    shell.innerHTML =
+      '<div class="ty-icon">&#9711;</div>' +
+      '<h1 class="ty-title">Simulation Complete</h1>' +
+      '<p class="ty-body">No real payment was made. In live mode, Paystack would process the transaction and pro access would activate here.</p>' +
+      '<div class="ty-ref"><span class="ty-ref__label">Simulation Reference</span>' + ref + '</div>' +
+      '<div class="ty-sim-banner"><span class="sim-badge">SIM</span> Pro access flag set in localStorage for testing</div>' +
+      '<br><br><a href="index.html" class="ty-cta">Back to Bulletin</a>';
+  } else {
+    // Live mode
+    shell.innerHTML =
+      '<div class="ty-icon" style="color:#27ae60;">&#10003;</div>' +
+      '<h1 class="ty-title">Payment Successful</h1>' +
+      '<p class="ty-body">Thank you for supporting ZA-DIVERGENT. Pro access has been activated in this browser.</p>' +
+      '<div class="ty-ref"><span class="ty-ref__label">Transaction Reference</span>' + ref + '</div>' +
+      '<div class="ty-status">PRO ACCESS ACTIVE</div>' +
+      '<div class="ty-note">' +
+        'Save your reference number. You will need it to restore access on a new device or browser.<br>' +
+        'If you need help, email your reference to the address on the subscribe page.' +
+      '</div>' +
+      '<a href="index.html" class="ty-cta">Enter the Bulletin &rarr;</a>';
+  }
+
+  // Store pro access in localStorage
+  try {
+    localStorage.setItem('za_divergent_pro', JSON.stringify({
+      ref: ref,
+      activated: new Date().toISOString(),
+      sim: isSim,
+    }));
+  } catch (e) {}
+
+})();
+</script>
 
 </body>
 </html>

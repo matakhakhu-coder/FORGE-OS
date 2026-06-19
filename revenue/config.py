@@ -49,12 +49,24 @@ SPONSOR_SLOTS: list[dict] = [
     {"text": "Protect your credentials with Bitwarden", "url": "https://bitwarden.com", "label": "SPONSORED"},
 ]
 
-# ── Payment provider (deferred — no SDK until needed) ────────────────────────
-PAYMENT_PROVIDER: str | None = os.environ.get("FORGE_PAYMENT_PROVIDER", None)
-PAYMENT_PRODUCT_ID: str | None = os.environ.get("FORGE_PAYMENT_PRODUCT_ID", None)
+# ── Paystack (SA payment gateway) ────────────────────────────────────────────
+PAYSTACK_PUBLIC_KEY: str | None = os.environ.get("FORGE_PAYSTACK_PUBLIC_KEY", None)
+PAYSTACK_AMOUNT_ZAR: int = int(os.environ.get("FORGE_PAYSTACK_AMOUNT_ZAR", "4900"))
+PAYSTACK_CURRENCY: str = "ZAR"
+
+# ── Manual EFT fallback (always visible as backup) ───────────────────────────
+MANUAL_EFT: dict = {
+    "bank": os.environ.get("FORGE_EFT_BANK", ""),
+    "account": os.environ.get("FORGE_EFT_ACCOUNT", ""),
+    "branch": os.environ.get("FORGE_EFT_BRANCH", ""),
+    "reference_prefix": "ZAD",
+    "email": os.environ.get("FORGE_EFT_EMAIL", ""),
+}
+
+# ── Legacy payment provider config (kept for redirect fallback) ──────────────
 PAYMENT_CHECKOUT_URL: str | None = os.environ.get("FORGE_PAYMENT_CHECKOUT_URL", None)
 
-# ── Digest provider (deferred — Phase 7) ─────────────────────────────────────
+# ── Digest provider ──────────────────────────────────────────────────────────
 DIGEST_PROVIDER: str | None = os.environ.get("FORGE_DIGEST_PROVIDER", None)
 DIGEST_API_KEY: str | None = os.environ.get("FORGE_DIGEST_API_KEY", None)
 
@@ -65,7 +77,13 @@ def get_template_context() -> dict:
         "revenue_live": REVENUE_LIVE,
         "membership_url": MEMBERSHIP_URL if REVENUE_LIVE else None,
         "membership_label": MEMBERSHIP_LABEL,
-        "membership_sim": MEMBERSHIP_URL and not REVENUE_LIVE,
+        "membership_sim": bool(MEMBERSHIP_URL) and not REVENUE_LIVE,
         "sponsor_slots": SPONSOR_SLOTS,
         "payment_checkout_url": PAYMENT_CHECKOUT_URL if REVENUE_LIVE else None,
+        "paystack_public_key": PAYSTACK_PUBLIC_KEY if REVENUE_LIVE else None,
+        "paystack_amount": PAYSTACK_AMOUNT_ZAR,
+        "paystack_currency": PAYSTACK_CURRENCY,
+        "paystack_sim": bool(PAYSTACK_PUBLIC_KEY) and not REVENUE_LIVE,
+        "manual_eft": MANUAL_EFT if MANUAL_EFT.get("bank") else None,
+        "manual_eft_sim": not MANUAL_EFT.get("bank"),
     }

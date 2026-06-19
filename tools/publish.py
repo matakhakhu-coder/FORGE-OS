@@ -921,9 +921,15 @@ def _build_dist(
         encoding="utf-8",
     )
 
-    # subscribe.html — pricing/feature comparison page
+    # subscribe.html — pricing/feature comparison page with Paystack checkout
     (DIST / "subscribe.html").write_text(
         env.get_template("subscribe.html").render(generated_at=now_str, **rev),
+        encoding="utf-8",
+    )
+
+    # thankyou.html — post-payment landing page
+    (DIST / "thankyou.html").write_text(
+        env.get_template("thankyou.html").render(generated_at=now_str, **rev),
         encoding="utf-8",
     )
 

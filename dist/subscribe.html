@@ -111,7 +111,7 @@
   gap: var(--sp-2);
 }
 .pricing-card__features li::before {
-  content: '✓';
+  content: '\2713';
   font-size: 0.7rem;
   color: var(--accent);
   flex-shrink: 0;
@@ -121,7 +121,7 @@
   text-decoration: line-through;
 }
 .pricing-card__features li.disabled::before {
-  content: '—';
+  content: '\2014';
   color: var(--text-ghost);
 }
 .pricing-cta {
@@ -134,17 +134,40 @@
   border-radius: var(--r-sm);
   text-decoration: none;
   transition: all var(--t-mid);
+  cursor: pointer;
+  border: none;
 }
 .pricing-cta--free {
   color: var(--text-secondary);
   border: 1px solid var(--border-dim);
+  background: transparent;
 }
 .pricing-cta--pro {
   color: var(--bg-base);
   background: var(--accent);
-  border: 1px solid var(--accent);
 }
 .pricing-cta--pro:hover { background: var(--accent-bright); color: var(--bg-base); }
+.pricing-cta--pro:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Email input ──────────────────────────────────────────────────────────── */
+.checkout-email {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  outline: none;
+  transition: border-color var(--t-fast);
+}
+.checkout-email:focus { border-color: var(--accent-muted); }
+.checkout-email::placeholder { color: var(--text-ghost); }
 
 /* ── Feature comparison ───────────────────────────────────────────────────── */
 .compare-table {
@@ -174,6 +197,101 @@
 .compare-check { color: var(--accent); }
 .compare-x { color: var(--text-ghost); }
 
+/* ── Manual EFT section ───────────────────────────────────────────────────── */
+.eft-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-8);
+}
+.eft-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+}
+.eft-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+}
+.eft-row:last-child { border-bottom: none; }
+.eft-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.eft-value { color: var(--text-primary); }
+.eft-value--placeholder { color: var(--text-ghost); font-style: italic; }
+.eft-note {
+  margin-top: var(--sp-3);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── Mock modal (SIM mode only) ───────────────────────────────────────────── */
+.sim-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+}
+.sim-modal-overlay.visible { display: flex; }
+.sim-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--r-md);
+  padding: var(--sp-8);
+  max-width: 400px;
+  text-align: center;
+}
+.sim-modal__icon { font-size: 2.4rem; color: var(--text-dim); margin-bottom: var(--sp-4); }
+.sim-modal__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-3);
+}
+.sim-modal__body {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-5);
+}
+.sim-modal__btn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: var(--sp-2) var(--sp-6);
+  border-radius: var(--r-sm);
+  border: none;
+  cursor: pointer;
+  margin: 0 var(--sp-2);
+  transition: all var(--t-fast);
+}
+.sim-modal__btn--success {
+  background: var(--accent);
+  color: var(--bg-base);
+}
+.sim-modal__btn--success:hover { background: var(--accent-bright); }
+.sim-modal__btn--cancel {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border-dim);
+}
+
+/* ── FAQ ───────────────────────────────────────────────────────────────────── */
 .sub-faq { max-width: 640px; margin: 0 auto; }
 .sub-faq__title {
   font-family: var(--font-mono);
@@ -228,7 +346,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">19 Jun 2026 21:53 UTC</span>
+        <span class="site-ts mono">19 Jun 2026 22:55 UTC</span>
       </div>
     </div>
   </header>
@@ -244,7 +362,7 @@
 <div class="sub-shell">
 
   <div class="sub-header">
-    <div class="sub-header__eyebrow">Intelligence Access · ZA-DIVERGENT</div>
+    <div class="sub-header__eyebrow">Intelligence Access &middot; ZA-DIVERGENT</div>
     <h1 class="sub-header__title">Choose Your Access Level</h1>
     <p class="sub-header__sub">
       The public bulletin is free. Pro unlocks full case evidence,
@@ -252,9 +370,9 @@
     </p>
   </div>
 
+  
   <div class="pricing-grid">
 
-    
     <div class="pricing-card">
       <div class="pricing-card__name">Public Bulletin</div>
       <div class="pricing-card__price">Free</div>
@@ -273,14 +391,13 @@
       <span class="pricing-cta pricing-cta--free">Current access</span>
     </div>
 
-    
     <div class="pricing-card pricing-card--pro">
       <span class="pricing-card__badge">Recommended</span>
       <div class="pricing-card__name">Pro Intelligence</div>
-      <div class="pricing-card__price">TBD</div>
-      <div class="pricing-card__period">Pricing announced when live</div>
+      <div class="pricing-card__price">R49.00</div>
+      <div class="pricing-card__period">per month &middot; cancel anytime</div>
       <ul class="pricing-card__features">
-        <li>All signals — full archive access</li>
+        <li>All signals &mdash; full archive access</li>
         <li>Signal map with geo-tagging</li>
         <li>Entity graph visualization</li>
         <li>All analyst articles</li>
@@ -290,9 +407,14 @@
         <li>API feed (pro-feed.json)</li>
         <li>Daily intelligence digest</li>
       </ul>
-      <a href="#" class="pricing-cta pricing-cta--pro">
-        <span class="sim-badge">SIM</span> Subscribe
-      </a>
+
+      <input type="email" id="checkout-email" class="checkout-email"
+             placeholder="Your email address" required>
+
+      <button class="pricing-cta pricing-cta--pro" id="checkout-btn" disabled>
+        
+        Subscribe &mdash; R49/month
+      </button>
     </div>
 
   </div>
@@ -300,69 +422,68 @@
   
   <table class="compare-table">
     <thead>
-      <tr>
-        <th>Feature</th>
-        <th>Free</th>
-        <th>Pro</th>
-      </tr>
+      <tr><th>Feature</th><th>Free</th><th>Pro</th></tr>
     </thead>
     <tbody>
       <tr><td>Timeline signals</td><td>20 latest</td><td>Full archive</td></tr>
       <tr><td>Analyst articles</td><td>3 latest</td><td>All</td></tr>
-      <tr><td>Signal map</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
-      <tr><td>Entity graph</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
-      <tr><td>Entity directory</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
-      <tr><td>Case list</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
-      <tr><td>Case detail + evidence</td><td class="compare-x">—</td><td class="compare-check">✓</td></tr>
-      <tr><td>Entity dossiers</td><td class="compare-x">—</td><td class="compare-check">✓</td></tr>
-      <tr><td>API feed (JSON)</td><td class="compare-x">—</td><td class="compare-check">✓</td></tr>
-      <tr><td>Intelligence digest</td><td class="compare-x">—</td><td class="compare-check">✓</td></tr>
-      <tr><td>MiniSearch</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
-      <tr><td>Watchlist</td><td class="compare-check">✓</td><td class="compare-check">✓</td></tr>
+      <tr><td>Signal map</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Entity graph</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Case detail + evidence</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Entity dossiers</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>API feed (JSON)</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Intelligence digest</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
     </tbody>
   </table>
 
   
+  <div class="eft-section">
+    <div class="eft-section__title">Alternative: Manual EFT</div>
+    
+    <div class="eft-row"><span class="eft-label">Bank</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_BANK]</span></div>
+    <div class="eft-row"><span class="eft-label">Account</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_ACCOUNT]</span></div>
+    <div class="eft-row"><span class="eft-label">Branch</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_BRANCH]</span></div>
+    <div class="eft-note" style="color:var(--text-ghost);">
+      <span class="sim-badge">SIM</span> EFT details will appear here when configured.
+    </div>
+    
+  </div>
+
+  
   <div class="sub-faq">
     <div class="sub-faq__title">Frequently Asked Questions</div>
-
     <div class="sub-faq__item">
       <div class="sub-faq__q">What is ZA-DIVERGENT?</div>
-      <div class="sub-faq__a">
-        An open-source intelligence bulletin covering South Africa and the surrounding
-        region. Signals are collected, scored, and published by the FORGE OSINT engine.
-        All source material is publicly available.
-      </div>
+      <div class="sub-faq__a">An open-source intelligence bulletin covering South Africa and the surrounding region. Signals are collected, scored, and published by the FORGE OSINT engine. All source material is publicly available.</div>
     </div>
-
     <div class="sub-faq__item">
       <div class="sub-faq__q">Is the free tier permanent?</div>
-      <div class="sub-faq__a">
-        Yes. The public bulletin will always be free. Pro adds depth — full evidence
-        chains, entity dossiers, and machine-readable feeds — for those who need
-        analyst-grade access.
-      </div>
+      <div class="sub-faq__a">Yes. The public bulletin will always be free. Pro adds depth &mdash; full evidence chains, entity dossiers, and machine-readable feeds.</div>
     </div>
-
     <div class="sub-faq__item">
-      <div class="sub-faq__q">How is this different from news?</div>
-      <div class="sub-faq__a">
-        ZA-DIVERGENT is structured intelligence, not journalism. Signals are scored
-        by an analytical pipeline, linked to cases and actors, and visualized as a
-        knowledge graph. The output is evidence chains, not articles.
-      </div>
+      <div class="sub-faq__q">How are payments processed?</div>
+      <div class="sub-faq__a">Payments are processed securely by Paystack, a PCI-DSS compliant payment gateway licensed by the South African Reserve Bank. We never see or store your card details.</div>
     </div>
-
     <div class="sub-faq__item">
-      <div class="sub-faq__q">Can I use the API feed?</div>
-      <div class="sub-faq__a">
-        Pro subscribers get access to pro-feed.json — a machine-readable feed
-        containing full signal data, gravity scores, entity relationships, and
-        case linkages. Suitable for integration with your own tools.
-      </div>
+      <div class="sub-faq__q">My card doesn't work?</div>
+      <div class="sub-faq__a">Use the Manual EFT option above. Send proof of payment to the listed email for manual activation within 24 hours.</div>
     </div>
   </div>
 
+</div>
+
+
+<div class="sim-modal-overlay" id="sim-modal">
+  <div class="sim-modal">
+    <div class="sim-modal__icon">&#9711;</div>
+    <div class="sim-modal__title">Simulation Mode</div>
+    <div class="sim-modal__body">
+      In live mode, Paystack's secure checkout would open here.
+      Your card would be charged R49.00 via Paystack (SA payment gateway).
+    </div>
+    <button class="sim-modal__btn sim-modal__btn--success" id="sim-success">Simulate Success</button>
+    <button class="sim-modal__btn sim-modal__btn--cancel" id="sim-cancel">Cancel</button>
+  </div>
 </div>
 
   </main>
@@ -381,7 +502,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 19 Jun 2026 21:53 UTC
+        Generated 19 Jun 2026 22:55 UTC
       </div>
     </div>
   </footer>
@@ -389,7 +510,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 21:53 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Jun 2026 22:55 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -428,5 +549,28 @@
   })();
   </script>
   
+
+<script>
+(function () {
+  'use strict';
+
+  var emailInput = document.getElementById('checkout-email');
+  var checkoutBtn = document.getElementById('checkout-btn');
+  if (!emailInput || !checkoutBtn) return;
+
+  // Enable button when valid email entered
+  emailInput.addEventListener('input', function () {
+    checkoutBtn.disabled = !emailInput.validity.valid || !emailInput.value.trim();
+  });
+
+  
+  // ── NO PAYSTACK CONFIG: button disabled ───────────────────────────────
+  checkoutBtn.disabled = true;
+  checkoutBtn.textContent = 'Coming soon';
+  
+
+})();
+</script>
+
 </body>
 </html>

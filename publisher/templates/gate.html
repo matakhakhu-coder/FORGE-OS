@@ -74,7 +74,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="gate-shell">
+<div class="gate-shell" id="gate-shell">
   <div class="gate-icon">&#9711;</div>
   <h1 class="gate-title">{{ gate_title }}</h1>
   <p class="gate-body">{{ gate_description }}</p>
@@ -90,4 +90,23 @@
     <a href="{{ back_url or '../index.html' }}">&larr; Back to {{ back_label or 'Timeline' }}</a>
   </div>
 </div>
+
+<script>
+(function () {
+  try {
+    var pro = localStorage.getItem('za_divergent_pro');
+    if (pro) {
+      var data = JSON.parse(pro);
+      var shell = document.getElementById('gate-shell');
+      if (shell && data.ref) {
+        shell.innerHTML =
+          '<div class="gate-icon" style="color:#27ae60;">&#10003;</div>' +
+          '<h1 class="gate-title">Pro Access Active</h1>' +
+          '<p class="gate-body">Your subscription (ref: ' + data.ref.slice(0, 16) + ') grants access to this content in the Pro build.</p>' +
+          '<a href="../index.html" class="gate-cta" style="background:var(--infra);">Return to Bulletin</a>';
+      }
+    }
+  } catch (e) {}
+})();
+</script>
 {% endblock %}
