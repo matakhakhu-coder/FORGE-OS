@@ -1,8 +1,125 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "20 Jun 2026 21:38 UTC",
+  "generated_at": "20 Jun 2026 21:55 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Govchat (Pty) Ltd and Another v Meta Platforms Inc and Others (CR189Mar22/DSC160Jan25) [2025] ZACT 35 (18 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Govchat (Pty) Ltd and Another v Meta Platforms Inc and Others (CR189Mar22/DSC160Jan25) [2025] ZACT 35 (18 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Meta Platforms Inc and Others v GovChat (Pty) Ltd and Another (CR189Mar22/STR04Jun25) [2026] ZACT 4 (27 January 2026) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Meta Platforms Inc and Others v GovChat (Pty) Ltd and Another (CR189Mar22/STR04Jun25) [2026] ZACT 4 (27 January 2026) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Govchat Proprietary Limited and Another v Facebook Inc and others (IR165Nov20) [2021] ZACT 111 (11 November 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Govchat Proprietary Limited and Another v Facebook Inc and others (IR165Nov20) [2021] ZACT 111 (11 November 2021) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Beale v S (A283/18) [2019] ZAWCHC 47; 2019 (2) SACR 19 (WCC) (3 May 2019) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Beale v S (A283/18) [2019] ZAWCHC 47; 2019 (2) SACR 19 (WCC) (3 May 2019) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Cimma v S (A2025/087499) [2025] ZAGPJHC 1345 (4 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Cimma v S (A2025/087499) [2025] ZAGPJHC 1345 (4 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Calder v S (A226/23) [2024] ZAWCHC 195 (27 July 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Calder v S (A226/23) [2024] ZAWCHC 195 (27 July 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Meta compelled to hand over user data in SA child pornography case -- Gauteng High Court consent order secured by Digital Law Company",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "The Digital Law Company (DLC), led by Emma Sadleir, secured a consent order from Judge Mudunwazi Makamu in the Gauteng High Court compelling Meta to disclose subscriber data (phone numbers, IP addresses, names, physical ...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "ANALYSIS: Gauteng consent order establishes SA jurisdictional precedent over global tech platforms for CSAM data disclosure",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "The Meta consent order is structurally significant beyond the immediate CSAM case. It establishes that: (1) SA courts can compel US-headquartered tech companies to disclose subscriber data; (2) the Gauteng High Court has...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Intelligence note: 70+ Instagram/WhatsApp accounts distributing CSAM suggests organized network with cross-platform coordination",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "58 Instagram accounts + 12 WhatsApp channels = 70 linked entities distributing child sexual abuse material. The cross-platform nature (Instagram for discovery, WhatsApp for distribution) indicates coordinated operation r...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
     {
       "kind": "signal",
       "title": "Mkwanazi and Another v Minister of Police (39290/2021) [2025] ZAGPPHC 855 (13 August 2025) - SAFLII",
@@ -534,123 +651,6 @@
       "geo": {
         "lat": -33.8688,
         "lng": 151.2093
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Friedrich Kraft: CEO PlainProxies + 3xK Tech, co-founder ByteConnect Ltd with Julia Levi (ex-Bright Data); HRB 18693, VAT DE344070238",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Friedrich Kraft (also styled Kraeft/Kraft): CEO of PlainProxies, co-founder of ByteConnect Ltd, operator of 3xK Tech GmbH (HRB 18693, VAT ID DE344070238). ByteConnect SDK installed on Kimwolf-compromised dev...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 52.89,
-        "lng": 13.58
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "MEGA encryption flaw: RSA key recovery attack demonstrated (2022) — user data less impenetrable than claimed; compounding risk with credential stuffing",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Cryptographic researchers (June 2022) demonstrated that MEGA's encryption design allows theoretical recovery of user RSA private keys and file decryption. MEGA patched the specific attack but acknowledged fu...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 47.3769,
-        "lng": 8.5417
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Kimwolf operators overwhelmed I2P anonymity network while migrating C2 — collateral DDoS on entire privacy infrastructure",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Kimwolf operators migrated C2 servers to I2P (Invisible Internet Project) to evade takedown, then overwhelmed the I2P network itself with the botnet's traffic volume, effectively DDoSing an entire anonymity ...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 60.1699,
-        "lng": 24.9384
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Europol dismantles Tycoon 2FA phishing platform (March 2026): 330+ domains, MFA bypass against 100K organizations",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Europol led takedown of Tycoon 2FA platform: 330+ domains seized. The platform enabled MFA-bypass phishing attacks against ~100,000 organizations including schools, hospitals, and government institutions. Te...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 52.0705,
-        "lng": 4.3007
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "BreachForums v5 itself breached (March 2026): 340K users exposed — the marketplace where credential dumps are traded got compromised",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"In March 2026, BreachForums v5 was breached, exposing 340,000 unique email addresses with usernames and argon2 password hashes. BreachForums is the primary marketplace where stolen credential dumps and combo...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 43.6532,
-        "lng": -79.3832
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "NCSC UK at CYBERUK 2026: passkeys recommended as default authentication — strategic response to credential stuffing epidemic",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"At CYBERUK 2026 in Glasgow, NCSC formally recommended passkeys as the default authentication method, replacing decades of password-based guidance. Separately, NCSC published a dedicated advisory on credentia...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 55.8642,
-        "lng": -4.2518
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CISA advisory: credential stuffing remains top initial access vector; recommends MFA + credential monitoring",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"The US Cybersecurity and Infrastructure Security Agency (CISA) has repeatedly warned that credential stuffing and password spraying are among the most common initial access vectors in cyber incidents affecti...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 38.8951,
-        "lng": -77.0364
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "NCSC UK: guidance on defending against credential stuffing — password deny lists and throttling",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"The UK National Cyber Security Centre (NCSC) publishes standing guidance on credential stuffing defence. Key recommendations: implement password deny lists using breached credential databases, enforce progre...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 51.5074,
-        "lng": -0.1278
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Cloudflare DDoS Threat Report Q3 2025: 3xK Tech (AS200373) identified as Internet's largest source of application-layer DDoS attacks",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"In its Q3 2025 DDoS Threat Report, Cloudflare identified 3xK Tech GmbH (AS200373, a.k.a. Drei-K-Tech) as the single largest source of application-layer DDoS attacks on the Internet. The network, operating fr...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 37.7749,
-        "lng": -122.4194
       }
     }
   ]

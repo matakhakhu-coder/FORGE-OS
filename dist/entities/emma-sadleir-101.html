@@ -3,13 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KZN HAWKS: Three Signals, One Pattern — South African Intelligence Bulletin</title>
+  <title>Emma Sadleir — South African Intelligence Bulletin</title>
   <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../static/css/site.css">
   
+<style>
+.ap-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.ap-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--sp-8);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .ap-layout { grid-template-columns: 1fr; }
+  .ap-infobox { order: -1; }
+}
+
+.ap-infobox {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  position: sticky;
+  top: var(--sp-8);
+}
+.ap-infobox__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-infobox__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ap-infobox__row:last-child { border-bottom: none; }
+.ap-infobox__label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-infobox__value {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.ap-infobox__cases { display: flex; flex-direction: column; gap: var(--sp-1); }
+.ap-infobox__case-link {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.ap-infobox__case-link:hover { text-decoration: underline; }
+.ap-infobox__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ap-infobox__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ap-infobox__media--placeholder {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.ap-back { margin-bottom: var(--sp-5); }
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+.ap-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  margin-bottom: var(--sp-6);
+}
+
+.ap-header { margin-bottom: var(--sp-6); }
+.ap-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.ap-type {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.ap-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.ap-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+.ap-section { margin-bottom: var(--sp-8); }
+.ap-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.ap-events { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ap-event {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+}
+.ap-event__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-event__role {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+  color: var(--text-secondary);
+}
+.ap-event__category { color: var(--accent); }
+.ap-event__title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+.ap-event__summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
+}
+.ap-event__location {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.ap-cases { display: flex; flex-direction: column; gap: var(--sp-2); }
+.ap-case-link {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  padding: var(--sp-2) 0;
+}
+.ap-case-link:hover { text-decoration: underline; }
+</style>
+
 </head>
 <body>
 
@@ -29,7 +241,7 @@
         <a href="../cases.html" class="site-nav__link ">Cases</a>
         <a href="../graph.html" class="site-nav__link ">Graph</a>
         <a href="../map.html" class="site-nav__link ">Map</a>
-        <a href="../entities.html" class="site-nav__link ">Entities</a>
+        <a href="../entities.html" class="site-nav__link site-nav__link--active">Entities</a>
         <a href="../watchlist.html" class="site-nav__link ">Watchlist</a>
         <a href="../subscribe.html" class="site-nav__link " style="color:var(--accent);">Pro</a>
       </nav>
@@ -92,110 +304,114 @@
   
   <main class="site-main">
     
-<div class="article-shell">
+<div class="ap-shell">
 
-  <div class="article-back">
-    <a href="../index.html" class="btn-back">← Back to Feed</a>
+  <div class="ap-back">
+    <a href="../entities.html" class="btn-back">← Entities</a>
   </div>
 
-  <div class="class-inline mono">
-    ANALYSIS · ZA-DIVERGENT · OPEN SOURCE
+  <div class="ap-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Entity Profile
   </div>
 
-  <header class="article-header">
-    <div class="article-header__eyebrow">
-      <span class="badge badge--article">✎ Analysis</span>
-      <span class="badge badge--stream badge--CRIME_INTEL">Crime &amp; Security</span>
+  <div class="ap-header">
+    <div class="ap-header__row">
+      <span class="ap-type">person</span>
     </div>
-    <h1 class="article-header__title">KZN HAWKS: Three Signals, One Pattern</h1>
-    
-    <p class="article-header__summary">Three independent signals from the KZN Directorate for Priority Crime Investigation — a cocaine theft, a R200m drug disappearance, and commission testimony about protocol failures — converge on a single conclusion: systemic evidence-handling compromise within South Africa&#39;s elite crime unit.</p>
-    
-    <div class="article-header__meta">
-      <span class="mono article-meta-item">By ZA-DIVERGENT Analyst</span>
-      <span class="mono article-meta-item">08 Jun 2026 - 05:15</span>
+    <h1 class="ap-header__title">Emma Sadleir</h1>
+    <div class="ap-header__meta">20 Jun 2026 21:55 UTC</div>
+  </div>
+
+  
+
+  <div class="ap-layout">
+    <div class="ap-main">
+
       
-      <div class="card__tags" style="display:inline-flex;">
+      <div class="ap-section">
+        <div class="ap-section__title">Person Profile</div>
+        <div class="ap-description">
+          South African social media law expert leading the Digital Law Company. Spearheaded the urgent High Court application against Meta for CSAM data disclosure.
+        </div>
+      </div>
+      
+
+      
+
+      
+
+      <div class="methodology-section">
+        <div class="methodology-section__title">Methodology</div>
+        <div class="methodology-section__body">
+          This profile is produced by the FORGE OSINT engine from 0 open-source
+          signals, spanning
+          2026-06-20 to 2026-06-20. All source material is publicly available.
+          Inclusion in this directory reflects relevance to published investigations and does not constitute a legal finding.
+        </div>
+      </div>
+
+      <div class="page-last-updated">Last updated: 20 Jun 2026 21:55 UTC</div>
+
+    </div>
+
+    <aside class="ap-infobox">
+      <div class="ap-infobox__media">
         
-        <span class="tag">hawks</span>
-        
-        <span class="tag">kzn</span>
-        
-        <span class="tag">corruption</span>
-        
-        <span class="tag">evidence tampering</span>
-        
-        <span class="tag">narcotics</span>
+        <span class="ap-infobox__media--placeholder avatar-placeholder" data-type="person">ES</span>
         
       </div>
       
-    </div>
-  </header>
-
-  
-
-  <div class="article-body">
-    <p>Intelligence analysis operates on the principle of convergence: a single source is a report,
-two sources are a lead, three independent sources converging on the same conclusion constitute
-a pattern. In the case of the KZN Hawks, FORGE holds three signals — separated by time,
-source, and legal forum — that converge on a single institutional integrity failure.</p>
-<h2>Signal 1: The Cocaine Theft (2022)</h2>
-<p>In early 2022, drug-detection canines deployed inside the KZN Hawks offices registered
-positive hits for narcotics <strong>after</strong> a significant cocaine seizure had already been processed
-through the facility. Sources cited by TimesLIVE described the disappearance as a potential
-inside job. A formal investigation was opened.</p>
-<p>No conviction has been publicly recorded.</p>
-<h2>Signal 2: The R200 Million Drug Disappearance</h2>
-<p>At a formal commission of inquiry, testimony was heard that the KZN Hawks provincial head
-<em>should have been subjected to a polygraph examination</em> after R200 million worth of narcotics
-vanished from an evidence facility under his command.</p>
-<p>The commission's recommendation implies that the standard accountability mechanism was not
-applied. The signal was manually corrected to a gravity score of <strong>0.45</strong> after the standard
-pipeline underscored it due to RSS content stripping.</p>
-<h2>Signal 3: Protocol Failure at Commission</h2>
-<p>A third signal confirms that the commission directly examined evidence-handling protocols at
-the KZN Hawks and found them wanting. The combination of the 2022 cocaine theft and the
-subsequent commission findings suggests that the 2022 incident was not isolated and did not
-trigger sufficient remedial action.</p>
-<h2>Analyst Assessment</h2>
-<p>FORGE Thread A, <em>KZN HAWKS Institutional Integrity</em>, has not yet been elevated to a formal
-case. The three-signal convergence meets the threshold for case opening. The pattern is:</p>
-<ol>
-<li>Narcotics disappear from a secured HAWKS facility</li>
-<li>Internal accountability mechanisms are not applied</li>
-<li>A commission of inquiry confirms protocol failures</li>
-</ol>
-<p>The implication that the KZN Hawks has a systematic evidence-integrity problem at the
-command level is analytically supportable from open sources.</p>
-<p><strong>Recommended collection:</strong> Commission testimony transcripts, NPA correspondence on the 2022
-cocaine theft investigation, and IPID records on the implicated commanding officer.</p>
-<hr />
-<p><em>All assessments are provisional and based on open-source signals.</em></p>
-
-  </div>
-
-  <div class="methodology-section">
-    <div class="methodology-section__title">About this analysis</div>
-    <div class="methodology-section__body">
-      This analysis is produced by ZA-DIVERGENT from open-source signals collected and scored by the
-      FORGE OSINT engine. All source material is publicly available. Analytical conclusions reflect the
-      assessment of the author and do not constitute legal findings.
-    </div>
-  </div>
-
-  
-  <div style="text-align:center;padding:var(--sp-6) 0 var(--sp-4);border-top:1px solid var(--border-dim);margin-top:var(--sp-6);">
-    <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener" class="membership-btn" style="padding:var(--sp-2) var(--sp-6);font-size:0.7rem;">
+      <div class="ap-no-photo">No photo on record</div>
       
-      Support Independent OSINT
-    </a>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="ap-infobox__title" style="margin-bottom:0;">Emma Sadleir</div>
+        <button class="wl-toggle" data-wl-id="101" data-wl-type="actors" data-wl-title="Emma Sadleir" data-wl-url="entities/emma-sadleir-101.html" style="margin-left:auto;">☆</button>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Type</span>
+        <span class="ap-infobox__value">Person</span>
+      </div>
+      
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Linked Cases — 1</span>
+        <div class="ap-infobox__cases">
+          
+          <a href="../cases/meta-data-disclosure-sa-child-exploitation-network-gauteng-h.html" class="ap-infobox__case-link">Meta Data Disclosure: SA Child Exploitation Network (Gauteng High Court)</a>
+          
+        </div>
+      </div>
+      
+      
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">First Observed</span>
+        <span class="ap-infobox__value">2026-06-20</span>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Last Observed</span>
+        <span class="ap-infobox__value">2026-06-20</span>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Linked Signals</span>
+        <span class="ap-infobox__value">5</span>
+      </div>
+      
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Primary Stream</span>
+        <span class="ap-infobox__value">Crime &amp; Security</span>
+      </div>
+      
+      
+      
+      
+      
+      
+      
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Source</span>
+        <span class="ap-infobox__value">FORGE OSINT Engine</span>
+      </div>
+    </aside>
   </div>
-  
-
-  <footer class="article-footer mono">
-    <div class="page-last-updated">Last updated: 20 Jun 2026 21:55 UTC</div>
-    ZA-DIVERGENT ARCHIVE
-  </footer>
 
 </div>
 
