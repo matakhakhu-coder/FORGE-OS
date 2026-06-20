@@ -1,8 +1,35 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "20 Jun 2026 23:16 UTC",
+  "generated_at": "20 Jun 2026 23:35 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Lubaale, E C --- \"Taking the incidence of false child sexual abuse allegations more seriously\" (49 Vol 1) [2016] PER 57 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "Lubaale, E C --- \"Taking the incidence of false child sexual abuse allegations more seriously\" (49 Vol 1) [2016] PER 57 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
+    {
+      "kind": "signal",
+      "title": "\"Sexual offences courts to be re-established.\" DR, September 2013:10 [2013] DEREBUS 163 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "\"Sexual offences courts to be re-established.\" DR, September 2013:10 [2013] DEREBUS 163 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
+    {
+      "kind": "signal",
+      "title": "CRIMINAL LAW (SEXUAL OFFENCES AND RELATED MATTERS) REGULATIONS - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "CRIMINAL LAW (SEXUAL OFFENCES AND RELATED MATTERS) REGULATIONS &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
     {
       "kind": "article",
       "title": "Meta Data Disclosure: SA Court Compels Tech Giant to Hand Over CSAM Subscriber Data",
@@ -609,45 +636,6 @@
       "geo": {
         "lat": -25.7479,
         "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Qurium forensics: PlainProxies (3xK Tech) identified in DDoS attacks against Russian independent media Meduza.io — 2B fake requests in 48 hours",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Qurium forensically identified PlainProxies (operated by Friedrich Kraft via 3xK Tech GmbH) in DDoS attacks on Meduza.io (April 2024). First attack: 2 billion fake requests over 48 hours from 6,300 IP addres...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 59.3293,
-        "lng": 18.0686
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Microsoft/DOJ seize 2,300 Lumma Stealer domains (May 2025); Lumma hosted payloads on MEGA Cloud — creating credential theft feedback loop",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"May 2025: Microsoft DCU court order seizes 2,300 Lumma C2 domains. DOJ/FBI seize 2 admin domains. 394,000+ Windows systems infected in 3 months. Critically, Lumma phishing campaigns hosted payloads on MEGA C...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 33.749,
-        "lng": -84.388
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "16 billion login credentials compiled from infostealer logs, phishing kits, and prior breaches — industrial fuel for credential stuffing",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Researchers discovered approximately 16 billion login credentials compiled from infostealer malware logs, phishing kits, and prior data breaches. This is the raw fuel for credential-stuffing-as-a-service ope...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": 48.8566,
-        "lng": 2.3522
       }
     }
   ]
