@@ -1,8 +1,278 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "20 Jun 2026 01:00 UTC",
+  "generated_at": "20 Jun 2026 01:09 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Mkwanazi and Another v Minister of Police (39290/2021) [2025] ZAGPPHC 855 (13 August 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mkwanazi and Another v Minister of Police (39290/2021) [2025] ZAGPPHC 855 (13 August 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Matlala v S (A67/2025) [2025] ZAGPJHC 1099; 2026 (1) SACR 46 (GJ) (27 October 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Matlala v S (A67/2025) [2025] ZAGPJHC 1099; 2026 (1) SACR 46 (GJ) (27 October 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "S v Masemola and Others (Sentence) (CC2/2025) [2025] ZAGPPHC 1151 (17 October 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "S v Masemola and Others (Sentence) (CC2/2025) [2025] ZAGPPHC 1151 (17 October 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Brown Mogotsi Foundation v MEC for Health, North West Province and Another (UM185/2023) [2023] ZANWHC 187 (29 September 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Brown Mogotsi Foundation v MEC for Health, North West Province and Another (UM185/2023) [2023] ZANWHC 187 (29 September 2023) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "MEC for Health North West Province Government v Brown Mogotsi Foundation and Another (UM185/2023) [2024] ZANWHC 30 (16 February 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "MEC for Health North West Province Government v Brown Mogotsi Foundation and Another (UM185/2023) [2024] ZANWHC 30 (16 February 2024) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Hume v Directorate for Priority Crime Investigation and Another (33593/20) [2022] ZAGPPHC 33; 2022 (1) SACR 518 (GP) (28 January 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Hume v Directorate for Priority Crime Investigation and Another (33593/20) [2022] ZAGPPHC 33; 2022 (1) SACR 518 (GP) (28 January 2022) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Moyo v Minister of Justice and Constitutional Development and Others; Sonti v Minister of Justice and Correctional Services and Others (387/2017; 386/2017) [2018] ZASCA 100; 2018 (8) BCLR 972 (SCA); [2018] 3 All SA 342 (SCA); 2018 (2) SACR 313 (SCA) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Moyo v Minister of Justice and Constitutional Development and Others; Sonti v Minister of Justice and Correctional Services and Others (387/2017; 386/2017) [2018] ZASCA 100; 2018 (8) BCLR 972 (SCA); [2018] 3 All SA 342 (...",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Greyling v George Randell High School (PR11/22) [2023] ZALCPE 2; [2023] 5 BLLR 412 (LC); (2023) 44 ILJ 1254 (LC) (27 February 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Greyling v George Randell High School (PR11/22) [2023] ZALCPE 2; [2023] 5 BLLR 412 (LC); (2023) 44 ILJ 1254 (LC) (27 February 2023) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Masinga and Others v Chief of the South African National Defence Force and Others (51/2021) [2022] ZASCA 1; [2022] 4 BLLR 305 (SCA); (2022) 43 ILJ 805 (SCA); [2022] 2 All SA 399 (SCA) (5 January 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Masinga and Others v Chief of the South African National Defence Force and Others (51/2021) [2022] ZASCA 1; [2022] 4 BLLR 305 (SCA); (2022) 43 ILJ 805 (SCA); [2022] 2 All SA 399 (SCA) (5 January 2022) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "City of Cape Town v Adams (EC06/2023) [2024] ZAEQC 1 (1 March 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "City of Cape Town v Adams (EC06/2023) [2024] ZAEQC 1 (1 March 2024) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Mtech Constructions (Pty) Ltd v Goosen Mega Enterprise (Pty) Ltd (Leave to Appeal) (024968/24) [2025] ZAGPPHC 296 (18 March 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mtech Constructions (Pty) Ltd v Goosen Mega Enterprise (Pty) Ltd (Leave to Appeal) (024968/24) [2025] ZAGPPHC 296 (18 March 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "BP Southern Africa (Pty) Ltd v Mega Burst Oils and Fuels (Pty) Ltd and Another; BP Southern Africa (Pty) Ltd v ZA Petroleum (Pty) Ltd and Another (39170/2019) [2020] ZAGPJHC 56; 2022 (1) SA 162 (GJ) (24 February 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "BP Southern Africa (Pty) Ltd v Mega Burst Oils and Fuels (Pty) Ltd and Another; BP Southern Africa (Pty) Ltd v ZA Petroleum (Pty) Ltd and Another (39170/2019) [2020] ZAGPJHC 56; 2022 (1) SA 162 (GJ) (24 February 2020) &n...",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Goosen Mega Enterprise (Pty) Ltd v Mtech Constructions (Pty) Ltd (115832/23) [2025] ZAGPPHC 72 (24 January 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Goosen Mega Enterprise (Pty) Ltd v Mtech Constructions (Pty) Ltd (115832/23) [2025] ZAGPPHC 72 (24 January 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "NUMSA obo Mavuso v Mini Mega (PTY) Ltd t-a Rustenberg Engine Centre (JR 1288/13) [2022] ZALCJHB 180 (4 July 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "NUMSA obo Mavuso v Mini Mega (PTY) Ltd t-a Rustenberg Engine Centre (JR 1288/13) [2022] ZALCJHB 180 (4 July 2022) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Blue Bulls Company (Pty)Ltd vs Mega Burst Oils and Fuels (Pty)Ltd (2021/18739) [2022] ZAGPJHC 314 (21 April 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Blue Bulls Company (Pty)Ltd vs Mega Burst Oils and Fuels (Pty)Ltd (2021/18739) [2022] ZAGPJHC 314 (21 April 2022) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "South African Breweries Proprietary Limited and Others v President of the Republic of South Africa and Another (139/2021) [2022] ZAWCHC 102; [2022] 3 All SA 514 (WCC) (27 May 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "South African Breweries Proprietary Limited and Others v President of the Republic of South Africa and Another (139/2021) [2022] ZAWCHC 102; [2022] 3 All SA 514 (WCC) (27 May 2022) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Guardrisk Insurance Company Limited v Cafe Chameleon CC (632/20) [2020] ZASCA 173; [2021] 1 All SA 707 (SCA); 2021 (2) SA 323 (SCA) (17 December 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Guardrisk Insurance Company Limited v Cafe Chameleon CC (632/20) [2020] ZASCA 173; [2021] 1 All SA 707 (SCA); 2021 (2) SA 323 (SCA) (17 December 2020) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Helen Suzman Foundation and Another v Minister of Police and Others (23199/16) [2016] ZAGPPHC 1191 (19 October 2016) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Helen Suzman Foundation and Another v Minister of Police and Others (23199/16) [2016] ZAGPPHC 1191 (19 October 2016) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Van Vuren and Others v Van Der Merwe (1054/2019; 23267/2018; 23369/2018; 21511/2018) [2023] ZAWCHC 227 (29 August 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Van Vuren and Others v Van Der Merwe (1054/2019; 23267/2018; 23369/2018; 21511/2018) [2023] ZAWCHC 227 (29 August 2023) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "General Council of the Bar of South Africa v Jiba and Others (23576/2015) [2016] ZAGPPHC 833 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "General Council of the Bar of South Africa v Jiba and Others (23576/2015) [2016] ZAGPPHC 833 &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Freedom Under Law (RF) NPC v National Director of Public Prosecutions and Others (89849/2015) [2017] ZAGPPHC 791; 2018 (1) SACR 436 (GP) (21 December 2017) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Freedom Under Law (RF) NPC v National Director of Public Prosecutions and Others (89849/2015) [2017] ZAGPPHC 791; 2018 (1) SACR 436 (GP) (21 December 2017) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Mogalakwena Local Municipality v Provincial Executive Council, Limpopo and Others (35248/14) [2014] ZAGPPHC 400 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mogalakwena Local Municipality v Provincial Executive Council, Limpopo and Others (35248/14) [2014] ZAGPPHC 400 &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "MEC Provincial Treasury, Provincial Government of Limpopo v Magnum Simplex International (Pty) Ltd (70477/09) [2021] ZAGPPHC 108 (19 February 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "MEC Provincial Treasury, Provincial Government of Limpopo v Magnum Simplex International (Pty) Ltd (70477/09) [2021] ZAGPPHC 108 (19 February 2021) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Khari Investments (Pty) Ltd v Mopani District Municipality (5424/2018) [2024] ZALMPPHC 86 (12 August 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Khari Investments (Pty) Ltd v Mopani District Municipality (5424/2018) [2024] ZALMPPHC 86 (12 August 2024) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Greater Tzaneen Municipality v Bravospan 252 CC (CCT 342/22) [2024] ZACC 20; 2025 (1) BCLR 1 (CC); 2025 (1) SA 557 (CC) (2 October 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Greater Tzaneen Municipality v Bravospan 252 CC (CCT 342/22) [2024] ZACC 20; 2025 (1) BCLR 1 (CC); 2025 (1) SA 557 (CC) (2 October 2024) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Basic Education For All and Others v Minister of Basic Education and Others (23949/14) [2014] ZAGPPHC 251; 2014 (4) SA 274 (GP); [2014] 3 All SA 56 (GP); 2014 (9) BCLR 1039 (GP) (5 May 2014) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Basic Education For All and Others v Minister of Basic Education and Others (23949/14) [2014] ZAGPPHC 251; 2014 (4) SA 274 (GP); [2014] 3 All SA 56 (GP); 2014 (9) BCLR 1039 (GP) (5 May 2014) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Democratic Alliance v Minister of Co-operative Governance and Traditional Affairs and Others (22311/2020) [2021] ZAGPPHC 168 (24 March 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Democratic Alliance v Minister of Co-operative Governance and Traditional Affairs and Others (22311/2020) [2021] ZAGPPHC 168 (24 March 2021) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Ma-Afrika Hotels (Pty) Ltd and Another v Santam Limited (6499/2020) [2020] ZAWCHC 160; [2021] 1 All SA 195 (WCC) (17 November 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Ma-Afrika Hotels (Pty) Ltd and Another v Santam Limited (6499/2020) [2020] ZAWCHC 160; [2021] 1 All SA 195 (WCC) (17 November 2020) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Zuma v Secretary of the Judicial Commission of Inquiry into Allegations of State Capture, Corruption and Fraud in the Public Sector Including Organs of State and Others (CCT 52/21) [2021] ZACC 28; 2021 (11) BCLR 1263 (CC) (17 September 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Zuma v Secretary of the Judicial Commission of Inquiry into Allegations of State Capture, Corruption and Fraud in the Public Sector Including Organs of State and Others (CCT 52/21) [2021] ZACC 28; 2021 (11) BCLR 1263 (CC...",
+      "source": "SAFLII"
+    },
+    {
+      "kind": "signal",
+      "title": "Minister of Police v Van Der Merwe (13204/2022) [2025] ZAWCHC 599 (23 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Minister of Police v Van Der Merwe (13204/2022) [2025] ZAWCHC 599 (23 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "SAFLII"
+    },
     {
       "kind": "signal",
       "title": "BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler charged — yet 3xK Tech infrastructure still active 3 months later",
@@ -262,376 +532,6 @@
         "lat": 37.7749,
         "lng": -122.4194
       }
-    },
-    {
-      "kind": "signal",
-      "title": "Kimwolf botnet: 2 million unofficial Android TV boxes infected; ByteConnect SDK converts devices to proxy relays",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"The Kimwolf botnet infected over 2 million unofficial Android TV streaming boxes globally. The malware installed the ByteConnect SDK, distributed through Plainproxies (operated by Friedrich Kraft, CEO of 3xK...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 52.52,
-        "lng": 13.405
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "November 2025: 3xK Tech IPs responsible for ~75% of Internet scanning for critical Palo Alto Networks PAN-OS vulnerability",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"In November 2025, security researchers observed that IP addresses belonging to 3xK Tech GmbH (AS200373) were responsible for approximately three-quarters of all Internet scanning traffic targeting a critical...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 37.3861,
-        "lng": -122.0839
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Collection #1: 773 million email/password pairs discovered on MEGA cloud storage (January 2019) — foundational credential stuffing dump",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"In January 2019, security researcher Troy Hunt discovered a massive 87GB data dump on MEGA's own cloud storage service, labelled 'Collection #1.' It contained 773 million unique email addresses and over 21 m...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": -36.8485,
-        "lng": 174.7633
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Lumma Stealer: dominant infostealer of 2026, subscriptions from $250/month, anti-sandbox evasion, credential harvesting at scale",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"Lumma Stealer has emerged as the most prevalent infostealer malware in 2026, filling the vacuum left by RedLine Stealer's takedown. It operates on a subscription model starting at $250/month and employs adva...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 55.7558,
-        "lng": 37.6173
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "MEGA confirms 15,500 users compromised in credential stuffing attack — passwords reused from third-party breaches",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"MEGA confirmed that approximately 15,500 user accounts were compromised in a credential stuffing attack where stolen username/password pairs from other breaches were tested against MEGA's login API. The comp...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": -36.8485,
-        "lng": 174.7633
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Europol Operation Endgame (2025): largest-ever takedown of botnet infrastructure used for credential theft and ransomware delivery",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"In May 2025, Europol coordinated Operation Endgame \\u2014 described as the largest-ever law enforcement action against botnets. The operation targeted multiple botnet dropper infrastructures including IcedID...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 51.9225,
-        "lng": 4.4792
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "South Africa Information Regulator: POPIA requires breach notification within 72 hours; credential stuffing victims may report",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"Under South Africa's Protection of Personal Information Act (POPIA), organisations must notify the Information Regulator and affected data subjects of security compromises within 72 hours. While credential s...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Hurricane Electric (AS6939) provides transit to AS200373 — upstream connectivity enabling 3xK Tech's global proxy infrastructure",
-      "stream": "INFRASTRUCTURE",
-      "stream_label": "Infrastructure",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"Hurricane Electric LLC (AS6939), one of the world's largest IPv6 backbone providers and a major transit provider, provides upstream connectivity to 3xK Tech GmbH (AS200373). Other upstream providers include ...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 47.6062,
-        "lng": -122.3321
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "KELA State of Cybercrime 2026: 2.86 billion compromised credentials circulating across criminal markets in 2025",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:16:55.438996+00:00",
-      "summary": "{\"summary\": \"KELA's State of Cybercrime 2026 report tracked 2.86 billion compromised credentials circulating across criminal markets in 2025, spanning infostealer malware, breach databases, and underground marketplaces. ...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 32.0853,
-        "lng": 34.7818
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "KREBS: 3xK Tech GmbH CEO Friedrich Kraft also runs Plainproxies — Kimwolf botnet proxy service; Cloudflare named 3xK as Internet's #1 DDoS source (Jul 2025)",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:55:27.859775+00:00",
-      "summary": "{\"summary\": \"Brian Krebs (KrebsOnSecurity) investigation published January 2026 links 3xK Tech GmbH directly to the Kimwolf botnet infrastructure. Key findings: \\n\\n1. Friedrich Kraft, CEO of 3xK Tech GmbH, is also CEO o...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 52.9,
-        "lng": 13.55
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "HIBP shows zero breaches for compromised email — stealer logs or unlisted breach as credential source vector",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:55:27.859775+00:00",
-      "summary": "{\"summary\": \"Have I Been Pwned (HIBP) returns zero breaches for the compromised email address, yet the MEGA account was demonstrably compromised via credential stuffing. This anomaly has two primary explanations:\\n\\n1. S...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": -33.8688,
-        "lng": 151.2093
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Credential stuffing economics: why empty accounts are targeted — validated credentials sell for $5-50, aged accounts bypass spam filters",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:55:27.859775+00:00",
-      "summary": "{\"summary\": \"Credential stuffing operations are economically motivated at industrial scale. The attacker's process is automated and indiscriminate:\\n\\n1. Acquire credential dumps (Collection #1: 773M emails; stealer logs...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 51.5074,
-        "lng": -0.1278
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "AS200373 full infrastructure profile: 92,517 IPs, 22.88% spam rate, 72,448 IPs running VPNs/proxies (Scamalytics), 56,320 IPv4 allocated",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:55:27.859775+00:00",
-      "summary": "{\"summary\": \"Comprehensive infrastructure profile of ASN AS200373 (3xK Tech GmbH) compiled from multiple threat intelligence sources:\\n\\nCLEANTALK: 92,517 IP addresses, 46,302 detected, 10,595 spam-active (22.88% spam ra...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 52.9,
-        "lng": 13.55
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "GDPR forensic analysis: 25.8-minute attack window, 3 attacker sessions killed, no file exfiltration confirmed",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:43:36.270692+00:00",
-      "summary": "{\"summary\": \"Analysis of MEGA GDPR data export confirms the full attack sequence and provides forensic evidence of attacker behaviour. Five sessions total: 2 legitimate (user's Chrome browser + Android app, both ZA-based...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": -23.9,
-        "lng": 29.45
-      }
-    },
-    {
-      "kind": "article",
-      "title": "MEGA Account Compromise: Credential Stuffing via 3xK Tech GmbH Proxy Infrastructure",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:35:12.474027+00:00",
-      "summary": "Automated credential stuffing attack detected across three proxy nodes operated by 3xK Tech GmbH (AS200373). MegaApiClient session indicates active data exfiltration.",
-      "author": "ZA-DIVERGENT Staff",
-      "url": "articles/mega-account-compromise-3xktech-credential-stuffing.html"
-    },
-    {
-      "kind": "signal",
-      "title": "Unauthorized MEGA account access from datacenter proxy IP 209.50.171.190 (3xK Tech GmbH / AS200373)",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:32:59.552637+00:00",
-      "summary": "{\"summary\": \"Automated login to user MEGA cloud storage account detected at 2026-06-19 15:53 SAST. User-Agent: Go-http-client/1.1 (Go standard library HTTP client \\u2014 automated tool, not browser). Source IP: 209.50.17...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 39.0437,
-        "lng": -77.4875
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Threat infrastructure profile: 3xK Tech GmbH (AS200373) — proxy cluster with abuse history",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:32:59.552637+00:00",
-      "summary": "{\"summary\": \"3xK Tech GmbH is a German hosting provider (ASN AS200373) headquartered at Altenhofer Weg 21, Schorfheide, 16244, Germany. Contact: friedrich.kraeft@3xktech.cloud. The network operates datacenter infrastruct...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 39.0437,
-        "lng": -77.4875
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Second unauthorized MEGA session: 104.207.47.133 (3xK Tech GmbH / AS200373, Ashburn VA)",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:32:59.552637+00:00",
-      "summary": "{\"summary\": \"Second unauthorized MEGA session detected at 2026-06-19 16:19 SAST from IP 104.207.47.133. User-Agent: Unknown. Same operator as original breach IP: 3xK Tech GmbH (AS200373). IPinfo classification: Hosting p...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 39.0437,
-        "lng": -77.4875
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CRITICAL: MegaApiClient session from 209.50.190.92 (3xK Tech GmbH / AS200373, Berlin) — active data exfiltration",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T14:32:59.552637+00:00",
-      "summary": "{\"summary\": \"CRITICAL \\u2014 Active data exfiltration session detected at 2026-06-19 16:19 SAST. IP: 209.50.190.92. Client: MegaApiClient (MEGA SDK/API client for programmatic bulk file access \\u2014 NOT a browser sessio...",
-      "source": "FORGE_INCIDENT",
-      "geo": {
-        "lat": 52.5244,
-        "lng": 13.4105
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering charge - Mail & Guardian",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-13T15:45:10.925188+00:00",
-      "summary": "Johannesburg Social Housing Company CEO granted R50 000 bail on money laundering charge &nbsp;&nbsp; Mail & Guardian",
-      "source": "DORK",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs - EWN",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-13T15:45:10.925188+00:00",
-      "summary": "Spouses and syndicates: SIU exposes corruption marketplace at Home Affairs &nbsp;&nbsp; EWN",
-      "source": "DORK",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "article",
-      "title": "Graft Roundup: Joshco CEO's R2m Cash Stash and a R180m Home Affairs Permit Racket",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-13T15:45:10.925188+00:00",
-      "summary": "Two parallel corruption probes surfaced this cycle: Joshco acting CEO Themba Mathibe granted R50,000 bail after R2m cash was found at his home, and the SIU's exposure of a R180m Home Affairs permit-and-visa marketplace run by officials via spousal accounts.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/graft-roundup-joshco-home-affairs-june-2026.html"
-    },
-    {
-      "kind": "signal",
-      "title": "Zimbabwean truck driver sentenced to 20 years for explosives smuggling at Beitbridge",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-13T11:52:50.047781+00:00",
-      "summary": "Edgar Maroto, a 42-year-old Zimbabwean truck driver, was sentenced to 20 years in a South African prison by the Musina Magistrate's Court for illegally possessing and attempting to smuggle explosives through the Beitbrid...",
-      "source": "ANALYST_MANUAL",
-      "geo": {
-        "lat": -22.2833,
-        "lng": 30.0
-      }
-    },
-    {
-      "kind": "article",
-      "title": "Beitbridge Border Post: Edgar Maroto Sentenced in Explosives Smuggling Case",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-13T11:52:50.047781+00:00",
-      "summary": "Edgar Maroto sentenced to 20 years by the Magisterial Court Musina for smuggling explosives through Beitbridge Border Post. FORGE has opened Case #13 to assess whether this is part of a wider trafficking pattern through the corridor.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/beitbridge-explosives-smuggling-maroto.html"
-    },
-    {
-      "kind": "signal",
-      "title": "UPDATE | Nine cops suspended over ‘Cat’ Matlala’s controversial R360m police tender - News24",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-12T07:44:12.553139+00:00",
-      "summary": "UPDATE | Nine cops suspended over ‘Cat’ Matlala’s controversial R360m police tender News24",
-      "source": "NEWS24_CRIME",
-      "geo": {
-        "lat": -25.7479,
-        "lng": 28.2293
-      }
-    },
-    {
-      "kind": "article",
-      "title": "Operation Matlala: How a R360m Tender Became a National Police Crisis",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-12T07:44:12.553139+00:00",
-      "summary": "An irregular R360m SAPS medical tender awarded to Pretoria businessman Vusimuzi 'Cat' Matlala has, over eleven months, escalated from a vetting failure into the suspension of the National Police Commissioner, the arrest of twelve senior officers, and testimony at the Madlanga Commission implicating the SAPS Organised Crime unit.",
-      "author": "ZA-DIVERGENT Analyst",
-      "url": "articles/operation-matlala-saps-tender-capture.html"
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: Lebanon: Flash Update #20 - Escalation of hostilities in Lebanon (as of 23 April 2026)",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: Lebanon Source: UN Office for the Coordination of Humanitarian Affairs Please refer to the attached file. HIGHLIGHTS Ceasefire extended for further three weeks even as population movements remain tentative and u...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 33.854,
-        "lng": 35.862
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: Ukraine: Health Cluster Bulletin #3 (March 2026)",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: Ukraine Source: Health Cluster Please refer to the attached file. Ukraine saw an escalation in aerial attacks compared to the first two months of the year, with over 3,500 air and drone strikes recorded in March...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR"
-    },
-    {
-      "kind": "signal",
-      "title": "ProMED: Haiti: Latin America & The Caribbean Weekly Situation Update as of 24 April 2026",
-      "stream": "GLOBAL",
-      "stream_label": "Africa & World",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Countries: Haiti, Colombia, Ecuador, Venezuela (Bolivarian Republic of) Source: UN Office for the Coordination of Humanitarian Affairs Please refer to the attached file. KEY FIGURES 103K people affected by rain-related i...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR",
-      "geo": {
-        "lat": 6.611,
-        "lng": 20.939
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "CDC HAN: World: Thematic Report on Harmful Practices Affecting Children in Africa",
-      "stream": "PRIORITY",
-      "stream_label": "Priority Intelligence",
-      "published_at": "2026-06-08T14:29:55.530783+00:00",
-      "summary": "Country: World Source: Equality Now Please refer to the attached files. Legal protections are failing to protect girls in Africa from child marriage and female genital mutilation, report warns Maseru, Lesotho, April 29, ...",
-      "source": "DISEASE_OUTBREAK_COLLECTOR"
     }
   ]
 }
