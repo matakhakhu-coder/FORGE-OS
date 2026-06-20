@@ -1,8 +1,18 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "20 Jun 2026 21:55 UTC",
+  "generated_at": "20 Jun 2026 22:27 UTC",
   "items": [
+    {
+      "kind": "article",
+      "title": "Meta Data Disclosure: SA Court Compels Tech Giant to Hand Over CSAM Subscriber Data",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T22:25:57.831094+00:00",
+      "summary": "Gauteng High Court consent order compels Meta to disclose subscriber data for 70+ accounts distributing child sexual abuse material. Two-year DLC-Meta hotline established. SAFLII precedent chain verified.",
+      "author": "ZA-DIVERGENT Staff",
+      "url": "articles/meta-csam-data-disclosure-gauteng-high-court.html"
+    },
     {
       "kind": "signal",
       "title": "Govchat (Pty) Ltd and Another v Meta Platforms Inc and Others (CR189Mar22/DSC160Jan25) [2025] ZACT 35 (18 December 2025) - SAFLII",
@@ -638,19 +648,6 @@
       "geo": {
         "lat": 48.8566,
         "lng": 2.3522
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Synthient corpus: 2 billion emails + 1.3 billion passwords added to HIBP (Nov 2025) — largest single addition in HIBP history",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-06-19T15:19:18.120313+00:00",
-      "summary": "{\"summary\": \"Nov 5, 2025: HIBP processed 1,957,476,021 unique emails and 1.3 billion unique passwords from the Synthient Credential Stuffing corpus \\u2014 largest single addition in HIBP history. 625 million passwords we...",
-      "source": "Incident Report",
-      "geo": {
-        "lat": -33.8688,
-        "lng": 151.2093
       }
     }
   ]
