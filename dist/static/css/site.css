@@ -751,21 +751,138 @@ a:hover { color: var(--accent-bright); }
 
 /* ── Light theme ─────────────────────────────────────────────────────────── */
 body.theme-light {
-  --bg-void:        #f5f5f0;
-  --bg-base:        #fafaf8;
-  --bg-surface:     #ffffff;
-  --bg-elevated:    #f0f0ec;
-  --bg-hover:       #e8e8e4;
-  --border-subtle:  rgba(0,0,0,0.04);
-  --border-dim:     rgba(0,0,0,0.08);
-  --border-mid:     rgba(0,0,0,0.14);
-  --border-bright:  rgba(0,0,0,0.22);
+  /* Layered backgrounds — warm paper tones, not flat white */
+  --bg-void:        #eae8e1;
+  --bg-base:        #f2f0eb;
+  --bg-surface:     #faf9f6;
+  --bg-elevated:    #ffffff;
+  --bg-hover:       #f0ede6;
+
+  /* Borders — visible but soft */
+  --border-subtle:  rgba(0,0,0,0.05);
+  --border-dim:     rgba(0,0,0,0.10);
+  --border-mid:     rgba(0,0,0,0.16);
+  --border-bright:  rgba(0,0,0,0.25);
+
+  /* Text — high contrast hierarchy */
   --text-primary:   #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-dim:       #8a8a8a;
-  --text-ghost:     #c0c0c0;
-  --accent-glow:    rgba(180,120,30,0.08);
+  --text-secondary: #3d3d3d;
+  --text-dim:       #6b6b6b;
+  --text-ghost:     #a0a0a0;
+
+  /* Accent — slightly deeper for light bg contrast */
+  --accent:         #a07020;
+  --accent-bright:  #8a5e18;
+  --accent-muted:   #c4a060;
+  --accent-glow:    rgba(160,112,32,0.10);
+
+  /* Stream colours — darkened for light background readability */
+  --crime:          #a02e22;
+  --crime-bg:       rgba(160,46,34,0.06);
+  --crime-glow:     rgba(160,46,34,0.10);
+  --infra:          #1e6a9e;
+  --infra-bg:       rgba(30,106,158,0.06);
+  --infra-glow:     rgba(30,106,158,0.10);
+  --priority:       #a07020;
+  --priority-bg:    rgba(160,112,32,0.06);
+  --priority-glow:  rgba(160,112,32,0.10);
+  --global:         #1e8a4a;
+  --global-bg:      rgba(30,138,74,0.06);
+  --global-glow:    rgba(30,138,74,0.10);
 }
+
+/* Light theme — structural overrides that can't be done with variables alone */
+body.theme-light .site-header {
+  background: #f2f0eb;
+  border-bottom-color: rgba(0,0,0,0.10);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+body.theme-light .class-banner {
+  background: rgba(0,0,0,0.03);
+  color: #6b6b6b;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+body.theme-light .site-footer {
+  background: #eae8e1;
+  border-top-color: rgba(0,0,0,0.08);
+}
+
+/* Cards + panels get a subtle shadow instead of relying on border contrast */
+body.theme-light .tl__card,
+body.theme-light .case-card,
+body.theme-light .pricing-card,
+body.theme-light .cd-signal,
+body.theme-light .ap-infobox,
+body.theme-light .eft-section,
+body.theme-light .about-flow__step {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+body.theme-light .tl__card:hover,
+body.theme-light .case-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Stream-colored left borders need darkened values */
+body.theme-light .tl__card--CRIME_INTEL    { border-left-color: #a02e22; }
+body.theme-light .tl__card--INFRASTRUCTURE { border-left-color: #1e6a9e; }
+body.theme-light .tl__card--PRIORITY       { border-left-color: #a07020; }
+body.theme-light .tl__card--GLOBAL         { border-left-color: #1e8a4a; }
+
+/* Timeline spine + nodes */
+body.theme-light .tl__spine { background: rgba(0,0,0,0.08); }
+body.theme-light .tl__node { background: var(--bg-base); }
+body.theme-light .tl__node--CRIME_INTEL    { border-color: #a02e22; box-shadow: none; }
+body.theme-light .tl__node--INFRASTRUCTURE { border-color: #1e6a9e; box-shadow: none; }
+body.theme-light .tl__node--PRIORITY       { border-color: #a07020; box-shadow: none; }
+body.theme-light .tl__node--GLOBAL         { border-color: #1e8a4a; box-shadow: none; }
+body.theme-light .tl__node--article        { border-color: #a07020; box-shadow: none; }
+
+/* Badge styling for light mode */
+body.theme-light .badge--CRIME_INTEL    { background: rgba(160,46,34,0.08); color: #a02e22; border-color: rgba(160,46,34,0.20); }
+body.theme-light .badge--INFRASTRUCTURE { background: rgba(30,106,158,0.08); color: #1e6a9e; border-color: rgba(30,106,158,0.20); }
+body.theme-light .badge--PRIORITY       { background: rgba(160,112,32,0.08); color: #a07020; border-color: rgba(160,112,32,0.20); }
+body.theme-light .badge--GLOBAL         { background: rgba(30,138,74,0.08); color: #1e8a4a; border-color: rgba(30,138,74,0.20); }
+
+/* Live badge */
+body.theme-light .live-badge { color: #6b6b6b; border-color: rgba(0,0,0,0.12); }
+body.theme-light .live-dot { background: #1e8a4a; }
+
+/* Links */
+body.theme-light a { color: #8a5e18; }
+body.theme-light a:hover { color: #a07020; }
+
+/* Membership button */
+body.theme-light .membership-btn { background: #a07020; color: #fff; }
+body.theme-light .membership-btn:hover { background: #8a5e18; color: #fff; }
+
+/* Settings panel */
+body.theme-light .settings-panel { background: #faf9f6; border-left-color: rgba(0,0,0,0.10); }
+body.theme-light .settings-overlay { background: rgba(0,0,0,0.25); }
+body.theme-light .settings-opt.active { background: rgba(160,112,32,0.08); border-color: #c4a060; color: #8a5e18; }
+
+/* Evidence timeline rail */
+body.theme-light .cd-evidence::before { background: rgba(0,0,0,0.08); }
+body.theme-light .cd-signal::before { background: var(--bg-base); }
+
+/* Significance bands stay readable on light */
+body.theme-light .sig-routine    { color: #8a8a8a; border-color: rgba(0,0,0,0.10); }
+body.theme-light .sig-notable    { color: #1e6a9e; border-color: rgba(30,106,158,0.25); }
+body.theme-light .sig-significant { color: #a07020; border-color: rgba(160,112,32,0.25); }
+body.theme-light .sig-high       { color: #a02e22; border-color: rgba(160,46,34,0.25); }
+body.theme-light .sig-critical   { color: #c0392b; border-color: rgba(192,57,43,0.30); background: rgba(192,57,43,0.04); }
+
+/* Type-colored placeholders */
+body.theme-light .avatar-placeholder[data-type="person"]          { background: #dbe8f4; color: #1e5a8e; }
+body.theme-light .avatar-placeholder[data-type="institution"]     { background: #e2e4e8; color: #3a4050; }
+body.theme-light .avatar-placeholder[data-type="government"]      { background: #d8eee0; color: #1a6040; }
+body.theme-light .avatar-placeholder[data-type="political_party"] { background: #e8daf0; color: #5a3080; }
+body.theme-light .avatar-placeholder[data-type="media"]           { background: #f0e8d4; color: #7a6020; }
+body.theme-light .avatar-placeholder[data-type="organization"]    { background: #d4ece8; color: #1a6858; }
+body.theme-light .avatar-placeholder[data-type="other"]           { background: #e4e4e2; color: #4a4a48; }
+body.theme-light .avatar-placeholder[data-type="unknown"]         { background: #e4e4e2; color: #4a4a48; }
+
+/* Sponsor ticker in light mode */
+body.theme-light .md-ticker__sponsor-label { color: #8a5e18; border-color: #c4a060; }
 
 /* ── Revenue surfaces ─────────────────────────────────────────────────────── */
 .membership-btn {
