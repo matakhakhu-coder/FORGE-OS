@@ -258,7 +258,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="20 Jun 2026 16:39 UTC" title="20 Jun 2026 16:39 UTC">20 Jun 2026 16:39 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="20 Jun 2026 21:00 UTC" title="20 Jun 2026 21:00 UTC">20 Jun 2026 21:00 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -322,7 +322,7 @@
     <button class="ig-btn" onclick="resetLayout()">Reset</button>
     <div class="ig-spacer"></div>
     <input id="ig-search" type="text" placeholder="Search actor…">
-    <span class="ig-stat" style="margin-left:auto;">20 Jun 2026 16:39 UTC</span>
+    <span class="ig-stat" style="margin-left:auto;">20 Jun 2026 21:00 UTC</span>
   </div>
 
   <div id="ig-body">
@@ -492,7 +492,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 20 Jun 2026 16:39 UTC
+        Generated 20 Jun 2026 21:00 UTC
       </div>
     </div>
   </footer>
@@ -500,7 +500,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 16:39 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 21:00 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -802,6 +802,20 @@
         selector: '.faded',
         style: { 'opacity': 0.06 }
       },
+      {
+        selector: '.ghost',
+        style: {
+          'opacity':                  0.10,
+          'label':                    '',
+          'border-width':             0.5,
+          'width':                    8,
+          'height':                   8,
+        }
+      },
+      {
+        selector: 'edge.ghost',
+        style: { 'opacity': 0.04 }
+      },
 
     ],
     layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
@@ -815,6 +829,23 @@
     cy.fit(cy.elements(), 80);
     if (cy.zoom() > 0.85) { cy.zoom(0.85); cy.center(); }
     document.getElementById('ig-loading').style.display = 'none';
+
+    /* ── Progressive expand/collapse: scope to ?case=N ───────────────── */
+    var CASE_ACTORS = {"10": [10, 59, 61, 63], "11": [50, 51, 52, 53, 54, 55, 64], "12": [5, 9, 17, 59, 60, 61, 62, 63], "13": [65, 66], "15": [94, 95, 96, 97, 98], "7": [10, 40, 41], "8": [46, 47], "9": [19, 49]};
+    var urlCase = new URLSearchParams(window.location.search).get('case');
+    if (urlCase && CASE_ACTORS[urlCase]) {
+      var scopedIds = CASE_ACTORS[urlCase];
+      cy.nodes().forEach(function (n) {
+        var actorId = parseInt(n.data('id').replace('n', ''));
+        if (scopedIds.indexOf(actorId) === -1) {
+          n.addClass('ghost');
+          n.connectedEdges().addClass('ghost');
+        }
+      });
+      // Fit to visible (non-ghost) nodes
+      var visible = cy.nodes().not('.ghost');
+      if (visible.length > 0) cy.fit(visible, 60);
+    }
   });
 
   /* ── Hover labels ───────────────────────────────────────────────────────── */
@@ -836,6 +867,15 @@
 
   cy.on('tap', 'node', function (evt) {
     var node = evt.target;
+
+    // Ghost node: single-click expands it (reveals connections)
+    if (node.hasClass('ghost')) {
+      node.removeClass('ghost');
+      node.connectedEdges().removeClass('ghost');
+      node.neighborhood('node').removeClass('ghost');
+      return;
+    }
+
     if (_tapTimeout && _tappedNode === node) {
       clearTimeout(_tapTimeout);
       _tappedNode = null;
