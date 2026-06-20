@@ -176,6 +176,49 @@
   .ig-legend__dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
   .ig-legend__line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
   .ig-legend__lbl  { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    #ig-toolbar {
+      padding: var(--sp-2) var(--sp-3);
+      gap: var(--sp-2);
+    }
+    .ig-title { font-size: 0.6rem; margin-right: var(--sp-2); }
+    .ig-stat  { font-size: 0.55rem; }
+    .ig-sep   { display: none; }
+    #ig-search {
+      width: 100%;
+      order: 99;
+      font-size: 16px;
+    }
+    .ig-btn {
+      padding: 8px 12px;
+      font-size: 0.6rem;
+    }
+
+    #ig-panel {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 50vh;
+      border-left: none;
+      border-top: 1px solid var(--border-dim);
+      z-index: 15;
+    }
+
+    #ig-legend {
+      bottom: var(--sp-3);
+      left: var(--sp-3);
+      padding: var(--sp-2) var(--sp-3);
+      max-width: 140px;
+    }
+    .ig-legend__title { font-size: 0.48rem; margin-bottom: var(--sp-2); }
+    .ig-legend__lbl   { font-size: 0.5rem; }
+    .ig-legend__dot   { width: 7px; height: 7px; }
+    .ig-legend__line  { width: 14px; }
+  }
 </style>
 {% endblock %}
 
@@ -201,6 +244,24 @@
     <div id="ig-loading">
       <div class="ig-spinner"></div>
       <span class="ig-loading__label">Building graph…</span>
+      <div id="ig-fallback" style="margin-top:var(--sp-6);max-height:300px;overflow-y:auto;width:380px;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.72rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border-dim);">
+              <th style="text-align:left;padding:4px 8px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--text-dim);">ACTOR</th>
+              <th style="text-align:left;padding:4px 8px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;color:var(--text-dim);">TYPE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for n in graph.nodes[:20] %}
+            <tr style="border-bottom:1px solid var(--border-subtle);">
+              <td style="padding:4px 8px;color:var(--text-primary);">{{ n.name }}</td>
+              <td style="padding:4px 8px;color:var(--text-dim);font-family:var(--font-mono);font-size:0.6rem;">{{ n.type }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div id="ig-legend">
@@ -394,6 +455,20 @@
         selector: '.faded',
         style: { 'opacity': 0.06 }
       },
+      {
+        selector: '.ghost',
+        style: {
+          'opacity':                  0.10,
+          'label':                    '',
+          'border-width':             0.5,
+          'width':                    8,
+          'height':                   8,
+        }
+      },
+      {
+        selector: 'edge.ghost',
+        style: { 'opacity': 0.04 }
+      },
 
     ],
     layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
@@ -407,6 +482,23 @@
     cy.fit(cy.elements(), 80);
     if (cy.zoom() > 0.85) { cy.zoom(0.85); cy.center(); }
     document.getElementById('ig-loading').style.display = 'none';
+
+    /* ── Progressive expand/collapse: scope to ?case=N ───────────────── */
+    var CASE_ACTORS = {{ case_actor_map | tojson }};
+    var urlCase = new URLSearchParams(window.location.search).get('case');
+    if (urlCase && CASE_ACTORS[urlCase]) {
+      var scopedIds = CASE_ACTORS[urlCase];
+      cy.nodes().forEach(function (n) {
+        var actorId = parseInt(n.data('id').replace('n', ''));
+        if (scopedIds.indexOf(actorId) === -1) {
+          n.addClass('ghost');
+          n.connectedEdges().addClass('ghost');
+        }
+      });
+      // Fit to visible (non-ghost) nodes
+      var visible = cy.nodes().not('.ghost');
+      if (visible.length > 0) cy.fit(visible, 60);
+    }
   });
 
   /* ── Hover labels ───────────────────────────────────────────────────────── */
@@ -428,6 +520,15 @@
 
   cy.on('tap', 'node', function (evt) {
     var node = evt.target;
+
+    // Ghost node: single-click expands it (reveals connections)
+    if (node.hasClass('ghost')) {
+      node.removeClass('ghost');
+      node.connectedEdges().removeClass('ghost');
+      node.neighborhood('node').removeClass('ghost');
+      return;
+    }
+
     if (_tapTimeout && _tappedNode === node) {
       clearTimeout(_tapTimeout);
       _tappedNode = null;

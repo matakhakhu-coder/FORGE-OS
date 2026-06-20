@@ -7960,6 +7960,43 @@ def create_app() -> Flask:
         except Exception as exc:
             print(f"[Scoped Intake] auto-pin failed for case {case_id}: {exc}")
 
+    @app.route("/api/discover/<int:actor_id>", methods=["POST"])
+    def api_discover(actor_id: int):
+        """
+        Transform-on-click: run SAFLII collector scoped to a specific actor,
+        return discovered signals as JSON. Maltego-inspired interactive discovery.
+        """
+        db = get_db()
+        actor = db.execute(
+            "SELECT name, type FROM actors WHERE actor_id = ?", (actor_id,)
+        ).fetchone()
+        if not actor:
+            return jsonify({"error": "Actor not found"}), 404
+
+        try:
+            from forage.collectors.saflii_collector import run as saflii_run
+            results = saflii_run(
+                actor_name=actor["name"], dry_run=False,
+                max_actors=1, max_results=5,
+            )
+        except Exception as exc:
+            results = {"error": str(exc), "signals_written": 0}
+
+        new_signals = db.execute("""
+            SELECT s.signal_id, s.title, s.gravity_score, s.source, s.lat, s.lng
+            FROM signal_actors sa
+            JOIN signals s ON s.signal_id = sa.signal_id
+            WHERE sa.actor_id = ?
+            ORDER BY s.timestamp DESC LIMIT 10
+        """, (actor_id,)).fetchall()
+
+        return jsonify({
+            "actor_id": actor_id,
+            "actor_name": actor["name"],
+            "stats": results,
+            "signals": [dict(r) for r in new_signals],
+        })
+
     @app.route("/api/control/run_collector/<collector_id>", methods=["POST"])
     def api_control_run_collector(collector_id: str):
         """

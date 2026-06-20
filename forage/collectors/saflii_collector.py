@@ -72,7 +72,54 @@ HIGH_COURTS = {'ZASCA', 'ZACC', 'ZAGPPHC', 'ZAGPJHC', 'ZALMPPHC', 'ZANWHC',
                'ZAWCHC', 'ZAEQC', 'ZALCPE', 'ZAECPEHC', 'ZAFSHC', 'ZAKZPHC',
                'ZALCCT', 'ZAECGHC', 'ZAKZDHC', 'ZALCJHB'}
 
+# SA court code → geo coordinates (court physical location)
+COURT_GEO: dict[str, tuple[float, float]] = {
+    # Constitutional Court + Supreme Court of Appeal — Johannesburg / Bloemfontein
+    "ZACC":      (-26.1952, 28.0486),   # Constitutional Court, Braamfontein, JHB
+    "ZASCA":     (-29.1187, 26.2141),   # Supreme Court of Appeal, Bloemfontein
+    # Gauteng
+    "ZAGPPHC":   (-25.7479, 28.1876),   # Gauteng Division, Pretoria
+    "ZAGPJHC":   (-26.2023, 28.0436),   # Gauteng Division, Johannesburg
+    # Limpopo
+    "ZALMPPHC":  (-23.9045, 29.4688),   # Limpopo Division, Polokwane
+    # North West
+    "ZANWHC":    (-25.8652, 25.6442),   # North West Division, Mahikeng
+    # Western Cape
+    "ZAWCHC":    (-33.9258, 18.4232),   # Western Cape Division, Cape Town
+    # Eastern Cape
+    "ZAECPEHC":  (-33.9608, 25.6022),   # Eastern Cape, Port Elizabeth (Gqeberha)
+    "ZAECGHC":   (-33.3148, 26.5312),   # Eastern Cape, Grahamstown (Makhanda)
+    # Free State
+    "ZAFSHC":    (-29.1187, 26.2141),   # Free State Division, Bloemfontein
+    # KwaZulu-Natal
+    "ZAKZPHC":   (-29.8587, 31.0218),   # KZN Division, Pietermaritzburg
+    "ZAKZDHC":   (-29.8587, 31.0218),   # KZN Division, Durban
+    # Labour Courts
+    "ZALCJHB":   (-26.2023, 28.0436),   # Labour Court, Johannesburg
+    "ZALCCT":    (-33.9258, 18.4232),   # Labour Court, Cape Town
+    "ZALCPE":    (-33.9608, 25.6022),   # Labour Court, Port Elizabeth
+    # Equality Court
+    "ZAEQC":     (-33.9258, 18.4232),   # Equality Court (usually WC or GP)
+    # Competition Tribunal
+    "ZACT":      (-25.7479, 28.1876),   # Competition Tribunal, Pretoria
+}
+
+# Fallback: if no court code matched, use Pretoria (seat of government)
+COURT_GEO_DEFAULT = (-25.7479, 28.1876)
+
 GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={query}&hl=en-ZA&gl=ZA&ceid=ZA:en"
+
+
+def _court_geo(case_ref: str | None, title: str) -> tuple[float, float] | None:
+    """Extract court geo from case reference or title."""
+    text = f"{case_ref or ''} {title}"
+    for code, coords in COURT_GEO.items():
+        if code in text.upper():
+            return coords
+    # If no court code found but it's clearly a SA legal document
+    if case_ref:
+        return COURT_GEO_DEFAULT
+    return None
 
 
 def _make_external_id(url: str) -> str:
@@ -221,6 +268,11 @@ def _write_signal(
     now      = datetime.now(timezone.utc).isoformat()
     gravity  = _compute_gravity(item["title"], case_ref, actor_name)
 
+    # Geo-tag from court code
+    geo = _court_geo(case_ref, item["title"])
+    lat = geo[0] if geo else None
+    lng = geo[1] if geo else None
+
     # Multi-actor matching
     full_text = f"{item['title']} {item['desc']}"
     matched_actors = _match_actors(full_text, all_actors)
@@ -232,6 +284,8 @@ def _write_signal(
         "query_source": query_source,
         "matched_actors": [a["name"] for a in matched_actors],
     }
+    if geo:
+        metadata["court_geo"] = {"lat": lat, "lng": lng}
     content = re.sub(r"<[^>]+>", " ", item["desc"])[:500]
 
     # Party extraction
@@ -241,9 +295,10 @@ def _write_signal(
         metadata["defendant"] = parties[1]
 
     if dry_run:
+        geo_str = f"({lat:.1f},{lng:.1f})" if geo else "no-geo"
         actors_str = ", ".join(a["name"][:20] for a in matched_actors[:3]) or actor_name[:20]
-        _log.info("  [DRY] G %.2f | %s | ref=%s | actors=[%s]",
-                  gravity, item["title"][:55], case_ref, actors_str)
+        _log.info("  [DRY] G %.2f %s | %s | ref=%s | actors=[%s]",
+                  gravity, geo_str, item["title"][:50], case_ref, actors_str)
         if parties:
             _create_party_relationship(conn, parties[0], parties[1], case_ref, all_actors, dry_run=True)
         return True
@@ -251,12 +306,14 @@ def _write_signal(
     conn.execute(
         """INSERT OR IGNORE INTO signals
            (signal_id, source, external_id, title, content,
+            lat, lng,
             stream, status, source_type, timestamp, metadata_json,
             gravity_score)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
             sig_id, "saflii", ext_id,
             item["title"][:300], content,
+            lat, lng,
             "CRIME_INTEL", "raw", "live", now,
             json.dumps(metadata, ensure_ascii=False),
             gravity,
@@ -308,6 +365,30 @@ def _write_signal(
                 "INSERT OR IGNORE INTO signal_actors (signal_id, actor_id, role) VALUES (?, ?, ?)",
                 (sig_id, actor_row["actor_id"], "subject"),
             )
+
+    # ── Store case ref in actor's structured profile ────────────────
+    if case_ref:
+        try:
+            from forage.engines.entity_engine import update_actor_property
+            for actor in matched_actors:
+                update_actor_property(conn, actor["actor_id"], "saflii_case_refs", case_ref)
+        except Exception:
+            pass
+
+    # ── Evidence preservation: archive source URL ────────────────────
+    source_url = item.get("link") or item.get("url")
+    if source_url:
+        try:
+            from utils.wayback import archive_url as _archive
+            archived = _archive(source_url)
+            if archived:
+                metadata["archive_url"] = archived
+                conn.execute(
+                    "UPDATE signals SET metadata_json = ? WHERE signal_id = ?",
+                    (json.dumps(metadata, ensure_ascii=False), sig_id),
+                )
+        except Exception:
+            pass
 
     conn.commit()
 

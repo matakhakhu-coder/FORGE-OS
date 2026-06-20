@@ -169,6 +169,15 @@
   color: var(--accent);
   letter-spacing: 0.04em;
 }
+
+@media (max-width: 640px) {
+  .cases-shell { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
+  .cases-header__title { font-size: 1.3rem; }
+  .cases-grid { grid-template-columns: 1fr; }
+  .cases-stats { gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); }
+  .case-card { padding: var(--sp-4); }
+  .case-card__footer { gap: var(--sp-2); flex-wrap: wrap; }
+}
 </style>
 {% endblock %}
 
@@ -221,10 +230,11 @@
 
       <div class="case-card__desc">{{ case.description[:160] }}{% if case.description|length > 160 %}…{% endif %}</div>
 
-      <div class="case-coe">
+      <div class="case-coe" title="Evidence Confidence: average gravity score across all pinned signals. Higher = more sources corroborate the investigation. 0.75+ = Corroborated, 0.55+ = Strong, 0.35+ = Established, 0.20+ = Developing, below = Preliminary.">
         <div class="case-coe__label">
           <span class="case-coe__title">Evidence Confidence</span>
-          <span class="case-coe__val">{{ '%.2f'|format(case.coe) }}</span>
+          {% set coe_label = 'Corroborated' if coe_pct >= 75 else ('Strong' if coe_pct >= 55 else ('Established' if coe_pct >= 35 else ('Developing' if coe_pct >= 20 else 'Preliminary'))) %}
+          <span class="case-coe__val">{{ coe_label }} · {{ '%.2f'|format(case.coe) }}</span>
         </div>
         <div class="case-coe__track">
           <div class="case-coe__fill" style="width:{{ coe_pct }}%; background:{{ coe_color }};"></div>
@@ -236,6 +246,7 @@
         <span class="case-card__meta">{{ case.actor_count }} actors</span>
         <span class="case-card__meta">{{ case.updated_fmt }}</span>
         <span class="case-card__cta">View case →</span>
+        <a href="graph.html?case={{ case.case_id }}" class="case-card__cta" style="color:var(--infra);" onclick="event.stopPropagation();">Graph →</a>
       </div>
 
     </a>

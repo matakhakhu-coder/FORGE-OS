@@ -122,6 +122,37 @@ STREAM_LABELS = {
 
 md_parser = MarkdownIt()
 
+# ── Source label mapping (collector ID → human-readable) ─────────────────────
+SOURCE_LABELS: dict[str, str] = {
+    "civic_intel_collector":    "News Wire",
+    "civic_intel":              "News Wire",
+    "rss_collector":            "RSS Feed",
+    "rss":                      "RSS Feed",
+    "forge_incident":           "Incident Report",
+    "saflii":                   "Court Records",
+    "dork_collector":           "Web Intelligence",
+    "dork":                     "Web Intelligence",
+    "gdelt_collector":          "GDELT",
+    "gdelt":                    "GDELT",
+    "acled_collector":          "ACLED",
+    "acled":                    "ACLED",
+    "firms_collector":          "Satellite Fire",
+    "earthquake_collector":     "Seismic",
+    "usgs_collector":           "USGS",
+    "disease_outbreak_collector": "Health Alert",
+    "ndbc_collector":           "Marine Buoy",
+    "cipc_collector":           "Company Registry",
+    "pdf_infiltrator":          "Document Scan",
+    "bi196_collector":          "SA Gazette",
+    "x_pulse":                  "X / Social",
+}
+
+
+def _source_label(raw: str) -> str:
+    """Map raw collector source ID to a human-readable label."""
+    key = (raw or "").lower().strip()
+    return SOURCE_LABELS.get(key, raw.upper() if raw else "UNKNOWN")
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -189,7 +220,7 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             "summary":       _truncate(r["content"]),
             "stream":        r["stream"] or "GLOBAL",
             "stream_label":  STREAM_LABELS.get(r["stream"] or "GLOBAL", r["stream"]),
-            "source":        (r["source"] or "").upper(),
+            "source":        _source_label(r["source"]),
             "lat":           r["lat"],
             "lng":           r["lng"],
             "gravity_score": r["gravity_score"],
@@ -417,7 +448,7 @@ def _fetch_case_signals(conn: sqlite3.Connection, case_id: int) -> list[dict]:
     return [{
         "title":         r["title"],
         "content":       _strip_html(r["content"] or ""),
-        "source":        (r["source"] or "").upper(),
+        "source":        _source_label(r["source"]),
         "gravity_score": round(r["gravity_score"] or 0.0, 3),
         "published_fmt": _fmt_dt(r["timestamp"]),
         "note":          r["note"] or "",
@@ -890,6 +921,10 @@ def _build_dist(
     actor_tmpl = env.get_template("actor_profile.html")
     for actor in directory_actors:
         actor["initials"] = _actor_initials(actor["name"])
+        raw_profile = conn.execute(
+            "SELECT socint_profile FROM actors WHERE actor_id = ?", (actor["actor_id"],)
+        ).fetchone()
+        actor["properties"] = json.loads(raw_profile["socint_profile"] or "{}") if raw_profile and raw_profile["socint_profile"] else {}
         actor["cases"] = _fetch_actor_cases(conn, actor["actor_id"])
         actor["events"] = _fetch_actor_events(conn, actor["actor_id"])
         actor["activity"] = _fetch_actor_activity(conn, actor["actor_id"])
@@ -902,11 +937,19 @@ def _build_dist(
         )
     print(f"[publish] entities/    - {len(directory_actors)} entity profile pages")
 
-    # graph.html
+    # graph.html — with case→actor mapping for progressive expand/collapse
     graph_data = _build_graph_data(conn)
+    case_actor_map = {}
+    for cid in PUBLISHED_CASE_IDS:
+        rows = conn.execute(
+            "SELECT actor_id FROM case_actors WHERE case_id = ?", (cid,)
+        ).fetchall()
+        case_actor_map[str(cid)] = [r["actor_id"] for r in rows]
+
     (DIST / "graph.html").write_text(
         env.get_template("graph.html").render(
             graph=graph_data,
+            case_actor_map=case_actor_map,
             stream_labels=STREAM_LABELS,
             generated_at=now_str,
             **rev,
@@ -918,6 +961,12 @@ def _build_dist(
     # watchlist.html — static shell, content from localStorage at runtime
     (DIST / "watchlist.html").write_text(
         env.get_template("watchlist.html").render(generated_at=now_str, **rev),
+        encoding="utf-8",
+    )
+
+    # about.html — methodology and "how it works" page
+    (DIST / "about.html").write_text(
+        env.get_template("about.html").render(generated_at=now_str, **rev),
         encoding="utf-8",
     )
 

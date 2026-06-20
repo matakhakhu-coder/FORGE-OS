@@ -13,6 +13,7 @@
 {% block wl_js_path %}../static/js/watchlist.js{% endblock %}
 {% block nav_watchlist %}../watchlist.html{% endblock %}
 {% block nav_subscribe %}../subscribe.html{% endblock %}
+{% block footer_about %}../about.html{% endblock %}
 
 {% block head_extra %}
 <style>
@@ -384,6 +385,42 @@
           <a href="{{ rel.other_id }}.html" class="ap-infobox__case-link">{{ rel.relation_type | replace('_', ' ') | title }} — {{ rel.other_name }}</a>
           {% endfor %}
         </div>
+      </div>
+      {% endif %}
+      {% if actor.properties and actor.properties.saflii_case_refs %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Court References</span>
+        <div class="ap-infobox__cases">
+          {% for ref in actor.properties.saflii_case_refs %}
+          <span class="ap-infobox__value" style="font-family:var(--font-mono);font-size:0.72rem;">{{ ref }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if actor.properties and actor.properties.aliases %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Also Known As</span>
+        <div class="ap-infobox__cases">
+          {% for alias in actor.properties.aliases %}
+          <span class="ap-infobox__value">{{ alias }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if actor.properties and actor.properties.x_handles %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">X / Social</span>
+        <div class="ap-infobox__cases">
+          {% for handle in actor.properties.x_handles %}
+          <span class="ap-infobox__value" style="font-family:var(--font-mono);">{{ handle }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if actor.properties and actor.properties.cipc_registration %}
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">CIPC Registration</span>
+        <span class="ap-infobox__value" style="font-family:var(--font-mono);">{{ actor.properties.cipc_registration }}</span>
       </div>
       {% endif %}
       <div class="ap-infobox__row">

@@ -321,6 +321,9 @@
           <a href="${nodeData.url}" class="btn btn--primary gpanel__cta">
             View Full Profile →
           </a>
+          <button class="btn btn--secondary gpanel__cta" onclick="discoverActor('${nodeData.id}', this)" style="margin-top:6px;">
+            Search SAFLII + News →
+          </button>
         </div>`;
 
     /* ── Event ─────────────────────────────────────────────────────────────── */
@@ -534,6 +537,20 @@
   /* ═══════════════════════════════════════════════════════════════════════════
      LOAD + INIT NETWORK
   ═══════════════════════════════════════════════════════════════════════════ */
+
+  function discoverActor(nodeId, btn) {
+    var actorId = nodeId.replace('actor-', '');
+    btn.textContent = 'Searching...';
+    btn.disabled = true;
+    fetch('/api/discover/' + actorId, { method: 'POST' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var count = data.stats ? (data.stats.signals_written || 0) : 0;
+        btn.textContent = count + ' new signals found';
+        if (count > 0) setTimeout(loadGraph, 1000);
+      })
+      .catch(function () { btn.textContent = 'Error — try again'; btn.disabled = false; });
+  }
 
   function loadGraph() {
     /* Show loader, hide empty state, close panel */

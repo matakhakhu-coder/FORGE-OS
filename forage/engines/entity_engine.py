@@ -253,3 +253,31 @@ def stitch_entity_cooccurrence(signal_id: str, db) -> int:
     if linked:
         db.commit()
     return linked
+
+
+def update_actor_property(db, actor_id: int, key: str, value) -> None:
+    """Update a structured property in the actor's socint_profile JSON.
+    If the property is a list, appends the value (deduped). Otherwise overwrites."""
+    row = db.execute(
+        "SELECT socint_profile FROM actors WHERE actor_id = ?", (actor_id,)
+    ).fetchone()
+    if not row:
+        return
+    profile = json.loads(row["socint_profile"] or "{}") if row["socint_profile"] else {}
+    existing = profile.get(key)
+    if isinstance(existing, list) and not isinstance(value, list):
+        if value not in existing:
+            existing.append(value)
+    elif isinstance(existing, list) and isinstance(value, list):
+        for v in value:
+            if v not in existing:
+                existing.append(v)
+    else:
+        profile[key] = value if not isinstance(existing, list) else [value]
+        if key not in profile:
+            profile[key] = [value] if isinstance(value, str) else value
+    profile["last_updated"] = datetime.now(timezone.utc).isoformat()
+    db.execute(
+        "UPDATE actors SET socint_profile = ? WHERE actor_id = ?",
+        (json.dumps(profile, ensure_ascii=False), actor_id),
+    )
