@@ -197,6 +197,19 @@
 .compare-check { color: var(--accent); }
 .compare-x { color: var(--text-ghost); }
 
+.compare-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .compare-table { min-width: 480px; }
+  .sub-header__title { font-size: 1.3rem; }
+  .sub-shell { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
+  .pricing-card { padding: var(--sp-4); }
+  .eft-section { padding: var(--sp-4); }
+}
+
 /* ── Manual EFT section ───────────────────────────────────────────────────── */
 .eft-section {
   background: var(--bg-surface);
@@ -331,6 +344,10 @@
         <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
         <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
       </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="site-nav">
         <a href="index.html" class="site-nav__link ">Timeline</a>
         <a href="cases.html" class="site-nav__link ">Cases</a>
@@ -347,7 +364,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">20 Jun 2026 01:37 UTC</span>
+        <span class="site-ts mono">20 Jun 2026 09:48 UTC</span>
       </div>
     </div>
   </header>
@@ -421,6 +438,7 @@
   </div>
 
   
+  <div class="compare-scroll">
   <table class="compare-table">
     <thead>
       <tr><th>Feature</th><th>Free</th><th>Pro</th></tr>
@@ -436,6 +454,7 @@
       <tr><td>Intelligence digest</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
     </tbody>
   </table>
+  </div>
 
   
   <div class="eft-section">
@@ -503,7 +522,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 20 Jun 2026 01:37 UTC
+        Generated 20 Jun 2026 09:48 UTC
       </div>
     </div>
   </footer>
@@ -511,7 +530,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 01:37 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 09:48 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>

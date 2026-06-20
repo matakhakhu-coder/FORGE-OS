@@ -379,6 +379,57 @@
   /* ── Leaflet overrides ──────────────────────────────────────────────────── */
   .leaflet-control-zoom { display: none !important; }
 
+  /* ── Signal dot (divIcon) with data-driven pulse ─────────────────────── */
+  .sig-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    position: relative;
+    cursor: pointer;
+  }
+  .sig-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid;
+    opacity: 0;
+  }
+
+  /* Pulse: recent + high gravity — fast, bright */
+  .sig-dot--pulse-critical {
+    animation: sig-pulse-bright 1.8s ease-in-out infinite;
+  }
+  .sig-dot--pulse-critical::after {
+    animation: sig-ring 1.8s ease-out infinite;
+  }
+
+  /* Pulse: recent + moderate gravity — slower, dimmer */
+  .sig-dot--pulse-active {
+    animation: sig-pulse-dim 2.8s ease-in-out infinite;
+  }
+  .sig-dot--pulse-active::after {
+    animation: sig-ring 2.8s ease-out infinite;
+  }
+
+  /* No pulse: older signals — static */
+  .sig-dot--static {
+    opacity: 0.7;
+  }
+
+  @keyframes sig-pulse-bright {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.15); filter: brightness(1.5); }
+  }
+  @keyframes sig-pulse-dim {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.08); filter: brightness(1.2); }
+  }
+  @keyframes sig-ring {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
   /* ── MarkerCluster theme override ─────────────────────────────────────── */
   .marker-cluster {
     background: rgba(5, 8, 11, 0.75) !important;
@@ -433,9 +484,53 @@
 
   /* ── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
-    .md-panel { left: var(--sp-4); width: calc(100vw - 2 * var(--sp-4)); top: 60px; }
-    .md-sidebar { top: auto; bottom: 40px; left: var(--sp-4); flex-direction: row; }
-    .md-controls { top: var(--sp-4); }
+    .md-sidebar {
+      top: auto;
+      bottom: 40px;
+      left: var(--sp-4);
+      right: var(--sp-4);
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--sp-3);
+    }
+    .md-pill {
+      padding: 10px 14px;
+      font-size: 0.65rem;
+      text-align: center;
+      flex: 1;
+    }
+    .md-panel {
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 72px;
+      width: 100%;
+      max-height: 60vh;
+      border-radius: var(--r-md) var(--r-md) 0 0;
+      border-bottom: none;
+    }
+    .md-controls {
+      top: var(--sp-4);
+      right: var(--sp-3);
+      padding: var(--sp-2);
+      gap: var(--sp-1);
+    }
+    .md-ctrl {
+      padding: 8px 10px;
+      font-size: 0.55rem;
+    }
+    .md-ticker {
+      height: 28px;
+    }
+    .md-ticker__badge {
+      font-size: 0.48rem;
+      padding: 2px 6px;
+      margin: 0 var(--sp-2);
+    }
+    .md-ticker__item {
+      font-size: 0.52rem;
+      padding: 0 var(--sp-3);
+    }
   }
 </style>
 
@@ -449,6 +544,10 @@
         <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
         <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
       </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="site-nav">
         <a href="index.html" class="site-nav__link ">Timeline</a>
         <a href="cases.html" class="site-nav__link ">Cases</a>
@@ -465,7 +564,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">20 Jun 2026 01:37 UTC</span>
+        <span class="site-ts mono">20 Jun 2026 09:48 UTC</span>
       </div>
     </div>
   </header>
@@ -863,7 +962,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 20 Jun 2026 01:37 UTC
+        Generated 20 Jun 2026 09:48 UTC
       </div>
     </div>
   </footer>
@@ -871,7 +970,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 01:37 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 09:48 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -1004,18 +1103,37 @@
 
   var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
 
+  var NOW_MS = Date.now();
+  var HOURS_48 = 48 * 60 * 60 * 1000;
+
   RAW.forEach(function (m, idx) {
     if (m.lat == null || m.lng == null) return;
     m._idx = idx;
     var color = STREAM_COLOR[m.stream] || '#7a95aa';
-    var marker = L.circleMarker([m.lat, m.lng], {
-      radius: 7,
-      fillColor: color,
-      color: color,
-      weight: 1.5,
-      opacity: 0.9,
-      fillOpacity: 0.58,
+
+    // Determine pulse class based on recency + gravity
+    var ageMs = m.published_at ? (NOW_MS - new Date(m.published_at).getTime()) : Infinity;
+    var isRecent = ageMs < HOURS_48;
+    var g = m.gravity_score || 0;
+    var pulseClass = 'sig-dot--static';
+    if (isRecent && g >= 0.55) pulseClass = 'sig-dot--pulse-critical';
+    else if (isRecent && g >= 0.20) pulseClass = 'sig-dot--pulse-active';
+
+    var dotHtml = '<div class="sig-dot ' + pulseClass + '" style="' +
+      'background:' + color + ';' +
+      'border-color:' + color + ';' +
+      'box-shadow:0 0 ' + (g >= 0.55 ? '8' : '4') + 'px ' + color + '60;' +
+      '"></div>';
+
+    var icon = L.divIcon({
+      className: '',
+      html: dotHtml,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -10],
     });
+
+    var marker = L.marker([m.lat, m.lng], { icon: icon });
     marker.bindPopup(buildPopup(m), { maxWidth: 300 });
     marker._forgeStream = m.stream;
     marker._forgeIdx = idx;

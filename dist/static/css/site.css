@@ -754,14 +754,121 @@ a:hover { color: var(--accent-bright); }
   .print-footer__class { color: #b45309; }
 }
 
+/* ── Hamburger toggle (hidden on desktop) ──────────────────────────────────── */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: 8px 7px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 1px;
+  transition: transform var(--t-mid), opacity var(--t-mid);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
+  /* ── Header & hamburger nav ──────────────────────────────────────────── */
   .site-header__inner { padding: 0 var(--sp-4); gap: var(--sp-3); }
   .site-tagline       { display: none; }
   .site-ts            { display: none; }
+
+  .nav-toggle { display: flex; }
+
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--bg-void);
+    border-bottom: 1px solid var(--border-dim);
+    padding: var(--sp-3) 0;
+    z-index: 99;
+    gap: 0;
+  }
+  .site-nav--open { display: flex; }
+
+  .site-nav__link {
+    padding: var(--sp-3) var(--sp-5);
+    font-size: 0.75rem;
+    border-radius: 0;
+  }
+  .site-nav__link:hover,
+  .site-nav__link--active {
+    background: var(--bg-elevated);
+  }
+
+  .site-header__meta { gap: var(--sp-2); }
+  .site-search       { display: none; }
+  .live-badge         { font-size: 0.52rem; padding: 2px 5px; }
+
+  /* ── Feed & content ──────────────────────────────────────────────────── */
   .feed-wrap          { padding: var(--sp-4) var(--sp-4) var(--sp-12); }
   .stream-bar__inner  { padding: var(--sp-2) var(--sp-4); }
   .article-shell      { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
   .article-header__title { font-size: 1.4rem; }
   .card__ts           { display: none; }
+
+  /* ── Touch targets ───────────────────────────────────────────────────── */
+  .pill {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+  }
+  .stream-toggle {
+    width: 40px;
+    height: 22px;
+  }
+  .stream-toggle::after {
+    width: 14px;
+    height: 14px;
+    top: 3px;
+    left: 3px;
+  }
+  .stream-toggle.on::after {
+    transform: translateX(18px);
+  }
+
+  /* ── Grid layouts ────────────────────────────────────────────────────── */
+  .bl-grid       { grid-template-columns: 1fr; }
+  .cases-grid    { grid-template-columns: 1fr; }
+
+  /* ── Typography floor (prevent sub-10px text) ────────────────────────── */
+  .badge,
+  .card__source,
+  .card__gravity-val,
+  .card__geo,
+  .card__author,
+  .tag,
+  .pill-count,
+  .class-banner,
+  .page-last-updated,
+  .methodology-section__title { font-size: 0.68rem; }
+
+  /* Prevent iOS auto-zoom on input focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="search"] { font-size: 16px; }
+
+  /* ── Footer ──────────────────────────────────────────────────────────── */
+  .site-footer__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--sp-2);
+  }
 }

@@ -183,6 +183,49 @@
   .ig-legend__dot  { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
   .ig-legend__line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
   .ig-legend__lbl  { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+
+  /* ── Responsive ─────────────────────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    #ig-toolbar {
+      padding: var(--sp-2) var(--sp-3);
+      gap: var(--sp-2);
+    }
+    .ig-title { font-size: 0.6rem; margin-right: var(--sp-2); }
+    .ig-stat  { font-size: 0.55rem; }
+    .ig-sep   { display: none; }
+    #ig-search {
+      width: 100%;
+      order: 99;
+      font-size: 16px;
+    }
+    .ig-btn {
+      padding: 8px 12px;
+      font-size: 0.6rem;
+    }
+
+    #ig-panel {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 50vh;
+      border-left: none;
+      border-top: 1px solid var(--border-dim);
+      z-index: 15;
+    }
+
+    #ig-legend {
+      bottom: var(--sp-3);
+      left: var(--sp-3);
+      padding: var(--sp-2) var(--sp-3);
+      max-width: 140px;
+    }
+    .ig-legend__title { font-size: 0.48rem; margin-bottom: var(--sp-2); }
+    .ig-legend__lbl   { font-size: 0.5rem; }
+    .ig-legend__dot   { width: 7px; height: 7px; }
+    .ig-legend__line  { width: 14px; }
+  }
 </style>
 
 </head>
@@ -195,6 +238,10 @@
         <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
         <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
       </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="site-nav">
         <a href="index.html" class="site-nav__link ">Timeline</a>
         <a href="cases.html" class="site-nav__link ">Cases</a>
@@ -211,7 +258,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">20 Jun 2026 01:37 UTC</span>
+        <span class="site-ts mono">20 Jun 2026 09:48 UTC</span>
       </div>
     </div>
   </header>
@@ -236,7 +283,7 @@
     <button class="ig-btn" onclick="resetLayout()">Reset</button>
     <div class="ig-spacer"></div>
     <input id="ig-search" type="text" placeholder="Search actor…">
-    <span class="ig-stat" style="margin-left:auto;">20 Jun 2026 01:37 UTC</span>
+    <span class="ig-stat" style="margin-left:auto;">20 Jun 2026 09:48 UTC</span>
   </div>
 
   <div id="ig-body">
@@ -292,7 +339,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 20 Jun 2026 01:37 UTC
+        Generated 20 Jun 2026 09:48 UTC
       </div>
     </div>
   </footer>
@@ -300,7 +347,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 01:37 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 09:48 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
