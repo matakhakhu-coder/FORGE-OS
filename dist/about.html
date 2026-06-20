@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<style>
+.about-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.about-header { margin-bottom: var(--sp-8); }
+.about-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.about-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-3);
+}
+.about-header__sub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.about-section { margin-bottom: var(--sp-8); }
+.about-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+.about-body {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.about-body p { margin-bottom: var(--sp-4); }
+.about-body strong { color: var(--text-primary); }
+
+.about-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--sp-4) 0;
+}
+.about-table th, .about-table td {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 0.78rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.about-table th {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.about-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--sp-4);
+  margin: var(--sp-5) 0;
+}
+.about-flow__step {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  text-align: center;
+}
+.about-flow__num {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+.about-flow__label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-1);
+}
+.about-flow__desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="index.html" class="site-nav__link ">Timeline</a>
+        <a href="cases.html" class="site-nav__link ">Cases</a>
+        <a href="graph.html" class="site-nav__link ">Graph</a>
+        <a href="map.html" class="site-nav__link ">Map</a>
+        <a href="entities.html" class="site-nav__link ">Entities</a>
+        <a href="watchlist.html" class="site-nav__link ">Watchlist</a>
+        <a href="subscribe.html" class="site-nav__link " style="color:var(--accent);">Pro</a>
+      </nav>
+      <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono">20 Jun 2026 10:57 UTC</span>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="about-shell">
+
+  <div class="about-header">
+    <div class="about-header__eyebrow">Methodology &middot; ZA-DIVERGENT</div>
+    <h1 class="about-header__title">How It Works</h1>
+    <p class="about-header__sub">
+      ZA-DIVERGENT is a machine-scored intelligence bulletin covering South African
+      corruption, crime, and governance. Signals are collected from open sources,
+      verified against court records, and organized into active investigations.
+    </p>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">What is ZA-DIVERGENT</div>
+    <div class="about-body">
+      <p>
+        ZA-DIVERGENT is the public intelligence bulletin produced by the
+        <strong>FORGE OSINT Engine</strong> &mdash; a local-first, analyst-grade
+        intelligence operating system built for the collection, scoring, and
+        visual analysis of open-source intelligence.
+      </p>
+      <p>
+        Every signal on this site is sourced from publicly available material:
+        news outlets, government gazettes, court records, satellite data, and
+        social media. Nothing on this site is classified, leaked, or obtained
+        through non-public means.
+      </p>
+      <p>
+        The bulletin is designed and operated out of <strong>South Africa</strong>,
+        with a primary focus on domestic and regional open-source intelligence.
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Collection Pipeline</div>
+    <div class="about-body">
+      <p>
+        Signals are collected by automated collectors that scan open sources on a
+        regular schedule. Each collector is purpose-built for a specific source type:
+      </p>
+    </div>
+    <table class="about-table">
+      <thead>
+        <tr><th>Source</th><th>What it collects</th><th>Update frequency</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>News Wire</td><td>SA investigative journalism (amaBhungane, Daily Maverick, News24, GroundUp, TimesLive)</td><td>Every pipeline run</td></tr>
+        <tr><td>Court Records</td><td>SAFLII case law involving tracked actors &mdash; provides external schema authority via immutable case numbers</td><td>Every pipeline run</td></tr>
+        <tr><td>Company Registry</td><td>CIPC corporate registration checks on procurement-linked actors</td><td>On demand</td></tr>
+        <tr><td>SA Gazette</td><td>Government procurement notices and tenders</td><td>Weekly</td></tr>
+        <tr><td>GDELT / ACLED</td><td>Global conflict and event data for regional context</td><td>Daily</td></tr>
+        <tr><td>Health Alert</td><td>Disease outbreak monitoring (WHO, ProMED, CDC)</td><td>Daily</td></tr>
+        <tr><td>Incident Report</td><td>Manually authored signals for specific events under investigation</td><td>As needed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Gravity Scoring</div>
+    <div class="about-body">
+      <p>
+        Every signal is assigned a <strong>gravity score</strong> between 0.0 and 1.0
+        by the FORGE analytical pipeline. This score represents editorial weight &mdash;
+        how significant the signal is based on source reliability, recency, keyword
+        density, and corroboration with existing intelligence.
+      </p>
+      <p>The score is displayed as a named significance band:</p>
+    </div>
+    <table class="about-table">
+      <thead>
+        <tr><th>Score range</th><th>Band</th><th>Meaning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0.75 &ndash; 1.00</td><td>Critical</td><td>Multiple corroborating sources, high urgency, verified actors</td></tr>
+        <tr><td>0.55 &ndash; 0.74</td><td>High</td><td>Strong source, significant subject matter, escalation threshold</td></tr>
+        <tr><td>0.35 &ndash; 0.54</td><td>Significant</td><td>Established signal, meets monitoring threshold</td></tr>
+        <tr><td>0.20 &ndash; 0.34</td><td>Notable</td><td>Single-source or developing, worth tracking</td></tr>
+        <tr><td>0.00 &ndash; 0.19</td><td>Routine</td><td>Low-weight background signal</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Evidence Confidence (Cases)</div>
+    <div class="about-body">
+      <p>
+        Each investigation case has an <strong>Evidence Confidence</strong> score &mdash;
+        the average gravity score across all signals pinned to that case. This
+        reflects the overall evidentiary weight of the investigation:
+      </p>
+    </div>
+    <table class="about-table">
+      <thead>
+        <tr><th>Score range</th><th>Label</th><th>What it means</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0.75+</td><td>Corroborated</td><td>Multiple independent high-quality sources confirm the investigation's findings</td></tr>
+        <tr><td>0.55 &ndash; 0.74</td><td>Strong</td><td>Reliable sources with substantial corroboration</td></tr>
+        <tr><td>0.35 &ndash; 0.54</td><td>Established</td><td>Investigation has a solid evidence base from verified sources</td></tr>
+        <tr><td>0.20 &ndash; 0.34</td><td>Developing</td><td>Early-stage investigation, limited corroboration so far</td></tr>
+        <tr><td>Below 0.20</td><td>Preliminary</td><td>Sparse evidence, mostly single-source signals</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Pipeline Flow</div>
+    <div class="about-flow">
+      <div class="about-flow__step">
+        <div class="about-flow__num">1</div>
+        <div class="about-flow__label">Collect</div>
+        <div class="about-flow__desc">Automated collectors scan open sources for new signals</div>
+      </div>
+      <div class="about-flow__step">
+        <div class="about-flow__num">2</div>
+        <div class="about-flow__label">Score</div>
+        <div class="about-flow__desc">Gravity engine assigns significance based on source, content, and context</div>
+      </div>
+      <div class="about-flow__step">
+        <div class="about-flow__num">3</div>
+        <div class="about-flow__label">Link</div>
+        <div class="about-flow__desc">Signals are linked to actors, cases, and geographic locations</div>
+      </div>
+      <div class="about-flow__step">
+        <div class="about-flow__num">4</div>
+        <div class="about-flow__label">Publish</div>
+        <div class="about-flow__desc">Verified signals are published to this bulletin as a static site</div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Trust and Transparency</div>
+    <div class="about-body">
+      <p>
+        <strong>All sources are open.</strong> Every signal on this site is derived from
+        publicly available material. Source attribution is displayed on every signal card.
+      </p>
+      <p>
+        <strong>Court records provide external authority.</strong> When SAFLII case numbers
+        appear (e.g. [2024] ZAGPPHC 441), these are immutable, verifiable identifiers that
+        can be independently checked on <a href="https://www.saflii.org" target="_blank" rel="noopener">saflii.org</a>.
+      </p>
+      <p>
+        <strong>Inclusion is not accusation.</strong> An actor appearing in the entity
+        directory reflects relevance to a published investigation, not a legal finding.
+        Analytical conclusions are clearly labelled as assessments.
+      </p>
+      <p>
+        <strong>Corrections are published.</strong> When information is found to be incorrect,
+        corrections are noted at the top of the affected article or profile.
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <div class="about-section__title">Map Markers</div>
+    <div class="about-body">
+      <p>
+        Markers on the signal map represent geo-tagged intelligence. Their visual behaviour
+        communicates two dimensions:
+      </p>
+      <p>
+        <strong>Pulsing markers</strong> indicate signals published within the last 48 hours.
+        Fast, bright pulses indicate high gravity (Critical/High significance). Slower pulses
+        indicate moderate gravity. Static markers represent older, digested signals.
+      </p>
+      <p>
+        <strong>Cluster bubbles</strong> with numbers appear when multiple signals overlap
+        geographically. Click to zoom in and separate them. The cluster colour indicates
+        density: green (small), amber (medium), red (large cluster).
+      </p>
+      <p>
+        <strong>Dashed lines</strong> between markers connect signals from the same
+        investigation case that are geographically separated, showing the spatial extent
+        of an investigation.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        <a href="about.html" style="color:var(--text-dim);">How It Works</a>
+      </div>
+      
+      <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener"
+         class="membership-btn">
+        
+        Support Independent OSINT
+      </a>
+      
+      <div class="site-footer__right mono">
+        Generated 20 Jun 2026 10:57 UTC
+      </div>
+    </div>
+  </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 10:57 UTC</span>
+  </div>
+
+  <script src="static/js/site.js"></script>
+  <script src="static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
+  
+</body>
+</html>
