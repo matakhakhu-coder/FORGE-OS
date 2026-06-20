@@ -364,7 +364,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono">20 Jun 2026 10:57 UTC</span>
+        <span class="site-ts mono">20 Jun 2026 12:21 UTC</span>
       </div>
     </div>
   </header>
@@ -381,57 +381,55 @@
 
   <div class="sub-header">
     <div class="sub-header__eyebrow">Intelligence Access &middot; ZA-DIVERGENT</div>
-    <h1 class="sub-header__title">Choose Your Access Level</h1>
+    <h1 class="sub-header__title">Access Tiers</h1>
     <p class="sub-header__sub">
-      The public bulletin is free. Pro unlocks full case evidence,
-      entity dossiers, API access, and daily intelligence digests.
+      The full bulletin is free and open. Pro features are in development &mdash;
+      register interest to be notified when they launch.
     </p>
   </div>
 
   
   <div class="pricing-grid">
 
-    <div class="pricing-card">
+    <div class="pricing-card" style="border-left:3px solid var(--accent);">
+      <span class="pricing-card__badge">Current</span>
       <div class="pricing-card__name">Public Bulletin</div>
       <div class="pricing-card__price">Free</div>
-      <div class="pricing-card__period">No account required</div>
+      <div class="pricing-card__period">No account required &middot; full access</div>
       <ul class="pricing-card__features">
-        <li>Latest 20 signals on timeline</li>
-        <li>Signal map with geo-tagging</li>
+        <li>All signals &mdash; full archive</li>
+        <li>Signal map with geo-tagging &amp; clustering</li>
         <li>Entity graph visualization</li>
-        <li>3 most recent analyst articles</li>
-        <li>Entity directory</li>
-        <li class="disabled">Full case evidence chains</li>
-        <li class="disabled">Complete entity dossiers</li>
-        <li class="disabled">API feed (pro-feed.json)</li>
-        <li class="disabled">Daily intelligence digest</li>
+        <li>All analyst articles</li>
+        <li>Entity directory &amp; full profiles</li>
+        <li>Full case evidence chains</li>
+        <li>Complete entity dossiers</li>
+        <li>SAFLII court record integration</li>
+        <li>MiniSearch across all content</li>
+        <li>Watchlist (localStorage)</li>
       </ul>
-      <span class="pricing-cta pricing-cta--free">Current access</span>
+      <span class="pricing-cta pricing-cta--free">You have full access</span>
     </div>
 
     <div class="pricing-card pricing-card--pro">
-      <span class="pricing-card__badge">Recommended</span>
+      <span class="pricing-card__badge">Coming Soon</span>
       <div class="pricing-card__name">Pro Intelligence</div>
-      <div class="pricing-card__price">R49.00</div>
-      <div class="pricing-card__period">per month &middot; cancel anytime</div>
+      <div class="pricing-card__price">TBD</div>
+      <div class="pricing-card__period">Pricing announced at launch</div>
       <ul class="pricing-card__features">
-        <li>All signals &mdash; full archive access</li>
-        <li>Signal map with geo-tagging</li>
-        <li>Entity graph visualization</li>
-        <li>All analyst articles</li>
-        <li>Entity directory</li>
-        <li>Full case evidence chains</li>
-        <li>Complete entity dossiers</li>
-        <li>API feed (pro-feed.json)</li>
-        <li>Daily intelligence digest</li>
+        <li>Everything in Free, plus:</li>
+        <li>API feed (pro-feed.json) &mdash; machine-readable signal data</li>
+        <li>Daily intelligence digest to email</li>
+        <li>Custom alert rules (stream + keyword filters)</li>
+        <li>Priority signal notifications</li>
+        <li class="disabled">Additional Pro features TBD</li>
       </ul>
 
       <input type="email" id="checkout-email" class="checkout-email"
-             placeholder="Your email address" required>
+             placeholder="Your email — get notified when Pro launches" required>
 
       <button class="pricing-cta pricing-cta--pro" id="checkout-btn" disabled>
-        
-        Subscribe &mdash; R49/month
+        Register Interest
       </button>
     </div>
 
@@ -441,32 +439,23 @@
   <div class="compare-scroll">
   <table class="compare-table">
     <thead>
-      <tr><th>Feature</th><th>Free</th><th>Pro</th></tr>
+      <tr><th>Feature</th><th>Free (current)</th><th>Pro (coming)</th></tr>
     </thead>
     <tbody>
-      <tr><td>Timeline signals</td><td>20 latest</td><td>Full archive</td></tr>
-      <tr><td>Analyst articles</td><td>3 latest</td><td>All</td></tr>
-      <tr><td>Signal map</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Timeline signals</td><td>Full archive</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Analyst articles</td><td>All</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Signal map + clusters</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
       <tr><td>Entity graph</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
-      <tr><td>Case detail + evidence</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
-      <tr><td>Entity dossiers</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Case detail + evidence</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Entity dossiers</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>SAFLII court records</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Search + watchlist</td><td class="compare-check">&#10003;</td><td class="compare-check">&#10003;</td></tr>
       <tr><td>API feed (JSON)</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
-      <tr><td>Intelligence digest</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Daily intelligence digest</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Custom alert rules</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
+      <tr><td>Priority notifications</td><td class="compare-x">&mdash;</td><td class="compare-check">&#10003;</td></tr>
     </tbody>
   </table>
-  </div>
-
-  
-  <div class="eft-section">
-    <div class="eft-section__title">Alternative: Manual EFT</div>
-    
-    <div class="eft-row"><span class="eft-label">Bank</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_BANK]</span></div>
-    <div class="eft-row"><span class="eft-label">Account</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_ACCOUNT]</span></div>
-    <div class="eft-row"><span class="eft-label">Branch</span><span class="eft-value eft-value--placeholder">[Set FORGE_EFT_BRANCH]</span></div>
-    <div class="eft-note" style="color:var(--text-ghost);">
-      <span class="sim-badge">SIM</span> EFT details will appear here when configured.
-    </div>
-    
   </div>
 
   
@@ -477,16 +466,16 @@
       <div class="sub-faq__a">An open-source intelligence bulletin covering South Africa and the surrounding region. Signals are collected, scored, and published by the FORGE OSINT engine. All source material is publicly available.</div>
     </div>
     <div class="sub-faq__item">
-      <div class="sub-faq__q">Is the free tier permanent?</div>
-      <div class="sub-faq__a">Yes. The public bulletin will always be free. Pro adds depth &mdash; full evidence chains, entity dossiers, and machine-readable feeds.</div>
+      <div class="sub-faq__q">Is all the content really free?</div>
+      <div class="sub-faq__a">Yes. The full bulletin &mdash; all signals, cases, entity profiles, court records, map, and graph &mdash; is free with no account required. Pro will add automation features (API feeds, email digests, custom alerts) for power users when it launches.</div>
     </div>
     <div class="sub-faq__item">
-      <div class="sub-faq__q">How are payments processed?</div>
-      <div class="sub-faq__a">Payments are processed securely by Paystack, a PCI-DSS compliant payment gateway licensed by the South African Reserve Bank. We never see or store your card details.</div>
+      <div class="sub-faq__q">When does Pro launch?</div>
+      <div class="sub-faq__a">We're still defining which features belong in the Pro tier. Register your email above and we'll notify you when it's ready. No spam, just one announcement.</div>
     </div>
     <div class="sub-faq__item">
-      <div class="sub-faq__q">My card doesn't work?</div>
-      <div class="sub-faq__a">Use the Manual EFT option above. Send proof of payment to the listed email for manual activation within 24 hours.</div>
+      <div class="sub-faq__q">How can I support this project now?</div>
+      <div class="sub-faq__a">Use the "Support Independent OSINT" button in the footer. Every contribution helps keep the bulletin running and the data pipeline active.</div>
     </div>
   </div>
 
@@ -523,7 +512,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 20 Jun 2026 10:57 UTC
+        Generated 20 Jun 2026 12:21 UTC
       </div>
     </div>
   </footer>
@@ -531,7 +520,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 10:57 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 20 Jun 2026 12:21 UTC</span>
   </div>
 
   <script src="static/js/site.js"></script>
@@ -585,9 +574,23 @@
   });
 
   
-  // ── NO PAYSTACK CONFIG: button disabled ───────────────────────────────
-  checkoutBtn.disabled = true;
-  checkoutBtn.textContent = 'Coming soon';
+  // ── INTEREST REGISTRATION: store email, show confirmation ─────────────
+  checkoutBtn.addEventListener('click', function () {
+    var email = emailInput.value.trim();
+    if (!email) return;
+
+    try {
+      var existing = JSON.parse(localStorage.getItem('za_divergent_interest') || '[]');
+      if (existing.indexOf(email) === -1) existing.push(email);
+      localStorage.setItem('za_divergent_interest', JSON.stringify(existing));
+    } catch (e) {}
+
+    checkoutBtn.textContent = 'Registered';
+    checkoutBtn.disabled = true;
+    checkoutBtn.style.background = 'var(--global)';
+    emailInput.disabled = true;
+    emailInput.style.opacity = '0.5';
+  });
   
 
 })();
