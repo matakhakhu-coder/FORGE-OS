@@ -7,6 +7,16 @@
   <div class="page-header__eyebrow">System // Admin</div>
   <h1 class="page-header__title">Admin Panel</h1>
   <p class="page-header__sub">Ingest artifacts, create events, manage the archive.</p>
+  <div style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+    <button hx-post="/api/admin/publish" hx-swap="none"
+            hx-confirm="Deploy to ZA-DIVERGENT?"
+            style="background:#1d9e45;color:#fff;border:none;padding:0.5rem 1.2rem;border-radius:4px;cursor:pointer;font-size:0.8rem;">
+      Publish to ZA-DIVERGENT
+    </button>
+    <a href="{{ url_for('diagnostics.status_dashboard') }}" class="btn btn--secondary" style="font-size:0.8rem;">
+      System Status
+    </a>
+  </div>
 </div>
 
 {# ── Stat summary ────────────────────────────────────────────────────────── #}

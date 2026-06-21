@@ -211,11 +211,40 @@ def _stream_artifact_processor(proc: subprocess.Popen, job_id: int,
 @control_bp.route("/api/control/registry", methods=["GET"])
 def api_control_registry():
     """
-    Return the full collector registry — healthy collectors and dead nodes.
-    The frontend uses this to stamp Control Room buttons and health cards
-    dynamically, replacing hard-coded COLLECTOR_ORDER arrays.
+    Return the full collector registry with per-source signal counts
+    and last pipeline run timestamps. The frontend uses this to render
+    the collector control matrix with health badges.
     """
+    db = get_db()
     collectors = list(_COLLECTOR_REGISTRY.values())
+
+    # Per-source signal counts
+    try:
+        rows = db.execute(
+            "SELECT source, COUNT(*) AS cnt FROM signals GROUP BY source"
+        ).fetchall()
+        source_counts = {r[0]: r[1] for r in rows}
+    except Exception:
+        source_counts = {}
+
+    # Last pipeline run per component
+    try:
+        rows = db.execute(
+            "SELECT component, MAX(run_at) AS last_run, status "
+            "FROM pipeline_runs GROUP BY component"
+        ).fetchall()
+        last_runs = {r[0]: {"last_run": r[1], "status": r[2]} for r in rows}
+    except Exception:
+        last_runs = {}
+
+    # Enrich each collector with live metrics
+    for c in collectors:
+        cid = c.get("id", "")
+        c["signal_count"] = source_counts.get(cid, 0)
+        run_info = last_runs.get(cid, {})
+        c["last_run"] = run_info.get("last_run")
+        c["last_status"] = run_info.get("status")
+
     return jsonify({
         "collectors": collectors,
         "dead_nodes": _DEAD_NODES,
@@ -1219,3 +1248,40 @@ def api_quarantine_purge_all():
         return jsonify({"status": "partial", "deleted": deleted,
                         "errors": errors[:5]}), 207
     return jsonify({"status": "purged", "deleted": deleted})
+
+
+# ── Sprint 3: One-click publish ──────────────────────────────────────────────
+
+@control_bp.route("/api/admin/publish", methods=["POST"])
+def api_admin_publish():
+    """Trigger a ZA-DIVERGENT publish + deploy cycle from the admin panel."""
+    import subprocess, sys, threading
+
+    if _PIPELINE_ACTIVE.get("publish"):
+        return jsonify({"status": "rejected", "reason": "publish already running"}), 409
+
+    job_id = create_job("publish", "ZA-DIVERGENT publish + deploy")
+
+    def _run():
+        _PIPELINE_ACTIVE["publish"] = True
+        try:
+            update_job(job_id, status="running", message="Publishing to ZA-DIVERGENT...")
+            proc = subprocess.run(
+                [sys.executable, "tools/publish.py", "--deploy"],
+                capture_output=True, text=True, timeout=300,
+                cwd=str(BASE_DIR), encoding="utf-8", errors="replace",
+            )
+            if proc.returncode == 0:
+                finalize_job(job_id, "completed", "Publish + deploy complete")
+            else:
+                err = (proc.stderr or proc.stdout or "")[-200:]
+                finalize_job(job_id, "failed", f"Exit {proc.returncode}: {err}")
+        except subprocess.TimeoutExpired:
+            finalize_job(job_id, "failed", "Publish timed out after 300s")
+        except Exception as exc:
+            finalize_job(job_id, "failed", str(exc)[:200])
+        finally:
+            _PIPELINE_ACTIVE.pop("publish", None)
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"status": "started", "job_id": job_id, "job": "publish"})

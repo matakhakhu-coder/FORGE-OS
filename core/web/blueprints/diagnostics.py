@@ -424,3 +424,105 @@ def evolution():
             })
 
     return render_template("evolution.html", articles=articles)
+
+
+# ── Sprint 3: Live operational status dashboard ──────────────────────────────
+
+@diagnostics_bp.route("/status")
+def status_dashboard():
+    return render_template("status.html")
+
+
+@diagnostics_bp.route("/api/status/metrics")
+def api_status_metrics():
+    """Return live system metrics for the status dashboard (HTMX polling)."""
+    from core.web.state import _COLLECTOR_REGISTRY
+    from core.conclave.context import get_context
+
+    db = get_db()
+    metrics = {}
+
+    try:
+        metrics["signals"] = db.execute("SELECT COUNT(*) FROM signals").fetchone()[0]
+    except Exception:
+        metrics["signals"] = 0
+
+    try:
+        metrics["actors"] = db.execute("SELECT COUNT(*) FROM actors").fetchone()[0]
+    except Exception:
+        metrics["actors"] = 0
+
+    try:
+        metrics["cases_active"] = db.execute(
+            "SELECT COUNT(*) FROM cases WHERE status = 'active'"
+        ).fetchone()[0]
+    except Exception:
+        metrics["cases_active"] = 0
+
+    try:
+        metrics["events"] = db.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+    except Exception:
+        metrics["events"] = 0
+
+    try:
+        row = db.execute(
+            "SELECT run_at FROM pipeline_runs WHERE status = 'success' "
+            "ORDER BY run_at DESC LIMIT 1"
+        ).fetchone()
+        metrics["last_pipeline_run"] = row[0] if row else None
+    except Exception:
+        metrics["last_pipeline_run"] = None
+
+    try:
+        metrics["graph_nodes"] = db.execute("SELECT COUNT(*) FROM graph_nodes").fetchone()[0]
+        metrics["graph_edges"] = db.execute("SELECT COUNT(*) FROM graph_edges").fetchone()[0]
+    except Exception:
+        metrics["graph_nodes"] = 0
+        metrics["graph_edges"] = 0
+
+    try:
+        metrics["alerts"] = db.execute(
+            "SELECT COUNT(*) FROM sentinel_alerts WHERE status = 'new'"
+        ).fetchone()[0]
+    except Exception:
+        metrics["alerts"] = 0
+
+    # Collector fleet
+    metrics["collectors_total"] = len(_COLLECTOR_REGISTRY)
+    metrics["collectors_healthy"] = len(_COLLECTOR_REGISTRY)
+
+    # FMS modules
+    try:
+        ctx = get_context()
+        status = ctx.status()
+        metrics["fms_active"] = len(status.get("active_modules", []))
+        metrics["fms_total"] = len(status.get("modules", []))
+    except Exception:
+        metrics["fms_active"] = 0
+        metrics["fms_total"] = 0
+
+    # DB size
+    try:
+        metrics["db_size_mb"] = round(os.path.getsize(str(DB_PATH)) / (1024 * 1024), 2)
+    except Exception:
+        metrics["db_size_mb"] = 0
+
+    # Source distribution (top 10)
+    try:
+        rows = db.execute(
+            "SELECT source, COUNT(*) AS cnt FROM signals GROUP BY source ORDER BY cnt DESC LIMIT 10"
+        ).fetchall()
+        metrics["top_sources"] = [{"source": r[0], "count": r[1]} for r in rows]
+    except Exception:
+        metrics["top_sources"] = []
+
+    # Stream distribution
+    try:
+        rows = db.execute(
+            "SELECT stream, COUNT(*) AS cnt FROM signals GROUP BY stream ORDER BY cnt DESC"
+        ).fetchall()
+        metrics["streams"] = [{"stream": r[0], "count": r[1]} for r in rows]
+    except Exception:
+        metrics["streams"] = []
+
+    return jsonify(metrics)

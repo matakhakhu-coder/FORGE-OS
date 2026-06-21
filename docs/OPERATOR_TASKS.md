@@ -48,7 +48,7 @@
 |---|---|---|---|
 | Sprint 1: Content Gate | Done | 2026-06-21 | Pending commit |
 | Sprint 2: Automation | Done | 2026-06-21 | Pending commit |
-| Sprint 3: Dashboard | Not started | — | — |
+| Sprint 3: Dashboard | Done | 2026-06-21 | Pending commit |
 
 ## Deferred improvements
 

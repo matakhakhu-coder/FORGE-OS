@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}System Status{% endblock %}
+{% block content %}
+<div class="container" style="max-width:1100px;margin:0 auto;padding:2rem 1rem;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
+    <h1 style="margin:0;">System Status</h1>
+    <div>
+      <button hx-post="/api/admin/publish" hx-swap="none"
+              hx-confirm="Deploy to ZA-DIVERGENT?"
+              style="background:#1d9e45;color:#fff;border:none;padding:0.5rem 1.2rem;border-radius:4px;cursor:pointer;font-size:0.85rem;">
+        Publish to ZA-DIVERGENT
+      </button>
+      <a href="{{ url_for('diagnostics.diagnostics') }}" class="btn btn--secondary" style="margin-left:0.5rem;">Diagnostics</a>
+    </div>
+  </div>
+
+  <!-- Metric cards — auto-refresh via HTMX every 30s -->
+  <div id="metrics-panel" hx-get="/api/status/metrics" hx-trigger="load, every 30s"
+       hx-swap="innerHTML" hx-target="#metrics-content">
+    <div id="metrics-content">
+      <p style="color:#888;">Loading system metrics...</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('htmx:afterRequest', function(evt) {
+  if (evt.detail.target && evt.detail.target.id === 'metrics-content') {
+    try {
+      var data = JSON.parse(evt.detail.xhr.responseText);
+      var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;">';
+
+      function card(label, value, color) {
+        return '<div style="background:var(--bg-card,#111);border:1px solid var(--border-dim,#333);border-radius:8px;padding:1rem;text-align:center;">'
+          + '<div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.05em;">' + label + '</div>'
+          + '<div style="font-size:1.8rem;font-weight:600;margin-top:0.3rem;color:' + (color || '#fff') + ';">' + value + '</div>'
+          + '</div>';
+      }
+
+      html += card('Signals', data.signals.toLocaleString(), '#d4a520');
+      html += card('Actors', data.actors, '#1d9e45');
+      html += card('Active Cases', data.cases_active, '#4a90d9');
+      html += card('Events', data.events, '#e07020');
+      html += card('Graph Nodes', data.graph_nodes.toLocaleString(), '#8b5cf6');
+      html += card('Graph Edges', data.graph_edges.toLocaleString(), '#8b5cf6');
+      html += card('Alerts', data.alerts, data.alerts > 0 ? '#ef4444' : '#1d9e45');
+      html += card('DB Size', data.db_size_mb + ' MB', '#888');
+      html += '</div>';
+
+      // Fleet status
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;">';
+      html += '<div style="background:var(--bg-card,#111);border:1px solid var(--border-dim,#333);border-radius:8px;padding:1rem;">'
+        + '<div style="font-size:0.75rem;color:#888;text-transform:uppercase;">Collector Fleet</div>'
+        + '<div style="font-size:1.4rem;font-weight:600;color:#1d9e45;margin-top:0.3rem;">' + data.collectors_total + ' / ' + data.collectors_total + ' healthy</div>'
+        + '</div>';
+      html += '<div style="background:var(--bg-card,#111);border:1px solid var(--border-dim,#333);border-radius:8px;padding:1rem;">'
+        + '<div style="font-size:0.75rem;color:#888;text-transform:uppercase;">FMS Modules</div>'
+        + '<div style="font-size:1.4rem;font-weight:600;color:#1d9e45;margin-top:0.3rem;">' + data.fms_active + ' / ' + data.fms_total + ' attached</div>'
+        + '</div>';
+      html += '<div style="background:var(--bg-card,#111);border:1px solid var(--border-dim,#333);border-radius:8px;padding:1rem;">'
+        + '<div style="font-size:0.75rem;color:#888;text-transform:uppercase;">Last Pipeline Run</div>'
+        + '<div style="font-size:0.9rem;color:#ccc;margin-top:0.3rem;">' + (data.last_pipeline_run || 'Never') + '</div>'
+        + '</div>';
+      html += '</div>';
+
+      // Stream distribution
+      if (data.streams && data.streams.length > 0) {
+        html += '<h3 style="margin:1.5rem 0 0.8rem;">Stream Distribution</h3>';
+        html += '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;">';
+        var streamColors = {CRIME_INTEL:'#ef4444', INFRASTRUCTURE:'#f59e0b', PRIORITY:'#8b5cf6', GLOBAL:'#4a90d9'};
+        data.streams.forEach(function(s) {
+          var color = streamColors[s.stream] || '#888';
+          html += '<span style="background:' + color + '22;color:' + color + ';padding:0.3rem 0.8rem;border-radius:4px;font-size:0.8rem;border:1px solid ' + color + '44;">'
+            + s.stream + ': ' + s.count.toLocaleString() + '</span>';
+        });
+        html += '</div>';
+      }
+
+      // Top sources
+      if (data.top_sources && data.top_sources.length > 0) {
+        html += '<h3 style="margin:1.5rem 0 0.8rem;">Top Signal Sources</h3>';
+        html += '<table style="width:100%;font-size:0.85rem;border-collapse:collapse;">';
+        html += '<tr style="border-bottom:1px solid #333;"><th style="text-align:left;padding:0.4rem;">Source</th><th style="text-align:right;padding:0.4rem;">Signals</th></tr>';
+        data.top_sources.forEach(function(s) {
+          html += '<tr style="border-bottom:1px solid #222;"><td style="padding:0.4rem;">' + s.source + '</td><td style="text-align:right;padding:0.4rem;">' + s.count.toLocaleString() + '</td></tr>';
+        });
+        html += '</table>';
+      }
+
+      evt.detail.target.innerHTML = html;
+    } catch(e) {
+      // non-JSON response, leave as-is
+    }
+  }
+});
+</script>
+{% endblock %}
