@@ -99,10 +99,72 @@
   </div>
   {% endif %}
 
+  {# ── Premium workspace controls ──────────────────────────────────────── #}
+  {% if revenue_live or membership_sim %}
+  <div style="text-align:center;padding:var(--sp-4) 0;border-top:1px solid var(--border-dim);margin-top:var(--sp-6);">
+    <button onclick="__wsToggleModal()" class="hero-sovereign__btn hero-sovereign__btn--secondary" style="font-size:0.7rem;">
+      + Add Custom Evidence
+    </button>
+  </div>
+  {% else %}
+  <div class="premium-callout">
+    <span class="premium-badge"><span class="premium-badge__dot"></span> PREMIUM FORENSIC ACCESS</span>
+    <div class="premium-callout__title" style="margin-top:var(--sp-3);">Analyst Workspace</div>
+    <div class="premium-callout__text">
+      Attach custom notes, link evidence, and export structured intelligence models.
+      Available to Pro subscribers.
+    </div>
+    <a href="{{ membership_url or 'subscribe.html' }}" class="premium-callout__btn">Unlock Full Access</a>
+  </div>
+  {% endif %}
+
   <footer class="article-footer mono">
     <div class="page-last-updated">Last updated: {{ generated_at }}</div>
     ZA-DIVERGENT ARCHIVE
   </footer>
 
 </div>
+
+{# ── Workspace modal overlay ──────────────────────────────────────────── #}
+<div class="workspace-overlay" onclick="if(event.target===this)__wsToggleModal()">
+  <div class="workspace-modal">
+    <div class="workspace-modal__header">
+      <div class="workspace-modal__title">+ Add Custom Evidence</div>
+      <button class="workspace-modal__close" onclick="__wsToggleModal()">&times;</button>
+    </div>
+    <div class="workspace-tabs">
+      <button class="workspace-tab active" onclick="__wsTabSwitch(this)">Note</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Link</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Comment</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Table</button>
+    </div>
+    <form id="ws-form">
+      <input type="text" id="ws-title" class="workspace-input" placeholder="Short, descriptive title" required>
+      <textarea id="ws-body" class="workspace-input" placeholder="Your observations, hypotheses, or full quote. Markdown supported."></textarea>
+      <div class="workspace-byte-counter" id="ws-bytes">0 / 50,000 bytes</div>
+      <input type="url" id="ws-source" class="workspace-input" placeholder="https://... (optional source URL)">
+      <input type="text" id="ws-tags" class="workspace-input" placeholder="Add tags, comma-separated">
+      <button type="submit" class="workspace-submit">+ Add to board</button>
+    </form>
+  </div>
+</div>
+
+{# ── Workspace side drawer ────────────────────────────────────────────── #}
+<button class="workspace-drawer__toggle" onclick="__wsToggleDrawer()">
+  Workspace (<span id="drawer-count">0</span>)
+</button>
+<div class="workspace-drawer">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+    <div style="font-family:var(--font-display);font-size:0.9rem;font-weight:700;color:#fff;">Workspace</div>
+    <button onclick="__wsExport()" class="hero-sovereign__btn hero-sovereign__btn--secondary" style="font-size:0.6rem;padding:3px 8px;">Export JSON</button>
+  </div>
+  <div id="drawer-notes"></div>
+  <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid #222934;font-size:0.65rem;color:#3d5060;text-align:center;">
+    Export your workspace model and send to<br>
+    <a href="mailto:matamelaramovha8@gmail.com" style="color:#14b8a6;">matamelaramovha8@gmail.com</a><br>
+    for advanced coalition detection analysis.
+  </div>
+</div>
+
+<script src="../static/js/workspace.js"></script>
 {% endblock %}

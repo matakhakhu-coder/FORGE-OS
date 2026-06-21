@@ -1036,6 +1036,23 @@ def _build_dist(
     )
     print(f"[publish] search-index.json - {len(search_docs)} documents")
 
+    # entity-index.json — actor/entity names + slugs for client-side auto-linking
+    entity_index = []
+    try:
+        for ent in entities:
+            entity_index.append({
+                "name": ent.get("name", ""),
+                "slug": ent.get("slug", ""),
+                "url": f"entities/{ent.get('slug', '')}.html",
+                "type": ent.get("type", ""),
+            })
+    except Exception:
+        pass
+    (DIST / "entity-index.json").write_text(
+        json.dumps(entity_index), encoding="utf-8"
+    )
+    print(f"[publish] entity-index.json - {len(entity_index)} entities")
+
     _check_case_triangulation(conn, cases, signals, graph_data)
 
 

@@ -4,6 +4,28 @@
 
 {% block content %}
 
+{# ── Sovereign hero ──────────────────────────────────────────────────────── #}
+<div class="hero-sovereign">
+  <div class="hero-sovereign__title">ZA-DIVERGENT</div>
+  <div class="hero-sovereign__sub">
+    South African open-source intelligence bulletin. Real-time signals from 23 collection
+    nodes across courts, parliament, sanctions registries, and investigative media.
+  </div>
+  <div class="hero-sovereign__actions">
+    <span class="premium-badge"><span class="premium-badge__dot"></span> PREMIUM FORENSIC ACCESS</span>
+  </div>
+</div>
+
+{# ── Temporal filter bar ─────────────────────────────────────────────────── #}
+<div class="temporal-bar" id="js-temporal-bar">
+  <button class="temporal-btn active" data-hours="0" onclick="__filterTemporal(this,0)">All</button>
+  <button class="temporal-btn" data-hours="1" onclick="__filterTemporal(this,1)">Last hour</button>
+  <button class="temporal-btn" data-hours="6" onclick="__filterTemporal(this,6)">Last 6h</button>
+  <button class="temporal-btn" data-hours="12" onclick="__filterTemporal(this,12)">Last 12h</button>
+  <button class="temporal-btn" data-hours="24" onclick="__filterTemporal(this,24)">Last 24h</button>
+  <button class="temporal-btn" data-hours="168" onclick="__filterTemporal(this,168)">Last 7 days</button>
+</div>
+
 {# ── Stream filter pills ─────────────────────────────────────────────────── #}
 <div class="stream-bar">
   <div class="stream-bar__inner">

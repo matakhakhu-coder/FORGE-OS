@@ -9,7 +9,7 @@
 
 ## Uncommitted changes
 
-- Sprint 1 content gate (app.py tier migration, publish.py tier rendering, article.html gate banner) — **not yet committed**
+- Design sprint (CSS overhaul, workspace JS, hero section, temporal filters, entity index) — **pending commit**
 
 ## Pending operator actions
 
