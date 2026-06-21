@@ -1,181 +1,229 @@
 # FORGE — Foundational Open Research & Graph Engine
 
-> *A local-first, open-source intelligence platform for monitoring real-world signals, building investigative cases, and mapping the relationships between actors, events, and evidence.*
+> A local-first, analyst-grade OSINT intelligence operating system for monitoring real-world signals, building investigative cases, and mapping the relationships between actors, events, and evidence.
 
-FORGE is built on the analytical structures used in intelligence analysis and investigative journalism. It ingests publicly available information, organises it into a connected evidence network, and surfaces patterns across actors, events, and signals — entirely on your local machine, with no cloud dependencies and no external services.
+FORGE ingests publicly available information from 23 zero-dependency collectors, scores it through a multi-factor gravity engine, resolves entities through hybrid fuzzy matching, and surfaces patterns via automated coalition detection, anomaly alerting, and network emergence tracking — entirely on your local machine.
 
 It is not a passive archive. It is an active investigative system.
 
 ---
 
-## Who It's For
+## Who it's for
 
 - **Investigative journalists** building and managing case files across multiple sources
 - **Independent researchers** tracking real-world actors and events over time
 - **Security and intelligence analysts** monitoring open-source signals for threat patterns
-- **Developers** who want a self-hosted OSINT foundation to build on top of
+- **Developers** who want a self-hosted OSINT foundation to build on
+
+## What FORGE does
+
+- Collects signals from 23 sources: SA investigative news, parliamentary transcripts, court records, INTERPOL notices, OFAC sanctions, treasury procurement, disease surveillance, satellite data, and social media
+- Scores every signal via a 5-factor gravity engine with stream-specific exponential decay
+- Resolves actor names through a 3-tier hybrid lookup (exact, normalized, Jaro-Winkler fuzzy)
+- Links signals to actors, events, and cases through an automated 10-stage ingestion pipeline
+- Detects coalitions, counterintelligence anomalies, and emerging actor clusters via 7 pluggable forge modules
+- Visualises the evidence network as a D3.js force-directed graph with centrality metrics
+- Renders geographic intelligence on an interactive Leaflet.js map with multi-layer GeoJSON
+- Generates static intelligence bulletins for public distribution via Vercel
+- Operates entirely offline after setup — no cloud services, no paid APIs
 
 ---
 
-## What FORGE Does
-
-- Ingest and archive OSINT artifacts — documents, images, video, audio, news screenshots, and web captures
-- Link evidence to real-world events and the actors involved in them
-- Full-text search across all metadata using SQLite FTS5
-- Monitor live and scraped signals through the Signal Monitor and contextual feed
-- Detect coalitions, counterintelligence patterns, and emerging actor clusters via forge modules
-- Visualise events geographically on an interactive Leaflet.js map
-- Render the full evidence network as a D3.js force-directed intelligence graph
-- Tag every artifact with source authenticity indicators
-- Operate entirely offline — no cloud services, no paid APIs, no external dependencies after setup
-
----
-
-## Tech Stack
+## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Backend | Python 3.9+ / Flask |
-| Database | SQLite with FTS5 full-text search |
-| Frontend | HTML / CSS / Vanilla JavaScript |
-| Map Engine | Leaflet.js |
-| Graph Engine | D3.js |
-| Media Storage | Local filesystem |
+| Runtime | Python 3.13 · Flask 3.1 |
+| Database | SQLite (WAL mode) · FTS5 full-text search · 86 indexes |
+| Frontend | Jinja2 · HTMX · Leaflet.js · D3.js · Chart.js |
+| NLP | spaCy (en_core_web_sm) · custom SA EntityRuler (146 patterns) |
+| Security | PDF detonation (pikepdf) · input sanitization · quarantine system |
+| Publisher | Jinja2 static site generation · Vercel deployment |
 
 ---
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
+
 - Python 3.9 or later
 - pip
-- A modern browser (Chrome, Firefox, or Edge)
+- A modern browser
 
 ### Installation
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/matakhakhu-coder/FORGE-OS.git
 cd FORGE-OS
 
-# 2. Install dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 3. Set up your environment variables
+# Set up environment variables
 cp env.example .env
-# Edit .env and fill in your secret key and admin password
+# Edit .env — set FORGE_SECRET_KEY and FORGE_ADMIN_PASSWORD
 
-# 4. Initialise the database schema
+# Initialise the database
 python app.py --init-db
-python migrations/fix_schema.py   # apply column patches + relationship tables
+python app.py --migrate
 
-# 5. Seed the pipeline (first run)
-python tools/mega_ingest.py       # collect + synthesise (runs all 4 phases)
+# Run the collection pipeline (first run)
+python tools/mega_ingest.py --collect-only
 
-# 6. Start the application
+# Start the application
 python app.py
 ```
 
-Then open your browser at: **http://localhost:5000**
+Open your browser at `http://localhost:5000`
 
 ---
 
-## Interface Modules
+## Architecture
 
-| Route | Module |
-|---|---|
-| `/` | Archive Home — search, recent artifacts, navigation |
-| `/search` | Full-text search across all artifact metadata |
-| `/timeline` | Chronological browse by year and month |
-| `/map` | Interactive Leaflet map — click events to explore |
-| `/actors` | Actor profiles with linked events and artifact counts |
-| `/events` | Filterable event list with artifacts and actors inline |
-| `/graph` | D3.js intelligence graph — the full evidence network |
-| `/feed` | Contextual signal feed — gravity-filtered by active case |
-| `/signals` | Signal Monitor — real-time and scraped signal tracking |
-| `/surface` | Surface layer — pattern and emergence detection |
-| `/admin` | Password-protected artifact ingestion and management |
-
----
-
-## Data Model
-
-```
-Artifact ──────► Event ──────► Actor
-    │                               ▲
-    └───────────────────────────────┘
-```
-
-- **Artifacts** — individual evidence items (documents, photos, video, audio, news, web captures)
-- **Events** — real-world moments that give artifacts context and causality
-- **Actors** — people, institutions, movements, and organisations that appear across events
-
----
-
-## Directory Structure
+### Application structure
 
 ```
 FORGE/
-├── app.py                  ← Flask entry point
-├── requirements.txt        ← Python dependencies
-├── .env                    ← Runtime secrets (not committed)
-├── database.db             ← SQLite database (~650MB, WAL mode)
-│
-├── core/                   ← Conclave synthesis engine, FMS, API routes
-├── forage/                 ← Collectors, engines, processors
-├── forge_modules/          ← Analytical capability modules
-├── forge_security/         ← Input sanitisation layer
-│
-├── tools/                  ← Standalone operator scripts (mega_ingest, nexus_bridge…)
-├── migrations/             ← Schema migrations & DB repair (fix_schema, repair_db…)
-├── maintenance/            ← Housekeeping (cleanup_actors, system_decontamination…)
-├── bin/                    ← Windows batch workers (decay_worker.bat, wiki_worker.bat)
-│
-├── docs/                   ← Supplementary docs (ROADMAP, pipeline contracts, debug)
-├── .archive/               ← Superseded versioned files
-├── tests/                  ← Unit & integration tests
-├── wiki/                   ← Auto-generated intelligence knowledge base
-└── static/ templates/ surface/ logs/ media/
+├── app.py                    ← Thin factory (1,207 lines) + schema + CLI
+├── core/
+│   ├── web/
+│   │   ├── helpers.py        ← get_db(), telemetry, config constants
+│   │   ├── state.py          ← Shared mutable registries
+│   │   └── blueprints/       ← 8 domain-specific route modules
+│   ├── pipeline/ingest.py    ← 10-stage signal processing orchestrator
+│   ├── conclave/             ← FMS hook registry + engine runner
+│   ├── fms/                  ← Module discovery, validation, activation
+│   ├── db/connection.py      ← SQLite connection factory + FK enforcement
+│   └── gravity.py            ← CT-1 Contextual Tunneling scorer
+├── forage/
+│   ├── collectors/ (23)      ← OSINT signal collectors
+│   ├── engines/ (13)         ← Gravity, decay, correlation, graph, anomaly...
+│   └── processors/           ← NER, entity resolution, triple extraction
+├── flux/
+│   ├── collectors/           ← SOCINT (X/Twitter) collectors
+│   └── processors/           ← Stylometric analysis, resonance scoring
+├── forge_modules/ (7)        ← Pluggable analytical modules
+├── forge_security/           ← PDF detonation, input sanitization, audit
+├── tools/
+│   ├── mega_ingest.py        ← Pipeline runner (4 phases, Semaphore(4))
+│   ├── publish.py            ← Static site generator → Vercel
+│   └── sanitize_db.py        ← Database integrity checker + optimizer
+└── publisher/                ← ZA-DIVERGENT static bulletin templates
 ```
 
----
+### Route map — 151 endpoints across 10 blueprints
 
-## Forge Modules
+| Blueprint | Routes | Domain |
+|---|---|---|
+| `pages_bp` | 11 | Dashboard, feed, timeline, search, gallery |
+| `signals_bp` | 10 | Signal triage, pulse, heatmap, decay |
+| `cases_bp` | 28 | Case management, workbench, briefings |
+| `admin_bp` | 29 | Entity CRUD, forensics, dossiers, alerts |
+| `graph_bp` | 13 | D3/Vis-Network, relationships, coalitions |
+| `map_bp` | 6 | Leaflet map, GeoJSON layers |
+| `control_bp` | 24 | Collector dispatch, pipeline operations |
+| `diagnostics_bp` | 11 | Health, FMS, discovery, evolution |
+| `surface_bp` | 9 | Intelligence surface + FLUX discovery |
+| `wiki_bp` | 5 | Wiki synthesis, graph data |
 
-FORGE uses a modular architecture for analytical capabilities. Active modules:
+### Collector fleet — 23 active sources
+
+| Category | Collectors |
+|---|---|
+| SA News | civic_intel (amaBhungane, Daily Maverick, News24, GroundUp, TimesLive, defenceWeb, The Citizen), civic_intel_us |
+| Courts & Legal | saflii, courts_roll, fpb_enforcement |
+| Government | pmg_parliamentary, bi196, treasury_tenders |
+| Sanctions | ofac_sdn, sanctions_sa_fic, interpol_red_notices |
+| Global Events | rss (GDACS), disease_outbreak |
+| Documents | pdf_infiltrator, dork_collector |
+| Social Media | x_pulse, x_search (FLUX/Nitter) |
+| Actor Search | google_news_monitor |
+
+All collectors are auto-discovered via AST manifest scanning. Drop a `.py` file with a `__manifest__` dict into `forage/collectors/` — it registers automatically on the next run.
+
+### Data model
+
+```
+Signal ──── gravity_score ──── Actor
+  │              │                │
+  │         score_signal()        │
+  │              │                │
+  ├── case_signals ──── Case     ├── entity_relationships
+  │                      │       │
+  └── signal_entities    │       └── graph_edges
+       (spaCy NER)       │            (co-occurrence)
+                    case_actors
+```
+
+### Forge modules
 
 | Module | Purpose |
 |---|---|
-| `coalition_detector` | Identifies actor groupings and coordination patterns |
-| `counterintel` | Flags anomalous actor behaviour and potential deception signals |
-| `emergence_engine` | Detects early-stage patterns before they become visible events |
-| `archive_engine` | Long-term evidence archiving and retrieval |
+| `coalition_detector` | Identifies actor groupings via co-occurrence analysis |
+| `counterintel` | Flags narrative clusters, bot patterns, and information campaigns |
+| `emergence_engine` | Detects early-stage network growth before events are visible |
+| `signal_enrichment` | Enriches signal metadata during ingestion |
+| `geo_enrichment` | Adds/corrects geographic coordinates |
+| `graph_sync` | Syncs entity changes to the network graph |
+| `flux` | Bridges SOCINT data into the main intelligence graph |
 
 Modules are auto-attached at startup via the FMS (Forge Module System) and can be extended independently.
 
 ---
 
-## Current Development Phase
+## Commands
 
-See [ROADMAP.md](./docs/ROADMAP.md) for the active phase and task checklist.
+```bash
+# Server
+python app.py                          # start on localhost:5000
+python app.py --init-db                # create schema from scratch
+python app.py --migrate                # apply column migrations
 
-Currently at **Phase 41** with **CT-1: Contextual Tunneling** in progress — gravity-based feed and signal filtering anchored to an active case context, so analysts see what is relevant rather than the full firehose.
+# Pipeline
+python tools/mega_ingest.py            # full 4-phase pipeline run
+python tools/mega_ingest.py --collect-only  # collection phase only
+
+# Publishing
+python tools/publish.py                # generate static site to dist/
+python tools/publish.py --deploy       # generate + push to Vercel
+
+# Maintenance
+python tools/sanitize_db.py            # integrity check + orphan purge + VACUUM
+python tools/sanitize_db.py --dry-run  # report only
+
+# Individual collectors
+python forage/collectors/<name>.py --dry-run
+```
 
 ---
 
-## Project Status
+## Configuration
 
-FORGE is in active development and has been made public to invite collaboration. The core archive and intelligence engine are functional. Modules and surface layers are being added phase by phase.
+Copy `env.example` to `.env` and set:
 
-If you are a developer interested in contributing, start with the [ROADMAP](./ROADMAP.md) and open a GitHub Issue to discuss.
+| Variable | Required | Purpose |
+|---|---|---|
+| `FORGE_SECRET_KEY` | Yes | Flask session signing key |
+| `FORGE_ADMIN_PASSWORD` | Yes | Admin panel authentication |
+| `FLASK_ENV` | No | `development` (default) or `production` |
+| `VERCEL_DEPLOY_HOOK_URL` | No | Vercel auto-deploy webhook |
+
+See `env.example` for the full list of optional collector configuration variables.
+
+---
+
+## Project status
+
+FORGE is at **Stable 1.2.1** — the monolith has been extracted into 8 Flask blueprints, the collector fleet expanded from 16 to 23 sources, and the database substrate is verified clean with 0 FK violations across 86 indexes.
+
+Active development is focused on commercial transition: premium content gating, production automation, and dashboard integration. See `docs/COMMERCIAL_TRANSITION_SPRINTS.md` for the roadmap.
 
 ---
 
 ## Important
 
-FORGE is built exclusively for **open-source intelligence** — publicly available information only. It is intended for lawful investigative, journalistic, and research use. Users are responsible for ensuring their use complies with applicable laws and ethical standards.
-
----
+FORGE is built exclusively for open-source intelligence — publicly available information only. It is intended for lawful investigative, journalistic, and research use. Users are responsible for ensuring their use complies with applicable laws and ethical standards.
 
 ## License
 
@@ -183,4 +231,4 @@ MIT License — free to use, modify, and distribute.
 
 ---
 
-*FORGE — Matamela Ramovha*
+FORGE — Matamela Ramovha
