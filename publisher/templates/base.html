@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="{% block favicon_svg %}static/favicon.svg{% endblock %}">
+  <link rel="icon" type="image/x-icon" href="{% block favicon_ico %}static/favicon.ico{% endblock %}">
+  <link rel="apple-touch-icon" href="{% block apple_icon %}static/apple-touch-icon.png{% endblock %}">
   <link rel="stylesheet" href="{% block css_path %}static/css/site.css{% endblock %}">
   {% block head_extra %}{% endblock %}
 </head>
