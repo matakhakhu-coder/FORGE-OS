@@ -17,7 +17,7 @@ MEDIA_DIR = BASE_DIR / "media"
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]
 ACTOR_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
-ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "forge-admin")
+ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "")
 
 SOURCE_META = {
     "verified":    {"label": "Verified",         "colour": "#2d7a4f"},

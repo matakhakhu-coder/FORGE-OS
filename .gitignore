@@ -38,3 +38,11 @@ Thumbs.db
 
 # ACLED OAuth token cache (contains live refresh token)
 forage/collectors/.acled_token_cache.json
+
+# Cached data downloads (OFAC SDN, FIC TFS)
+data/sdn.csv
+data/fic_tfs.xml
+data/acled_*.xlsx
+
+# GDPR data exports — never commit
+gdpr-data*

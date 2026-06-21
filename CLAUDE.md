@@ -167,6 +167,36 @@ All routes live in `core/web/blueprints/`:
 
 ---
 
+## Pipeline Orchestration (Stable 1.2.1)
+
+### Collector Autodiscovery
+
+`tools/mega_ingest.py` uses AST-based manifest scanning — identical to `app.py`'s `_load_collector_registry()`. Any `.py` file in `forage/collectors/` or `flux/collectors/` that exposes a `__manifest__` dict is automatically discovered and queued for execution. No hardcoded import lists.
+
+**To add a new collector:** Drop a `.py` file with a `__manifest__` dict into `forage/collectors/`. It will be auto-discovered on the next run. No changes to `mega_ingest.py`, `app.py`, or any config file required.
+
+**To decommission a collector:** Prefix the filename with `_` (e.g., `_acled_collector.py`). The scanner ignores underscore-prefixed files.
+
+**To sever a noise source:** Add its `__manifest__["id"]` to the `_SEVERED_IDS` frozenset in `mega_ingest.py`. The file stays importable for manual runs but won't execute in the automated pipeline.
+
+### Concurrency Governor
+
+All collectors execute under `asyncio.Semaphore(4)` — maximum 4 simultaneous collectors. This prevents SQLite WAL thrashing and memory exhaustion on single-machine deployments. The constant `COLLECTOR_CONCURRENCY` in `mega_ingest.py` is tunable.
+
+### Entity Resolution (Hybrid Fuzzy)
+
+`forage/processors/entity_resolver.py` uses a three-tier resolution strategy:
+
+1. **Tier 1:** Exact case-insensitive dict lookup — O(1)
+2. **Tier 2:** Normalized token dict lookup — O(1)
+3. **Tier 3:** Jaro-Winkler fuzzy match — O(k) where k = candidates sharing a token
+
+Fuzzy matching activates only when tiers 1+2 miss, and only for names ≥ 5 chars. Threshold: `FUZZY_THRESHOLD = 0.92`. A surname+initial boost handles court-roll abbreviations (e.g., "C Ramaphosa" → "Cyril Ramaphosa"). The token index maps every name token (≥ 3 chars) to its actor, keeping candidate sets small.
+
+Actor confidence gate: `conclusion.confidence ≥ 0.20` in `entity_engine.py`.
+
+---
+
 ## Critical Code Rules
 
 These have caused pipeline crashes when violated.

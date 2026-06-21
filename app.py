@@ -49,7 +49,7 @@ MEDIA_DIR = BASE_DIR / "media"
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]
 ACTOR_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
-ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "forge-admin")
+ADMIN_PASSWORD = os.environ.get("FORGE_ADMIN_PASSWORD", "")
 
 # Source classification display config (used by templates via context)
 SOURCE_META = {
@@ -222,19 +222,27 @@ def create_app() -> Flask:
         template_folder=str(BASE_DIR / "templates"),
         static_folder=str(BASE_DIR / "static"),
     )
-    app.secret_key = os.environ.get("FORGE_SECRET_KEY", "forge-dev-secret")
+    app.secret_key = os.environ.get("FORGE_SECRET_KEY", "")
+    if not app.secret_key:
+        import secrets
+        app.secret_key = secrets.token_hex(32)
+        import logging as _sk_log
+        _sk_log.getLogger("forge").warning(
+            "[SEC] FORGE_SECRET_KEY not set — using ephemeral key. "
+            "Sessions will not persist across restarts. Set FORGE_SECRET_KEY in .env."
+        )
 
-    # ── SEC-1: Block production boot with default secrets ─────────────────
+    # ── SEC-1: Block production boot without secrets ────────────────────
     _flask_env = os.environ.get("FLASK_ENV", "development").lower()
     if _flask_env == "production":
-        if app.secret_key == "forge-dev-secret":
+        if not os.environ.get("FORGE_SECRET_KEY"):
             raise RuntimeError(
-                "FORGE_SECRET_KEY is set to the default value. "
+                "FORGE_SECRET_KEY is not set. "
                 "Set a strong secret via FORGE_SECRET_KEY env var before running in production."
             )
-        if ADMIN_PASSWORD == "forge-admin":
+        if not os.environ.get("FORGE_ADMIN_PASSWORD"):
             raise RuntimeError(
-                "FORGE_ADMIN_PASSWORD is set to the default value. "
+                "FORGE_ADMIN_PASSWORD is not set. "
                 "Set a strong password via FORGE_ADMIN_PASSWORD env var before running in production."
             )
 
