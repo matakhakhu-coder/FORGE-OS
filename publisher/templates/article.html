@@ -59,6 +59,28 @@
     {{ body_html | safe }}
   </div>
 
+  {% if is_gated %}
+  <div class="gate-banner" style="background:linear-gradient(180deg, transparent 0%, var(--bg) 40%); margin-top:-6rem; padding:8rem 2rem 3rem; position:relative; text-align:center;">
+    <div style="border:1px solid var(--border-dim); border-radius:8px; padding:2rem; max-width:480px; margin:0 auto; background:var(--bg);">
+      <div style="font-size:1.4rem; font-weight:600; margin-bottom:0.5rem;">Continue reading</div>
+      <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1.5rem;">
+        This intelligence brief is available to Pro subscribers. Get full access to all analysis, entity dossiers, and the live evidence graph.
+      </p>
+      {% if membership_url or membership_sim %}
+      <a href="{{ membership_url or '#' }}" target="_blank" rel="noopener" class="membership-btn" style="padding:var(--sp-2) var(--sp-6); font-size:0.8rem; display:inline-block;">
+        {% if membership_sim %}<span class="sim-badge">SIM</span>{% endif %}
+        Unlock Full Access
+      </a>
+      {% endif %}
+      {% if paystack_public_key or paystack_sim %}
+      <div style="margin-top:1rem; font-size:0.75rem; color:var(--text-secondary);">
+        From R49/month
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="methodology-section">
     <div class="methodology-section__title">About this analysis</div>
     <div class="methodology-section__body">

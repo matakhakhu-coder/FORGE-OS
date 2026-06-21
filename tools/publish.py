@@ -346,7 +346,8 @@ def _build_graph_data(conn: sqlite3.Connection) -> dict:
 def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
     rows = conn.execute("""
         SELECT article_id, title, slug, summary, body_markdown,
-               stream, author, published_at, tags
+               stream, author, published_at, tags,
+               COALESCE(tier, 'free') AS tier
         FROM   articles
         WHERE  status = 'published'
         ORDER  BY published_at DESC
@@ -375,6 +376,7 @@ def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
             "published_at":  r["published_at"],
             "published_fmt": _fmt_dt(r["published_at"]),
             "tags":          tags,
+            "tier":          r["tier"],
         })
     return items
 
@@ -799,16 +801,55 @@ def _build_dist(
     )
     print(f"[publish] map.html    - {len(geo_signals)} geo-tagged signals, {len(intel_links)} intel links")
 
-    # article pages
+    # article pages — tier-aware rendering
     tmpl = env.get_template("article.html")
+    gate_tmpl = env.get_template("gate.html")
+    gated_count = 0
     for art in articles:
-        body_html = md_parser.render(art["body_markdown"])
+        article_tier = art.get("tier", "free")
         out = DIST_ART / f"{art['slug']}.html"
-        out.write_text(
-            tmpl.render(article=art, body_html=body_html, generated_at=now_str, **rev),
-            encoding="utf-8",
-        )
-    print(f"[publish] articles/   - {len(articles)} pages")
+
+        if article_tier == "premium":
+            gated_count += 1
+            out.write_text(
+                gate_tmpl.render(
+                    gate_title=art["title"],
+                    gate_description=art.get("summary") or "This intelligence brief is available to Pro subscribers.",
+                    back_url="../index.html",
+                    back_label="Bulletin",
+                    generated_at=now_str,
+                    **rev,
+                ),
+                encoding="utf-8",
+            )
+        elif article_tier == "preview":
+            gated_count += 1
+            full_html = md_parser.render(art["body_markdown"])
+            preview_chars = 300
+            preview_text = art["body_markdown"][:preview_chars]
+            if len(art["body_markdown"]) > preview_chars:
+                last_space = preview_text.rfind(" ")
+                if last_space > 200:
+                    preview_text = preview_text[:last_space]
+                preview_text += "..."
+            preview_html = md_parser.render(preview_text)
+            out.write_text(
+                tmpl.render(
+                    article=art, body_html=preview_html,
+                    is_gated=True, generated_at=now_str, **rev,
+                ),
+                encoding="utf-8",
+            )
+        else:
+            body_html = md_parser.render(art["body_markdown"])
+            out.write_text(
+                tmpl.render(
+                    article=art, body_html=body_html,
+                    is_gated=False, generated_at=now_str, **rev,
+                ),
+                encoding="utf-8",
+            )
+    print(f"[publish] articles/   - {len(articles)} pages ({gated_count} gated)")
 
     # feed.json
     feed_items = []

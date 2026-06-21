@@ -1093,6 +1093,8 @@ def migrate_db():
         # Analyst-curated portrait/building photo URL — surfaced on the
         # ZA-DIVERGENT Entity Directory cards and profile pages.
         ("actors",         "image_url",           "TEXT"),
+        # Sprint 1 — Premium content gate
+        ("articles",       "tier",                "TEXT NOT NULL DEFAULT 'free'"),
     ]
     for table, column, col_type in migrations:
         if column not in _columns(table):

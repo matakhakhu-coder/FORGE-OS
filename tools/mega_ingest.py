@@ -216,20 +216,30 @@ async def run_all_collectors(dry_run: bool = False) -> dict:
 
     sem = asyncio.Semaphore(COLLECTOR_CONCURRENCY)
 
+    COLLECTOR_TIMEOUT = 300  # 5 minutes max per collector
+
+    async def _execute_collector(mod: object):
+        if hasattr(mod, "async_main"):
+            return await mod.async_main()
+        elif hasattr(mod, "collect"):
+            return await mod.collect(db_path=DB_PATH)
+        elif hasattr(mod, "run"):
+            return mod.run()
+        return None
+
     async def _run_one(label: str, mod: object) -> tuple:
-        """Run a single collector under the semaphore."""
+        """Run a single collector under the semaphore with timeout."""
         async with sem:
             log.info(f"[collector:{label}] starting")
             try:
-                if hasattr(mod, "async_main"):
-                    result = await mod.async_main()
-                elif hasattr(mod, "collect"):
-                    result = await mod.collect(db_path=DB_PATH)
-                elif hasattr(mod, "run"):
-                    result = mod.run()
-                else:
-                    result = None
+                result = await asyncio.wait_for(
+                    _execute_collector(mod),
+                    timeout=COLLECTOR_TIMEOUT,
+                )
                 return (label, result)
+            except asyncio.TimeoutError:
+                log.error(f"[collector:{label}] TIMEOUT after {COLLECTOR_TIMEOUT}s — skipping")
+                return (label, Exception(f"Timed out after {COLLECTOR_TIMEOUT}s"))
             except Exception as exc:
                 return (label, exc)
 
