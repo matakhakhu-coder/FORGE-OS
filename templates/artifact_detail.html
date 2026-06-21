@@ -6,12 +6,12 @@
 
 {# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('pages.index') }}">Archive</a>
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('events') }}">Evidence</a>
+  <a href="{{ url_for('pages.events') }}">Evidence</a>
   {% if artifact.event_title %}
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}">
+  <a href="{{ url_for('admin.event_detail', event_id=artifact.linked_event_id) }}">
     {{ artifact.event_title }}
   </a>
   {% endif %}
@@ -66,11 +66,11 @@
       <h2 class="detail-section__title">Evidence File</h2>
       <div class="media-viewer">
         {% if artifact.type == 'photo' %}
-          <img src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}"
+          <img src="{{ url_for('pages.serve_media', filepath=artifact.file_path[6:]) }}"
                alt="{{ artifact.title }}" class="media-viewer__image">
         {% elif artifact.type == 'video' %}
           <video controls class="media-viewer__video">
-            <source src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}">
+            <source src="{{ url_for('pages.serve_media', filepath=artifact.file_path[6:]) }}">
             Your browser does not support video playback.
           </video>
         {% elif artifact.type == 'audio' %}
@@ -79,14 +79,14 @@
               ◈ Audio Recording · {{ artifact.title }}
             </div>
             <audio controls class="media-viewer__audio">
-              <source src="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}">
+              <source src="{{ url_for('pages.serve_media', filepath=artifact.file_path[6:]) }}">
             </audio>
           </div>
         {% else %}
           <div class="media-viewer__doc">
             <div class="media-viewer__doc-icon">◫</div>
             <div class="media-viewer__doc-name mono">{{ artifact.file_path.split('/')[-1] }}</div>
-            <a href="{{ url_for('serve_media', filepath=artifact.file_path[6:]) }}"
+            <a href="{{ url_for('pages.serve_media', filepath=artifact.file_path[6:]) }}"
                class="btn btn--primary" download>
               ↓ Download {{ artifact.type | title }}
             </a>
@@ -100,7 +100,7 @@
     {% if artifact.event_title %}
     <section class="detail-section">
       <h2 class="detail-section__title">Source Event</h2>
-      <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}"
+      <a href="{{ url_for('admin.event_detail', event_id=artifact.linked_event_id) }}"
          class="event-link-card">
         <div class="event-link-card__left">
           <div class="event-link-card__label mono">
@@ -137,7 +137,7 @@
       </p>
       <div class="circle-grid">
         {% for ac in circle_of_evidence %}
-        <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+        <a href="{{ url_for('admin.actor_detail', actor_id=ac.actor_id) }}"
            class="circle-card">
           <div class="circle-card__node">◉</div>
           <div class="circle-card__body">
@@ -167,7 +167,7 @@
       </p>
       <div class="sibling-list">
         {% for s in siblings %}
-        <a href="{{ url_for('artifact_detail', artifact_id=s.artifact_id) }}"
+        <a href="{{ url_for('admin.artifact_detail', artifact_id=s.artifact_id) }}"
            class="sibling-row">
           <span class="sibling-row__type mono">{{ s.type }}</span>
           <span class="sibling-row__title">{{ s.title }}</span>
@@ -200,7 +200,7 @@
       </p>
       <div class="related-grid">
         {% for r in tag_related %}
-        <a href="{{ url_for('artifact_detail', artifact_id=r.artifact_id) }}"
+        <a href="{{ url_for('admin.artifact_detail', artifact_id=r.artifact_id) }}"
            class="related-card">
           <div class="related-card__type mono">{{ r.type }}</div>
           <div class="related-card__title">{{ r.title }}</div>
@@ -285,7 +285,7 @@
           <div class="meta-field__value">
             <div class="tag-cloud">
               {% for tag in artifact.tags.split(',') %}
-              <a href="{{ url_for('search', q=tag.strip()) }}"
+              <a href="{{ url_for('pages.search', q=tag.strip()) }}"
                  class="tag-pill">{{ tag.strip() }}</a>
               {% endfor %}
             </div>
@@ -316,7 +316,7 @@
           {% if artifact.event_title %}
           <div class="chain__node">
             <span class="chain__icon" style="color:var(--accent);">◎</span>
-            <a href="{{ url_for('event_detail', event_id=artifact.linked_event_id) }}"
+            <a href="{{ url_for('admin.event_detail', event_id=artifact.linked_event_id) }}"
                class="chain__label chain__label--link">
               {{ artifact.event_title | truncate(32) }}
             </a>

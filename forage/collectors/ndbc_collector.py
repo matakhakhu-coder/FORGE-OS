@@ -536,6 +536,10 @@ if __name__ == "__main__":
         "--list-meta", action="store_true",
         help="Print station metadata (lat/lng/name) for configured stations and exit.",
     )
+    ap.add_argument(
+        "--dry-run", action="store_true",
+        help="Fetch and display station data without writing to database.",
+    )
     args = ap.parse_args()
 
     ids: list[str] | None = None
@@ -553,6 +557,16 @@ if __name__ == "__main__":
         for sid in check_ids:
             if sid.upper() not in meta:
                 print(f"{sid.upper():10s}  (not found in station table)")
+        sys.exit(0)
+
+    if args.dry_run:
+        check_ids = ids or [s.strip() for s in os.environ.get("NDBC_STATIONS", "").split(",") if s.strip()] or list(_DEFAULT_STATIONS)
+        print(f"[ndbc] DRY RUN — would collect from stations: {check_ids}")
+        meta = _load_station_meta(check_ids)
+        print(f"[ndbc] Station metadata resolved: {len(meta)} stations")
+        for sid, info in meta.items():
+            print(f"  {sid:10s}  lat={info['lat']:8.3f}  lng={info['lng']:9.3f}  {info['name']}")
+        print("[ndbc] Dry run complete (no writes)")
         sys.exit(0)
 
     result = collect(station_ids=ids, force_backfill=args.backfill)

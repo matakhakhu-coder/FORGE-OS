@@ -17,7 +17,7 @@
 
 {# ── Breadcrumb ───────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('cases') }}">Workspaces</a>
+  <a href="{{ url_for('cases.cases') }}">Workspaces</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">{{ case.name | truncate(48) }}</span>
 </nav>
@@ -35,8 +35,8 @@
   <p class="page-header__sub">{{ case.description }}</p>
   {% endif %}
   <div class="page-header__actions">
-    <a href="{{ url_for('cases') }}" class="btn btn--ghost btn--sm">← All Workspaces</a>
-    <a href="{{ url_for('case_workbench', case_id=case.case_id) }}"
+    <a href="{{ url_for('cases.cases') }}" class="btn btn--ghost btn--sm">← All Workspaces</a>
+    <a href="{{ url_for('cases.workbench', case_id=case.case_id) }}"
        class="btn btn--ghost btn--sm" title="Evidence Timeline, Roster &amp; Overlap">
       ⬡ Workbench
     </a>
@@ -59,7 +59,7 @@
             title="View pinned events on a tactical map">
       ⊕ Tactical Map
     </button>
-    <a href="{{ url_for('case_briefing', case_id=case.case_id) }}"
+    <a href="{{ url_for('cases.case_briefing', case_id=case.case_id) }}"
        class="btn btn--dossier btn--sm" target="_blank">
       ⎙ Intelligence Briefing
     </a>
@@ -228,7 +228,7 @@
                       data-entity-type="actor" data-entity-id="{{ ac.actor_id }}"
                       title="Unpin">⊠</button>
             </div>
-            <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=ac.actor_id) }}"
                class="board-card__title">{{ ac.name }}</a>
             {% if ac.description %}
             <p class="board-card__desc">{{ ac.description | truncate(80) }}</p>
@@ -293,7 +293,7 @@
                       data-entity-type="event" data-entity-id="{{ ev.event_id }}"
                       title="Unpin">⊠</button>
             </div>
-            <a href="{{ url_for('event_detail', event_id=ev.event_id) }}"
+            <a href="{{ url_for('admin.event_detail', event_id=ev.event_id) }}"
                class="board-card__title">{{ ev.title }}</a>
             {% if ev.location %}
             <div class="mono board-card__location">⊕ {{ ev.location }}</div>
@@ -362,11 +362,11 @@
                       data-entity-type="artifact" data-entity-id="{{ a.artifact_id }}"
                       title="Unpin">⊠</button>
             </div>
-            <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+            <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
                class="board-card__title">{{ a.title }}</a>
             {% if a.event_title %}
             <div class="mono board-card__location">
-              ◎ <a href="{{ url_for('event_detail', event_id=a.event_id) }}"
+              ◎ <a href="{{ url_for('admin.event_detail', event_id=a.event_id) }}"
                    style="color:inherit;">{{ a.event_title | truncate(36) }}</a>
             </div>
             {% endif %}
@@ -421,7 +421,7 @@
             <p class="intel-feed-hypothesis__body">{{ case.hypothesis }}</p>
           </div>
           {% endif %}
-          <a href="{{ url_for('signals') }}" class="btn btn--ghost btn--sm">
+          <a href="{{ url_for('signals.signals') }}" class="btn btn--ghost btn--sm">
             Open Signal Monitor
           </a>
         </div>
@@ -499,9 +499,9 @@
         <p class="case-intel-empty__title mono">No signals linked yet.</p>
         <p class="case-intel-empty__hint">
           Open the
-          <a href="{{ url_for('signals') }}">Signal Monitor</a>
+          <a href="{{ url_for('signals.signals') }}">Signal Monitor</a>
           or the
-          <a href="{{ url_for('map_explorer') }}">Situational Map</a>
+          <a href="{{ url_for('map_routes.map_explorer') }}">Situational Map</a>
           and use the ⬡ Link button on any signal to attach it to this case.
         </p>
       </div>
@@ -602,7 +602,7 @@
       <span class="modal__title">Edit Workspace</span>
       <button class="modal__close" onclick="document.getElementById('js-case-edit-modal').classList.remove('modal--open')">✕</button>
     </div>
-    <form method="POST" action="{{ url_for('case_edit', case_id=case.case_id) }}">
+    <form method="POST" action="{{ url_for('cases.case_edit', case_id=case.case_id) }}">
       <div class="modal__body">
         <div class="form-group">
           <label>Title *</label>
@@ -660,7 +660,7 @@
       </p>
     </div>
     <div class="modal__footer">
-      <form method="POST" action="{{ url_for('case_delete', case_id=case.case_id) }}" style="display:contents;">
+      <form method="POST" action="{{ url_for('cases.case_delete', case_id=case.case_id) }}" style="display:contents;">
         <button type="button" class="btn btn--ghost"
                 onclick="document.getElementById('js-case-delete-modal').classList.remove('modal--open')">Cancel</button>
         <button type="submit" class="btn btn--danger">Delete Permanently</button>
@@ -723,7 +723,7 @@
       {# No events notice #}
       <div class="tactical-map-empty" id="js-tactical-empty" style="display:none;">
         <span class="mono">No geo-located events pinned to this case.</span>
-        <a href="{{ url_for('events') }}" class="mono" style="color:var(--accent); display:block; margin-top:var(--sp-2);">
+        <a href="{{ url_for('pages.events') }}" class="mono" style="color:var(--accent); display:block; margin-top:var(--sp-2);">
           Browse events to pin →
         </a>
       </div>

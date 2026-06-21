@@ -12,6 +12,7 @@ Usage:
 
 import argparse
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -49,11 +50,10 @@ DIST_ART    = DIST / "articles"
 DIST_CASES  = DIST / "cases"
 DIST_ENTITIES = DIST / "entities"
 
-# Vercel deploy hook — triggered after every git push to force immediate deployment
-VERCEL_DEPLOY_HOOK = "https://api.vercel.com/v1/integrations/deploy/prj_ibD3AwjGwVKVA5tA43Evg93d5Xzf/QTHKub0Cbl"
+VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
-PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber)
+PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15, 16)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber); 16 = Meta CSAM Data Disclosure (Gauteng HC)
 
 # Entity infobox: relationship-derived rows (Position/Affiliation from
 # entity_relationships, co-occurrence from graph_edges). Off by default —
@@ -86,29 +86,14 @@ SIGNAL_ARTICLE_MAP: dict[str, str] = {
     "403e89f7-43ba-4193-97a4-fc2726cb61af": "saps-murder-investigation-sabotage-pattern",
     # Eskom diesel
     "82b8d529-892b-4d6e-9d42-82a6583f7620": "eskom-r21bn-diesel-fraud-mavuso",
-    # ── Project Aegis: Regional Pathogen Surveillance (case 11) ───────────────
+    # ── Project Aegis: Regional Pathogen Surveillance (case 11) — primary only
     "34a1be1a-1e5e-41c3-a61a-c3b9023324fa": "project-aegis-sadc-health-security",
-    "811016d3-9abd-457e-8f50-2bd3a0aeed65": "project-aegis-sadc-health-security",
-    "83fb987d-2ede-4f28-bfb8-2d254d4bcfd2": "project-aegis-sadc-health-security",
-    "8db51668-0502-42de-8bff-dbdb4464169a": "project-aegis-sadc-health-security",
-    "f511c9c6-03c5-4793-8e90-71dafcea75fa": "project-aegis-sadc-health-security",
-    "d8e5a1db-87bf-4ec8-bed0-ba0afe56732c": "project-aegis-sadc-health-security",
-    "85500d07-5284-48fe-93e9-c83015fd75ad": "project-aegis-sadc-health-security",
-    "9dee7b1c-6611-4128-bc98-8a03e579afc8": "project-aegis-sadc-health-security",
-    "aad3e8e2-87cb-4b63-a576-d3611fa8d0b6": "project-aegis-sadc-health-security",
-    "2a3a8fee-72a9-4751-8d2a-f9aaa3d25f58": "project-aegis-sadc-health-security",
     # ── Operation Matlala (case 12) ───────────────────────────────────────────
     "abfd0ffb-e1d3-4e99-be3d-420676ebb923": "operation-matlala-saps-tender-capture",
-    # ── MEGA Account Compromise (case 15) ────────────────────────────────────
+    # ── MEGA Account Compromise (case 15) — primary signal only ─────────────
     "5544a9d6-bfed-4266-807f-1b2466e4b626": "mega-account-compromise-3xktech-credential-stuffing",
-    "6ab2784d-7e18-4200-899b-91a10cc6c4d6": "mega-account-compromise-3xktech-credential-stuffing",
-    "94611d55-f713-4bb1-8e44-b7cf00ea262c": "mega-account-compromise-3xktech-credential-stuffing",
-    "7b47d7c4-7a97-4867-b3d4-b083077fd17d": "mega-account-compromise-3xktech-credential-stuffing",
-    "cd6b4568-0d3d-4282-8c5d-0a75f143c1bc": "mega-account-compromise-3xktech-credential-stuffing",
-    "7e04f983-b2aa-4c15-a248-32d7470f09d8": "mega-account-compromise-3xktech-credential-stuffing",
-    "1d646ff0-8edb-44a7-a7e0-8bc1e793f8d6": "mega-account-compromise-3xktech-credential-stuffing",
-    "c551e334-f0bf-4379-afbb-53ae14ee0b81": "mega-account-compromise-3xktech-credential-stuffing",
-    "bf73dc5d-7a33-4001-8d40-d9f60a0c78cd": "mega-account-compromise-3xktech-credential-stuffing",
+    # ── Meta CSAM Data Disclosure (case 16) — primary signal only ─────────
+    "1dd6ac6a-e9fa-457e-ad39-f16987fa2fac": "meta-csam-data-disclosure-gauteng-high-court",
 }
 
 
@@ -1042,12 +1027,16 @@ def _git_deploy(now_str: str) -> None:
     _run(["git", "push", "origin", "HEAD"], cwd=cwd)
     print("[deploy] Pushed to origin/main")
 
-    try:
-        req = urllib.request.Request(VERCEL_DEPLOY_HOOK, method="POST")
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            print(f"[deploy] Vercel hook triggered -- status {resp.status}")
-    except Exception as exc:
-        print(f"[deploy] Vercel hook call failed: {exc} (deploy still queued via GitHub)")
+    if not VERCEL_DEPLOY_HOOK:
+        print("[deploy] VERCEL_DEPLOY_HOOK_URL not set — skipping deploy hook. "
+              "Set it in .env to trigger automatic Vercel deployments.")
+    else:
+        try:
+            req = urllib.request.Request(VERCEL_DEPLOY_HOOK, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                print(f"[deploy] Vercel hook triggered -- status {resp.status}")
+        except Exception as exc:
+            print(f"[deploy] Vercel hook call failed: {exc} (deploy still queued via GitHub)")
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

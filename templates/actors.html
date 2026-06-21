@@ -14,7 +14,7 @@
 {% if actors %}
 <div class="actor-grid">
   {% for a in actors %}
-  <a href="{{ url_for('actor_detail', actor_id=a.actor_id) }}"
+  <a href="{{ url_for('admin.actor_detail', actor_id=a.actor_id) }}"
      class="actor-card{% if a.is_targeted %} actor-card--targeted{% endif %}"
      {% if a.is_targeted %}data-targeted="true"{% endif %}>
 

@@ -200,7 +200,9 @@ def ingest_signal(signal: dict) -> dict:
         else:
             conclusion = run_conclave([_core_result])
 
-        # 1. Store cognition first
+        # 1. Store cognition first — if this fails, skip downstream stages
+        #    so the signal is not partially processed with missing gravity_score
+        _cognition_persisted = False
         if signal.get("signal_id"):
             try:
                 conn.execute(
@@ -217,8 +219,15 @@ def ingest_signal(signal: dict) -> dict:
                     ),
                 )
                 conn.commit()
+                _cognition_persisted = True
             except Exception as e:
-                _log.error("[Conclave Persist Error] signal=%s: %s", signal.get("signal_id", "?"), e)
+                _log.error("[Conclave Persist FAILED — skipping downstream] signal=%s: %s", signal.get("signal_id", "?"), e)
+                conn.close()
+                return {
+                    "raw_signal": signal,
+                    "interpreted_signal": interpreted,
+                    "error": f"gravity persistence failed: {e}",
+                }
 
         # 2. Materialize entities
         actor_ids = []

@@ -5,7 +5,7 @@
 
 {# ── Breadcrumb ─────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('pages.index') }}">Archive</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">FORAGE — Signal Monitor</span>
 </nav>
@@ -25,10 +25,10 @@
     </p>
   </div>
   <div class="page-header__actions">
-    <a href="{{ url_for('document_signals') }}" class="btn btn--dossier btn--sm" target="_blank">
+    <a href="{{ url_for('admin.document_signals') }}" class="btn btn--dossier btn--sm" target="_blank">
       ✦ Rich Brief
     </a>
-    <a href="{{ url_for('admin') }}" class="btn btn--sm">
+    <a href="{{ url_for('admin.admin') }}" class="btn btn--sm">
       ⊞ Admin
     </a>
   </div>
@@ -114,13 +114,13 @@
 {# ── Phase 27: Stream filter pills ────────────────────────────────────────── #}
 {% if stream_counts %}
 <div class="stream-pills" style="margin-bottom:var(--sp-4);">
-  <a href="{{ url_for('signals') }}"
+  <a href="{{ url_for('signals.signals') }}"
      class="stream-pill {% if active_stream == 'ALL' %}stream-pill--active{% endif %}">
     All Streams
     <span class="stream-pill__count">{{ counts.total or 0 }}</span>
   </a>
   {% for sname, scnt in stream_counts.items() %}
-  <a href="{{ url_for('signals') }}?stream={{ sname }}"
+  <a href="{{ url_for('signals.signals') }}?stream={{ sname }}"
      class="stream-pill
             {%- if active_stream == sname %} stream-pill--active stream-pill--active-{{ sname }}{% endif %}">
     {{ sname }}
@@ -174,7 +174,7 @@
           <span class="signal-source-tag">{{ sig.source }}</span>
           {# Phase 19: artifact breadcrumb #}
           {% if sig.source_artifact_id %}
-          <a href="{{ url_for('artifact_detail', artifact_id=sig.source_artifact_id) }}"
+          <a href="{{ url_for('admin.artifact_detail', artifact_id=sig.source_artifact_id) }}"
              class="signal-artifact-crumb" title="{{ sig.artifact_title or 'Source artifact' }}">
             <span class="signal-artifact-crumb__icon">◈</span>
             {{ (sig.artifact_title or 'Artifact') | truncate(20, True, '…') }}
@@ -254,7 +254,7 @@
 
             {% if sig.status not in ('promoted', 'dismissed') %}
             <a class="btn btn--sm btn--promote"
-               href="{{ url_for('admin_event_new',
+               href="{{ url_for('admin.admin_event_new',
                    title    = sig.title,
                    summary  = sig.content or '',
                    date     = sig.timestamp[:10] if sig.timestamp else '',

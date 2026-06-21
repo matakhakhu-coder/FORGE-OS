@@ -4,9 +4,9 @@
 {% block content %}
 
 <nav class="breadcrumb">
-  <a href="{{ url_for('admin') }}">Admin</a>
+  <a href="{{ url_for('admin.admin') }}">Admin</a>
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('artifact_detail', artifact_id=artifact.artifact_id) }}">{{ artifact.title | truncate(40) }}</a>
+  <a href="{{ url_for('admin.artifact_detail', artifact_id=artifact.artifact_id) }}">{{ artifact.title | truncate(40) }}</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">Edit</span>
 </nav>
@@ -15,7 +15,7 @@
   <div class="page-header__eyebrow mono">ARTIFACT #{{ artifact.artifact_id }} — EDIT</div>
   <h1 class="page-header__title">Edit Artifact</h1>
   <div class="page-header__actions">
-    <a href="{{ url_for('artifact_detail', artifact_id=artifact.artifact_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
+    <a href="{{ url_for('admin.artifact_detail', artifact_id=artifact.artifact_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
   </div>
 </div>
 
@@ -26,7 +26,7 @@
       <span class="form-panel__header-title">Update Artifact Record</span>
     </div>
     <div class="form-panel__body">
-      <form method="POST" action="{{ url_for('artifact_edit', artifact_id=artifact.artifact_id) }}">
+      <form method="POST" action="{{ url_for('admin.artifact_edit', artifact_id=artifact.artifact_id) }}">
 
         <div class="form-group">
           <label>Admin Password *</label>

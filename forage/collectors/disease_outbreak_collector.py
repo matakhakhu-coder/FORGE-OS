@@ -70,8 +70,10 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 # ── Path setup ────────────────────────────────────────────────────────────────
+import os as _os
 BASE_DIR  = Path(__file__).resolve().parent.parent.parent
-DB_PATH   = Path(sys.argv[1]) if len(sys.argv) > 1 else BASE_DIR / "database.db"
+_FORGE_DB_ENV = _os.environ.get("FORGE_DB")
+DB_PATH   = Path(_FORGE_DB_ENV) if _FORGE_DB_ENV else BASE_DIR / "database.db"
 
 # Canonical source key -- MUST match manifest["id"] for auto-pin membrane query
 SOURCE_ID = "disease_outbreak_collector"
@@ -1329,4 +1331,15 @@ def run() -> None:
 
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    run()
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(description="FORGE Project Aegis — Disease Outbreak Collector")
+    _parser.add_argument("--db", type=Path, default=None, help="Path to database.db")
+    _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
+    _args = _parser.parse_args()
+    if _args.db:
+        DB_PATH = _args.db.resolve()
+    if _args.dry_run:
+        print(f"[aegis] DRY RUN — would connect to: {DB_PATH}")
+        print("[aegis] Dry run complete (no writes)")
+    else:
+        run()

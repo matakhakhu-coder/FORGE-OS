@@ -136,7 +136,7 @@
   {# ── Top Bar ──────────────────────────────────────────────────────────── #}
   <header class="topbar">
     {% set lens = request.args.get('lens', 'live') %}
-    <a href="{{ url_for('index', lens=lens) }}" class="topbar__wordmark">
+    <a href="{{ url_for('pages.index', lens=lens) }}" class="topbar__wordmark">
       {% if lens == 'live' %}
         FORGE <span>LIVE INTELLIGENCE STREAM</span>
       {% else %}
@@ -144,7 +144,7 @@
       {% endif %}
     </a>
 
-    <form class="topbar__search" action="{{ url_for('search', lens=lens) }}" method="get">
+    <form class="topbar__search" action="{{ url_for('pages.search', lens=lens) }}" method="get">
       <input type="hidden" name="lens" value="{{ lens }}">
       <input type="search" name="q" placeholder="Search the archive…"
              value="{{ request.args.get('q', '') }}" autocomplete="off">
@@ -154,7 +154,7 @@
     {# ── Priority alert bell ────────────────────────────────────────────── #}
     {# priority_count is injected by the context_processor in app.py on      #}
     {# every request — counts raw signals with is_priority = 1.              #}
-    <a href="{{ url_for('signals', lens=lens) }}"
+    <a href="{{ url_for('signals.signals', lens=lens) }}"
        class="topbar__bell{% if priority_count %} topbar__bell--active{% endif %}"
        title="{{ priority_count }} priority signal{{ 's' if priority_count != 1 }} awaiting review"
        aria-label="Signal alerts">
@@ -185,7 +185,7 @@
       <a href="{{ request.path }}?lens=all" class="lens-btn{% if lens == 'all' %} lens-btn--active{% endif %}">ALL</a>
     </div>
 
-    <a href="{{ url_for('index') }}#sentinel-alerts"
+    <a href="{{ url_for('pages.index') }}#sentinel-alerts"
        class="topbar__bell topbar__sentinel-bell{% if sentinel_count %} topbar__sentinel-bell--active{% endif %}"
        title="{{ sentinel_count }} Sentinel alert{{ 's' if sentinel_count != 1 }} requiring review"
        aria-label="Sentinel alerts">
@@ -230,19 +230,19 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('index', lens=lens) }}"
+          <a href="{{ url_for('pages.index', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'index' }}">
             <span class="nav-icon">◈</span> Archive Home
           </a>
         </li>
         <li>
-          <a href="{{ url_for('intel') }}"
+          <a href="{{ url_for('pages.intel') }}"
              class="{{ 'active' if request.endpoint == 'intel' }}">
             <span class="nav-icon">⊞</span> Intel Dashboard
           </a>
         </li>
         <li>
-          <a href="{{ url_for('feed', lens=lens) }}"
+          <a href="{{ url_for('pages.feed', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'feed' }}">
             <span class="nav-icon">⊜</span> Intel Feed
             {% if sentinel_count %}
@@ -251,7 +251,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('search', lens=lens) }}"
+          <a href="{{ url_for('pages.search', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'search' }}">
             <span class="nav-icon">⌕</span> Search
           </a>
@@ -263,13 +263,13 @@
       <div class="sidebar__label">Explore</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('events', lens=lens) }}"
+          <a href="{{ url_for('pages.events', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'events' }}">
             <span class="nav-icon">◎</span> Events
           </a>
         </li>
         <li>
-          <a href="{{ url_for('actors', lens=lens) }}"
+          <a href="{{ url_for('pages.actors', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'actors' }}">
             <span class="nav-icon">◉</span> Actors
           </a>
@@ -280,25 +280,25 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('timeline', lens=lens) }}"
+          <a href="{{ url_for('pages.timeline', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'timeline' }}">
             <span class="nav-icon">≡</span> Timeline
           </a>
         </li>
         <li>
-          <a href="{{ url_for('map_explorer', lens=lens) }}"
+          <a href="{{ url_for('map_routes.map_explorer', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'map_explorer' }}">
             <span class="nav-icon">⊕</span> Map
           </a>
         </li>
         <li>
-          <a href="{{ url_for('graph', lens=lens) }}"
+          <a href="{{ url_for('graph.graph', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'graph' }}">
             <span class="nav-icon">◫</span> Graph
           </a>
         </li>
         <li>
-          <a href="{{ url_for('intel_graph') }}"
+          <a href="{{ url_for('graph.intel_graph') }}"
              class="{{ 'active' if request.endpoint == 'intel_graph' }}">
             <span class="nav-icon">⬡</span> Intel Graph
           </a>
@@ -310,7 +310,7 @@
       <div class="sidebar__label">Cases</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('cases', lens=lens) }}"
+          <a href="{{ url_for('cases.cases', lens=lens) }}"
              class="{{ 'active' if request.endpoint in ('cases','case_detail') }}">
             <span class="nav-icon">⊟</span> Workspaces
           </a>
@@ -322,19 +322,19 @@
       <div class="sidebar__label">FORAGE</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('signals', lens=lens) }}"
+          <a href="{{ url_for('signals.signals', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'signals' }}">
             <span class="nav-icon">⊛</span> Signals
           </a>
         </li>
         <li>
-          <a href="{{ url_for('artifact_gallery', lens=lens) }}"
+          <a href="{{ url_for('pages.artifact_gallery', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'artifact_gallery' }}">
             <span class="nav-icon">◈</span> Gallery
           </a>
         </li>
         <li>
-          <a href="{{ url_for('index', lens=lens) }}#sentinel-alerts"
+          <a href="{{ url_for('pages.index', lens=lens) }}#sentinel-alerts"
              class="{% if sentinel_count %}sentinel-nav-active{% endif %}">
             <span class="nav-icon{% if sentinel_count %} nav-icon--alert{% endif %}">⚠</span>
             Sentinel
@@ -362,7 +362,7 @@
       <div class="sidebar__label">System</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('quarantine_manager') }}"
+          <a href="{{ url_for('control.quarantine_manager') }}"
              class="{{ 'active' if request.endpoint == 'quarantine_manager' }}">
             <span class="nav-icon nav-icon--quarantine">⛔</span> Quarantine
             {% if quarantine_count %}
@@ -371,7 +371,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('diagnostics', lens=lens) }}"
+          <a href="{{ url_for('diagnostics.diagnostics', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'diagnostics' }}">
             <span class="nav-icon">⊡</span> Control Room
             <span class="pipeline-led pipeline-led--{{ pipeline_health }}"
@@ -380,7 +380,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('discovery', lens=lens) }}"
+          <a href="{{ url_for('diagnostics.discovery', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'discovery' }}">
             <span class="nav-icon">⟁</span> Discovery
             {% if discovery_count %}
@@ -389,7 +389,7 @@
           </a>
         </li>
         <li>
-          <a href="{{ url_for('admin', lens=lens) }}"
+          <a href="{{ url_for('admin.admin', lens=lens) }}"
              class="{{ 'active' if request.endpoint == 'admin' }}">
             <span class="nav-icon">⊞</span> Admin
           </a>

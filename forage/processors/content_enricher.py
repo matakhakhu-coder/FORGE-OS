@@ -62,8 +62,17 @@ CONTENT_CAP = 2000      # max chars to store in signals.content
 MIN_BODY    = 150       # minimum extracted chars to count as successful fetch
 TIMEOUT     = 10        # HTTP request timeout (seconds)
 
-# User-agent: identifies as FORGE research tool
-UA = "FORGE-OSINT/1.1 (research; non-commercial; +https://github.com/forge-osint)"
+# User-agent rotation pool — mitigates tracking fingerprint on repeated fetches
+import random as _random
+_UA_POOL = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+]
+def _get_ua() -> str:
+    return _random.choice(_UA_POOL)
 
 # ── HTML → plaintext stripper ─────────────────────────────────────────────────
 
@@ -138,7 +147,7 @@ def _can_fetch(url: str) -> bool:
             # If robots.txt is unreachable, assume allowed
             rp.allow_all = True
         _robots_cache[base] = rp
-    return _robots_cache[base].can_fetch(UA, url)
+    return _robots_cache[base].can_fetch(_get_ua(), url)
 
 
 # ── HTTP fetch ────────────────────────────────────────────────────────────────
@@ -150,7 +159,8 @@ def _fetch(url: str) -> str | None:
         _log.debug("robots.txt disallows: %s", url)
         return None
     _rate_wait(domain)
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    ua = _get_ua()
+    req = urllib.request.Request(url, headers={"User-Agent": ua})
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
             ct = resp.headers.get("Content-Type", "")

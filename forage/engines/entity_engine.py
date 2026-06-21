@@ -89,9 +89,9 @@ def materialize_entities(conclusion, signal_id, db):
         return []
 
     conf = getattr(conclusion, 'confidence', 0.0)
-    if conf < 0.25:
+    if conf < 0.20:
         _log.debug(
-            "[entity_engine] signal=%s confidence=%.3f below gate 0.25 — skipping materialization",
+            "[entity_engine] signal=%s confidence=%.3f below gate 0.20 — skipping materialization",
             signal_id, conf,
         )
         return []

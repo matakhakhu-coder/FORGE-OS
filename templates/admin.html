@@ -37,7 +37,7 @@
     </div>
     <div class="form-panel__body">
 
-      <form method="POST" action="{{ url_for('admin') }}" enctype="multipart/form-data">
+      <form method="POST" action="{{ url_for('admin.admin') }}" enctype="multipart/form-data">
         <input type="hidden" name="action" value="add_artifact">
 
         {# Password gate #}
@@ -161,7 +161,7 @@
       </div>
       <div class="form-panel__body">
 
-        <form method="POST" action="{{ url_for('admin') }}">
+        <form method="POST" action="{{ url_for('admin.admin') }}">
           <input type="hidden" name="action" value="add_event">
 
           <div class="form-group">
@@ -234,7 +234,7 @@
       </div>
       <div class="form-panel__body">
 
-        <form method="POST" action="{{ url_for('admin') }}">
+        <form method="POST" action="{{ url_for('admin.admin') }}">
           <input type="hidden" name="action" value="add_actor">
 
           <div class="form-group">
@@ -296,7 +296,7 @@
             {% for a in recent_artifacts %}
             <tr>
               <td>
-                <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}">
+                <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}">
                   {{ a.title[:40] }}{% if a.title|length > 40 %}…{% endif %}
                 </a>
               </td>

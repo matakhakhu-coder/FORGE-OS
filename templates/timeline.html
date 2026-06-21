@@ -5,7 +5,7 @@
 
 {# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index', lens=request.args.get('lens', 'live')) }}">
+  <a href="{{ url_for('pages.index', lens=request.args.get('lens', 'live')) }}">
     {% if request.args.get('lens','live') == 'live' %}Live{% else %}Archive{% endif %}
   </a>
   <span class="breadcrumb__sep">›</span>
@@ -112,7 +112,7 @@
               </div>
 
               <h3 class="tl__card-title">
-                <a href="{{ url_for('event_detail', event_id=event.event_id) }}">
+                <a href="{{ url_for('admin.event_detail', event_id=event.event_id) }}">
                   {{ event.title }}
                 </a>
               </h3>
@@ -131,7 +131,7 @@
                   {{ event.artifact_count }} evidence item{{ 's' if event.artifact_count != 1 }}
                 </span>
                 {% endif %}
-                <a href="{{ url_for('event_detail', event_id=event.event_id) }}"
+                <a href="{{ url_for('admin.event_detail', event_id=event.event_id) }}"
                    class="tl__card-link">
                   Investigate →
                 </a>
@@ -164,7 +164,7 @@
         {% endif %}
       </div>
       <h3 class="tl__card-title">
-        <a href="{{ url_for('event_detail', event_id=event.event_id) }}">{{ event.title }}</a>
+        <a href="{{ url_for('admin.event_detail', event_id=event.event_id) }}">{{ event.title }}</a>
       </h3>
       {% if event.location %}
       <div class="tl__card-location mono">⊕ {{ event.location }}</div>

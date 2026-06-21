@@ -602,8 +602,17 @@ def run(db_path: Path = DB_PATH) -> dict:
 
 
 if __name__ == "__main__":
-    db = Path(sys.argv[1]) if len(sys.argv) > 1 else DB_PATH
-    print(json.dumps(run(db_path=db), indent=2))
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(description="FORGE Civic Intelligence Collector (US)")
+    _parser.add_argument("--db", type=Path, default=None, help="Path to database.db")
+    _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
+    _args = _parser.parse_args()
+    db = _args.db.resolve() if _args.db else DB_PATH
+    if _args.dry_run:
+        print("[civic_intel_us] DRY RUN — would connect to:", db)
+        print("[civic_intel_us] Dry run complete (no writes)")
+    else:
+        print(json.dumps(run(db_path=db), indent=2))
 
 # --- MEGA RUNNER ADAPTER ---
 import asyncio as _asyncio

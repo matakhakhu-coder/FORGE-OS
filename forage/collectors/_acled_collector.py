@@ -334,6 +334,7 @@ class ACLEDClient:
           fatalities, notes, source, source_scale
         """
         params = {
+            "_format":     "json",
             "country":     country,
             "event_date":  since_date,
             "event_date_where": ">=",
@@ -354,6 +355,7 @@ class ACLEDClient:
         req = Request(url, headers={
             "User-Agent":    "FORGE-OSINT/1.0",
             "Authorization": f"Bearer {self.auth.get_access_token()}",
+            "Content-Type":  "application/json",
         })
         try:
             with urlopen(req, timeout=30) as resp:

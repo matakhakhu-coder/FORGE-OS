@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Constraint:** Zero Node.js at build or runtime. Ever. No npm. No webpack.
 - **Anchor document:** `FORGE_OS_MANIFEST.md` — if code conflicts with the manifest, the code is wrong.
 - **Tech debt ledger:** `docs/tech_debt.md` — update when debt is resolved or discovered.
-- **Current stable:** `Stable 1.1.3` (post-Phase 72 + document brief engine + codebase audit). FLUX phases A–I complete.
+- **Current stable:** `Stable 1.2.0` (Post-Monolith Extraction). app.py reduced from 10,133 to 1,297 lines. 8 Flask Blueprints in `core/web/blueprints/`. 151 routes across 10 blueprints. FLUX phases A–I complete.
 
 ---
 
@@ -134,6 +134,36 @@ Module failures are isolated — a crashing module cannot kill Flask or block in
 | Source layers | `source_type = 'live'` or `'seed'`; `lens` param on routes | Analyst can inspect live vs. curated layers independently |
 | Actor types (valid) | `person · institution · media · movement · government · location · political_party · organization · other · paramilitary · unknown` | Full CHECK constraint; `/admin` dropdown and `_VALID_ACTOR_TYPES` must stay in sync |
 | Frontend | Leaflet.js · D3.js · Chart.js · HTMX | No SPA framework; server-rendered Jinja2 + progressive enhancement |
+| Route architecture | 8 Flask Blueprints in `core/web/blueprints/` | app.py is thin factory; routes live in domain-specific modules |
+
+---
+
+## Blueprint Architecture (Stable 1.2)
+
+`app.py` is a **thin factory** (1,297 lines): config, collector scanner, `create_app()` with blueprint registrations, schema, migrations, and CLI.
+
+All routes live in `core/web/blueprints/`:
+
+| Blueprint | File | Routes | Domain |
+|---|---|---|---|
+| `pages_bp` | `pages.py` | 11 | Dashboard, feed, timeline, search, gallery, intel |
+| `signals_bp` | `signals.py` | 10 | Signal triage, pulse, heatmap, decay/anomaly |
+| `cases_bp` | `cases.py` | 28 | Case CRUD, workbench, pinning, briefings, CT-1 |
+| `admin_bp` | `admin.py` | 29 | Entity CRUD, forensics, dossiers, documents, alerts |
+| `graph_bp` | `graph.py` | 13 | D3/Vis-Network, relationships, coalitions |
+| `map_bp` | `map_routes.py` | 6 | Leaflet map, GeoJSON layers |
+| `control_bp` | `control.py` | 24 | Collector dispatch, pipeline ops, quarantine |
+| `diagnostics_bp` | `diagnostics.py` | 11 | Health, FMS, discovery, evolution |
+
+**Shared infrastructure:**
+- `core/web/helpers.py` — `get_db()`, telemetry functions, config constants
+- `core/web/state.py` — `_COLLECTOR_REGISTRY`, `_DEAD_NODES`, `_KILL_FLAGS`, `_PIPELINE_ACTIVE`
+
+**Rules for adding routes:**
+- New routes go into the appropriate blueprint, NOT into `app.py`
+- Import `get_db` from `core.web.helpers`
+- Import mutable state from `core.web.state`
+- Cross-blueprint `url_for()` uses `blueprint.endpoint` format
 
 ---
 
@@ -247,11 +277,17 @@ Full ledger in `docs/tech_debt.md`. Active high-priority items:
 
 | ID | Area | Severity | Notes |
 |---|---|:---:|---|
-| ENT-01 | ~~`entity_engine.py` missing `confidence_score`, `automated` columns~~ | ~~MEDIUM~~ | **RESOLVED 2026-05-28** — `migrate_db()` added both columns. `verify_schema.py` confirms all 128 required columns present. `entity_engine.py` compliance fix applied (`from __future__ import annotations`). |
-| CT-1 | `core/gravity.py` implemented but not wired into app routes | MEDIUM | **VERIFIED 2026-05-28** — 41-test suite (`tests/test_gravity_ct1.py`) passes clean. Documented as verified offline asset. Surface route integration ready when analyst case context is available in route layer. |
+| ENT-01 | ~~`entity_engine.py` missing `confidence_score`, `automated` columns~~ | ~~MEDIUM~~ | **RESOLVED 2026-05-28** |
+| CT-1 | `core/gravity.py` implemented, partially wired (feed route only) | MEDIUM | 41-test suite passes. Full route integration pending. |
 | P2-06 | spaCy `en_core_web_sm` not tuned for SA govt entities | HIGH | DPWI, HAWKS, SIU, NPA tagged MISC or missed. Fix: custom `EntityRuler` |
 | P3.2-05 | 6,458 scanned PDFs with `< 100 chars` in `raw_text_cache` | HIGH | OCR pipeline exists; needs `--status A1-PENDING` run |
 | TD-13 | Case Alpha institutional bridge gap (CoE = 0.28) | HIGH | SAFLII bridge hunt needed |
 | TD-20 | `graph_nodes` (463k rows) vs `actors` (1,011) imbalance | MEDIUM | Provenance audit; prune stale rows |
-| DB-01 | ~~`sqlite3.connect()` missing `timeout=60` in 8 active files~~ | ~~HIGH~~ | **RESOLVED 2026-05-30** — `core/db/connection.py`, `app.py`, `decay_engine.py`, `ner_processor.py`, `rss_collector.py`, `pipeline_logger.py`, `wiki/routes.py`, `wiki_compiler.py`. `decay_engine` and `ner_processor` also hardened with `try/finally: conn.close()`. ~40 migration/tool scripts remain unfixed (low risk — manual execution only). |
-| DB-02 | `__future__` placement after line 3 in 51 files | LOW | CLAUDE.md convention, no runtime impact. Defer to cleanup pass. Affected areas: `core/fms/`, `forage/engines/`, `forage/processors/`, `forge_modules/`, `flux/`, `surface/`, `wiki/` |
+| ~~AD-3~~ | ~~Schema duplication: SCHEMA_STATEMENTS vs migrate_db()~~ | ~~MEDIUM~~ | **RESOLVED 2026-06-21** — duplicate CREATE TABLE stanzas removed; column drift patched |
+| DB-01 | ~~`sqlite3.connect()` missing `timeout=60` in 8 active files~~ | ~~HIGH~~ | **RESOLVED 2026-05-30** |
+| DB-02 | `__future__` placement after line 3 in 51 files | LOW | No runtime impact. Defer to cleanup pass. |
+| ~~AD-1~~ | ~~10,133-line app.py monolith~~ | ~~HIGH~~ | **RESOLVED 2026-06-21** — Stable 1.2.0 extraction: 8 blueprints, app.py → 1,297 lines |
+| ~~AD-2~~ | ~~Missing FK indexes (35 FKs, 3 indexes)~~ | ~~HIGH~~ | **RESOLVED 2026-06-21** — 16 FK indexes added; total 49 |
+| ~~RC-1~~ | ~~No mutex on concurrent pipeline runs~~ | ~~HIGH~~ | **RESOLVED 2026-06-21** — `_PIPELINE_ACTIVE` guard, HTTP 409 rejection |
+| ~~IV-1~~ | ~~14 bare int()/float() casts crash on bad input~~ | ~~MEDIUM~~ | **RESOLVED 2026-06-21** — Safe `type=int/float` pattern |
+| ~~SDL-1~~ | ~~Gravity write failure silently drops signals~~ | ~~CRITICAL~~ | **RESOLVED 2026-06-21** — Early return on persistence failure |

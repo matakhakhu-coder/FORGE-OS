@@ -38,11 +38,11 @@
             <span class="rel-item__arrow">→</span>
             <span class="rel-item__type rel-item__type--out">{{ r.relation_type }}</span>
             <span class="rel-item__arrow">→</span>
-            <a href="{{ url_for('actor_detail', actor_id=r.object_actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=r.object_actor_id) }}"
                class="rel-item__peer">{{ r.object_name | truncate(20) }}</a>
           {% else %}
             {# This actor is the object #}
-            <a href="{{ url_for('actor_detail', actor_id=r.subject_actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=r.subject_actor_id) }}"
                class="rel-item__peer">{{ r.subject_name | truncate(20) }}</a>
             <span class="rel-item__arrow">→</span>
             <span class="rel-item__type rel-item__type--in">{{ r.relation_type }}</span>

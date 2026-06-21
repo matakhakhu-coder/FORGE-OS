@@ -135,6 +135,13 @@
   border-color: var(--accent);
   color: var(--bg-base);
 }
+
+@media (max-width: 640px) {
+  .bl-shell { padding: var(--sp-5) var(--sp-4) var(--sp-12); }
+  .bl-header__title { font-size: 1.3rem; }
+  .bl-grid { grid-template-columns: 1fr; }
+  .bl-pill { padding: 8px 14px; font-size: 0.68rem; }
+}
 </style>
 {% endblock %}
 

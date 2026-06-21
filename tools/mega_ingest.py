@@ -81,7 +81,11 @@ else:
 
 log.info(f"[config] DB_PATH = {DB_PATH}")
 
-# ── FMS bootstrap (must come after log is defined) ────────────────────────────
+# ── FORGE path bootstrap — must come before any core/ imports ─────────────────
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+# ── FMS bootstrap (must come after log + path are defined) ───────────────────
 try:
     from core.fms.bootstrap import bootstrap_fms
     bootstrap_fms(verbose=False)
@@ -91,72 +95,83 @@ except Exception as _fms_err:
 
 # ── Core imports ──────────────────────────────────────────────────────────────
 
-# ── FORGE path bootstrap (added by refactor) ──────────────────────────
-import sys as _sys, os as _os
-_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
-
 from core.pipeline.ingest import ingest_signal
 
-# ── Collector imports ─────────────────────────────────────────────────────────
-# Each collector exposes an async collect() coroutine.
-# Failures are isolated — a missing collector never kills the full run.
+# ── Collector autodiscovery (Stable 1.2.1) ───────────────────────────────────
+# Dynamically discovers all collectors via AST __manifest__ scanning, matching
+# the same mechanism as app.py's _load_collector_registry(). Files prefixed
+# with underscore are ignored (decommissioned). Severed noise sources are
+# excluded by explicit blocklist.
+import ast as _ast
+import importlib as _importlib
+
+COLLECTOR_CONCURRENCY = 4  # max simultaneous collectors
+
+# Severed feeds — produce noise with no investigative value.
+# Decommissioned feeds use _ prefix and are excluded by the scanner.
+_SEVERED_IDS = frozenset({
+    "firms_collector",       # Phase 3.3 — 142k+ satellite thermal noise
+    "earthquake_collector",  # Phase 3.3 — USGS seismic noise
+    "usgs_collector",        # Phase 3.3 — duplicate USGS feed
+})
 
 _collectors_available: list[str] = []
+_collector_modules: dict[str, object] = {}
 
-# NEW: ACLED — primary high-signal collector
-try:
-    from forage.collectors.acled_collector import collect as acled_collect
-    _collectors_available.append("acled")
-except ImportError as _e:
-    log.warning(f"[collector] ACLED not importable (skipping): {_e}")
-    acled_collect = None
+def _autodiscover_collectors() -> None:
+    """
+    Scan forage/collectors/ and flux/collectors/ for __manifest__ dicts.
+    Import each module and register it if it exposes async_main/collect/run.
+    """
+    collector_roots = [
+        (Path(__file__).resolve().parent.parent / "forage" / "collectors", "forage.collectors"),
+        (Path(__file__).resolve().parent.parent / "flux" / "collectors",   "flux.collectors"),
+    ]
 
-# NEW: GDELT DOC API — replaces noisy event stream
-try:
-    from forage.collectors.gdelt_collector import collect as gdelt_collect
-    _collectors_available.append("gdelt_doc")
-except ImportError as _e:
-    log.warning(f"[collector] GDELT DOC collector not importable (skipping): {_e}")
-    gdelt_collect = None
+    for collectors_dir, package_prefix in collector_roots:
+        if not collectors_dir.exists():
+            continue
+        for py_path in sorted(collectors_dir.glob("*.py")):
+            if py_path.name.startswith("_") or py_path.name == "__init__.py":
+                continue
+            stem = py_path.stem
+            module_path = f"{package_prefix}.{stem}"
 
-# Existing collectors — unchanged async_main() interface
-try:
-    from forage.collectors import civic_intel_collector
-    _collectors_available.append("civic_intel")
-except ImportError:
-    civic_intel_collector = None
+            # AST-extract __manifest__ to get the collector ID
+            try:
+                source = py_path.read_text(encoding="utf-8")
+                tree = _ast.parse(source, filename=str(py_path))
+                manifest = None
+                for node in _ast.walk(tree):
+                    if isinstance(node, _ast.Assign):
+                        for target in node.targets:
+                            if isinstance(target, _ast.Name) and target.id == "__manifest__":
+                                manifest = _ast.literal_eval(node.value)
+                if not manifest or "id" not in manifest:
+                    continue
+            except Exception:
+                continue
 
-# ── SEVERED FEEDS (Phase 3.3 — Source Severance 2026-04-14) ─────────────────
-# FIRMS (NASA wildfire sensor), earthquake_collector, and usgs_collector are
-# permanently disabled. They produced 142k+ noise signals with no investigative
-# value for FORGE's SA accountability mandate. Historical data purged via
-# scripts/purge_noise_sources.py. Do not re-enable without a deliberate
-# architecture decision.
-firms_collector    = None  # SEVERED — NASA FIRMS thermal sensor noise
-earthquake_collector = None  # SEVERED — USGS earthquake feed
-usgs_collector     = None  # SEVERED — USGS duplicate feed
+            collector_id = manifest["id"]
 
-try:
-    from forage.collectors import rss_collector
-    _collectors_available.append("rss")
-except ImportError:
-    rss_collector = None
+            # Skip severed noise sources
+            if collector_id in _SEVERED_IDS:
+                log.debug(f"[collector] {collector_id} SEVERED — skipping")
+                continue
 
-try:
-    from forage.collectors import dork_collector
-    _collectors_available.append("dork")
-except ImportError:
-    dork_collector = None
+            # Import and register
+            try:
+                mod = _importlib.import_module(module_path)
+                if hasattr(mod, "async_main") or hasattr(mod, "collect") or hasattr(mod, "run"):
+                    _collector_modules[collector_id] = mod
+                    _collectors_available.append(collector_id)
+                else:
+                    log.debug(f"[collector] {collector_id} has no async_main/collect/run — skipping")
+            except Exception as exc:
+                log.warning(f"[collector] {collector_id} import failed: {exc}")
 
-# C-1: Sovereign-First PDF vault — async portal crawler with OCR bridge
-try:
-    from forage.collectors.pdf_infiltrator import collect as pdf_infiltrator_collect
-    _collectors_available.append("pdf_infiltrator")
-except ImportError as _e:
-    log.warning(f"[collector] pdf_infiltrator not importable (skipping): {_e}")
-    pdf_infiltrator_collect = None
-
-log.info(f"[collector] Available: {_collectors_available}")
+_autodiscover_collectors()
+log.info(f"[collector] Available: {_collectors_available} ({len(_collectors_available)} total)")
 
 # ── Engine imports ────────────────────────────────────────────────────────────
 # Engines are class-based: Engine(db_path=DB_PATH).run()
@@ -190,62 +205,51 @@ SentinelClass      = _safe_import("forage.processors.sentinel",         "Sentine
 
 async def run_all_collectors(dry_run: bool = False) -> dict:
     """
-    Run all available collectors concurrently.
+    Run all available collectors with bounded concurrency.
+    COLLECTOR_CONCURRENCY limits simultaneous execution to prevent
+    SQLite WAL thrashing and memory exhaustion on single-machine setups.
     return_exceptions=True ensures one failing collector never kills the batch.
-    Results are logged per-collector for pipeline_runs observability.
     """
     log.info("S A M A R I T A N . O N L I N E")
     log.info("DETERMINING_RELEVANCE...")
-    log.info(f"[collect] Running {len(_collectors_available)} collectors concurrently")
+    log.info(f"[collect] Running {len(_collector_modules)} collectors (max {COLLECTOR_CONCURRENCY} concurrent)")
 
-    tasks: list = []
-    labels: list[str] = []
+    sem = asyncio.Semaphore(COLLECTOR_CONCURRENCY)
 
-    # ── New collectors (use collect() coroutine interface) ────────────────────
-    if acled_collect is not None:
-        # Only run ACLED if credentials are present
-        if os.environ.get("ACLED_KEY") and os.environ.get("ACLED_EMAIL"):
-            tasks.append(acled_collect(db_path=DB_PATH))
-            labels.append("acled")
-        else:
-            log.warning(
-                "[collector] ACLED skipped: ACLED_KEY and ACLED_EMAIL env vars not set. "
-                "Register free at https://developer.acleddata.com/"
-            )
+    async def _run_one(label: str, mod: object) -> tuple:
+        """Run a single collector under the semaphore."""
+        async with sem:
+            log.info(f"[collector:{label}] starting")
+            try:
+                if hasattr(mod, "async_main"):
+                    result = await mod.async_main()
+                elif hasattr(mod, "collect"):
+                    result = await mod.collect(db_path=DB_PATH)
+                elif hasattr(mod, "run"):
+                    result = mod.run()
+                else:
+                    result = None
+                return (label, result)
+            except Exception as exc:
+                return (label, exc)
 
-    if gdelt_collect is not None:
-        tasks.append(gdelt_collect(db_path=DB_PATH))
-        labels.append("gdelt_doc")
-
-    # C-1: Sovereign-First PDF vault — concurrent portal crawl + OCR bridge
-    if pdf_infiltrator_collect is not None:
-        tasks.append(pdf_infiltrator_collect(db_path=DB_PATH))
-        labels.append("pdf_infiltrator")
-
-    # ── Existing collectors (use async_main() interface) ──────────────────────
-    _legacy = [
-        (civic_intel_collector, "civic_intel",  {"": None}),
-        # firms_collector     SEVERED (Phase 3.3 — noise purge)
-        (rss_collector,         "rss",           {"": None}),
-        # earthquake_collector SEVERED (Phase 3.3 — noise purge)
-        # usgs_collector       SEVERED (Phase 3.3 — noise purge)
-        (dork_collector,        "dork",          {"": None}),
-    ]
-    for mod, label, _kwargs in _legacy:
-        if mod is not None and hasattr(mod, "async_main"):
-            tasks.append(mod.async_main())
-            labels.append(label)
+    tasks = [_run_one(label, mod) for label, mod in _collector_modules.items()]
 
     if not tasks:
         log.warning("[collect] No collectors available — skipping collection phase")
         return {"collectors_run": 0, "errors": []}
 
     start = time.monotonic()
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    raw_results = await asyncio.gather(*tasks, return_exceptions=True)
     duration = round(time.monotonic() - start, 2)
 
     errors = []
-    for label, result in zip(labels, results):
+    for item in raw_results:
+        if isinstance(item, Exception):
+            log.error(f"[collector] gather-level error: {item}")
+            errors.append({"collector": "unknown", "error": str(item)})
+            continue
+        label, result = item
         if isinstance(result, Exception):
             log.error(f"[collector:{label}] FAILED: {result}")
             errors.append({"collector": label, "error": str(result)})
@@ -254,7 +258,7 @@ async def run_all_collectors(dry_run: bool = False) -> dict:
             inserted = result.get("inserted", result.get("records_out", "?"))
             log.info(f"[collector:{label}] {status} — {inserted} signals written")
         else:
-            log.info(f"[collector:{label}] completed (no structured result)")
+            log.info(f"[collector:{label}] completed")
 
     log.info(
         f"[collect] Collection complete in {duration}s — "
@@ -965,6 +969,28 @@ def run_full_ingest(
 # Phase 4 — Pipeline Run Logging
 # ══════════════════════════════════════════════════════════════════════════════
 
+def run_publish_deploy() -> dict:
+    """
+    Phase 5 — regenerate the ZA-DIVERGENT static site and push to
+    origin/main via tools/publish.py --deploy. Non-fatal on any error;
+    a failed publish must never fail the pipeline run.
+    """
+    import subprocess
+    try:
+        result = subprocess.run(
+            [sys.executable, str(Path(__file__).resolve().parent / "publish.py"), "--deploy"],
+            capture_output=True, text=True, timeout=600,
+        )
+        if result.returncode != 0:
+            log.warning(f"[publish] non-zero exit ({result.returncode}): {result.stderr[-1000:]}")
+            return {"status": "error", "returncode": result.returncode}
+        log.info("[publish] dist/ rebuilt and deployed")
+        return {"status": "success"}
+    except Exception as exc:
+        log.warning(f"[publish] failed (non-fatal): {exc}")
+        return {"status": "error", "detail": str(exc)}
+
+
 def _log_pipeline_run(
     component: str,
     status: str,
@@ -1077,6 +1103,11 @@ if __name__ == "__main__":
             reprocess_all=args.reprocess_all,
         )
 
+    # ── Phase 5: Publish + Deploy ─────────────────────────────────────────────
+    publish_result = {"status": "skipped"}
+    if not args.collect_only and not args.engines_only:
+        publish_result = run_publish_deploy()
+
     # ── Phase 4: Log run ──────────────────────────────────────────────────────
     total_duration = round(time.time() - pipeline_start, 2)
     overall_status = (
@@ -1095,6 +1126,7 @@ if __name__ == "__main__":
             "collect":  collect_result,
             "engines":  {k: v.get("status") for k, v in engine_result.items()},
             "ingest":   ingest_result,
+            "publish":  publish_result,
         },
     )
 

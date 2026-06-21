@@ -380,7 +380,7 @@
   {# ── Toolbar ─────────────────────────────────────────────────────────── #}
   <div class="briefing-toolbar no-print">
     <div class="briefing-toolbar__left">
-      <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+      <a href="{{ url_for('cases.case_detail', case_id=case.case_id) }}"
          class="btn btn--ghost btn--sm">← Back to Workspace</a>
       <span class="briefing-wordmark">FORGE / ZA-DIVERGENT</span>
     </div>
@@ -468,9 +468,9 @@
             {% endif %}
           </div>
 
-          {% set detail_url = url_for('event_detail', event_id=item.entity_id) if item.kind == 'event'
-                              else url_for('actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
-                              else url_for('artifact_detail', artifact_id=item.entity_id) %}
+          {% set detail_url = url_for('admin.event_detail', event_id=item.entity_id) if item.kind == 'event'
+                              else url_for('admin.actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
+                              else url_for('admin.artifact_detail', artifact_id=item.entity_id) %}
           <a href="{{ detail_url }}" class="briefing-card__title">{{ item.title }}</a>
 
           <div class="briefing-card__sub">
@@ -515,7 +515,7 @@
     <p class="mono" style="color:var(--text-dim); font-size:0.78rem; letter-spacing:0.06em;">
       No sequenced items. Assign sequence numbers in the Workspace to build the narrative thread.
     </p>
-    <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+    <a href="{{ url_for('cases.case_detail', case_id=case.case_id) }}"
        class="btn btn--ghost" style="margin-top:var(--sp-4);">
       ← Go to Workspace
     </a>
@@ -528,9 +528,9 @@
     <div class="briefing-section-heading">Appendix — Unsequenced Items</div>
     <div class="unsequenced-grid">
       {% for item in unsequenced %}
-      {% set detail_url = url_for('event_detail', event_id=item.entity_id) if item.kind == 'event'
-                          else url_for('actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
-                          else url_for('artifact_detail', artifact_id=item.entity_id) %}
+      {% set detail_url = url_for('admin.event_detail', event_id=item.entity_id) if item.kind == 'event'
+                          else url_for('admin.actor_detail', actor_id=item.entity_id) if item.kind == 'actor'
+                          else url_for('admin.artifact_detail', artifact_id=item.entity_id) %}
       <div class="unsequenced-card">
         <div class="unsequenced-card__kind">{{ item.kind }}</div>
         <a href="{{ detail_url }}" class="unsequenced-card__title">{{ item.title }}</a>

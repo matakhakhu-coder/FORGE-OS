@@ -150,6 +150,8 @@ _ACLED_CREDIBILITY  = 0.85   # peer-reviewed sourced data
 _INVESTIGATIVE_SOURCES = frozenset({
     "amabhungane", "dailymaverick", "dailymaverick_corruption",
     "news24_crime", "timeslive_corruption", "groundup",
+    # Stable 1.2.1 — SA security/defence + general news (ACLED replacement)
+    "defenceweb", "citizen_news",
     # Phase 74 — US region (civic_intel_collector_us.py)
     "propublica", "icij", "theintercept", "revealnews", "occrp_us",
     "us_infrastructure",

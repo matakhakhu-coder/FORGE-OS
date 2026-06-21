@@ -38,18 +38,18 @@
 {# ── Phase 17: Signal stat cards (only shown when signals exist) ─────────── #}
 {% if signal_stats and signal_stats.total %}
 <div class="stat-grid" style="margin-top:calc(var(--sp-4)*-1);margin-bottom:var(--sp-6);">
-  <a href="{{ url_for('signals') }}" class="stat-card" style="text-decoration:none;">
+  <a href="{{ url_for('signals.signals') }}" class="stat-card" style="text-decoration:none;">
     <div class="stat-card__value" style="color:#818cf8;">{{ signal_stats.total }}</div>
     <div class="stat-card__label">Signals</div>
   </a>
   {% if signal_stats.raw %}
-  <a href="{{ url_for('signals') }}" class="stat-card" style="text-decoration:none;">
+  <a href="{{ url_for('signals.signals') }}" class="stat-card" style="text-decoration:none;">
     <div class="stat-card__value" style="color:var(--text-secondary);font-size:1.6rem;">{{ signal_stats.raw }}</div>
     <div class="stat-card__label">Unreviewed</div>
   </a>
   {% endif %}
   {% if signal_stats.priority %}
-  <a href="{{ url_for('signals') }}" class="stat-card" style="text-decoration:none;">
+  <a href="{{ url_for('signals.signals') }}" class="stat-card" style="text-decoration:none;">
     <div class="stat-card__value" style="color:#e05c5c;font-size:1.6rem;">{{ signal_stats.priority }}</div>
     <div class="stat-card__label">⚑ Priority</div>
   </a>
@@ -68,7 +68,7 @@
       </div>
     </div>
   </div>
-  <a href="{{ url_for('feed', lens=request.args.get('lens', 'live')) }}" class="btn btn--primary">
+  <a href="{{ url_for('pages.feed', lens=request.args.get('lens', 'live')) }}" class="btn btn--primary">
     View Feed →
   </a>
 </div>
@@ -180,7 +180,7 @@
       </div>
       {% endif %}
       <div style="flex:1;"></div>
-      <a href="{{ url_for('signals') }}" class="btn btn--sm"
+      <a href="{{ url_for('signals.signals') }}" class="btn btn--sm"
          style="font-size:0.65rem;">Open Monitor →</a>
     </div>
     {% endif %}
@@ -207,12 +207,12 @@
 {% if recent_artifacts %}
 <div class="artifact-grid">
   {% for a in recent_artifacts %}
-  <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+  <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
      class="artifact-card" style="text-decoration:none; color:inherit;">
 
     <div class="artifact-card__thumb">
       {% if a.thumbnail %}
-        <img src="{{ url_for('serve_media', filepath=a.thumbnail[6:]) }}"
+        <img src="{{ url_for('pages.serve_media', filepath=a.thumbnail[6:]) }}"
              alt="{{ a.title }}">
       {% else %}
         {% if a.type == 'video' %}🎞{% elif a.type == 'audio' %}🎙{% elif a.type == 'document' %}📄{% elif a.type == 'photo' %}📷{% else %}📰{% endif %}
@@ -233,7 +233,7 @@
       </div>
       {% if a.event_title %}
       <div class="artifact-card__event-link">
-        ↳ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">
+        ↳ <a href="{{ url_for('admin.event_detail', event_id=a.event_id) }}">
           {{ a.event_title }}
         </a>
       </div>
@@ -252,7 +252,7 @@
 {% if recent_events %}
 <div class="event-list">
   {% for e in recent_events %}
-  <a href="{{ url_for('event_detail', event_id=e.event_id) }}" class="event-row">
+  <a href="{{ url_for('admin.event_detail', event_id=e.event_id) }}" class="event-row">
     <div class="event-row__date mono">{{ e.date or '—' }}</div>
     <div>
       <div class="event-row__title">{{ e.title }}</div>
@@ -311,7 +311,7 @@
         </span>
       </div>
     </div>
-    <a href="{{ url_for('map_explorer') }}" class="corr-item__map-link mono" title="View on map">⊕</a>
+    <a href="{{ url_for('map_routes.map_explorer') }}" class="corr-item__map-link mono" title="View on map">⊕</a>
   </div>
   {% endfor %}
 </div>
@@ -330,7 +330,7 @@
   {% for lead in intelligence_leads %}
   {% set heat_pct = ((lead.influence_score / max_score) * 100)|int if max_score > 0 else 0 %}
   {% set is_critical = lead.influence_score > 0.5 %}
-  <a href="{{ url_for('actor_detail', actor_id=lead.actor_id) }}"
+  <a href="{{ url_for('admin.actor_detail', actor_id=lead.actor_id) }}"
      class="lead-item{% if is_critical %} lead-item--critical{% endif %}">
 
     <div class="lead-item__rank mono">#{{ loop.index }}</div>
@@ -374,13 +374,13 @@
 {% if stream_counts %}
 <div class="section-heading" style="margin-top:var(--space-xl);">
   Signal Streams
-  <a href="{{ url_for('signals') }}" class="mono"
+  <a href="{{ url_for('signals.signals') }}" class="mono"
      style="font-size:0.62rem;color:var(--accent);margin-left:var(--sp-3);
             text-decoration:none;">View Monitor →</a>
 </div>
 <div class="stream-grid">
   {% for stream_name, cnt in stream_counts.items() %}
-  <a href="{{ url_for('signals') }}?stream={{ stream_name }}"
+  <a href="{{ url_for('signals.signals') }}?stream={{ stream_name }}"
      class="stream-card stream-card--{{ stream_name }}"
      style="text-decoration:none;">
     <div class="stream-card__name mono">{{ stream_name }}</div>

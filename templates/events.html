@@ -22,28 +22,28 @@
 <div class="filter-bar">
   <span class="filter-bar__label">Filter</span>
 
-  <a href="{{ url_for('events') }}"
+  <a href="{{ url_for('pages.events') }}"
      class="filter-pill {{ 'active' if not current_category }}">
     All
   </a>
 
   {% for cat in categories %}
-  <a href="{{ url_for('events', category=cat, sort=current_sort) }}"
+  <a href="{{ url_for('pages.events', category=cat, sort=current_sort) }}"
      class="filter-pill {{ 'active' if cat == current_category }}">
     {{ cat }}
   </a>
   {% endfor %}
 
   <select class="sort-select" onchange="window.location.href=this.value">
-    <option value="{{ url_for('events', category=current_category, sort='date_desc') }}"
+    <option value="{{ url_for('pages.events', category=current_category, sort='date_desc') }}"
             {{ 'selected' if current_sort == 'date_desc' }}>
       Date ↓
     </option>
-    <option value="{{ url_for('events', category=current_category, sort='date_asc') }}"
+    <option value="{{ url_for('pages.events', category=current_category, sort='date_asc') }}"
             {{ 'selected' if current_sort == 'date_asc' }}>
       Date ↑
     </option>
-    <option value="{{ url_for('events', category=current_category, sort='title_asc') }}"
+    <option value="{{ url_for('pages.events', category=current_category, sort='title_asc') }}"
             {{ 'selected' if current_sort == 'title_asc' }}>
       Title A–Z
     </option>
@@ -54,7 +54,7 @@
 {% if events %}
 <div class="event-list">
   {% for e in events %}
-  <a href="{{ url_for('event_detail', event_id=e.event_id) }}" class="event-row">
+  <a href="{{ url_for('admin.event_detail', event_id=e.event_id) }}" class="event-row">
 
     <div class="event-row__date">
       {% if e.date %}

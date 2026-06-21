@@ -1,0 +1,20 @@
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+
+</title></head>
+<body>
+    <form method="post" action="./uploaderror.aspx?aspxerrorpath=%2fDownloadList" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="vcbi0q5GPGVGfn8wchwyyHZ4Yf/JKSyHrMUS/PTQiaSNKSthJNvEFE2pUhcYxM7vwxw55yfTfljQ6X4YJoZL5xiHOqFiWcQMXXk53LXAJZk=" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="7EAB070E" />
+        <div>
+            <h3 style="color:red">The maximum file size allowed for the Application for permitted financial services is 5mb.</h3> 
+        </div>
+        <a href="/Pages/Form">Back</a>
+    </form>
+</body>
+</html>

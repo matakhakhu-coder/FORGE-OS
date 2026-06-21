@@ -5,9 +5,9 @@
 
 {# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('pages.index') }}">Archive</a>
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('events') }}">Events</a>
+  <a href="{{ url_for('pages.events') }}">Events</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">{{ event.title | truncate(48) }}</span>
 </nav>
@@ -22,17 +22,17 @@
   </div>
   <h1 class="page-header__title">{{ event.title }}</h1>
   <div class="page-header__actions">
-    <a href="{{ url_for('events') }}" class="btn btn--ghost btn--sm">
+    <a href="{{ url_for('pages.events') }}" class="btn btn--ghost btn--sm">
       ← All Events
     </a>
-    <a href="{{ url_for('event_edit', event_id=event.event_id) }}" class="btn btn--ghost btn--sm">
+    <a href="{{ url_for('admin.event_edit', event_id=event.event_id) }}" class="btn btn--ghost btn--sm">
       ✎ Edit
     </a>
-    <a href="{{ url_for('dossier_event', event_id=event.event_id) }}"
+    <a href="{{ url_for('admin.dossier_event', event_id=event.event_id) }}"
        class="btn btn--dossier" target="_blank">
       ⎙ Generate Dossier
     </a>
-    <a href="{{ url_for('document_event', event_id=event.event_id) }}"
+    <a href="{{ url_for('admin.document_event', event_id=event.event_id) }}"
        class="btn btn--dossier" target="_blank">
       ✦ Rich Brief
     </a>
@@ -48,7 +48,7 @@
           <div class="pin-widget__loading mono">Loading…</div>
         </div>
         <div class="pin-widget__dropdown-footer">
-          <a href="{{ url_for('cases') }}" class="pin-widget__manage mono">Manage workspaces →</a>
+          <a href="{{ url_for('cases.cases') }}" class="pin-widget__manage mono">Manage workspaces →</a>
         </div>
       </div>
     </div>
@@ -125,7 +125,7 @@
           </div>
           <div class="actor-role-row__body">
             <div class="actor-role-row__top">
-              <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+              <a href="{{ url_for('admin.actor_detail', actor_id=ac.actor_id) }}"
                  class="actor-role-row__name">{{ ac.name }}</a>
               <span class="actor-type-badge">{{ ac.type }}</span>
             </div>
@@ -170,7 +170,7 @@
       {% if artifacts %}
       <div class="evidence-list">
         {% for a in artifacts %}
-        <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+        <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
            class="evidence-row">
           <div class="evidence-row__type-col">
             <span class="type-badge">{{ a.type }}</span>
@@ -212,7 +212,7 @@
       </p>
       <div class="narrative-chain">
         {% for rel in related_by_actor %}
-        <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+        <a href="{{ url_for('admin.event_detail', event_id=rel.event_id) }}"
            class="chain-event-card">
           <div class="chain-event-card__left">
             <div class="chain-event-card__date mono">{{ rel.date or '—' }}</div>
@@ -258,7 +258,7 @@
       </h2>
       <div class="sibling-list">
         {% for rel in related_by_category %}
-        <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+        <a href="{{ url_for('admin.event_detail', event_id=rel.event_id) }}"
            class="sibling-row">
           <span class="sibling-row__type mono">{{ rel.date or '—' }}</span>
           <span class="sibling-row__title">{{ rel.title }}</span>
@@ -365,7 +365,7 @@
       <div class="meta-panel__body" style="padding:var(--sp-3) var(--sp-4);">
         {% for ac in actors %}
         <div style="padding:var(--sp-2) 0; border-bottom:1px solid var(--border-dim);">
-          <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+          <a href="{{ url_for('admin.actor_detail', actor_id=ac.actor_id) }}"
              style="font-size:0.82rem; display:block; margin-bottom:2px;">
             {{ ac.name | truncate(36) }}
           </a>

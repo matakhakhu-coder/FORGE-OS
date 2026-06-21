@@ -212,6 +212,7 @@ def build_baselines(conn: sqlite3.Connection,
         return 0
 
     written = 0
+    dropped = 0
     now     = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     for r in rows:
         region_key = f"1°grid::{r['lat_cell']}:{r['lng_cell']}"
@@ -224,10 +225,14 @@ def build_baselines(conn: sqlite3.Connection,
                  r["daily_count"], now)
             )
             written += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            dropped += 1
+            if dropped <= 3:
+                warn(f"Baseline row write failed ({r['source']}/{region_key}): {exc}")
 
     conn.commit()
+    if dropped:
+        warn(f"Baseline builder: {dropped}/{written + dropped} rows failed to write")
     log(f"Baseline builder: {written} geographic rows written")
     return written
 
@@ -272,6 +277,7 @@ def build_actor_baselines(conn: sqlite3.Connection,
         return 0
 
     written = 0
+    dropped = 0
     now     = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     for r in rows:
         region_key = f"actor::{r['actor_name']}"
@@ -284,10 +290,14 @@ def build_actor_baselines(conn: sqlite3.Connection,
                  r["daily_count"], now)
             )
             written += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            dropped += 1
+            if dropped <= 3:
+                warn(f"Actor baseline row write failed ({region_key}): {exc}")
 
     conn.commit()
+    if dropped:
+        warn(f"Actor baseline builder: {dropped}/{written + dropped} rows failed to write")
     log(f"Baseline builder: {written} actor rows written")
     return written
 
@@ -585,22 +595,23 @@ class AnomalyEngine:
         log(f"Dry run  : {dry_run} | Rebuild baselines: {rebuild}")
 
         conn = _open_db(self._db_path)
-        _ensure_schema(conn)
+        try:
+            _ensure_schema(conn)
 
-        # Phase A: build / update baselines
-        log("Phase A — Updating signal baselines…")
-        geo_rows   = build_baselines(conn, rebuild=rebuild)
-        actor_rows = build_actor_baselines(conn, rebuild=rebuild)
+            # Phase A: build / update baselines
+            log("Phase A — Updating signal baselines…")
+            geo_rows   = build_baselines(conn, rebuild=rebuild)
+            actor_rows = build_actor_baselines(conn, rebuild=rebuild)
 
-        # Phase B: geographic Z-scores
-        log("Phase B — Geographic anomaly detection…")
-        geo_alerts = detect_geographic_anomalies(conn, dry_run=dry_run)
+            # Phase B: geographic Z-scores
+            log("Phase B — Geographic anomaly detection…")
+            geo_alerts = detect_geographic_anomalies(conn, dry_run=dry_run)
 
-        # Phase C: actor Z-scores
-        log("Phase C — Actor mention anomaly detection…")
-        act_alerts = detect_actor_anomalies(conn, dry_run=dry_run)
-
-        conn.close()
+            # Phase C: actor Z-scores
+            log("Phase C — Actor mention anomaly detection…")
+            act_alerts = detect_actor_anomalies(conn, dry_run=dry_run)
+        finally:
+            conn.close()
 
         summary = {
             "status":             "done",

@@ -105,7 +105,7 @@
         <ol class="network-rank__list">
           {% for r in network_top %}
           <li class="network-rank__item {% if r.actor_id == actor.actor_id %}network-rank__item--current{% endif %}">
-            <a href="{{ url_for('actor_detail', actor_id=r.actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=r.actor_id) }}"
                class="network-rank__link">
               <span class="network-rank__name">{{ r.name }}</span>
               <span class="network-rank__type mono">{{ r.type }}</span>

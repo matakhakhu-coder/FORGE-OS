@@ -266,6 +266,30 @@ SOURCES = [
         "default_lng":         28.2293,
         "is_priority_default": 1,
     },
+
+    # ── Stable 1.2.1: ACLED replacement — SA security & conflict coverage ─
+    {
+        "source_key":          "defenceweb",
+        "label":               "defenceWeb — SA Security & Defence",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.defenceweb.co.za/feed/",
+        "stream":              "CRIME_INTEL",
+        "base_relevance":      1.5,
+        "default_lat":         -25.7479,
+        "default_lng":         28.2293,
+        "is_priority_default": 0,
+    },
+    {
+        "source_key":          "citizen_news",
+        "label":               "The Citizen — SA News & Crime",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.citizen.co.za/news/feed/",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.3,
+        "default_lat":         -26.2041,
+        "default_lng":         28.0473,
+        "is_priority_default": 0,
+    },
 ]
 
 # ── Keyword classification rules ───────────────────────────────────────────
@@ -503,6 +527,7 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         "stream":          stream,
         "relevance_score": relevance,
         "is_priority":     priority,
+        "url":             link if link != title else None,
     }
 
 
@@ -730,8 +755,10 @@ def run(db_path: Path = DB_PATH) -> dict:
                 )
                 continue
 
-            # Build metadata_json — tag near-duplicates before insert
+            # Build metadata_json — tag near-duplicates and store source URL
             meta = {}
+            if sig.get("url"):
+                meta["url"] = sig["url"]
             if action == "near_dup":
                 meta["near_duplicate"] = True
                 meta["near_dup_sim"]   = round(sim, 3)
@@ -841,8 +868,17 @@ def run(db_path: Path = DB_PATH) -> dict:
 
 
 if __name__ == "__main__":
-    db = Path(sys.argv[1]) if len(sys.argv) > 1 else DB_PATH
-    print(json.dumps(run(db_path=db), indent=2))
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(description="FORGE Civic Intelligence Collector (SA)")
+    _parser.add_argument("--db", type=Path, default=None, help="Path to database.db")
+    _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
+    _args = _parser.parse_args()
+    db = _args.db.resolve() if _args.db else DB_PATH
+    if _args.dry_run:
+        print("[civic_intel] DRY RUN — would connect to:", db)
+        print("[civic_intel] Dry run complete (no writes)")
+    else:
+        print(json.dumps(run(db_path=db), indent=2))
 
 # --- MEGA RUNNER ADAPTER ---
 import asyncio as _asyncio

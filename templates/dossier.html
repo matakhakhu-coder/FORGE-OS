@@ -146,7 +146,7 @@
       <tbody>
         {% for rt in role_timeline %}
         <tr>
-          <td><a href="{{ url_for('event_detail', event_id=rt.event_id) }}">{{ rt.title }}</a></td>
+          <td><a href="{{ url_for('admin.event_detail', event_id=rt.event_id) }}">{{ rt.title }}</a></td>
           <td class="mono">{{ rt.date or '—' }}</td>
           <td>{% if rt.category %}<span class="category-badge">{{ rt.category }}</span>{% endif %}</td>
           <td><span class="role-badge">{{ rt.role }}</span></td>
@@ -200,7 +200,7 @@
             {% if e.role %}<span class="role-badge">{{ e.role }}</span>{% endif %}
           </div>
           <div class="dossier-timeline__title">
-            <a href="{{ url_for('event_detail', event_id=e.event_id) }}">{{ e.title }}</a>
+            <a href="{{ url_for('admin.event_detail', event_id=e.event_id) }}">{{ e.title }}</a>
           </div>
           {% if e.location %}
           <div class="mono dossier-timeline__location">⊕ {{ e.location }}</div>
@@ -247,7 +247,7 @@
           <td><span class="actor-type-badge">{{ ac.type }}</span></td>
           <td>{% if ac.role %}<span class="role-badge">{{ ac.role }}</span>{% else %}—{% endif %}</td>
           <td>
-            <a href="{{ url_for('actor_detail', actor_id=ac.actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=ac.actor_id) }}"
                class="dossier-link no-print">View ↗</a>
           </td>
         </tr>
@@ -289,7 +289,7 @@
           {% if not loop.first %}</tbody></table>{% endif %}
           {% set current_eid.val = a.event_id %}
           <div class="dossier-evidence-group-header mono">
-            ◎ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">{{ a.event_title }}</a>
+            ◎ <a href="{{ url_for('admin.event_detail', event_id=a.event_id) }}">{{ a.event_title }}</a>
           </div>
           <table class="dossier-table dossier-table--evidence">
             <thead>
@@ -307,7 +307,7 @@
           </td>
           <td class="mono">{{ a.date or '—' }}</td>
           <td class="no-print">
-            <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+            <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
                class="dossier-link">View ↗</a>
           </td>
         </tr>
@@ -344,7 +344,7 @@
             </td>
             <td class="mono">{{ a.date or '—' }}</td>
             <td class="no-print">
-              <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+              <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
                  class="dossier-link">View ↗</a>
             </td>
           </tr>
@@ -379,7 +379,7 @@
           <td><span class="actor-type-badge">{{ ca.type }}</span></td>
           <td class="mono" style="color:var(--accent);">{{ ca.shared_events }}</td>
           <td class="no-print">
-            <a href="{{ url_for('actor_detail', actor_id=ca.actor_id) }}"
+            <a href="{{ url_for('admin.actor_detail', actor_id=ca.actor_id) }}"
                class="dossier-link">View ↗</a>
           </td>
         </tr>
@@ -407,7 +407,7 @@
           <td>{% if rel.category %}<span class="category-badge">{{ rel.category }}</span>{% endif %}</td>
           <td class="mono" style="color:var(--accent);">{{ rel.shared_actors }}</td>
           <td class="no-print">
-            <a href="{{ url_for('event_detail', event_id=rel.event_id) }}"
+            <a href="{{ url_for('admin.event_detail', event_id=rel.event_id) }}"
                class="dossier-link">View ↗</a>
           </td>
         </tr>

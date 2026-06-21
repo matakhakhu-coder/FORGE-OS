@@ -1105,20 +1105,21 @@ def _record_artifact_skip(conn: sqlite3.Connection, pdf_url: str,
                            file_path: Optional[Path] = None) -> None:
     """
     Record a tried-but-skipped PDF in artifacts so future runs skip the
-    download entirely.  status: 'no_text' | 'no_intel'
+    download entirely.  status: 'no_text' | 'no_intel' (mapped to 'skipped')
     """
     try:
         if _artifact_url_status(conn, pdf_url) is not None:
             return  # already recorded (any status)
         title    = Path(urlparse(pdf_url).path).stem[:80] or "unknown"
         path_str = str(file_path) if file_path else None
+        db_status = "skipped"  # CHECK constraint: pending|processing|done|failed|skipped
         conn.execute(
             """INSERT INTO artifacts
                    (title, description, type, source, file_path,
                     processing_status, source_type, created_at)
                VALUES (?, ?, 'document', 'government', ?,
                        ?, 'pdf_portal', datetime('now'))""",
-            (title, pdf_url, path_str, status),
+            (title, pdf_url, path_str, db_status),
         )
         conn.commit()
     except Exception as exc:
@@ -1755,9 +1756,18 @@ if __name__ == "__main__":
     parser.add_argument("--reprocess-vault", action="store_true",
                         help="P2-04: re-extract text (with OCR) from saved PDFs "
                              "in media/documents/ to back-fill empty raw_text_cache")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Print collection plan without downloading or writing to database")
     args = parser.parse_args()
 
     db = args.db.resolve() if args.db else DB_PATH
+
+    if args.dry_run:
+        print(f"[pdf_infiltrator] DRY RUN — DB: {db}")
+        print(f"[pdf_infiltrator] Max PDFs per run: {args.max_pdfs}")
+        print(f"[pdf_infiltrator] Mode: {'reprocess-vault' if args.reprocess_vault else 'portals' if args.portals else 'dork-rss'}")
+        print("[pdf_infiltrator] Dry run complete (no downloads, no writes)")
+        sys.exit(0)
 
     if getattr(args, "reprocess_vault", False):
         result = _reprocess_vault(db_path=db)

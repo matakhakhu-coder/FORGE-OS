@@ -56,7 +56,7 @@
         <ul class="forensic-duplicate-alert__list">
           {% for dup in duplicates %}
           <li>
-            <a href="{{ url_for('artifact_detail', artifact_id=dup.artifact_id) }}">
+            <a href="{{ url_for('admin.artifact_detail', artifact_id=dup.artifact_id) }}">
               ◈ {{ dup.title }} (ID {{ dup.artifact_id }})
             </a>
             <span class="mono" style="color:var(--text-ghost);font-size:0.6rem;">

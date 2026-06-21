@@ -15,7 +15,7 @@
 {# ── Create new case ──────────────────────────────────────────────────────── #}
 <div class="case-create-panel">
   <div class="case-create-panel__header mono">⊟ Open New Workspace</div>
-  <form method="POST" action="{{ url_for('case_new') }}" class="case-create-form">
+  <form method="POST" action="{{ url_for('cases.case_new') }}" class="case-create-form">
     <div class="case-create-form__row">
       <input type="text" name="title" placeholder="Case title…" required
              class="case-create-form__input">
@@ -35,7 +35,7 @@
 {% if cases %}
 <div class="case-grid">
   {% for c in cases %}
-  <a href="{{ url_for('case_detail', case_id=c.case_id) }}" class="case-card">
+  <a href="{{ url_for('cases.case_detail', case_id=c.case_id) }}" class="case-card">
     <div class="case-card__top">
       <div class="case-card__header">
         <span class="case-status-badge case-status-badge--{{ c.status }}">{{ c.status }}</span>

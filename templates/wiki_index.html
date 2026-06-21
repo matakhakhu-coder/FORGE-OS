@@ -2,7 +2,7 @@
 {% block content %}
 {# ── Breadcrumb ────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('pages.index') }}">Archive</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">Archive Intelligence</span>
 </nav>
@@ -53,7 +53,7 @@
             {% if article.tags %}
               <div class="tag-cloud" style="justify-content:flex-end;">
                 {% for tag in article.tags.split(',') %}
-                <a href="{{ url_for('search') }}?q={{ tag.strip() }}"
+                <a href="{{ url_for('pages.search') }}?q={{ tag.strip() }}"
                    class="tag-pill">{{ tag.strip() }}</a>
                 {% endfor %}
               </div>

@@ -477,6 +477,78 @@ Full static analysis run across all `.py` files, `templates/*.html`, and inline 
 
 ---
 
+---
+
+## Stable 1.2.0 — Monolith Extraction & Stability Fixes (2026-06-21)
+
+Items resolved during the comprehensive codebase audit and structural refactoring.
+
+- [x] **AD-1** · `app.py` monolith (10,133 lines, ~120 inline routes in single `create_app()`).
+  **RESOLVED:** Extracted into 8 Flask Blueprints in `core/web/blueprints/`. app.py reduced to
+  1,297 lines (thin factory + schema + CLI). 151 routes across 10 blueprints verified.
+  Shared infrastructure in `core/web/helpers.py` (get_db, telemetry, constants) and
+  `core/web/state.py` (mutable registries).
+
+- [x] **AD-2** · Missing FK indexes — 35 FK relationships but only 3 explicit indexes.
+  `graph_edges.source_node_id/target_node_id` unindexed with 463K rows in `graph_nodes`.
+  **RESOLVED:** 16 FK indexes added to SCHEMA_STATEMENTS and applied to live database.
+  Total indexes: 49. Key additions: graph_edges (source/target), signal_actors (signal/actor),
+  entity_relationships (subject/object), correlated_incidents (signal_a/b), case_signals,
+  signal_entities, socint_signals, actor_coalitions, network_emergence, socint_resonance.
+
+- [x] **RC-1** · No mutex on concurrent pipeline execution — `/api/control/run_collectors`,
+  `run_ingest`, `run_conclave`, `run_graph_engine` could be invoked simultaneously, causing
+  SQLITE_BUSY thrashing and partial commits.
+  **RESOLVED:** `_PIPELINE_ACTIVE` guard in `core/web/state.py`. Concurrent invocations
+  return HTTP 409 `{"status": "rejected", "reason": "already running"}`.
+
+- [x] **IV-1** · 14 bare `int()`/`float()` query parameter casts across 8 routes. Non-numeric
+  input caused raw 500 ValueError tracebacks.
+  **RESOLVED:** Replaced with safe `request.args.get(key, default, type=int/float)` pattern.
+  POST body casts guarded with `try/except (ValueError, TypeError)`.
+
+- [x] **SEC-3** · `_update_job(**fields)` interpolated kwargs keys into SQL column names via
+  f-string with no allowlist. Potential SQL injection vector for future callers.
+  **RESOLVED:** Column allowlist `_ALLOWED_JOB_COLUMNS` added; unknown keys are silently skipped.
+
+- [x] **SDL-1** · Gravity score write failure in `core/pipeline/ingest.py` silently fell through
+  to downstream stages. Signal marked as processed despite missing `gravity_score`.
+  **RESOLVED:** Write failure now returns early with error dict. Signal remains with
+  `processed_at = NULL` for retry on next pipeline run.
+
+- [x] **SDL-2** · Anomaly engine baseline write loop used bare `except Exception: pass`.
+  Failed INSERT silently dropped baseline rows with no logging.
+  **RESOLVED:** Both `build_baselines()` and `build_actor_baselines()` now log dropped rows
+  with `warn()` and emit failure count summary.
+
+- [x] **RL-1** · `AnomalyEngine.run()` used `conn.close()` outside `try/finally`. Unhandled
+  exception in any engine phase leaked the SQLite connection.
+  **RESOLVED:** Full engine sequence wrapped in `try/finally: conn.close()`.
+
+### Remaining open items introduced by audit
+
+- [x] **AD-3** · Schema duplication between `SCHEMA_STATEMENTS` and `migrate_db()`.
+  **RESOLVED 2026-06-21:** Removed 7 duplicate inline CREATE TABLE stanzas from `migrate_db()`.
+  All table/index creation now driven by the single canonical SCHEMA_STATEMENTS array.
+  Added explicit ALTER TABLE migrations for `community_id_socint` and `influence_score`
+  on `actor_network_metrics` to close the column drift gap.
+
+- [x] **AD-4** · `wiki_links` foreign keys missing ON DELETE clause.
+  **RESOLVED 2026-06-21:** SCHEMA_STATEMENTS updated with `ON DELETE CASCADE` on both FKs.
+  Table-recreation migration added to `migrate_db()` for existing databases. Verified:
+  both `source_slug` and `target_slug` now show `ON DELETE CASCADE` in PRAGMA output.
+
+- [x] **SEC-1** · Default `ADMIN_PASSWORD` and `secret_key` in production.
+  **RESOLVED 2026-06-21:** Production environment gate added to `create_app()`. When
+  `FLASK_ENV=production`, the app raises `RuntimeError` if either `FORGE_SECRET_KEY` or
+  `FORGE_ADMIN_PASSWORD` matches the default fallback value.
+
+- [x] **SEC-4** · Vercel deploy hook URL hardcoded in `tools/publish.py`.
+  **RESOLVED 2026-06-21:** Token replaced with `os.environ.get("VERCEL_DEPLOY_HOOK_URL")`.
+  Graceful skip with operator message when env var is unset. Placeholder added to `env.example`.
+
+---
+
 *Update this file when debt is resolved or newly discovered. Use `- [x]` for resolved items.*
 *Substrate audit report: `docs/SUBSTRATE_AUDIT_REPORT_APRIL_2026.md`*
 *SOP: `docs/SUBSTRATE_INTERROGATION_SOP.md`*

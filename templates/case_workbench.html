@@ -655,7 +655,7 @@
   <div id="wb-header">
     <div>
       <div class="wb-header__eyebrow">
-        <a href="{{ url_for('cases') }}" style="color:inherit;text-decoration:none;">
+        <a href="{{ url_for('cases.cases') }}" style="color:inherit;text-decoration:none;">
           Workspaces
         </a> › CASE #{{ case.case_id }} › Workbench
       </div>
@@ -683,9 +683,9 @@
       </div>
     </div>
     <div class="wb-header__actions">
-      <a href="{{ url_for('case_detail', case_id=case.case_id) }}" class="wb-btn">◫ Board</a>
-      <a href="{{ url_for('case_briefing', case_id=case.case_id) }}" class="wb-btn" target="_blank">⎙ Briefing</a>
-      <a href="{{ url_for('intel_graph') }}" class="wb-btn">⬡ Intel Graph</a>
+      <a href="{{ url_for('cases.case_detail', case_id=case.case_id) }}" class="wb-btn">◫ Board</a>
+      <a href="{{ url_for('cases.case_briefing', case_id=case.case_id) }}" class="wb-btn" target="_blank">⎙ Briefing</a>
+      <a href="{{ url_for('graph.intel_graph') }}" class="wb-btn">⬡ Intel Graph</a>
       <button id="wb-tunnel-btn" class="wb-btn wb-btn--tunnel"
               title="Run Context Tunnel — NER + triple extraction + wiki synthesis scoped to this case's signals">
         ⟳ Context Tunnel
@@ -778,7 +778,7 @@
         {% else %}
           <div class="overlap-empty">
             No signals or artifacts<br>pinned to this case yet.<br><br>
-            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+            <a href="{{ url_for('cases.case_detail', case_id=case.case_id) }}"
                style="color:var(--accent);text-decoration:none;">
               Pin evidence from the Board →
             </a>
@@ -804,7 +804,7 @@
             <div class="roster-item">
               <div class="roster-item__header">
                 <div class="roster-item__name">
-                  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}">
+                  <a href="{{ url_for('admin.actor_detail', actor_id=actor.actor_id) }}">
                     {{ actor.name }}
                   </a>
                 </div>
@@ -839,7 +839,7 @@
         {% else %}
           <div class="overlap-empty">
             No actors pinned to this case.<br><br>
-            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+            <a href="{{ url_for('cases.case_detail', case_id=case.case_id) }}"
                style="color:var(--accent);text-decoration:none;">
               Add actors from the Board →
             </a>
@@ -888,7 +888,7 @@
             <div class="overlap-item">
               <div class="overlap-item__header">
                 <div class="overlap-item__name">
-                  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}"
+                  <a href="{{ url_for('admin.actor_detail', actor_id=actor.actor_id) }}"
                      style="color:inherit;text-decoration:none;">
                     {{ actor.name }}
                   </a>
@@ -907,7 +907,7 @@
               </div>
               <div class="overlap-cases">
                 {% for c in actor.other_cases %}
-                  <a href="{{ url_for('case_workbench', case_id=c.case_id) }}"
+                  <a href="{{ url_for('cases.workbench', case_id=c.case_id) }}"
                      class="overlap-case-link"
                      title="Open workbench for this case">
                     #{{ c.case_id }} {{ c.name | truncate(36) }}

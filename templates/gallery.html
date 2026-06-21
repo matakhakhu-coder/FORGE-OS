@@ -14,13 +14,13 @@
     </p>
   </div>
   <div class="page-header__actions">
-    <a href="{{ url_for('admin') }}" class="btn btn--sm">⊕ Ingest Artifact</a>
-    <a href="{{ url_for('index') }}" class="btn btn--sm">← Archive</a>
+    <a href="{{ url_for('admin.admin') }}" class="btn btn--sm">⊕ Ingest Artifact</a>
+    <a href="{{ url_for('pages.index') }}" class="btn btn--sm">← Archive</a>
   </div>
 </div>
 
 {# ── Search bar ────────────────────────────────────────────────────────────── #}
-<form method="get" action="{{ url_for('artifact_gallery') }}"
+<form method="get" action="{{ url_for('pages.artifact_gallery') }}"
       style="display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5);align-items:center;">
   <input type="text" name="q" value="{{ q }}"
          placeholder="Search title, description, tags…"
@@ -32,7 +32,7 @@
   {% if active_status %}<input type="hidden" name="status" value="{{ active_status }}">{% endif %}
   <button type="submit" class="btn btn--sm">Search</button>
   {% if q or active_type or active_source or active_status %}
-  <a href="{{ url_for('artifact_gallery') }}" class="btn btn--sm"
+  <a href="{{ url_for('pages.artifact_gallery') }}" class="btn btn--sm"
      style="color:var(--text-dim);">✕ Clear</a>
   {% endif %}
 </form>
@@ -45,13 +45,13 @@
   {# Type filter #}
   <div class="section-heading">Type</div>
   <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
-    <a href="{{ url_for('artifact_gallery', source=active_source, status=active_status, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', source=active_source, status=active_status, q=q) }}"
        class="gallery-filter-link {% if not active_type %}gallery-filter-link--active{% endif %}">
       All
       <span class="gallery-filter-count">{{ total }}</span>
     </a>
     {% for t, cnt in type_counts.items() | sort %}
-    <a href="{{ url_for('artifact_gallery', type=t, source=active_source, status=active_status, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', type=t, source=active_source, status=active_status, q=q) }}"
        class="gallery-filter-link gallery-filter-link--type-{{ t }}
               {% if active_type == t %}gallery-filter-link--active{% endif %}">
       {{ t }}
@@ -64,12 +64,12 @@
   {% if source_counts %}
   <div class="section-heading">Source</div>
   <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
-    <a href="{{ url_for('artifact_gallery', type=active_type, status=active_status, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', type=active_type, status=active_status, q=q) }}"
        class="gallery-filter-link {% if not active_source %}gallery-filter-link--active{% endif %}">
       All sources
     </a>
     {% for src, cnt in source_counts.items() | sort %}
-    <a href="{{ url_for('artifact_gallery', type=active_type, source=src, status=active_status, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', type=active_type, source=src, status=active_status, q=q) }}"
        class="gallery-filter-link {% if active_source == src %}gallery-filter-link--active{% endif %}">
       <span class="source-badge source-badge--{{ src }}">
         {{ SOURCE_META[src].label if src in SOURCE_META else src }}
@@ -83,12 +83,12 @@
   {# Processing status filter #}
   <div class="section-heading">Processing</div>
   <nav style="display:flex;flex-direction:column;gap:2px;margin-bottom:var(--sp-5);">
-    <a href="{{ url_for('artifact_gallery', type=active_type, source=active_source, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', type=active_type, source=active_source, q=q) }}"
        class="gallery-filter-link {% if not active_status %}gallery-filter-link--active{% endif %}">
       All statuses
     </a>
     {% for st, cnt in status_counts.items() | sort %}
-    <a href="{{ url_for('artifact_gallery', type=active_type, source=active_source, status=st, q=q) }}"
+    <a href="{{ url_for('pages.artifact_gallery', type=active_type, source=active_source, status=st, q=q) }}"
        class="gallery-filter-link {% if active_status == st %}gallery-filter-link--active{% endif %}">
       <span class="artifact-status-badge artifact-status-badge--{{ st }}">{{ st }}</span>
       <span class="gallery-filter-count">{{ cnt }}</span>
@@ -118,7 +118,7 @@
       {% if a.thumbnail or a.file_path %}
       <div class="gallery-card__thumb">
         {% if a.thumbnail %}
-          <img src="{{ url_for('serve_media', filepath=a.thumbnail[6:]) }}"
+          <img src="{{ url_for('pages.serve_media', filepath=a.thumbnail[6:]) }}"
                alt="{{ a.title }}" loading="lazy">
         {% elif a.type == 'video' %}
           <div class="gallery-card__thumb-placeholder">🎞</div>
@@ -135,7 +135,7 @@
       {# ── Card body ──────────────────────────────────────────────── #}
       <div class="artifact-card__body">
         <div class="artifact-card__title">
-          <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}">
+          <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}">
             {{ a.title }}
           </a>
         </div>
@@ -152,7 +152,7 @@
 
         {% if a.event_title %}
         <div class="artifact-card__event">
-          ↳ <a href="{{ url_for('event_detail', event_id=a.event_id) }}">
+          ↳ <a href="{{ url_for('admin.event_detail', event_id=a.event_id) }}">
             {{ a.event_title }}
           </a>
         </div>
@@ -180,7 +180,7 @@
 
       {# ── Card footer: action buttons ────────────────────────────── #}
       <div class="gallery-card__footer">
-        <a href="{{ url_for('artifact_detail', artifact_id=a.artifact_id) }}"
+        <a href="{{ url_for('admin.artifact_detail', artifact_id=a.artifact_id) }}"
            class="btn btn--sm" style="flex:1;text-align:center;">View</a>
         {% if a.processing_status in ('pending', 'failed') %}
         <button class="btn btn--sm js-reprocess"
@@ -202,7 +202,7 @@
               gap:var(--sp-3);margin-top:var(--sp-8);font-family:var(--font-mono);
               font-size:0.7rem;">
     {% if page > 1 %}
-    <a href="{{ url_for('artifact_gallery', page=page-1, type=active_type,
+    <a href="{{ url_for('pages.artifact_gallery', page=page-1, type=active_type,
                          source=active_source, status=active_status, q=q) }}"
        class="btn btn--sm">← Prev</a>
     {% endif %}
@@ -211,7 +211,7 @@
       &nbsp;·&nbsp; {{ total }} artifacts
     </span>
     {% if page < total_pages %}
-    <a href="{{ url_for('artifact_gallery', page=page+1, type=active_type,
+    <a href="{{ url_for('pages.artifact_gallery', page=page+1, type=active_type,
                          source=active_source, status=active_status, q=q) }}"
        class="btn btn--sm">Next →</a>
     {% endif %}
@@ -224,10 +224,10 @@
     <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-dim);">
       {% if q or active_type or active_source or active_status %}
         No artifacts match the current filters.
-        <a href="{{ url_for('artifact_gallery') }}" style="color:var(--accent);">Clear filters</a>
+        <a href="{{ url_for('pages.artifact_gallery') }}" style="color:var(--accent);">Clear filters</a>
       {% else %}
         No artifacts in the archive yet.
-        <a href="{{ url_for('admin') }}" style="color:var(--accent);">Ingest evidence →</a>
+        <a href="{{ url_for('admin.admin') }}" style="color:var(--accent);">Ingest evidence →</a>
       {% endif %}
     </div>
   </div>

@@ -65,7 +65,7 @@
           {{ "%.4f"|format(alert.location_lat) }},
           {{ "%.4f"|format(alert.location_lon) }}
         </span>
-        <a href="{{ url_for('map_explorer') }}"
+        <a href="{{ url_for('map_routes.map_explorer') }}"
            class="mono" style="font-size:0.62rem;color:var(--accent);margin-left:var(--sp-2);">
           View on Map →
         </a>

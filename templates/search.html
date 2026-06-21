@@ -10,7 +10,7 @@
 
 {# ── Search form ─────────────────────────────────────────────────────────── #}
 <div class="search-header">
-  <form class="search-form" action="{{ url_for('search') }}" method="get">
+  <form class="search-form" action="{{ url_for('pages.search') }}" method="get">
     <input type="search" name="q"
            value="{{ query }}"
            placeholder="Search artifacts, events, tags, descriptions…"
@@ -51,7 +51,7 @@
     {% endif %}
   </div>
   <div class="search-result__title">
-    <a href="{{ url_for('artifact_detail', artifact_id=r.artifact_id) }}">
+    <a href="{{ url_for('admin.artifact_detail', artifact_id=r.artifact_id) }}">
       {{ r.title }}
     </a>
   </div>
@@ -64,7 +64,7 @@
     {% endif %}
     {% if r.event_title %}
     <span style="font-size:0.78rem; color:var(--text-secondary);">
-      ↳ <a href="{{ url_for('event_detail', event_id=r.event_id) }}">{{ r.event_title }}</a>
+      ↳ <a href="{{ url_for('admin.event_detail', event_id=r.event_id) }}">{{ r.event_title }}</a>
     </span>
     {% endif %}
     {% if r.tags %}
@@ -89,7 +89,7 @@
     {% endif %}
   </div>
   <div class="search-result__title">
-    <a href="{{ url_for('event_detail', event_id=r.event_id) }}">{{ r.title }}</a>
+    <a href="{{ url_for('admin.event_detail', event_id=r.event_id) }}">{{ r.title }}</a>
   </div>
   {% if r.snippet %}
   <div class="search-result__snippet">{{ r.snippet|safe }}</div>

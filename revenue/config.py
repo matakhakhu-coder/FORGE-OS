@@ -19,12 +19,12 @@ REVENUE_LIVE: bool = os.environ.get("FORGE_REVENUE_LIVE", "true").lower() == "tr
 TIERS = {
     "free": {
         "label": "Public Bulletin",
-        "signals_limit": 20,
-        "case_detail": False,
-        "entity_detail": False,
-        "articles_limit": 3,
-        "api_feed": False,
-        "digest": False,
+        "signals_limit": None,       # all signals — current site is fully free
+        "case_detail": True,         # full case detail — free
+        "entity_detail": True,       # full entity profiles — free
+        "articles_limit": None,      # all articles — free
+        "api_feed": False,           # pro-feed.json — future pro feature
+        "digest": False,             # email digest — future pro feature
     },
     "pro": {
         "label": "Pro Intelligence",

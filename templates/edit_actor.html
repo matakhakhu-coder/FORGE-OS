@@ -4,9 +4,9 @@
 {% block content %}
 
 <nav class="breadcrumb">
-  <a href="{{ url_for('actors') }}">Actors</a>
+  <a href="{{ url_for('pages.actors') }}">Actors</a>
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}">{{ actor.name | truncate(40) }}</a>
+  <a href="{{ url_for('admin.actor_detail', actor_id=actor.actor_id) }}">{{ actor.name | truncate(40) }}</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">Edit</span>
 </nav>
@@ -15,7 +15,7 @@
   <div class="page-header__eyebrow mono">ACTOR #{{ actor.actor_id }} — EDIT</div>
   <h1 class="page-header__title">Edit Actor</h1>
   <div class="page-header__actions">
-    <a href="{{ url_for('actor_detail', actor_id=actor.actor_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
+    <a href="{{ url_for('admin.actor_detail', actor_id=actor.actor_id) }}" class="btn btn--ghost btn--sm">← Back to Record</a>
   </div>
 </div>
 
@@ -26,7 +26,7 @@
       <span class="form-panel__header-title">Update Actor Record</span>
     </div>
     <div class="form-panel__body">
-      <form method="POST" action="{{ url_for('actor_edit', actor_id=actor.actor_id) }}" enctype="multipart/form-data">
+      <form method="POST" action="{{ url_for('admin.actor_edit', actor_id=actor.actor_id) }}" enctype="multipart/form-data">
 
         <div class="form-group">
           <label>Admin Password *</label>
@@ -57,7 +57,7 @@
           <label>Photo (portrait for persons, building/logo for institutions)</label>
           {% if actor.image_url %}
           <div style="margin-bottom:var(--sp-2);">
-            <img src="{{ url_for('serve_media', filepath=actor.image_url) }}" alt="" style="max-height:120px; border-radius:var(--r-sm); border:1px solid var(--border-dim);">
+            <img src="{{ url_for('pages.serve_media', filepath=actor.image_url) }}" alt="" style="max-height:120px; border-radius:var(--r-sm); border:1px solid var(--border-dim);">
           </div>
           <label style="display:flex; align-items:center; gap:var(--sp-2); cursor:pointer; font-weight:normal;">
             <input type="checkbox" name="remove_image">

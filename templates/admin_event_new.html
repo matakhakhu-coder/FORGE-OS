@@ -5,9 +5,9 @@
 
 {# ── Breadcrumb ─────────────────────────────────────────────────────────────── #}
 <nav class="breadcrumb">
-  <a href="{{ url_for('index') }}">Archive</a>
+  <a href="{{ url_for('pages.index') }}">Archive</a>
   <span class="breadcrumb__sep">›</span>
-  <a href="{{ url_for('signals') }}">Signal Monitor</a>
+  <a href="{{ url_for('signals.signals') }}">Signal Monitor</a>
   <span class="breadcrumb__sep">›</span>
   <span class="breadcrumb__current">Promote to Event</span>
 </nav>
@@ -88,7 +88,7 @@
     <div class="form-card__eyebrow mono">New Event — Pre-filled from Signal</div>
   </div>
 
-  <form method="post" action="{{ url_for('admin_event_new_post') }}"
+  <form method="post" action="{{ url_for('admin.admin_event_new_post') }}"
         class="forge-form" id="js-promote-form">
 
     {# Hidden fields #}
@@ -190,7 +190,7 @@
       <button type="submit" class="btn btn--primary">
         ↑ Promote to FORGE Event
       </button>
-      <a href="{{ url_for('signals') }}" class="btn">
+      <a href="{{ url_for('signals.signals') }}" class="btn">
         ← Back to Signals
       </a>
     </div>

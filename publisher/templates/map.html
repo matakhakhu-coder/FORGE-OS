@@ -5,6 +5,10 @@
 {% block head_extra %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
       crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+      crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+      crossorigin="anonymous" referrerpolicy="no-referrer">
 <style>
   .site-main { padding: 0; }
 
@@ -368,20 +372,81 @@
   /* ── Leaflet overrides ──────────────────────────────────────────────────── */
   .leaflet-control-zoom { display: none !important; }
 
-  /* ── Cluster marker ─────────────────────────────────────────────────────── */
-  .smap-cluster {
-    width: 28px; height: 28px;
+  /* ── Signal dot (divIcon) with data-driven pulse ─────────────────────── */
+  .sig-dot {
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: rgba(5, 8, 11, 0.92);
-    border: 2px solid currentColor;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono), monospace;
-    font-size: 10px; font-weight: 500;
+    border: 1.5px solid;
+    position: relative;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .smap-cluster:hover { transform: scale(1.2); }
-  .smap-cluster.active { transform: scale(1.25); box-shadow: 0 0 12px currentColor; }
+  .sig-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid;
+    opacity: 0;
+  }
+
+  /* Pulse: recent + high gravity — fast, bright */
+  .sig-dot--pulse-critical {
+    animation: sig-pulse-bright 1.8s ease-in-out infinite;
+  }
+  .sig-dot--pulse-critical::after {
+    animation: sig-ring 1.8s ease-out infinite;
+  }
+
+  /* Pulse: recent + moderate gravity — slower, dimmer */
+  .sig-dot--pulse-active {
+    animation: sig-pulse-dim 2.8s ease-in-out infinite;
+  }
+  .sig-dot--pulse-active::after {
+    animation: sig-ring 2.8s ease-out infinite;
+  }
+
+  /* No pulse: older signals — static */
+  .sig-dot--static {
+    opacity: 0.7;
+  }
+
+  @keyframes sig-pulse-bright {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.15); filter: brightness(1.5); }
+  }
+  @keyframes sig-pulse-dim {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.08); filter: brightness(1.2); }
+  }
+  @keyframes sig-ring {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  /* ── MarkerCluster theme override ─────────────────────────────────────── */
+  .marker-cluster {
+    background: rgba(5, 8, 11, 0.75) !important;
+    border-radius: 50%;
+  }
+  .marker-cluster div {
+    background: rgba(39, 174, 96, 0.85) !important;
+    color: #080d12 !important;
+    font-family: var(--font-mono), monospace !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    border-radius: 50%;
+    width: 30px !important; height: 30px !important;
+    margin-left: 5px !important; margin-top: 5px !important;
+    line-height: 30px !important;
+    text-align: center;
+  }
+  .marker-cluster-small div  { background: rgba(39, 174, 96, 0.85) !important; }
+  .marker-cluster-medium div { background: rgba(200, 148, 58, 0.85) !important; }
+  .marker-cluster-large div  { background: rgba(192, 57, 43, 0.85) !important; }
+  .marker-cluster-small  { background: rgba(39, 174, 96, 0.25) !important; }
+  .marker-cluster-medium { background: rgba(200, 148, 58, 0.25) !important; }
+  .marker-cluster-large  { background: rgba(192, 57, 43, 0.25) !important; }
+  .leaflet-cluster-anim .marker-cluster div { transition: all 0.3s ease; }
 
   /* ── Leaflet popup ──────────────────────────────────────────────────────── */
   .leaflet-popup-content-wrapper {
@@ -412,9 +477,53 @@
 
   /* ── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
-    .md-panel { left: var(--sp-4); width: calc(100vw - 2 * var(--sp-4)); top: 60px; }
-    .md-sidebar { top: auto; bottom: 40px; left: var(--sp-4); flex-direction: row; }
-    .md-controls { top: var(--sp-4); }
+    .md-sidebar {
+      top: auto;
+      bottom: 40px;
+      left: var(--sp-4);
+      right: var(--sp-4);
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--sp-3);
+    }
+    .md-pill {
+      padding: 10px 14px;
+      font-size: 0.65rem;
+      text-align: center;
+      flex: 1;
+    }
+    .md-panel {
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: 72px;
+      width: 100%;
+      max-height: 60vh;
+      border-radius: var(--r-md) var(--r-md) 0 0;
+      border-bottom: none;
+    }
+    .md-controls {
+      top: var(--sp-4);
+      right: var(--sp-3);
+      padding: var(--sp-2);
+      gap: var(--sp-1);
+    }
+    .md-ctrl {
+      padding: 8px 10px;
+      font-size: 0.55rem;
+    }
+    .md-ticker {
+      height: 28px;
+    }
+    .md-ticker__badge {
+      font-size: 0.48rem;
+      padding: 2px 6px;
+      margin: 0 var(--sp-2);
+    }
+    .md-ticker__item {
+      font-size: 0.52rem;
+      padding: 0 var(--sp-3);
+    }
   }
 </style>
 {% endblock %}
@@ -532,6 +641,8 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function () {
   'use strict';
@@ -599,83 +710,68 @@
      MARKERS + SPIDERFY (existing logic preserved)
      ══════════════════════════════════════════════════════════════════════════ */
   var RAW = {{ markers | tojson }};
-  var groups = {};
   var allMarkerLayers = []; // { layer, stream, lat, lng, idx }
+
+  // MarkerClusterGroup — handles numbered bubbles, zoom-to-spread, spiderfy
+  var clusterGroup = L.markerClusterGroup({
+    maxClusterRadius: 45,
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 14,
+    spiderfyDistanceMultiplier: 1.8,
+    iconCreateFunction: function (cluster) {
+      var count = cluster.getChildCount();
+      var size = count < 10 ? 'small' : (count < 30 ? 'medium' : 'large');
+      return L.divIcon({
+        html: '<div>' + count + '</div>',
+        className: 'marker-cluster marker-cluster-' + size,
+        iconSize: L.point(40, 40),
+      });
+    },
+  });
+
+  var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
+
+  var NOW_MS = Date.now();
+  var HOURS_48 = 48 * 60 * 60 * 1000;
 
   RAW.forEach(function (m, idx) {
     if (m.lat == null || m.lng == null) return;
     m._idx = idx;
-    var key = m.lat.toFixed(5) + ',' + m.lng.toFixed(5);
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(m);
-  });
+    var color = STREAM_COLOR[m.stream] || '#7a95aa';
 
-  var spider = null;
-  function clearSpider() {
-    if (!spider) return;
-    spider.legs.forEach(function (l) { map.removeLayer(l); });
-    spider.subs.forEach(function (s) { map.removeLayer(s); });
-    if (spider.clusterEl) spider.clusterEl.classList.remove('active');
-    spider = null;
-  }
+    // Determine pulse class based on recency + gravity
+    var ageMs = m.published_at ? (NOW_MS - new Date(m.published_at).getTime()) : Infinity;
+    var isRecent = ageMs < HOURS_48;
+    var g = m.gravity_score || 0;
+    var pulseClass = 'sig-dot--static';
+    if (isRecent && g >= 0.55) pulseClass = 'sig-dot--pulse-critical';
+    else if (isRecent && g >= 0.20) pulseClass = 'sig-dot--pulse-active';
 
-  function openSpider(clusterEl, group) {
-    var n = group.length, cLat = group[0].lat, cLng = group[0].lng;
-    var centerPx = map.latLngToContainerPoint([cLat, cLng]);
-    var pixelRadius = 50 + (n * 3);
-    var legs = [], subs = [];
+    var dotHtml = '<div class="sig-dot ' + pulseClass + '" style="' +
+      'background:' + color + ';' +
+      'border-color:' + color + ';' +
+      'box-shadow:0 0 ' + (g >= 0.55 ? '8' : '4') + 'px ' + color + '60;' +
+      '"></div>';
 
-    group.forEach(function (m, i) {
-      var angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-      var targetPx = L.point(centerPx.x + pixelRadius * Math.cos(angle), centerPx.y + pixelRadius * Math.sin(angle));
-      var sLatLng = map.containerPointToLatLng(targetPx);
-      var color = STREAM_COLOR[m.stream] || '#7a95aa';
-
-      legs.push(L.polyline([[cLat, cLng], sLatLng], { color: color, weight: 1.5, opacity: 0.38, dashArray: '4 5' }).addTo(map));
-      var sm = L.circleMarker(sLatLng, { radius: 7, fillColor: color, color: color, weight: 1.5, opacity: 0.9, fillOpacity: 0.60 });
-      sm.bindPopup(buildPopup(m), { maxWidth: 300 });
-      sm.addTo(map);
-      subs.push(sm);
+    var icon = L.divIcon({
+      className: '',
+      html: dotHtml,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -10],
     });
 
-    if (clusterEl) clusterEl.classList.add('active');
-    spider = { legs: legs, subs: subs, clusterEl: clusterEl };
-  }
-
-  // Stream visibility state
-  var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
-
-  Object.keys(groups).forEach(function (key) {
-    var group = groups[key];
-    var lat = group[0].lat, lng = group[0].lng;
-
-    if (group.length === 1) {
-      var m = group[0];
-      var color = STREAM_COLOR[m.stream] || '#7a95aa';
-      var dot = L.circleMarker([lat, lng], { radius: 7, fillColor: color, color: color, weight: 1.5, opacity: 0.9, fillOpacity: 0.58 });
-      dot.bindPopup(buildPopup(m), { maxWidth: 300 });
-      dot.addTo(map);
-      allMarkerLayers.push({ layer: dot, stream: m.stream, lat: lat, lng: lng, idx: m._idx, popup: buildPopup(m) });
-    } else {
-      var rep = group.slice().sort(function (a, b) { return (b.gravity_score || 0) - (a.gravity_score || 0); })[0];
-      var color = STREAM_COLOR[rep.stream] || '#7a95aa';
-      var icon = L.divIcon({ className: '', html: '<div class="smap-cluster" style="color:' + color + '">' + group.length + '</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
-      var cm = L.marker([lat, lng], { icon: icon });
-      cm.on('click', function (e) {
-        L.DomEvent.stopPropagation(e);
-        var el = cm.getElement() ? cm.getElement().querySelector('.smap-cluster') : null;
-        if (spider && spider.clusterEl === el) { clearSpider(); } else { clearSpider(); openSpider(el, group); }
-      });
-      cm.addTo(map);
-      group.forEach(function (m) {
-        allMarkerLayers.push({ layer: cm, stream: m.stream, lat: lat, lng: lng, idx: m._idx, isCluster: true });
-      });
-    }
+    var marker = L.marker([m.lat, m.lng], { icon: icon });
+    marker.bindPopup(buildPopup(m), { maxWidth: 300 });
+    marker._forgeStream = m.stream;
+    marker._forgeIdx = idx;
+    clusterGroup.addLayer(marker);
+    allMarkerLayers.push({ layer: marker, stream: m.stream, lat: m.lat, lng: m.lng, idx: idx });
   });
 
-  map.on('click', clearSpider);
-  map.on('zoomstart', clearSpider);
-  map.on('movestart', clearSpider);
+  map.addLayer(clusterGroup);
 
   /* ── Intel links ────────────────────────────────────────────────────────── */
   var INTEL_LINKS = {{ intel_links | tojson }};
@@ -749,17 +845,18 @@
       var idx = parseInt(el.dataset.wireIdx);
       var m = RAW[idx];
       if (m && m.lat && m.lng) {
-        map.flyTo([m.lat, m.lng], 10, { duration: 0.8 });
         document.querySelectorAll('.wire-entry').forEach(function (e) { e.classList.remove('active'); });
         el.classList.add('active');
-        // Open popup on the closest marker
+        // Zoom to marker — cluster will auto-unpack at zoom 14+
+        map.flyTo([m.lat, m.lng], 14, { duration: 0.8 });
+        // Open popup after zoom completes
         setTimeout(function () {
           allMarkerLayers.forEach(function (ml) {
             if (ml.idx === idx && ml.layer && ml.layer.openPopup) {
               ml.layer.openPopup();
             }
           });
-        }, 900);
+        }, 1000);
       }
     });
   });
@@ -775,9 +872,9 @@
       allMarkerLayers.forEach(function (ml) {
         if (ml.stream === stream) {
           if (visible) {
-            if (!map.hasLayer(ml.layer)) map.addLayer(ml.layer);
+            clusterGroup.addLayer(ml.layer);
           } else {
-            if (map.hasLayer(ml.layer)) map.removeLayer(ml.layer);
+            clusterGroup.removeLayer(ml.layer);
           }
         }
       });
@@ -787,7 +884,13 @@
   /* ── Right controls ─────────────────────────────────────────────────────── */
   document.getElementById('ctrl-zoomin').addEventListener('click', function () { map.zoomIn(); });
   document.getElementById('ctrl-zoomout').addEventListener('click', function () { map.zoomOut(); });
-  document.getElementById('ctrl-reset').addEventListener('click', function () { map.setView([-28.5, 25], 5); });
+  document.getElementById('ctrl-reset').addEventListener('click', function () {
+    if (clusterGroup.getLayers().length > 0) {
+      map.fitBounds(clusterGroup.getBounds(), { padding: [40, 40] });
+    } else {
+      map.setView([-28.5, 25], 5);
+    }
+  });
   document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
 
   /* ── Ticker speed — scale with content ──────────────────────────────────── */
