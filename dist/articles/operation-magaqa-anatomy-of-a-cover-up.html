@@ -43,7 +43,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="21 Jun 2026 13:25 UTC" title="21 Jun 2026 13:25 UTC">21 Jun 2026 13:25 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="21 Jun 2026 18:37 UTC" title="21 Jun 2026 18:37 UTC">21 Jun 2026 18:37 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -176,6 +176,8 @@ criminal liability — that determination rests with the courts.</em></p>
 
   </div>
 
+  
+
   <div class="methodology-section">
     <div class="methodology-section__title">About this analysis</div>
     <div class="methodology-section__body">
@@ -194,12 +196,64 @@ criminal liability — that determination rests with the courts.</em></p>
   </div>
   
 
+  
+  
+  <div style="text-align:center;padding:var(--sp-4) 0;border-top:1px solid var(--border-dim);margin-top:var(--sp-6);">
+    <button onclick="__wsToggleModal()" class="hero-sovereign__btn hero-sovereign__btn--secondary" style="font-size:0.7rem;">
+      + Add Custom Evidence
+    </button>
+  </div>
+  
+
   <footer class="article-footer mono">
-    <div class="page-last-updated">Last updated: 21 Jun 2026 13:25 UTC</div>
+    <div class="page-last-updated">Last updated: 21 Jun 2026 18:37 UTC</div>
     ZA-DIVERGENT ARCHIVE
   </footer>
 
 </div>
+
+
+<div class="workspace-overlay" onclick="if(event.target===this)__wsToggleModal()">
+  <div class="workspace-modal">
+    <div class="workspace-modal__header">
+      <div class="workspace-modal__title">+ Add Custom Evidence</div>
+      <button class="workspace-modal__close" onclick="__wsToggleModal()">&times;</button>
+    </div>
+    <div class="workspace-tabs">
+      <button class="workspace-tab active" onclick="__wsTabSwitch(this)">Note</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Link</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Comment</button>
+      <button class="workspace-tab" onclick="__wsTabSwitch(this)">Table</button>
+    </div>
+    <form id="ws-form">
+      <input type="text" id="ws-title" class="workspace-input" placeholder="Short, descriptive title" required>
+      <textarea id="ws-body" class="workspace-input" placeholder="Your observations, hypotheses, or full quote. Markdown supported."></textarea>
+      <div class="workspace-byte-counter" id="ws-bytes">0 / 50,000 bytes</div>
+      <input type="url" id="ws-source" class="workspace-input" placeholder="https://... (optional source URL)">
+      <input type="text" id="ws-tags" class="workspace-input" placeholder="Add tags, comma-separated">
+      <button type="submit" class="workspace-submit">+ Add to board</button>
+    </form>
+  </div>
+</div>
+
+
+<button class="workspace-drawer__toggle" onclick="__wsToggleDrawer()">
+  Workspace (<span id="drawer-count">0</span>)
+</button>
+<div class="workspace-drawer">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+    <div style="font-family:var(--font-display);font-size:0.9rem;font-weight:700;color:#fff;">Workspace</div>
+    <button onclick="__wsExport()" class="hero-sovereign__btn hero-sovereign__btn--secondary" style="font-size:0.6rem;padding:3px 8px;">Export JSON</button>
+  </div>
+  <div id="drawer-notes"></div>
+  <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid #222934;font-size:0.65rem;color:#3d5060;text-align:center;">
+    Export your workspace model and send to<br>
+    <a href="mailto:matamelaramovha8@gmail.com" style="color:#14b8a6;">matamelaramovha8@gmail.com</a><br>
+    for advanced coalition detection analysis.
+  </div>
+</div>
+
+<script src="../static/js/workspace.js"></script>
 
   </main>
 
@@ -218,7 +272,7 @@ criminal liability — that determination rests with the courts.</em></p>
       </a>
       
       <div class="site-footer__right mono">
-        Generated 21 Jun 2026 13:25 UTC
+        Generated 21 Jun 2026 18:37 UTC
       </div>
     </div>
   </footer>
@@ -226,7 +280,7 @@ criminal liability — that determination rests with the courts.</em></p>
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 21 Jun 2026 13:25 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 21 Jun 2026 18:37 UTC</span>
   </div>
 
   <script src="../static/js/site.js"></script>
