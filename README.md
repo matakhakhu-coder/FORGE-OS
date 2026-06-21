@@ -227,7 +227,14 @@ FORGE is built exclusively for open-source intelligence — publicly available i
 
 ## License
 
-MIT License — free to use, modify, and distribute.
+FORGE uses a **hybrid open-core licensing model**:
+
+- **Core framework** (app.py, core/, forage/, flux/, templates/, static/) — [GNU AGPLv3](LICENSE)
+- **Analytical modules** (forge_modules/) — [Proprietary](forge_modules/LICENSE). Commercial license required for deployment.
+
+The platform boots and operates fully without proprietary modules. See [docs/LICENSING.md](docs/LICENSING.md) for the complete policy.
+
+For commercial licensing, enterprise deployment, or consulting: **matamelaramovha8@gmail.com**
 
 ---
 

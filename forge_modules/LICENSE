@@ -1,0 +1,37 @@
+PROPRIETARY LICENSE
+
+Copyright (C) 2026 Matamela Ramovha. All Rights Reserved.
+
+The software components, algorithms, data structures, and logic
+contained within this directory (forge_modules/) and its
+subdirectories are the exclusive intellectual property of the
+copyright holder.
+
+This software is NOT covered by the GNU Affero General Public
+License (AGPLv3) applied to the repository root.
+
+RESTRICTIONS
+
+You may NOT, without a signed commercial license agreement:
+
+  1. Copy, reproduce, or distribute these modules in any form
+  2. Modify, adapt, or create derivative works
+  3. Incorporate these modules into commercial products or services
+  4. Deploy these modules in a multi-tenant or SaaS environment
+  5. Sublicense or transfer access to any third party
+
+PERMITTED USE
+
+These modules may be executed locally for personal, non-commercial
+evaluation purposes only, solely in conjunction with the FORGE
+open-source framework.
+
+LICENSING INQUIRIES
+
+For commercial licensing, enterprise deployment, or integration
+partnership inquiries:
+
+  Email: matamelaramovha8@gmail.com
+
+This notice must remain intact in all copies or substantial
+portions of this directory.
