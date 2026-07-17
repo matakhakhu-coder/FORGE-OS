@@ -98,5 +98,10 @@
     renderWatchlistPage();
   });
 
-  window.ZADWatchlist = { getWatchlist: getWatchlist, isWatchlisted: isWatchlisted, toggleItem: toggleItem };
+  window.ZADWatchlist = {
+    getWatchlist: getWatchlist,
+    isWatchlisted: isWatchlisted,
+    toggleItem: toggleItem,
+    renderWatchlistPage: renderWatchlistPage,
+  };
 })();
