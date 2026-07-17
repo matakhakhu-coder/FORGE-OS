@@ -475,6 +475,173 @@
   .intel-link-tooltip { background: rgba(8,13,18,0.88) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 2px !important; color: #7a95aa !important; font-family: var(--font-mono), monospace; font-size: 0.58rem; letter-spacing: 0.06em; padding: 2px 8px !important; box-shadow: none !important; }
   .intel-link-tooltip::before { display: none; }
 
+  /* ── Wide panel variant (Graph / Entities) ──────────────────────────────── */
+  .md-panel--wide { width: min(920px, 88vw); }
+  .md-panel__body--flush { padding: 0; overflow: hidden; position: relative; display: flex; }
+  .md-panel__actions { display: flex; align-items: center; gap: var(--sp-2); margin-left: auto; }
+  .md-panel__search {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    padding: 4px var(--sp-2);
+    width: 130px;
+    outline: none;
+  }
+  .md-panel__btn {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm);
+    padding: 3px var(--sp-2);
+    cursor: pointer;
+  }
+  .md-panel__btn:hover { color: var(--text-primary); border-color: var(--border-mid); }
+
+  /* ── Wire panel: Top / Archive mode toggle ──────────────────────────────── */
+  .wire-mode-toggle { display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4) 0; }
+  .wire-mode-btn {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    border-radius: 999px;
+    padding: 3px var(--sp-3);
+    cursor: pointer;
+  }
+  .wire-mode-btn.active { color: var(--accent-bright); border-color: var(--accent-muted); }
+  #wire-top.hidden { display: none; }
+  #wire-archive { display: none; overflow-y: auto; }
+  #wire-archive.open { display: block; }
+  .wa-year { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; color: var(--accent); padding: var(--sp-3) var(--sp-4) var(--sp-1); }
+  .wa-month { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); padding: var(--sp-2) var(--sp-4) var(--sp-1); }
+  .wa-entry { padding: var(--sp-2) var(--sp-4); border-bottom: 1px solid var(--border-subtle); }
+  .wa-entry__title { font-size: 0.76rem; color: var(--text-primary); line-height: 1.3; margin-bottom: 2px; }
+  .wa-entry__title a { color: inherit; text-decoration: none; }
+  .wa-entry__title a:hover { color: var(--accent); }
+  .wa-entry__meta { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-ghost); }
+
+  /* ── Cases panel: graph quick-link ───────────────────────────────────────── */
+  .case-entry__graph-link {
+    margin-left: auto;
+    color: var(--infra);
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    text-decoration: none;
+  }
+  .case-entry__graph-link:hover { color: var(--accent-bright); }
+
+  /* ── Graph panel (ported from graph.html, ig- prefixed) ─────────────────── */
+  #ig-cy { flex: 1; background: var(--bg-void); position: relative; min-width: 0; }
+  #ig-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--bg-void); z-index: 20; gap: var(--sp-4);
+  }
+  .ig-loading__label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+  .ig-spinner { width: 28px; height: 28px; border: 2px solid var(--border-subtle); border-top-color: var(--accent); border-radius: 50%; animation: ig-spin 0.8s linear infinite; }
+  @keyframes ig-spin { to { transform: rotate(360deg); } }
+  #ig-legend {
+    position: absolute; bottom: var(--sp-4); left: var(--sp-4);
+    background: rgba(8,13,18,0.90);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-sm);
+    padding: var(--sp-3) var(--sp-4);
+    z-index: 5; pointer-events: none;
+  }
+  .ig-legend__title { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: var(--sp-3); }
+  .ig-legend__row { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+  .ig-legend__row:last-child { margin-bottom: 0; }
+  .ig-legend__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .ig-legend__line { width: 18px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+  .ig-legend__lbl { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+  #ig-panel {
+    width: 240px;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-dim);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  #ig-panel.open { display: flex; }
+  .ig-panel__header { padding: var(--sp-4) var(--sp-4) var(--sp-3); border-bottom: 1px solid var(--border-dim); display: flex; align-items: center; gap: var(--sp-2); }
+  .ig-panel__type { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .ig-panel__name { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--text-primary); padding: var(--sp-3) var(--sp-4) 0; }
+  .ig-panel__meta { padding: var(--sp-2) var(--sp-4) var(--sp-3); font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); line-height: 1.8; }
+  .ig-panel__rels-title { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: var(--sp-3) var(--sp-4) var(--sp-2); border-top: 1px solid var(--border-dim); }
+  .ig-panel__rel { padding: var(--sp-2) var(--sp-4); font-size: 0.78rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-subtle); line-height: 1.4; }
+  .ig-panel__rel-type { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.06em; color: var(--text-dim); display: block; margin-bottom: 2px; }
+  #ig-panel-close {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--text-dim); cursor: pointer; padding: 2px 6px;
+    border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+    background: transparent;
+  }
+  #ig-panel-close:hover { color: var(--text-primary); }
+
+  /* ── Entities panel (ported from entities.html, bl- prefixed) ───────────── */
+  .bl-filters { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+  .bl-pill {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-radius: 999px;
+    padding: 4px var(--sp-3);
+    cursor: pointer;
+  }
+  .bl-pill:hover { border-color: var(--border-mid); color: var(--text-primary); }
+  .bl-pill--active { background: var(--accent); border-color: var(--accent); color: var(--bg-base); }
+  .bl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-3); padding: var(--sp-4); overflow-y: auto; }
+  .bl-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-dim);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-md);
+    padding: var(--sp-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    text-decoration: none;
+    color: inherit;
+  }
+  .bl-card:hover { border-color: var(--border-mid); background: rgba(255,255,255,0.02); }
+  .bl-card__media { width: 100%; aspect-ratio: 16/9; border-radius: var(--r-sm); overflow: hidden; background: var(--bg-surface); display: flex; align-items: center; justify-content: center; }
+  .bl-card__media img { width: 100%; height: 100%; object-fit: cover; }
+  .bl-card__media--placeholder { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--text-dim); }
+  .bl-card__type { font-family: var(--font-mono); font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .bl-card__name { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; color: var(--text-primary); line-height: 1.25; }
+  .bl-card__desc { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; }
+  .bl-empty { font-size: 0.8rem; color: var(--text-secondary); padding: var(--sp-8); text-align: center; width: 100%; }
+
+  /* ── Watchlist star toggle + panel list (wl- prefixed) ───────────────────── */
+  .wl-toggle { background: transparent; border: none; color: var(--text-dim); font-size: 0.9rem; cursor: pointer; padding: 2px 4px; line-height: 1; }
+  .wl-toggle.wl-active { color: var(--accent-bright); }
+  .wl-item {
+    display: flex; align-items: center; gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border-subtle);
+    text-decoration: none; color: inherit;
+  }
+  .wl-item:hover { background: rgba(255,255,255,0.03); }
+  .wl-item__star { font-size: 1rem; color: var(--accent-bright); flex-shrink: 0; }
+  .wl-item__title { font-family: var(--font-display); font-size: 0.82rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+  .wl-item__meta { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); margin-top: 2px; }
+  .wl-empty { text-align: center; padding: var(--sp-8) var(--sp-4); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.7rem; }
+
   /* ── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
     .md-sidebar {
@@ -539,6 +706,9 @@
     <button class="md-pill" data-panel="wire"><span class="md-pill__icon">+</span> Wire</button>
     <button class="md-pill" data-panel="streams"><span class="md-pill__icon">&#9656;</span> Streams</button>
     <button class="md-pill" data-panel="cases"><span class="md-pill__icon">&#9650;</span> Cases</button>
+    <button class="md-pill" data-panel="graph"><span class="md-pill__icon">&#8982;</span> Graph</button>
+    <button class="md-pill" data-panel="entities"><span class="md-pill__icon">&#9679;</span> Entities</button>
+    <button class="md-pill" data-panel="watchlist"><span class="md-pill__icon">&#9733;</span> Watchlist</button>
   </nav>
 
   {# ── Wire panel ─────────────────────────────────────────────────────────── #}
@@ -549,8 +719,39 @@
       <span class="md-panel__count">{{ markers|length }} total</span>
       <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
     </div>
-    <div class="md-panel__stats" id="wire-stats"></div>
-    <div class="md-panel__body" id="wire-list"></div>
+    <div class="wire-mode-toggle">
+      <button class="wire-mode-btn active" data-wire-mode="top">Top</button>
+      <button class="wire-mode-btn" data-wire-mode="archive">Archive</button>
+    </div>
+    <div id="wire-top">
+      <div class="md-panel__stats" id="wire-stats"></div>
+      <div class="md-panel__body" id="wire-list"></div>
+    </div>
+    <div id="wire-archive" class="md-panel__body">
+      {% if span.start %}
+      <div style="font-family:var(--font-mono);font-size:0.55rem;color:var(--text-dim);padding:var(--sp-2) var(--sp-4);">
+        {{ span.start }} &rarr; {{ span.end }} &middot; {{ span.total }} items
+      </div>
+      {% endif %}
+      {% for year, months in grouped.items() %}
+      <div class="wa-year">{{ year }}</div>
+      {% for month, items in months.items() %}
+      <div class="wa-month">{{ month }}</div>
+      {% for item in items %}
+      <div class="wa-entry">
+        <div class="wa-entry__title">
+          {% if item.kind == 'article' %}
+          <a href="articles/{{ item.slug }}.html">{{ item.title }}</a>
+          {% else %}
+          {{ item.title }}
+          {% endif %}
+        </div>
+        <div class="wa-entry__meta">{{ item.stream_label }} &middot; {{ item.published_fmt }}</div>
+      </div>
+      {% endfor %}
+      {% endfor %}
+      {% endfor %}
+    </div>
   </div>
 
   {# ── Streams panel ──────────────────────────────────────────────────────── #}
@@ -591,10 +792,110 @@
           <span class="case-entry__coe {{ coe_cls }}">{{ coe_label }}</span>
           <span>{{ c.signal_count }} signals</span>
           <span>{{ c.actor_count }} actors</span>
+          <a href="index.html?panel=graph&amp;case={{ c.case_id }}" class="case-entry__graph-link" onclick="event.stopPropagation();">Graph &rarr;</a>
         </div>
       </div>
       {% endfor %}
     </div>
+  </div>
+
+  {# ── Graph panel ────────────────────────────────────────────────────────── #}
+  <div class="md-panel md-panel--wide" id="panel-graph">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--infra);"></div>
+      <span class="md-panel__title">Graph</span>
+      <span class="md-panel__count" id="ig-stats">{{ graph.nodes|length }} actors &middot; {{ graph.edges|length }} relationships</span>
+      <div class="md-panel__actions">
+        <input id="ig-search" class="md-panel__search" type="text" placeholder="Search actor…">
+        <button class="md-panel__btn" id="ig-fit">Fit</button>
+        <button class="md-panel__btn" id="ig-reset">Reset</button>
+      </div>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__body md-panel__body--flush">
+      <div id="ig-cy"></div>
+      <div id="ig-loading">
+        <div class="ig-spinner"></div>
+        <span class="ig-loading__label">Building graph…</span>
+      </div>
+      <div id="ig-legend">
+        <div class="ig-legend__title">Actor Type</div>
+        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#e0803a"></div><span class="ig-legend__lbl">Person</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#3a6ed4"></div><span class="ig-legend__lbl">Institution</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40a060"></div><span class="ig-legend__lbl">Government</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#c040a0"></div><span class="ig-legend__lbl">Political Party</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40b0c0"></div><span class="ig-legend__lbl">Media</span></div>
+        <div class="ig-legend__title" style="margin-top:var(--sp-3);">Relationship</div>
+        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#f7768e"></div><span class="ig-legend__lbl">Investigates</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#7aa2f7"></div><span class="ig-legend__lbl">Leads / Commands</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#9ece6a"></div><span class="ig-legend__lbl">Contracted / Employed</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#e0803a"></div><span class="ig-legend__lbl">Funded / Accused</span></div>
+        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#bb9af7;opacity:0.5;"></div><span class="ig-legend__lbl" style="opacity:0.6;">Auto-extracted</span></div>
+      </div>
+      <div id="ig-panel">
+        <div class="ig-panel__header">
+          <span class="ig-panel__type" id="ig-panel-type">—</span>
+          <button id="ig-panel-close">&#10005;</button>
+        </div>
+        <div class="ig-panel__name" id="ig-panel-name">—</div>
+        <div class="ig-panel__meta" id="ig-panel-meta"></div>
+        <div class="ig-panel__rels-title">Relationships</div>
+        <div id="ig-panel-rels"></div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Entities panel ─────────────────────────────────────────────────────── #}
+  <div class="md-panel md-panel--wide" id="panel-entities">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--accent);"></div>
+      <span class="md-panel__title">Entities</span>
+      <span class="md-panel__count">{{ actors|length }} tracked</span>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__body md-panel__body--flush" style="flex-direction:column;overflow-y:auto;">
+      {% if actors %}
+      <div class="bl-filters">
+        <button class="bl-pill bl-pill--active" data-filter="all">All</button>
+        {% for t in entity_types %}
+        <button class="bl-pill" data-filter="{{ t }}">{{ t|title }}</button>
+        {% endfor %}
+      </div>
+      <div class="bl-grid">
+        {% for a in actors %}
+        <a href="entities/{{ a.slug }}.html" class="bl-card" data-type="{{ a.type }}">
+          <div class="bl-card__media">
+            {% if a.photo %}
+            <img src="static/photos/{{ a.photo }}" alt="{{ a.name }}" loading="lazy">
+            {% else %}
+            <span class="bl-card__media--placeholder">{{ a.initials }}</span>
+            {% endif %}
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--sp-2);">
+            <div class="bl-card__type">{{ a.type }}</div>
+            <button class="wl-toggle" data-wl-id="{{ a.actor_id }}" data-wl-type="actors" data-wl-title="{{ a.name }}" data-wl-url="entities/{{ a.slug }}.html" style="margin-left:auto;">☆</button>
+          </div>
+          <div class="bl-card__name">{{ a.name }}</div>
+          {% if a.description %}
+          <div class="bl-card__desc">{{ a.description[:140] }}{% if a.description|length > 140 %}…{% endif %}</div>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="bl-empty">No entities published yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Watchlist panel ────────────────────────────────────────────────────── #}
+  <div class="md-panel" id="panel-watchlist">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--accent);"></div>
+      <span class="md-panel__title">Watchlist</span>
+      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+    </div>
+    <div class="md-panel__body" id="wl-list"></div>
   </div>
 
   {# ── Right controls ─────────────────────────────────────────────────────── #}
@@ -642,6 +943,8 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function () {
@@ -786,8 +1089,19 @@
      DASHBOARD PANELS
      ══════════════════════════════════════════════════════════════════════════ */
   var activePanel = null;
+  var PANEL_INIT_DONE = {};
 
-  function openPanel(name) {
+  function maybeInitPanel(name) {
+    if (name === 'watchlist' && window.ZADWatchlist) {
+      window.ZADWatchlist.renderWatchlistPage();
+      return;
+    }
+    if (PANEL_INIT_DONE[name]) return;
+    PANEL_INIT_DONE[name] = true;
+    if (name === 'graph' && typeof initGraphPanel === 'function') initGraphPanel();
+  }
+
+  window.openPanel = function openPanel(name) {
     document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
     document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
     if (activePanel === name) { activePanel = null; return; }
@@ -796,7 +1110,9 @@
     if (panel) panel.classList.add('open');
     if (pill) pill.classList.add('active');
     activePanel = name;
-  }
+    maybeInitPanel(name);
+  };
+
   window.closePanel = function () {
     document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
     document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
@@ -806,6 +1122,323 @@
   document.querySelectorAll('.md-pill').forEach(function (pill) {
     pill.addEventListener('click', function () { openPanel(pill.dataset.panel); });
   });
+
+  /* ── Wire panel: Top / Archive mode toggle ──────────────────────────────── */
+  document.querySelectorAll('.wire-mode-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.wire-mode-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var mode = btn.dataset.wireMode;
+      document.getElementById('wire-top').classList.toggle('hidden', mode !== 'top');
+      document.getElementById('wire-archive').classList.toggle('open', mode === 'archive');
+    });
+  });
+
+  /* ── Entities panel: type filter pills ──────────────────────────────────── */
+  document.querySelectorAll('#panel-entities .bl-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      document.querySelectorAll('#panel-entities .bl-pill').forEach(function (p) { p.classList.remove('bl-pill--active'); });
+      pill.classList.add('bl-pill--active');
+      var filter = pill.dataset.filter;
+      document.querySelectorAll('#panel-entities .bl-card').forEach(function (card) {
+        card.style.display = (filter === 'all' || card.dataset.type === filter) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ── Graph panel — lazy Cytoscape init (ported from graph.html) ─────────── */
+  function initGraphPanel() {
+    var GRAPH_DATA = {{ graph | tojson }};
+    var CASE_ACTORS = {{ case_actor_map | tojson }};
+
+    var TYPE_NODE = {
+      person:          { bg: '#2a1500', border: '#e0803a' },
+      institution:     { bg: '#0e1e3a', border: '#3a6ed4' },
+      government:      { bg: '#0a2010', border: '#40a060' },
+      political_party: { bg: '#2a0818', border: '#c040a0' },
+      organization:    { bg: '#0a2a22', border: '#20c090' },
+      movement:        { bg: '#2a0a2a', border: '#c040c0' },
+      paramilitary:    { bg: '#1a1010', border: '#c04040' },
+      media:           { bg: '#0a2a2a', border: '#40b0c0' },
+      other:           { bg: '#141e28', border: '#4a6080' },
+      unknown:         { bg: '#141e28', border: '#4a6080' },
+    };
+    var EDGE_COLOR = {
+      INVESTIGATES: '#f7768e', INVESTIGATED_FOR: '#f7768e', INVESTIGATED_BY: '#f7768e', ARRESTS: '#f7768e',
+      LEADS: '#7aa2f7', COMMANDS: '#7aa2f7', MEMBER_OF: '#7aa2f7',
+      CONTRACTED: '#9ece6a', EMPLOYED_BY: '#9ece6a',
+      FUNDED_BY: '#e0803a', ACCUSED_OF: '#e0803a',
+      AFFILIATED_WITH: '#bb9af7', ASSOCIATED_WITH: '#bb9af7',
+    };
+
+    var elements = [];
+    GRAPH_DATA.nodes.forEach(function (n) {
+      var nc = TYPE_NODE[n.type] || TYPE_NODE.unknown;
+      elements.push({
+        data: {
+          id: 'n' + n.id, label: n.name, type: n.type, confidence: n.confidence,
+          _bg: nc.bg, _border: nc.border,
+          size: Math.max(12, Math.min(26, (n.confidence || 0.5) * 34)),
+        }
+      });
+    });
+    GRAPH_DATA.edges.forEach(function (e, i) {
+      elements.push({
+        data: {
+          id: 'e' + i, source: 'n' + e.source, target: 'n' + e.target,
+          relation: e.relation, method: e.method, description: e.description || '',
+          color: EDGE_COLOR[e.relation] || '#4a6080',
+          width: Math.max(1, Math.min(3.5, 0.8 + (e.confidence || 0.5) * 2.8)),
+        }
+      });
+    });
+
+    var cy = window.cy = cytoscape({
+      container: document.getElementById('ig-cy'),
+      elements: elements,
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'background-color':         'data(_bg)',
+            'border-color':             'data(_border)',
+            'border-width':             1.5,
+            'width':                    'data(size)',
+            'height':                   'data(size)',
+            'label':                    'data(label)',
+            'color':                    '#7a95aa',
+            'font-family':              'IBM Plex Mono, monospace',
+            'font-size':                '8px',
+            'font-weight':              400,
+            'text-valign':              'bottom',
+            'text-halign':              'center',
+            'text-margin-y':            4,
+            'text-background-color':    '#080e14',
+            'text-background-opacity':  0.60,
+            'text-background-padding':  '2px',
+            'text-background-shape':    'roundrectangle',
+            'text-max-width':           '92px',
+            'text-wrap':                'ellipsis',
+            'min-zoomed-font-size':     6,
+            'overlay-opacity':          0,
+          }
+        },
+        {
+          selector: 'node.hovered',
+          style: {
+            'color':                    '#cfdce8',
+            'font-size':                '9px',
+            'font-weight':              600,
+            'text-background-opacity':  0.80,
+            'border-width':             2,
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            'border-color':             '#c8943a',
+            'border-width':             3,
+            'color':                    '#e0aa4a',
+            'font-size':                '9px',
+            'font-weight':              600,
+            'text-background-opacity':  0.85,
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width':              'data(width)',
+            'line-color':         'data(color)',
+            'target-arrow-color': 'data(color)',
+            'target-arrow-shape': 'triangle',
+            'arrow-scale':        0.7,
+            'curve-style':        'bezier',
+            'line-style':         'solid',
+            'opacity':            0.82,
+            'label':              '',
+            'overlay-opacity':    0,
+          }
+        },
+        {
+          selector: 'edge[method != "manual"]',
+          style: {
+            'line-style':        'dashed',
+            'line-dash-pattern': [4, 3],
+            'opacity':           0.40,
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style: {
+            'opacity':            1,
+            'line-color':         '#c8943a',
+            'target-arrow-color': '#c8943a',
+            'z-index':            999,
+          }
+        },
+        { selector: '.faded', style: { 'opacity': 0.06 } },
+        {
+          selector: '.ghost',
+          style: {
+            'opacity':                  0.10,
+            'label':                    '',
+            'border-width':             0.5,
+            'width':                    8,
+            'height':                   8,
+          }
+        },
+        { selector: 'edge.ghost', style: { 'opacity': 0.04 } },
+      ],
+      layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
+      userZoomingEnabled:    true,
+      userPanningEnabled:    true,
+      boxSelectionEnabled:   false,
+      autounselectify:       false,
+    });
+
+    cy.one('layoutstop', function () {
+      cy.resize();
+      cy.fit(cy.elements(), 80);
+      if (cy.zoom() > 0.85) { cy.zoom(0.85); cy.center(); }
+      document.getElementById('ig-loading').style.display = 'none';
+
+      var urlCase = new URLSearchParams(window.location.search).get('case');
+      if (urlCase && CASE_ACTORS[urlCase]) {
+        var scopedIds = CASE_ACTORS[urlCase];
+        cy.nodes().forEach(function (n) {
+          var actorId = parseInt(n.data('id').replace('n', ''));
+          if (scopedIds.indexOf(actorId) === -1) {
+            n.addClass('ghost');
+            n.connectedEdges().addClass('ghost');
+          }
+        });
+        var visible = cy.nodes().not('.ghost');
+        if (visible.length > 0) cy.fit(visible, 60);
+      }
+    });
+
+    cy.on('mouseover', 'node', function (evt) {
+      evt.target.addClass('hovered');
+      evt.target.neighborhood('node').addClass('hovered');
+    });
+    cy.on('mouseout', 'node', function (evt) {
+      var n = evt.target;
+      if (!n.selected()) n.removeClass('hovered');
+      n.neighborhood('node').each(function (nb) {
+        if (!nb.selected()) nb.removeClass('hovered');
+      });
+    });
+
+    var _tappedNode = null;
+    var _tapTimeout = null;
+
+    cy.on('tap', 'node', function (evt) {
+      var node = evt.target;
+      if (node.hasClass('ghost')) {
+        node.removeClass('ghost');
+        node.connectedEdges().removeClass('ghost');
+        node.neighborhood('node').removeClass('ghost');
+        return;
+      }
+      if (_tapTimeout && _tappedNode === node) {
+        clearTimeout(_tapTimeout);
+        _tappedNode = null;
+        window.location.href = 'entities/' + node.data('id').replace('n', '') + '.html';
+        return;
+      }
+      _tappedNode = node;
+      _tapTimeout = setTimeout(function () {
+        openGraphDetail(node, node.data());
+        fadeTo(node);
+        _tappedNode = null;
+      }, 280);
+    });
+
+    cy.on('tap', 'edge', function (evt) {
+      var e = evt.target;
+      cy.elements().removeClass('faded');
+      e.source().removeClass('faded');
+      e.target().removeClass('faded');
+      e.removeClass('faded');
+    });
+
+    cy.on('tap', function (evt) {
+      if (evt.target === cy) {
+        cy.elements().removeClass('faded').removeClass('hovered');
+        closeGraphDetail();
+      }
+    });
+
+    function fadeTo(node) {
+      var connected = node.closedNeighborhood();
+      cy.elements().addClass('faded');
+      connected.removeClass('faded');
+    }
+
+    function openGraphDetail(node, data) {
+      var panel = document.getElementById('ig-panel');
+      document.getElementById('ig-panel-type').textContent = data.type || '—';
+      document.getElementById('ig-panel-name').textContent = data.label;
+      document.getElementById('ig-panel-meta').innerHTML =
+        'Confidence: ' + ((data.confidence || 0) * 100).toFixed(0) + '%<br>' +
+        'Type: ' + (data.type || '—');
+
+      var relsEl = document.getElementById('ig-panel-rels');
+      relsEl.innerHTML = '';
+
+      node.connectedEdges().forEach(function (edge) {
+        var src   = edge.source().data('label');
+        var tgt   = edge.target().data('label');
+        var rel   = edge.data('relation');
+        var desc  = edge.data('description');
+        var meth  = edge.data('method');
+
+        var div = document.createElement('div');
+        div.className = 'ig-panel__rel';
+        div.innerHTML =
+          '<span class="ig-panel__rel-type">' + rel + ' · ' + meth + '</span>' +
+          (src === data.label
+            ? '→ <strong>' + tgt + '</strong>'
+            : '<strong>' + src + '</strong> →') +
+          (desc ? '<br><span style="font-size:0.72rem;opacity:0.6;">' + desc.slice(0, 80) + '</span>' : '');
+        relsEl.appendChild(div);
+      });
+
+      var actorId = data.id.replace('n', '');
+      var profileDiv = document.createElement('div');
+      profileDiv.style.padding = 'var(--sp-3) var(--sp-4)';
+      profileDiv.style.borderTop = '1px solid var(--border-dim)';
+      profileDiv.innerHTML = '<a href="entities/' + actorId + '.html" style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);letter-spacing:0.04em;">View full profile &rarr;</a>';
+      relsEl.parentElement.appendChild(profileDiv);
+
+      panel.classList.add('open');
+    }
+
+    function closeGraphDetail() {
+      document.getElementById('ig-panel').classList.remove('open');
+    }
+
+    document.getElementById('ig-panel-close').addEventListener('click', closeGraphDetail);
+    document.getElementById('ig-fit').addEventListener('click', function () { cy.fit(); });
+    document.getElementById('ig-reset').addEventListener('click', function () {
+      cy.layout({ name: 'cose', animate: true, animationDuration: 400,
+                  idealEdgeLength: 120, nodeRepulsion: 8000 }).run();
+    });
+    document.getElementById('ig-search').addEventListener('input', function () {
+      var q = this.value.trim().toLowerCase();
+      if (!q) { cy.elements().removeClass('faded'); return; }
+      cy.elements().addClass('faded');
+      cy.nodes().filter(function (n) {
+        return n.data('label').toLowerCase().includes(q);
+      }).closedNeighborhood().removeClass('faded');
+    });
+  }
+
+  /* ── Deep link: ?panel=name (from old-URL redirects / cases-panel links) ── */
+  (function () {
+    var p = new URLSearchParams(window.location.search).get('panel');
+    if (p && document.getElementById('panel-' + p)) openPanel(p);
+  })();
 
   /* ── Wire panel ─────────────────────────────────────────────────────────── */
   var sorted = RAW.slice().sort(function (a, b) { return (b.gravity_score || 0) - (a.gravity_score || 0); });

@@ -722,24 +722,40 @@ def _build_dist(
         signals + articles, key=lambda x: x["published_at"] or "", reverse=True
     )
 
-    # index.html — rendered from timeline template (feed removed, timeline is home)
-    grouped, span = _build_timeline_data(signals, articles)
-    (DIST / "index.html").write_text(
-        env.get_template("timeline.html").render(
-            grouped=grouped,
-            span=span,
-            stream_labels=STREAM_LABELS,
-            generated_at=now_str,
-            **rev,
-        ),
-        encoding="utf-8",
-    )
-    print(f"[publish] index.html  - {span.get('total', 0)} timeline items")
+    # index.html — the map shell (World-Monitor-style: one home surface, every
+    # other screen absorbed as an overlay panel). Data for all panels is
+    # gathered here, then rendered in a single pass from map.html.
+    grouped, span = _build_timeline_data(signals, articles)  # Wire panel: Archive mode
 
-    # Fetch cases early — used by both map dashboard and cases.html
+    # Cases — used by both the Cases panel and per-case detail pages
     cases = _fetch_cases(conn)
 
-    # map.html
+    # Entities — used by both the Entities panel and per-actor profile pages
+    directory_actors = _fetch_directory_actors(conn)
+    entity_types = sorted({a["type"] for a in directory_actors})
+
+    photos_dir = DIST_STATIC / "photos"
+    photos_dir.mkdir(parents=True, exist_ok=True)
+    for actor in directory_actors:
+        src = actor.pop("image_url", None)
+        actor["photo"] = None
+        if src:
+            src_path = MEDIA_DIR / src
+            if src_path.exists():
+                dest_name = pathlib.Path(src).name
+                shutil.copy2(src_path, photos_dir / dest_name)
+                actor["photo"] = dest_name
+
+    # Graph — with case→actor mapping for progressive expand/collapse
+    graph_data = _build_graph_data(conn)
+    case_actor_map = {}
+    for cid in PUBLISHED_CASE_IDS:
+        rows = conn.execute(
+            "SELECT actor_id FROM case_actors WHERE case_id = ?", (cid,)
+        ).fetchall()
+        case_actor_map[str(cid)] = [r["actor_id"] for r in rows]
+
+    # Map — geo-tagged signals + cross-geography intel links
     geo_signals = [s for s in signals if s["lat"] and s["lng"]]
 
     # Build cross-geography intel links: connect geo-tagged signals within
@@ -786,12 +802,21 @@ def _build_dist(
         st = s.get("stream", "GLOBAL")
         stream_counts[st] = stream_counts.get(st, 0) + 1
 
-    (DIST / "map.html").write_text(
+    # Single render — index.html is the map shell; every other screen (Wire
+    # archive, Streams, Cases, Graph, Entities, Watchlist) is an overlay panel
+    # on this one page, populated from the context below.
+    (DIST / "index.html").write_text(
         env.get_template("map.html").render(
             markers=geo_signals,
             intel_links=intel_links,
             all_signals=signals,
             cases=cases,
+            grouped=grouped,
+            span=span,
+            graph=graph_data,
+            case_actor_map=case_actor_map,
+            actors=directory_actors,
+            entity_types=entity_types,
             stream_labels=STREAM_LABELS,
             stream_counts=stream_counts,
             generated_at=now_str,
@@ -799,7 +824,8 @@ def _build_dist(
         ),
         encoding="utf-8",
     )
-    print(f"[publish] map.html    - {len(geo_signals)} geo-tagged signals, {len(intel_links)} intel links")
+    print(f"[publish] index.html  - {len(geo_signals)} geo signals, {len(intel_links)} intel links, "
+          f"{span.get('total', 0)} wire items, {len(graph_data['nodes'])} graph nodes, {len(directory_actors)} entities")
 
     # article pages — tier-aware rendering
     tmpl = env.get_template("article.html")
@@ -887,22 +913,7 @@ def _build_dist(
     )
     print("[publish] feed.json")
 
-    # cases.html + individual case pages (cases already fetched above for map dashboard)
-    total_signals = sum(c["signal_count"] for c in cases)
-    total_actors  = sum(c["actor_count"]  for c in cases)
-
-    (DIST / "cases.html").write_text(
-        env.get_template("cases.html").render(
-            cases=cases,
-            total_signals=total_signals,
-            total_actors=total_actors,
-            generated_at=now_str,
-            **rev,
-        ),
-        encoding="utf-8",
-    )
-    print(f"[publish] cases.html    - {len(cases)} cases")
-
+    # individual case detail pages (cases already fetched above for index.html)
     case_tmpl = env.get_template("case_detail.html")
     for case in cases:
         case_signals = _fetch_case_signals(conn, case["case_id"])
@@ -920,30 +931,7 @@ def _build_dist(
         )
     print(f"[publish] cases/        - {len(cases)} detail pages")
 
-    # entities.html + individual entity profile pages
-    directory_actors = _fetch_directory_actors(conn)
-    entity_types = sorted({a["type"] for a in directory_actors})
-
-    photos_dir = DIST_STATIC / "photos"
-    photos_dir.mkdir(parents=True, exist_ok=True)
-    for actor in directory_actors:
-        src = actor.pop("image_url", None)
-        actor["photo"] = None
-        if src:
-            src_path = MEDIA_DIR / src
-            if src_path.exists():
-                dest_name = pathlib.Path(src).name
-                shutil.copy2(src_path, photos_dir / dest_name)
-                actor["photo"] = dest_name
-    (DIST / "entities.html").write_text(
-        env.get_template("entities.html").render(
-            actors=directory_actors,
-            entity_types=entity_types,
-            generated_at=now_str,
-            **rev,
-        ),
-        encoding="utf-8",
-    )
+    # individual entity profile pages (directory_actors already fetched above for index.html)
     actor_tmpl = env.get_template("actor_profile.html")
     for actor in directory_actors:
         actor["initials"] = _actor_initials(actor["name"])
@@ -962,33 +950,6 @@ def _build_dist(
             encoding="utf-8",
         )
     print(f"[publish] entities/    - {len(directory_actors)} entity profile pages")
-
-    # graph.html — with case→actor mapping for progressive expand/collapse
-    graph_data = _build_graph_data(conn)
-    case_actor_map = {}
-    for cid in PUBLISHED_CASE_IDS:
-        rows = conn.execute(
-            "SELECT actor_id FROM case_actors WHERE case_id = ?", (cid,)
-        ).fetchall()
-        case_actor_map[str(cid)] = [r["actor_id"] for r in rows]
-
-    (DIST / "graph.html").write_text(
-        env.get_template("graph.html").render(
-            graph=graph_data,
-            case_actor_map=case_actor_map,
-            stream_labels=STREAM_LABELS,
-            generated_at=now_str,
-            **rev,
-        ),
-        encoding="utf-8",
-    )
-    print(f"[publish] graph.html    - {len(graph_data['nodes'])} nodes / {len(graph_data['edges'])} edges")
-
-    # watchlist.html — static shell, content from localStorage at runtime
-    (DIST / "watchlist.html").write_text(
-        env.get_template("watchlist.html").render(generated_at=now_str, **rev),
-        encoding="utf-8",
-    )
 
     # about.html — methodology and "how it works" page
     (DIST / "about.html").write_text(

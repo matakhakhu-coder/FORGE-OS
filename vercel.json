@@ -9,6 +9,12 @@
     }
   ],
   "routes": [
+    { "src": "/timeline\\.html", "status": 302, "headers": { "Location": "/?panel=wire" } },
+    { "src": "/cases\\.html", "status": 302, "headers": { "Location": "/?panel=cases" } },
+    { "src": "/graph\\.html", "status": 302, "headers": { "Location": "/?panel=graph" } },
+    { "src": "/entities\\.html", "status": 302, "headers": { "Location": "/?panel=entities" } },
+    { "src": "/watchlist\\.html", "status": 302, "headers": { "Location": "/?panel=watchlist" } },
+    { "src": "/map\\.html", "status": 302, "headers": { "Location": "/" } },
     { "src": "/(.*)", "dest": "/dist/$1" }
   ]
 }

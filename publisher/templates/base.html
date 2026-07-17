@@ -28,12 +28,7 @@
         <span></span><span></span><span></span>
       </button>
       <nav class="site-nav">
-        <a href="{% block nav_timeline %}index.html{% endblock %}" class="site-nav__link {% block nav_timeline_active %}{% endblock %}">Timeline</a>
-        <a href="{% block nav_cases %}cases.html{% endblock %}" class="site-nav__link {% block nav_cases_active %}{% endblock %}">Cases</a>
-        <a href="{% block nav_graph %}graph.html{% endblock %}" class="site-nav__link {% block nav_graph_active %}{% endblock %}">Graph</a>
-        <a href="{% block nav_map %}map.html{% endblock %}" class="site-nav__link {% block nav_map_active %}{% endblock %}">Map</a>
-        <a href="{% block nav_entities %}entities.html{% endblock %}" class="site-nav__link {% block nav_entities_active %}{% endblock %}">Entities</a>
-        <a href="{% block nav_watchlist %}watchlist.html{% endblock %}" class="site-nav__link {% block nav_watchlist_active %}{% endblock %}">Watchlist</a>
+        <a href="{% block nav_about %}about.html{% endblock %}" class="site-nav__link {% block nav_about_active %}{% endblock %}">How It Works</a>
         <a href="{% block nav_subscribe %}subscribe.html{% endblock %}" class="site-nav__link {% block nav_subscribe_active %}{% endblock %}" style="color:var(--accent);">Pro</a>
       </nav>
       <div class="site-header__meta">
@@ -123,7 +118,6 @@
     <span>ZA-DIVERGENT · FORGE OSINT ENGINE · {{ generated_at }}</span>
   </div>
 
-  <script src="{% block js_path %}static/js/site.js{% endblock %}"></script>
   <script src="{% block wl_js_path %}static/js/watchlist.js{% endblock %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
