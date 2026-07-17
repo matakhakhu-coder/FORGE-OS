@@ -486,7 +486,7 @@
   .intel-link-tooltip::before { display: none; }
 
   /* ── Wide panel variant (Graph / Entities) ──────────────────────────────── */
-  .md-panel--wide { width: min(920px, 88vw); }
+  .md-panel--wide { width: min(920px, 88vw); height: calc(100vh - 180px); }
   .md-panel__body--flush { padding: 0; overflow: hidden; position: relative; display: flex; }
   .md-panel__actions { display: flex; align-items: center; gap: var(--sp-2); margin-left: auto; }
   .md-panel__search {
@@ -679,6 +679,7 @@
       border-radius: var(--r-md) var(--r-md) 0 0;
       border-bottom: none;
     }
+    .md-panel--wide { height: 60vh; }
     .md-controls {
       top: var(--sp-4);
       right: var(--sp-3);
@@ -729,7 +730,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="17 Jul 2026 18:41 UTC" title="17 Jul 2026 18:41 UTC">17 Jul 2026 18:41 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="17 Jul 2026 19:10 UTC" title="17 Jul 2026 19:10 UTC">17 Jul 2026 19:10 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -2128,7 +2129,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 17 Jul 2026 18:41 UTC
+        Generated 17 Jul 2026 19:10 UTC
       </div>
     </div>
   </footer>
@@ -2136,7 +2137,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 17 Jul 2026 18:41 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 17 Jul 2026 19:10 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -2435,7 +2436,13 @@
     }
     if (PANEL_INIT_DONE[name]) return;
     PANEL_INIT_DONE[name] = true;
-    if (name === 'graph' && typeof initGraphPanel === 'function') initGraphPanel();
+    if (name === 'graph' && typeof initGraphPanel === 'function') {
+      // Defer past a paint frame so #ig-cy has its real, laid-out
+      // dimensions (post the .open class flip) before Cytoscape measures
+      // its container — constructing against a still-collapsed container
+      // makes the cose layout converge in a degenerate 0-size box.
+      requestAnimationFrame(function () { requestAnimationFrame(initGraphPanel); });
+    }
   }
 
   window.openPanel = function openPanel(name) {
@@ -2626,13 +2633,18 @@
         },
         { selector: 'edge.ghost', style: { 'opacity': 0.04 } },
       ],
-      layout: { name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 },
+      layout: { name: 'preset' },
       userZoomingEnabled:    true,
       userPanningEnabled:    true,
       boxSelectionEnabled:   false,
       autounselectify:       false,
     });
 
+    // Force a re-measure of #ig-cy's real (post-layout) dimensions before
+    // running the physics layout — constructing cytoscape() and running
+    // 'cose' in the same tick as the container becoming visible can race
+    // ahead of the browser's reflow and converge against a 0×0 box.
+    cy.resize();
     cy.one('layoutstop', function () {
       cy.resize();
       cy.fit(cy.elements(), 80);
@@ -2653,6 +2665,7 @@
         if (visible.length > 0) cy.fit(visible, 60);
       }
     });
+    cy.layout({ name: 'cose', animate: true, animationDuration: 700, fit: false, padding: 80, idealEdgeLength: 200, nodeRepulsion: 22000, gravity: 0.2 }).run();
 
     cy.on('mouseover', 'node', function (evt) {
       evt.target.addClass('hovered');
