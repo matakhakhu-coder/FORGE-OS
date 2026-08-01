@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alaa Hassan — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+  <link rel="apple-touch-icon" href="static/apple-touch-icon.png">
+  <link rel="stylesheet" href="../static/css/site.css">
+  
+<style>
+.ap-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.ap-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--sp-8);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .ap-layout { grid-template-columns: 1fr; }
+  .ap-infobox { order: -1; }
+}
+
+.ap-infobox {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  position: sticky;
+  top: var(--sp-8);
+}
+.ap-infobox__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-infobox__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ap-infobox__row:last-child { border-bottom: none; }
+.ap-infobox__label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-infobox__value {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.ap-infobox__cases { display: flex; flex-direction: column; gap: var(--sp-1); }
+.ap-infobox__case-link {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.ap-infobox__case-link:hover { text-decoration: underline; }
+.ap-infobox__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ap-infobox__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ap-infobox__media--placeholder {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.ap-back { margin-bottom: var(--sp-5); }
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+.ap-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  margin-bottom: var(--sp-6);
+}
+
+.ap-header { margin-bottom: var(--sp-6); }
+.ap-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.ap-type {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.ap-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.ap-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+.ap-section { margin-bottom: var(--sp-8); }
+.ap-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+.ap-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.ap-events { display: flex; flex-direction: column; gap: var(--sp-4); }
+.ap-event {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+}
+.ap-event__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ap-event__role {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: 1px 6px;
+  color: var(--text-secondary);
+}
+.ap-event__category { color: var(--accent); }
+.ap-event__title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+.ap-event__summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-1);
+}
+.ap-event__location {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.ap-cases { display: flex; flex-direction: column; gap: var(--sp-2); }
+.ap-case-link {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  padding: var(--sp-2) 0;
+}
+.ap-case-link:hover { text-decoration: underline; }
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="../index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="../about.html" class="site-nav__link ">How It Works</a>
+        <a href="../subscribe.html" class="site-nav__link " style="color:var(--accent);">Pro</a>
+      </nav>
+      <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono" id="data-age" data-generated="01 Aug 2026 19:27 UTC" title="01 Aug 2026 19:27 UTC">01 Aug 2026 19:27 UTC</span>
+        <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel" id="settings-panel">
+      <div class="settings-panel__header">
+        <span class="settings-panel__dot"></span>
+        <span class="settings-panel__title">Settings</span>
+        <button class="settings-panel__close" id="settings-close">&#10005;</button>
+      </div>
+
+      <div class="settings-panel__body">
+        <div class="settings-group">
+          <div class="settings-group__label">Theme</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-theme="dark">Dark</button>
+            <button class="settings-opt" data-theme="light">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Timezone</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-tz="utc">UTC</button>
+            <button class="settings-opt" data-tz="sast">SAST</button>
+            <button class="settings-opt" data-tz="local">Local</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Time Display</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-timemode="age">Data Age</button>
+            <button class="settings-opt" data-timemode="absolute">Timestamp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="ap-shell">
+
+  <div class="ap-back">
+    <a href="../index.html?panel=entities" class="btn-back">← Entities</a>
+  </div>
+
+  <div class="ap-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Entity Profile
+  </div>
+
+  <div class="ap-header">
+    <div class="ap-header__row">
+      <span class="ap-type">person</span>
+    </div>
+    <h1 class="ap-header__title">Alaa Hassan</h1>
+    <div class="ap-header__meta">01 Aug 2026 19:27 UTC</div>
+  </div>
+
+  
+
+  <div class="ap-layout">
+    <div class="ap-main">
+
+      
+      <div class="ap-section">
+        <div class="ap-section__title">Person Profile</div>
+        <div class="ap-description">
+          No further profile information on record.
+        </div>
+      </div>
+      
+
+      
+
+      
+
+      <div class="methodology-section">
+        <div class="methodology-section__title">Methodology</div>
+        <div class="methodology-section__body">
+          This profile is produced by the FORGE OSINT engine from 0 open-source
+          signals. All source material is publicly available.
+          Inclusion in this directory reflects relevance to published investigations and does not constitute a legal finding.
+        </div>
+      </div>
+
+      <div class="page-last-updated">Last updated: 01 Aug 2026 19:27 UTC</div>
+
+    </div>
+
+    <aside class="ap-infobox">
+      <div class="ap-infobox__media">
+        
+        <span class="ap-infobox__media--placeholder avatar-placeholder" data-type="person">AH</span>
+        
+      </div>
+      
+      <div class="ap-no-photo">No photo on record</div>
+      
+      <div style="display:flex;align-items:center;gap:var(--sp-2);">
+        <div class="ap-infobox__title" style="margin-bottom:0;">Alaa Hassan</div>
+        <button class="wl-toggle" data-wl-id="257" data-wl-type="actors" data-wl-title="Alaa Hassan" data-wl-url="entities/alaa-hassan-257.html" style="margin-left:auto;">☆</button>
+      </div>
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Type</span>
+        <span class="ap-infobox__value">Person</span>
+      </div>
+      
+      
+      
+      
+      
+      
+      
+      <div class="ap-infobox__row">
+        <span class="ap-infobox__label">Source</span>
+        <span class="ap-infobox__value">FORGE OSINT Engine</span>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        <a href="../about.html" style="color:var(--text-dim);">How It Works</a>
+      </div>
+      
+      <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener"
+         class="membership-btn">
+        
+        Support Independent OSINT
+      </a>
+      
+      <div class="site-footer__right mono">
+        Generated 01 Aug 2026 19:27 UTC
+      </div>
+    </div>
+  </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 01 Aug 2026 19:27 UTC</span>
+  </div>
+
+  <script src="../static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('../search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    var PREFS_KEY = 'za_divergent_prefs';
+
+    function loadPrefs() {
+      try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
+    function savePrefs(p) { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); }
+    var prefs = loadPrefs();
+
+    /* ── Settings panel toggle ──────────────────────────────────────────── */
+    var overlay = document.getElementById('settings-overlay');
+    var toggleBtn = document.getElementById('settings-toggle');
+    var closeBtn = document.getElementById('settings-close');
+    if (toggleBtn && overlay) {
+      toggleBtn.addEventListener('click', function () { overlay.classList.toggle('open'); });
+      closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.remove('open'); });
+    }
+
+    /* ── Theme ──────────────────────────────────────────────────────────── */
+    function applyTheme(t) {
+      document.body.classList.toggle('theme-light', t === 'light');
+      document.querySelectorAll('[data-theme]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.theme === t);
+      });
+      prefs.theme = t;
+      savePrefs(prefs);
+    }
+    if (prefs.theme) applyTheme(prefs.theme);
+    document.querySelectorAll('[data-theme]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTheme(b.dataset.theme); });
+    });
+
+    /* ── Timezone ───────────────────────────────────────────────────────── */
+    function applyTz(tz) {
+      document.querySelectorAll('[data-tz]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.tz === tz);
+      });
+      prefs.tz = tz;
+      savePrefs(prefs);
+    }
+    if (prefs.tz) applyTz(prefs.tz);
+    document.querySelectorAll('[data-tz]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTz(b.dataset.tz); });
+    });
+
+    /* ── Time display mode ──────────────────────────────────────────────── */
+    var dataAgeEl = document.getElementById('data-age');
+    var generatedAt = dataAgeEl ? dataAgeEl.dataset.generated : null;
+    var generatedMs = generatedAt ? Date.now() : 0;
+
+    if (generatedAt) {
+      var parts = generatedAt.match(/(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+)/);
+      if (parts) {
+        var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        generatedMs = Date.UTC(+parts[3], months[parts[2]] || 0, +parts[1], +parts[4], +parts[5]);
+      }
+    }
+
+    function formatAge() {
+      var diff = Math.max(0, Date.now() - generatedMs);
+      var mins = Math.floor(diff / 60000);
+      var hrs = Math.floor(mins / 60);
+      var days = Math.floor(hrs / 24);
+      if (days > 0) return 'DATA AGE: ' + days + 'D ' + (hrs % 24) + 'H';
+      if (hrs > 0) return 'DATA AGE: ' + hrs + 'H ' + (mins % 60) + 'M';
+      return 'DATA AGE: ' + mins + 'M';
+    }
+
+    function applyTimeMode(mode) {
+      document.querySelectorAll('[data-timemode]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.timemode === mode);
+      });
+      prefs.timemode = mode;
+      savePrefs(prefs);
+      updateTimeDisplay();
+    }
+
+    function updateTimeDisplay() {
+      if (!dataAgeEl) return;
+      var mode = prefs.timemode || 'age';
+      if (mode === 'age' && generatedMs) {
+        dataAgeEl.textContent = formatAge();
+      } else {
+        dataAgeEl.textContent = generatedAt || '';
+      }
+    }
+
+    if (prefs.timemode) applyTimeMode(prefs.timemode);
+    else updateTimeDisplay();
+
+    document.querySelectorAll('[data-timemode]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTimeMode(b.dataset.timemode); });
+    });
+
+    // Tick every 60 seconds
+    if (generatedMs) setInterval(updateTimeDisplay, 60000);
+
+  })();
+  </script>
+  
+</body>
+</html>
