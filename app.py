@@ -41,7 +41,8 @@ from werkzeug.utils import secure_filename
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-
+from dotenv import load_dotenv
+load_dotenv(override=True)
 BASE_DIR  = Path(__file__).resolve().parent
 DB_PATH   = BASE_DIR / "database.db"
 MEDIA_DIR = BASE_DIR / "media"

@@ -381,6 +381,7 @@ def api_control_run_collector(collector_id: str):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=str(BASE_DIR),
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         )
         if os.name == "nt":
             popen_kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore[attr-defined]

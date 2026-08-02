@@ -43,7 +43,7 @@ __manifest__ = {
     "description": "Looks up company registration details for procurement-linked actors. Provides external entity disambiguation via CIPC registration numbers.",
     "icon":        "🏢",
     "entry":       "forage/collectors/cipc_collector.py",
-    "args":        ["--dry-run", "--actor"],
+    "args":        [],
     "job_key":     "cipc_collector",
     "version":     "1.0.0",
 }
