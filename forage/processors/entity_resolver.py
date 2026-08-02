@@ -3,6 +3,8 @@ import sqlite3
 import re
 from typing import Any, Dict, List, Optional
 
+from forage.engines.entity_engine import _BLOCKED_ACTOR_NAMES
+
 NORMALIZE_RE = re.compile(r"[^a-z0-9]+")
 
 # Fuzzy matching threshold — only applied when exact + token matches fail.
@@ -221,24 +223,44 @@ class EntityResolver:
 
         return None
 
-    def _create_actor(self, name: str) -> int:
+    def _create_actor(self, name: str, actor_type: str = "institution") -> int:
         cur = self.conn.cursor()
         cur.execute(
             "INSERT INTO actors (name, type, created_at) VALUES (?, ?, datetime('now'))",
-            (name.strip(), "institution"),
+            (name.strip(), actor_type),
         )
         self.conn.commit()
         actor_id = cur.lastrowid
         self._register(actor_id, name.strip())
         return actor_id
 
-    def resolve_actors(self, actors: List[str]) -> List[Dict[str, Any]]:
+    def resolve_actors(
+        self, actors: List[str], actor_types: Optional[Dict[str, str]] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        actor_types: optional {name: actors-table-type} map (e.g. from
+        signal_interpreter's _extract_actor_types()). Sprint 1 (2026-07-23):
+        this used to be missing entirely, so every brand-new actor — the
+        primary actor-creation path, running before entity_engine ever sees
+        the signal — was hardcoded "institution" regardless of what it
+        actually was, including place names.
+        """
+        actor_types = actor_types or {}
         resolved = []
         for actor_name in actors:
             if not actor_name or not actor_name.strip():
                 continue
+            # Fix (2026-07-23): this path had no defense against category
+            # labels being inserted as if they were real actor names (e.g.
+            # a literal actor named "location") — entity_engine.py has this
+            # guard for its own creation path, this one didn't. Shares the
+            # same blocklist so the two paths can't drift apart again.
+            if actor_name.strip().lower() in _BLOCKED_ACTOR_NAMES:
+                continue
             actor_id = self._find_actor(actor_name)
             if actor_id is None:
-                actor_id = self._create_actor(actor_name)
+                actor_id = self._create_actor(
+                    actor_name, actor_types.get(actor_name, "institution")
+                )
             resolved.append({"actor_id": actor_id, "name": actor_name})
         return resolved

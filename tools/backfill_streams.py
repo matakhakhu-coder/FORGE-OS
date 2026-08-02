@@ -83,7 +83,7 @@ def run(db_path: Path, dry_run: bool = False, reclassify_all: bool = False) -> N
         print(f"ERROR: Database not found at {db_path}", file=sys.stderr)
         sys.exit(1)
 
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), timeout=60)
     conn.row_factory = sqlite3.Row
 
     # Ensure stream column exists

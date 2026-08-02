@@ -25,6 +25,7 @@
 
 </div>
 
+<script src="https://unpkg.com/htmx.org@1.9.12" crossorigin="anonymous"></script>
 <script>
 document.addEventListener('htmx:afterRequest', function(evt) {
   if (evt.detail.target && evt.detail.target.id === 'metrics-content') {
@@ -73,7 +74,7 @@ document.addEventListener('htmx:afterRequest', function(evt) {
         data.streams.forEach(function(s) {
           var color = streamColors[s.stream] || '#888';
           html += '<span style="background:' + color + '22;color:' + color + ';padding:0.3rem 0.8rem;border-radius:4px;font-size:0.8rem;border:1px solid ' + color + '44;">'
-            + s.stream + ': ' + s.count.toLocaleString() + '</span>';
+            + s.stream.replace('_', ' ') + ': ' + s.count.toLocaleString() + '</span>';
         });
         html += '</div>';
       }

@@ -13,7 +13,18 @@ from .registry import AnalysisResult
 
 
 def run_conclave(results: List[AnalysisResult]) -> AnalysisResult:
-    """Original function — completely unchanged."""
+    """
+    Sprint 1 (2026-07-23): provenance now also carries a merged top-level
+    "entity_types" dict, in addition to the original "sources" list (kept
+    unchanged for anything else reading it). Previously any per-result
+    entity_types (e.g. geo_enrichment correctly typing province/city
+    entities as "location") was nested at provenance["sources"][i]
+    ["entity_types"] — a location entity_engine.materialize_entities()
+    never looked at, since it reads provenance["entity_types"] at the top
+    level. That's why even engines that typed entities correctly still had
+    their typing silently discarded during merge. Later results in the
+    list win on name collisions — arbitrary but deterministic.
+    """
     if not results:
         return AnalysisResult([], "unknown", 0.0, "IGNORE", 0.0, {})
 
@@ -23,13 +34,23 @@ def run_conclave(results: List[AnalysisResult]) -> AnalysisResult:
     final_rec  = max(set(recs), key=recs.count)
     confidence = sum(r.confidence for r in results) / len(results)
 
+    merged_entity_types: dict = {}
+    for r in results:
+        if isinstance(r.provenance, dict):
+            et = r.provenance.get("entity_types")
+            if isinstance(et, dict):
+                merged_entity_types.update(et)
+
     return AnalysisResult(
         entities=entities,
         intent=results[0].intent,
         gravity=gravity,
         recommendation=final_rec,
         confidence=confidence,
-        provenance={"sources": [r.provenance for r in results]},
+        provenance={
+            "sources": [r.provenance for r in results],
+            "entity_types": merged_entity_types,
+        },
     )
 
 

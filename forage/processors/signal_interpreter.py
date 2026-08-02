@@ -17,6 +17,19 @@ ACTOR_PATTERNS = {
     "location": re.compile(r"\b(South Africa|SA|Johannesburg|Cape Town|Pretoria)\b", re.I),
 }
 
+# Sprint 1 (2026-07-23): ACTOR_PATTERNS key -> actors table type. Used by
+# _extract_actor_types() so callers (EntityResolver, entity_engine) can
+# create actors with the right type instead of defaulting everyone to
+# "institution". "government"/"company" matches are all blocked by
+# _GENERIC_ACTOR_TERMS below in practice (bare words, never real names),
+# so only "NPA" and "location" ever reach actor creation.
+_ACTOR_PATTERN_TYPE_MAP = {
+    "NPA":        "institution",
+    "government": "institution",
+    "company":    "organization",
+    "location":   "location",
+}
+
 SEVERITY_WEIGHTS = {
     "critical": ["hijack", "bomb", "murder", "assault"],
     "high": ["attack", "violence", "arrest", "raid"],
@@ -142,6 +155,23 @@ def _extract_actors(text: str) -> List[str]:
     return sorted(actors)
 
 
+def _extract_actor_types(text: str) -> Dict[str, str]:
+    """
+    Same extraction as _extract_actors(), but keeps the ACTOR_PATTERNS
+    category each match came from, mapped to an actors-table type
+    (_ACTOR_PATTERN_TYPE_MAP). This is what _extract_actors() itself
+    discards (it returns a flat, category-less list) — that discard is
+    the root cause of place names defaulting to "institution" downstream.
+    """
+    typed: Dict[str, str] = {}
+    for category, pattern in ACTOR_PATTERNS.items():
+        mapped_type = _ACTOR_PATTERN_TYPE_MAP.get(category, "institution")
+        for match in pattern.findall(text):
+            if match and match.lower().rstrip(".") not in _GENERIC_ACTOR_TERMS:
+                typed[match] = mapped_type
+    return typed
+
+
 def _infer_event_type(text: str) -> str:
     txt = text.lower()
     for event_type, keywords in EVENT_KEYWORDS.items():
@@ -177,6 +207,7 @@ class SignalInterpreter:
                 text = ""
 
         actors = _extract_actors(text)
+        actor_types = _extract_actor_types(text)
         ev_type = _infer_event_type(text)
 
         # Phase 68: use detailed scoring to capture investigative uplift audit trail
@@ -209,6 +240,7 @@ class SignalInterpreter:
         result = {
             "type": "event" if ev_type != "unknown" else "unknown",
             "actors": actors,
+            "actor_types": actor_types,
             "event_type": ev_type,
             "severity": round(severity, 2),
             "actor_importance": round(actor_importance, 2),

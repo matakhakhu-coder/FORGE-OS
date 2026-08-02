@@ -55,7 +55,7 @@
     {% if source_signal.stream %}
     <span class="mono" style="font-size:0.6rem; padding:1px 6px; border-radius:2px;
       background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--text-dim);">
-      {{ source_signal.stream }}
+      {{ source_signal.stream | replace('_', ' ') }}
     </span>
     {% endif %}
     {% if source_signal.is_priority %}

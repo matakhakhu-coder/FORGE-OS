@@ -68,7 +68,7 @@ def run_live_intercept(dry_run=False):
         logging.error("FATAL: database.db missing.")
         return
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
     cursor = conn.cursor()
 
     try:

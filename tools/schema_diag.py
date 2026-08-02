@@ -9,7 +9,7 @@ TARGET_TABLES = ['cases', 'case_events', 'event_actors', 'entity_relationships',
 def run_diagnostic():
     logging.info("Executing PRAGMA Schema Diagnostic...")
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(DB_PATH, timeout=60)
         cursor = conn.cursor()
         for table in TARGET_TABLES:
             cursor.execute(f"PRAGMA table_info({table})")

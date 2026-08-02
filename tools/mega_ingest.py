@@ -113,6 +113,13 @@ _SEVERED_IDS = frozenset({
     "firms_collector",       # Phase 3.3 — 142k+ satellite thermal noise
     "earthquake_collector",  # Phase 3.3 — USGS seismic noise
     "usgs_collector",        # Phase 3.3 — duplicate USGS feed
+    # Sprint 2 (2026-07-23): FLUX/SOCINT pulled out of the default pipeline
+    # path per the scope-trim audit — 3,619 lines producing 130 signals /
+    # 10 resonance pairs, a footprint far out of proportion to output.
+    # Files stay (real design work, not broken) but no longer auto-run.
+    # Still runnable manually: python flux/collectors/x_pulse.py --targets ...
+    "x_pulse",
+    "x_search",
 })
 
 _collectors_available: list[str] = []
@@ -752,6 +759,168 @@ def bridge_pdf_signals_to_cases() -> dict:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Phase 2.8 — Event/Artifact → Case Evidence Bridge  (Sprint 5, 2026-08-02)
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# case_signals and case_events/case_artifacts were asymmetric: signals get
+# auto-pinned via the two bridges above (dork_actor + pdf actor-overlap), but
+# nothing ever populated case_events/case_artifacts automatically — they were
+# 0 rows, always, regardless of how many signals/actors a case accumulated.
+# case_actors itself is never auto-populated (manually pinned by an analyst
+# via the case detail page) — these bridges use it as the seed, same as
+# bridge_pdf_signals_to_cases does for signals.
+
+def bridge_events_to_cases() -> dict:
+    """
+    Auto-pin events to cases via actor overlap: event -> event_actors ->
+    actor_id -> case_actors -> case_id. Falls back to the older actor_events
+    table when event_actors has no rows for that event.
+
+    Idempotent: case_events has PRIMARY KEY (case_id, event_id) — safe to
+    re-run; INSERT OR IGNORE silently skips existing pins.
+    """
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL;")
+
+    events = conn.execute("SELECT event_id FROM events").fetchall()
+    log.info(f"[bridge_events] Processing {len(events)} events...")
+
+    pinned  = 0
+    skipped = 0
+
+    for ev_row in events:
+        event_id = ev_row["event_id"]
+
+        actor_ids = [
+            r["actor_id"] for r in conn.execute(
+                "SELECT actor_id FROM event_actors WHERE event_id = ?", (event_id,)
+            )
+        ]
+        if not actor_ids:
+            actor_ids = [
+                r["actor_id"] for r in conn.execute(
+                    "SELECT actor_id FROM actor_events WHERE event_id = ?", (event_id,)
+                )
+            ]
+        if not actor_ids:
+            skipped += 1
+            continue
+
+        placeholders = ",".join("?" for _ in actor_ids)
+        case_ids = conn.execute(f"""
+            SELECT DISTINCT case_id
+            FROM   case_actors
+            WHERE  actor_id IN ({placeholders})
+        """, actor_ids).fetchall()
+
+        if not case_ids:
+            skipped += 1
+            continue
+
+        for case_row in case_ids:
+            try:
+                conn.execute("""
+                    INSERT OR IGNORE INTO case_events
+                        (case_id, event_id, note)
+                    VALUES (?, ?, 'auto-linked via event actor-overlap bridge')
+                """, (case_row["case_id"], event_id))
+                pinned += 1
+            except Exception:
+                pass
+
+    conn.commit()
+    conn.close()
+
+    summary = {"status": "ok", "events": len(events), "pinned": pinned, "skipped": skipped}
+    log.info(f"[bridge_events] {pinned} event-case links created · {skipped} events with no case overlap")
+    return summary
+
+
+def bridge_artifacts_to_cases() -> dict:
+    """
+    Auto-pin artifacts to cases via actor overlap, following the artifact's
+    *originating signal* (signals.source_artifact_id -> signal_actors ->
+    actor_id -> case_actors -> case_id). Most artifacts have no direct actor
+    link of their own -- actor materialization happens at the signal level
+    (see forage/engines/entity_engine.py) -- so the signal that produced the
+    artifact is the only path back to an actor. Falls back to the artifact's
+    linked event (artifacts.event_id -> event_actors) when no originating
+    signal has actor links.
+
+    Idempotent: case_artifacts has PRIMARY KEY (case_id, artifact_id).
+
+    NOTE: signals.source_artifact_id has no index, and this table is large
+    (30k+ rows) — a per-artifact lookup query would be a full table scan
+    times every artifact (7k+), which times out in practice. All three
+    lookup maps are built with one bulk query each instead, then joined
+    in memory.
+    """
+    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL;")
+
+    artifacts = conn.execute("SELECT artifact_id, event_id FROM artifacts").fetchall()
+    log.info(f"[bridge_artifacts] Processing {len(artifacts)} artifacts...")
+
+    artifact_actor_map: dict = {}
+    for r in conn.execute("""
+        SELECT s.source_artifact_id AS artifact_id, sa.actor_id
+        FROM   signals s
+        JOIN   signal_actors sa ON sa.signal_id = s.signal_id
+        WHERE  s.source_artifact_id IS NOT NULL
+    """):
+        artifact_actor_map.setdefault(r["artifact_id"], set()).add(r["actor_id"])
+
+    event_actor_map: dict = {}
+    for r in conn.execute("SELECT event_id, actor_id FROM event_actors"):
+        event_actor_map.setdefault(r["event_id"], set()).add(r["actor_id"])
+
+    actor_case_map: dict = {}
+    for r in conn.execute("SELECT actor_id, case_id FROM case_actors"):
+        actor_case_map.setdefault(r["actor_id"], set()).add(r["case_id"])
+
+    pinned  = 0
+    skipped = 0
+
+    for art_row in artifacts:
+        artifact_id = art_row["artifact_id"]
+
+        actor_ids = artifact_actor_map.get(artifact_id, set())
+        if not actor_ids and art_row["event_id"] is not None:
+            actor_ids = event_actor_map.get(art_row["event_id"], set())
+        if not actor_ids:
+            skipped += 1
+            continue
+
+        case_ids: set = set()
+        for actor_id in actor_ids:
+            case_ids |= actor_case_map.get(actor_id, set())
+
+        if not case_ids:
+            skipped += 1
+            continue
+
+        for case_id in case_ids:
+            try:
+                conn.execute("""
+                    INSERT OR IGNORE INTO case_artifacts
+                        (case_id, artifact_id, note)
+                    VALUES (?, ?, 'auto-linked via artifact actor-overlap bridge')
+                """, (case_id, artifact_id))
+                pinned += 1
+            except Exception:
+                pass
+
+    conn.commit()
+    conn.close()
+
+    summary = {"status": "ok", "artifacts": len(artifacts), "pinned": pinned, "skipped": skipped}
+    log.info(f"[bridge_artifacts] {pinned} artifact-case links created · {skipped} artifacts with no case overlap")
+    return summary
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Phase 2.75 — Co-occurrence → entity_relationships Bridge
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1100,6 +1269,11 @@ if __name__ == "__main__":
     # ── Phase 2.7: PDF Portal Signal → Case Evidence Bridge (P3-08) ──────────
     if not args.collect_only and not args.engines_only:
         bridge_pdf_signals_to_cases()
+
+    # ── Phase 2.8: Event/Artifact → Case Evidence Bridge ─────────────────────
+    if not args.collect_only and not args.engines_only:
+        bridge_events_to_cases()
+        bridge_artifacts_to_cases()
 
     # ── Phase 2.75: Co-occurrence → entity_relationships Bridge ──────────────
     if not args.collect_only and not args.engines_only:

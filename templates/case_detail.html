@@ -36,7 +36,7 @@
   {% endif %}
   <div class="page-header__actions">
     <a href="{{ url_for('cases.cases') }}" class="btn btn--ghost btn--sm">← All Workspaces</a>
-    <a href="{{ url_for('cases.workbench', case_id=case.case_id) }}"
+    <a href="{{ url_for('cases.case_workbench', case_id=case.case_id) }}"
        class="btn btn--ghost btn--sm" title="Evidence Timeline, Roster &amp; Overlap">
       ⬡ Workbench
     </a>

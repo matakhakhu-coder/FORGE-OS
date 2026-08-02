@@ -10,7 +10,7 @@ def fix():
         return
 
     tables = ['events', 'artifacts', 'actors', 'cases', 'signals', 'wiki_articles']
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
 
     for table in tables:

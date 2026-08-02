@@ -125,7 +125,7 @@ def run():
         print("[archive-migrate] ERROR: database.db not found. Run --init-db first.")
         return
 
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(DB_PATH), timeout=60)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
 

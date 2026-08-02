@@ -83,7 +83,7 @@ def ignite_v5(dry_run=False):
         logging.error(f"FATAL: {DB_PATH} missing.")
         return
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
     cursor = conn.cursor()
 
     try:

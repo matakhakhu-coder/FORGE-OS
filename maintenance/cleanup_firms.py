@@ -1,6 +1,6 @@
 from pathlib import Path
 import sqlite3
-conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"))
+conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"), timeout=60)
 r = conn.execute(
     "DELETE FROM sentinel_alerts "
     "WHERE alert_type='correlation_escalation' "

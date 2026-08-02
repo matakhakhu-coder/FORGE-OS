@@ -17,6 +17,17 @@
            autocomplete="off"
            autofocus>
     <button type="submit">Search</button>
+
+    {# Sprint 3 (2026-07-23): 91.7% of all artifacts are bulk OFAC SDN
+       sanctions-list entries -- excluded by default so a broad query
+       doesn't get swamped by them. Opt back in here if that's what
+       you're actually looking for. #}
+    <label class="search-facet mono" style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text-dim); margin-top:8px; width:100%;">
+      <input type="checkbox" name="include_sanctions" value="1"
+             onchange="this.form.submit()"
+             {% if include_sanctions %}checked{% endif %}>
+      Include OFAC/sanctions-list entries
+    </label>
   </form>
 
   {% if query %}
@@ -31,6 +42,9 @@
       —
       {{ artifact_results|length }} artifact{{ 's' if artifact_results|length != 1 }},
       {{ event_results|length }} event{{ 's' if event_results|length != 1 }}
+      {% if not include_sanctions %}
+      <span style="opacity:0.6;">(OFAC/sanctions entries excluded)</span>
+      {% endif %}
     {% endif %}
   </div>
   {% endif %}

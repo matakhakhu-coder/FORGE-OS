@@ -137,8 +137,6 @@ SOURCES = [
         "url":                 "https://amabhungane.org/feed/",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -148,8 +146,6 @@ SOURCES = [
         "url":                 "https://oxpeckers.org/feed/",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.4,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
 
@@ -161,8 +157,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:dailymaverick.co.za+investigat&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -172,8 +166,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:groundup.org.za&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "INFRASTRUCTURE",
         "base_relevance":      1.3,
-        "default_lat":         -33.9249,
-        "default_lng":         18.4241,
         "is_priority_default": 0,
     },
     {
@@ -183,8 +175,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:dailymaverick.co.za+corruption+OR+VBS+OR+tender&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 1,
     },
     {
@@ -194,8 +184,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:news24.com+crime+OR+court+OR+arrest+south+africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.3,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -205,8 +193,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:timeslive.co.za+corruption+OR+Hawks+OR+NPA&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.3,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -216,8 +202,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=Eskom+loadshedding+OR+%22load+shedding%22+OR+%22power+outage%22+south+africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "INFRASTRUCTURE",
         "base_relevance":      1.3,
-        "default_lat":         -26.2041,
-        "default_lng":         28.0473,
         "is_priority_default": 0,
     },
     {
@@ -227,8 +211,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=south+africa+municipality+%22water+outage%22+OR+%22sewage%22+OR+%22road+collapse%22+OR+%22infrastructure%22&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "INFRASTRUCTURE",
         "base_relevance":      1.3,
-        "default_lat":         -29.0,
-        "default_lng":         25.5,
         "is_priority_default": 0,
     },
 
@@ -240,8 +222,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:saps.gov.za+newsroom&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -251,8 +231,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=%22Hawks+DPCI%22+OR+%22Directorate+for+Priority+Crime%22+arrest+OR+charge+OR+raid+South+Africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 1,
     },
     {
@@ -262,8 +240,6 @@ SOURCES = [
         "url":                 "https://news.google.com/rss/search?q=site:npa.gov.za+OR+%22NPA%22+prosecution+South+Africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 1,
     },
 
@@ -275,8 +251,6 @@ SOURCES = [
         "url":                 "https://www.defenceweb.co.za/feed/",
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
-        "default_lat":         -25.7479,
-        "default_lng":         28.2293,
         "is_priority_default": 0,
     },
     {
@@ -286,8 +260,6 @@ SOURCES = [
         "url":                 "https://www.citizen.co.za/news/feed/",
         "stream":              "GLOBAL",
         "base_relevance":      1.3,
-        "default_lat":         -26.2041,
-        "default_lng":         28.0473,
         "is_priority_default": 0,
     },
 ]
@@ -520,6 +492,11 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         "external_id":     ext_id,
         "title":           _sanitize(title)[:400],
         "content":         _sanitize(content),
+        # Sprint 1 (2026-07-23): sources no longer carry a default_lat/lng —
+        # a shared per-source coordinate was being stamped onto every
+        # article regardless of content, producing false 0km-apart
+        # correlations. NULL here is correct: these articles have no real
+        # per-item location.
         "lat":             source.get("default_lat"),
         "lng":             source.get("default_lng"),
         "timestamp":       published,
@@ -677,7 +654,7 @@ def _open_db(path: Path) -> sqlite3.Connection:
         raise FileNotFoundError(
             f"Database not found at {path}. Run: python app.py --init-db"
         )
-    conn = sqlite3.connect(str(path), detect_types=sqlite3.PARSE_DECLTYPES)
+    conn = sqlite3.connect(str(path), detect_types=sqlite3.PARSE_DECLTYPES, timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")

@@ -344,23 +344,24 @@ A case-independent, rich-output document layer. Generates self-contained HTML in
 
 ---
 
-## AESTHETIC SYSTEM
+## AESTHETIC SYSTEM — REMOVED (Sprint 2, 2026-07-23)
 
-FORGE includes a POV toggle that transforms the visual language of the entire interface.
+FORGE previously had a POV toggle (STANDARD / THE MACHINE / SAMARITAN) that
+themed the whole interface, plus matching "targeting overlay" badges on
+actors. Cut in the launch-readiness scope-trim: zero functional purpose,
+and the badge logic was actually a symptom of the `is_targeted`
+MAX-without-normalization scoring bug (fixed in Sprint 1) wearing a
+Person-of-Interest costume. `cycleAesthetic()`, the topbar toggle button,
+and all `[data-aesthetic=...]`-gated CSS are gone from `templates/base.html`
+and `static/css/main.css`.
 
-| Mode | Identity | Accent | Style |
-|---|---|---|---|
-| STANDARD | Neutral analyst | System default | Clean, minimal |
-| THE MACHINE | Asset identification | `#ffcc00` yellow | Dot-grid, bracket corners, scan animations |
-| SAMARITAN | Threat classification | `#ff0000` red | Uppercase, aggressive minimalism, red borders |
-
-POV state persists across page navigation via `localStorage`. Toggle is available in the topbar on every page.
-
-### Targeting Component
-Actors with `gravity_score ≥ 0.55` or any linked `is_priority = 1` signal receive visual targeting overlays:
-
-- **THE MACHINE:** Yellow animated bracket box, `ASSET IDENTIFIED` label, scan-line sweep on page load, gravity score and signal count displayed
-- **SAMARITAN:** Red pulse border, `THREAT CLASSIFIED` label, uppercase styling
+### Targeting Component (kept, de-costumed)
+Actors flagged `is_targeted` (now: hot-signal ratio ≥ 2x corpus baseline,
+excluding `location`-typed actors — see Sprint 1) still get a plain,
+always-visible indicator on the actor detail page: a subtle border tint on
+the signal panel (`.signal-intel-panel--targeted`) plus a small severity
+dot/text colour (`.targeting-dot--*`, `.targeting-level--*`). No animation,
+no per-theme banners, no `ASSET IDENTIFIED`/`THREAT CLASSIFIED` labels.
 
 Threat levels: `NONE / MONITORED / ELEVATED / CRITICAL`
 

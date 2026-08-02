@@ -7,7 +7,7 @@ Safe to run multiple times — all operations are idempotent.
 """
 import sqlite3
 
-conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"))
+conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"), timeout=60)
 cur  = conn.cursor()
 
 # ── 1. Rename legacy actor names ──────────────────────────────────────────────

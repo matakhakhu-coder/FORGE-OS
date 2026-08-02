@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 
-conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"))
+conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"), timeout=60)
 
 print('--- actor_events: events with 2+ actors ---')
 rows = conn.execute(

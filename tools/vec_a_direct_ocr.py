@@ -29,7 +29,7 @@ def direct_infiltration():
     os.makedirs(DOC_PATH, exist_ok=True)
 
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(DB_PATH, timeout=60)
         cursor = conn.cursor()
     except sqlite3.Error as e:
         print(f"[-] FATAL DB ERROR: {e}")

@@ -50,7 +50,7 @@ def run_migration(db_path: Path):
     if not db_path.exists():
         raise FileNotFoundError(f"Database not found: {db_path}")
 
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(db_path), timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
 

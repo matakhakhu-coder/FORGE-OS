@@ -117,7 +117,7 @@ def _resolve_db(override: Optional[str] = None) -> Path:
 def _open_db(path: Path) -> sqlite3.Connection:
     if not path.exists():
         raise FileNotFoundError(f"Database not found at {path}")
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     return conn

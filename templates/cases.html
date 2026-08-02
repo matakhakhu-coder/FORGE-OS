@@ -15,10 +15,11 @@
 {# ── Create new case ──────────────────────────────────────────────────────── #}
 <div class="case-create-panel">
   <div class="case-create-panel__header mono">⊟ Open New Workspace</div>
-  <form method="POST" action="{{ url_for('cases.case_new') }}" class="case-create-form">
+  <form method="POST" action="{{ url_for('cases.case_new') }}" class="case-create-form"
+        id="js-case-create-form" novalidate>
     <div class="case-create-form__row">
       <input type="text" name="title" placeholder="Case title…" required
-             class="case-create-form__input">
+             id="js-case-title-input" class="case-create-form__input">
       <select name="status" class="case-create-form__select">
         <option value="active">Active</option>
         <option value="closed">Closed</option>
@@ -26,10 +27,43 @@
       </select>
       <button type="submit" class="btn btn--dossier">Open Workspace</button>
     </div>
+    {# Sprint 3 (2026-07-23): a click with an empty title used to rely
+       entirely on the browser's native validation bubble -- easy to miss,
+       and visually inconsistent with the rest of the UI. `novalidate` on
+       the form hands validation to this explicit, on-brand error state
+       instead; `required` stays as a no-JS fallback. #}
+    <div id="js-case-title-error" class="case-create-form__error mono"
+         style="display:none; color:var(--src-leaked); font-size:0.72rem; margin-top:6px;">
+      ⚠ Case title is required.
+    </div>
     <textarea name="description" placeholder="Case description / hypothesis (optional)…"
               class="case-create-form__textarea"></textarea>
   </form>
 </div>
+
+<script>
+(function () {
+  var form  = document.getElementById('js-case-create-form');
+  var title = document.getElementById('js-case-title-input');
+  var error = document.getElementById('js-case-title-error');
+  if (!form || !title || !error) return;
+
+  form.addEventListener('submit', function (e) {
+    if (!title.value.trim()) {
+      e.preventDefault();
+      error.style.display = '';
+      title.classList.add('case-create-form__input--error');
+      title.focus();
+    }
+  });
+  title.addEventListener('input', function () {
+    if (title.value.trim()) {
+      error.style.display = 'none';
+      title.classList.remove('case-create-form__input--error');
+    }
+  });
+})();
+</script>
 
 {# ── Case list ────────────────────────────────────────────────────────────── #}
 {% if cases %}

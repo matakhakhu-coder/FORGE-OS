@@ -9,125 +9,6 @@
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   {% block head_extra %}{% endblock %}
-  <style>
-    /* ── Aesthetic: THE MACHINE ─────────────────────────────────────── */
-    [data-aesthetic="THE_MACHINE"] {
-      --bg: #050505;
-      --text: #ffffff;
-      --accent: #ffcc00;
-      --ui-border: rgba(255, 204, 0, 0.4);
-      --font: 'Courier New', monospace;
-    }
-    [data-aesthetic="THE_MACHINE"] body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
-      background-size: 30px 30px;
-    }
-    [data-aesthetic="THE_MACHINE"] .signal-card {
-      border: 1px solid var(--ui-border);
-      position: relative;
-      box-shadow: inset 0 0 10px rgba(255, 204, 0, 0.1);
-    }
-    [data-aesthetic="THE_MACHINE"] .topbar__pov-btn {
-      border-color: #ffcc00;
-      color: #ffcc00;
-    }
-
-    /* ── Aesthetic: SAMARITAN ────────────────────────────────────────── */
-    [data-aesthetic="SAMARITAN"] {
-      --bg: #000;
-      --text: #fff;
-      --accent: #ff0000;
-      --ui-border: #ff0000;
-      --font: 'Helvetica', 'Arial', sans-serif;
-    }
-    [data-aesthetic="SAMARITAN"] body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    [data-aesthetic="SAMARITAN"] h1,
-    [data-aesthetic="SAMARITAN"] .signal-title {
-      border-left: 8px solid var(--accent);
-      padding-left: 15px;
-    }
-    [data-aesthetic="SAMARITAN"] .topbar__pov-btn {
-      border-color: #ff0000;
-      color: #ff0000;
-    }
-
-    /* ── POV button base style ───────────────────────────────────────── */
-    .topbar__pov-btn {
-      background: transparent;
-      color: #aaa;
-      border: 1px solid #444;
-      padding: 5px 10px;
-      cursor: pointer;
-      font-size: 11px;
-      letter-spacing: 1px;
-      font-family: 'Courier New', monospace;
-      transition: border-color 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
-    .topbar__pov-btn:hover { opacity: 0.8; }
-
-    /* ── Glitch animation ────────────────────────────────────────────── */
-    @keyframes glitch-clip {
-      0%   { clip-path: inset(40% 0 61% 0); transform: translate(-4px, 0); }
-      20%  { clip-path: inset(92% 0 1%  0); transform: translate( 4px, 0); }
-      40%  { clip-path: inset(43% 0 50% 0); transform: translate(-4px, 0); }
-      60%  { clip-path: inset(25% 0 58% 0); transform: translate( 4px, 0); }
-      80%  { clip-path: inset(54% 0 7%  0); transform: translate(-4px, 0); }
-      100% { clip-path: inset(58% 0 43% 0); transform: translate( 0,   0); }
-    }
-    @keyframes glitch-skew {
-      0%  { transform: skew(-2deg); opacity: 0.8; }
-      25% { transform: skew( 3deg); opacity: 0.6; }
-      50% { transform: skew(-1deg); opacity: 0.9; }
-      75% { transform: skew( 2deg); opacity: 0.7; }
-      100%{ transform: skew( 0deg); opacity: 1;   }
-    }
-    .glitch-active::before,
-    .glitch-active::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-    }
-    .glitch-active::before {
-      color: #ff0000;
-      animation: glitch-clip 0.3s steps(1) forwards;
-    }
-    .glitch-active::after {
-      color: #00ffff;
-      animation: glitch-clip 0.3s steps(1) reverse forwards;
-    }
-    .glitch-active {
-      animation: glitch-skew 0.3s ease forwards;
-      position: relative;
-    }
-
-    /* ── Samaritan sidebar & nav enhancements ────────────────────────── */
-    [data-aesthetic="SAMARITAN"] .sidebar {
-      border-right: 1px solid #ff0000;
-      background: #000;
-    }
-    [data-aesthetic="SAMARITAN"] .nav-icon {
-      color: #ff0000;
-      text-shadow: 0 0 5px #ff0000;
-    }
-    [data-aesthetic="SAMARITAN"] .sidebar__label {
-      background: #ff0000;
-      color: #000;
-      padding: 2px 5px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
 
@@ -144,12 +25,21 @@
       {% endif %}
     </a>
 
+    {# Sprint 4 (2026-08-02): hidden specifically on the /search page,
+       where templates/search.html already has its own, more prominent
+       search box -- having both visible at once was the actual
+       redundancy. Kept everywhere else: this is the only way to start a
+       search without navigating to /search first, so removing it
+       globally would have been a real functionality loss, not a
+       decluttering. #}
+    {% if request.endpoint != 'pages.search' %}
     <form class="topbar__search" action="{{ url_for('pages.search', lens=lens) }}" method="get">
       <input type="hidden" name="lens" value="{{ lens }}">
       <input type="search" name="q" placeholder="Search the archive…"
              value="{{ request.args.get('q', '') }}" autocomplete="off">
       <button type="submit">Search</button>
     </form>
+    {% endif %}
 
     {# ── Priority alert bell ────────────────────────────────────────────── #}
     {# priority_count is injected by the context_processor in app.py on      #}
@@ -210,41 +100,27 @@
     </div>
 
     <div class="topbar__meta" id="js-clock">——</div>
-
-    {# ── POV Aesthetic Toggle ─────────────────────────────────────────────── #}
-    <button onclick="cycleAesthetic()" id="aesthetic-btn"
-            class="topbar__pov-btn" title="Cycle UI aesthetic">
-      POV: STANDARD
-    </button>
   </header>
 
   {# ── Sidebar ──────────────────────────────────────────────────────────── #}
   <nav class="sidebar">
+    {# Sprint 4 (2026-08-02): nav trimmed from 21 items to a focused set --
+       see docs/ROADMAP.md. Cut here: Surface, Archive Home (redundant with
+       the FORGE wordmark link, which already goes to pages.index), Intel
+       Dashboard (folded into Signals/Actors, see Sprint 4.2), Events
+       (redundant with Timeline's chronological view), Archive Intelligence
+       /wiki, Graph, Intel Graph. All those routes are still reachable
+       directly by URL -- only the nav links are gone. The System section
+       (Quarantine/Control Room/Discovery/Admin/System Status) and
+       Gallery/Sentinel below are explicitly untouched -- operator tooling,
+       kept as-is on request, not part of this trim. #}
     <div class="sidebar__section">
       <div class="sidebar__label">Intelligence</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('surface.surface') }}"
-             class="{{ 'active' if request.endpoint == 'surface.surface' }}">
-            <span class="nav-icon">◉</span> Surface
-          </a>
-        </li>
-        <li>
-          <a href="{{ url_for('pages.index', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'index' }}">
-            <span class="nav-icon">◈</span> Archive Home
-          </a>
-        </li>
-        <li>
-          <a href="{{ url_for('pages.intel') }}"
-             class="{{ 'active' if request.endpoint == 'intel' }}">
-            <span class="nav-icon">⊞</span> Intel Dashboard
-          </a>
-        </li>
-        <li>
           <a href="{{ url_for('pages.feed', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'feed' }}">
-            <span class="nav-icon">⊜</span> Intel Feed
+             class="{{ 'active' if request.endpoint == 'pages.feed' }}">
+            <span class="nav-icon">⊜</span> Feed
             {% if sentinel_count %}
             <span class="nav-sentinel-badge" style="margin-left:auto;">{{ sentinel_count }}</span>
             {% endif %}
@@ -252,7 +128,7 @@
         </li>
         <li>
           <a href="{{ url_for('pages.search', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'search' }}">
+             class="{{ 'active' if request.endpoint == 'pages.search' }}">
             <span class="nav-icon">⌕</span> Search
           </a>
         </li>
@@ -263,44 +139,21 @@
       <div class="sidebar__label">Explore</div>
       <ul class="sidebar__nav">
         <li>
-          <a href="{{ url_for('pages.events', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'events' }}">
-            <span class="nav-icon">◎</span> Events
-          </a>
-        </li>
-        <li>
           <a href="{{ url_for('pages.actors', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'actors' }}">
+             class="{{ 'active' if request.endpoint == 'pages.actors' }}">
             <span class="nav-icon">◉</span> Actors
           </a>
         </li>
         <li>
-          <a href="{{ url_for('wiki.wiki_index', lens=lens) }}" class="nav-link">
-              <span class="nav-icon">◈</span> <span class="nav-label">Archive Intelligence</span>
-          </a>
-        </li>
-        <li>
           <a href="{{ url_for('pages.timeline', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'timeline' }}">
+             class="{{ 'active' if request.endpoint == 'pages.timeline' }}">
             <span class="nav-icon">≡</span> Timeline
           </a>
         </li>
         <li>
           <a href="{{ url_for('map_routes.map_explorer', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'map_explorer' }}">
+             class="{{ 'active' if request.endpoint == 'map_routes.map_explorer' }}">
             <span class="nav-icon">⊕</span> Map
-          </a>
-        </li>
-        <li>
-          <a href="{{ url_for('graph.graph', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'graph' }}">
-            <span class="nav-icon">◫</span> Graph
-          </a>
-        </li>
-        <li>
-          <a href="{{ url_for('graph.intel_graph') }}"
-             class="{{ 'active' if request.endpoint == 'intel_graph' }}">
-            <span class="nav-icon">⬡</span> Intel Graph
           </a>
         </li>
       </ul>
@@ -311,8 +164,8 @@
       <ul class="sidebar__nav">
         <li>
           <a href="{{ url_for('cases.cases', lens=lens) }}"
-             class="{{ 'active' if request.endpoint in ('cases','case_detail') }}">
-            <span class="nav-icon">⊟</span> Workspaces
+             class="{{ 'active' if request.endpoint in ('cases.cases','cases.case_detail') }}">
+            <span class="nav-icon">⊟</span> Cases
           </a>
         </li>
       </ul>
@@ -323,13 +176,13 @@
       <ul class="sidebar__nav">
         <li>
           <a href="{{ url_for('signals.signals', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'signals' }}">
+             class="{{ 'active' if request.endpoint == 'signals.signals' }}">
             <span class="nav-icon">⊛</span> Signals
           </a>
         </li>
         <li>
           <a href="{{ url_for('pages.artifact_gallery', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'artifact_gallery' }}">
+             class="{{ 'active' if request.endpoint == 'pages.artifact_gallery' }}">
             <span class="nav-icon">◈</span> Gallery
           </a>
         </li>
@@ -347,23 +200,11 @@
     </div>
 
     <div class="sidebar__section">
-      <div class="sidebar__label">FLUX</div>
-      <ul class="sidebar__nav">
-        <li>
-          <a href="{{ url_for('surface.flux_discovery_page') }}"
-             class="{{ 'active' if request.endpoint == 'surface.flux_discovery_page' }}">
-            <span class="nav-icon">⟁</span> Centrifugal Net
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <div class="sidebar__section">
       <div class="sidebar__label">System</div>
       <ul class="sidebar__nav">
         <li>
           <a href="{{ url_for('control.quarantine_manager') }}"
-             class="{{ 'active' if request.endpoint == 'quarantine_manager' }}">
+             class="{{ 'active' if request.endpoint == 'control.quarantine_manager' }}">
             <span class="nav-icon nav-icon--quarantine">⛔</span> Quarantine
             {% if quarantine_count %}
             <span class="nav-sentinel-badge" style="margin-left:auto;background:rgba(122,26,26,0.25);color:#f87171;border:1px solid rgba(185,28,28,0.3);">{{ quarantine_count }}</span>
@@ -372,7 +213,7 @@
         </li>
         <li>
           <a href="{{ url_for('diagnostics.diagnostics', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'diagnostics' }}">
+             class="{{ 'active' if request.endpoint == 'diagnostics.diagnostics' }}">
             <span class="nav-icon">⊡</span> Control Room
             <span class="pipeline-led pipeline-led--{{ pipeline_health }}"
                   title="Pipeline: {{ pipeline_health }}"
@@ -387,7 +228,7 @@
         </li>
         <li>
           <a href="{{ url_for('diagnostics.discovery', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'discovery' }}">
+             class="{{ 'active' if request.endpoint == 'diagnostics.discovery' }}">
             <span class="nav-icon">⟁</span> Discovery
             {% if discovery_count %}
             <span class="nav-sentinel-badge" style="margin-left:auto;background:rgba(129,140,248,0.2);color:#818cf8;">{{ discovery_count }}</span>
@@ -396,7 +237,7 @@
         </li>
         <li>
           <a href="{{ url_for('admin.admin', lens=lens) }}"
-             class="{{ 'active' if request.endpoint == 'admin' }}">
+             class="{{ 'active' if request.endpoint == 'admin.admin' }}">
             <span class="nav-icon">⊞</span> Admin
           </a>
         </li>
@@ -447,45 +288,6 @@
       window.location.href = url.toString();
     });
   });
-
-  // ── POV Aesthetic Cycle ──────────────────────────────────────────────────
-  function cycleAesthetic() {
-    const html = document.documentElement;
-    const btn  = document.getElementById('aesthetic-btn');
-    const states = [null, 'THE_MACHINE', 'SAMARITAN'];
-
-    let current = html.getAttribute('data-aesthetic');
-    if (current === "null") current = null;
-
-    const nextIndex = (states.indexOf(current) + 1) % states.length;
-    const next      = states[nextIndex];
-
-    // Glitch the shell on transition
-    document.body.classList.add('glitch-active');
-    setTimeout(() => document.body.classList.remove('glitch-active'), 350);
-
-    if (next) {
-      html.setAttribute('data-aesthetic', next);
-      btn.textContent = 'POV: ' + next.replace('_', ' ');
-    } else {
-      html.removeAttribute('data-aesthetic');
-      btn.textContent = 'POV: STANDARD';
-    }
-
-    try { localStorage.setItem('forge_aesthetic', next || ''); } catch(e) {}
-  }
-
-  // Restore persisted aesthetic on load
-  (function () {
-    try {
-      const saved = localStorage.getItem('forge_aesthetic');
-      if (saved && saved !== "null") {
-        document.documentElement.setAttribute('data-aesthetic', saved);
-        const btn = document.getElementById('aesthetic-btn');
-        if (btn) btn.textContent = 'POV: ' + saved.replace('_', ' ');
-      }
-    } catch(e) {}
-  })();
 
   // ── CT-1: Focus Case ─────────────────────────────────────────────────────
   function setFocusCase(caseId, caseName) {

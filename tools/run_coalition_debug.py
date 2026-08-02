@@ -10,7 +10,7 @@ from itertools import combinations
 DB = str(Path(__file__).resolve().parent.parent / "database.db")
 THRESHOLD = 2
 
-conn = sqlite3.connect(DB)
+conn = sqlite3.connect(DB, timeout=60)
 conn.row_factory = sqlite3.Row
 
 # Step 1: load links using the fixed UNION ALL + DISTINCT query

@@ -736,7 +736,7 @@
                   {% if item.kind == 'signal' %}
                     <span class="tl-badge tl-badge--signal">Signal</span>
                     {% if item.stream %}
-                      <span class="tl-badge tl-badge--source">{{ item.stream }}</span>
+                      <span class="tl-badge tl-badge--source">{{ item.stream | replace('_', ' ') }}</span>
                     {% endif %}
                     {% if is_priority %}
                       <span class="tl-badge tl-badge--priority">⚑ Priority</span>
@@ -907,7 +907,7 @@
               </div>
               <div class="overlap-cases">
                 {% for c in actor.other_cases %}
-                  <a href="{{ url_for('cases.workbench', case_id=c.case_id) }}"
+                  <a href="{{ url_for('cases.case_workbench', case_id=c.case_id) }}"
                      class="overlap-case-link"
                      title="Open workbench for this case">
                     #{{ c.case_id }} {{ c.name | truncate(36) }}

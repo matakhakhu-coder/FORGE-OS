@@ -5,7 +5,7 @@
 
 {# ── Page Header ─────────────────────────────────────────────────────────── #}
 <div class="page-header">
-  <div class="page-header__eyebrow">FORAGE · PHASE 31</div>
+  <div class="page-header__eyebrow">Intelligence · Feed</div>
   <h1 class="page-header__title">
     Analyst Intelligence Feed
   </h1>
@@ -71,12 +71,21 @@
 </div>
 
 {# ── Status Bar ───────────────────────────────────────────────────────────── #}
+{# Sprint 3 (2026-07-23): "Total" here is the feed's own matched-candidate
+   count for the current filter, before pagination -- a different number
+   from the per-pill archive-wide counts above (e.g. "All 35,298"), and the
+   breakdown stats below it count only items loaded into the page so far,
+   not the full total. Previously all shared the ambiguous label "Total"
+   with nothing distinguishing which question each number answers. #}
 <div class="feed-status-bar" id="js-status-bar" style="display:none;">
   <span class="feed-status-bar__stat">
-    <span>Total</span>
+    <span title="Items matching the current filter, before pagination">Matched</span>
     <span class="feed-status-bar__val" id="js-sb-total">—</span>
   </span>
   <span class="feed-status-bar__sep"></span>
+  <span class="feed-status-bar__stat" title="Breakdown of items loaded onto the page so far, not the full matched count">
+    Loaded so far:
+  </span>
   <span class="feed-status-bar__stat">
     <span style="color:#e05c5c;">⚠ Alerts</span>
     <span class="feed-status-bar__val" id="js-sb-alerts">—</span>

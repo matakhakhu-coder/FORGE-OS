@@ -129,7 +129,7 @@ function submitDelete() {
   if (!pw) { alert('Password required.'); return; }
   const form = document.createElement('form');
   form.method = 'POST';
-  form.action = '{{ url_for("actor_delete", actor_id=actor.actor_id) }}';
+  form.action = '{{ url_for("admin.actor_delete", actor_id=actor.actor_id) }}';
   const input = document.createElement('input');
   input.type = 'hidden'; input.name = 'password'; input.value = pw;
   form.appendChild(input);

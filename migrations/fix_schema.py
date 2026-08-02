@@ -5,7 +5,7 @@ def patch_forge_schema():
     db_path = str(Path(__file__).resolve().parent.parent / "database.db") # Ensure this matches your actual db filename
     tables_to_fix = ['events', 'artifacts', 'actors', 'cases', 'signals', 'wiki_articles']
     
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
     
     for table in tables_to_fix:
@@ -29,7 +29,7 @@ def patch_forge_schema():
 
 
 def apply_conclave_schema_patch(db_path = str(Path(__file__).resolve().parent.parent / "database.db")):
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
 
     def column_exists(table, column):
@@ -70,7 +70,7 @@ def apply_relationship_schema_patch(db_path = str(Path(__file__).resolve().paren
     Creates signal_actors and event_actors relationship tables.
     Safe to run multiple times — CREATE TABLE IF NOT EXISTS + UNIQUE constraints.
     """
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -112,7 +112,7 @@ def apply_graph_schema_patch(db_path = str(Path(__file__).resolve().parent.paren
 
     Safe to run multiple times — all CREATE TABLE IF NOT EXISTS.
     """
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
 
     cursor.execute("""

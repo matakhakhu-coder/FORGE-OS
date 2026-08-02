@@ -13,33 +13,7 @@
 </nav>
 
 {# ── Page header ───────────────────────────────────────────────────────────── #}
-{# Targeting wrapper — activates Machine/Samaritan overlays when is_targeted #}
-<div class="actor-detail-wrap{% if targeting.is_targeted %} actor-detail-wrap--targeted{% endif %}"
-     {% if targeting.is_targeted %}data-targeted="true" data-threat="{{ targeting.threat_level }}"{% endif %}>
-<div class="targeting-scan-full"></div>
-
-{# ── Targeting banner (POV-aware) ─────────────────────────────────────────── #}
-{% if targeting.is_targeted %}
-<div class="targeting-banner targeting-banner--machine">
-  <span class="targeting-banner__corner targeting-banner__corner--tl">◤</span>
-  <span class="targeting-banner__corner targeting-banner__corner--tr">◥</span>
-  <span class="targeting-banner__corner targeting-banner__corner--bl">◣</span>
-  <span class="targeting-banner__corner targeting-banner__corner--br">◢</span>
-  <span class="targeting-banner__label">
-    ◈ ASSET IDENTIFIED &nbsp;·&nbsp;
-    GRAVITY: {{ "%.3f"|format(targeting.max_gravity) }} &nbsp;·&nbsp;
-    {{ targeting.signal_count }} SIGNAL{{ 'S' if targeting.signal_count != 1 }} &nbsp;·&nbsp;
-    STATUS: {{ targeting.threat_level | upper }}
-  </span>
-</div>
-<div class="targeting-banner targeting-banner--samaritan">
-  <span class="targeting-banner__label">
-    ▲ THREAT CLASSIFIED &nbsp;·&nbsp;
-    LEVEL: {{ targeting.threat_level | upper }} &nbsp;·&nbsp;
-    {{ targeting.signal_count }} ACTIVE SIGNAL{{ 'S' if targeting.signal_count != 1 }}
-  </span>
-</div>
-{% endif %}
+<div class="actor-detail-wrap">
 
 <div class="page-header">
   {% if actor.image_url %}

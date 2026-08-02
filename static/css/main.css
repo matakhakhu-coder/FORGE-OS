@@ -4563,6 +4563,10 @@ input[type="file"]::file-selector-button:hover {
   min-width: 200px;
 }
 
+.case-create-form__input--error {
+  border-color: var(--src-leaked) !important;
+}
+
 .case-create-form__select {
   width: auto;
   flex-shrink: 0;
@@ -11310,183 +11314,28 @@ div.vis-network canvas {
 }
 
 /* ============================================================
-   FORGE — Targeting Component CSS Patch
-   Append to: static/css/main.css
+   FORGE — Targeting Component CSS
+   Sprint 2 (2026-07-23): stripped of THE_MACHINE/SAMARITAN aesthetic
+   theming (dead weight — the toggle that drove it was removed from
+   base.html). What's left is the plain, always-visible severity
+   indicator: a subtle border tint on the signal panel plus the
+   dot/text colour coding below. No animation, no costume.
    ============================================================ */
 
-/* ── Scan-line animation ─────────────────────────────────────────────────── */
-@keyframes targeting-scan {
-  0%   { top: 0;    opacity: 0.7; }
-  100% { top: 100%; opacity: 0;   }
-}
-@keyframes targeting-pulse {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 204, 0, 0.4); }
-  50%       { box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15),
-                          0 0 12px rgba(255, 204, 0, 0.1); }
-}
-@keyframes targeting-pulse-red {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.5); }
-  50%       { box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2),
-                          0 0 12px rgba(255, 0, 0, 0.1); }
-}
-@keyframes banner-flicker {
-  0%, 95%, 100% { opacity: 1; }
-  96%            { opacity: 0.6; }
-  97%            { opacity: 1; }
-  98%            { opacity: 0.4; }
-}
-
-/* ── Actor card targeting (actors.html grid) ─────────────────────────────── */
+/* ── Actor card ───────────────────────────────────────────────────────────── */
 .actor-card {
   position: relative;
   overflow: hidden;
 }
-
-/* Targeting labels — hidden by default, shown by POV */
-.targeting-label {
-  display: none;
-  position: absolute;
-  top: 6px; right: 6px;
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  font-family: 'Courier New', monospace;
-  padding: 1px 5px;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Scan line on card */
-.targeting-scan {
-  display: none;
-  position: absolute;
-  left: 0; right: 0;
-  height: 1px;
-  pointer-events: none;
-  z-index: 3;
-}
-
-/* THE MACHINE — yellow targeting on actor cards */
-[data-aesthetic="THE_MACHINE"] .actor-card--targeted {
-  animation: targeting-pulse 2.5s ease-in-out infinite;
-  border-color: rgba(255, 204, 0, 0.6) !important;
-}
-[data-aesthetic="THE_MACHINE"] .actor-card--targeted .targeting-label--machine {
-  display: block;
-  background: rgba(255, 204, 0, 0.15);
-  color: #ffcc00;
-  border: 1px solid rgba(255, 204, 0, 0.4);
-}
-[data-aesthetic="THE_MACHINE"] .actor-card--targeted .targeting-scan {
-  display: block;
-  background: linear-gradient(to bottom, transparent, rgba(255,204,0,0.4), transparent);
-  animation: targeting-scan 2s linear infinite;
-}
-/* Corner brackets on targeted card */
-[data-aesthetic="THE_MACHINE"] .actor-card--targeted::before {
-  content: "◤";
-  position: absolute; top: 2px; left: 4px;
-  color: #ffcc00; font-size: 8px;
-  pointer-events: none;
-}
-[data-aesthetic="THE_MACHINE"] .actor-card--targeted::after {
-  content: "◢";
-  position: absolute; bottom: 2px; right: 4px;
-  color: #ffcc00; font-size: 8px;
-  pointer-events: none;
-}
-
-/* SAMARITAN — red targeting on actor cards */
-[data-aesthetic="SAMARITAN"] .actor-card--targeted {
-  animation: targeting-pulse-red 2s ease-in-out infinite;
-  border-color: rgba(255, 0, 0, 0.7) !important;
-}
-[data-aesthetic="SAMARITAN"] .actor-card--targeted .targeting-label--samaritan {
-  display: block;
-  background: rgba(255, 0, 0, 0.15);
-  color: #ff0000;
-  border: 1px solid rgba(255, 0, 0, 0.5);
-}
-
-/* Signal count stat highlight */
-[data-aesthetic="THE_MACHINE"] .actor-card__stat--signals strong { color: #ffcc00; }
-[data-aesthetic="SAMARITAN"]   .actor-card__stat--signals strong { color: #ff0000; }
 
 /* ── Actor detail page wrapper ───────────────────────────────────────────── */
 .actor-detail-wrap {
   position: relative;
 }
 
-/* Full-page scan on load for targeted actors */
-.targeting-scan-full {
-  display: none;
-  position: fixed;
-  left: 0; right: 0;
-  height: 2px;
-  pointer-events: none;
-  z-index: 9998;
-}
-[data-aesthetic="THE_MACHINE"] .actor-detail-wrap--targeted .targeting-scan-full {
-  display: block;
-  background: rgba(255, 204, 0, 0.5);
-  animation: targeting-scan 1.5s linear 1 forwards;
-}
-[data-aesthetic="SAMARITAN"] .actor-detail-wrap--targeted .targeting-scan-full {
-  display: block;
-  background: rgba(255, 0, 0, 0.5);
-  animation: targeting-scan 1.5s linear 1 forwards;
-}
-
-/* ── Targeting banner (actor detail page) ────────────────────────────────── */
-.targeting-banner {
-  display: none;
-  position: relative;
-  padding: 8px 16px;
-  margin-bottom: 12px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-align: center;
-}
-
-/* Machine banner */
-[data-aesthetic="THE_MACHINE"] .targeting-banner--machine {
-  display: block;
-  background: rgba(255, 204, 0, 0.06);
-  border: 1px solid rgba(255, 204, 0, 0.35);
-  color: #ffcc00;
-  animation: banner-flicker 8s ease-in-out infinite;
-}
-[data-aesthetic="THE_MACHINE"] .targeting-banner--samaritan { display: none; }
-
-/* Samaritan banner */
-[data-aesthetic="SAMARITAN"] .targeting-banner--samaritan {
-  display: block;
-  background: rgba(255, 0, 0, 0.08);
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  color: #ff0000;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-}
-[data-aesthetic="SAMARITAN"] .targeting-banner--machine { display: none; }
-
-/* Corner glyphs on machine banner */
-.targeting-banner__corner {
-  position: absolute;
-  font-size: 10px;
-  color: #ffcc00;
-  line-height: 1;
-}
-.targeting-banner__corner--tl { top: 2px;  left:  4px; }
-.targeting-banner__corner--tr { top: 2px;  right: 4px; }
-.targeting-banner__corner--bl { bottom: 2px; left:  4px; }
-.targeting-banner__corner--br { bottom: 2px; right: 4px; }
-
 /* ── Signal Intel Panel ──────────────────────────────────────────────────── */
 .signal-intel-panel--targeted {
   border-color: rgba(255, 204, 0, 0.3);
-}
-[data-aesthetic="SAMARITAN"] .signal-intel-panel--targeted {
-  border-color: rgba(255, 0, 0, 0.4);
 }
 
 /* Threat level dot indicator */
@@ -11508,8 +11357,8 @@ div.vis-network canvas {
 .targeting-level--monitored { color: #ffcc00 !important; }
 .targeting-level--none      { color: var(--text-dim) !important; }
 /* ============================================================================
-   SAMARITAN Aesthetic — Phase 43
-   Critical actor pulse + Case filter bar
+   Critical actor pulse + Case filter bar (Phase 43)
+   Not aesthetic-gated — always-on severity styling.
    ============================================================================ */
 
 /* ── targeting-dot--critical: live pulse animation ─────────────────────────── */

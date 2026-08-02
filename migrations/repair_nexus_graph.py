@@ -3,7 +3,7 @@ import sqlite3
 
 def repair_graph():
     print("[OPERATOR] Initiating Graph Decontamination... (Surgical Excision)")
-    conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"))
+    conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"), timeout=60)
     cursor = conn.cursor()
 
     try:

@@ -1844,13 +1844,17 @@ def api_correlation_promote_case():
     auto_title = case_title or (
         f"Pattern: {(row['title_a'] or '')[:40]} ↔ {(row['title_b'] or '')[:40]}"
     )
-    hypothesis = (
+    # Sprint 1 (2026-07-23): description is what the case list displays —
+    # it must be the readable summary, not internal tracking IDs. The raw
+    # correlation/signal-ID provenance still lives in hypothesis, which is
+    # only ever shown in the case detail panel, not the list view.
+    description = (
         f"Correlation score {row['correlation_score']:.3f} — "
         f"{row['distance_km']:.1f} km apart, "
         f"{row['time_difference_hours']:.2f} h apart. "
         f"Sources: {row['src_a']} ↔ {row['src_b']}."
     )
-    description = (
+    hypothesis = (
         f"Auto-generated from correlated pair #{corr_id}. "
         f"Signals: [{row['signal_a'][:8]}…] and [{row['signal_b'][:8]}…]. "
         f"Score: {row['correlation_score']:.3f}."

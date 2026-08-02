@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="page-header">
-  <div class="page-header__eyebrow">SYSTEM · PHASE 32</div>
+  <div class="page-header__eyebrow">System · Control Room</div>
   <h1 class="page-header__title">
     <span style="color:var(--accent);">⊡</span> Control Room
   </h1>
@@ -156,6 +156,12 @@
             title="Detect emerging actor networks — compares 24h actor-event link growth against the prior 24h baseline and scores by growth rate">
       🌐 Run Emergence Engine
     </button>
+    {# Sprint 4 (2026-08-02): the three engines above write to panels on
+       /intel (Coalitions, CounterIntel, Emergence) -- link straight there
+       so triggering a scan and seeing its output are one click apart. #}
+    <a href="{{ url_for('pages.intel') }}" class="btn btn--sm btn--ghost" style="align-self:center;">
+      ⊞ View Results →
+    </a>
   </div>
 
   {# ── Phase 72: Processing & Synthesis (telemetry-tracked) ──────────────── #}

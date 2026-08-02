@@ -779,8 +779,12 @@ def _parse_args() -> argparse.Namespace:
         help="Skip Wave B (Dork Collector). Useful for mid-session quick passes.",
     )
     p.add_argument(
-        "--no-flux", action="store_true",
-        help="Skip Phase 5B FLUX SOCINT wave (corpus_builder + resonance + discovery).",
+        "--with-flux", action="store_true",
+        # Sprint 2 (2026-07-23): flipped from opt-out (--no-flux) to opt-in.
+        # FLUX/SOCINT pulled out of the default pipeline path per the
+        # scope-trim audit — code stays, just doesn't auto-run anymore.
+        help="Run Phase 5B FLUX SOCINT wave (corpus_builder + resonance + "
+             "discovery). Off by default.",
     )
     p.add_argument(
         "--dry-run", action="store_true",
@@ -932,7 +936,7 @@ if __name__ == "__main__":
     #   • actor_network_metrics populated (Phase 3.9 + Phase 6 refresh)
     #   • Dork signals absorbed into case_signals (Phase 6)
     # Gracefully skips when x_pulse has not been run (socint_signals empty).
-    if not args.no_flux:
+    if args.with_flux:
         log.info("\n── PHASE 5B: FLUX SOCINT WAVE ──────────────────────────")
         log.info(
             "Executes AFTER Bridge Pass B because:\n"
@@ -943,7 +947,7 @@ if __name__ == "__main__":
         )
         results["phase_5b_flux"] = run_flux_wave(dry_run=args.dry_run)
     else:
-        log.info("[sovereign] Phase 5B (FLUX) skipped (--no-flux)")
+        log.info("[sovereign] Phase 5B (FLUX) skipped (off by default — pass --with-flux to run)")
         results["phase_5b_flux"] = {"status": "skipped"}
 
     # ── Phase 7 — Sovereign Gate + Wiki Synthesis ────────────────────────────

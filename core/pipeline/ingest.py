@@ -165,7 +165,9 @@ def ingest_signal(signal: dict) -> dict:
     conn = get_connection()
     conclusion = None
     try:
-        resolved_entities = EntityResolver(conn).resolve_actors(interpreted.get("actors", []))
+        resolved_entities = EntityResolver(conn).resolve_actors(
+            interpreted.get("actors", []), interpreted.get("actor_types", {})
+        )
 
         artifact = ProcessorManager(db_path=None).signal_to_artifact(signal)
 
@@ -192,7 +194,14 @@ def ingest_signal(signal: dict) -> dict:
             gravity=float(gravity_signal.get("gravity_score", 0.0)),
             recommendation=rec_tgt,
             confidence=float(feedback_result.get("actor_updates", [{}])[0].get("weight", 0.1) if feedback_result.get("actor_updates") else 0.1),
-            provenance={"stage": "autonomous_conclave"},
+            # Sprint 1 (2026-07-23): entity_types lets materialize_entities()
+            # (which re-resolves the same entity names later in the pipeline)
+            # know each entity's real type instead of defaulting to
+            # "institution" — see signal_interpreter._extract_actor_types().
+            provenance={
+                "stage": "autonomous_conclave",
+                "entity_types": interpreted.get("actor_types", {}),
+            },
         )
         # FMS: merge module engine results if available, else use core only
         if _FMS_AVAILABLE:

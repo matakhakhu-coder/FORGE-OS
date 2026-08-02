@@ -168,7 +168,7 @@ def verify(db_path: Path | None = None) -> tuple[bool, list[str]]:
     if not path.exists():
         return False, [f"Database not found at {path}"]
 
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), timeout=60)
     try:
         live_tables = _live_tables(conn)
 

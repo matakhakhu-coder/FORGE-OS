@@ -60,7 +60,7 @@ def materialize_entities(conclusion, signal_id, db_conn):
 
 # ----- Main seed runner -----
 def run_seed(limit=50):
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=60)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 

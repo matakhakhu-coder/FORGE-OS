@@ -1285,10 +1285,35 @@ def actor_detail(actor_id: int):
         "threat_level": "none",
     }
     try:
+        # Sprint 1 (2026-07-23): matches the actors-list fix in pages.py —
+        # raw MAX(gravity_score)/is_priority over all linked signals let
+        # high-frequency generic actors cross the bar by volume alone.
+        # Same two-part fix: ratio vs. corpus baseline (not a flat
+        # constant — the corpus is ~17% "hot" already), plus excluding
+        # actor_type='location' since place names' hot-ratio is inflated
+        # by corpus composition, not by anything meaningful about the place.
+        actor_row = db.execute(
+            "SELECT type FROM actors WHERE actor_id = ?", (actor_id,)
+        ).fetchone()
+        actor_type = actor_row["type"] if actor_row else None
+
+        base_rate_row = db.execute("""
+            SELECT CAST(SUM(CASE WHEN COALESCE(gravity_score,0) >= 0.55
+                                       OR COALESCE(is_priority,0) = 1
+                                  THEN 1 ELSE 0 END) AS REAL)
+                   / NULLIF(COUNT(*), 0) AS base_rate
+            FROM signals
+        """).fetchone()
+        base_rate = float(base_rate_row["base_rate"] or 0)
+
         t = db.execute("""
             SELECT COUNT(DISTINCT sa.signal_id)        AS signal_count,
                    MAX(COALESCE(s.gravity_score, 0))   AS max_gravity,
-                   MAX(COALESCE(s.is_priority, 0))     AS has_priority_signal
+                   MAX(COALESCE(s.is_priority, 0))     AS has_priority_signal,
+                   COUNT(DISTINCT CASE
+                             WHEN COALESCE(s.gravity_score, 0) >= 0.55
+                                  OR COALESCE(s.is_priority, 0) = 1
+                             THEN sa.signal_id END)     AS hot_signal_count
             FROM   signal_actors sa
             JOIN   signals s ON s.signal_id = sa.signal_id
             WHERE  sa.actor_id = ?
@@ -1297,10 +1322,18 @@ def actor_detail(actor_id: int):
             max_g     = float(t["max_gravity"] or 0)
             has_pri   = bool(t["has_priority_signal"])
             sig_count = int(t["signal_count"] or 0)
-            is_targeted = max_g >= 0.55 or has_pri
-            if max_g >= 0.75 or has_pri:
+            hot_count = int(t["hot_signal_count"] or 0)
+            hot_ratio = (hot_count / sig_count) if sig_count else 0.0
+            is_targeted = (
+                actor_type != "location"
+                and sig_count > 0
+                and hot_ratio >= 2.0 * base_rate
+            )
+            if actor_type == "location":
+                threat_level = "none"
+            elif hot_ratio >= 4.0 * base_rate:
                 threat_level = "critical"
-            elif max_g >= 0.55:
+            elif hot_ratio >= 2.0 * base_rate:
                 threat_level = "elevated"
             elif max_g >= 0.35:
                 threat_level = "monitored"

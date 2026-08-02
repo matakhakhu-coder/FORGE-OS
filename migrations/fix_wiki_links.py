@@ -3,7 +3,7 @@ import sqlite3
 
 def patch_wiki_links():
     db_path = str(Path(__file__).resolve().parent.parent / "database.db")
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=60)
     cursor = conn.cursor()
     
     print(f"[*] Connecting to {db_path}...")

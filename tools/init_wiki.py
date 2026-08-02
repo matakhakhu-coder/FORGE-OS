@@ -5,7 +5,7 @@ import sqlite3
 
 def setup_wiki_schema():
 
-    conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"))
+    conn = sqlite3.connect(str(Path(__file__).resolve().parent.parent / "database.db"), timeout=60)
 
     cursor = conn.cursor()
 

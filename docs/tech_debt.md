@@ -149,7 +149,7 @@ SQL alias scaffolding (`SELECT name AS title`) can be removed.
 - [x] **P2-04** · No OCR for scanned/image PDFs — `pdf_infiltrator.py`. Court orders (highest
   value docs) yield 0 text. **Note:** The forge_security detonator now validates PDFs before
   processing; OCR bridge added after detonation clears the file.
-  _Resolved Phase 48: `pytesseract` fallback implemented in `artifact_processor.py` (fitz renders at 2× → pytesseract). Activates when `raw_text_cache` is empty AND `file_path` exists on disk. 6,458 scanned candidates remain (see P3.2-05 for bulk OCR run)._
+  _Resolved Phase 48: `pytesseract` fallback implemented in `artifact_processor.py` (fitz renders at 2× → pytesseract). Activates when `raw_text_cache` is empty AND `file_path` exists on disk. The "6,458 scanned candidates" figure this note originally deferred to P3.2-05 is moot — see that item, confirmed 0 matching rows in the current DB._
 
 - [x] **P2-05** · `entity_resolver` full table scan per lookup — O(n×m) at 2,000 signals × 800
   actors.
@@ -219,6 +219,20 @@ SQL alias scaffolding (`SELECT name AS title`) can be removed.
   Sentinel alerts operating on a near-empty graph. 🔴 CRITICAL
   _Resolved: DB now has 51,155 signals — all 51,155 have cluster_id set (0 NULLs, 100% coverage). Signal table was rebuilt during Substrate Reconstruction (Phases 62–70). Closed Phase 72 after audit query confirmed 0 NULLs._
 
+- [x] **P3-11** · `case_events`/`case_artifacts` never auto-populated — asymmetric with
+  `case_signals`, which gets auto-pinned by `bridge_dork_to_cases()`/
+  `bridge_pdf_signals_to_cases()`. Both tables sat at 0 rows regardless of corpus size;
+  an analyst pinning a case's actors via `case_actors` never saw related events or
+  artifacts surface automatically.
+  _Resolved Sprint 5.2 (2026-08-02): `bridge_events_to_cases()` and
+  `bridge_artifacts_to_cases()` added to `tools/mega_ingest.py`, wired into the pipeline
+  as Phase 2.8 (same gate as the existing bridges). Both follow the established
+  actor-overlap-via-`case_actors` pattern. Live run against the real DB: 1 event pinned
+  (1 skipped, no actor overlap), 32 artifacts pinned (7,648 skipped). Idempotent —
+  re-run produced no duplicate rows. See `docs/ROADMAP.md` Sprint 5 for the
+  full writeup, including a real N+1 performance bug (unindexed full-table-scan ×
+  7,678 artifacts) caught and fixed before landing._
+
 ---
 
 ## Priority 3.2 — Deep Extraction (NEW DEBT, discovered Phase 3.2 audit)
@@ -252,11 +266,16 @@ SQL alias scaffolding (`SELECT name AS title`) can be removed.
   with different actor_ids.
   _Resolved: relationship_id=382 no longer present in DB — removed in a prior phase. Query for same-name subject/object pairs returns 0 rows. Underlying actor dedup gap (P3.2-04b) remains a long-term structural item but has no current dirty rows._
 
-- [ ] **P3.2-05** · 6,458 A1-PENDING PDFs have < 100 chars in raw_text_cache — likely
+- [x] **P3.2-05** · 6,458 A1-PENDING PDFs have < 100 chars in raw_text_cache — likely
   scanned image PDFs (court orders, signed agreements). OCR pipeline exists in
   `artifact_processor.py` (fitz renders at 2x → pytesseract) but only activates when
   `raw_text_cache` is empty AND `file_path` exists on disk.
-  _Fix: audit these 6,458 for file_path presence, then run processor with --status A1-PENDING._
+  _MOOT — confirmed 2026-08-02: this backlog belonged to the pre-Substrate-Reconstruction
+  dataset (April 2026 audit: 564,953 artifacts). Current DB has no `A1-PENDING` status rows
+  at all (`processing_status` is now `done`/7,279 · `pending`/395 · `skipped`/4). Direct
+  query for the original criteria returns 0 rows. The 395 `pending` rows also have 0 with
+  thin cache and 0 with a `file_path` set — not OCR candidates. Nothing to run here; do not
+  re-chase._
 
 - [x] **P3.2-06** · Actor-promotion gap — Real Aspirant Prosecutor names (`Bradley Smith`,
   `Mosalanyane Mosala`, `Refilwe Motshwane`, `George M Maphutuma`, `Theodore Leeuwschut`)
@@ -362,7 +381,7 @@ Items introduced or resolved during the Substrate Transition, Reconstruction, an
 | TD-17 | `priorities`, `provenance`, `relationships` unpopulated | 🔵 P3 | DEFERRED | Evaluate for deprecation in Phase 71. |
 | TD-18 | SABC Groenewald name collision | 🔵 P3 | DEFERRED | Require `"rhino" OR "hunting"` co-occurrence with Groenewald hits on SABC. |
 | TD-19 | NER misparsed `"Dawie Groenewald's Botswana"` | 🔵 P2 | DEFERRED | Configure NER boundary rules for possessive constructions. |
-| TD-20 | `graph_nodes` (463k) vs `actors` (1,011) imbalance | 🔵 P2 | DEFERRED | Audit `graph_nodes` provenance; truncate stale rows. |
+| TD-20 | `graph_nodes` (35,271) vs `actors` (1,167) imbalance | 🔵 P2 | DEFERRED | Figures corrected 2026-08-02 (were stale at 463k/1,011 — imbalance narrowed from ~458:1 to ~30:1, likely a side effect of Substrate Reconstruction, still open). Audit `graph_nodes` provenance; truncate stale rows. |
 | TD-21 | `signal_entities` orphan check missing from SOP | 🔵 P3 | DEFERRED | Add `signal_entities.signal_id -> signals` to §2.4 orphan checks. |
 | ENT-01 | `entity_engine.py` INSERT failed on missing `confidence_score`, `automated` columns on `actors` | 🟡 P1 | ✅ **RESOLVED 2026-05-28** | `migrate_db()` in `app.py` adds both columns (REAL NOT NULL DEFAULT 0.5, INTEGER NOT NULL DEFAULT 0). Confirmed via `verify_schema.py` — all 128 required columns present. `entity_engine.py` compliance fix applied (`from __future__ import annotations` line 1). |
 | CT-1 | `core/gravity.py` Contextual Tunneling implemented but disconnected from app routes | 🔵 P2 | ✅ **VERIFIED 2026-05-28** | 41-test suite at `tests/test_gravity_ct1.py` — all pass. Tests cover: haversine, keyword extraction, location matching, all 4 item types in `score_item()`, `blend_score()` weight clamping, `build_context()` with mock DB. Compliance fix applied (`from __future__ import annotations`). Surface integration: wire `build_context(db, case_id)` + `score_item()` into surface route when analyst active-case context is available. |
@@ -396,7 +415,7 @@ Full static analysis run across all `.py` files, `templates/*.html`, and inline 
 
 ### Still outstanding (not in scope of this audit)
 
-- ~40 additional `sqlite3.connect()` calls without `timeout=` in migration, maintenance, and one-off tool scripts. These run manually outside the Flask/WAL context and represent minimal deadlock risk, but should be fixed during a dedicated migration/tool hardening pass.
+- ~~~40 additional `sqlite3.connect()` calls without `timeout=` in migration, maintenance, and one-off tool scripts.~~ **RESOLVED — Sprint 5.1 (2026-08-02):** full repo audit found 38 bare calls across 34 files (collectors, engines, processors, `tools/`, `scripts/`, `maintenance/`, `migrations/`). All fixed with `timeout=60` via a paren-depth-aware script (needed for nested-paren call sites like `sqlite3.connect(str(Path(__file__).resolve()...))`). `flux/` already had `timeout=` on all 9 of its calls. Zero bare calls remain anywhere in the active codebase. See `docs/ROADMAP.md` Sprint 5 for the full file list.
 
 ---
 
@@ -422,7 +441,7 @@ Full static analysis run across all `.py` files, `templates/*.html`, and inline 
 | P2-01 | Amount regex misses formats | HIGH    | ✅ DONE   | Phase 48  |
 | P2-02 | Awardee regex gaps          | MEDIUM  | ✅ DONE   | Phase 48  |
 | P2-03 | _DEPT_PATTERN dead code     | MEDIUM  | ✅ DONE   | Phase 48  |
-| P2-04 | OCR bridge for scanned PDFs | HIGH    | ✅ DONE   | Phase 48 (6,458 candidates remain — see P3.2-05) |
+| P2-04 | OCR bridge for scanned PDFs | HIGH    | ✅ DONE   | Phase 48 (P3.2-05's "6,458 remain" note is moot — 0 in current DB) |
 | P2-05 | entity_resolver table scan  | MEDIUM  | ✅ DONE   | Phase 48  |
 | P2-06 | spaCy not tuned for SA govt | HIGH    | 🔶 PARTIAL | Phase 3.2 |
 | P2-07 | Amount unit metadata lost   | LOW     | ✅ DONE   | Phase 72 Session 3 |
@@ -439,11 +458,12 @@ Full static analysis run across all `.py` files, `templates/*.html`, and inline 
 | P3-08 | No PDF signal→case linkage  | MEDIUM  | ✅ DONE   | Phase 72 Session 4 — 32 links created |
 | P3-09 | 548k artifacts stuck pending | CRITICAL | ✅ DONE   | Phase 3.1/3.2 |
 | P3-10 | 150k signals NULL cluster_id | CRITICAL | ✅ DONE   | Pre-resolved — 0 NULLs confirmed Phase 72 |
+| P3-11 | case_events/case_artifacts never auto-pinned | MEDIUM | ✅ DONE | Sprint 5.2 — 2 new bridge functions, live-verified |
 | P3.2-01 | artifact_processor 500-row batch cap (original entry) | HIGH | ✅ DONE | Phase 3.2 |
 | P3.2-02 | triple_extractor not chained after processor | HIGH | ✅ DONE | Phase 48 |
 | P3.2-03 | Generic actor noise in entity_relationships | MEDIUM | ✅ DONE   | Phase 72 Session 2 — 19 rows deleted |
 | P3.2-04 | Self-referential NPA triple (actor dedup) | MEDIUM | ✅ DONE   | Pre-resolved — 0 dirty rows confirmed Phase 72 |
-| P3.2-05 | 6,458 scanned PDF OCR candidates | HIGH | ⬜ PENDING | 1 h |
+| P3.2-05 | 6,458 scanned PDF OCR candidates | HIGH | ✅ MOOT | Confirmed 2026-08-02 — 0 rows match in current (post-Substrate-Reconstruction) DB |
 | P3.2-06 | Actor-promotion gap (Aspirant Prosecutors) | HIGH | ✅ DONE | Phase 3.2 |
 | P3.2-07 | NASA FIRMS satellite noise (MW/FRP/Alaska) | MEDIUM | ✅ DONE | Phase 3.2 |
 | P3.2-08 | pdf_infiltrator missing from A-TIER_SOURCES | HIGH | ✅ DONE | Phase 3.2 |

@@ -22,7 +22,10 @@ Phase 48 changes (Evidence Closure Pipeline):
          _DEPT_PATTERN expanded to cover Provincial, Office of the Premier/DG.
   P2-04  OCR bridge integrated: pdfplumber text-layer is attempted first;
          if <50 chars extracted (scanned/image-based PDF), pytesseract runs
-         against the first 3 pages via pdf2image. OCR text flows into
+         against the first 8 pages via pdf2image at 300dpi, eng+afr, with
+         grayscale/autocontrast preprocessing and a per-page PSM 6 retry for
+         pages the default layout segmentation misreads (multi-column court
+         rolls / tender tables). [P3.2-05 tuning]. OCR text flows into
          raw_text_cache so triple_extractor can build evidence relationships.
          --reprocess-vault CLI mode re-extracts all saved PDFs in media/documents/
          to back-fill empty raw_text_cache entries and create missing signals.
@@ -843,16 +846,23 @@ async def _crawl_portal_async(label: str, portal_url: str,
 # Task 3: Text extraction — explicit close + gc.collect
 # ---------------------------------------------------------------------------
 
-def _ocr_pdf_pages(pdf_bytes: bytes, max_pages: int = 3) -> str:
+def _ocr_pdf_pages(pdf_bytes: bytes, max_pages: int = 8) -> str:
     """
     P2-04 OCR bridge: convert first max_pages of a PDF to images and run
     pytesseract OCR on each.  Called only when pdfplumber yields < 50 chars
     (scanned / image-based PDFs with no embedded text layer).
 
+    P3.2-05 tuning: 300dpi (was 200) + eng+afr language pack (SA gov/court
+    PDFs mix Afrikaans) + grayscale/autocontrast preprocessing + per-page
+    PSM 6 retry when the default PSM segmentation yields near-nothing
+    (multi-column court rolls and tender tables confuse PSM 3's automatic
+    layout detection).
+
     Dependencies:
         pip install pytesseract pdf2image
         + Tesseract-OCR installed (https://github.com/UB-Mannheim/tesseract/wiki)
         + poppler installed (winget install poppler)
+        + afr traineddata (bundled with the standard Tesseract-OCR installer)
 
     Returns extracted text or '' on any failure.
     """
@@ -866,6 +876,7 @@ def _ocr_pdf_pages(pdf_bytes: bytes, max_pages: int = 3) -> str:
     except ImportError:
         log("  OCR: pdf2image not installed (pip install pdf2image)")
         return ""
+    from PIL import ImageOps
 
     import shutil
 
@@ -892,7 +903,7 @@ def _ocr_pdf_pages(pdf_bytes: bytes, max_pages: int = 3) -> str:
             pdf_bytes,
             first_page=1,
             last_page=max_pages,
-            dpi=200,
+            dpi=300,
             poppler_path=_poppler_path,
         )
     except Exception as exc:
@@ -902,7 +913,20 @@ def _ocr_pdf_pages(pdf_bytes: bytes, max_pages: int = 3) -> str:
     texts: List[str] = []
     for i, img in enumerate(images, start=1):
         try:
-            page_text = pytesseract.image_to_string(img, lang="eng")
+            img = ImageOps.autocontrast(ImageOps.grayscale(img))
+
+            page_text = pytesseract.image_to_string(img, lang="eng+afr")
+
+            # PSM 3 (fully automatic layout) misreads multi-column court
+            # rolls / tender tables as near-empty; PSM 6 (uniform text
+            # block) frequently recovers them. Keep whichever is longer.
+            if len(page_text.strip()) < 20:
+                retry_text = pytesseract.image_to_string(
+                    img, lang="eng+afr", config="--psm 6"
+                )
+                if len(retry_text.strip()) > len(page_text.strip()):
+                    page_text = retry_text
+
             if page_text.strip():
                 texts.append(page_text)
             log(f"  OCR: page {i} -> {len(page_text)} chars")
@@ -951,8 +975,8 @@ def _extract_text_from_pdf(pdf_bytes: bytes) -> str:
 
     # P2-04: OCR bridge — scanned PDFs have no text layer
     if len(text.strip()) < 50:
-        log(f"  Text layer sparse ({len(text.strip())} chars) — attempting OCR on first 3 pages")
-        ocr_text = _ocr_pdf_pages(pdf_bytes, max_pages=3)
+        log(f"  Text layer sparse ({len(text.strip())} chars) — attempting OCR on first 8 pages")
+        ocr_text = _ocr_pdf_pages(pdf_bytes)
         if len(ocr_text.strip()) > len(text.strip()):
             log(f"  OCR bridge yielded {len(ocr_text)} chars")
             return ocr_text

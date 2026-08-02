@@ -8,6 +8,7 @@ Routes: /, /events, /actors, /search, /timeline, /api/timeline,
         /feed, /api/feed, /artifacts, /intel, /media/<path:filepath>
 """
 
+import logging
 import sqlite3
 
 from flask import (
@@ -21,6 +22,7 @@ from flask import (
 from core.web.helpers import get_db, MEDIA_DIR
 
 pages_bp = Blueprint("pages", __name__)
+_log = logging.getLogger("forge.pages")
 
 
 # ---------------------------------------------------------------------------
@@ -338,16 +340,61 @@ def actors():
 
     actor_where = '' if lens == 'all' else f"WHERE ac.source_type = '{lens}'"
 
+    # Sprint 1 (2026-07-23): is_targeted used to be MAX(gravity_score) >= 0.55
+    # over EVERY signal ever linked to the actor, with no normalization for
+    # volume. High-frequency generic actors (place names linked to thousands
+    # of unrelated signals via naive NER/regex matching) would trivially
+    # cross that bar by chance alone.
+    #
+    # Fix has two parts, both required — tested against live data, a flat
+    # ratio alone was not enough:
+    #   1. Ratio vs. corpus baseline, not a flat constant. The corpus-wide
+    #      "hot" rate (signals >= 0.55 gravity or is_priority) is currently
+    #      ~17%, so a flat 10% bar still passed high-volume actors that were
+    #      just tracking the corpus average, not genuinely exceptional.
+    #      Actors now need >= 2x the corpus base rate.
+    #   2. Exclude actor_type='location'. Even at 2x baseline, "Pretoria"/
+    #      "Gauteng" still passed — because so much of this corpus is crime
+    #      news geographically stamped to the capital, a place's hot-ratio
+    #      is inflated by definition, not by anything meaningful about that
+    #      place. A city can't be an investigative target; the people/
+    #      institutions operating in it can. This depends on actor type
+    #      classification being correct (see the separate GPE/LOC → location
+    #      fix) — mistyped place names will still slip through until that
+    #      backfill runs.
     actors_rows = db.execute(f"""
+        WITH corpus_stats AS (
+            SELECT CAST(SUM(CASE WHEN COALESCE(gravity_score,0) >= 0.55
+                                       OR COALESCE(is_priority,0) = 1
+                                  THEN 1 ELSE 0 END) AS REAL)
+                   / NULLIF(COUNT(*), 0) AS base_rate
+            FROM   signals
+        ),
+        actor_signal_stats AS (
+            SELECT sa.actor_id,
+                   COUNT(DISTINCT sa.signal_id) AS signal_count,
+                   MAX(COALESCE(s.gravity_score, 0)) AS max_gravity,
+                   MAX(COALESCE(s.is_priority, 0)) AS has_priority_signal,
+                   COUNT(DISTINCT CASE
+                             WHEN COALESCE(s.gravity_score, 0) >= 0.55
+                                  OR COALESCE(s.is_priority, 0) = 1
+                             THEN sa.signal_id END) AS hot_signal_count
+            FROM   signal_actors sa
+            JOIN   signals s ON s.signal_id = sa.signal_id
+            GROUP  BY sa.actor_id
+        )
         SELECT ac.actor_id, ac.name, ac.type, ac.description, ac.blacklisted,
-               COUNT(DISTINCT all_ev.event_id)    AS event_count,
-               COUNT(DISTINCT a.artifact_id)      AS artifact_count,
-               COUNT(DISTINCT sa.signal_id)       AS signal_count,
-               MAX(COALESCE(s.gravity_score, 0))  AS max_gravity,
-               MAX(COALESCE(s.is_priority, 0))    AS has_priority_signal,
-               CASE WHEN MAX(COALESCE(s.gravity_score, 0)) >= 0.55
-                         OR MAX(COALESCE(s.is_priority, 0)) = 1
-                    THEN 1 ELSE 0 END              AS is_targeted
+               COUNT(DISTINCT all_ev.event_id)      AS event_count,
+               COUNT(DISTINCT a.artifact_id)        AS artifact_count,
+               COALESCE(ass.signal_count, 0)        AS signal_count,
+               COALESCE(ass.max_gravity, 0)         AS max_gravity,
+               COALESCE(ass.has_priority_signal, 0) AS has_priority_signal,
+               CASE WHEN ac.type != 'location'
+                         AND COALESCE(ass.signal_count, 0) > 0
+                         AND (CAST(COALESCE(ass.hot_signal_count, 0) AS REAL)
+                              / ass.signal_count)
+                             >= 2.0 * (SELECT base_rate FROM corpus_stats)
+                    THEN 1 ELSE 0 END                AS is_targeted
         FROM   actors ac
         LEFT   JOIN (
             SELECT actor_id, event_id FROM actor_events
@@ -355,8 +402,7 @@ def actors():
             SELECT actor_id, event_id FROM event_actors
         ) all_ev ON all_ev.actor_id = ac.actor_id
         LEFT   JOIN artifacts a      ON a.event_id   = all_ev.event_id
-        LEFT   JOIN signal_actors sa ON sa.actor_id  = ac.actor_id
-        LEFT   JOIN signals s        ON s.signal_id  = sa.signal_id
+        LEFT   JOIN actor_signal_stats ass ON ass.actor_id = ac.actor_id
         {actor_where}
         GROUP  BY ac.actor_id
         ORDER  BY is_targeted DESC, signal_count DESC, ac.name
@@ -374,6 +420,20 @@ def search():
     db    = get_db()
     query = request.args.get("q", "").strip()
 
+    # Sprint 3 (2026-07-23): 91.7% of all artifacts are bulk-imported OFAC
+    # SDN sanctions-list entries (7,040 of 7,678) -- no structured column
+    # distinguishes them from genuine collected content (artifacts.source
+    # holds a verification tier like "unverified"/"government", not
+    # collector identity; the OFAC collector writes artifacts and signals
+    # independently with no reliable link between them). At this volume
+    # ratio, almost any broad search term gets swamped by sanctions-list
+    # noise by default -- confirmed live: "election" returned 51 results,
+    # 100% OFAC, 0% South African content, despite FORGE's stated SA focus.
+    # Title-pattern match is the only signal available without a schema
+    # migration. Excluded by default; opt back in via ?include_sanctions=1
+    # for analysts who actually want to search the sanctions list.
+    include_sanctions = request.args.get("include_sanctions", "").strip() == "1"
+
     artifact_results = []
     event_results    = []
     error            = None
@@ -386,10 +446,12 @@ def search():
                 c in query for c in ('"', '*', 'OR', 'AND', 'NOT')
             ) else f'"{query}"'
 
+            sanctions_clause = "" if include_sanctions else "AND a.title NOT LIKE '%OFAC SDN%'"
+
             # Note: snippet() is unavailable on content= FTS5 tables without
             # columnsize=0.  We fetch description/summary and build excerpts
             # in the template instead.
-            artifact_results = db.execute("""
+            artifact_results = db.execute(f"""
                 SELECT a.artifact_id, a.title, a.type, a.date, a.source,
                        a.description, a.tags, a.thumbnail,
                        e.title AS event_title, e.event_id
@@ -397,6 +459,7 @@ def search():
                 JOIN   artifacts a ON a.artifact_id = f.rowid
                 LEFT   JOIN events e ON e.event_id = a.event_id
                 WHERE  artifacts_fts MATCH ?
+                {sanctions_clause}
                 ORDER  BY rank
             """, (fts_query,)).fetchall()
 
@@ -424,6 +487,7 @@ def search():
         event_results=event_results,
         total=total,
         error=error,
+        include_sanctions=include_sanctions,
     )
 
 
@@ -697,7 +761,17 @@ def api_feed():
         source_type_param = None
         sentinel_allowed = True
     else:
-        source_type_clause = "s.source_type = ?"
+        # Sprint 3 (2026-07-23) bug fix: was "s.source_type = ?" (positional),
+        # but the SIGNAL query below executes with a named-params dict
+        # (:stream / :source_type) -- SQLite rejects mixing positional and
+        # named placeholders in one execute() call. This silently threw on
+        # every single /api/feed call whenever lens != 'all', and the bare
+        # `except: pass` that used to sit around the SIGNAL branch (see
+        # Sprint 3.3) swallowed it completely -- the feed's SIGNAL item
+        # type had likely been failing 100% of the time, not just losing a
+        # ranking contest against correlations as first suspected. Caught
+        # by the exception logging added in the same sprint.
+        source_type_clause = "s.source_type = :source_type"
         source_type_param = lens
         sentinel_allowed = (lens == 'live')
 
@@ -795,7 +869,11 @@ def api_feed():
                     "is_priority":      0,
                 })
         except Exception:
-            pass
+            # Sprint 3 (2026-07-23): was a bare `pass` — a regression here
+            # silently dropped this whole item type with zero trace in the
+            # logs. Still degrades gracefully (other branches still run),
+            # just no longer invisibly.
+            _log.exception("[api_feed] SENTINEL_ALERT branch failed")
 
     # -- 2. SIGNAL items
     # sentinel_flag: 1 if a non-dismissed sentinel alert exists within
@@ -910,12 +988,19 @@ def api_feed():
                 "stream_weight":   sw,
             })
     except Exception:
-        pass
+        _log.exception("[api_feed] SIGNAL branch failed")
 
     # -- 3. CORRELATION items
     # Threshold: >= 0.85 (strong patterns only).
-    # stream_weight: pinned to CRIME_INTEL (1.0) -- patterns always compete
-    #   at the top of the feed regardless of constituent signal streams.
+    # stream_weight (Sprint 3, 2026-07-23): was pinned to 1.0 unconditionally
+    # -- "patterns always compete at the top of the feed" -- which combined
+    # with the lat/lng-defaulting bug (Sprint 1) meant an artificially large
+    # pool of degenerate correlations structurally dominated every feed page,
+    # crowding out SIGNAL/LEAD items regardless of their own quality. Now
+    # derived from the stronger of the two constituent signals' own stream
+    # weights, same as everything else -- a correlation still ranks well
+    # when it's genuinely CRIME_INTEL-grade, it just no longer gets a free
+    # pass when both signals are GLOBAL/INFRASTRUCTURE-tier.
     # FIRMS exclusion (Phase 29.3): exclude any pair where either signal
     #   is source='firms'. Fire pixel-pairs are not investigative incidents.
     try:
@@ -952,9 +1037,11 @@ def api_feed():
         """, corr_params).fetchall()
 
         for r in corr_rows:
-            rel   = (float(r["rel_a"]) + float(r["rel_b"])) / 2.0
-            prio  = max(r["prio_a"] or 0, r["prio_b"] or 0)
-            sw    = 1.0   # pinned: patterns are always CRIME_INTEL weight
+            rel    = (float(r["rel_a"]) + float(r["rel_b"])) / 2.0
+            prio   = max(r["prio_a"] or 0, r["prio_b"] or 0)
+            sw_a   = _STREAM_WEIGHTS.get(r["stream_a"] or "GLOBAL", _STREAM_WEIGHT_DEFAULT)
+            sw_b   = _STREAM_WEIGHTS.get(r["stream_b"] or "GLOBAL", _STREAM_WEIGHT_DEFAULT)
+            sw     = max(sw_a, sw_b)
             score = round(rel * 0.40 + prio * 0.30 + 0.0 * 0.20 + sw * 0.10, 4)
             items.append({
                 "item_type":        "CORRELATION",
@@ -982,7 +1069,7 @@ def api_feed():
                 "stream_weight":    sw,
             })
     except Exception:
-        pass
+        _log.exception("[api_feed] CORRELATION branch failed")
 
     # -- 4. INTELLIGENCE_LEAD items
     # "Top 10%" = influence_score >= 90th-percentile value, computed once
@@ -1047,7 +1134,7 @@ def api_feed():
                 "is_priority":     0,
             })
     except Exception:
-        pass
+        _log.exception("[api_feed] INTELLIGENCE_LEAD branch failed")
 
     # -- CT-1: gravity scoring pass
     ct_context = None

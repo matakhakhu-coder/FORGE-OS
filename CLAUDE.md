@@ -113,6 +113,21 @@ Active modules: `signal_enrichment` · `geo_enrichment` · `graph_sync` · `coal
 
 Module failures are isolated — a crashing module cannot kill Flask or block ingestion.
 
+**Sprint 2 evidence check (2026-07-23):** a scope-trim audit initially flagged `coalition_detector`
+and `emergence_engine` for removal on "0 output rows, ever." Before cutting, triggered all three
+manual `/api/control/run_*` engines against a fresh pipeline run (13,997 signals) instead of
+assuming — verdicts revised on real evidence, not deleted:
+- `counterintel` — produced a real finding (narrative cluster) on first run. Proven working.
+- `coalition_detector` — ran correctly, found 1 actor-pair, below its own threshold (5). Corpus
+  currently lacks dense multi-actor co-occurrence (most signals link 0-1 actors) — data-starved,
+  not broken.
+- `emergence_engine` — "No actor-event links in current window." Hard-blocked by `events` having
+  only 2 rows (see gravity-escalation dormancy in `docs/tech_debt.md`) — cannot produce anything
+  until that's addressed. Revisit together, not separately.
+
+`flux`'s FMS bridge module stays active, but its collectors (`x_pulse`, `x_search`) were added to
+`_SEVERED_IDS` in `tools/mega_ingest.py` and no longer run by default — see FLUX Protocol below.
+
 ---
 
 ## Architectural Decisions (locked — do not re-litigate)
@@ -310,9 +325,9 @@ Full ledger in `docs/tech_debt.md`. Active high-priority items:
 | ENT-01 | ~~`entity_engine.py` missing `confidence_score`, `automated` columns~~ | ~~MEDIUM~~ | **RESOLVED 2026-05-28** |
 | CT-1 | `core/gravity.py` implemented, partially wired (feed route only) | MEDIUM | 41-test suite passes. Full route integration pending. |
 | P2-06 | spaCy `en_core_web_sm` not tuned for SA govt entities | HIGH | DPWI, HAWKS, SIU, NPA tagged MISC or missed. Fix: custom `EntityRuler` |
-| P3.2-05 | 6,458 scanned PDFs with `< 100 chars` in `raw_text_cache` | HIGH | OCR pipeline exists; needs `--status A1-PENDING` run |
+| ~~P3.2-05~~ | ~~6,458 scanned PDFs with `< 100 chars` in `raw_text_cache`~~ | ~~HIGH~~ | **MOOT — confirmed 2026-08-02.** Belonged to the pre-Substrate-Reconstruction dataset; 0 rows match in the current DB. |
 | TD-13 | Case Alpha institutional bridge gap (CoE = 0.28) | HIGH | SAFLII bridge hunt needed |
-| TD-20 | `graph_nodes` (463k rows) vs `actors` (1,011) imbalance | MEDIUM | Provenance audit; prune stale rows |
+| TD-20 | `graph_nodes` (35,271 rows) vs `actors` (1,167) imbalance | MEDIUM | Figures corrected 2026-08-02 (were stale at 463k/1,011 — imbalance narrowed from ~458:1 to ~30:1, likely from Substrate Reconstruction, but still open). Provenance audit; prune stale rows |
 | ~~AD-3~~ | ~~Schema duplication: SCHEMA_STATEMENTS vs migrate_db()~~ | ~~MEDIUM~~ | **RESOLVED 2026-06-21** — duplicate CREATE TABLE stanzas removed; column drift patched |
 | DB-01 | ~~`sqlite3.connect()` missing `timeout=60` in 8 active files~~ | ~~HIGH~~ | **RESOLVED 2026-05-30** |
 | DB-02 | `__future__` placement after line 3 in 51 files | LOW | No runtime impact. Defer to cleanup pass. |
