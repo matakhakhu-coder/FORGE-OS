@@ -1,6 +1,642 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "08 Oct 2026 23:20 UTC",
-  "items": []
+  "generated_at": "02 Aug 2026 08:36 UTC",
+  "items": [
+    {
+      "kind": "signal",
+      "title": "Lubaale, E C --- \"Taking the incidence of false child sexual abuse allegations more seriously\" (49 Vol 1) [2016] PER 57 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "Lubaale, E C --- \"Taking the incidence of false child sexual abuse allegations more seriously\" (49 Vol 1) [2016] PER 57 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
+    {
+      "kind": "signal",
+      "title": "\"Sexual offences courts to be re-established.\" DR, September 2013:10 [2013] DEREBUS 163 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "\"Sexual offences courts to be re-established.\" DR, September 2013:10 [2013] DEREBUS 163 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
+    {
+      "kind": "signal",
+      "title": "CRIMINAL LAW (SEXUAL OFFENCES AND RELATED MATTERS) REGULATIONS - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T23:35:07.676777+00:00",
+      "summary": "CRIMINAL LAW (SEXUAL OFFENCES AND RELATED MATTERS) REGULATIONS &nbsp;&nbsp; SAFLII",
+      "source": "Court Records"
+    },
+    {
+      "kind": "article",
+      "title": "Meta Data Disclosure: SA Court Compels Tech Giant to Hand Over CSAM Subscriber Data",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T22:25:57.831094+00:00",
+      "summary": "Gauteng High Court consent order compels Meta to disclose subscriber data for 70+ accounts distributing child sexual abuse material. Two-year DLC-Meta hotline established. SAFLII precedent chain verified.",
+      "author": "ZA-DIVERGENT Staff",
+      "url": "articles/meta-csam-data-disclosure-gauteng-high-court.html"
+    },
+    {
+      "kind": "signal",
+      "title": "Govchat (Pty) Ltd and Another v Meta Platforms Inc and Others (CR189Mar22/DSC160Jan25) [2025] ZACT 35 (18 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Govchat (Pty) Ltd and Another v Meta Platforms Inc and Others (CR189Mar22/DSC160Jan25) [2025] ZACT 35 (18 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Meta Platforms Inc and Others v GovChat (Pty) Ltd and Another (CR189Mar22/STR04Jun25) [2026] ZACT 4 (27 January 2026) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Meta Platforms Inc and Others v GovChat (Pty) Ltd and Another (CR189Mar22/STR04Jun25) [2026] ZACT 4 (27 January 2026) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Govchat Proprietary Limited and Another v Facebook Inc and others (IR165Nov20) [2021] ZACT 111 (11 November 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Govchat Proprietary Limited and Another v Facebook Inc and others (IR165Nov20) [2021] ZACT 111 (11 November 2021) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Beale v S (A283/18) [2019] ZAWCHC 47; 2019 (2) SACR 19 (WCC) (3 May 2019) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Beale v S (A283/18) [2019] ZAWCHC 47; 2019 (2) SACR 19 (WCC) (3 May 2019) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Cimma v S (A2025/087499) [2025] ZAGPJHC 1345 (4 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Cimma v S (A2025/087499) [2025] ZAGPJHC 1345 (4 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Calder v S (A226/23) [2024] ZAWCHC 195 (27 July 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:54:03.710568+00:00",
+      "summary": "Calder v S (A226/23) [2024] ZAWCHC 195 (27 July 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Meta compelled to hand over user data in SA child pornography case -- Gauteng High Court consent order secured by Digital Law Company",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "The Digital Law Company (DLC), led by Emma Sadleir, secured a consent order from Judge Mudunwazi Makamu in the Gauteng High Court compelling Meta to disclose subscriber data (phone numbers, IP addresses, names, physical ...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "ANALYSIS: Gauteng consent order establishes SA jurisdictional precedent over global tech platforms for CSAM data disclosure",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "The Meta consent order is structurally significant beyond the immediate CSAM case. It establishes that: (1) SA courts can compel US-headquartered tech companies to disclose subscriber data; (2) the Gauteng High Court has...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Intelligence note: 70+ Instagram/WhatsApp accounts distributing CSAM suggests organized network with cross-platform coordination",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T21:52:19.046675+00:00",
+      "summary": "58 Instagram accounts + 12 WhatsApp channels = 70 linked entities distributing child sexual abuse material. The cross-platform nature (Instagram for discovery, WhatsApp for distribution) indicates coordinated operation r...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mkwanazi and Another v Minister of Police (39290/2021) [2025] ZAGPPHC 855 (13 August 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mkwanazi and Another v Minister of Police (39290/2021) [2025] ZAGPPHC 855 (13 August 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Matlala v S (A67/2025) [2025] ZAGPJHC 1099; 2026 (1) SACR 46 (GJ) (27 October 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Matlala v S (A67/2025) [2025] ZAGPJHC 1099; 2026 (1) SACR 46 (GJ) (27 October 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "S v Masemola and Others (Sentence) (CC2/2025) [2025] ZAGPPHC 1151 (17 October 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "S v Masemola and Others (Sentence) (CC2/2025) [2025] ZAGPPHC 1151 (17 October 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Brown Mogotsi Foundation v MEC for Health, North West Province and Another (UM185/2023) [2023] ZANWHC 187 (29 September 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Brown Mogotsi Foundation v MEC for Health, North West Province and Another (UM185/2023) [2023] ZANWHC 187 (29 September 2023) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.8652,
+        "lng": 25.6442
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "MEC for Health North West Province Government v Brown Mogotsi Foundation and Another (UM185/2023) [2024] ZANWHC 30 (16 February 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "MEC for Health North West Province Government v Brown Mogotsi Foundation and Another (UM185/2023) [2024] ZANWHC 30 (16 February 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.8652,
+        "lng": 25.6442
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Hume v Directorate for Priority Crime Investigation and Another (33593/20) [2022] ZAGPPHC 33; 2022 (1) SACR 518 (GP) (28 January 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Hume v Directorate for Priority Crime Investigation and Another (33593/20) [2022] ZAGPPHC 33; 2022 (1) SACR 518 (GP) (28 January 2022) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Moyo v Minister of Justice and Constitutional Development and Others; Sonti v Minister of Justice and Correctional Services and Others (387/2017; 386/2017) [2018] ZASCA 100; 2018 (8) BCLR 972 (SCA); [2018] 3 All SA 342 (SCA); 2018 (2) SACR 313 (SCA) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Moyo v Minister of Justice and Constitutional Development and Others; Sonti v Minister of Justice and Correctional Services and Others (387/2017; 386/2017) [2018] ZASCA 100; 2018 (8) BCLR 972 (SCA); [2018] 3 All SA 342 (...",
+      "source": "Court Records",
+      "geo": {
+        "lat": -29.1187,
+        "lng": 26.2141
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Greyling v George Randell High School (PR11/22) [2023] ZALCPE 2; [2023] 5 BLLR 412 (LC); (2023) 44 ILJ 1254 (LC) (27 February 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Greyling v George Randell High School (PR11/22) [2023] ZALCPE 2; [2023] 5 BLLR 412 (LC); (2023) 44 ILJ 1254 (LC) (27 February 2023) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9608,
+        "lng": 25.6022
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Masinga and Others v Chief of the South African National Defence Force and Others (51/2021) [2022] ZASCA 1; [2022] 4 BLLR 305 (SCA); (2022) 43 ILJ 805 (SCA); [2022] 2 All SA 399 (SCA) (5 January 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Masinga and Others v Chief of the South African National Defence Force and Others (51/2021) [2022] ZASCA 1; [2022] 4 BLLR 305 (SCA); (2022) 43 ILJ 805 (SCA); [2022] 2 All SA 399 (SCA) (5 January 2022) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -29.1187,
+        "lng": 26.2141
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "City of Cape Town v Adams (EC06/2023) [2024] ZAEQC 1 (1 March 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "City of Cape Town v Adams (EC06/2023) [2024] ZAEQC 1 (1 March 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mtech Constructions (Pty) Ltd v Goosen Mega Enterprise (Pty) Ltd (Leave to Appeal) (024968/24) [2025] ZAGPPHC 296 (18 March 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mtech Constructions (Pty) Ltd v Goosen Mega Enterprise (Pty) Ltd (Leave to Appeal) (024968/24) [2025] ZAGPPHC 296 (18 March 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "BP Southern Africa (Pty) Ltd v Mega Burst Oils and Fuels (Pty) Ltd and Another; BP Southern Africa (Pty) Ltd v ZA Petroleum (Pty) Ltd and Another (39170/2019) [2020] ZAGPJHC 56; 2022 (1) SA 162 (GJ) (24 February 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "BP Southern Africa (Pty) Ltd v Mega Burst Oils and Fuels (Pty) Ltd and Another; BP Southern Africa (Pty) Ltd v ZA Petroleum (Pty) Ltd and Another (39170/2019) [2020] ZAGPJHC 56; 2022 (1) SA 162 (GJ) (24 February 2020) &n...",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Goosen Mega Enterprise (Pty) Ltd v Mtech Constructions (Pty) Ltd (115832/23) [2025] ZAGPPHC 72 (24 January 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Goosen Mega Enterprise (Pty) Ltd v Mtech Constructions (Pty) Ltd (115832/23) [2025] ZAGPPHC 72 (24 January 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "NUMSA obo Mavuso v Mini Mega (PTY) Ltd t-a Rustenberg Engine Centre (JR 1288/13) [2022] ZALCJHB 180 (4 July 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "NUMSA obo Mavuso v Mini Mega (PTY) Ltd t-a Rustenberg Engine Centre (JR 1288/13) [2022] ZALCJHB 180 (4 July 2022) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Blue Bulls Company (Pty)Ltd vs Mega Burst Oils and Fuels (Pty)Ltd (2021/18739) [2022] ZAGPJHC 314 (21 April 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Blue Bulls Company (Pty)Ltd vs Mega Burst Oils and Fuels (Pty)Ltd (2021/18739) [2022] ZAGPJHC 314 (21 April 2022) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.2023,
+        "lng": 28.0436
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "South African Breweries Proprietary Limited and Others v President of the Republic of South Africa and Another (139/2021) [2022] ZAWCHC 102; [2022] 3 All SA 514 (WCC) (27 May 2022) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "South African Breweries Proprietary Limited and Others v President of the Republic of South Africa and Another (139/2021) [2022] ZAWCHC 102; [2022] 3 All SA 514 (WCC) (27 May 2022) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Guardrisk Insurance Company Limited v Cafe Chameleon CC (632/20) [2020] ZASCA 173; [2021] 1 All SA 707 (SCA); 2021 (2) SA 323 (SCA) (17 December 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Guardrisk Insurance Company Limited v Cafe Chameleon CC (632/20) [2020] ZASCA 173; [2021] 1 All SA 707 (SCA); 2021 (2) SA 323 (SCA) (17 December 2020) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -29.1187,
+        "lng": 26.2141
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Helen Suzman Foundation and Another v Minister of Police and Others (23199/16) [2016] ZAGPPHC 1191 (19 October 2016) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Helen Suzman Foundation and Another v Minister of Police and Others (23199/16) [2016] ZAGPPHC 1191 (19 October 2016) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Van Vuren and Others v Van Der Merwe (1054/2019; 23267/2018; 23369/2018; 21511/2018) [2023] ZAWCHC 227 (29 August 2023) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Van Vuren and Others v Van Der Merwe (1054/2019; 23267/2018; 23369/2018; 21511/2018) [2023] ZAWCHC 227 (29 August 2023) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "General Council of the Bar of South Africa v Jiba and Others (23576/2015) [2016] ZAGPPHC 833 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "General Council of the Bar of South Africa v Jiba and Others (23576/2015) [2016] ZAGPPHC 833 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Freedom Under Law (RF) NPC v National Director of Public Prosecutions and Others (89849/2015) [2017] ZAGPPHC 791; 2018 (1) SACR 436 (GP) (21 December 2017) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Freedom Under Law (RF) NPC v National Director of Public Prosecutions and Others (89849/2015) [2017] ZAGPPHC 791; 2018 (1) SACR 436 (GP) (21 December 2017) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mogalakwena Local Municipality v Provincial Executive Council, Limpopo and Others (35248/14) [2014] ZAGPPHC 400 - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Mogalakwena Local Municipality v Provincial Executive Council, Limpopo and Others (35248/14) [2014] ZAGPPHC 400 &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "MEC Provincial Treasury, Provincial Government of Limpopo v Magnum Simplex International (Pty) Ltd (70477/09) [2021] ZAGPPHC 108 (19 February 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "MEC Provincial Treasury, Provincial Government of Limpopo v Magnum Simplex International (Pty) Ltd (70477/09) [2021] ZAGPPHC 108 (19 February 2021) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Khari Investments (Pty) Ltd v Mopani District Municipality (5424/2018) [2024] ZALMPPHC 86 (12 August 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Khari Investments (Pty) Ltd v Mopani District Municipality (5424/2018) [2024] ZALMPPHC 86 (12 August 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -23.9045,
+        "lng": 29.4688
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Greater Tzaneen Municipality v Bravospan 252 CC (CCT 342/22) [2024] ZACC 20; 2025 (1) BCLR 1 (CC); 2025 (1) SA 557 (CC) (2 October 2024) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Greater Tzaneen Municipality v Bravospan 252 CC (CCT 342/22) [2024] ZACC 20; 2025 (1) BCLR 1 (CC); 2025 (1) SA 557 (CC) (2 October 2024) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.1952,
+        "lng": 28.0486
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Basic Education For All and Others v Minister of Basic Education and Others (23949/14) [2014] ZAGPPHC 251; 2014 (4) SA 274 (GP); [2014] 3 All SA 56 (GP); 2014 (9) BCLR 1039 (GP) (5 May 2014) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Basic Education For All and Others v Minister of Basic Education and Others (23949/14) [2014] ZAGPPHC 251; 2014 (4) SA 274 (GP); [2014] 3 All SA 56 (GP); 2014 (9) BCLR 1039 (GP) (5 May 2014) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Democratic Alliance v Minister of Co-operative Governance and Traditional Affairs and Others (22311/2020) [2021] ZAGPPHC 168 (24 March 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Democratic Alliance v Minister of Co-operative Governance and Traditional Affairs and Others (22311/2020) [2021] ZAGPPHC 168 (24 March 2021) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.1876
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Ma-Afrika Hotels (Pty) Ltd and Another v Santam Limited (6499/2020) [2020] ZAWCHC 160; [2021] 1 All SA 195 (WCC) (17 November 2020) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Ma-Afrika Hotels (Pty) Ltd and Another v Santam Limited (6499/2020) [2020] ZAWCHC 160; [2021] 1 All SA 195 (WCC) (17 November 2020) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Zuma v Secretary of the Judicial Commission of Inquiry into Allegations of State Capture, Corruption and Fraud in the Public Sector Including Organs of State and Others (CCT 52/21) [2021] ZACC 28; 2021 (11) BCLR 1263 (CC) (17 September 2021) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Zuma v Secretary of the Judicial Commission of Inquiry into Allegations of State Capture, Corruption and Fraud in the Public Sector Including Organs of State and Others (CCT 52/21) [2021] ZACC 28; 2021 (11) BCLR 1263 (CC...",
+      "source": "Court Records",
+      "geo": {
+        "lat": -26.1952,
+        "lng": 28.0486
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Minister of Police v Van Der Merwe (13204/2022) [2025] ZAWCHC 599 (23 December 2025) - SAFLII",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-20T01:09:27.787441+00:00",
+      "summary": "Minister of Police v Van Der Merwe (13204/2022) [2025] ZAWCHC 599 (23 December 2025) &nbsp;&nbsp; SAFLII",
+      "source": "Court Records",
+      "geo": {
+        "lat": -33.9258,
+        "lng": 18.4232
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "BKA/DOJ takedown: Kimwolf/Aisuru botnets dismantled March 19, 2026; Jacob Butler charged — yet 3xK Tech infrastructure still active 3 months later",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"On March 19, 2026, BKA (Germany) and ZAC NRW with US/Canadian authorities dismantled the globally distributed infrastructure of Aisuru, Kimwolf, JackSkid, and 'Mossad' sister networks. Peak network: 3+ milli...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 50.9375,
+        "lng": 6.9603
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Aisuru botnet pivots from DDoS to residential proxy empire: 31.4 Tbps record, 2M+ Android devices, monetised via PlainProxies",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Aisuru retooled from DDoS to residential-proxy-as-a-service, renting access to hundreds of thousands of compromised IoT devices. 2M+ Android devices (mostly off-brand TVs). DDoS records: 22.2 Tbps / 10.6 bil...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 9.0579,
+        "lng": 7.4951
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Cloudflare Q2 2025 DDoS Report: AS200373 (Drei-K-Tech-GmbH) formally ranked #1 source of HTTP DDoS attacks globally",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"In Cloudflare's Q2 2025 DDoS threat report, Drei-K-Tech-GmbH (AS200373) jumped 6 places to become the #1 largest source of HTTP/application-layer DDoS attacks globally, displacing Hetzner (AS24940). DigitalO...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 37.7749,
+        "lng": -122.4194
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "GreyNoise: 2.3M scanning sessions + 1.7M credential spraying sessions from AS200373 against Palo Alto/Cisco VPNs (Nov-Dec 2025)",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"GreyNoise detected massive scanning/credential-spraying campaigns from 3xK Tech IPs. Nov 14-19: 2.3 million sessions hitting Palo Alto GlobalProtect /global-protect/login.esp. Dec 11: 1.7 million login sessi...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Operation Endgame 3.0: Europol dismantles Rhadamanthys infostealer — 1,025 servers seized, 525,303 infections, 86.2M stealing events",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"Nov 10-13 2025: Europol/Eurojust with 11 countries dismantled Rhadamanthys infostealer, VenomRAT, and Elysium botnet. 1,025+ servers taken down, 20 domains seized, 1 arrest in Greece. Shadowserver identified...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 52.0705,
+        "lng": 4.3007
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "FBI IC3 2025 Report: $20.9 billion in losses, 1M+ complaints — credential compromise identified as primary entry point",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"FBI IC3 2025 report records $20.877 billion in losses (up 26% from 2024). First time in 25-year history that complaints exceeded 1 million (1,008,597). 191,561 phishing/spoofing complaints \\u2014 highest cat...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": 38.9072,
+        "lng": -77.0369
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "SA Information Regulator: 2,374 breaches reported FY2024/25; 95% caused by human error including weak/reused passwords; avg cost R53 million",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-06-19T15:19:18.120313+00:00",
+      "summary": "{\"summary\": \"SA Information Regulator received 2,374 reported breaches in FY2024/25, with 82% (1,947) occurring after April 2025 when the eServices Portal went live (~300/month). Average breach cost R53 million, severe i...",
+      "source": "Incident Report",
+      "geo": {
+        "lat": -25.7479,
+        "lng": 28.2293
+      }
+    }
+  ]
 }
