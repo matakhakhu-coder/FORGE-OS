@@ -98,6 +98,12 @@ SIGNAL_ARTICLE_MAP: dict[str, str] = {
 
 
 # ── Stream labels (public-facing) ─────────────────────────────────────────────
+# Articles kept live as case studies: slug -> banner HTML shown above the headline
+CASE_STUDY_NOTES: dict[str, str] = {
+    "madlanga-hawks-limpopo-municipal-fraud": "<strong>Case study:</strong> this report contains errors; a point-by-point review is in preparation.",
+}
+
+
 STREAM_LABELS = {
     "CRIME_INTEL":    "Crime & Security",
     "INFRASTRUCTURE": "Infrastructure",
@@ -833,6 +839,7 @@ def _build_dist(
     gated_count = 0
     for art in articles:
         article_tier = art.get("tier", "free")
+        art["case_study"] = CASE_STUDY_NOTES.get(art["slug"])
         out = DIST_ART / f"{art['slug']}.html"
 
         if article_tier == "premium":
@@ -1029,6 +1036,10 @@ def _git_deploy(now_str: str) -> None:
     Vercel watches main and auto-deploys when it sees dist/ change.
     """
     cwd = str(ROOT)
+    import os as _os
+    if _os.environ.get("FORGE_ALLOW_PUBLISH") != "1":
+        print("[deploy] blocked: set FORGE_ALLOW_PUBLISH=1 to allow git push")
+        return
 
     _run(["git", "add", "dist/", "vercel.json"], cwd=cwd)
 
