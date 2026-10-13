@@ -221,6 +221,14 @@ class CorrelationEngine:
             # with noise.  High-intensity FIRMS events are still surfaced
             # in the feed via the FIRMS high-impact gate in api_feed().
             "  AND  source != 'firms' "
+            # Placeholder pins (collector defaults: Cape Town/Parliament, Pretoria x2, DC) and
+            # date-only midnight timestamps carry no real location or time, so they are
+            # excluded; otherwise they score as perfect 0 km / 0 h matches.
+            "  AND  NOT (abs(lat+33.9249)<0.00005 AND abs(lng-18.4241)<0.00005) "
+            "  AND  NOT (abs(lat+25.7479)<0.00005 AND (abs(lng-28.2293)<0.00005 OR abs(lng-28.1876)<0.00005)) "
+            "  AND  NOT (abs(lat-38.9072)<0.00005 AND abs(lng+77.0369)<0.00005) "
+            "  AND  timestamp NOT LIKE '%T00:00:00Z' "
+            "  AND  timestamp NOT LIKE '% 00:00:00' "
             "ORDER  BY timestamp DESC",
             (f"-{self._window_h} hours",),
         ).fetchall()
