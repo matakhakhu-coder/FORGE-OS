@@ -1155,6 +1155,10 @@ def run_publish_deploy() -> dict:
     a failed publish must never fail the pipeline run.
     """
     import subprocess
+    import os
+    if os.environ.get("FORGE_ALLOW_PUBLISH") != "1":
+        log.info("[publish] skipped: set FORGE_ALLOW_PUBLISH=1 to allow publishing")
+        return {"status": "skipped"}
     try:
         result = subprocess.run(
             [sys.executable, str(Path(__file__).resolve().parent / "publish.py"), "--deploy"],

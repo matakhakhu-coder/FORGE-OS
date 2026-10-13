@@ -517,6 +517,172 @@ doesn't fail silently.
 
 ---
 
+### Sprint 6 — Gravity scoring inputs  (COMPLETE 2026-08-02)
+
+Follow-up to Sprint 5's ops-hardening close-out: user asked for a trace of
+why gravity scores rarely clear 0.35 (MONITOR_THRESHOLD), tying back to
+the events-table dormancy noted throughout Sprint 2/5 (`events` had only
+2 rows against 38,575 signals). Traced live against the real DB before
+touching anything — full distribution: 3.56% of signals ever cleared
+0.35, only **3 signals ever, total**, cleared 0.55 (ESCALATE_THRESHOLD),
+and the highest gravity_score ever recorded was 0.551 — sitting right at
+the ESCALATE line rather than genuinely varying above it. Root-caused to
+two structural bugs in `forage/processors/signal_interpreter.py`, both
+in the five-factor input-building step that feeds
+`gravity_engine.calculate_gravity()`:
+
+- [x] **Source-name matching.** `credibility_map` / `high_value_sources`
+      keyed on broad category labels (`"NPA"`, `"SAPS"`, `"RSS"`,
+      `"GOVERNMENT"`) that never match `signal.get("source")`'s actual
+      values — specific collector IDs (`saps_media`, `news24_crime`,
+      `ofac_sdn`, etc.), verified against all 36 distinct source values
+      live in the DB. Both inputs silently defaulted (`credibility=0.5`,
+      `frequency=0.2`) for ~99% of the corpus, freezing 25% of the
+      formula's weight. Replaced with `_SOURCE_CREDIBILITY_TIERS` — five
+      evidence-based tiers built from real per-source signal counts,
+      kept in the spirit of `forage/utils/admiralty.py`'s existing A–F
+      grading (not unified with it directly — admiralty's short-name
+      coverage targets `artifacts.source`, a different column with a
+      different naming convention; unifying the two is a larger separate
+      change, flagged but not done here). Lookup is case-insensitive
+      (`GDACS` is stored uppercase in this DB; most other sources
+      aren't). `_HIGH_VALUE_SOURCES` for the frequency floor reuses the
+      top two credibility tiers rather than maintaining a second,
+      driftable list.
+- [x] **Severity vocabulary.** `SEVERITY_WEIGHTS` was ACLED/armed-conflict
+      vocabulary (`hijack`, `bomb`, `murder`, `assault`, `attack`,
+      `violence`, `arrest`, `raid`) that doesn't match how SA crime/
+      corruption journalism is actually written. Checked candidate
+      additions against real corpus frequency before adding anything —
+      e.g. `"fraud"` appears in 374 signal titles and scored
+      `severity=0.0` on every single one; `"rape"`, `"seized"`,
+      `"firearms"`, `"heist"`, `"manhunt"` all had real, non-trivial
+      corpus presence. Added them across critical/high/medium tiers.
+      **Caught a real bug in the fix itself before shipping:** plain
+      substring matching means `"rape"` collides with unrelated words —
+      confirmed live hits inside `"therapeutic"` (appears in 3 real
+      Dept. of Health document titles), `"Orapeleng"` (a person's first
+      name), and `"DRAPEKO"`/`"KRAPE MYRTLE"`/`"TRAPEZNIKOV"` (OFAC SDN
+      entity names). Fixed by switching the matching mechanism from
+      plain `term in txt` to a left-word-boundary regex (`\bterm`, not
+      `\bterm\b`) — this eliminates the cross-word collisions while
+      deliberately preserving the inflection-catching behavior the
+      *existing* terms already relied on (`"arrest"` still matches
+      `"arrested"`, `"murder"` still matches `"murders"`, since those
+      are suffixes of the stem, not different words the stem happens to
+      appear inside).
+- [x] Added `tests/test_sprint6_gravity.py` (14 tests): severity
+      vocabulary true-positives, the specific false-positive strings
+      found above (must stay at `severity=0.0`), inflection-matching
+      isn't broken, source-credibility tiering, case-insensitive lookup,
+      unknown-source neutral fallback, and an end-to-end check through
+      `SignalInterpreter.interpret()`.
+
+**Measured impact** (3,000-signal live random sample, before/after):
+`>= 0.35` roughly doubled, 3.56% → 6.33%. `>= 0.55` went from a
+near-nonexistent fringe (3 signals, ever, out of 38,575) to a real
+population 53x larger (0.53%). Max score in the sample: 0.674 — the
+first time any signal has cleared the ESCALATE line with room to spare
+rather than sitting right on it. Full regression suite (54 tests) clean
+after the change.
+
+- [x] **Sentiment computation.** Follow-up fix, same session: `sentiment`
+      was never computed at all — `SignalInterpreter.interpret()` never
+      set the key, so `gravity_engine` always fell back to a permanently
+      neutral 0.5 urgency (15% of the formula's weight, frozen for every
+      signal, regardless of content). Added `score_sentiment()`, range
+      [-1, +1] matching the ACLED path's existing convention (negative =
+      urgent/bad, positive = routine/good). Deliberately not a from-scratch
+      lexicon: severity content is inherently negative-urgent, so
+      `-severity` (already evidence-checked above) is the primary driver;
+      a small supplementary lexicon (`NEGATIVE_SENTIMENT_TERMS` /
+      `POSITIVE_SENTIMENT_TERMS`, 22/14 terms, each checked against real
+      corpus title frequency — 24 to 374 hits, none guessed) covers
+      non-criminal polarity severity's crime vocabulary misses entirely
+      (an outage, a resignation, a launch, an award). Reuses the same
+      left-word-boundary matching built for the severity fix above.
+      **Caught the same class of bug again before shipping:** the first
+      draft listed both a stem and its own inflection as separate entries
+      (`"launch"` and `"launches"`, `"award"` and `"awarded"`, `"success"`
+      and `"successful"`, `"improve"` and `"improvement"`, `"resign"` and
+      `"resignation"`, `"delay"` and `"delays"`) — since the shorter
+      stem's left-boundary match already covers the longer inflection,
+      this double-counted a single real word as two hits, silently
+      inflating scores. A test title with 3 genuine positive words
+      ("launches...wins...award") scored a saturated +1.00 instead of the
+      correct +0.90. Deduped by removing the six redundant longer forms.
+      Verified live across crime/positive/non-criminal-negative/neutral
+      examples — all landed exactly where expected, including the exact
+      false-positive strings checked earlier staying neutral. Added 11
+      more tests to `tests/test_sprint6_gravity.py` (`TestSentimentScoring`,
+      `TestSentimentLexiconDedup`, plus one interpret()-integration check)
+      — 65 tests total, all clean.
+      **Re-measured impact** (same 3,000-signal live sample): `>= 0.55`
+      nearly doubled again, 0.53% → 1.03%. First signal ever to clear 0.6
+      (0.47% of the sample) and 0.7 (1 signal). `>= 0.35`'s raw count
+      dipped slightly (6.33% → 5.97%) — correct, not a regression: good-
+      news signals that were previously inflated by the frozen-neutral
+      0.5 urgency contribution now correctly score lower instead of
+      riding the same artificial floor as everything else.
+
+- [x] **case_engine/escalation_engine threshold divergence.** Follow-up
+      trace, same session: the scoring-layer fixes above were necessary
+      but not sufficient — `forage/engines/case_engine.py` hardcoded its
+      own gravity thresholds (`gravity > 0.8` → `"CREATE CASE"`,
+      `gravity > 0.6` → `"FLAG MONITOR"`) completely independently of
+      `escalation_engine.py`'s already-correctly-calibrated 0.35/0.55
+      (that file's own header comment documents the recalibration:
+      *"Original values (0.75/0.45) were set for a richer NLP pipeline.
+      Lower them until a full spaCy/NER pipeline is integrated."*).
+      `case_engine.evaluate_case()`'s decision determines the Conclave
+      `recommendation` string *before* `handle_escalation()` ever runs
+      — so its stale, never-updated 0.6/0.8 bar silently forced
+      `recommendation = "IGNORE"` on virtually every signal, making
+      `escalation_engine`'s correct thresholds unreachable regardless of
+      the actual gravity score. Traced live against a 5,000-signal
+      sample using the now-fixed scoring: `gravity > 0.8` was reachable
+      by **0.000%** of signals (never, not once); `gravity > 0.6` by
+      only 0.62%. A bare `construct_case()` inside `case_engine.py`'s
+      `"CREATE CASE"` branch doesn't even write to the DB itself — the
+      real `INSERT INTO cases` only happens later in
+      `escalation_engine.create_case()`, gated behind this same broken
+      chain.
+      **Fix:** `case_engine.py` now imports `ESCALATE_THRESHOLD`/
+      `MONITOR_THRESHOLD` directly from `escalation_engine.py` instead
+      of duplicating the numbers, and switched `>` to `>=` to match
+      escalation_engine's own inclusive-boundary convention. This is a
+      structural fix, not just a value copy — the two thresholds are now
+      the same object in memory and cannot silently drift apart the way
+      they already did once.
+      Verified live: `evaluate_case()` at every threshold boundary now
+      produces exactly the decision `escalation_engine` expects (0.34 →
+      `STORE ONLY`, 0.35 → `FLAG MONITOR`, 0.54 → `FLAG MONITOR`, 0.55 →
+      `CREATE CASE`). Added `TestCaseEngineThresholdAlignment` to
+      `tests/test_sprint6_gravity.py` (5 tests) including a full-chain
+      proof: a signal scoring exactly `ESCALATE_THRESHOLD` now flows all
+      the way from `case_engine`'s decision through
+      `handle_escalation()` to an actual `INSERT INTO cases` — the same
+      signal would have silently produced `recommendation = "IGNORE"`
+      and nothing at all before this fix. 70 tests total, all clean.
+
+**Still deliberately not done — flagged, not fixed:**
+- **The historical 38,575 signals were not rescored.** All of the fixes
+  above (scoring inputs + case_engine thresholds) only affect
+  newly-ingested signals going forward. `forage/engines/gravity_engine.py`
+  `::rescore_signals_from_db()` already exists for a bulk backfill
+  (`null_only=False` to rescore everything) — not run here since it's a
+  real DB-wide write, and even after rescoring, `events`/`cases` still
+  only get created going forward through `ingest_signal()`'s escalation
+  path, not retroactively for historical signals (`handle_escalation()`
+  is never invoked by a bare rescore). Offer before running either.
+- **`emergence_engine`'s "no actor-event links" dormancy** (Sprint 2) was
+  traced to `events` having only 2 rows — this fix directly addresses
+  that root cause going forward, but hasn't been re-verified against a
+  live pipeline run producing new events yet. Worth re-checking once the
+  pipeline has run again with these fixes in place.
+
+---
+
 ## Next Priorities  [SUPERSEDED 2026-07-23 — see Launch-Readiness Sprints above]
 
 ### ~~Rank 1 — Actor Naming Quality~~ — already fixed, doc was stale
