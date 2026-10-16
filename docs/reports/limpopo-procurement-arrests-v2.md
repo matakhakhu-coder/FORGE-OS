@@ -8,7 +8,7 @@ On {RUN_DATE} FORGE held {N_SIGNALS} signals from {N_SOURCES} sources, collected
 
 {N_PINNED} signals are pinned to this case. Each is tagged **subject** (the Limpopo arrests), **control** (a matter the baseline report tied to Limpopo) or **decoy** (same province, no link examined). The pins were chosen by hand and are listed on [the case page](../cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2.html), not selected by keyword.
 
-The case page shows an "Evidence Confidence" figure. It is an average of headline gravity scores. It measures how alarming headlines sound, not whether claims are corroborated, so this report does not use it.
+The case page shows an "Evidence Confidence" figure. It is an average of headline gravity scores. Here {GRAVITY_TOP_COUNT} of the {N_PINNED} pinned signals carry the identical gravity score {GRAVITY_TOP_VALUE} and {N_UNSCORED} carry none, so the figure is a constant, not a measurement. This report does not use it.
 
 ## What the records support
 
@@ -59,9 +59,12 @@ Each claim from the baseline report, scored against what was checked in October 
 - **Same-name entities disambiguated:** documented here, not automated. The pipeline still has no disambiguation step.
 - **Placeholder coordinates and timestamps kept out of scoring:** yes. None of the signals has coordinates, and the news monitor's timestamps are date-only (all 07:00), so dates are used only at day level.
 - **Claim ledger published:** above.
+- **Scoring improvements shown:** none. See the provenance note.
 
 ## Provenance and limits
 
-Code commit {COMMIT}. Signal-table fingerprint (first 12 characters of a SHA-256 over every signal's id, source, timestamp and title) {CORPUS_SHA}. Scoring: the Sprint 6 severity vocabulary and unified thresholds, and the correlation filter that excludes placeholder pins and midnight timestamps.
+Code commit {COMMIT}. Signal-table fingerprint (first 12 characters of a SHA-256 over every signal's id, source, timestamp and title) {CORPUS_SHA}. Scoring: not exercised. The Sprint 6 changes to the severity vocabulary and thresholds, and the correlation filter for placeholder pins and midnight timestamps, were in the code at this commit, but the gravity figures here are collector defaults and no correlations were possible, so this report cannot show those changes work.
 
 This report cannot show that no link exists between these matters, only that none appears in the sources collected. All allegations are unproven and reported as allegations.
+
+*Correction, 16 October 2026: an earlier version of the provenance note said the Sprint 6 scoring applied to this corpus. The identical gravity scores noted above show it did not.*
