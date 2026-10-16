@@ -74,7 +74,6 @@ PINS = [
     ("c7970535", "control: Mkhwanazi, task team"),
     ("61c541b1", "control: Mkhwanazi, EMPD"),
     ("8bc54a90", "control: Mkhwanazi, Ekurhuleni case"),
-    ("0ba26b91", "control: Mkhwanazi, July arrests (headline only)"),
     ("4a114a5b", "control: Mkhwanazi, August arrest (headline only)"),
     ("76734add", "control: Mkhwanazi, latest signal (headline only)"),
     ("f195e708", "control: surname-only headline (no first name)"),
@@ -227,6 +226,12 @@ def main() -> int:
                 "UPDATE case_signals SET note=? WHERE case_id=? AND signal_id=?",
                 (note, CASE_ID, sid),
             )
+        keep = [sid for sid, _n, _r in resolved]
+        marks = ",".join("?" * len(keep))
+        wc.execute(
+            f"DELETE FROM case_signals WHERE case_id=? AND signal_id NOT IN ({marks})",
+            (CASE_ID, *keep),
+        )
         existing = wc.execute("SELECT article_id FROM articles WHERE slug=?", (SLUG,)).fetchone()
         if existing:
             wc.execute(
