@@ -147,7 +147,7 @@ def main() -> int:
         print("\n".join(problems))
         return 1
 
-    polokwane_ids = [p for p, note in PINS if note.startswith("subject: Polokwane")]
+    polokwane_ids = [p for p, note in PINS if note.startswith("subject: Polokwane 2025")]
     polokwane = (
         f"FORGE holds {len(polokwane_ids)} headlines on it, from 17 to 21 September 2025, plus one "
         "from May 2026 reporting that the Hawks would return to the municipality for more documents "
