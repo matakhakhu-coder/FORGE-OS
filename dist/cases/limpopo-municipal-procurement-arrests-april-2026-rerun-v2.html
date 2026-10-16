@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limpopo Municipal Procurement Arrests, April 2026 (rerun v2) — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+  <link rel="apple-touch-icon" href="static/apple-touch-icon.png">
+  <link rel="stylesheet" href="../static/css/site.css">
+  
+<style>
+/* ── Screen layout ──────────────────────────────────────────────────────────── */
+.cd-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.cd-back {
+  margin-bottom: var(--sp-5);
+}
+.btn-back {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.btn-back:hover { color: var(--text-primary); }
+
+/* ── Classification bar ─────────────────────────────────────────────────────── */
+.cd-classification {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(200,148,58,0.06);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-radius: var(--r-sm);
+  color: var(--accent-muted);
+  margin-bottom: var(--sp-6);
+}
+
+/* ── Case header ────────────────────────────────────────────────────────────── */
+.cd-header { margin-bottom: var(--sp-6); }
+.cd-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-case-id {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+.cd-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(200,148,58,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(200,148,58,0.25);
+}
+.cd-header__title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+}
+.cd-header__created {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-ghost);
+}
+
+/* ── Scorecard row ──────────────────────────────────────────────────────────── */
+.cd-scorecard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+.cd-score {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+}
+.cd-score__val {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.cd-score__lbl {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-coe-track {
+  height: 3px;
+  background: var(--border-dim);
+  border-radius: 999px;
+  margin-top: var(--sp-2);
+  overflow: hidden;
+}
+.cd-coe-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* ── Section ────────────────────────────────────────────────────────────────── */
+.cd-section {
+  margin-bottom: var(--sp-8);
+}
+.cd-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+
+/* ── Hypothesis block ───────────────────────────────────────────────────────── */
+.cd-hypothesis {
+  background: rgba(200,148,58,0.05);
+  border: 1px solid rgba(200,148,58,0.2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ── Description block ──────────────────────────────────────────────────────── */
+.cd-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ── Evidence timeline rail ─────────────────────────────────────────────────── */
+.cd-evidence {
+  position: relative;
+  padding-left: 28px;
+}
+.cd-evidence::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border-dim);
+}
+
+.cd-signal {
+  position: relative;
+  margin-bottom: var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  transition: border-color var(--t-mid);
+}
+.cd-signal:hover { border-color: var(--border-mid); }
+
+.cd-signal::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 14px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--border-dim);
+  background: var(--bg-base);
+}
+.cd-signal--verified::before  { background: #27ae60; border-color: #27ae60; }
+.cd-signal--reported::before  { background: var(--accent); border-color: var(--accent); }
+.cd-signal--unverified::before { background: var(--text-dim); border-color: var(--text-dim); }
+
+.cd-signal__title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+  line-height: 1.3;
+}
+.cd-signal__summary {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-2);
+}
+.cd-signal__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.cd-signal__source {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--text-ghost);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+}
+.cd-signal__note {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent-muted);
+  font-style: italic;
+}
+.cd-signal__sig {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  border: 1px solid;
+}
+.cd-sig-routine    { color: var(--text-dim);  border-color: var(--border-dim); }
+.cd-sig-notable    { color: var(--infra);     border-color: rgba(41,128,185,0.3); }
+.cd-sig-significant { color: var(--accent);   border-color: rgba(200,148,58,0.3); }
+.cd-sig-high       { color: var(--crime);     border-color: rgba(192,57,43,0.3); }
+.cd-sig-critical   { color: #e74c3c;         border-color: rgba(231,76,60,0.4); background: rgba(231,76,60,0.06); }
+
+/* ── Actors ─────────────────────────────────────────────────────────────────── */
+.cd-actors { display: flex; flex-direction: column; gap: var(--sp-3); }
+.cd-actor {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+}
+.cd-actor__dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cd-actor__name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cd-actor__type {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.cd-actor__confidence {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+/* ── Print button ───────────────────────────────────────────────────────────── */
+.cd-print-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-8);
+}
+.cd-print-bar__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+.cd-print-btn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--bg-void);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-5);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.cd-print-btn:hover { background: var(--accent-bright); }
+
+/* ── PRINT STYLES ───────────────────────────────────────────────────────────── */
+@media print {
+  /* Hide everything site-chrome */
+  .site-header, .class-banner, .site-footer,
+  .cd-back, .cd-print-bar, .site-nav { display: none !important; }
+
+  body, html {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 10pt;
+  }
+
+  .site-main { padding: 0 !important; }
+  .cd-shell   { max-width: 100%; padding: 0 1cm !important; }
+
+  /* Print header */
+  .cd-shell::before {
+    content: "ZA-DIVERGENT INTELLIGENCE BRIEF — OPEN SOURCE — UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    text-align: center;
+    border-bottom: 1pt solid #999;
+    padding-bottom: 6pt;
+    margin-bottom: 16pt;
+    color: #666;
+  }
+  .cd-shell::after {
+    content: "ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN SOURCE · UNCLASSIFIED";
+    display: block;
+    font-family: monospace;
+    font-size: 7pt;
+    letter-spacing: 0.1em;
+    text-align: center;
+    border-top: 1pt solid #999;
+    padding-top: 6pt;
+    margin-top: 16pt;
+    color: #666;
+  }
+
+  .cd-classification {
+    background: #f5f0e8 !important;
+    border: 1pt solid #c8943a !important;
+    color: #7a5c1e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-header__title { font-size: 18pt; color: #111 !important; }
+
+  .cd-score {
+    background: #f8f8f8 !important;
+    border: 1pt solid #ddd !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-score__val  { color: #7a5c1e !important; }
+  .cd-score__lbl  { color: #666 !important; }
+
+  .cd-hypothesis {
+    background: #fdf8f0 !important;
+    border-left: 3pt solid #c8943a !important;
+    color: #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cd-description { color: #333 !important; }
+
+  .cd-signal {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-signal__title   { color: #111 !important; }
+  .cd-signal__summary { color: #444 !important; }
+
+  .cd-actor {
+    background: #fafafa !important;
+    border: 1pt solid #ddd !important;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cd-actor__name { color: #111 !important; }
+
+  .cd-section__title { color: #666 !important; }
+  .cd-coe-fill, .cd-signal__bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="../index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="../about.html" class="site-nav__link ">How It Works</a>
+        <a href="../subscribe.html" class="site-nav__link " style="color:var(--accent);">Pro</a>
+      </nav>
+      <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono" id="data-age" data-generated="16 Oct 2026 07:27 UTC" title="16 Oct 2026 07:27 UTC">16 Oct 2026 07:27 UTC</span>
+        <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel" id="settings-panel">
+      <div class="settings-panel__header">
+        <span class="settings-panel__dot"></span>
+        <span class="settings-panel__title">Settings</span>
+        <button class="settings-panel__close" id="settings-close">&#10005;</button>
+      </div>
+
+      <div class="settings-panel__body">
+        <div class="settings-group">
+          <div class="settings-group__label">Theme</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-theme="dark">Dark</button>
+            <button class="settings-opt" data-theme="light">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Timezone</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-tz="utc">UTC</button>
+            <button class="settings-opt" data-tz="sast">SAST</button>
+            <button class="settings-opt" data-tz="local">Local</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Time Display</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-timemode="age">Data Age</button>
+            <button class="settings-opt" data-timemode="absolute">Timestamp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="cd-shell">
+
+  <div class="cd-back">
+    <a href="../index.html?panel=cases" class="btn-back">← All Cases</a>
+  </div>
+
+  <div class="cd-classification">
+    Open Source Intelligence · ZA-DIVERGENT · Unclassified · For Analyst Use
+  </div>
+
+  <div class="cd-header">
+    <div class="cd-header__row">
+      <span class="cd-case-id">CASE-17</span>
+      <span class="cd-status">Active Investigation</span>
+    </div>
+    <h1 class="cd-header__title">Limpopo Municipal Procurement Arrests, April 2026 (rerun v2)</h1>
+    <div class="cd-header__created mono">Opened 16 Oct 2026 - 07:20 · Updated 09 Oct 2026 - 16:24 · 16 Oct 2026 07:27 UTC</div>
+  </div>
+
+  <div class="cd-scorecard">
+    
+    
+    <div class="cd-score">
+      <div class="cd-score__val">0.30</div>
+      <div class="cd-score__lbl">Evidence Confidence</div>
+      <div class="cd-coe-track">
+        <div class="cd-coe-fill" style="width:30%; background:#c8943a;"></div>
+      </div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">30</div>
+      <div class="cd-score__lbl">Pinned Signals</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">0</div>
+      <div class="cd-score__lbl">Linked Actors</div>
+    </div>
+    <div class="cd-score">
+      <div class="cd-score__val">0.3</div>
+      <div class="cd-score__lbl">Peak Signal</div>
+    </div>
+  </div>
+
+  <div class="cd-print-bar">
+    <span class="cd-print-bar__label">Download this case brief as PDF</span>
+    <button class="cd-print-btn" onclick="window.print()">⬇ Download Brief</button>
+  </div>
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Case Summary</div>
+    <div class="cd-description">Rerun of the baseline Limpopo report with hand-picked signals, a control group and a decoy group. Asks what the public record supports, not what a story would like to connect.</div>
+  </div>
+  
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Analyst Hypothesis</div>
+    <div class="cd-hypothesis">Null hypothesis: the Molemole and Elias Motsoaledi arrests, the 2025 Polokwane document seizure and the Mkhwanazi arrest are separate matters. A link is accepted only if a Hawks, NPA or court record states one.</div>
+  </div>
+  
+
+  
+  <div class="cd-section">
+    <div class="cd-section__title">Evidence — 30 Signals</div>
+    <div class="cd-evidence">
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Limpopo Hawks arrest four municipal officials - TimesLIVE</div>
+        
+        <div class="cd-signal__summary">Limpopo Hawks arrest four municipal officials - TimesLIVE Limpopo Hawks arrest four municipal officials TimesLIVE</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">16 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Former Limpopo municipal legal manager arrested for tender fraud and corruption - IOL</div>
+        
+        <div class="cd-signal__summary">Former Limpopo municipal legal manager arrested for tender fraud and corruption - IOL Former Limpopo municipal legal manager arrested for tender fraud and corruption IOL</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Elias Motsoaledi</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">More arrests expected in Molemole tender corruption case - SABC News</div>
+        
+        <div class="cd-signal__summary">More arrests expected in Molemole tender corruption case - SABC News More arrests expected in Molemole tender corruption case SABC News</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">16 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">DA wants Molemole municipality placed under administration after 10 senior managers arrested - The Citizen</div>
+        
+        <div class="cd-signal__summary">DA wants Molemole municipality placed under administration after 10 senior managers arrested - The Citizen DA wants Molemole municipality placed under administration after 10 senior managers arrested The Citizen</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">25 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Polokwane mayor deploys legal arsenal to block Hawks corruption investigation - News24</div>
+        
+        <div class="cd-signal__summary">Polokwane mayor deploys legal arsenal to block Hawks corruption investigation - News24 Polokwane mayor deploys legal arsenal to block Hawks corruption investigation News24</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">21 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025, mayor&#39;s court challenge</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks raid Polokwane municipality offices over graft allegations - Sowetan</div>
+        
+        <div class="cd-signal__summary">Hawks raid Polokwane municipality offices over graft allegations - Sowetan Hawks raid Polokwane municipality offices over graft allegations Sowetan</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">18 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025 (quotes the Hawks)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Suspended EMPD deputy chief Julius Mkhwanazi in cuffs again over alleged murder cover-up - News24</div>
+        
+        <div class="cd-signal__summary">Suspended EMPD deputy chief Julius Mkhwanazi in cuffs again over alleged murder cover-up - News24 Suspended EMPD deputy chief Julius Mkhwanazi in cuffs again over alleged murder cover-up News24</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">05 Aug 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi, August arrest (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks raid Polokwane Municipality offices amid corruption allegations - SABC News</div>
+        
+        <div class="cd-signal__summary">Hawks raid Polokwane Municipality offices amid corruption allegations - SABC News Hawks raid Polokwane Municipality offices amid corruption allegations SABC News</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks arrest three more in Molemole R38m corruption scandal - The Citizen</div>
+        
+        <div class="cd-signal__summary">Hawks arrest three more in Molemole R38m corruption scandal - The Citizen Hawks arrest three more in Molemole R38m corruption scandal The Citizen</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">24 Jun 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole, later arrests (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Limpopo Legislature graft lands before SIU, Public Protector, Treasury after News24 exposé - News24</div>
+        
+        <div class="cd-signal__summary">Limpopo Legislature graft lands before SIU, Public Protector, Treasury after News24 exposé - News24 Limpopo Legislature graft lands before SIU, Public Protector, Treasury after News24 exposé News24</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">16 Jul 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">decoy: same province, link not examined</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">SAPS Madlanga task team arrest Julius Mkhwanazi for fraud and corruption - TimesLIVE</div>
+        
+        <div class="cd-signal__summary">SAPS Madlanga task team arrest Julius Mkhwanazi for fraud and corruption - TimesLIVE SAPS Madlanga task team arrest Julius Mkhwanazi for fraud and corruption TimesLIVE</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">18 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi (the baseline&#39;s signal)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">How security company was caught for R16m security tender fraud in Limpopo - IOL</div>
+        
+        <div class="cd-signal__summary">How security company was caught for R16m security tender fraud in Limpopo - IOL How security company was caught for R16m security tender fraud in Limpopo IOL</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">24 Sep 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">decoy: same province, link not examined</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Municipal Crackdown: Four Molemole Officials Arrested, More Nabbed Soon - Central News South Africa</div>
+        
+        <div class="cd-signal__summary">Municipal Crackdown: Four Molemole Officials Arrested, More Nabbed Soon - Central News South Africa Municipal Crackdown: Four Molemole Officials Arrested, More Nabbed Soon Central News South Africa</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">UPDATE | Julius Mkhwanazi arrested in EMPD corruption crackdown - News24</div>
+        
+        <div class="cd-signal__summary">UPDATE | Julius Mkhwanazi arrested in EMPD corruption crackdown - News24 UPDATE | Julius Mkhwanazi arrested in EMPD corruption crackdown News24</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">18 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi, EMPD</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Former Limpopo municipal legal manager arrested over procurement fraud - EWN</div>
+        
+        <div class="cd-signal__summary">Former Limpopo municipal legal manager arrested over procurement fraud - EWN Former Limpopo municipal legal manager arrested over procurement fraud EWN</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">16 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Elias Motsoaledi</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks raid Polokwane municipal manager’s office after R700m corruption allegations - IOL</div>
+        
+        <div class="cd-signal__summary">Hawks raid Polokwane municipal manager’s office after R700m corruption allegations - IOL Hawks raid Polokwane municipal manager’s office after R700m corruption allegations IOL</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">State opposes bail for Mkhwanazi and co-accused in Ekurhuleni corruption case - EWN</div>
+        
+        <div class="cd-signal__summary">State opposes bail for Mkhwanazi and co-accused in Ekurhuleni corruption case - EWN State opposes bail for Mkhwanazi and co-accused in Ekurhuleni corruption case EWN</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">20 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi, Ekurhuleni case</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Mkhwanazi’s bombshell briefing: A string of high-profile arrests over past year - EWN</div>
+        
+        <div class="cd-signal__summary">Mkhwanazi’s bombshell briefing: A string of high-profile arrests over past year - EWN Mkhwanazi’s bombshell briefing: A string of high-profile arrests over past year EWN</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">06 Jul 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: namesake? headline-level inference</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks raid Polokwane municipal offices amid multimillion-rand tender corruption probe - News24</div>
+        
+        <div class="cd-signal__summary">Hawks raid Polokwane municipal offices amid multimillion-rand tender corruption probe - News24 Hawks raid Polokwane municipal offices amid multimillion-rand tender corruption probe News24</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks nab four senior management officials in Molemole Municipality - EWN</div>
+        
+        <div class="cd-signal__summary">Hawks nab four senior management officials in Molemole Municipality - EWN Hawks nab four senior management officials in Molemole Municipality EWN</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Three more suspects arrested in connection with R38m Molemole corruption probe - Jacaranda FM</div>
+        
+        <div class="cd-signal__summary">Three more suspects arrested in connection with R38m Molemole corruption probe - Jacaranda FM Three more suspects arrested in connection with R38m Molemole corruption probe Jacaranda FM</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">24 Jun 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole, later arrests (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Former Elias Motsoaledi Local Municipality official arrested - South African Government News Agency</div>
+        
+        <div class="cd-signal__summary">Former Elias Motsoaledi Local Municipality official arrested - South African Government News Agency Former Elias Motsoaledi Local Municipality official arrested South African Government News Agency</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Elias Motsoaledi</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Molemole Municipality rocked by tender scandal as Hawks arrest four senior officials - IOL</div>
+        
+        <div class="cd-signal__summary">Molemole Municipality rocked by tender scandal as Hawks arrest four senior officials - IOL Molemole Municipality rocked by tender scandal as Hawks arrest four senior officials IOL</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Molemole</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Julius Mkhwanazi arrested by Madlanga Commission SAPS task team - EWN</div>
+        
+        <div class="cd-signal__summary">Julius Mkhwanazi arrested by Madlanga Commission SAPS task team - EWN Julius Mkhwanazi arrested by Madlanga Commission SAPS task team EWN</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">18 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi, task team</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Hawks to return to Polokwane Muni for more documents - The Citizen</div>
+        
+        <div class="cd-signal__summary">Hawks to return to Polokwane Muni for more documents - The Citizen Hawks to return to Polokwane Muni for more documents The Citizen</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">13 May 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane, May 2026 follow-up (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Suspended EMPD deputy chief Julius Mkhwanazi arrested on fraud and corruption charges - Mail &amp; Guardian</div>
+        
+        <div class="cd-signal__summary">Suspended EMPD deputy chief Julius Mkhwanazi arrested on fraud and corruption charges - Mail &amp; Guardian Suspended EMPD deputy chief Julius Mkhwanazi arrested on fraud and corruption charges Mail &amp; Guardian</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">18 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: Mkhwanazi, EMPD</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">WATCH: Polokwane Municipality confirms Hawks search and seizure - The Citizen</div>
+        
+        <div class="cd-signal__summary">WATCH: Polokwane Municipality confirms Hawks search and seizure - The Citizen WATCH: Polokwane Municipality confirms Hawks search and seizure The Citizen</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">17 Sep 2025 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">subject: Polokwane 2025 (the municipality&#39;s framing)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Suspended EMPD Deputy Chief Mkhwanazi to appear in court - SABC News</div>
+        
+        <div class="cd-signal__summary">Suspended EMPD Deputy Chief Mkhwanazi to appear in court - SABC News Suspended EMPD Deputy Chief Mkhwanazi to appear in court SABC News</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">GOOGLE_NEWS_MONITOR</span>
+          <span class="cd-signal__source mono">19 Apr 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-notable" title="Editorial weight: 0.30">Notable</span>
+          <span class="cd-signal__note">control: surname-only headline (no first name)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">State seeks postponement in Julius Mkhwanazi corruption case - TimesLIVE</div>
+        
+        <div class="cd-signal__summary">State seeks postponement in Julius Mkhwanazi corruption case &nbsp;&nbsp; TimesLIVE</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">TIMESLIVE_CORRUPTION</span>
+          <span class="cd-signal__source mono">09 Oct 2026 - 16:24</span>
+          <span class="cd-signal__sig cd-sig-routine" title="Editorial weight: 0.00">Routine</span>
+          <span class="cd-signal__note">control: Mkhwanazi, latest signal (headline only)</span>
+        </div>
+      </div>
+      
+      
+      
+      
+      
+      <div class="cd-signal cd-signal--reported">
+        <div class="cd-signal__title">Thulamela councillor arrested for trying to bribe SIU investigator - Limpopo Mirror</div>
+        
+        <div class="cd-signal__summary">Thulamela councillor arrested for trying to bribe SIU investigator &nbsp;&nbsp; Limpopo Mirror</div>
+        
+        <div class="cd-signal__meta">
+          <span class="cd-signal__source">HAWKS_MEDIA</span>
+          <span class="cd-signal__source mono">19 Jun 2026 - 07:00</span>
+          <span class="cd-signal__sig cd-sig-routine" title="Editorial weight: 0.00">Routine</span>
+          <span class="cd-signal__note">decoy: same province, link not examined</span>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+
+  
+
+  <div class="methodology-section">
+    <div class="methodology-section__title">Methodology</div>
+    <div class="methodology-section__body">
+      This investigation comprises 30 open-source signals
+      and 0 linked actors.
+      Evidence confidence is derived from signal gravity scores (urgency, source credibility, recency, corroboration).
+      Actor relationships are manually verified unless marked as automated extraction.
+      All source material is publicly available. This brief is produced by the FORGE OSINT engine.
+      Inclusion reflects analytical relevance and does not constitute a legal finding.
+    </div>
+  </div>
+
+  <div class="page-last-updated">Last updated: 16 Oct 2026 07:27 UTC</div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        <a href="../about.html" style="color:var(--text-dim);">How It Works</a>
+      </div>
+      
+      <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener"
+         class="membership-btn">
+        
+        Support Independent OSINT
+      </a>
+      
+      <div class="site-footer__right mono">
+        Generated 16 Oct 2026 07:27 UTC
+      </div>
+    </div>
+  </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 16 Oct 2026 07:27 UTC</span>
+  </div>
+
+  <script src="../static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    fetch('../search-index.json')
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    var PREFS_KEY = 'za_divergent_prefs';
+
+    function loadPrefs() {
+      try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
+    function savePrefs(p) { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); }
+    var prefs = loadPrefs();
+
+    /* ── Settings panel toggle ──────────────────────────────────────────── */
+    var overlay = document.getElementById('settings-overlay');
+    var toggleBtn = document.getElementById('settings-toggle');
+    var closeBtn = document.getElementById('settings-close');
+    if (toggleBtn && overlay) {
+      toggleBtn.addEventListener('click', function () { overlay.classList.toggle('open'); });
+      closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.remove('open'); });
+    }
+
+    /* ── Theme ──────────────────────────────────────────────────────────── */
+    function applyTheme(t) {
+      document.body.classList.toggle('theme-light', t === 'light');
+      document.querySelectorAll('[data-theme]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.theme === t);
+      });
+      prefs.theme = t;
+      savePrefs(prefs);
+    }
+    if (prefs.theme) applyTheme(prefs.theme);
+    document.querySelectorAll('[data-theme]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTheme(b.dataset.theme); });
+    });
+
+    /* ── Timezone ───────────────────────────────────────────────────────── */
+    function applyTz(tz) {
+      document.querySelectorAll('[data-tz]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.tz === tz);
+      });
+      prefs.tz = tz;
+      savePrefs(prefs);
+    }
+    if (prefs.tz) applyTz(prefs.tz);
+    document.querySelectorAll('[data-tz]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTz(b.dataset.tz); });
+    });
+
+    /* ── Time display mode ──────────────────────────────────────────────── */
+    var dataAgeEl = document.getElementById('data-age');
+    var generatedAt = dataAgeEl ? dataAgeEl.dataset.generated : null;
+    var generatedMs = generatedAt ? Date.now() : 0;
+
+    if (generatedAt) {
+      var parts = generatedAt.match(/(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+)/);
+      if (parts) {
+        var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        generatedMs = Date.UTC(+parts[3], months[parts[2]] || 0, +parts[1], +parts[4], +parts[5]);
+      }
+    }
+
+    function formatAge() {
+      var diff = Math.max(0, Date.now() - generatedMs);
+      var mins = Math.floor(diff / 60000);
+      var hrs = Math.floor(mins / 60);
+      var days = Math.floor(hrs / 24);
+      if (days > 0) return 'DATA AGE: ' + days + 'D ' + (hrs % 24) + 'H';
+      if (hrs > 0) return 'DATA AGE: ' + hrs + 'H ' + (mins % 60) + 'M';
+      return 'DATA AGE: ' + mins + 'M';
+    }
+
+    function applyTimeMode(mode) {
+      document.querySelectorAll('[data-timemode]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.timemode === mode);
+      });
+      prefs.timemode = mode;
+      savePrefs(prefs);
+      updateTimeDisplay();
+    }
+
+    function updateTimeDisplay() {
+      if (!dataAgeEl) return;
+      var mode = prefs.timemode || 'age';
+      if (mode === 'age' && generatedMs) {
+        dataAgeEl.textContent = formatAge();
+      } else {
+        dataAgeEl.textContent = generatedAt || '';
+      }
+    }
+
+    if (prefs.timemode) applyTimeMode(prefs.timemode);
+    else updateTimeDisplay();
+
+    document.querySelectorAll('[data-timemode]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTimeMode(b.dataset.timemode); });
+    });
+
+    // Tick every 60 seconds
+    if (generatedMs) setInterval(updateTimeDisplay, 60000);
+
+  })();
+  </script>
+  
+</body>
+</html>

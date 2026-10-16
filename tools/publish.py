@@ -100,7 +100,7 @@ SIGNAL_ARTICLE_MAP: dict[str, str] = {
 # ── Stream labels (public-facing) ─────────────────────────────────────────────
 # Articles kept live as case studies: slug -> banner HTML shown above the headline
 CASE_STUDY_NOTES: dict[str, str] = {
-    "madlanga-hawks-limpopo-municipal-fraud": "<strong>Case study:</strong> this report contains errors; a point-by-point review is in preparation.",
+    "madlanga-hawks-limpopo-municipal-fraud": "<strong>Case study:</strong> this report contains errors; see <a href='limpopo-procurement-arrests-v2.html' style='color:inherit;text-decoration:underline'>the follow-up report</a>.",
 }
 
 
