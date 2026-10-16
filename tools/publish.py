@@ -53,7 +53,7 @@ DIST_ENTITIES = DIST / "entities"
 VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
-PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15, 16)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber); 16 = Meta CSAM Data Disclosure (Gauteng HC)
+PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15, 16, 17)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber); 16 = Meta CSAM Data Disclosure (Gauteng HC)
 
 # Entity infobox: relationship-derived rows (Position/Affiliation from
 # entity_relationships, co-occurrence from graph_edges). Off by default —
