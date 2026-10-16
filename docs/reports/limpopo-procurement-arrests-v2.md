@@ -6,7 +6,7 @@
 
 On {RUN_DATE} FORGE held {N_SIGNALS} signals from {N_SOURCES} sources, collected by two collectors: a keyword news monitor and a news wire. None of them carries coordinates, so the correlation engine had nothing to score and produced no correlations. That is the honest output: the data gives no spatial or temporal basis for connecting these events, and this report does not manufacture one.
 
-{N_PINNED} signals are pinned to this case. Each is tagged **subject** (the Limpopo arrests), **control** (a matter the baseline report tied to Limpopo) or **decoy** (same province, no link examined). The pins were chosen by hand and are listed on the case page, not selected by keyword.
+{N_PINNED} signals are pinned to this case. Each is tagged **subject** (the Limpopo arrests), **control** (a matter the baseline report tied to Limpopo) or **decoy** (same province, no link examined). The pins were chosen by hand and are listed on [the case page](../cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2.html), not selected by keyword.
 
 The case page shows an "Evidence Confidence" figure. It is an average of headline gravity scores. It measures how alarming headlines sound, not whether claims are corroborated, so this report does not use it.
 
