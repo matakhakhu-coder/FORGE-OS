@@ -67,4 +67,4 @@ Code commit {COMMIT}. Signal-table fingerprint (first 12 characters of a SHA-256
 
 This report cannot show that no link exists between these matters, only that none appears in the sources collected. All allegations are unproven and reported as allegations.
 
-*Correction, 16 October 2026: an earlier version of the provenance note said the Sprint 6 scoring applied to this corpus. The identical gravity scores noted above show it did not.*
+*Correction, 17 October 2026: an earlier version of the provenance note said the Sprint 6 scoring applied to this corpus. The identical gravity scores noted above show it did not.*
