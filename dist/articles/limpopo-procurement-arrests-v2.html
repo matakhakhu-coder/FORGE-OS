@@ -38,7 +38,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="16 Oct 2026 07:34 UTC" title="16 Oct 2026 07:34 UTC">16 Oct 2026 07:34 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="17 Oct 2026 07:49 UTC" title="17 Oct 2026 07:49 UTC">17 Oct 2026 07:49 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -139,9 +139,9 @@
     <p><em>A follow-up to <a href="madlanga-hawks-limpopo-municipal-fraud.html">The Madlanga Pattern</a>, which stays online as a case study (<a href="https://github.com/matakhakhu-coder/FORGE-OS/tree/baseline-floor-madlanga">frozen copy</a>). That report joined real events with connections no one had shown. This one asks a narrower question.</em></p>
 <p><strong>Question:</strong> which of the April 2026 Limpopo municipal procurement arrests do public records support, and which connections between them does the evidence justify?</p>
 <h2>What FORGE holds</h2>
-<p>On 16 October 2026 FORGE held 1,077 signals from 15 sources, collected by two collectors: a keyword news monitor and a news wire. None of them carries coordinates, so the correlation engine had nothing to score and produced no correlations. That is the honest output: the data gives no spatial or temporal basis for connecting these events, and this report does not manufacture one.</p>
+<p>On 17 October 2026 FORGE held 1,077 signals from 15 sources, collected by two collectors: a keyword news monitor and a news wire. None of them carries coordinates, so the correlation engine had nothing to score and produced no correlations. That is the honest output: the data gives no spatial or temporal basis for connecting these events, and this report does not manufacture one.</p>
 <p>30 signals are pinned to this case. Each is tagged <strong>subject</strong> (the Limpopo arrests), <strong>control</strong> (a matter the baseline report tied to Limpopo) or <strong>decoy</strong> (same province, no link examined). The pins were chosen by hand and are listed on <a href="../cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2.html">the case page</a>, not selected by keyword.</p>
-<p>The case page shows an &quot;Evidence Confidence&quot; figure. It is an average of headline gravity scores. It measures how alarming headlines sound, not whether claims are corroborated, so this report does not use it.</p>
+<p>The case page shows an &quot;Evidence Confidence&quot; figure. It is an average of headline gravity scores. Here 28 of the 30 pinned signals carry the identical gravity score 0.3 and 2 carry none, so the figure is a constant, not a measurement. This report does not use it.</p>
 <h2>What the records support</h2>
 <p><strong>Molemole: supported.</strong> The Hawks arrested four senior officials of Molemole Local Municipality in mid-April 2026 (signals 001d12b4, b4245051, c343b837). TimesLIVE reported on 16 April that they were arrested on the Wednesday, which was 15 April, and charged under the Municipal Finance Management Act for allegedly circumventing tender procedures. EWN quoted the Hawks as saying the case arose from incidents reported in September 2024 and is handled by the Limpopo Serious Corruption Investigation Team. Later headlines report more arrests: ten senior managers by 25 April (261a12c8) and three more suspects on 24 June (b98e6b1c, 4eff391c). FORGE holds only the headlines for those later arrests, and their texts still need reading.</p>
 <p><strong>Elias Motsoaledi: supported, and separate.</strong> A former legal manager of Elias Motsoaledi Local Municipality was arrested on fraud and corruption charges, reported on 16 April (7c779be4, c17df827). EWN quoted the Hawks putting the alleged prejudice at about R686,000. As reported, this is a different municipality with different alleged conduct. No source found describes it as part of the Molemole case.</p>
@@ -184,10 +184,12 @@
 <li><strong>Same-name entities disambiguated:</strong> documented here, not automated. The pipeline still has no disambiguation step.</li>
 <li><strong>Placeholder coordinates and timestamps kept out of scoring:</strong> yes. None of the signals has coordinates, and the news monitor's timestamps are date-only (all 07:00), so dates are used only at day level.</li>
 <li><strong>Claim ledger published:</strong> above.</li>
+<li><strong>Scoring improvements shown:</strong> none. See the provenance note.</li>
 </ul>
 <h2>Provenance and limits</h2>
-<p>Code commit 0ca7530. Signal-table fingerprint (first 12 characters of a SHA-256 over every signal's id, source, timestamp and title) 38f558503553. Scoring: the Sprint 6 severity vocabulary and unified thresholds, and the correlation filter that excludes placeholder pins and midnight timestamps.</p>
+<p>Code commit 15ef341. Signal-table fingerprint (first 12 characters of a SHA-256 over every signal's id, source, timestamp and title) 38f558503553. Scoring: not exercised. The Sprint 6 changes to the severity vocabulary and thresholds, and the correlation filter for placeholder pins and midnight timestamps, were in the code at this commit, but the gravity figures here are collector defaults and no correlations were possible, so this report cannot show those changes work.</p>
 <p>This report cannot show that no link exists between these matters, only that none appears in the sources collected. All allegations are unproven and reported as allegations.</p>
+<p><em>Correction, 16 October 2026: an earlier version of the provenance note said the Sprint 6 scoring applied to this corpus. The identical gravity scores noted above show it did not.</em></p>
 
   </div>
 
@@ -221,7 +223,7 @@
   
 
   <footer class="article-footer mono">
-    <div class="page-last-updated">Last updated: 16 Oct 2026 07:34 UTC</div>
+    <div class="page-last-updated">Last updated: 17 Oct 2026 07:49 UTC</div>
     ZA-DIVERGENT ARCHIVE
   </footer>
 
@@ -287,7 +289,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 16 Oct 2026 07:34 UTC
+        Generated 17 Oct 2026 07:49 UTC
       </div>
     </div>
   </footer>
@@ -295,7 +297,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 16 Oct 2026 07:34 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 17 Oct 2026 07:49 UTC</span>
   </div>
 
   <script src="../static/js/watchlist.js"></script>
