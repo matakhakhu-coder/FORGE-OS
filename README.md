@@ -46,9 +46,10 @@ It is not a passive archive. It is an active investigative system.
 
 ### Prerequisites
 
-- Python 3.9 or later
+- Python 3.11 or later (pinned packages such as numpy, scipy and contourpy need 3.11+)
 - pip
 - A modern browser
+- Optional, to read scanned PDFs: the system packages `poppler-utils` and `tesseract-ocr` (with the Afrikaans language data, `tesseract-ocr-afr` on Debian/Ubuntu)
 
 ### Installation
 
@@ -59,6 +60,7 @@ cd FORGE-OS
 
 # Install dependencies
 pip install -r requirements.txt
+# (or, to also get the test runner: pip install -r requirements-dev.txt)
 
 # Set up environment variables
 cp env.example .env
