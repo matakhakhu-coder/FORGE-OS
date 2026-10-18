@@ -81,7 +81,9 @@ def test_checked_fields_reads_hand_check_and_drops_unsafe_links():
     assert got["incident"] == "Fri 16 Oct 2026, about 06:00"
     assert got["reported"] == "17-18 Oct 2026"
     assert got["location_note"].startswith("Fisher Avenue")
-    assert got["source_links"] == [{"name": "Cape Times (IOL)", "url": "https://iol.co.za/x"}]
+    assert got["source_links"] == [
+        {"name": "Cape Times (IOL)", "url": "https://iol.co.za/x", "domain": "iol.co.za"}
+    ]
 
 
 def test_checked_fields_absent_or_broken_metadata_renders_as_before():

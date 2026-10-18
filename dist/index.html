@@ -504,6 +504,94 @@
   .smap-popup__sources { margin-bottom: 6px; font-family: var(--font-mono), monospace; font-size: 0.60rem; line-height: 1.6; }
   .smap-popup__sources a { color: #c8943a; text-decoration: none; margin-right: 8px; white-space: nowrap; }
   .smap-popup__sources a:hover { color: #e0aa4a; }
+  .smap-popup__when { font-family: var(--font-mono), monospace; font-size: 0.62rem; color: #9fb3c4; line-height: 1.5; margin-bottom: 8px; }
+  .smap-popup__view {
+    display: block; width: 100%; min-height: 44px; margin-top: 4px;
+    font-family: var(--font-mono), monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #e0aa4a; background: rgba(200,148,58,0.12); border: 1px solid rgba(200,148,58,0.45);
+    border-radius: 3px; cursor: pointer;
+  }
+  .smap-popup__view:hover, .smap-popup__view:focus-visible { background: rgba(200,148,58,0.22); color: #f0c060; outline: none; }
+
+  /* ── Event drawer ───────────────────────────────────────────────────────── */
+  /* Computer: docks on the right, from near the top to just above the ticker,
+     over the map (the map is not resized). The map controls move left of it. */
+  .sd-drawer {
+    position: absolute;
+    top: var(--sp-4); right: var(--sp-4);
+    bottom: calc(32px + var(--sp-3));
+    width: 400px;
+    max-width: calc(100% - 2 * var(--sp-4));
+    z-index: 420;
+    display: flex;
+    flex-direction: column;
+    background: rgba(8,13,18,0.96);
+    border: 1px solid var(--border-dim);
+    border-radius: var(--r-md);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  }
+  .sd-drawer[hidden] { display: none; }
+  .md-shell.drawer-open .md-controls { right: calc(var(--sp-4) + 400px + var(--sp-3)); }
+  /* The OpenStreetMap credit moves left with them, so the drawer never hides it. */
+  .md-shell.drawer-open #map .leaflet-bottom.leaflet-right { right: calc(400px + var(--sp-4)); }
+  .sd-head {
+    display: flex; align-items: center; gap: var(--sp-3);
+    padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-4);
+    border-bottom: 1px solid var(--border-dim);
+    flex-shrink: 0;
+  }
+  .sd-kicker {
+    flex: 1; min-width: 0;
+    font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sd-close {
+    width: 44px; height: 44px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; color: var(--text-secondary);
+    background: none; border: 1px solid transparent; border-radius: var(--r-sm); cursor: pointer;
+  }
+  .sd-close:hover, .sd-close:focus-visible { color: var(--text-primary); border-color: var(--border-mid); outline: none; }
+  .sd-body {
+    flex: 1; min-height: 0;
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    padding: var(--sp-4);
+  }
+  .sd-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; line-height: 1.35; color: var(--text-primary); margin: 0 0 var(--sp-3); }
+  .sd-title:focus { outline: none; }
+  .sd-story { font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary); margin: 0; white-space: pre-line; }
+  .sd-section { border-top: 1px solid var(--border-dim); margin-top: var(--sp-4); padding-top: var(--sp-3); }
+  .sd-label { font-family: var(--font-mono); font-size: 0.58rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 var(--sp-2); }
+  .sd-facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px var(--sp-3); font-size: 0.84rem; line-height: 1.45; }
+  .sd-facts dt { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); padding-top: 3px; }
+  .sd-facts dd { margin: 0; color: var(--text-primary); }
+  .sd-where { margin: 0; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
+  .sd-list { margin: 0; padding-left: 1.1em; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
+  .sd-basis { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-secondary); }
+  .sd-sources { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+  .sd-src {
+    display: flex; align-items: center; gap: var(--sp-3);
+    box-sizing: border-box; width: 100%; min-height: 48px;
+    padding: 8px var(--sp-3);
+    color: var(--accent-bright); text-decoration: none;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+  }
+  .sd-src:hover, .sd-src:focus-visible { background: rgba(200,148,58,0.08); border-color: var(--accent-muted); outline: none; }
+  .sd-src:visited, .sd-src.is-opened { color: #a395d6; }
+  .sd-src.is-opened { border-color: rgba(163,149,214,0.35); }
+  .sd-src__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .sd-src__name { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
+  .sd-src__meta { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-dim); overflow-wrap: anywhere; }
+  .sd-src__opened { display: none; margin-left: 6px; color: #a395d6; }
+  .sd-src.is-opened .sd-src__opened { display: inline; }
+  .sd-src__arrow { flex-shrink: 0; font-size: 1rem; }
+  .sd-media figure { margin: 0 0 var(--sp-3); }
+  .sd-media img { display: block; width: 100%; height: auto; border-radius: var(--r-sm); }
+  .sd-media figcaption { margin-top: 4px; font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-dim); }
+  .sd-more { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); text-decoration: none; }
+  .sd-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .sig-dot.is-selected { outline: 2px solid #f0f4f8; outline-offset: 3px; }
 
   .intel-link-tooltip { background: rgba(8,13,18,0.88) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 2px !important; color: #7a95aa !important; font-family: var(--font-mono), monospace; font-size: 0.58rem; letter-spacing: 0.06em; padding: 2px 8px !important; box-shadow: none !important; }
   .intel-link-tooltip::before { display: none; }
@@ -737,6 +825,19 @@
       font-size: 0.52rem;
       padding: 0 var(--sp-3);
     }
+    /* Phone: the drawer is a sheet in the same spot as the panels: above the
+       pill bar, below the map controls. One sheet or panel at a time. */
+    .sd-drawer {
+      left: 0; right: 0; top: auto;
+      bottom: 112px;
+      width: 100%; max-width: none;
+      max-height: min(60vh, calc(100% - 284px));
+      border-radius: var(--r-md) var(--r-md) 0 0;
+      border-bottom: none;
+    }
+    .md-shell.drawer-open .md-controls { right: var(--sp-3); }
+    .md-shell.drawer-open #map .leaflet-bottom.leaflet-right { right: 0; }
+    .sd-body { padding: var(--sp-3) var(--sp-4); }
   }
 </style>
 
@@ -987,21 +1088,59 @@
   </div>
 
   
+  
+  <aside class="sd-drawer" id="signal-drawer" role="dialog" aria-modal="false" aria-labelledby="sd-title" hidden>
+    <div class="sd-head">
+      <span class="sd-kicker" id="sd-kicker"></span>
+      <button type="button" class="sd-close" id="sd-close" aria-label="Close event details">&#10005;</button>
+    </div>
+    <div class="sd-body" id="sd-body">
+      <h2 class="sd-title" id="sd-title" tabindex="-1"></h2>
+      <p class="sd-story" id="sd-story"></p>
+      <section class="sd-section" id="sd-when-wrap" hidden>
+        <h3 class="sd-label">When</h3>
+        <dl class="sd-facts" id="sd-when"></dl>
+      </section>
+      <section class="sd-section" id="sd-where-wrap" hidden>
+        <h3 class="sd-label">Where the pin is</h3>
+        <p class="sd-where" id="sd-where"></p>
+      </section>
+      <section class="sd-section" id="sd-diff-wrap" hidden>
+        <h3 class="sd-label">Where the reports differ</h3>
+        <ul class="sd-list" id="sd-diff"></ul>
+      </section>
+      <section class="sd-section" id="sd-src-wrap" hidden>
+        <h3 class="sd-label">Sources</h3>
+        <p class="sd-basis" id="sd-basis"></p>
+        <ul class="sd-sources" id="sd-sources"></ul>
+      </section>
+      <section class="sd-section sd-media" id="sd-media-wrap" hidden>
+        <h3 class="sd-label">Media</h3>
+        <div id="sd-media"></div>
+      </section>
+      <section class="sd-section" id="sd-more-wrap" hidden>
+        <a class="sd-more" id="sd-more" href="index.html">Read analysis &rarr;</a>
+      </section>
+    </div>
+  </aside>
+
+  
   <div class="md-ticker">
     <span class="md-ticker__badge"><span class="md-ticker__dot"></span> LATEST</span>
     <div class="md-ticker__track">
       <div class="md-ticker__scroll" id="ticker-scroll">
         
         
-        <a class="md-ticker__item" href="index.html">Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=7bce2be1" data-signal="7bce2be1">Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=dbf90d51" data-signal="dbf90d51">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=1a328ebb" data-signal="1a328ebb">Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=c2601d28" data-signal="c2601d28">Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
+        
+        <a class="md-ticker__item" href="index.html?signal=1b6fba13" data-signal="1b6fba13">Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         
         <span class="md-ticker__sponsor">
@@ -1011,15 +1150,15 @@
         <span class="md-ticker__sep">&bull;</span>
         
         
-        <a class="md-ticker__item" href="index.html">Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=7bce2be1" data-signal="7bce2be1" tabindex="-1">Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=dbf90d51" data-signal="dbf90d51" tabindex="-1">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=1a328ebb" data-signal="1a328ebb" tabindex="-1">Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=c2601d28" data-signal="c2601d28" tabindex="-1">Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html">Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=1b6fba13" data-signal="1b6fba13" tabindex="-1">Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         
         <span class="md-ticker__sponsor">
@@ -1257,44 +1396,27 @@
     });
   }
 
-  // Hand-checked signals carry the incident date apart from the report date,
-  // what the pin really marks, and their sources (see _checked_fields).
-  function buildCheckedHtml(m) {
-    if (!m.checked) return '';
-    var facts = '';
-    if (m.incident)      facts += '<div><b>Incident:</b> ' + escHtml(m.incident) + '</div>';
-    if (m.reported)      facts += '<div><b>Reported:</b> ' + escHtml(m.reported) + '</div>';
-    if (m.location_note) facts += '<div><b>Pin:</b> ' + escHtml(m.location_note) + '</div>';
-    var links = '';
-    (m.source_links || []).forEach(function (s) {
-      if (!/^https?:\/\//i.test(s.url || '')) return;
-      links += '<a href="' + escHtml(s.url) + '" target="_blank" rel="noopener noreferrer">' +
-               escHtml(s.name || 'Source') + ' &#8599;</a> ';
-    });
-    return (facts ? '<div class="smap-popup__facts">' + facts + '</div>' : '') +
-           (links ? '<div class="smap-popup__sources">' + links + '</div>' : '');
-  }
-
+  // A pin's popup is a short preview: title, when it happened, and a large
+  // "View event" button that opens the event drawer with the full story,
+  // dates, what the pin marks and the sources. Every value is escaped.
   function buildPopup(m) {
     var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
-    var gScore = (m.gravity_score != null) ? m.gravity_score.toFixed(2) : null;
+    var gScore = (m.gravity_score != null) ? Number(m.gravity_score).toFixed(2) : null;
     var gColor = gravityColor(m.gravity_score);
 
     var gravityHtml = gScore
-      ? '<span class="smap-popup__gravity" style="background:' + gColor + '22;color:' + gColor + '">G ' + gScore + '</span>'
+      ? '<div class="smap-popup__meta"><span class="smap-popup__gravity" style="background:' + gColor + '22;color:' + gColor + '">G ' + gScore + '</span></div>'
       : '';
-    var linkHtml = m.article_slug
-      ? '<a class="smap-popup__link" href="articles/' + m.article_slug + '.html">Read analysis &rarr;</a>'
-      : '';
+    var when = m.incident ? 'Incident: ' + m.incident
+             : (m.published_fmt ? 'Reported ' + m.published_fmt : '');
 
     return (
       '<div class="smap-popup">' +
-        '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
-        (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
-        '<div class="smap-popup__title">' + (m.title || '') + '</div>' +
-        buildCheckedHtml(m) +
-        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + (m.checked ? 'Added to FORGE ' : '') + (m.published_fmt || '') + '</span></div>' +
-        linkHtml +
+        '<div class="smap-popup__stream" style="color:' + sColor + '">' + escHtml(m.stream_label || m.stream || '') + '</div>' +
+        '<div class="smap-popup__title">' + escHtml(m.title || '') + '</div>' +
+        (when ? '<div class="smap-popup__when">' + escHtml(when) + '</div>' : '') +
+        gravityHtml +
+        '<button type="button" class="smap-popup__view" data-view-event="' + Number(m._idx) + '">View event</button>' +
       '</div>'
     );
   }
@@ -1302,7 +1424,7 @@
   /* ══════════════════════════════════════════════════════════════════════════
      MARKERS + SPIDERFY (existing logic preserved)
      ══════════════════════════════════════════════════════════════════════════ */
-  var RAW = [{"article_slug": null, "checked": true, "gravity_pct": 0, "gravity_score": null, "incident": "Sat 10 Oct 2026, about 19:00 (police)", "kind": "signal", "lat": -33.97157, "lng": 18.51769, "location_note": "Belgravia, Athlone. Suburb only, so the pin is the suburb\u0027s map point, not the scene.", "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "11 Oct 2026", "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155", "slug": "belgravia-athlone-approx-woman-65-and-man-shot-dead-10-oct-1a328ebb", "source": "SABC NEWS", "source_links": [{"name": "SABC News", "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/"}, {"name": "Cape Town ETC", "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/"}], "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the mot...", "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct"}, {"article_slug": null, "checked": true, "gravity_pct": 0, "gravity_score": null, "incident": "Fri 9 Oct 2026, about 09:15 (SAPS)", "kind": "signal", "lat": -34.06083, "lng": 18.48444, "location_note": "Cafda Village, Retreat. Reports differ on the street (Ensor or Enzo), so the pin is the suburb\u0027s map point.", "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "14-15 Oct 2026", "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac", "slug": "cafda-retreat-approx-man-30-and-woman-46-shot-dead-at-home-9-oct-c2601d28", "source": "CAPE ARGUS (IOL)", "source_links": [{"name": "Cape Argus (IOL)", "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/"}, {"name": "People\u0027s Post", "url": "https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/"}, {"name": "Cape Coast News", "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/"}], "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit...", "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct"}, {"article_slug": null, "checked": true, "gravity_pct": 0, "gravity_score": null, "incident": "Fri 16 Oct 2026, about 06:00 (SAPS)", "kind": "signal", "lat": -33.93709, "lng": 18.53663, "location_note": "Fisher Avenue, Epping 1, named by SAPS. The pin is on that street; the exact spot was not given.", "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "17-18 Oct 2026", "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c", "slug": "epping-cape-town-fisher-ave-approx-2-men-shot-dead-in-taxi-attack-16-oct-dbf90d51", "source": "CAPE TIMES (IOL)", "source_links": [{"name": "Cape Times (IOL)", "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/"}, {"name": "Cape Town ETC", "url": "https://www.capetownetc.com/news/murder-charges-epping-taxi-shooting/"}, {"name": "NovaNews", "url": "https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/"}], "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two sus...", "title": "Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct"}, {"article_slug": null, "checked": true, "gravity_pct": 0, "gravity_score": null, "incident": "Body found Wed 14 Oct 2026, morning (time of death not given)", "kind": "signal", "lat": -33.652, "lng": 19.502, "location_note": "A farm between Overhex and MaGwaleni, Zwelethemba, outside Worcester. The farm is not named, so the pin marks the general area.", "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "15 Oct 2026", "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f", "slug": "farm-near-worcester-approx-man-24-found-shot-dead-14-oct-7bce2be1", "source": "WORCESTER STANDARD", "source_links": [{"name": "Worcester Standard", "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/"}], "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police re...", "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct"}, {"article_slug": null, "checked": true, "gravity_pct": 0, "gravity_score": null, "incident": "4 Oct 2026 (time not given)", "kind": "signal", "lat": -34.1762, "lng": 22.07302, "location_note": "Dunjwa Street, Asla Park, KwaNonqaba, named by police. The pin is on that street; the exact spot was not given.", "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "13 Oct 2026", "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650", "slug": "asla-park-mossel-bay-dunjwa-st-approx-man-19-stabbed-dead-4-oct-1b6fba13", "source": "MOSSEL BAY ADVERTISER", "source_links": [{"name": "Mossel Bay Advertiser", "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945"}], "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an alt...", "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct"}];
+  var RAW = [{"article_slug": null, "basis": null, "checked": true, "disagreements": [], "gravity_pct": 0, "gravity_score": null, "incident": "Body found Wed 14 Oct 2026, morning (time of death not given)", "kind": "signal", "lat": -33.652, "lng": 19.502, "location_note": "A farm between Overhex and MaGwaleni, Zwelethemba, outside Worcester. The farm is not named, so the pin marks the general area.", "media": [], "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "15 Oct 2026", "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f", "slug": "farm-near-worcester-approx-man-24-found-shot-dead-14-oct-7bce2be1", "source": "WORCESTER STANDARD", "source_links": [{"domain": "novanews.co.za", "name": "Worcester Standard", "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/"}], "story": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police registered a murder case; spokesperson Lt-Col F.C. van Wyk said the motive is part of the investigation (Worcester Standard). One source only, and it does not say when he died.", "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police re...", "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct"}, {"article_slug": null, "basis": null, "checked": true, "disagreements": [], "gravity_pct": 0, "gravity_score": null, "incident": "Fri 16 Oct 2026, about 06:00 (SAPS)", "kind": "signal", "lat": -33.93709, "lng": 18.53663, "location_note": "Fisher Avenue, Epping 1, named by SAPS. The pin is on that street; the exact spot was not given.", "media": [], "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "17-18 Oct 2026", "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c", "slug": "epping-cape-town-fisher-ave-approx-2-men-shot-dead-in-taxi-attack-16-oct-dbf90d51", "source": "CAPE TIMES (IOL)", "source_links": [{"domain": "iol.co.za", "name": "Cape Times (IOL)", "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/"}, {"domain": "capetownetc.com", "name": "Cape Town ETC", "url": "https://www.capetownetc.com/news/murder-charges-epping-taxi-shooting/"}, {"domain": "novanews.co.za", "name": "NovaNews", "url": "https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/"}], "story": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two suspects, aged 27 and 31, were arrested on two counts of murder and were due in the Cape Town Magistrate\u0027s Court on 19 October (Cape Times). Accounts differ: a 17 October police statement called the dead men passengers and said the car\u0027s owner escaped (NovaNews); on 18 October police and Codeta called them taxi owners. Police gave the number of gunmen as about six, then seven.", "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two sus...", "title": "Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct"}, {"article_slug": null, "basis": null, "checked": true, "disagreements": [], "gravity_pct": 0, "gravity_score": null, "incident": "Sat 10 Oct 2026, about 19:00 (police)", "kind": "signal", "lat": -33.97157, "lng": 18.51769, "location_note": "Belgravia, Athlone. Suburb only, so the pin is the suburb\u0027s map point, not the scene.", "media": [], "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "11 Oct 2026", "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155", "slug": "belgravia-athlone-approx-woman-65-and-man-shot-dead-10-oct-1a328ebb", "source": "SABC NEWS", "source_links": [{"domain": "sabcnews.com", "name": "SABC News", "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/"}, {"domain": "capetownetc.com", "name": "Cape Town ETC", "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/"}], "story": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the motive is believed to be gang-related (SABC News). No arrests had been made by 11 October (Cape Town ETC). Neither source gives a street.", "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the mot...", "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct"}, {"article_slug": null, "basis": null, "checked": true, "disagreements": [], "gravity_pct": 0, "gravity_score": null, "incident": "Fri 9 Oct 2026, about 09:15 (SAPS)", "kind": "signal", "lat": -34.06083, "lng": 18.48444, "location_note": "Cafda Village, Retreat. Reports differ on the street (Ensor or Enzo), so the pin is the suburb\u0027s map point.", "media": [], "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "14-15 Oct 2026", "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac", "slug": "cafda-retreat-approx-man-30-and-woman-46-shot-dead-at-home-9-oct-c2601d28", "source": "CAPE ARGUS (IOL)", "source_links": [{"domain": "iol.co.za", "name": "Cape Argus (IOL)", "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/"}, {"domain": "novanews.co.za", "name": "People\u0027s Post", "url": "https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/"}, {"domain": "ccnews.co.za", "name": "Cape Coast News", "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/"}], "story": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit them. Anti-Gang Unit detectives arrested a 32-year-old man on 14 October; he was due in the Wynberg Magistrates\u0027 Court on 16 October on two murder charges. Two men arrested after a chase on 9 October face firearm and stolen-property charges, not murder (Cape Argus). Reports name the street as Ensor or Enzo Street.", "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit...", "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct"}, {"article_slug": null, "basis": null, "checked": true, "disagreements": [], "gravity_pct": 0, "gravity_score": null, "incident": "4 Oct 2026 (time not given)", "kind": "signal", "lat": -34.1762, "lng": 22.07302, "location_note": "Dunjwa Street, Asla Park, KwaNonqaba, named by police. The pin is on that street; the exact spot was not given.", "media": [], "published_at": "2026-10-18T17:28:41Z", "published_fmt": "18 Oct 2026 - 17:28", "reported": "13 Oct 2026", "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650", "slug": "asla-park-mossel-bay-dunjwa-st-approx-man-19-stabbed-dead-4-oct-1b6fba13", "source": "MOSSEL BAY ADVERTISER", "source_links": [{"domain": "mosselbayadvertiser.com", "name": "Mossel Bay Advertiser", "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945"}], "story": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an altercation with a group. No arrests had been made (Mossel Bay Advertiser, 13 October). One source only.", "stream": "CRIME_INTEL", "stream_label": "Crime \u0026 Security", "summary": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an alt...", "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct"}];
   var allMarkerLayers = []; // { layer, stream, lat, lng, idx }
 
   // MarkerClusterGroup — handles numbered bubbles, zoom-to-spread, spiderfy
@@ -1325,6 +1447,8 @@
   });
 
   var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
+  var markerByIdx = {};   // RAW index -> its L.marker
+  var drawerIdx = null;   // RAW index shown in the event drawer, or null
 
   var NOW_MS = Date.now();
   var HOURS_48 = 48 * 60 * 60 * 1000;
@@ -1356,8 +1480,20 @@
       popupAnchor: [0, -10],
     });
 
-    var marker = L.marker([m.lat, m.lng], { icon: icon });
+    var marker = L.marker([m.lat, m.lng], { icon: icon, title: m.title || '' });
     marker.bindPopup(buildPopup(m), { maxWidth: 300 });
+    // Pins open the preview themselves, so that while the drawer is open a
+    // click swaps the drawer to that pin instead (see onPinActivate).
+    marker.off('click', marker._openPopup, marker);
+    marker.off('keypress', marker._onKeyPress, marker);
+    marker.on('click', function () { onPinActivate(idx, false); });
+    marker.on('keypress', function (e) {
+      var k = e.originalEvent || {};
+      if (k.key === 'Enter' || k.keyCode === 13) onPinActivate(idx, true);
+    });
+    // Clustering re-creates a pin's element; keep the selected ring on it.
+    marker.on('add', function () { if (drawerIdx === idx) markSelected(idx, true); });
+    markerByIdx[idx] = marker;
     marker._forgeStream = m.stream;
     marker._forgeIdx = idx;
     clusterGroup.addLayer(marker);
@@ -1398,6 +1534,11 @@
   }
 
   window.openPanel = function openPanel(name) {
+    // One sheet at a time on phones and narrow screens; on a computer the
+    // wide Graph and Entities panels would run under the drawer.
+    if (drawerIdx !== null && activePanel !== name && (isCompact() || WIDE_PANELS[name])) {
+      closeDrawer({ restoreFocus: false });
+    }
     document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
     document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
     if (activePanel === name) { activePanel = null; return; }
@@ -1736,6 +1877,314 @@
     });
   }
 
+  /* ══════════════════════════════════════════════════════════════════════════
+     EVENT DRAWER
+     Opened from a pin's "View event", a Wire entry, a ticker item or a shared
+     ?signal= link. Closed by ✕, Escape or Back; closing never moves the map.
+     Contents are set with textContent / attributes only, never innerHTML.
+     ══════════════════════════════════════════════════════════════════════════ */
+  var WIDE_PANELS = { graph: true, entities: true };
+  var drawer = document.getElementById('signal-drawer');
+  var shellEl = drawer.parentElement;
+  var drawerTrigger = null;     // element to return focus to on close
+  var drawerPushed = false;     // the drawer has its own history entry
+  var pendingClose = null;      // close options waiting for popstate
+  var phoneMq = window.matchMedia('(max-width: 768px)');
+  var compactMq = window.matchMedia('(max-width: 1180px)');
+  function isPhone() { return phoneMq.matches; }
+  function isCompact() { return compactMq.matches; }
+
+  function shortId(m) { return String(m.signal_id || '').slice(0, 8); }
+
+  function idxForSignal(param) {
+    param = String(param || '').trim().toLowerCase();
+    if (!/^[0-9a-f-]{8,36}$/.test(param)) return null;
+    for (var i = 0; i < RAW.length; i++) {
+      var id = String(RAW[i].signal_id || '').toLowerCase();
+      if ((id === param || id.slice(0, 8) === param) && markerByIdx[i]) return i;
+    }
+    return null;
+  }
+
+  function urlForSignal(sid) {
+    var u = new URL(window.location.href);
+    if (sid) u.searchParams.set('signal', sid);
+    else u.searchParams.delete('signal');
+    return u.pathname + u.search + u.hash;
+  }
+
+  var OPENED_KEY = 'forge.openedSources';
+  function openedSources() {
+    try { return JSON.parse(localStorage.getItem(OPENED_KEY) || '[]') || []; } catch (e) { return []; }
+  }
+  function rememberOpened(url) {
+    try {
+      var list = openedSources();
+      if (list.indexOf(url) === -1) { list.push(url); localStorage.setItem(OPENED_KEY, JSON.stringify(list.slice(-500))); }
+    } catch (e) { /* private mode: :visited still colours the row */ }
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function section(id, show) { document.getElementById(id).hidden = !show; }
+
+  function fillDrawer(m) {
+    var kicker = [m.stream_label || m.stream || '', m.checked ? 'Hand-checked' : ''].filter(Boolean).join(' \u00b7 ');
+    document.getElementById('sd-kicker').textContent = kicker;
+    document.getElementById('sd-title').textContent = m.title || '';
+    document.getElementById('sd-story').textContent = m.story || m.summary || '';
+
+    // When: the incident and the report as separate lines.
+    var facts = document.getElementById('sd-when');
+    facts.textContent = '';
+    var rows = m.checked
+      ? [['Incident', m.incident], ['Reported', m.reported], ['Added to FORGE', m.published_fmt]]
+      : [['Reported', m.published_fmt]];
+    var anyFact = false;
+    rows.forEach(function (r) {
+      if (!r[1]) return;
+      facts.appendChild(el('dt', null, r[0]));
+      facts.appendChild(el('dd', null, r[1]));
+      anyFact = true;
+    });
+    section('sd-when-wrap', anyFact);
+
+    document.getElementById('sd-where').textContent = m.location_note || '';
+    section('sd-where-wrap', !!m.location_note);
+
+    var diff = document.getElementById('sd-diff');
+    diff.textContent = '';
+    (m.disagreements || []).forEach(function (d) { diff.appendChild(el('li', null, d)); });
+    section('sd-diff-wrap', diff.children.length > 0);
+
+    // Sources: one full-width row each. A count of links is not a count of
+    // confirmations, so the line above only counts, plus any stated basis.
+    var list = document.getElementById('sd-sources');
+    list.textContent = '';
+    var opened = openedSources();
+    var links = (m.source_links || []).filter(function (s) { return /^https?:\/\//i.test(s.url || ''); });
+    links.forEach(function (s) {
+      var a = el('a', 'sd-src');
+      a.href = s.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      if (opened.indexOf(s.url) !== -1) a.classList.add('is-opened');
+      var text = el('span', 'sd-src__text');
+      text.appendChild(el('span', 'sd-src__name', s.name || 'Source'));
+      var meta = el('span', 'sd-src__meta', [s.domain, s.date].filter(Boolean).join(' \u00b7 '));
+      meta.appendChild(el('span', 'sd-src__opened', '\u00b7 opened'));
+      text.appendChild(meta);
+      a.appendChild(text);
+      var arrow = el('span', 'sd-src__arrow', '\u2197');
+      arrow.setAttribute('aria-hidden', 'true');
+      a.appendChild(arrow);
+      a.appendChild(el('span', 'sd-sr-only', ' (opens in a new tab)'));
+      a.addEventListener('click', function () { rememberOpened(s.url); a.classList.add('is-opened'); });
+      var li = el('li');
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+    var basis = links.length + (links.length === 1 ? ' report' : ' reports') + (m.basis ? ' \u00b7 ' + m.basis : '');
+    document.getElementById('sd-basis').textContent = basis;
+    section('sd-src-wrap', links.length > 0);
+
+    // Media: only files FORGE hosts, each with its credit and licence.
+    var media = document.getElementById('sd-media');
+    media.textContent = '';
+    (m.media || []).forEach(function (md) {
+      if (!md || !/^static\/media\//.test(md.src || '') || !md.credit || !md.licence) return;
+      var fig = el('figure');
+      var img = el('img');
+      img.src = md.src;
+      img.alt = md.caption || '';
+      img.loading = 'lazy';
+      fig.appendChild(img);
+      fig.appendChild(el('figcaption', null, [md.caption, md.credit, md.licence].filter(Boolean).join(' \u00b7 ')));
+      media.appendChild(fig);
+    });
+    section('sd-media-wrap', media.children.length > 0);
+
+    var more = document.getElementById('sd-more');
+    if (m.article_slug) more.href = 'articles/' + encodeURIComponent(m.article_slug) + '.html';
+    section('sd-more-wrap', !!m.article_slug);
+
+    document.getElementById('sd-body').scrollTop = 0;
+  }
+
+  function markSelected(idx, on) {
+    var mk = markerByIdx[idx];
+    var node = mk && mk.getElement && mk.getElement();
+    var dot = node && node.querySelector('.sig-dot');
+    if (dot) dot.classList.toggle('is-selected', on);
+  }
+
+  // Nudge the map only when the pin would sit behind the drawer, a panel,
+  // the sidebar or the phone controls. Leaflet's panInside does nothing when
+  // the pin is already clear.
+  function keepPinVisible(idx) {
+    var m = RAW[idx];
+    if (drawerIdx !== idx || !m) return;
+    var mapRect = map.getContainer().getBoundingClientRect();
+    var d = drawer.getBoundingClientRect();
+    var tl = [24, 24], br = [24, 48];
+    if (isPhone()) {
+      // The sheet reaches up to the controls' bottom edge, so the free space
+      // is above the sheet and left of the controls column.
+      var ctr = document.querySelector('.md-controls');
+      if (ctr) br[0] = Math.max(24, mapRect.right - ctr.getBoundingClientRect().left + 16);
+      br[1] = Math.max(48, mapRect.bottom - d.top + 24);
+    } else {
+      var left = mapRect.left;
+      var side = document.querySelector('.md-pills');
+      if (side) left = Math.max(left, side.getBoundingClientRect().right);
+      var openP = document.querySelector('.md-panel.open');
+      if (openP) left = Math.max(left, openP.getBoundingClientRect().right);
+      tl[0] = Math.max(24, left - mapRect.left + 16);
+      br[0] = Math.max(24, mapRect.right - d.left + 24);
+      if (tl[0] + br[0] > mapRect.width - 40) tl[0] = 24;   // too tight: just clear the drawer
+    }
+    map.panInside([m.lat, m.lng], { paddingTopLeft: tl, paddingBottomRight: br });
+  }
+
+  // Open (or swap) the drawer. opts.history: false when the address already
+  // says ?signal= (shared link, Back/Forward). opts.trigger: focus returns there.
+  function openDrawer(idx, opts) {
+    opts = opts || {};
+    var m = RAW[idx];
+    if (!m) return;
+    var wasOpen = drawerIdx !== null;
+    if (wasOpen && drawerIdx !== idx) markSelected(drawerIdx, false);
+    if (opts.trigger || !wasOpen) drawerTrigger = opts.trigger || null;
+    fillDrawer(m);
+    drawerIdx = idx;
+    markSelected(idx, true);
+
+    if (isCompact()) { if (activePanel) closePanel(); }
+    else if (activePanel && WIDE_PANELS[activePanel]) closePanel();
+
+    drawer.hidden = false;
+    shellEl.classList.add('drawer-open');
+    map.closePopup();
+
+    if (opts.history !== false) {
+      var sid = shortId(m);
+      if (!wasOpen) {
+        history.pushState({ forgeSignal: sid }, '', urlForSignal(sid));
+        drawerPushed = true;
+      } else {
+        // Moving between pins doesn't add Back steps.
+        history.replaceState(history.state, '', urlForSignal(sid));
+      }
+    }
+
+    var title = document.getElementById('sd-title');
+    try { title.focus({ preventScroll: true }); } catch (e) { title.focus(); }
+    if (opts.pan !== false) requestAnimationFrame(function () { keepPinVisible(idx); });
+  }
+
+  // Hide the drawer without touching history or the map.
+  function hideDrawer(opts) {
+    opts = opts || {};
+    if (drawerIdx === null) return;
+    markSelected(drawerIdx, false);
+    drawerIdx = null;
+    drawer.hidden = true;
+    shellEl.classList.remove('drawer-open');
+    var t = drawerTrigger;
+    drawerTrigger = null;
+    if (opts.restoreFocus === false || !t || !document.body.contains(t)) return;
+    // Leaflet pans to a pin when it gets focus; only refocus a pin in view.
+    var mk = null;
+    for (var k in markerByIdx) { if (markerByIdx[k].getElement() === t) { mk = markerByIdx[k]; break; } }
+    if (mk && !map.getBounds().pad(-0.05).contains(mk.getLatLng())) return;
+    try { t.focus({ preventScroll: true }); } catch (e) { t.focus(); }
+  }
+
+  // ✕ / Escape / switching to a panel. Uses Back when the drawer added the
+  // history entry, so the address and Back stay in step.
+  function closeDrawer(opts) {
+    if (drawerIdx === null) return;
+    if (drawerPushed && history.state && history.state.forgeSignal) {
+      pendingClose = opts || {};
+      drawerPushed = false;
+      hideDrawer(pendingClose);
+      history.back();
+      return;
+    }
+    history.replaceState(null, '', urlForSignal(null));
+    hideDrawer(opts);
+  }
+
+  window.addEventListener('popstate', function () {
+    var idx = idxForSignal(new URLSearchParams(window.location.search).get('signal'));
+    if (idx === null) {
+      var opts = pendingClose || { restoreFocus: true };
+      pendingClose = null;
+      drawerPushed = false;
+      hideDrawer(opts);
+    } else {
+      drawerPushed = !!(history.state && history.state.forgeSignal);
+      showSignal(idx, { history: false });
+    }
+  });
+
+  // From Wire, the ticker or a link: open the drawer straight away, then zoom
+  // just far enough for the pin to come out of its cluster.
+  function showSignal(idx, opts) {
+    opts = opts || {};
+    var mk = markerByIdx[idx];
+    if (!mk) return;
+    openDrawer(idx, { history: opts.history, trigger: opts.trigger, pan: false });
+    if (clusterGroup.hasLayer(mk)) {
+      clusterGroup.zoomToShowLayer(mk, function () {
+        markSelected(idx, true);
+        keepPinVisible(idx);
+      });
+    } else {
+      keepPinVisible(idx);
+    }
+  }
+
+  // A pin was clicked or Enter pressed on it.
+  var popupByKey = false;
+  function onPinActivate(idx, byKey) {
+    var mk = markerByIdx[idx];
+    if (!mk) return;
+    if (drawerIdx !== null) {
+      openDrawer(idx, { trigger: mk.getElement() });   // swap contents
+      return;
+    }
+    popupByKey = byKey;
+    mk.openPopup();
+  }
+
+  map.on('popupopen', function (e) {
+    var node = e.popup.getElement();
+    var btn = node && node.querySelector('[data-view-event]');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-view-event'), 10);
+    btn.onclick = function (ev) {
+      ev.preventDefault();
+      var mk = markerByIdx[idx];
+      openDrawer(idx, { trigger: mk && mk.getElement() });
+    };
+    if (popupByKey) { popupByKey = false; btn.focus({ preventScroll: true }); }
+  });
+
+  document.getElementById('sd-close').addEventListener('click', function () {
+    closeDrawer({ restoreFocus: true });
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Escape' || e.key === 'Esc') && drawerIdx !== null) {
+      e.preventDefault();
+      closeDrawer({ restoreFocus: true });
+    }
+  });
+
   /* ── Deep link: ?panel=name (from old-URL redirects / cases-panel links) ── */
   (function () {
     var p = new URLSearchParams(window.location.search).get('panel');
@@ -1765,14 +2214,14 @@
       ? { label: 'Hand-checked', cls: 'wire-sig--routine' }
       : sigBand(m.gravity_score || 0);
     var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
-    wireHtml += '<div class="wire-entry" data-wire-idx="' + m._idx + '">' +
+    wireHtml += '<div class="wire-entry" role="button" tabindex="0" data-wire-idx="' + Number(m._idx) + '">' +
       '<span class="wire-rank">' + (i + 1) + '</span>' +
       '<div class="wire-dot" style="background:' + sColor + ';"></div>' +
       '<div class="wire-body">' +
-        '<div class="wire-title">' + (m.title || '').slice(0, 80) + '</div>' +
+        '<div class="wire-title">' + escHtml(String(m.title || '').slice(0, 80)) + '</div>' +
         '<div class="wire-meta">' +
-          '<span class="wire-sig ' + band.cls + '">' + band.label + '</span>' +
-          '<span class="wire-source">' + (m.source || '').toUpperCase() + '</span>' +
+          '<span class="wire-sig ' + band.cls + '">' + escHtml(band.label) + '</span>' +
+          '<span class="wire-source">' + escHtml(String(m.source || '').toUpperCase()) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -1780,25 +2229,48 @@
   document.getElementById('wire-list').innerHTML = wireHtml;
 
   document.querySelectorAll('.wire-entry').forEach(function (el) {
-    el.addEventListener('click', function () {
-      var idx = parseInt(el.dataset.wireIdx);
-      var m = RAW[idx];
-      if (m && m.lat && m.lng) {
-        document.querySelectorAll('.wire-entry').forEach(function (e) { e.classList.remove('active'); });
-        el.classList.add('active');
-        // Zoom to marker — cluster will auto-unpack at zoom 14+
-        map.flyTo([m.lat, m.lng], 14, { duration: 0.8 });
-        // Open popup after zoom completes
-        setTimeout(function () {
-          allMarkerLayers.forEach(function (ml) {
-            if (ml.idx === idx && ml.layer && ml.layer.openPopup) {
-              ml.layer.openPopup();
-            }
-          });
-        }, 1000);
-      }
+    function pick() {
+      var idx = parseInt(el.dataset.wireIdx, 10);
+      if (!markerByIdx[idx]) return;
+      document.querySelectorAll('.wire-entry').forEach(function (e) { e.classList.remove('active'); });
+      el.classList.add('active');
+      // Open the drawer, then zoom just far enough for the pin to leave its
+      // cluster (no fixed wait for the zoom to finish).
+      showSignal(idx, { trigger: el });
+    }
+    el.addEventListener('click', pick);
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
     });
   });
+
+  /* ── Ticker: hand-checked items open the drawer ──────────────────────────────── */
+  var tickerEl = document.getElementById('ticker-scroll');
+  if (tickerEl) {
+    tickerEl.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-signal]') : null;
+      if (!a) return;
+      var idx = idxForSignal(a.getAttribute('data-signal'));
+      if (idx === null) return;          // falls back to the link itself
+      e.preventDefault();
+      showSignal(idx, { trigger: a });
+    });
+  }
+
+  /* ── Shared link: ?signal=<id> opens with the drawer showing ─────────────── */
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (!params.has('signal')) return;
+    var idx = idxForSignal(params.get('signal'));
+    // A bad or unpublished id just shows the normal map (and tidies the address).
+    history.replaceState(null, '', urlForSignal(null));
+    if (idx === null) return;
+    // Put the drawer on its own history entry so Back closes it first.
+    var sid = shortId(RAW[idx]);
+    history.pushState({ forgeSignal: sid }, '', urlForSignal(sid));
+    drawerPushed = true;
+    showSignal(idx, { history: false });
+  })();
 
   /* ── Stream filter toggles ──────────────────────────────────────────────── */
   document.querySelectorAll('.stream-toggle').forEach(function (toggle) {

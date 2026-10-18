@@ -19,6 +19,7 @@ import shutil
 import sqlite3
 import subprocess
 import urllib.request
+from urllib.parse import urlparse
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -205,6 +206,56 @@ def _truncate(text: str | None, length: int = 220) -> str:
     return text[:length] + "..." if len(text) > length else text
 
 
+# The event drawer shows a hand-checked signal's own written story in full.
+# Capped so a runaway body can't bloat the map page; cut on a word boundary.
+STORY_MAX_CHARS = 2000
+
+
+def _story(text: str | None, limit: int = STORY_MAX_CHARS) -> str:
+    """Full story text for the event drawer: HTML stripped, capped at ~limit chars."""
+    text = _strip_html(text)
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    space = cut.rfind(" ")
+    if space > limit * 0.8:
+        cut = cut[:space]
+    return cut.rstrip(" ,;:.") + "…"
+
+
+def _source_domain(url: str) -> str:
+    """Website shown beside a source's name, e.g. 'iol.co.za' (leading www. dropped)."""
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except ValueError:
+        return ""
+    return host[4:] if host.startswith("www.") else host
+
+
+# Media the drawer may show: only files FORGE hosts itself (no hotlinking of
+# news photos), and only with a credit and a licence/permission line.
+_MEDIA_SRC_RE = re.compile(r"^static/media/[A-Za-z0-9][A-Za-z0-9._/-]*$")
+
+
+def _clean_media(items) -> list[dict]:
+    out = []
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        src = str(item.get("src") or "").strip()
+        credit = str(item.get("credit") or "").strip()
+        licence = str(item.get("licence") or item.get("license") or "").strip()
+        if not (src and credit and licence) or ".." in src or not _MEDIA_SRC_RE.match(src):
+            continue
+        out.append({
+            "src": src,
+            "credit": credit,
+            "licence": licence,
+            "caption": str(item.get("caption") or "").strip(),
+        })
+    return out
+
+
 # ── DB queries ────────────────────────────────────────────────────────────────
 
 def _checked_fields(metadata_json: str | None) -> dict:
@@ -217,10 +268,20 @@ def _checked_fields(metadata_json: str | None) -> dict:
                   "sources": [{"name": "Cape Times (IOL)", "url": "https://..."}]}
     The map shows the incident date apart from the report date, where the pin
     really is, and links to the sources. Signals without it render as before.
-    Only http(s) source links are kept.
+    Only http(s) source links are kept; each gets its website ("domain").
+
+    Optional, for the event drawer (signals without them keep working):
+      sources[].date   - the outlet's own publication date, shown on its row
+      "basis"          - what the reporting rests on, e.g. "all based on police
+                         statements"; shown beside the report count
+      "disagreements"  - list of short notes where the reports differ
+      "media"          - [{"src": "static/media/...", "credit": "...",
+                          "licence": "...", "caption": "..."}]; FORGE-hosted
+                         files only, dropped without a credit and licence
     """
     empty = {"checked": False, "incident": None, "reported": None,
-             "location_note": None, "source_links": []}
+             "location_note": None, "source_links": [], "basis": None,
+             "disagreements": [], "media": []}
     if not metadata_json:
         return empty
     try:
@@ -237,13 +298,23 @@ def _checked_fields(metadata_json: str | None) -> dict:
         url = str(src.get("url") or "").strip()
         if not url.lower().startswith(("https://", "http://")):
             continue
-        links.append({"name": str(src.get("name") or "Source").strip(), "url": url})
+        link = {"name": str(src.get("name") or "Source").strip(), "url": url,
+                "domain": _source_domain(url)}
+        if src.get("date"):
+            link["date"] = str(src["date"]).strip()
+        links.append(link)
+    disagreements = chk.get("disagreements")
+    if not isinstance(disagreements, list):
+        disagreements = []
     return {
         "checked":       True,
         "incident":      (str(chk["incident"]).strip() or None) if chk.get("incident") else None,
         "reported":      (str(chk["reported"]).strip() or None) if chk.get("reported") else None,
         "location_note": (str(chk["location"]).strip() or None) if chk.get("location") else None,
         "source_links":  links,
+        "basis":         (str(chk["basis"]).strip() or None) if chk.get("basis") else None,
+        "disagreements": [str(d).strip() for d in disagreements if str(d).strip()],
+        "media":         _clean_media(chk.get("media")),
     }
 
 
@@ -260,6 +331,7 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     items = []
     for r in rows:
         slug = r["publish_slug"] or (_slugify(r["title"]) + "-" + r["signal_id"][:8])
+        checked = _checked_fields(r["metadata_json"])
         items.append({
             "kind":          "signal",
             "signal_id":     r["signal_id"],
@@ -276,7 +348,10 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             "published_fmt": _fmt_dt(r["published_at"]),
             "slug":          slug,
             "article_slug":  SIGNAL_ARTICLE_MAP.get(r["signal_id"]),
-            **_checked_fields(r["metadata_json"]),
+            # Full written story for the event drawer, hand-checked signals only
+            # (machine-collected bodies keep the short summary).
+            "story":         _story(r["content"]) if checked["checked"] else None,
+            **checked,
         })
     return items
 
