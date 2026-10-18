@@ -135,3 +135,36 @@ def test_map_template_builds_drawer_and_lists_safely():
     # The fixed one-second wait before opening a Wire pick is gone.
     assert "}, 1000);" not in html
     assert "zoomToShowLayer" in html
+
+
+def test_drawer_sources_ask_before_leaving_the_site():
+    """External-link gate (19 Oct 2026): a drawer source row asks first.
+
+    Clicking a source no longer leaves straight away. A box says
+    'External link', that you are about to leave for an external source,
+    shows the destination, says linked content is outside our control, and
+    offers Cancel and Continue. Continue is a real link to the same URL with
+    the same new-tab and rel protections; Escape closes only the box.
+    """
+    html = (ROOT / "publisher/templates/map.html").read_text(encoding="utf-8")
+    # The box and its wording.
+    assert 'id="xl-gate"' in html and 'aria-modal="true"' in html
+    assert '>External link<' in html
+    assert "You are about to leave this site and visit an external source." in html
+    assert "The content of linked pages is outside our control." in html
+    assert 'id="xl-dest"' in html
+    assert '>Cancel<' in html and '>Continue<' in html
+    # Continue keeps the old link protections.
+    cont = re.search(r'<a [^>]*id="xl-continue"[^>]*>', html).group(0)
+    assert 'target="_blank"' in cont and 'rel="noopener noreferrer"' in cont
+    # Source rows stop the jump and open the box; opened only counts on Continue.
+    assert "e.preventDefault(); openExtGate(s.url, a);" in html
+    assert "a.addEventListener('click', function () { rememberOpened(s.url)" not in html
+    # Destination is shown as text, and only web links can open the box.
+    assert "xlDest.textContent = url;" in html
+    assert "if (!/^https?:\\/\\//i.test(url || '')) return;" in html
+    # Escape: the box handles it first, and the drawer ignores it while the box is up.
+    assert "e.stopImmediatePropagation();" in html
+    assert "drawerIdx !== null && !extGateOpen()" in html
+    # The box never outlives its drawer.
+    assert html.count("closeExtGate({ restoreFocus: false });") >= 2
