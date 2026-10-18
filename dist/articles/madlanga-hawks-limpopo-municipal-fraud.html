@@ -298,7 +298,7 @@ on vendors awarded contracts 2023–2025), SIU referral logs for Limpopo municip
     fetch(indexUrl)
       .then(function (r) { return r.json(); })
       .then(function (docs) {
-        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url', 'signal'] });
+        idx = new MiniSearch({ fields: ['title', 'aliases'], storeFields: ['title', 'kind', 'url', 'signal'] });
         idx.addAll(docs);
       })
       .catch(function () {});

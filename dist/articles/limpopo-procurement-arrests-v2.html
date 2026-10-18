@@ -321,7 +321,7 @@
     fetch(indexUrl)
       .then(function (r) { return r.json(); })
       .then(function (docs) {
-        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url', 'signal'] });
+        idx = new MiniSearch({ fields: ['title', 'aliases'], storeFields: ['title', 'kind', 'url', 'signal'] });
         idx.addAll(docs);
       })
       .catch(function () {});

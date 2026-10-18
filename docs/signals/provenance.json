@@ -43,13 +43,17 @@
         "F.C. van Wyk"
       ],
       "other_voices": [
-        "ward 85 councillor Unathi Lasiti"
+        "Asanda Village CPF member Zintle Lubobo (Voice of the Cape)",
+        "ward 85 councillor Unathi Lasiti (Daily Voice)",
+        "District Mail's own reporter at the scene"
       ],
       "outlets": [
+        "District Mail (NovaNews)",
+        "Voice of the Cape",
         "Daily Voice"
       ],
-      "independence": "single_report",
-      "note": "One report. The police statement, plus the ward councillor; the paper says both statements were given to IOL Media."
+      "independence": "partly_independent",
+      "note": "Three outlets. Voice of the Cape and Daily Voice carry the same police statement from F.C. van Wyk; District Mail quotes an unnamed police spokesperson. Each adds its own non-police source: Voice of the Cape a community policing forum member, Daily Voice the ward councillor, District Mail its reporter at the scene."
     },
     "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2": {
       "statement_from": "Police",

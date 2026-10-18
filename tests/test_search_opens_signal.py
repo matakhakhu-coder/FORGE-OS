@@ -152,3 +152,49 @@ def test_in_browser_search_click_and_wire_scroll():
           l.scrollTop = l.scrollHeight; return {sh: l.scrollHeight, ch: l.clientHeight, top: l.scrollTop}; }""")
         assert info["sh"] > info["ch"] and info["top"] > 0
         browser.close()
+
+
+# --- Sprint 5 (19 Oct 2026): Asanda Village area fix + search aliases -------
+
+ASANDA = "0d2ac747"
+
+
+def test_checked_search_aliases_are_read_and_cleaned():
+    from tools.publish import _checked_fields
+
+    meta = json.dumps({"checked": {"incident": "x",
+                                   "search_aliases": ["Zola Village", " ", 7]}})
+    assert _checked_fields(meta)["search_aliases"] == ["Zola Village", "7"]
+    assert _checked_fields(json.dumps({"checked": {"incident": "x"}}))["search_aliases"] == []
+    assert _checked_fields(None)["search_aliases"] == []
+
+
+def test_asanda_pin_area_corrected_and_old_name_kept_as_alias():
+    from tools.checked_signals import load_index
+
+    pin = next(s for s in load_index().active if s["signal_id"].startswith(ASANDA))
+    chk = pin["metadata"]["checked"]
+    assert pin["title"].startswith("Asanda Village, Strand")
+    assert "Zola Village" not in pin["title"]
+    assert chk["search_aliases"] == ["Zola Village"]
+    assert "Asanda Village" in chk["location"]
+    urls = {s["url"] for s in chk["sources"]}
+    assert "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/" in urls
+    assert len(urls) == 3
+    prov = json.loads((ROOT / "docs/signals/provenance.json").read_text(encoding="utf-8"))
+    entry = next(v for k, v in prov["pins"].items() if k.startswith(ASANDA))
+    assert entry["independence"] == "partly_independent"
+    assert len(entry["outlets"]) == 3
+    # The alleged motive stays private: never on the public pin.
+    public = json.dumps(pin) + json.dumps(entry)
+    assert "caught stealing" not in public and "Lubobo" not in pin["content"]
+
+
+def test_built_search_index_finds_asanda_by_either_name():
+    docs = json.loads((ROOT / "dist/search-index.json").read_text(encoding="utf-8"))
+    doc = next(d for d in docs if d.get("signal") == ASANDA)
+    assert doc["title"].startswith("Asanda Village")
+    assert doc["aliases"] == "Zola Village"
+    for page in ["index.html", "about.html"]:
+        t = (ROOT / "dist" / page).read_text(encoding="utf-8")
+        assert "fields: ['title', 'aliases']" in t, page

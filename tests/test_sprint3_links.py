@@ -162,13 +162,13 @@ def test_pattern_case_shows_pattern_test_and_sorts_by_incident_date(tmp_path, mo
 
 
 def test_pattern_case_keeps_time_order_within_one_day(tmp_path, monkeypatch):
-    # Epping (16 Oct, 06:00) sorts after Zola Village (16 Oct, 06:30) by ID,
+    # Epping (16 Oct, 06:00) sorts after Asanda Village (16 Oct, 06:30) by ID,
     # so a date-only sort put 06:30 first.
     index = _copy_signals(tmp_path)
     dist = _build(tmp_path, monkeypatch, index, case_pins=[ZOLA, EPPING],
                   anchors={"experiment": True, "links_incidents": False})
     page = next((dist / "cases").glob("*.html")).read_text()
-    order = [page.find(t) for t in ("Epping", "Zola Village")]
+    order = [page.find(t) for t in ("Epping", "Asanda Village")]
     assert -1 not in order and order == sorted(order)
 
 

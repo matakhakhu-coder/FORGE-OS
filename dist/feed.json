@@ -1,7 +1,7 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "18 Oct 2026 22:30 UTC",
+  "generated_at": "18 Oct 2026 23:05 UTC",
   "items": [
     {
       "kind": "signal",
@@ -18,12 +18,12 @@
     },
     {
       "kind": "signal",
-      "title": "Zola Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
+      "title": "Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
       "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Lwandle police are investigating a murder after a 35-year-old man's body was found burning in Christmas Tinto Park, near Simanyene High School, Zola Village, at about 06:30 on Friday 16 October; police say he had been st...",
-      "source": "DAILY VOICE",
+      "summary": "Lwandle police are investigating a murder after a 35-year-old man's body was found still burning at Christmas Tinto Park, Asanda Village, Strand, at about 06:30 on Friday 16 October; police found stab wounds to his upper...",
+      "source": "DISTRICT MAIL (NOVANEWS)",
       "geo": {
         "lat": -34.1077,
         "lng": 18.8578

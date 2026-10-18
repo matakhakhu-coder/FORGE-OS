@@ -283,6 +283,8 @@ def _checked_fields(metadata_json: str | None) -> dict:
       "basis"          - what the reporting rests on, e.g. "all based on police
                          statements"; shown beside the report count
       "disagreements"  - list of short notes where the reports differ
+      "search_aliases" - other place names the reports use; added to the
+                         search index only, so the pin is found by either
       "media"          - [{"src": "static/media/...", "credit": "...",
                           "licence": "...", "caption": "..."}]; FORGE-hosted
                          files only, dropped without a credit and licence
@@ -290,7 +292,7 @@ def _checked_fields(metadata_json: str | None) -> dict:
     empty = {"checked": False, "incident": None, "reported": None,
              "location_note": None, "source_links": [], "basis": None,
              "disagreements": [], "media": [], "incident_start": None,
-             "link_records": []}
+             "link_records": [], "search_aliases": []}
     if not metadata_json:
         return empty
     try:
@@ -315,6 +317,9 @@ def _checked_fields(metadata_json: str | None) -> dict:
     disagreements = chk.get("disagreements")
     if not isinstance(disagreements, list):
         disagreements = []
+    aliases = chk.get("search_aliases")
+    if not isinstance(aliases, list):
+        aliases = []
     return {
         "checked":       True,
         "incident":      (str(chk["incident"]).strip() or None) if chk.get("incident") else None,
@@ -331,6 +336,9 @@ def _checked_fields(metadata_json: str | None) -> dict:
         # Raw link records; _resolve_links() turns them into drawer rows and
         # map lines, then drops this key so it never reaches the page.
         "link_records":  _clean_link_records(chk.get("links")),
+        # Other names the reports use for the place (Sprint 5): searchable,
+        # never shown as the pin's area.
+        "search_aliases": [str(a).strip() for a in aliases if str(a).strip()],
     }
 
 
@@ -1323,12 +1331,15 @@ def _build_dist(
     # search-index.json — flat document list for client-side MiniSearch
     search_docs = []
     for s in signals:
-        search_docs.append({
+        doc = {
             "id": s["slug"],
             "title": s["title"],
             "kind": "signal",
             **_signal_search_target(s),
-        })
+        }
+        if s.get("search_aliases"):
+            doc["aliases"] = " ".join(s["search_aliases"])
+        search_docs.append(doc)
     for a in articles:
         search_docs.append({
             "id": a["slug"],

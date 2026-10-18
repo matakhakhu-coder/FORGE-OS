@@ -627,36 +627,54 @@
     {
       "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",
       "external_id": "checked:wc-2026-10-18b:S",
-      "source": "Daily Voice",
-      "title": "Zola Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
-      "content": "Lwandle police are investigating a murder after a 35-year-old man's body was found burning in Christmas Tinto Park, near Simanyene High School, Zola Village, at about 06:30 on Friday 16 October; police say he had been stabbed (Daily Voice).",
+      "source": "District Mail (NovaNews)",
+      "title": "Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
+      "content": "Lwandle police are investigating a murder after a 35-year-old man's body was found still burning at Christmas Tinto Park, Asanda Village, Strand, at about 06:30 on Friday 16 October; police found stab wounds to his upper body. District Mail quotes a police spokesperson saying preliminary investigation showed he was allegedly assaulted, stabbed and placed in a wheelie bin in Celiwe Street at around 03:00, then dumped near the Asanda Village Wetland Park, opposite Christmas Tinto Primary School. Police say the motive is under investigation, and no arrest has been reported (District Mail and Voice of the Cape, 16 Oct; Daily Voice, 18 Oct, which places the park in Zola Village).",
       "lat": -34.1077,
       "lng": 18.8578,
       "stream": "CRIME_INTEL",
-      "timestamp": "2026-10-18T12:56:00Z",
+      "timestamp": "2026-10-16T09:20:00Z",
       "published_at": "2026-10-18T18:50:00Z",
       "metadata": {
-        "source_outlet": "Daily Voice",
+        "source_outlet": "District Mail (NovaNews)",
         "collected_external_id": "gnews:0d921f07fa866baa",
         "checked": {
-          "incident": "Found burning Fri 16 Oct 2026, about 06:30 (police)",
-          "reported": "18 Oct 2026",
-          "location": "Christmas Tinto Park near Simanyene High School, Zola Village, Strand. The park is not on the map, so the pin sits between the two nearby schools.",
+          "incident": "Found still burning Fri 16 Oct 2026, about 06:30 (police). District Mail quotes police saying the victim was allegedly attacked in Celiwe Street around 03:00 and dumped at the park afterwards.",
+          "reported": "16-18 Oct 2026",
+          "location": "Christmas Tinto Park, opposite Christmas Tinto Primary School and near the Asanda Village Wetland Park, Asanda Village, Strand (Voice of the Cape, District Mail). Daily Voice calls the area Zola Village. The park is not on the map; the pin is about 80 m from the primary school.",
           "sources": [
             {
+              "name": "District Mail (NovaNews)",
+              "url": "https://novanews.co.za/districtmailhelderberg/man-stabbed-torched-near-primary-school-near-strand/",
+              "date": "16 Oct"
+            },
+            {
+              "name": "Voice of the Cape",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "date": "16 Oct"
+            },
+            {
               "name": "Daily Voice",
-              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/"
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/",
+              "date": "18 Oct"
             }
           ],
-          "checked_at": "2026-10-18T18:48:00Z",
-          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "checked_at": "2026-10-18T23:15:00Z",
+          "method": "Collected by google_news_collector --keywords; Daily Voice read 18 Oct. Area corrected 19 Oct after reading Voice of the Cape and District Mail (both 16 Oct); claims, dates and place checked by hand; standalone (no case, entity or map line).",
           "incident_start": "2026-10-16T06:30+02:00",
           "incident_precision": "approx_time",
           "incident_event": "found",
-          "reported_at": "2026-10-18"
+          "reported_at": "2026-10-16",
+          "basis": "Three outlets. The facts of the killing come from police in all three; Voice of the Cape adds a community policing forum member, Daily Voice the ward councillor and District Mail its own reporter at the scene.",
+          "disagreements": [
+            "Daily Voice (18 Oct) places Christmas Tinto Park in Zola Village; Voice of the Cape and District Mail (16 Oct) place it in Asanda Village."
+          ],
+          "search_aliases": [
+            "Zola Village"
+          ]
         }
       },
-      "fingerprint": "sha256:a87d4c4abf192c8ee9189d27a83e1902e492bf833d8d8c78cea2178141d1961e"
+      "fingerprint": "sha256:c92fea8bbb77210dc86e8200cc7cbe3c1d070e321cf438e4c79e2174bfe62588"
     },
     {
       "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8",
