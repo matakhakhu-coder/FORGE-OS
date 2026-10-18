@@ -70,7 +70,9 @@
   /* ── Overlay panels ─────────────────────────────────────────────────────── */
   .md-panel {
     position: absolute;
-    top: var(--sp-4); left: 100px;
+    /* Start right of the Wire/Streams/... sidebar (it ends ~137px in) so the
+       panel's title is never tucked under it. */
+    top: var(--sp-4); left: 152px;
     z-index: 350;
     width: 380px;
     max-height: calc(100vh - 180px);
@@ -501,7 +503,8 @@
   .intel-link-tooltip::before { display: none; }
 
   /* ── Wide panel variant (Graph / Entities) ──────────────────────────────── */
-  .md-panel--wide { width: min(920px, 88vw); height: calc(100vh - 180px); }
+  /* Fit between the sidebar (left) and the map controls (right, ~130px). */
+  .md-panel--wide { width: min(920px, calc(100vw - 300px)); height: calc(100vh - 180px); }
   .md-panel__body--flush { padding: 0; overflow: hidden; position: relative; display: flex; }
   .md-panel__actions { display: flex; align-items: center; gap: var(--sp-2); margin-left: auto; }
   .md-panel__search {
@@ -675,9 +678,14 @@
       left: var(--sp-4);
       right: var(--sp-4);
       flex-direction: row;
-      justify-content: center;
+      justify-content: flex-start;
       gap: var(--sp-3);
+      /* Six pills are wider than a phone: swipe the bar instead of clipping
+         Wire and Watchlist off both edges. */
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .md-sidebar::-webkit-scrollbar { display: none; }
     .md-pill {
       padding: 10px 14px;
       font-size: 0.65rem;
@@ -688,13 +696,19 @@
       left: 0;
       right: 0;
       top: auto;
-      bottom: 72px;
+      /* Sit above the pill bar (bottom 40px + ~60px tall), not under it, and
+         stay below the map controls at the top right. */
+      bottom: 112px;
       width: 100%;
-      max-height: 60vh;
+      max-height: min(60vh, calc(100% - 284px));
       border-radius: var(--r-md) var(--r-md) 0 0;
       border-bottom: none;
     }
-    .md-panel--wide { height: 60vh; }
+    .md-panel--wide { height: min(60vh, calc(100% - 284px)); }
+    /* Graph's header (search + Fit + Reset) was wider than a phone and pushed
+       its close button off the right edge. */
+    .md-panel__header { flex-wrap: wrap; }
+    .md-panel__search { width: 96px; }
     .md-controls {
       top: var(--sp-4);
       right: var(--sp-3);
