@@ -471,7 +471,7 @@
     if (!pw) { alert('Password required.'); return; }
     const form  = document.createElement('form');
     form.method = 'POST';
-    form.action = '{{ url_for("event_delete", event_id=event.event_id) }}';
+    form.action = '{{ url_for("admin.event_delete", event_id=event.event_id) }}';
     const inp   = document.createElement('input');
     inp.type    = 'hidden'; inp.name = 'password'; inp.value = pw;
     form.appendChild(inp);

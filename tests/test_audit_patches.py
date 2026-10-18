@@ -111,3 +111,21 @@ def test_document_signals_stream_is_not_injectable(tmp_path, monkeypatch):
         assert _document_signals_data(conn, None, 7)["total"] == 2
     finally:
         conn.close()
+
+
+def test_event_and_artifact_edit_pages_render(tmp_path, monkeypatch):
+    """The edit templates built their delete URL with an endpoint name that
+    lacked the 'admin.' blueprint prefix, so both pages raised BuildError."""
+    import sqlite3
+
+    client, db_file = _client(tmp_path, monkeypatch)
+    conn = sqlite3.connect(str(db_file))
+    conn.execute("INSERT INTO events (title, date) VALUES ('ev', '2026-10-01')")
+    conn.execute("INSERT INTO artifacts (title, type, date) VALUES ('ar', 'document', '2026-10-01')")
+    conn.commit()
+    conn.close()
+
+    ev = client.get("/event/1/edit")
+    ar = client.get("/artifact/1/edit")
+    assert ev.status_code == 200 and "/event/1/delete" in ev.get_data(as_text=True)
+    assert ar.status_code == 200 and "/artifact/1/delete" in ar.get_data(as_text=True)
