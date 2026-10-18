@@ -38,7 +38,7 @@ Usage
   python mega_ingest.py                  full run
   python mega_ingest.py --collect-only   collection phase only
   python mega_ingest.py --ingest-only    Conclave phase only (skips collection)
-  python mega_ingest.py --dry-run        collect but don't write to DB
+  python mega_ingest.py --dry-run        list the collectors that would run; collects nothing, writes nothing
 """
 
 from __future__ import annotations
@@ -219,6 +219,17 @@ async def run_all_collectors(dry_run: bool = False) -> dict:
     """
     log.info("S A M A R I T A N . O N L I N E")
     log.info("DETERMINING_RELEVANCE...")
+    # --dry-run used to run every collector anyway (they write straight to the
+    # database), so it was not a dry run. Now it only reports what would run.
+    # To preview one collector's results without writing, use that collector's
+    # own --dry-run, e.g. forage/collectors/google_news_collector.py --dry-run.
+    if dry_run:
+        labels = sorted(_collector_modules)
+        log.info(f"[collect] DRY RUN: would run {len(labels)} collectors; nothing collected or written")
+        for label in labels:
+            log.info(f"[collect]   would run: {label}")
+        return {"collectors_run": 0, "errors": [], "dry_run": True, "would_run": labels}
+
     log.info(f"[collect] Running {len(_collector_modules)} collectors (max {COLLECTOR_CONCURRENCY} concurrent)")
 
     sem = asyncio.Semaphore(COLLECTOR_CONCURRENCY)
@@ -1227,7 +1238,7 @@ def _parse_args():
     )
     p.add_argument(
         "--dry-run", action="store_true",
-        help="Collection phase only, no DB writes",
+        help="List the collectors that would run; collects nothing and writes nothing to the DB",
     )
     p.add_argument(
         "--batch-size", type=int, default=50,

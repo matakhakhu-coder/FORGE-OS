@@ -488,6 +488,12 @@
   .smap-popup__time { font-family: var(--font-mono), monospace; font-size: 0.58rem; color: #3d5060; }
   .smap-popup__link { display: block; margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.06); font-family: var(--font-mono), monospace; font-size: 0.62rem; color: #c8943a; text-decoration: none; letter-spacing: 0.04em; }
   .smap-popup__link:hover { color: #e0aa4a; }
+  /* Hand-checked signals: incident vs report date, pin precision, sources */
+  .smap-popup__facts { font-family: var(--font-mono), monospace; font-size: 0.60rem; color: #7a95aa; line-height: 1.5; margin-bottom: 6px; }
+  .smap-popup__facts b { color: #9fb3c4; font-weight: 500; }
+  .smap-popup__sources { margin-bottom: 6px; font-family: var(--font-mono), monospace; font-size: 0.60rem; line-height: 1.6; }
+  .smap-popup__sources a { color: #c8943a; text-decoration: none; margin-right: 8px; white-space: nowrap; }
+  .smap-popup__sources a:hover { color: #e0aa4a; }
 
   .intel-link-tooltip { background: rgba(8,13,18,0.88) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 2px !important; color: #7a95aa !important; font-family: var(--font-mono), monospace; font-size: 0.58rem; letter-spacing: 0.06em; padding: 2px 8px !important; box-shadow: none !important; }
   .intel-link-tooltip::before { display: none; }
@@ -1019,6 +1025,30 @@
   /* ══════════════════════════════════════════════════════════════════════════
      POPUP BUILDER
      ══════════════════════════════════════════════════════════════════════════ */
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  // Hand-checked signals carry the incident date apart from the report date,
+  // what the pin really marks, and their sources (see _checked_fields).
+  function buildCheckedHtml(m) {
+    if (!m.checked) return '';
+    var facts = '';
+    if (m.incident)      facts += '<div><b>Incident:</b> ' + escHtml(m.incident) + '</div>';
+    if (m.reported)      facts += '<div><b>Reported:</b> ' + escHtml(m.reported) + '</div>';
+    if (m.location_note) facts += '<div><b>Pin:</b> ' + escHtml(m.location_note) + '</div>';
+    var links = '';
+    (m.source_links || []).forEach(function (s) {
+      if (!/^https?:\/\//i.test(s.url || '')) return;
+      links += '<a href="' + escHtml(s.url) + '" target="_blank" rel="noopener noreferrer">' +
+               escHtml(s.name || 'Source') + ' &#8599;</a> ';
+    });
+    return (facts ? '<div class="smap-popup__facts">' + facts + '</div>' : '') +
+           (links ? '<div class="smap-popup__sources">' + links + '</div>' : '');
+  }
+
   function buildPopup(m) {
     var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
     var gScore = (m.gravity_score != null) ? m.gravity_score.toFixed(2) : null;
@@ -1036,7 +1066,8 @@
         '<div class="smap-popup__stream" style="color:' + sColor + '">' + (m.stream_label || m.stream || '') + '</div>' +
         (m.source ? '<div class="smap-popup__source">' + m.source.toUpperCase() + '</div>' : '') +
         '<div class="smap-popup__title">' + (m.title || '') + '</div>' +
-        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + (m.published_fmt || '') + '</span></div>' +
+        buildCheckedHtml(m) +
+        '<div class="smap-popup__meta">' + gravityHtml + '<span class="smap-popup__time">' + (m.checked ? 'Added to FORGE ' : '') + (m.published_fmt || '') + '</span></div>' +
         linkHtml +
       '</div>'
     );
@@ -1502,7 +1533,11 @@
 
   var wireHtml = '';
   sorted.slice(0, 50).forEach(function (m, i) {
-    var band = sigBand(m.gravity_score || 0);
+    // A hand-checked signal has no machine gravity score: say so, rather than
+    // calling a murder 'Routine'.
+    var band = (m.checked && m.gravity_score == null)
+      ? { label: 'Hand-checked', cls: 'wire-sig--routine' }
+      : sigBand(m.gravity_score || 0);
     var sColor = STREAM_COLOR[m.stream] || '#7a95aa';
     wireHtml += '<div class="wire-entry" data-wire-idx="' + m._idx + '">' +
       '<span class="wire-rank">' + (i + 1) + '</span>' +

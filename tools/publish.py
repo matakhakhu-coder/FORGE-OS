@@ -103,6 +103,21 @@ DIRECT_LINK_ONLY_CASES: frozenset[str] = frozenset({
     "limpopo-municipal-procurement-arrests-april-2026-rerun-v2",
 })
 
+# Uncased people (18 Oct 2026). Processing (tools/mega_ingest.py ->
+# core/pipeline/ingest.py) auto-creates person actors from name extraction,
+# e.g. a president mentioned in passing, at confidence 0.5. Graph and Entities
+# used to publish every such person, with an entity page, even when no
+# published case links them. That puts people on the site with no checked
+# source. Keep this False: only actors on a case in PUBLISHED_CASE_IDS appear.
+PUBLISH_UNCASED_PERSONS: bool = False
+
+
+def _uncased_person_sql() -> str:
+    """Extra OR-clause that admits uncased people, or nothing (the default)."""
+    if PUBLISH_UNCASED_PERSONS:
+        return "OR (a.type = 'person' AND a.confidence_score >= 0.35)"
+    return ""
+
 
 STREAM_LABELS = {
     "CRIME_INTEL":    "Crime & Security",
@@ -192,10 +207,50 @@ def _truncate(text: str | None, length: int = 220) -> str:
 
 # ── DB queries ────────────────────────────────────────────────────────────────
 
+def _checked_fields(metadata_json: str | None) -> dict:
+    """Hand-check details for a signal, read from metadata_json["checked"].
+
+    A signal checked by hand carries, in its metadata_json:
+      "checked": {"incident": "Fri 16 Oct 2026, about 06:00",
+                  "reported": "17-18 Oct 2026",
+                  "location": "Fisher Avenue, Epping 1 (exact spot not given)",
+                  "sources": [{"name": "Cape Times (IOL)", "url": "https://..."}]}
+    The map shows the incident date apart from the report date, where the pin
+    really is, and links to the sources. Signals without it render as before.
+    Only http(s) source links are kept.
+    """
+    empty = {"checked": False, "incident": None, "reported": None,
+             "location_note": None, "source_links": []}
+    if not metadata_json:
+        return empty
+    try:
+        meta = json.loads(metadata_json)
+    except (TypeError, ValueError):
+        return empty
+    chk = meta.get("checked") if isinstance(meta, dict) else None
+    if not isinstance(chk, dict):
+        return empty
+    links = []
+    for src in chk.get("sources") or []:
+        if not isinstance(src, dict):
+            continue
+        url = str(src.get("url") or "").strip()
+        if not url.lower().startswith(("https://", "http://")):
+            continue
+        links.append({"name": str(src.get("name") or "Source").strip(), "url": url})
+    return {
+        "checked":       True,
+        "incident":      (str(chk["incident"]).strip() or None) if chk.get("incident") else None,
+        "reported":      (str(chk["reported"]).strip() or None) if chk.get("reported") else None,
+        "location_note": (str(chk["location"]).strip() or None) if chk.get("location") else None,
+        "source_links":  links,
+    }
+
+
 def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     rows = conn.execute("""
         SELECT signal_id, title, content, stream, source, lat, lng,
-               gravity_score, published_at, publish_slug
+               gravity_score, published_at, publish_slug, metadata_json
         FROM   signals
         WHERE  published_at IS NOT NULL
         ORDER  BY published_at DESC
@@ -221,6 +276,7 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             "published_fmt": _fmt_dt(r["published_at"]),
             "slug":          slug,
             "article_slug":  SIGNAL_ARTICLE_MAP.get(r["signal_id"]),
+            **_checked_fields(r["metadata_json"]),
         })
     return items
 
@@ -281,7 +337,8 @@ def _build_graph_data(conn: sqlite3.Connection) -> dict:
 
     Inclusion criteria (OR):
       1. Actor is linked to any published case via case_actors
-      2. Actor is a person with confidence >= 0.35 (NER-extracted principals)
+      2. Only if PUBLISH_UNCASED_PERSONS: a person with confidence >= 0.35
+         (NER-extracted principals). Off by default; see the flag.
     Exclusion:
       - Generic noise names (location, company, etc.)
       - type = 'location'
@@ -296,7 +353,7 @@ def _build_graph_data(conn: sqlite3.Connection) -> dict:
                      SELECT actor_id FROM case_actors
                      WHERE  case_id IN ({ph})
                  )
-                 OR (a.type = 'person' AND a.confidence_score >= 0.35)
+                 {_uncased_person_sql()}
                )
           AND  a.name NOT IN ('location','government','company','sa',
                                'south africa','gauteng','pretoria',
@@ -486,7 +543,7 @@ def _fetch_directory_actors(conn: sqlite3.Connection) -> list[dict]:
                      SELECT actor_id FROM case_actors
                      WHERE  case_id IN ({ph})
                  )
-                 OR (a.type = 'person' AND a.confidence_score >= 0.35)
+                 {_uncased_person_sql()}
                )
           AND  a.name NOT IN ('location','government','company','sa',
                                'south africa','gauteng','pretoria',
