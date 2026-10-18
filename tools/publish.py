@@ -53,7 +53,12 @@ DIST_ENTITIES = DIST / "entities"
 VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
-PUBLISHED_CASE_IDS = (7, 8, 9, 10, 11, 12, 13, 15, 16, 17)  # 11 = Regional Pathogen Surveillance (Project Aegis); 12 = Operation Matlala; 13 = Beitbridge Explosives (Maroto); 15 = MEGA Account Compromise (Cyber); 16 = Meta CSAM Data Disclosure (Gauteng HC)
+# Cleared 18 Oct 2026: the old cases (7-17) were retired from the public site.
+# Their numbers belonged to the old database, which has been wiped, so they
+# would point at the wrong cases in a fresh one. Add a case's ID here when it
+# is ready to be published.
+# Previously: (7, 8, 9, 10, 11, 12, 13, 15, 16, 17)
+PUBLISHED_CASE_IDS: tuple[int, ...] = ()
 
 # Entity infobox: relationship-derived rows (Position/Affiliation from
 # entity_relationships, co-occurrence from graph_edges). Off by default —
@@ -64,36 +69,11 @@ ENABLE_INFOBOX_RELATIONSHIPS = False
 
 # Maps signal_id → article slug for "Read analysis →" on timeline signal cards
 SIGNAL_ARTICLE_MAP: dict[str, str] = {
-    # Beitbridge / Edgar Maroto (Case #13)
-    "f94b0c85-9fc5-49c2-8dfe-72090074f5bd": "beitbridge-explosives-smuggling-maroto",
-    # Graft roundup: Joshco CEO bail + SIU Home Affairs (13 Jun 2026)
-    "423f421e-9182-469b-b684-3d5e61a68d38": "graft-roundup-joshco-home-affairs-june-2026",
-    "0450004e-732e-4e96-9044-bd5210ae9a33": "graft-roundup-joshco-home-affairs-june-2026",
-    # ── SA Crime & Security ────────────────────────────────────────────────────
+    # Cleared 18 Oct 2026 with the old content. The only page still served is
+    # a direct-link-only case study (see DIRECT_LINK_ONLY_ARTICLES below); its
+    # signal stays mapped so it is recognised and kept off the map and ticker.
     # Limpopo / Mkhwanazi
     "c4d50e84-59ff-4a74-b608-1709feb2402b": "madlanga-hawks-limpopo-municipal-fraud",
-    # Emfuleni / Martha Rantsofu
-    "208633b9-e522-4c6c-a7a7-36f3bf342106": "emfuleni-martha-rantsofu-murder-investigation",
-    # Fadiel Adams / Magaqa
-    "5af98c1e-a6b3-49e1-ba20-cac68e86bcce": "operation-magaqa-anatomy-of-a-cover-up",
-    # KZN HAWKS R200m drugs
-    "b57d464f-cf86-4f6b-aca1-cf8d56671457": "kzn-hawks-three-signals-one-pattern",
-    # KZN HAWKS cocaine theft
-    "14f285b6-efc2-49a9-9ede-c80baa8d98a7": "kzn-hawks-three-signals-one-pattern",
-    # Police minister / crime syndicates
-    "0a714878-477c-4238-8164-667dfeb267b7": "saps-police-minister-crime-syndicate-allegation",
-    # SAPS murder investigation sabotage
-    "403e89f7-43ba-4193-97a4-fc2726cb61af": "saps-murder-investigation-sabotage-pattern",
-    # Eskom diesel
-    "82b8d529-892b-4d6e-9d42-82a6583f7620": "eskom-r21bn-diesel-fraud-mavuso",
-    # ── Project Aegis: Regional Pathogen Surveillance (case 11) — primary only
-    "34a1be1a-1e5e-41c3-a61a-c3b9023324fa": "project-aegis-sadc-health-security",
-    # ── Operation Matlala (case 12) ───────────────────────────────────────────
-    "abfd0ffb-e1d3-4e99-be3d-420676ebb923": "operation-matlala-saps-tender-capture",
-    # ── MEGA Account Compromise (case 15) — primary signal only ─────────────
-    "5544a9d6-bfed-4266-807f-1b2466e4b626": "mega-account-compromise-3xktech-credential-stuffing",
-    # ── Meta CSAM Data Disclosure (case 16) — primary signal only ─────────
-    "1dd6ac6a-e9fa-457e-ad39-f16987fa2fac": "meta-csam-data-disclosure-gauteng-high-court",
 }
 
 
@@ -102,6 +82,26 @@ SIGNAL_ARTICLE_MAP: dict[str, str] = {
 CASE_STUDY_NOTES: dict[str, str] = {
     "madlanga-hawks-limpopo-municipal-fraud": "<strong>Case study:</strong> this report contains errors; see <a href='limpopo-procurement-arrests-v2.html' style='color:inherit;text-decoration:underline'>the follow-up report</a>.",
 }
+
+
+# Direct-link-only pages (18 Oct 2026). These are the only old pages kept,
+# because the OSINT blog (osint-platform-sage.vercel.app) links to them:
+#   - madlanga-hawks-limpopo-municipal-fraud  <- post "A polished report is not a checked report"
+#   - limpopo-procurement-arrests-v2          <- post "Checking the check"
+#   - cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2
+#                                             <- linked from the v2 report and described in "Checking the check"
+# Their HTML files stay in dist/ (this publisher never deletes files from
+# dist/), and an article is still re-rendered if it is in the database. They
+# are kept off every listing: map markers, ticker, Wire (Top and Archive),
+# Streams counts, Cases, Graph, Entities, feed.json and search-index.json.
+# Do not delete these files without updating the blog first.
+DIRECT_LINK_ONLY_ARTICLES: frozenset[str] = frozenset({
+    "madlanga-hawks-limpopo-municipal-fraud",
+    "limpopo-procurement-arrests-v2",
+})
+DIRECT_LINK_ONLY_CASES: frozenset[str] = frozenset({
+    "limpopo-municipal-procurement-arrests-april-2026-rerun-v2",
+})
 
 
 STREAM_LABELS = {
@@ -207,6 +207,7 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
         slug = r["publish_slug"] or (_slugify(r["title"]) + "-" + r["signal_id"][:8])
         items.append({
             "kind":          "signal",
+            "signal_id":     r["signal_id"],
             "title":         r["title"],
             "summary":       _truncate(r["content"]),
             "stream":        r["stream"] or "GLOBAL",
@@ -262,14 +263,16 @@ def _build_timeline_data(
         grouped[year][month].append(item)
 
     span: dict = {}
-    if all_items:
-        dates = [i["published_at"] for i in all_items if i.get("published_at")]
-        if dates:
-            span = {
-                "start": _fmt_dt(min(dates)),
-                "end":   _fmt_dt(max(dates)),
-                "total": len(all_items),
-            }
+    shown = [i for months in grouped.values() for its in months.values() for i in its]
+    if shown:
+        dates = [i["published_at"] for i in shown]
+        span = {
+            "start": _fmt_dt(min(dates)),
+            "end":   _fmt_dt(max(dates)),
+            # Count only the entries the Archive actually lists (signals held
+            # back by the article gate are not shown, so not counted).
+            "total": len(shown),
+        }
     return grouped, span
 
 
@@ -704,6 +707,26 @@ def _check_case_triangulation(
 
 # ── Build dist/ ───────────────────────────────────────────────────────────────
 
+def _direct_link_only_signal_ids(conn: sqlite3.Connection) -> set[str]:
+    """Signal IDs pinned to a direct-link-only case, so they stay off the map,
+    ticker and Wire even if that case is in the database."""
+    if not DIRECT_LINK_ONLY_CASES:
+        return set()
+    try:
+        rows = conn.execute("SELECT case_id, name FROM cases").fetchall()
+        ids = [r["case_id"] for r in rows
+               if _slugify(r["name"] or "")[:60] in DIRECT_LINK_ONLY_CASES]
+        if not ids:
+            return set()
+        ph = ",".join("?" * len(ids))
+        sig_rows = conn.execute(
+            f"SELECT signal_id FROM case_signals WHERE case_id IN ({ph})", ids
+        ).fetchall()
+        return {r["signal_id"] for r in sig_rows}
+    except sqlite3.Error:
+        return set()
+
+
 def _build_dist(
     env: Environment,
     conn: sqlite3.Connection,
@@ -713,6 +736,17 @@ def _build_dist(
 ) -> None:
     # Revenue context — merged into every template render
     rev = _get_revenue_context()
+
+    # Direct-link-only pages: their article pages are still rendered (below),
+    # but they and their signals are listed nowhere on the site.
+    pages_articles = articles
+    hidden_signal_ids = _direct_link_only_signal_ids(conn)
+    signals = [
+        s for s in signals
+        if s.get("article_slug") not in DIRECT_LINK_ONLY_ARTICLES
+        and s.get("signal_id") not in hidden_signal_ids
+    ]
+    articles = [a for a in articles if a["slug"] not in DIRECT_LINK_ONLY_ARTICLES]
 
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
@@ -734,7 +768,8 @@ def _build_dist(
     grouped, span = _build_timeline_data(signals, articles)  # Wire panel: Archive mode
 
     # Cases — used by both the Cases panel and per-case detail pages
-    cases = _fetch_cases(conn)
+    all_cases = _fetch_cases(conn)
+    cases = [c for c in all_cases if c["slug"] not in DIRECT_LINK_ONLY_CASES]
 
     # Entities — used by both the Entities panel and per-actor profile pages
     directory_actors = _fetch_directory_actors(conn)
@@ -782,6 +817,8 @@ def _build_dist(
     from itertools import combinations
     case_points: dict[int, list] = {}
     for r in case_geo_rows:
+        if _slugify(r["name"])[:60] in DIRECT_LINK_ONLY_CASES:
+            continue
         case_points.setdefault(r["case_id"], []).append(r)
 
     for cid, points in case_points.items():
@@ -837,7 +874,7 @@ def _build_dist(
     tmpl = env.get_template("article.html")
     gate_tmpl = env.get_template("gate.html")
     gated_count = 0
-    for art in articles:
+    for art in pages_articles:
         article_tier = art.get("tier", "free")
         art["case_study"] = CASE_STUDY_NOTES.get(art["slug"])
         out = DIST_ART / f"{art['slug']}.html"
@@ -882,7 +919,7 @@ def _build_dist(
                 ),
                 encoding="utf-8",
             )
-    print(f"[publish] articles/   - {len(articles)} pages ({gated_count} gated)")
+    print(f"[publish] articles/   - {len(pages_articles)} pages ({gated_count} gated)")
 
     # feed.json
     feed_items = []
@@ -922,7 +959,7 @@ def _build_dist(
 
     # individual case detail pages (cases already fetched above for index.html)
     case_tmpl = env.get_template("case_detail.html")
-    for case in cases:
+    for case in all_cases:
         case_signals = _fetch_case_signals(conn, case["case_id"])
         case_actors  = _fetch_case_actors(conn, case["case_id"])
         out = DIST_CASES / f"{case['slug']}.html"
@@ -936,7 +973,7 @@ def _build_dist(
             ),
             encoding="utf-8",
         )
-    print(f"[publish] cases/        - {len(cases)} detail pages")
+    print(f"[publish] cases/        - {len(all_cases)} detail pages")
 
     # individual entity profile pages (directory_actors already fetched above for index.html)
     actor_tmpl = env.get_template("actor_profile.html")

@@ -3,9 +3,28 @@
 
   var WL_KEY = 'za_divergent_watchlist';
 
+  // 18 Oct 2026: every old signal and entity was removed from the site, so
+  // anything starred before this moment points at a page that no longer
+  // exists. Those entries are dropped the next time the watchlist is read.
+  var WL_RESET_AT = '2026-10-18T16:30:00.000Z';
+
   function getWatchlist() {
-    try { return JSON.parse(localStorage.getItem(WL_KEY)) || { signals: [], actors: [] }; }
+    var wl;
+    try { wl = JSON.parse(localStorage.getItem(WL_KEY)) || { signals: [], actors: [] }; }
     catch (e) { return { signals: [], actors: [] }; }
+    var changed = false;
+    ['signals', 'actors'].forEach(function (type) {
+      var list = wl[type] || [];
+      var kept = list.filter(function (item) {
+        return (item.addedAt || '') >= WL_RESET_AT;
+      });
+      if (kept.length !== list.length) changed = true;
+      wl[type] = kept;
+    });
+    if (changed) {
+      try { localStorage.setItem(WL_KEY, JSON.stringify(wl)); } catch (e) { /* ignore */ }
+    }
+    return wl;
   }
 
   function saveWatchlist(wl) {
