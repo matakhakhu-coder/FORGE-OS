@@ -20,6 +20,8 @@
     <a href="{{ url_for('pages.index', lens=lens) }}" class="topbar__wordmark">
       {% if lens == 'live' %}
         FORGE <span>LIVE INTELLIGENCE STREAM</span>
+      {% elif lens == 'checked' %}
+        FORGE <span>HAND-CHECKED SIGNALS</span>
       {% else %}
         FORGE <span>INTELLIGENCE ARCHIVE</span>
       {% endif %}
@@ -63,7 +65,7 @@
     {# ── Sentinel alert bell ────────────────────────────────────────────── #}
     {# sentinel_count injected by context_processor — counts 'new' alerts   #}
     {% set lens = request.args.get('lens', 'live') %}
-    {% set active_mode = {'live':'LIVE', 'seed':'ARCHIVE', 'all':'ALL'}.get(lens, 'LIVE') %}
+    {% set active_mode = {'live':'LIVE', 'seed':'ARCHIVE', 'checked':'CHECKED', 'all':'ALL'}.get(lens, 'LIVE') %}
 
     <div class="topbar__mode-badge topbar__mode-badge--{{ lens }}" aria-live="polite" aria-atomic="true">
       ACTIVE MODE: <strong>{{ active_mode }}</strong>
@@ -72,6 +74,7 @@
     <div class="topbar__lens-toggle" aria-label="Select intelligence layer">
       <a href="{{ request.path }}?lens=live" class="lens-btn{% if lens == 'live' %} lens-btn--active{% endif %}">LIVE</a>
       <a href="{{ request.path }}?lens=seed" class="lens-btn{% if lens == 'seed' %} lens-btn--active{% endif %}">ARCHIVE</a>
+      <a href="{{ request.path }}?lens=checked" class="lens-btn{% if lens == 'checked' %} lens-btn--active{% endif %}" title="Hand-checked pins (docs/signals)">CHECKED</a>
       <a href="{{ request.path }}?lens=all" class="lens-btn{% if lens == 'all' %} lens-btn--active{% endif %}">ALL</a>
     </div>
 

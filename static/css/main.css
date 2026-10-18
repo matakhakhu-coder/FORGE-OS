@@ -277,6 +277,7 @@ mark {
 
 .topbar__mode-badge--live { background: rgba(34,197,94,0.16); border-color: rgba(34,197,94,0.45); color: #dcfce7; }
 .topbar__mode-badge--seed { background: rgba(245,158,11,0.16); border-color: rgba(245,158,11,0.45); color: #facc15; }
+.topbar__mode-badge--checked { background: rgba(56,189,248,0.16); border-color: rgba(56,189,248,0.45); color: #bae6fd; }
 .topbar__mode-badge--all { background: rgba(148,163,184,0.16); border-color: rgba(148,163,184,0.45); color: #94a3b8; }
 
 .lens-btn {

@@ -24,7 +24,7 @@ def map_explorer():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     event_where = "WHERE latitude IS NOT NULL AND longitude IS NOT NULL"
@@ -94,7 +94,7 @@ def api_geo():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     where_clauses = ["e.latitude IS NOT NULL", "e.longitude IS NOT NULL"]
@@ -255,7 +255,7 @@ def api_signals_geojson():
     mode          = request.args.get("mode",          "").strip().lower()  # "relevant" = case-pinned only
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     features = []
@@ -325,8 +325,16 @@ def api_signals_geojson():
         )
 
     # ── Default (corpus) mode ────────────────────────────────────────────
+    # Hand-checked pins are stored 'reviewed' (tools/checked_signals.py), so
+    # the 'checked' lens shows the published ones and 'all' adds them.
+    status_clause = "status IN ('raw', 'promoted')"
+    if lens == 'checked':
+        status_clause = "status = 'reviewed' AND published_at IS NOT NULL"
+    elif lens == 'all':
+        status_clause = ("(status IN ('raw', 'promoted') OR "
+                         "(source_type = 'checked' AND published_at IS NOT NULL))")
     clauses = [
-        "status IN ('raw', 'promoted')",
+        status_clause,
         "lat IS NOT NULL",
         "lng IS NOT NULL",
     ]
@@ -504,7 +512,7 @@ def api_clusters_geojson():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     where_clauses = [

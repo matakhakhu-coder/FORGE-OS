@@ -1,0 +1,18 @@
+{
+  "schema": "forge.checked_signals.index",
+  "version": 1,
+  "about": "Every batch of hand-checked pins, in load order. tools/checked_signals.py loads them all with one command, and tools/publish.py refuses to build if any pin listed here is missing from the database or different from its file.",
+  "load_with": "python tools/checked_signals.py import --write",
+  "batches": [
+    {
+      "file": "western-cape-murders-2026-10-18.json",
+      "province": "Western Cape",
+      "signals": 5
+    },
+    {
+      "file": "western-cape-murders-2026-10-18-batch2.json",
+      "province": "Western Cape",
+      "signals": 19
+    }
+  ]
+}

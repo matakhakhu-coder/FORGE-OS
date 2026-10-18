@@ -285,7 +285,7 @@ def discovery():
     ignored  = sum(1 for t in targets if t["status"] == "ignored")
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     return render_template(

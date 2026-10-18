@@ -34,7 +34,7 @@ def index():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     # Case-level filter -- when set, scope events + actors to one case
@@ -270,7 +270,7 @@ def index():
 def events():
     db       = get_db()
     lens     = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     category = request.args.get("category", "")
@@ -335,7 +335,7 @@ def actors():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     actor_where = '' if lens == 'all' else f"WHERE ac.source_type = '{lens}'"
@@ -500,7 +500,7 @@ def timeline():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     event_where = '' if lens == 'all' else 'WHERE e.source_type = ?'
@@ -568,7 +568,7 @@ def api_timeline():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     event_where = '' if lens == 'all' else 'WHERE e.source_type = ?'
@@ -603,7 +603,7 @@ def artifact_gallery():
     status   = request.args.get("status", "").strip()
     q        = request.args.get("q",      "").strip()
     lens     = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
     page     = max(1, request.args.get("page", 1, type=int))
     per_page = 24
@@ -753,7 +753,7 @@ def api_feed():
     stream_filter = request.args.get("stream", "").strip().upper() or None
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     if lens == 'all':

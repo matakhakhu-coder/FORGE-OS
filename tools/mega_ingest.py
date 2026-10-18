@@ -1159,17 +1159,52 @@ def run_full_ingest(
 # Phase 4 — Pipeline Run Logging
 # ══════════════════════════════════════════════════════════════════════════════
 
+def import_checked_signals() -> dict:
+    """
+    Load every hand-checked pin batch (docs/signals/index.json) into DB_PATH
+    via tools/checked_signals.py. Idempotent: pins already in line are left
+    alone. Runs before collection (so a collector's INSERT OR IGNORE skips
+    articles that are already checked pins) and again right before publishing
+    (so anything the engines or ingest changed on a checked pin is put back).
+    Non-fatal here; tools/publish.py refuses to build if the pins are not right.
+    """
+    try:
+        from tools.checked_signals import CheckedSignalError, run_import
+    except Exception as exc:
+        log.warning(f"[checked] import unavailable: {exc}")
+        return {"status": "error", "detail": str(exc)}
+    try:
+        actions = run_import(Path(DB_PATH), write=True, out=lambda m: log.info(f"[checked] {m}"))
+    except CheckedSignalError as exc:
+        log.warning(f"[checked] import refused: {exc}")
+        return {"status": "refused", "detail": str(exc)}
+    except Exception as exc:
+        log.warning(f"[checked] import failed: {exc}")
+        return {"status": "error", "detail": str(exc)}
+    counts: dict = {}
+    for a in actions:
+        counts[a.kind] = counts.get(a.kind, 0) + 1
+    return {"status": "success", **counts}
+
+
 def run_publish_deploy() -> dict:
     """
     Phase 5 — regenerate the ZA-DIVERGENT static site and push to
     origin/main via tools/publish.py --deploy. Non-fatal on any error;
     a failed publish must never fail the pipeline run.
+
+    The hand-checked pins are imported first; if that fails, nothing is
+    published (publish.py's own guard would refuse the build anyway).
     """
     import subprocess
     import os
     if os.environ.get("FORGE_ALLOW_PUBLISH") != "1":
         log.info("[publish] skipped: set FORGE_ALLOW_PUBLISH=1 to allow publishing")
         return {"status": "skipped"}
+    checked = import_checked_signals()
+    if checked.get("status") != "success":
+        log.warning("[publish] skipped: hand-checked pins could not be imported")
+        return {"status": "refused", "checked": checked}
     try:
         result = subprocess.run(
             [sys.executable, str(Path(__file__).resolve().parent / "publish.py"), "--deploy"],
@@ -1255,6 +1290,11 @@ if __name__ == "__main__":
     engine_result   = {}
     ingest_result   = {"status": "skipped", "total": 0, "processed": 0}
 
+    # ── Phase 0: Hand-checked pins (docs/signals) ────────────────────────────
+    checked_result = {"status": "skipped"}
+    if not args.dry_run:
+        checked_result = import_checked_signals()
+
     # ── Phase 1: Collection ───────────────────────────────────────────────────
     if not args.ingest_only and not args.engines_only:
         collect_result = asyncio.run(
@@ -1322,6 +1362,7 @@ if __name__ == "__main__":
         records_out=ingest_result.get("processed", 0),
         duration_s=total_duration,
         detail={
+            "checked":  checked_result,
             "collect":  collect_result,
             "engines":  {k: v.get("status") for k, v in engine_result.items()},
             "ingest":   ingest_result,

@@ -1371,6 +1371,50 @@ def _writes_pro_feed(tier: str) -> bool:
     return tier == "pro"
 
 
+# ── Rebuild guard for hand-checked pins (Sprint 1) ─────────────────────────────
+# database.db is not in git and Vercel serves the committed dist/, so a build
+# from a database that lacks a checked batch would quietly drop those pins.
+# Before building: every pin in docs/signals/index.json must be in the
+# database exactly as its file says. After building: the map must carry every
+# active checked pin. Either failure stops the publish before any deploy.
+
+CHECKED_INDEX = ROOT / "docs" / "signals" / "index.json"
+
+
+class CheckedGuardError(SystemExit):
+    pass
+
+
+def _checked_guard_before(conn):
+    from tools.checked_signals import CheckedSignalError, load_index, verify
+    try:
+        cs = load_index(CHECKED_INDEX)
+    except CheckedSignalError as exc:
+        print(f"[publish] REFUSED: checked-signal files are not loadable: {exc}")
+        raise CheckedGuardError(2)
+    problems = verify(conn, cs)
+    if problems:
+        print(f"[publish] REFUSED: {len(problems)} hand-checked pin problem(s); nothing was built.")
+        for p in problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] Fix: python tools/checked_signals.py import --write  (then publish again)")
+        raise CheckedGuardError(2)
+    print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted")
+    return cs
+
+
+def _checked_guard_after(cs):
+    from tools.checked_signals import count_markers_problems
+    problems = count_markers_problems(DIST / "index.html", cs)
+    if problems:
+        print(f"[publish] REFUSED after build: the map is missing hand-checked pins; not deploying.")
+        for p in problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] dist/ is now incomplete. Restore it with: git checkout -- dist/")
+        raise CheckedGuardError(3)
+    print(f"[publish] map carries all {len(cs.active)} checked pins")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="ZA-DIVERGENT static site publisher")
     parser.add_argument(
@@ -1403,6 +1447,7 @@ def main() -> None:
     conn = sqlite3.connect(str(DB_PATH), timeout=60)
     conn.row_factory = sqlite3.Row
     try:
+        checked = _checked_guard_before(conn)
         signals  = _fetch_signals(conn)
         articles = _fetch_articles(conn)
 
@@ -1445,6 +1490,7 @@ def main() -> None:
     finally:
         conn.close()
 
+    _checked_guard_after(checked)
     print(f"\n[publish] dist/ ready -> {DIST}")
 
     if args.deploy:

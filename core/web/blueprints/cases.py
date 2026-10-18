@@ -361,7 +361,7 @@ def cases():
     db = get_db()
 
     lens = request.args.get('lens', 'all').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'all'
 
     case_where = '' if lens == 'all' else 'WHERE c.source_type = ?'

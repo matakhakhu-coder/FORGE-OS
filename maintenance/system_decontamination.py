@@ -41,7 +41,8 @@ def seed_source_type(conn: sqlite3.Connection, table: str):
 
     print(f"{table}: marking existing rows as source_type='seed'")
     cur = conn.execute(
-        f"UPDATE {table} SET source_type = 'seed' WHERE source_type IS NULL OR source_type != 'seed'"
+        f"UPDATE {table} SET source_type = 'seed' WHERE source_type IS NULL "
+        f"OR source_type NOT IN ('seed', 'checked')"  # hand-checked pins keep their type
     )
     print(f"{table}: updated {cur.rowcount} rows")
 
@@ -68,8 +69,8 @@ def run_migration(db_path: Path):
 
             # Final data reclassification per Task 1
             print("signals: applying sentinel/live/seed classification (signal_id and source)")
-            conn.execute("UPDATE signals SET source_type = 'live' WHERE source = 'SENTINEL' OR signal_id LIKE 'sa-%'")
-            conn.execute("UPDATE signals SET source_type = 'seed' WHERE source_type IS NULL OR source_type NOT IN ('live', 'seed')")
+            conn.execute("UPDATE signals SET source_type = 'live' WHERE (source = 'SENTINEL' OR signal_id LIKE 'sa-%') AND COALESCE(source_type, '') != 'checked'")
+            conn.execute("UPDATE signals SET source_type = 'seed' WHERE source_type IS NULL OR source_type NOT IN ('live', 'seed', 'checked')")
 
             print("events: default to seed + promote linked live events")
             conn.execute("UPDATE events SET source_type = 'seed'")

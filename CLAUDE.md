@@ -44,6 +44,12 @@ python app.py --migrate
 # Full pipeline
 python tools\mega_ingest.py          # collect + synthesise (all phases)
 
+# Hand-checked pins (docs/signals, listed in docs/signals/index.json)
+python tools\checked_signals.py import           # dry run: what would change
+python tools\checked_signals.py import --write   # load every batch (idempotent)
+python tools\checked_signals.py verify           # the rebuild guard publish.py runs
+python tools\checked_signals.py stamp            # refresh fingerprints after a hand edit
+
 # Single collector test
 python forage\collectors\<name>.py
 
@@ -146,7 +152,7 @@ assuming — verdicts revised on real evidence, not deleted:
 | Actor confidence gate | `conclusion.confidence ≥ 0.2` | Prevents low-quality signals from polluting actor registry |
 | Signal streams | `CRIME_INTEL · INFRASTRUCTURE · PRIORITY · GLOBAL` | Four discrete decay rates |
 | Decay model | `score × e^(−λ × hours)`, floor `0.05` | Exponential half-life; priority signals start at 1.5× |
-| Source layers | `source_type = 'live'` or `'seed'`; `lens` param on routes | Analyst can inspect live vs. curated layers independently |
+| Source layers | `source_type = 'live'`, `'seed'` (synthetic archive) or `'checked'` (hand-checked pins from docs/signals, loaded only by `tools/checked_signals.py`); `lens` param on routes | Analyst can inspect live vs. curated layers independently; publish.py refuses to build if a checked pin is missing or different |
 | Actor types (valid) | `person · institution · media · movement · government · location · political_party · organization · other · paramilitary · unknown` | Full CHECK constraint; `/admin` dropdown and `_VALID_ACTOR_TYPES` must stay in sync |
 | Frontend | Leaflet.js · D3.js · Chart.js · HTMX | No SPA framework; server-rendered Jinja2 + progressive enhancement |
 | Route architecture | 8 Flask Blueprints in `core/web/blueprints/` | app.py is thin factory; routes live in domain-specific modules |

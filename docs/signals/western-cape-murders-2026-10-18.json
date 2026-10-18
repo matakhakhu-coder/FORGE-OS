@@ -1,7 +1,11 @@
 {
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Western Cape",
   "batch": "Western Cape murders, hand-checked 18 Oct 2026",
   "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb or area is known.",
-  "load_with": "python tools/seed_checked_signals.py docs/signals/western-cape-murders-2026-10-18.json --write",
+  "load_with": "python tools/checked_signals.py import --write",
+  "retractions": [],
   "signals": [
     {
       "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f",
@@ -31,10 +35,15 @@
             }
           ],
           "checked_at": "2026-10-18T17:23:07Z",
-          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-14",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-15"
         },
         "collected_title": "Murder investigation launched after man’s body discovered on farm near Worcester - https://worcesterstandard.co.za/"
-      }
+      },
+      "fingerprint": "sha256:631743eea733a4d4407d1191999c66c511c6f5aabe66e4aec058ef49b66d3091"
     },
     {
       "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c",
@@ -72,10 +81,15 @@
             }
           ],
           "checked_at": "2026-10-18T17:23:07Z",
-          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-16T06:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-17"
         },
         "collected_title": "Two taxi owners shot dead in Epping as police arrest two suspects - Cape Times"
-      }
+      },
+      "fingerprint": "sha256:cccbb2b74c131bf8108286429710e5355897e95f76399d67184f0913fd39fc11"
     },
     {
       "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155",
@@ -109,10 +123,15 @@
             }
           ],
           "checked_at": "2026-10-18T17:23:07Z",
-          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-10T19:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-11"
         },
         "collected_title": "Police launch manhunt after double murder in Athlone, CTN - SABC News"
-      }
+      },
+      "fingerprint": "sha256:ae7691f7012f2e8871907e956ad96d6badb170d438371ca30467e43bbc69ee8e"
     },
     {
       "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac",
@@ -150,10 +169,15 @@
             }
           ],
           "checked_at": "2026-10-18T17:23:07Z",
-          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-09T09:15+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-14"
         },
         "collected_title": "Two arrested after high-speed chase linked to Cafda double murder - IOL"
-      }
+      },
+      "fingerprint": "sha256:6f35e083a8defb9cbcc31c1be3e3fead94ecb699658631d4be74efe8d6311887"
     },
     {
       "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650",
@@ -183,10 +207,15 @@
             }
           ],
           "checked_at": "2026-10-18T17:23:07Z",
-          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-04",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-13"
         },
         "collected_title": "Kwa Police investigate murder of 19-year-old - Mossel Bay Advertiser"
-      }
+      },
+      "fingerprint": "sha256:4abb1c8127715bae1811a65a78de3bca4a59686196fda3faec127da88af74e83"
     }
   ]
 }

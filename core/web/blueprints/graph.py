@@ -24,7 +24,7 @@ def graph():
     db = get_db()
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     event_filter = '' if lens == 'all' else f"WHERE source_type = '{lens}'"
@@ -86,7 +86,7 @@ def api_graph():
     incl_artifacts = request.args.get("include_artifacts", "false").lower() == "true"
 
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     # ── Actors ─────────────────────────────────────────────────────────
@@ -326,7 +326,7 @@ def api_graph_data():
     min_weight     = max(0, int(request.args.get("min_weight", 0)))
     incl_artifacts = request.args.get("include_artifacts", "false").lower() == "true"
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
 
     # ── Actors ─────────────────────────────────────────────────────────

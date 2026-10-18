@@ -73,7 +73,7 @@ def register_wiki_routes(app):
 @wiki_bp.route('/api/wiki/graph_data', methods=['GET'])
 def graph_data():
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
     where_clause = '1=1' if lens == 'all' else f"source_type = '{lens}'"
 
@@ -111,7 +111,7 @@ def graph_data():
 @wiki_bp.route('/')
 def wiki_index():
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
     where_clause = '1=1' if lens == 'all' else f"source_type = '{lens}'"
 
@@ -124,7 +124,7 @@ def wiki_index():
 @wiki_bp.route('/diagnostics')
 def wiki_diagnostics():
     lens = request.args.get('lens', 'live').lower()
-    if lens not in ('live', 'seed', 'all'):
+    if lens not in ('live', 'seed', 'checked', 'all'):
         lens = 'live'
     where_clause = '1=1' if lens == 'all' else f"source_type = '{lens}'"
 
