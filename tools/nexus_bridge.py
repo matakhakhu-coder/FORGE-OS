@@ -14,15 +14,13 @@ BATCH_SIZE = 50
 FLUSH_LIMIT = 500
 MAX_TEXT_SLICE = 100000  # RAM Safety: 100KB per doc limit BEFORE regex
 
-# Attempt to load FORGE security, fallback to basic sanitization if offline
-try:
-    from forge_security.sanitizer import sanitize_signal_text
-except ImportError:
-    logging.warning("forge_security module not found. Using local fallback sanitizer.")
-    def sanitize_signal_text(text):
-        """Strips non-printable chars and dangerous script tags."""
-        clean = re.sub(r'[^\x20-\x7E\n\r\t]', '', text)
-        return re.sub(r'<[^>]*>', '', clean)
+# Shared FORGE text cleaner, no local fallback (see coalition_interceptor).
+# Make the repo root importable so `python tools/nexus_bridge.py` works.
+import sys
+_REPO_ROOT = str(Path(__file__).resolve().parent.parent)
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+from forge_security.sanitizer import sanitize_signal_text  # noqa: E402
 
 BLACKLIST = {'magnitude', 'usgs', 'review', 'state', 'government', 'south africa', 'gauteng', 'durban', 'joburg', 'daily maverick', 'news24', 'timeslive', 'labubu', 'cgi', 'walker', 'exxon', 'ferrari', 'court'}
 PROTECTED = {'npa', 'ssa', 'eff', 'anc', 'siu', 'fbi', 'doj', 'zim'}

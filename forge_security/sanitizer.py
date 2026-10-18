@@ -11,6 +11,15 @@ Two public entry-points:
   sanitize_signal_text(raw: str) -> str
       For plain-text fields: title, summary, source_url, actor names.
       Strips every HTML tag, collapses whitespace, limits length.
+      The result is HTML-safe (bleach escapes &, < and >).
+
+  What this module does NOT do: it does not delete words. Earlier
+  versions scrubbed SQL keywords (SELECT, UPDATE, DELETE, "-- ", ...)
+  and replaced them with "[REDACTED]", which mangled ordinary news
+  text ("Police select suspects" -> "Police [REDACTED] suspects").
+  SQL injection is prevented where it has to be: every database write
+  binds values as parameters (sqlite3 "?" placeholders). Text cleaning
+  is the wrong layer for it, and keyword lists are trivially bypassed.
 
   sanitize_html_fragment(raw: str) -> str
       For fields that may legitimately contain a restricted subset of
@@ -48,13 +57,6 @@ _ALLOWED_ATTRS: Final[dict[str, list[str]]] = {
 # rel="noopener noreferrer" is forced on every <a> by the link cleaner below
 _ALLOWED_PROTOCOLS: Final[list[str]] = ["http", "https", "mailto"]
 
-# Pattern that matches common SQL injection probes
-_SQL_INJECT_RE: Final[re.Pattern[str]] = re.compile(
-    r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|CAST)\b"
-    r"|\-\-\s|;\s*(DROP|SELECT|INSERT))",
-    re.IGNORECASE,
-)
-
 # Null-byte and other control characters (except tab, LF, CR)
 _CONTROL_CHAR_RE: Final[re.Pattern[str]] = re.compile(
     r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]"
@@ -76,9 +78,11 @@ def sanitize_signal_text(raw: str | None, *, field_name: str = "field") -> str:
     1. None → empty string guard
     2. Unicode normalisation (NFC) + control-char strip
     3. HTML tag strip (via bleach.clean with no allowed tags)
-    4. SQL-injection probe detection (log + scrub)
-    5. Whitespace collapse
-    6. Length truncation
+    4. Whitespace collapse
+    5. Length truncation
+
+    Words and punctuation are never removed. SQL safety comes from
+    parameterised queries at the database layer, not from this function.
 
     Parameters
     ----------
@@ -112,18 +116,10 @@ def sanitize_signal_text(raw: str | None, *, field_name: str = "field") -> str:
     # 3. Strip all HTML
     text = bleach.clean(text, tags=[], attributes={}, strip=True)
 
-    # 4. SQL-injection probe detection — scrub and log, don't raise
-    if _SQL_INJECT_RE.search(text):
-        logger.warning(
-            "SANITIZER | SQL injection probe detected in field %r — scrubbing",
-            field_name,
-        )
-        text = _SQL_INJECT_RE.sub("[REDACTED]", text)
-
-    # 5. Collapse whitespace
+    # 4. Collapse whitespace
     text = " ".join(text.split())
 
-    # 6. Truncate
+    # 5. Truncate
     if len(text) > MAX_TEXT_LENGTH:
         logger.debug(
             "SANITIZER | truncated %r from %d to %d chars",
@@ -190,16 +186,7 @@ def sanitize_html_fragment(raw: str | None, *, field_name: str = "html_field") -
         strip=True,
     )
 
-    # SQL probe check on the stripped text
-    text_only = bleach.clean(cleaned, tags=[], attributes={}, strip=True)
-    if _SQL_INJECT_RE.search(text_only):
-        logger.warning(
-            "SANITIZER | SQL injection probe in HTML fragment field %r",
-            field_name,
-        )
-        cleaned = bleach.clean(cleaned, tags=[], attributes={}, strip=True)
-        cleaned = _SQL_INJECT_RE.sub("[REDACTED]", cleaned)
-
+    # No keyword scrubbing here either: see the module docstring.
     return cleaned
 
 

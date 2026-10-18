@@ -14,11 +14,25 @@ class TestV7Interceptor(unittest.TestCase):
         self.conn.close()
 
     def test_sanitizer_advanced_sqli(self):
-        """Gap 2 Fix: Time-based blind and encoding scrubbed."""
+        """An injection-looking title is stored as inert text, not executed.
+
+        The cleaner keeps the words (it is not a SQL filter); safety comes
+        from the parameterised insert. The original April test asserted
+        that SLEEP and -- were deleted, which only a removed local
+        fallback cleaner ever did.
+        """
         dirty_title = "ActionSA Press Release'; SLEEP(5)--"
         clean = sanitize_signal_text(dirty_title)
-        self.assertNotIn("SLEEP", clean)
-        self.assertNotIn("--", clean)
+        self.assertEqual(clean, dirty_title)
+        self.cursor.execute("CREATE TABLE mock_titles (title TEXT)")
+        dynamic_insert(self.cursor, "mock_titles", {"title": clean})
+        self.cursor.execute("SELECT title FROM mock_titles")
+        self.assertEqual(self.cursor.fetchone(), (dirty_title,))
+
+    def test_uses_shared_sanitizer(self):
+        """No private copy of the cleaner hides in this tool any more."""
+        from forge_security import sanitizer
+        self.assertIs(sanitize_signal_text, sanitizer.sanitize_signal_text)
 
     def test_dynamic_insert_strict_concat(self):
         """Gap 1 Fix: Schema mapping strictly uses concatenation."""

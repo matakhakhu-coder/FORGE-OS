@@ -11,25 +11,15 @@ DB_PATH = str(Path(__file__).resolve().parent.parent / "database.db")
 KEYWORDS = ['Tshwane', 'ActionSA', 'EFF', 'Madlanga', 'Matlala', 'Mkhwanazi', 'Sibiya']
 RECENCY_THRESHOLD = '2026-01-01'
 
-# 🔴 GAP 2 FIXED: Word-Boundary Patched OWASP Sanitizer
-try:
-    from forge_security.sanitizer import sanitize_signal_text
-except ImportError:
-    logging.warning("forge_security off-grid. Initializing boundary-locked OWASP sanitizer.")
-    def sanitize_signal_text(text):
-        if not isinstance(text, str):
-            text = str(text)
-        text = text.encode('utf-8', 'ignore').decode('utf-8')
-        text = re.sub(r'<[^>]*>', '', text) 
-        
-        # Word boundaries prevent partial match bypasses (e.g., 'Sleeping')
-        sqli_pattern = (
-            r'\b(SLEEP|BENCHMARK|WAITFOR|UNION|SELECT|INSERT|DROP|UPDATE|DELETE)\b|'
-            r'(--|;|\/\*|\*\/|@@|@|1\s*=\s*1|OR\s+\'[^\']+\'\s*=\s*\'[^\']+\'|0x[0-9a-fA-F]+)'
-        )
-        text = re.sub(sqli_pattern, '', text, flags=re.IGNORECASE) 
-        text = re.sub(r'[^\x20-\x7E\n\r\t]', '', text) 
-        return text.strip()[:250]
+# Shared FORGE text cleaner. There is deliberately no local fallback:
+# an old copy here deleted words like "select", "update" and every ";"
+# and "@" from titles. Make the repo root importable so this also works
+# when run as `python tools/coalition_interceptor.py`.
+import sys
+_REPO_ROOT = str(Path(__file__).resolve().parent.parent)
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+from forge_security.sanitizer import sanitize_signal_text  # noqa: E402
 
 def dynamic_insert(cursor, table, payload_dict, dry_run=False):
     cursor.execute("PRAGMA table_info(" + table + ")")
