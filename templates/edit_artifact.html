@@ -148,7 +148,7 @@ function submitDelete() {
   if (!pw) { alert('Password required.'); return; }
   const form = document.createElement('form');
   form.method = 'POST';
-  form.action = '{{ url_for("artifact_delete", artifact_id=artifact.artifact_id) }}';
+  form.action = '{{ url_for("admin.artifact_delete", artifact_id=artifact.artifact_id) }}';
   const input = document.createElement('input');
   input.type = 'hidden'; input.name = 'password'; input.value = pw;
   form.appendChild(input);

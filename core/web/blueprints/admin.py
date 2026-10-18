@@ -230,7 +230,6 @@ def admin_event_new():
         signal_id=signal_id,
         source_signal=source_signal,
         event_categories=event_categories,
-        admin_password=ADMIN_PASSWORD,
     )
 
 
@@ -245,7 +244,9 @@ def admin_event_new_post():
 
     if request.form.get("password") != ADMIN_PASSWORD:
         flash("Incorrect password — event not saved.", "error")
-        return redirect(url_for("admin.admin_event_new"))
+        # Keep the originating signal so the pre-filled form comes back.
+        return redirect(url_for("admin.admin_event_new",
+                                signal_id=request.form.get("signal_id") or None))
 
     title    = request.form.get("ev_title",    "").strip()
     summary  = request.form.get("ev_summary",  "").strip() or None
@@ -596,7 +597,6 @@ def admin():
         event_categories=event_categories,
         actor_types_list=actor_types_list,
         actors_list=actors_list,
-        admin_password=ADMIN_PASSWORD,
     )
 
 
@@ -2150,33 +2150,42 @@ def _build_event_document(event, ctx: dict) -> dict:
 
 
 def _document_signals_data(db, stream: str | None, days: int) -> dict:
-    """Query aggregate signal data for a stream brief (no case required)."""
-    period_clause = f"datetime('now', '-{days} days')"
+    """Query aggregate signal data for a stream brief (no case required).
 
-    base_where = f"created_at >= {period_clause}"
+    signals has no created_at column; its time column is `timestamp`
+    (the same one the feed, map and pulse routes filter on). `stream`
+    comes from the query string, so it is bound as a parameter, never
+    formatted into the SQL.
+    """
+    base_where = "timestamp >= datetime('now', ?)"
+    params: list = [f"-{int(days)} days"]
     if stream:
-        base_where += f" AND stream = '{stream}'"
+        base_where += " AND stream = ?"
+        params.append(stream)
 
     total = db.execute(
-        f"SELECT COUNT(*) AS n FROM signals WHERE {base_where}"
+        f"SELECT COUNT(*) AS n FROM signals WHERE {base_where}", params
     ).fetchone()["n"]
 
     high_gravity = db.execute(
-        f"SELECT COUNT(*) AS n FROM signals WHERE {base_where} AND gravity_score >= 0.5"
+        f"SELECT COUNT(*) AS n FROM signals WHERE {base_where} AND gravity_score >= 0.5",
+        params,
     ).fetchone()["n"]
 
     stream_dist = db.execute(
         f"SELECT stream, COUNT(*) AS cnt FROM signals WHERE {base_where} "
-        f"GROUP BY stream ORDER BY cnt DESC"
+        f"GROUP BY stream ORDER BY cnt DESC",
+        params,
     ).fetchall()
 
     source_dist = db.execute(
         f"SELECT source, COUNT(*) AS cnt FROM signals WHERE {base_where} AND source IS NOT NULL "
-        f"GROUP BY source ORDER BY cnt DESC LIMIT 8"
+        f"GROUP BY source ORDER BY cnt DESC LIMIT 8",
+        params,
     ).fetchall()
 
     unique_sources = db.execute(
-        f"SELECT COUNT(DISTINCT source) AS n FROM signals WHERE {base_where}"
+        f"SELECT COUNT(DISTINCT source) AS n FROM signals WHERE {base_where}", params
     ).fetchone()["n"]
 
     gravity_tiers = db.execute(
@@ -2184,13 +2193,16 @@ def _document_signals_data(db, stream: str | None, days: int) -> dict:
             SUM(CASE WHEN gravity_score >= 0.7 THEN 1 ELSE 0 END) AS high,
             SUM(CASE WHEN gravity_score >= 0.35 AND gravity_score < 0.7 THEN 1 ELSE 0 END) AS med,
             SUM(CASE WHEN gravity_score < 0.35 THEN 1 ELSE 0 END) AS low
-        FROM signals WHERE {base_where}"""
+        FROM signals WHERE {base_where}""",
+        params,
     ).fetchone()
 
     top_signals = db.execute(
-        f"SELECT signal_id, title, source, stream, gravity_score, created_at, content "
+        f"SELECT signal_id, title, source, stream, gravity_score, "
+        f"timestamp AS created_at, content "
         f"FROM signals WHERE {base_where} "
-        f"ORDER BY gravity_score DESC LIMIT 6"
+        f"ORDER BY gravity_score DESC LIMIT 6",
+        params,
     ).fetchall()
 
     return {
@@ -2352,7 +2364,7 @@ def _build_signals_document(data: dict) -> dict:
         subject_type="signals",
         doc_title=doc_title,
         doc_subtitle=f"Aggregate signal intelligence across the last {days} days" + (f" · Stream: {stream}" if stream else ""),
-        back_url=url_for("signals"),
+        back_url=url_for("signals.signals"),
         stats=stats,
         primary_section=primary_section,
         primary_chart=primary_chart,

@@ -119,6 +119,16 @@ ARCHIVE_SCHEMA = [
 ]
 
 
+def apply(conn: sqlite3.Connection) -> None:
+    """Create the archive tables and indexes on an open connection (idempotent).
+
+    Called by ``python app.py --migrate`` so /api/archive works on a fresh
+    database. The caller is responsible for committing.
+    """
+    for stmt in ARCHIVE_SCHEMA:
+        conn.execute(stmt)
+
+
 def run():
     print(f"[archive-migrate] Target database: {DB_PATH}")
     if not DB_PATH.exists():
@@ -129,8 +139,7 @@ def run():
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
 
-    for stmt in ARCHIVE_SCHEMA:
-        conn.execute(stmt)
+    apply(conn)
 
     conn.commit()
     conn.close()

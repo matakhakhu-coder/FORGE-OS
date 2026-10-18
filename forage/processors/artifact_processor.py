@@ -47,7 +47,6 @@ Usage
 from __future__ import annotations
 
 import argparse
-import io
 import json
 import re
 import sqlite3
@@ -55,12 +54,17 @@ import sys
 import uuid
 
 # ── Windows cp1252 fix: force UTF-8 output so unicode in log strings works ───
-if hasattr(sys.stdout, "buffer"):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
-                                  errors="replace", line_buffering=True)
-if hasattr(sys.stderr, "buffer"):
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8",
-                                  errors="replace", line_buffering=True)
+# reconfigure() changes the encoding in place. The old approach wrapped
+# sys.stdout.buffer in a new TextIOWrapper; when the replaced wrapper was
+# garbage-collected it closed the shared buffer, which broke any host that
+# had already captured stdout (pytest: "I/O operation on closed file").
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace",
+                                line_buffering=True)
+        except (ValueError, OSError):
+            pass  # stream already detached/closed or not reconfigurable
 from datetime import datetime, timezone
 from pathlib import Path
 
