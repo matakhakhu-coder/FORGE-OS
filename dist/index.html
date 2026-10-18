@@ -1213,7 +1213,9 @@
   /* ══════════════════════════════════════════════════════════════════════════
      MAP INIT
      ══════════════════════════════════════════════════════════════════════════ */
-  var map = L.map('map', { zoomControl: false }).setView([-28.5, 25], 5);
+  // Opening view: all of South Africa. Reset returns here (not to the pins).
+  var HOME_CENTER = [-28.5, 25], HOME_ZOOM = 5;
+  var map = L.map('map', { zoomControl: false }).setView(HOME_CENTER, HOME_ZOOM);
 
   // OpenStreetMap standard tiles (no API key). Usage policy:
   // https://operations.osmfoundation.org/policies/tiles/ — keep the
@@ -1822,11 +1824,7 @@
   document.getElementById('ctrl-zoomin').addEventListener('click', function () { map.zoomIn(); });
   document.getElementById('ctrl-zoomout').addEventListener('click', function () { map.zoomOut(); });
   document.getElementById('ctrl-reset').addEventListener('click', function () {
-    if (clusterGroup.getLayers().length > 0) {
-      map.fitBounds(clusterGroup.getBounds(), { padding: [40, 40] });
-    } else {
-      map.setView([-28.5, 25], 5);
-    }
+    map.setView(HOME_CENTER, HOME_ZOOM);
   });
   document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
 
