@@ -111,6 +111,11 @@
   .md-panel__body {
     overflow-y: auto;
     flex: 1;
+    /* A flex item won't shrink below its content without this, so a long
+       list would run off the bottom of the panel instead of scrolling. */
+    min-height: 0;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     padding: var(--sp-2) 0;
   }
 
@@ -630,6 +635,11 @@
     cursor: pointer;
   }
   .wire-mode-btn.active { color: var(--accent-bright); border-color: var(--accent-muted); }
+  /* Top mode wraps the stats and the list. It must be a shrinking flex column
+     itself, or #wire-list grows to all 24+ entries and the panel's
+     overflow:hidden clips everything past the sixth with no scrollbar. */
+  #wire-top { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+  #wire-top .md-panel__stats { flex-shrink: 0; }
   #wire-top.hidden { display: none; }
   #wire-archive { display: none; overflow-y: auto; }
   #wire-archive.open { display: block; }
@@ -2032,6 +2042,15 @@
       showSignal(idx, { trigger: a });
     });
   }
+
+  /* ── Site search: a signal result opens its drawer without a reload ────── */
+  // Returns true when the signal is a pin on this map and its drawer opened.
+  window.forgeOpenSignal = function (sid, trigger) {
+    var idx = idxForSignal(sid);
+    if (idx === null) return false;
+    showSignal(idx, { trigger: trigger || null });
+    return true;
+  };
 
   /* ── Shared link: ?signal=<id> opens with the drawer showing ─────────────── */
   (function () {

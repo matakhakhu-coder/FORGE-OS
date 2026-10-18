@@ -318,6 +318,23 @@ def _checked_fields(metadata_json: str | None) -> dict:
     }
 
 
+def _signal_search_target(s: dict) -> dict:
+    """Where a signal's search result goes.
+
+    A signal with a pin opens the map with its event drawer showing
+    (index.html?signal=<first 8 of signal_id>, the same link the ticker uses).
+    A signal without a pin goes to its analysis page, or to the map when it
+    has none. Before this, every signal pointed at bare index.html, so a
+    click just reloaded the map.
+    """
+    sid = str(s.get("signal_id") or "")[:8]
+    if sid and s.get("lat") and s.get("lng"):
+        return {"url": f"index.html?signal={sid}", "signal": sid}
+    if s.get("article_slug"):
+        return {"url": f"articles/{s['article_slug']}.html"}
+    return {"url": "index.html"}
+
+
 def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     rows = conn.execute("""
         SELECT signal_id, title, content, stream, source, lat, lng,
@@ -1152,7 +1169,7 @@ def _build_dist(
             "id": s["slug"],
             "title": s["title"],
             "kind": "signal",
-            "url": "index.html",
+            **_signal_search_target(s),
         })
     for a in articles:
         search_docs.append({

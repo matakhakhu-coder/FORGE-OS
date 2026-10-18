@@ -129,7 +129,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="18 Oct 2026 18:50 UTC" title="18 Oct 2026 18:50 UTC">18 Oct 2026 18:50 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="18 Oct 2026 21:40 UTC" title="18 Oct 2026 21:40 UTC">18 Oct 2026 21:40 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -206,7 +206,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 18 Oct 2026 18:50 UTC
+        Generated 18 Oct 2026 21:40 UTC
       </div>
     </div>
   </footer>
@@ -214,7 +214,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 18 Oct 2026 18:50 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 18 Oct 2026 21:40 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -226,10 +226,19 @@
     var box = document.getElementById('search-results');
     if (!input || !box) return;
     var idx = null;
-    fetch('search-index.json')
+    var indexUrl = 'search-index.json';
+    // Result urls are relative to the site root, where search-index.json sits,
+    // so resolve them against the index (pages in articles/ etc. load ../).
+    var siteRoot = new URL(indexUrl, window.location.href);
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    fetch(indexUrl)
       .then(function (r) { return r.json(); })
       .then(function (docs) {
-        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url'] });
+        idx = new MiniSearch({ fields: ['title'], storeFields: ['title', 'kind', 'url', 'signal'] });
         idx.addAll(docs);
       })
       .catch(function () {});
@@ -240,11 +249,25 @@
       if (!res.length) { box.style.display = 'none'; return; }
       box.innerHTML = res.map(function (r) {
         var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
-        return '<a href="' + r.url + '" style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+        var href = new URL(r.url, siteRoot).href;
+        var title = String(r.title || '');
+        return '<a href="' + esc(href) + '"' + (r.signal ? ' data-signal="' + esc(r.signal) + '"' : '') + ' style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
           '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
-          r.title.slice(0, 60) + (r.title.length > 60 ? '...' : '') + '</a>';
+          esc(title.slice(0, 60)) + (title.length > 60 ? '...' : '') + '</a>';
       }).join('');
       box.style.display = 'block';
+    });
+    // On the map page a signal result opens its event drawer in place
+    // (the map sets window.forgeOpenSignal). Anywhere else, or if the pin
+    // isn't on this map, the link loads index.html?signal=..., which opens it.
+    box.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-signal]') : null;
+      if (!a || typeof window.forgeOpenSignal !== 'function') return;
+      if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (!window.forgeOpenSignal(a.getAttribute('data-signal'), input)) return;
+      e.preventDefault();
+      box.style.display = 'none';
+      input.blur();
     });
     document.addEventListener('click', function (e) {
       if (!e.target.closest('.site-search')) box.style.display = 'none';
