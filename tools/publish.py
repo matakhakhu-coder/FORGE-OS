@@ -1192,6 +1192,16 @@ def _build_digest(
     state_file.write_text(now_str)
 
 
+def _writes_pro_feed(tier: str) -> bool:
+    """Whether this build writes dist/pro-feed.json.
+
+    pro-feed.json is the paid API feed (revenue/config.py: api_feed is False
+    for the free tier; docs/MONETIZATION_PLAN.md Module 5). The default
+    'current' build is deployed publicly, so it must not include it.
+    """
+    return tier == "pro"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="ZA-DIVERGENT static site publisher")
     parser.add_argument(
@@ -1245,13 +1255,18 @@ def main() -> None:
         else:
             print(f"[publish] {len(signals)} published signals / {len(articles)} published articles")
             _build_dist(env, conn, signals, articles, now_str)
-            # Pro API feed
-            if tier == "pro" or tier == "current":
+            # Pro API feed — only for an explicit pro build (see _writes_pro_feed)
+            pro_feed_path = DIST / "pro-feed.json"
+            if _writes_pro_feed(tier):
                 pro_feed = _build_pro_feed(signals, conn)
-                (DIST / "pro-feed.json").write_text(
+                pro_feed_path.write_text(
                     json.dumps(pro_feed, indent=2), encoding="utf-8"
                 )
                 print(f"[publish] pro-feed.json — {len(pro_feed)} signals")
+            elif pro_feed_path.exists():
+                # Don't leave a stale paid feed behind in a public build.
+                pro_feed_path.unlink()
+                print("[publish] removed stale pro-feed.json (not a pro build)")
 
         # ── Digest ───────────────────────────────────────────────────────
         if args.digest:

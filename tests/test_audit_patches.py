@@ -173,3 +173,11 @@ def test_api_health_reports_ok(tmp_path, monkeypatch):
     resp = client.get("/api/health")
     assert resp.status_code == 200
     assert resp.get_json() == {"status": "ok", "db": "ok"}
+
+
+def test_pro_feed_only_written_for_pro_builds():
+    from tools.publish import _writes_pro_feed
+
+    assert _writes_pro_feed("pro") is True
+    assert _writes_pro_feed("current") is False
+    assert _writes_pro_feed("free") is False
