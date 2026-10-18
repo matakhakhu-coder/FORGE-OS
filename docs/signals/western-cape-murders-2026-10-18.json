@@ -13,7 +13,7 @@
       "lng": 19.502,
       "stream": "CRIME_INTEL",
       "timestamp": "2026-10-15T09:23:33Z",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "metadata": {
         "query": "Paarl OR Stellenbosch OR Worcester murder",
         "source_outlet": "https://worcesterstandard.co.za/",
@@ -46,7 +46,7 @@
       "lng": 18.53663,
       "stream": "CRIME_INTEL",
       "timestamp": "2026-10-18T15:13:30Z",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "metadata": {
         "query": "Cape Town shot dead",
         "source_outlet": "Cape Times",
@@ -87,7 +87,7 @@
       "lng": 18.51769,
       "stream": "CRIME_INTEL",
       "timestamp": "2026-10-11T09:29:38Z",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "metadata": {
         "query": "Cape Town murder police",
         "source_outlet": "SABC News",
@@ -124,7 +124,7 @@
       "lng": 18.48444,
       "stream": "CRIME_INTEL",
       "timestamp": "2026-10-14T05:05:05Z",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "metadata": {
         "query": "Cape Town murder police",
         "source_outlet": "IOL",
@@ -165,7 +165,7 @@
       "lng": 22.07302,
       "stream": "CRIME_INTEL",
       "timestamp": "2026-10-13T08:00:00Z",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "metadata": {
         "query": "George OR Mossel Bay OR Oudtshoorn murder",
         "source_outlet": "Mossel Bay Advertiser",

@@ -1,14 +1,14 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "18 Oct 2026 17:23 UTC",
+  "generated_at": "18 Oct 2026 17:28 UTC",
   "items": [
     {
       "kind": "signal",
       "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "summary": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the mot...",
       "source": "SABC NEWS",
       "geo": {
@@ -21,7 +21,7 @@
       "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "summary": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit...",
       "source": "CAPE ARGUS (IOL)",
       "geo": {
@@ -34,7 +34,7 @@
       "title": "Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "summary": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two sus...",
       "source": "CAPE TIMES (IOL)",
       "geo": {
@@ -47,7 +47,7 @@
       "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "summary": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police re...",
       "source": "WORCESTER STANDARD",
       "geo": {
@@ -60,7 +60,7 @@
       "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:23:07Z",
+      "published_at": "2026-10-18T17:28:41Z",
       "summary": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an alt...",
       "source": "MOSSEL BAY ADVERTISER",
       "geo": {
