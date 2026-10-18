@@ -49,6 +49,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import sqlite3
 import sys
@@ -263,6 +264,13 @@ class CorrelationEngine:
         log(f"Window   : {self._window_h}h | Max dist: {self._max_dist}km "
             f"| Max time: {self._max_time}h | Min score: {self._min_score}")
 
+        # Checked pins first, on their incident dates, into their own private
+        # review table (never correlated_incidents or the graph). Sprint 4.
+        try:
+            self.checked_proximity(dry_run=dry_run)
+        except Exception as exc:  # never block the main matcher
+            warn(f"checked-pin proximity skipped: {exc}")
+
         conn = _open_db(self._db_path)
         _ensure_schema(conn)
 
@@ -412,6 +420,80 @@ class CorrelationEngine:
                     except Exception:
                         pass
         conn.commit()
+
+    # ── Hand-checked pins: place and time by INCIDENT date (Sprint 4) ──────────
+    #
+    # The main matcher reads `timestamp`, which for collected signals is the
+    # report time, and skips checked pins altogether. Here checked pins are
+    # matched on their incident window (checked.incident_start + precision),
+    # and the result is a private review list only: checked_proximity rows
+    # never enter correlated_incidents or graph_edges, never touch the pins
+    # themselves, and are never drawn on the map. Being near in place and time
+    # is a lead for a person to look at, not a link between two killings.
+
+    CHECKED_MAX_KM = 5.0
+    CHECKED_MAX_HOURS = 48.0
+
+    def checked_proximity(self, dry_run: bool = False,
+                          max_km: Optional[float] = None,
+                          max_hours: Optional[float] = None) -> dict:
+        import sys as _sys
+        _tools = str(Path(__file__).resolve().parents[2] / "tools")
+        if _tools not in _sys.path:
+            _sys.path.insert(0, _tools)
+        from checked_signals import incident_window  # noqa: E402
+
+        max_km = self.CHECKED_MAX_KM if max_km is None else max_km
+        max_h = self.CHECKED_MAX_HOURS if max_hours is None else max_hours
+        conn = _open_db(self._db_path)
+        try:
+            rows = conn.execute(
+                "SELECT signal_id, title, lat, lng, metadata_json FROM signals "
+                "WHERE source_type = 'checked' AND published_at IS NOT NULL "
+                "AND lat IS NOT NULL AND lng IS NOT NULL").fetchall()
+            pins = []
+            for r in rows:
+                try:
+                    chk = (json.loads(r["metadata_json"] or "{}") or {}).get("checked") or {}
+                except (TypeError, ValueError):
+                    chk = {}
+                w = incident_window(chk)
+                if w is None:
+                    warn(f"checked pin {r['signal_id'][:8]} has no readable incident date")
+                    continue
+                pins.append((r["signal_id"], float(r["lat"]), float(r["lng"]), w,
+                             chk.get("incident_precision")))
+            pairs = []
+            for i in range(len(pins)):
+                for j in range(i + 1, len(pins)):
+                    a, b = pins[i], pins[j]
+                    km = haversine_km(a[1], a[2], b[1], b[2])
+                    # gap between the two incident windows (0 when they overlap)
+                    gap = max(0.0, (max(a[3][0], b[3][0]) - min(a[3][1], b[3][1])).total_seconds() / 3600)
+                    if km <= max_km and gap <= max_h:
+                        ida, idb = sorted([a[0], b[0]])
+                        pairs.append((ida, idb, round(km, 2), round(gap, 1),
+                                      f"{a[4]}/{b[4]}"))
+            if not dry_run:
+                conn.execute("""
+                    CREATE TABLE IF NOT EXISTS checked_proximity (
+                        signal_a TEXT NOT NULL, signal_b TEXT NOT NULL,
+                        distance_km REAL NOT NULL, hours_apart REAL NOT NULL,
+                        precision TEXT, note TEXT NOT NULL,
+                        detected_at TEXT NOT NULL,
+                        PRIMARY KEY (signal_a, signal_b))""")
+                conn.execute("DELETE FROM checked_proximity")
+                now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+                conn.executemany(
+                    "INSERT INTO checked_proximity VALUES (?,?,?,?,?,?,?)",
+                    [(*p, "near in place and incident time; not a link", now) for p in pairs])
+                conn.commit()
+            log(f"Checked pins: {len(pins)} read on incident date; "
+                f"{len(pairs)} near pairs (<= {max_km} km, <= {max_h} h apart)")
+            return {"status": "done", "checked_pins": len(pins), "near_pairs": len(pairs),
+                    "pairs": pairs, "dry_run": dry_run}
+        finally:
+            conn.close()
 
     def report(self) -> None:
         """Print top correlations to stdout."""

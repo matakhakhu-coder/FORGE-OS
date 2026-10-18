@@ -563,6 +563,8 @@
   .sd-where { margin: 0; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
   .sd-list { margin: 0; padding-left: 1.1em; font-size: 0.84rem; line-height: 1.5; color: var(--text-secondary); }
   .sd-basis { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-secondary); }
+  .sd-indep { display: inline-block; margin: 0 0 var(--sp-2); padding: 2px 8px; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-primary); border: 1px solid var(--border-dim); border-radius: var(--r-sm); }
+  .sd-prov-note { margin: var(--sp-2) 0 0; font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); }
   .sd-sources { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
   .sd-src {
     display: flex; align-items: center; gap: var(--sp-3);
@@ -1085,6 +1087,12 @@
         <h3 class="sd-label">Sources</h3>
         <p class="sd-basis" id="sd-basis"></p>
         <ul class="sd-sources" id="sd-sources"></ul>
+      </section>
+      <section class="sd-section" id="sd-prov-wrap" hidden>
+        <h3 class="sd-label">Where the reporting comes from</h3>
+        <p class="sd-indep" id="sd-indep"></p>
+        <dl class="sd-facts" id="sd-prov"></dl>
+        <p class="sd-prov-note" id="sd-prov-note"></p>
       </section>
       <section class="sd-section" id="sd-rel-wrap" hidden>
         <h3 class="sd-label">Related pins</h3>
@@ -1787,6 +1795,25 @@
     var basis = links.length + (links.length === 1 ? ' report' : ' reports') + (m.basis ? ' \u00b7 ' + m.basis : '');
     document.getElementById('sd-basis').textContent = basis;
     section('sd-src-wrap', links.length > 0);
+
+    // Where the reporting comes from (Sprint 4): statement, spokesperson,
+    // outlets, other voices, and whether the reports are independent.
+    var pv = m.provenance || null;
+    var dl = document.getElementById('sd-prov');
+    dl.textContent = '';
+    if (pv) {
+      document.getElementById('sd-indep').textContent = pv.independence_label || '';
+      [['Statement from', pv.statement_from],
+       ['Spokesperson', (pv.spokesperson || []).join('; ') || 'Not named'],
+       ['Other voices', (pv.other_voices || []).join('; ') || 'None'],
+       ['Outlets', (pv.outlets || []).join(', ')]].forEach(function (row) {
+        if (!row[1]) return;
+        dl.appendChild(el('dt', null, row[0]));
+        dl.appendChild(el('dd', null, row[1]));
+      });
+      document.getElementById('sd-prov-note').textContent = pv.note || '';
+    }
+    section('sd-prov-wrap', !!pv);
 
     // Related pins: approved link records only. A shared source or a similar
     // pattern is text here and never a line; only a linked incident is drawn.

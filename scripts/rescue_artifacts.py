@@ -144,8 +144,8 @@ def _is_rescue_candidate(domain: str, tiers: str) -> bool:
         # Fallback: promote all artifacts with raw_text_cache
         return True
 
-    grade = grade_source(domain)
-    return grade in tiers.upper()
+    grade = grade_source(domain)          # None = not graded: never promoted
+    return bool(grade) and grade in tiers.upper()
 
 
 # ── Main rescue loop ──────────────────────────────────────────────────────────

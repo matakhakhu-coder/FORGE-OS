@@ -34,6 +34,8 @@ Usage
 
 from __future__ import annotations
 
+import re
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -193,16 +195,46 @@ class AdmiraltyCode:
 
 # ── Public helpers ────────────────────────────────────────────────────────────
 
-def grade_source(domain: str) -> str:
-    """
-    Return the default source reliability grade (A–F) for a domain.
-    Falls back to 'F' (unknown) if the domain is not in the tier list.
-    """
+def _normalise_domain(domain: str) -> str:
+    """'https://www.iol.co.za/capeargus/x' -> 'iol.co.za'; short-names pass through."""
     d = (domain or "").lower().strip()
-    # Strip www. prefix
+    d = re.sub(r"^[a-z][a-z0-9+.-]*://", "", d)      # scheme
+    d = d.split("/", 1)[0].split("?", 1)[0].split(":", 1)[0]
     if d.startswith("www."):
         d = d[4:]
-    return _DOMAIN_SOURCE_GRADES.get(d, "F")
+    return d
+
+
+def grade_source(domain: str) -> Optional[str]:
+    """
+    Return the default source reliability grade (A-E) for a domain, or None
+    when the domain is not on the tier list.
+
+    Sprint 4 fix: an outlet missing from the list used to come back as 'F',
+    which read as "unreliable" for every regional and community paper (10 of
+    the 13 outlets behind the hand-checked pins). Not being on the list means
+    nobody has graded it, so the answer is None, not a grade. Accepts full
+    URLs and sub-domains (m.news24.com, www.iol.co.za/capeargus/...).
+    """
+    d = _normalise_domain(domain)
+    if not d:
+        return None
+    parts = d.split(".")
+    for i in range(len(parts) - 1):          # m.news24.com -> news24.com
+        g = _DOMAIN_SOURCE_GRADES.get(".".join(parts[i:]))
+        if g:
+            return g
+    return _DOMAIN_SOURCE_GRADES.get(d)       # collector short-names
+
+
+# Grades are list defaults set by hand, not checked against any outlet's track
+# record. Until they are, nothing public shows them.
+GRADES_VALIDATED = False
+
+
+def public_grade(domain: str) -> Optional[str]:
+    """The grade a public page may show: None while grades are unvalidated."""
+    return grade_source(domain) if GRADES_VALIDATED else None
 
 
 def grade_info(corroborated: bool = False, contradicted: bool = False) -> int:
@@ -229,7 +261,9 @@ def code_for_domain(domain: str, corroborated: bool = False,
     Convenience: build an AdmiraltyCode from a domain + corroboration state.
     """
     return AdmiraltyCode(
-        source=grade_source(domain),
+        # Ungraded -> 'F' here only: in Admiralty terms F is "reliability
+        # cannot be judged", which weights as neutral (0.5) in the engines.
+        source=grade_source(domain) or "F",
         info=grade_info(corroborated, contradicted),
     )
 

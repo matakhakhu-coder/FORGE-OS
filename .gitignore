@@ -46,3 +46,6 @@ data/acled_*.xlsx
 
 # GDPR data exports — never commit
 gdpr-data*
+
+# Sprint 4: private coding, saved article text, analysis results. Never commit.
+private/

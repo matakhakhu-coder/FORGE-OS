@@ -261,6 +261,11 @@ def _clean_media(items) -> list[dict]:
 
 # ── DB queries ────────────────────────────────────────────────────────────────
 
+def _incident_at(chk: dict) -> str | None:
+    from tools.checked_signals import incident_sort_key
+    return incident_sort_key(chk) or None
+
+
 def _checked_fields(metadata_json: str | None) -> dict:
     """Hand-check details for a signal, read from metadata_json["checked"].
 
@@ -321,6 +326,8 @@ def _checked_fields(metadata_json: str | None) -> dict:
         "media":         _clean_media(chk.get("media")),
         # Sorting key for pattern cases (the incident, not the report).
         "incident_start": (str(chk["incident_start"]).strip() or None) if chk.get("incident_start") else None,
+        # Machine-readable incident moment in UTC (Sprint 4); sorts by incident.
+        "incident_at":   _incident_at(chk),
         # Raw link records; _resolve_links() turns them into drawer rows and
         # map lines, then drops this key so it never reaches the page.
         "link_records":  _clean_link_records(chk.get("links")),
@@ -466,8 +473,59 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             # (machine-collected bodies keep the short summary).
             "story":         _story(r["content"]) if checked["checked"] else None,
             **checked,
+            # Where the reporting comes from (Sprint 4), checked pins only.
+            "provenance":    _provenance_for(r["signal_id"]) if checked["checked"] else None,
         })
+    # Same publish time (a whole batch goes live at once): put the incidents
+    # in the order they happened, newest first, not in signal-ID order.
+    items.sort(key=lambda x: x["signal_id"])
+    items.sort(key=lambda x: x.get("incident_at") or "", reverse=True)
+    items.sort(key=lambda x: x["published_at"] or "", reverse=True)
     return items
+
+
+# ── Source provenance (Sprint 4) ─────────────────────────────────────────────
+# docs/signals/provenance.json says, for each checked pin, who gave the
+# statement, the spokesperson, the outlets and whether the reports are
+# independent. It sits beside the pin files so their fingerprints stay as they
+# are. Private coding (reporters, motive, victims) lives in private/ and the
+# database, and is never read here.
+PROVENANCE_FILE = ROOT / "docs" / "signals" / "provenance.json"
+INDEPENDENCE_LABELS = {
+    "single_report":      "One report only",
+    "same_outlet":        "One outlet only",
+    "same_statement":     "All from police statements",
+    "shared_wording":     "One account, repeated",
+    "partly_independent": "Partly independent",
+    "independent":        "Independent reports",
+}
+_PROVENANCE_CACHE: dict | None = None
+
+
+def _load_provenance() -> dict:
+    global _PROVENANCE_CACHE
+    if _PROVENANCE_CACHE is None:
+        try:
+            _PROVENANCE_CACHE = json.loads(PROVENANCE_FILE.read_text(encoding="utf-8")).get("pins") or {}
+        except (OSError, ValueError):
+            _PROVENANCE_CACHE = {}
+    return _PROVENANCE_CACHE
+
+
+def _provenance_for(signal_id: str) -> dict | None:
+    p = _load_provenance().get(signal_id)
+    if not isinstance(p, dict) or p.get("independence") not in INDEPENDENCE_LABELS:
+        return None
+    clean = lambda xs: [str(x).strip() for x in (xs or []) if str(x).strip()]
+    return {
+        "statement_from":     str(p.get("statement_from") or "").strip() or None,
+        "spokesperson":       clean(p.get("spokesperson")),
+        "other_voices":       clean(p.get("other_voices")),
+        "outlets":            clean(p.get("outlets")),
+        "independence":       p["independence"],
+        "independence_label": INDEPENDENCE_LABELS[p["independence"]],
+        "note":               str(p.get("note") or "").strip() or None,
+    }
 
 
 def _build_timeline_data(
@@ -1516,7 +1574,13 @@ def _checked_guard_before(conn):
             print(f"[publish]   {p}")
         print("[publish] Fix: python tools/checked_signals.py import --write  (then publish again)")
         raise CheckedGuardError(2)
-    print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted")
+    missing = [s["signal_id"][:8] for s in cs.active if _provenance_for(s["signal_id"]) is None]
+    if missing:
+        print(f"[publish] REFUSED: {len(missing)} checked pin(s) have no source provenance "
+              f"in docs/signals/provenance.json: {', '.join(missing)}")
+        raise CheckedGuardError(2)
+    print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted, "
+          f"all with source provenance")
     return cs
 
 

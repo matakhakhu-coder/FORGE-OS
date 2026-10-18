@@ -1,0 +1,345 @@
+{
+  "schema": "forge.checked_signals.provenance",
+  "version": 1,
+  "about": "Where each hand-checked pin's reporting comes from: who gave the statement, the spokesperson, the outlets, and whether the reports are independent of each other. Written after reading every source article (saved text, 19 Oct 2026) with the counterintel independence check as a first pass. Public: shown in the event drawer. Kept apart from the pin files so their fingerprints do not change. The private coding (reporters, motive, victims, arrests) is not in this file.",
+  "independence_values": {
+    "single_report": "One report only. Nothing to check it against.",
+    "same_outlet": "More than one report, all from one outlet. Not independent.",
+    "same_statement": "Several outlets, all resting on police statements. Not independent of the police account.",
+    "shared_wording": "Several outlets, but one repeats the other's wording. Counts as one account.",
+    "partly_independent": "Several outlets; most facts come from police, and at least one report adds its own non-police source."
+  },
+  "checked_at": "2026-10-19",
+  "pins": {
+    "03459a76-618b-4f7b-a538-c70eb89d5f99": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Thembakazi Mpendukana"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Sentinel News"
+      ],
+      "independence": "single_report",
+      "note": "One report, based on the police statement."
+    },
+    "0c5e795f-330b-4302-97c2-812543262e8b": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg"
+      ],
+      "other_voices": [
+        "a family member"
+      ],
+      "outlets": [
+        "City Vision"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus a family member."
+    },
+    "0d2ac747-e939-48fd-a116-3d99c1a95758": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [
+        "ward 85 councillor Unathi Lasiti"
+      ],
+      "outlets": [
+        "Daily Voice"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus the ward councillor; the paper says both statements were given to IOL Media."
+    },
+    "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [
+        "an unnamed resident"
+      ],
+      "outlets": [
+        "Daily Voice"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus an unnamed resident."
+    },
+    "0f037fc3-9de9-4e2b-aa1f-00feda269a58": {
+      "statement_from": "Provincial police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Plainsman"
+      ],
+      "independence": "single_report",
+      "note": "One report, based on the police statement."
+    },
+    "19a71c43-7584-4483-8cb1-9c71f12a9cb8": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [
+        "Ian Cameron, chair of Parliament's police committee"
+      ],
+      "outlets": [
+        "EWN"
+      ],
+      "independence": "same_outlet",
+      "note": "Two reports from one outlet by the same reporter. Police facts, plus a political reaction."
+    },
+    "1a328ebb-28da-4b22-a7d6-f986d7852155": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg (SABC News)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SABC News",
+        "Cape Town ETC"
+      ],
+      "independence": "same_statement",
+      "note": "Two reports written separately, both resting on police. SABC quotes Sgt Wesley Twigg; Cape Town ETC cites police without naming a spokesperson for this shooting. Its Van Wyk quote is about the earlier 6 Oct Belgravia Road shooting. Neither has a non-police source."
+    },
+    "1b6fba13-ef88-48d7-8c17-16b4e7ba6650": {
+      "statement_from": "Southern Cape police",
+      "spokesperson": [
+        "Warrant Officer Chris Spies"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Mossel Bay Advertiser"
+      ],
+      "independence": "single_report",
+      "note": "One report, based on the police statement."
+    },
+    "218c685c-2720-486e-8fc9-9af1dd3c2d5a": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg"
+      ],
+      "other_voices": [
+        "WCED spokesperson Millicent Merton"
+      ],
+      "outlets": [
+        "TygerBurger"
+      ],
+      "independence": "same_outlet",
+      "note": "Two reports from one paper by the same reporter. Police facts, plus the education department."
+    },
+    "21b2a9b0-66c3-4045-924d-963eaa85b4a1": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Const. Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "a Roosendal resident (Daily Voice)",
+        "DA spokesperson Benedicta van Minnen (TygerBurger)"
+      ],
+      "outlets": [
+        "Daily Voice",
+        "TygerBurger"
+      ],
+      "independence": "partly_independent",
+      "note": "Two reports written separately; the same two articles also cover the other Delft shooting. The shooting facts come from police spokesperson Const. Ndakhe Gwala in both. Daily Voice adds a resident and TygerBurger adds a DA spokesperson."
+    },
+    "2a848e46-0a84-4d05-8efc-85e54c8aa636": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg"
+      ],
+      "other_voices": [
+        "ward councillor Angus McKenzie"
+      ],
+      "outlets": [
+        "Daily Voice"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus the ward councillor."
+    },
+    "2a87ec3f-8763-416c-99cf-6c060faab5a1": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Const. Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "a Roosendal resident (Daily Voice)",
+        "DA spokesperson Benedicta van Minnen (TygerBurger)"
+      ],
+      "outlets": [
+        "Daily Voice",
+        "TygerBurger"
+      ],
+      "independence": "partly_independent",
+      "note": "Two reports written separately; the same two articles also cover the other Delft shooting. The shooting facts come from police spokesperson Const. Ndakhe Gwala in both. Daily Voice adds a resident and TygerBurger adds a DA spokesperson."
+    },
+    "2fdd9a56-11a3-4877-891a-bd46f152c44b": {
+      "statement_from": "Police: the first report, then an arrest update",
+      "spokesperson": [
+        "Sgt Wesley Twigg (8 Oct)",
+        "F.C. van Wyk (15 Oct)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Mossel Bay Advertiser"
+      ],
+      "independence": "same_outlet",
+      "note": "Two reports a week apart, both from one paper and both from police statements. Not independent."
+    },
+    "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Cape Town ETC"
+      ],
+      "independence": "single_report",
+      "note": "One report, based on the police statement."
+    },
+    "530a09b2-015a-4ac3-996e-0183e8599dfa": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg"
+      ],
+      "other_voices": [
+        "Nicola Small, Steenberg CPF chair"
+      ],
+      "outlets": [
+        "Southern Mail"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus the local policing forum chair."
+    },
+    "582ea2d7-5473-4f40-af91-a7343d865d0b": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Warrant Officer Christopher Spies"
+      ],
+      "other_voices": [
+        "Angelina Botha, the victim's aunt"
+      ],
+      "outlets": [
+        "Cape Argus (IOL)"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus the victim's aunt."
+    },
+    "7acad00a-2081-462b-939c-be61b9d9b539": {
+      "statement_from": "Police and a community leader",
+      "spokesperson": [
+        "Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "community leader Nomalungelo Bikitsha"
+      ],
+      "outlets": [
+        "Voice of the Cape",
+        "Cape Argus (IOL)"
+      ],
+      "independence": "shared_wording",
+      "note": "Two outlets, one account. Cape Argus (14 Oct) repeats long passages of Voice of the Cape's 13 Oct report, including the same police and community quotes."
+    },
+    "7bce2be1-912e-48e2-9fd4-c79d1611c16f": {
+      "statement_from": "Worcester police",
+      "spokesperson": [
+        "F.C. van Wyk"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Worcester Standard"
+      ],
+      "independence": "single_report",
+      "note": "One short report, based on the police statement."
+    },
+    "821f2edc-df43-41d1-ad4a-c18b8380809e": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Sgt Wesley Twigg"
+      ],
+      "other_voices": [
+        "Nicola Small, Steenberg CPF chair"
+      ],
+      "outlets": [
+        "Southern Mail"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus the local policing forum chair."
+    },
+    "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Const. Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "a community crime fighter",
+        "residents"
+      ],
+      "outlets": [
+        "Daily Voice"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus community voices."
+    },
+    "c2601d28-ecde-4cd0-b9e3-0c19230dafac": {
+      "statement_from": "SAPS, including its arrest statement",
+      "spokesperson": [
+        "F.C. van Wyk (Cape Argus)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Cape Argus (IOL)",
+        "People's Post",
+        "Cape Coast News"
+      ],
+      "independence": "same_statement",
+      "note": "Three outlets, all resting on police. Cape Coast News and People's Post retell the SAPS arrest statement, including the provincial commissioner's praise; Cape Argus quotes police spokesperson F.C. van Wyk. No non-police source."
+    },
+    "d09da7da-5705-46e3-8d10-5fef0db6c639": {
+      "statement_from": "Police (no spokesperson named)",
+      "spokesperson": [],
+      "other_voices": [],
+      "outlets": [
+        "Mossel Bay Advertiser"
+      ],
+      "independence": "single_report",
+      "note": "One report, based on what police said. No spokesperson is named."
+    },
+    "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c": {
+      "statement_from": "SAPS: a 17 Oct statement and an 18 Oct arrest statement",
+      "spokesperson": [
+        "F.C. van Wyk (17 Oct)",
+        "Brig Novela Potelwa (18 Oct)"
+      ],
+      "other_voices": [
+        "Nceba Enge of Codeta (Cape Times only)"
+      ],
+      "outlets": [
+        "Cape Times (IOL)",
+        "Cape Town ETC",
+        "NovaNews"
+      ],
+      "independence": "partly_independent",
+      "note": "Mostly police statements, but not all. Cape Times and Cape Town ETC carry the same 18 Oct SAPS statement word for word, and NovaNews carries the earlier 17 Oct one. Only Cape Times adds a source outside the police: Codeta."
+    },
+    "fdb570fb-11a4-4430-8966-b973f1ae3ede": {
+      "statement_from": "Police",
+      "spokesperson": [
+        "Const. Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "a local resident",
+        "the community, including a club's condolence post"
+      ],
+      "outlets": [
+        "Daily Voice"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement, plus comment from the community."
+    }
+  }
+}

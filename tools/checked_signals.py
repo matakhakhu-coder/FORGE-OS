@@ -81,7 +81,7 @@ import re
 import sqlite3
 import sys
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 # FORGE_DB points every tool at another database (an isolated test copy).
@@ -140,6 +140,46 @@ def _parse_iso(value, what: str, sid: str) -> datetime | date:
 
 def _day(d: datetime | date) -> date:
     return d.date() if isinstance(d, datetime) else d
+
+
+# Sprint 4: one machine-readable incident time for everything that sorts or
+# matches by time. The signal's own `timestamp` is the report time.
+_SAST = timezone(timedelta(hours=2))
+# Local-time span (start hour, hours long) of each part of the day.
+_PART_SPANS = {"morning": (5, 7), "afternoon": (12, 5), "evening": (17, 4), "night": (20, 9)}
+
+
+def incident_window(chk: dict) -> tuple[datetime, datetime] | None:
+    """Earliest and latest UTC moment the incident can have started.
+
+    time / approx_time: the stated moment (approx: +/- 1 hour).
+    part_of_day: that part of the stated local day.  day: the whole local day.
+    None when the record has no readable incident_start."""
+    if not isinstance(chk, dict):
+        return None
+    try:
+        start = _parse_iso(chk.get("incident_start"), "incident_start", "?")
+    except CheckedSignalError:
+        return None
+    prec = chk.get("incident_precision") or "day"
+    if isinstance(start, datetime):
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=_SAST)
+        pad = timedelta(hours=1) if prec == "approx_time" else timedelta(0)
+        return (start - pad).astimezone(timezone.utc), (start + pad).astimezone(timezone.utc)
+    day0 = datetime(start.year, start.month, start.day, tzinfo=_SAST)
+    if prec == "part_of_day" and chk.get("incident_part") in _PART_SPANS:
+        h, n = _PART_SPANS[chk["incident_part"]]
+        a = day0 + timedelta(hours=h)
+        return a.astimezone(timezone.utc), (a + timedelta(hours=n)).astimezone(timezone.utc)
+    return day0.astimezone(timezone.utc), (day0 + timedelta(days=1)).astimezone(timezone.utc)
+
+
+def incident_sort_key(chk: dict) -> str:
+    """UTC ISO string of the incident's earliest moment, '' when unknown.
+    Sorts October in incident order, whatever the report or publish time."""
+    w = incident_window(chk)
+    return w[0].strftime("%Y-%m-%dT%H:%M:%SZ") if w else ""
 
 
 def canonical(record: dict) -> str:
