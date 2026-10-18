@@ -20,6 +20,20 @@ diagnostics_bp = Blueprint("diagnostics", __name__)
 # Phase 32: Diagnostics — Control Room
 # -----------------------------------------------------------------------
 
+@diagnostics_bp.route("/api/health")
+def api_health():
+    """Liveness check for Docker/monitoring: is the app up, is the DB readable?
+
+    Returns 200 {"status": "ok", "db": "ok"} when a trivial query on the
+    signals table succeeds, otherwise 503 with the database error.
+    """
+    try:
+        get_db().execute("SELECT 1 FROM signals LIMIT 1").fetchall()
+    except Exception as exc:  # report, don't crash, so monitors see a 503
+        return jsonify({"status": "error", "db": str(exc)}), 503
+    return jsonify({"status": "ok", "db": "ok"})
+
+
 @diagnostics_bp.route("/diagnostics")
 def diagnostics():
     """Phase 32: System Control Room page."""

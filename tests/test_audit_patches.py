@@ -166,3 +166,10 @@ def test_new_event_post_rejects_wrong_password(tmp_path, monkeypatch):
         assert conn.execute("SELECT COUNT(*) FROM events WHERE title='X'").fetchone()[0] == 1
     finally:
         conn.close()
+
+
+def test_api_health_reports_ok(tmp_path, monkeypatch):
+    client, _ = _client(tmp_path, monkeypatch)
+    resp = client.get("/api/health")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"status": "ok", "db": "ok"}
