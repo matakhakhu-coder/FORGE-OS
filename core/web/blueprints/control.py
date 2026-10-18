@@ -643,7 +643,7 @@ def api_archive_index():
         rows = db.execute("""
             SELECT
                 c.case_id,
-                c.title,
+                c.name AS title,  -- cases has no title column; keep the JSON key
                 c.status,
                 c.created_at,
                 COUNT(DISTINCT sa.signal_id)   AS signal_count,

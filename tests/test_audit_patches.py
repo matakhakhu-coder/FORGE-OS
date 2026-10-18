@@ -181,3 +181,21 @@ def test_pro_feed_only_written_for_pro_builds():
     assert _writes_pro_feed("pro") is True
     assert _writes_pro_feed("current") is False
     assert _writes_pro_feed("free") is False
+
+
+def test_api_archive_lists_archived_cases(tmp_path, monkeypatch):
+    """/api/archive selected cases.title, which does not exist (it is 'name')."""
+    import sqlite3
+
+    client, db_file = _client(tmp_path, monkeypatch)
+    conn = sqlite3.connect(str(db_file))
+    conn.execute("INSERT INTO cases (name, status) VALUES ('Old case', 'archived')")
+    conn.execute("INSERT INTO cases (name, status) VALUES ('Open case', 'active')")
+    conn.commit()
+    conn.close()
+
+    resp = client.get("/api/archive")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["total"] == 1
+    assert data["archived_cases"][0]["title"] == "Old case"
