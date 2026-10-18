@@ -286,12 +286,14 @@ def run(db_path: Path | None = None,
         # Build query for signals to process
         if signal_id:
             rows = conn.execute(
-                "SELECT signal_id, title, content FROM signals WHERE signal_id = ?",
+                "SELECT signal_id, title, content FROM signals WHERE signal_id = ? "
+                "AND COALESCE(source_type, '') != 'checked'",
                 (signal_id,),
             ).fetchall()
         elif reprocess:
             rows = conn.execute(
-                "SELECT signal_id, title, content FROM signals ORDER BY timestamp DESC"
+                "SELECT signal_id, title, content FROM signals "
+                "WHERE COALESCE(source_type, '') != 'checked' ORDER BY timestamp DESC"
             ).fetchall()
         else:
             # Only signals that have no entities yet
@@ -301,6 +303,8 @@ def run(db_path: Path | None = None,
                 FROM   signals s
                 LEFT   JOIN signal_entities se ON se.signal_id = s.signal_id
                 WHERE  se.signal_id IS NULL
+                  -- hand-checked pins carry no machine name rows (Sprint 3)
+                  AND  COALESCE(s.source_type, '') != 'checked'
                 ORDER  BY s.timestamp DESC
                 """
             ).fetchall()

@@ -46,6 +46,7 @@ Returns a pipeline_runs-compatible result dict.
 
 from __future__ import annotations
 
+import os
 import math
 import sqlite3
 import time
@@ -56,7 +57,7 @@ from datetime import datetime, timezone, timedelta
 
 log = logging.getLogger("forge.modules.emergence_engine")
 
-DB_PATH = Path(__file__).resolve().parents[2] / "database.db"
+DB_PATH = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parents[2] / "database.db")
 
 # ── Schema ────────────────────────────────────────────────────────────────────
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Absolute Path Logic
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH = BASE_DIR / "database.db"
+DB_PATH = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
 
 # ── Phase 68 Hard-Lock — Process-level FK enforcement ────────────────────────
 # Python's stdlib sqlite3 module does NOT honour `_foreign_keys` as a URI

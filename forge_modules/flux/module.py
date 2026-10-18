@@ -32,6 +32,7 @@ FMS Contract rules enforced
   • No side effects on import of this file.
 """
 
+import os
 import logging
 
 log = logging.getLogger("forge.modules.flux")
@@ -56,7 +57,7 @@ def register(conclave) -> None:
         score_signal_against_corpus,
     )
 
-    _DB_PATH = str(Path(__file__).resolve().parent.parent.parent / "database.db")
+    _DB_PATH = str((Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parent.parent.parent / "database.db"))  # FORGE_DB
 
     # ── Engine registration ───────────────────────────────────────────────────
     conclave.register_engine("flux_socint_engine", engine_run)

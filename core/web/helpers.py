@@ -11,7 +11,7 @@ from flask import g
 from core.db.connection import get_connection
 
 BASE_DIR  = Path(__file__).resolve().parent.parent.parent
-DB_PATH   = BASE_DIR / "database.db"
+DB_PATH   = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
 MEDIA_DIR = BASE_DIR / "media"
 
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]

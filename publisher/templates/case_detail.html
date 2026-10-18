@@ -428,7 +428,7 @@
   <div class="cd-header">
     <div class="cd-header__row">
       <span class="cd-case-id">CASE-{{ '%02d'|format(case.case_id) }}</span>
-      <span class="cd-status">Active Investigation</span>
+      <span class="cd-status">{{ 'Pattern test' if case.pattern else 'Active Investigation' }}</span>
     </div>
     <h1 class="cd-header__title">{{ case.name }}</h1>
     <div class="cd-header__created mono">Opened {{ case.created_fmt }} · Updated {{ case.updated_fmt }} · {{ generated_at }}</div>
@@ -437,6 +437,14 @@
   <div class="cd-scorecard">
     {% set coe_pct = (case.coe * 100)|int %}
     {% set coe_color = '#c0392b' if coe_pct >= 45 else ('#c8943a' if coe_pct >= 30 else '#2980b9') %}
+    {% if case.pattern %}
+    {# A pattern case groups pins a person thinks look alike. It claims no
+       link between them, so it shows no evidence-confidence score. #}
+    <div class="cd-score">
+      <div class="cd-score__val" style="font-size:1rem;">Pattern test</div>
+      <div class="cd-score__lbl">Not a linked case</div>
+    </div>
+    {% else %}
     <div class="cd-score">
       <div class="cd-score__val">{{ '%.2f'|format(case.coe) }}</div>
       <div class="cd-score__lbl">Evidence Confidence</div>
@@ -444,6 +452,7 @@
         <div class="cd-coe-fill" style="width:{{ coe_pct }}%; background:{{ coe_color }};"></div>
       </div>
     </div>
+    {% endif %}
     <div class="cd-score">
       <div class="cd-score__val">{{ case.signal_count }}</div>
       <div class="cd-score__lbl">Pinned Signals</div>
@@ -479,7 +488,7 @@
 
   {% if signals %}
   <div class="cd-section">
-    <div class="cd-section__title">Evidence — {{ signals|length }} Signals</div>
+    <div class="cd-section__title">{% if case.pattern %}Signals by incident date — {{ signals|length }}{% else %}Evidence — {{ signals|length }} Signals{% endif %}</div>
     <div class="cd-evidence">
       {% for s in signals %}
       {% set gs = s.gravity_score %}
@@ -493,7 +502,7 @@
         {% endif %}
         <div class="cd-signal__meta">
           {% if s.source %}<span class="cd-signal__source">{{ s.source|upper }}</span>{% endif %}
-          <span class="cd-signal__source mono">{{ s.published_fmt }}</span>
+          <span class="cd-signal__source mono">{% if case.pattern and s.incident %}{{ s.incident }}{% else %}{{ s.published_fmt }}{% endif %}</span>
           <span class="cd-signal__sig {{ sig_cls }}" title="Editorial weight: {{ '%.2f'|format(gs) }}">{{ sig_label }}</span>
           {% if s.note %}<span class="cd-signal__note">{{ s.note }}</span>{% endif %}
         </div>
@@ -535,9 +544,14 @@
   <div class="methodology-section">
     <div class="methodology-section__title">Methodology</div>
     <div class="methodology-section__body">
+      {% if case.pattern %}
+      This pattern test groups {{ signals|length }} signal{{ 's' if signals|length != 1 else '' }} that look alike in
+      features a person recorded. It does not say the incidents are connected, and no line joins them on the map.
+      {% else %}
       This investigation comprises {{ signals|length }} open-source signal{{ 's' if signals|length != 1 else '' }}
       and {{ actors|length }} linked actor{{ 's' if actors|length != 1 else '' }}.
       Evidence confidence is derived from signal gravity scores (urgency, source credibility, recency, corroboration).
+      {% endif %}
       Actor relationships are manually verified unless marked as automated extraction.
       All source material is publicly available. This brief is produced by the FORGE OSINT engine.
       Inclusion reflects analytical relevance and does not constitute a legal finding.

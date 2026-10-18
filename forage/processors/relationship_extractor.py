@@ -38,6 +38,7 @@ __manifest__ = {
     "version":     "1.0.0",
 }
 
+import os
 import argparse
 import logging
 import re
@@ -48,7 +49,7 @@ from pathlib import Path
 _log = logging.getLogger("forge.relationship_extractor")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-DB_PATH = Path(__file__).resolve().parent.parent.parent / "database.db"
+DB_PATH = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parent.parent.parent / "database.db")
 
 # ── Noise actor filter ────────────────────────────────────────────────────────
 # Actors whose names match these are skipped — too generic to form edges

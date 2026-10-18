@@ -101,6 +101,21 @@ class _OwnerAwareContext:
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
+def _drop_hooks_from(context, module_path: str) -> int:
+    """Remove hook callables whose __module__ is exactly module_path."""
+    if not module_path or not hasattr(context, "_hooks"):
+        return 0
+    removed = 0
+    for hook_name in list(context._hooks):
+        keep = [f for f in context._hooks[hook_name]
+                if getattr(f, "__module__", None) != module_path]
+        removed += len(context._hooks[hook_name]) - len(keep)
+        context._hooks[hook_name] = keep
+    if removed:
+        log.info(f"[FMS] Replacing {removed} hook(s) left by an earlier load of {module_path}")
+    return removed
+
+
 def attach_module(
     module_name: str,
     context,
@@ -161,6 +176,12 @@ def attach_module(
 
         # ── Step 6: register via ownership-aware wrapper ──────────────────────
         log.info(f"[FMS] Attaching '{module_name}' v{manifest['version']}...")
+        # bootstrap_fms() already ran this module's register() at startup
+        # without marking it active, so app.py's attach pass registered every
+        # hook a second time and each ran twice per signal (Sprint 2). The
+        # hooks are closures made inside register(), so drop the earlier
+        # copies from this exact module before registering again. Sprint 3.
+        _drop_hooks_from(context, getattr(mod, "__name__", ""))
         wrapper = _OwnerAwareContext(context, owner=module_name)
         mod.register(wrapper)
 

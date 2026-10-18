@@ -513,6 +513,14 @@ class ProcessorManager:
         if existing:
             return existing["signal_id"]
 
+        # An artifact made from a signal by Conclave ingest (signal_to_artifact)
+        # names that signal in its metadata. Its names belong to that signal:
+        # making a new one duplicated every ingested record on the next run
+        # (Sprint 2: 500 duplicates per workbench run). Sprint 3.
+        origin = self._origin_signal_id(row) or self._matching_signal_id(row)
+        if origin:
+            return origin
+
         sid    = str(uuid.uuid4())
         ext_id = f"artifact:{artifact_id}:{(row['title'] or '')[:40]}"
         conf   = _confidence(row["raw_text_cache"] or row["description"] or "")
@@ -544,6 +552,51 @@ class ProcessorManager:
                   row["latitude"], row["longitude"], rel_score, artifact_id))
         return sid
 
+    def _origin_signal_id(self, row: sqlite3.Row) -> str | None:
+        """The existing signal an ingest-made artifact came from, or None."""
+        if "metadata_json" not in row.keys() or not row["metadata_json"]:
+            return None
+        try:
+            meta = json.loads(row["metadata_json"])
+        except (TypeError, ValueError):
+            return None
+        sid = meta.get("signal_id") if isinstance(meta, dict) else None
+        if not sid:
+            return None
+        hit = self._conn().execute(
+            "SELECT signal_id FROM signals WHERE signal_id = ?", (str(sid),)
+        ).fetchone()
+        return hit[0] if hit else None
+
+    def _matching_signal_id(self, row: sqlite3.Row) -> str | None:
+        """For artifacts made before they carried metadata (or in a database
+        without artifacts.metadata_json): the signal with the same title whose
+        cleaned text is what signal_to_artifact stored as the description."""
+        keys = row.keys()
+        title = row["title"] if "title" in keys else None
+        desc = row["description"] if "description" in keys else None
+        if not title or not desc:
+            return None
+        cands = self._conn().execute(
+            "SELECT signal_id, content FROM signals "
+            "WHERE substr(title, 1, 500) = ? "
+            "AND COALESCE(external_id, '') NOT LIKE 'artifact:%' "
+            "ORDER BY timestamp, signal_id LIMIT 20", (title,)
+        ).fetchall()
+        for c in cands:
+            if self._clean_text(c[1] or "")[:1000] == desc:
+                return c[0]
+        return None
+
+    def _is_checked(self, signal_id: str) -> bool:
+        try:
+            r = self._conn().execute(
+                "SELECT source_type FROM signals WHERE signal_id = ?", (signal_id,)
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return False
+        return bool(r) and r[0] == "checked"
+
     def _clean_text(self, raw: str) -> str:
         """Minimal cleanup for unstructured signal text."""
         txt = raw or ""
@@ -554,15 +607,23 @@ class ProcessorManager:
         """Convert a signal dict into artifacts table entry + metadata."""
         conn = self._conn()
 
-        existing = conn.execute(
-            "SELECT artifact_id FROM artifacts WHERE source = ? AND description = ?",
-            (signal.get("source", ""), signal.get("content", ""),),
-        ).fetchone()
-        if existing:
-            return existing["artifact_id"]
-
         title = signal.get("title", "") or "GDELT Signal"
         content = self._clean_text(signal.get("content", ""))
+
+        # Same record already copied? Compare with what is stored (the cleaned
+        # text cut to 1000 characters, the mapped source); the old check used
+        # the raw content and raw source, so it never matched a long record
+        # and every ingest copied it again. Sprint 3.
+        _src = signal.get("source", "unverified")
+        if _src not in {"verified", "unverified", "government", "leaked", "citizen", "media"}:
+            _src = "unverified"
+        existing = conn.execute(
+            "SELECT artifact_id FROM artifacts WHERE source = ? AND description = ? "
+            "AND title = ?",
+            (_src, content[:1000], title[:500]),
+        ).fetchone()
+        if existing:
+            return existing[0]
 
         # Intake gate: reject title-only stubs with no extractable content.
         # Sub-200-char records produce zero NER triples and flood the pipeline.
@@ -745,6 +806,15 @@ class ProcessorManager:
 
         # ── Step 4: persist entities ──────────────────────────────────────
         signal_id  = self._get_or_create_signal(artifact_id, row)
+        if self._is_checked(signal_id):
+            # Hand-checked pins carry no machine names or scores (Sprint 3).
+            conn.execute(
+                "UPDATE artifacts SET processing_status='done' "
+                "WHERE artifact_id=?", (artifact_id,),
+            )
+            self._commit()
+            return {"artifact_id": artifact_id, "status": "skipped_checked",
+                    "entities": 0, "chars_extracted": len(text)}
         n_inserted = self._store_entities(signal_id, entities)
 
         # ── Step 5: update signal confidence ─────────────────────────────

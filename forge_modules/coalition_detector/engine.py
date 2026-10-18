@@ -47,6 +47,7 @@ Returns a result dict for pipeline_runs logging.
 
 from __future__ import annotations
 
+import os
 import sqlite3
 import time
 import logging
@@ -57,7 +58,7 @@ from datetime import datetime, timezone
 
 log = logging.getLogger("forge.modules.coalition_detector")
 
-DB_PATH = Path(__file__).resolve().parents[2] / "database.db"
+DB_PATH = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parents[2] / "database.db")
 
 # ── Schema ────────────────────────────────────────────────────────────────────
 

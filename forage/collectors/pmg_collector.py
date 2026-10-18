@@ -418,7 +418,7 @@ def run_collector(days: int = 14, max_pages: int = 5,
     if not meetings:
         print("[pmg] No meetings to process")
         duration = time.time() - start_time
-        log_run(SOURCE_ID, "success", 0, 0, duration)
+        log_run(DB_PATH, SOURCE_ID, "success", 0, 0, duration)
         return {"status": "done", "fetched": 0, "inserted": 0, "duration_s": duration}
 
     # Load actor names for cross-referencing (only in write mode)
@@ -463,7 +463,7 @@ def run_collector(days: int = 14, max_pages: int = 5,
         print(f"[pmg] Inserted {inserted} new signals ({len(signals) - inserted} duplicates)")
     print(f"[pmg] Done in {duration}s")
 
-    log_run(SOURCE_ID, "success", len(meetings), inserted, duration)
+    log_run(DB_PATH, SOURCE_ID, "success", len(meetings), inserted, duration)
 
     return {
         "status": "done",

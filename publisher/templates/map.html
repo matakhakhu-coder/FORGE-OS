@@ -578,6 +578,11 @@
   .sd-src__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .sd-src__name { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
   .sd-src__meta { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-dim); overflow-wrap: anywhere; }
+  .sd-rel { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+  .sd-rel__item { font-size: 0.84rem; line-height: 1.45; color: var(--text-secondary); }
+  .sd-rel__kind { display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .sd-rel__pin { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
+  .sd-rel__quote { display: block; margin-top: 2px; font-size: 0.78rem; color: var(--text-dim); font-style: italic; }
   .sd-src__opened { display: none; margin-left: 6px; color: #a395d6; }
   .sd-src.is-opened .sd-src__opened { display: inline; }
   .sd-src__arrow { flex-shrink: 0; font-size: 1rem; }
@@ -933,6 +938,7 @@
       {% set coe_pct = (c.coe * 100)|int %}
       {% set coe_label = 'Corroborated' if coe_pct >= 75 else ('Strong' if coe_pct >= 55 else ('Established' if coe_pct >= 35 else ('Developing' if coe_pct >= 20 else 'Preliminary'))) %}
       {% set coe_cls = 'coe-corroborated' if coe_pct >= 75 else ('coe-strong' if coe_pct >= 55 else ('coe-established' if coe_pct >= 35 else ('coe-developing' if coe_pct >= 20 else 'coe-preliminary'))) %}
+      {% if c.pattern %}{% set coe_label = 'Pattern test' %}{% set coe_cls = 'coe-preliminary' %}{% endif %}
       <div class="case-entry" data-case-id="{{ c.case_id }}" data-slug="{{ c.slug }}">
         <div class="case-entry__name">{{ c.name[:50] }}{% if c.name|length > 50 %}...{% endif %}</div>
         <div class="case-entry__meta">
@@ -1079,6 +1085,10 @@
         <h3 class="sd-label">Sources</h3>
         <p class="sd-basis" id="sd-basis"></p>
         <ul class="sd-sources" id="sd-sources"></ul>
+      </section>
+      <section class="sd-section" id="sd-rel-wrap" hidden>
+        <h3 class="sd-label">Related pins</h3>
+        <ul class="sd-rel" id="sd-rel"></ul>
       </section>
       <section class="sd-section sd-media" id="sd-media-wrap" hidden>
         <h3 class="sd-label">Media</h3>
@@ -1294,7 +1304,7 @@
     var color = STREAM_COLOR[link.stream] || '#7a95aa';
     L.polyline([[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]], {
       color: color, weight: 1.2, opacity: 0.25, dashArray: '8 6',
-    }).bindTooltip(link.case_name, { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
+    }).bindTooltip(link.label || link.case_name || 'Linked incident', { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
   });
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -1777,6 +1787,28 @@
     var basis = links.length + (links.length === 1 ? ' report' : ' reports') + (m.basis ? ' \u00b7 ' + m.basis : '');
     document.getElementById('sd-basis').textContent = basis;
     section('sd-src-wrap', links.length > 0);
+
+    // Related pins: approved link records only. A shared source or a similar
+    // pattern is text here and never a line; only a linked incident is drawn.
+    var rel = document.getElementById('sd-rel');
+    rel.textContent = '';
+    (m.related || []).forEach(function (r) {
+      var li = el('li', 'sd-rel__item');
+      li.appendChild(el('span', 'sd-rel__kind', (r.kind_label || '') + (r.label ? ' \u00b7 ' + r.label : '')));
+      var a = el('a', 'sd-rel__pin', r.title || 'Pin');
+      a.href = urlForSignal(r.signal);
+      a.setAttribute('data-signal', r.signal || '');
+      a.addEventListener('click', function (e) {
+        var j = idxForSignal(r.signal);
+        if (j === null) return;          // falls back to the shared link
+        e.preventDefault();
+        showSignal(j, { trigger: a });
+      });
+      li.appendChild(a);
+      if (r.quote) li.appendChild(el('span', 'sd-rel__quote', '\u201c' + r.quote + '\u201d'));
+      rel.appendChild(li);
+    });
+    section('sd-rel-wrap', rel.children.length > 0);
 
     // Media: only files FORGE hosts, each with its credit and licence.
     var media = document.getElementById('sd-media');

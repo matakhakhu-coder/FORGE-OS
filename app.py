@@ -44,8 +44,16 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 load_dotenv(override=True)
 BASE_DIR  = Path(__file__).resolve().parent
-DB_PATH   = BASE_DIR / "database.db"
+DB_PATH   = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
 MEDIA_DIR = BASE_DIR / "media"
+
+# core.db.connection was imported above, before .env was read, so a FORGE_DB
+# set only in .env would have missed it. Point the shared modules at the same
+# database as the app (Sprint 3). Without FORGE_DB nothing changes.
+import core.db.connection as _forge_conn  # noqa: E402
+import core.pipeline.ingest as _forge_ingest  # noqa: E402
+_forge_conn.DB_PATH = DB_PATH
+_forge_ingest._FORGE_DB_PATH = str(DB_PATH)
 
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]
 ACTOR_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
@@ -1072,6 +1080,9 @@ def migrate_db():
         ("artifacts",      "raw_text_cache",      "TEXT"),
         ("artifacts",      "processing_status",   "TEXT NOT NULL DEFAULT 'pending'"),
         ("signals",        "source_artifact_id",  "INTEGER"),
+        # Sprint 3 — ingest-made artifacts name the signal they came from, so
+        # the artifact processor attaches to it instead of duplicating it.
+        ("artifacts",      "metadata_json",       "TEXT"),
         # Phase 27 — Signal Stream Engine
         ("signals", "stream",           "TEXT NOT NULL DEFAULT 'GLOBAL'"),
         # Phase 28 — Signal Decay Engine

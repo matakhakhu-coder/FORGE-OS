@@ -40,7 +40,10 @@ except ImportError:
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT        = pathlib.Path(__file__).parent.parent
-DB_PATH     = ROOT / "database.db"
+# FORGE_DB points the publisher at another database (an isolated test copy),
+# the same variable the engines, app.py and checked_signals.py read.
+DB_PATH     = (pathlib.Path(os.environ["FORGE_DB"]).expanduser().resolve()
+               if os.environ.get("FORGE_DB", "").strip() else ROOT / "database.db")
 MEDIA_DIR   = ROOT / "media"
 PUBLISHER   = ROOT / "publisher"
 TMPL_DIR    = PUBLISHER / "templates"
@@ -281,7 +284,8 @@ def _checked_fields(metadata_json: str | None) -> dict:
     """
     empty = {"checked": False, "incident": None, "reported": None,
              "location_note": None, "source_links": [], "basis": None,
-             "disagreements": [], "media": []}
+             "disagreements": [], "media": [], "incident_start": None,
+             "link_records": []}
     if not metadata_json:
         return empty
     try:
@@ -315,6 +319,11 @@ def _checked_fields(metadata_json: str | None) -> dict:
         "basis":         (str(chk["basis"]).strip() or None) if chk.get("basis") else None,
         "disagreements": [str(d).strip() for d in disagreements if str(d).strip()],
         "media":         _clean_media(chk.get("media")),
+        # Sorting key for pattern cases (the incident, not the report).
+        "incident_start": (str(chk["incident_start"]).strip() or None) if chk.get("incident_start") else None,
+        # Raw link records; _resolve_links() turns them into drawer rows and
+        # map lines, then drops this key so it never reaches the page.
+        "link_records":  _clean_link_records(chk.get("links")),
     }
 
 
@@ -335,15 +344,103 @@ def _signal_search_target(s: dict) -> dict:
     return {"url": "index.html"}
 
 
+# ── Link records (Sprint 3) ──────────────────────────────────────────────────
+# A line on the map says two incidents are connected, so only an approved
+# incident link with a quote and a source draws one. Shared sources (the same
+# police statement, spokesperson, reporter) are a paper trail, and similar
+# patterns are a person's observation: both show as labelled text in the
+# drawer and never as a line. Being in the same case draws nothing.
+# tools/checked_signals.py validates the records before they reach the DB;
+# this re-checks the shape so a hand-edited database can't draw a line.
+
+LINK_KIND_LABELS = {
+    "incident":        "Linked incident",
+    "shared_source":   "Shared source",
+    "similar_pattern": "Similar pattern",
+}
+
+
+def _clean_link_records(raw) -> list[dict]:
+    out = []
+    if not isinstance(raw, list):
+        return out
+    for ln in raw:
+        if not isinstance(ln, dict):
+            continue
+        kind = ln.get("type")
+        to = str(ln.get("to") or "").strip().lower()
+        label = str(ln.get("label") or "").strip()[:80]
+        basis = ln.get("basis") if isinstance(ln.get("basis"), dict) else {}
+        quote = str(basis.get("quote") or "").strip()
+        url = str(basis.get("url") or "").strip()
+        if not url.lower().startswith(("https://", "http://")):
+            url = ""
+        if kind not in LINK_KIND_LABELS or not to or not label:
+            continue
+        if not str(ln.get("approved_by") or "").strip():
+            continue                      # unapproved: shown nowhere
+        if kind == "incident" and not (quote and url):
+            continue
+        if not (quote or url):
+            continue
+        out.append({"to": to, "type": kind, "label": label, "quote": quote, "url": url})
+    return out
+
+
+def _resolve_links(signals: list[dict]) -> list[dict]:
+    """Attach each published pin's related pins (both directions) for the
+    drawer and return the map lines: one per approved incident link between
+    two published pins that have coordinates."""
+    by_id = {s["signal_id"].lower(): s for s in signals}
+    for s in signals:
+        s.setdefault("related", [])
+    lines, seen = [], set()
+    for s in signals:
+        for ln in s.pop("link_records", None) or []:
+            other = by_id.get(ln["to"])
+            if other is None or other is s:
+                continue                  # target retracted or unpublished
+            key = (min(s["signal_id"], other["signal_id"]), max(s["signal_id"], other["signal_id"]),
+                   ln["type"], ln["label"].lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            for a, b in ((s, other), (other, s)):
+                a["related"].append({
+                    "type":       ln["type"],
+                    "kind_label": LINK_KIND_LABELS[ln["type"]],
+                    "label":      ln["label"],
+                    "quote":      ln["quote"],
+                    "url":        ln["url"],
+                    "signal":     b["signal_id"][:8],
+                    "title":      b["title"],
+                })
+            if (ln["type"] == "incident" and s["lat"] and s["lng"]
+                    and other["lat"] and other["lng"]):
+                lines.append({
+                    "from_lat": s["lat"], "from_lng": s["lng"],
+                    "to_lat": other["lat"], "to_lng": other["lng"],
+                    "label": ln["label"],
+                    "type": "incident",
+                    "stream": s["stream"] or "GLOBAL",
+                })
+    order = {"incident": 0, "shared_source": 1, "similar_pattern": 2}
+    for s in signals:
+        s["related"].sort(key=lambda r: (order[r["type"]], r["title"]))
+    return lines
+
+
 def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     rows = conn.execute("""
         SELECT signal_id, title, content, stream, source, lat, lng,
                gravity_score, published_at, publish_slug, metadata_json
         FROM   signals
         WHERE  published_at IS NOT NULL
-        ORDER  BY published_at DESC
+        ORDER  BY published_at DESC, signal_id ASC
         LIMIT  200
     """).fetchall()
+    # signal_id breaks ties: pins published in one batch share a publish time,
+    # and without it their order (ticker, Wire) shuffled between rebuilds.
 
     items = []
     for r in rows:
@@ -508,7 +605,7 @@ def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
                COALESCE(tier, 'free') AS tier
         FROM   articles
         WHERE  status = 'published'
-        ORDER  BY published_at DESC
+        ORDER  BY published_at DESC, article_id ASC
         LIMIT  200
     """).fetchall()
 
@@ -541,11 +638,26 @@ def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
 
 # ── Cases ────────────────────────────────────────────────────────────────────
 
+def _is_pattern_case(context_anchors: str | None) -> bool:
+    """A pattern case groups pins a person thinks look alike. It claims no
+    link between them: it draws no lines, shows no evidence-confidence score
+    and lists its signals by incident date. Set in cases.context_anchors as
+    {"pattern_test": true} (the Sprint 2 experiment case's
+    {"links_incidents": false} counts too)."""
+    try:
+        anchors = json.loads(context_anchors or "null")
+    except (TypeError, ValueError):
+        return False
+    if not isinstance(anchors, dict):
+        return False
+    return anchors.get("pattern_test") is True or anchors.get("links_incidents") is False
+
+
 def _fetch_cases(conn: sqlite3.Connection) -> list[dict]:
     ph = ",".join("?" * len(PUBLISHED_CASE_IDS))
     rows = conn.execute(f"""
         SELECT c.case_id, c.name, c.description, c.hypothesis,
-               c.status, c.created_at,
+               c.status, c.created_at, c.context_anchors,
                COUNT(DISTINCT cs.signal_id) as signal_count,
                COUNT(DISTINCT ca.actor_id)  as actor_count,
                AVG(s.gravity_score)          as coe,
@@ -576,28 +688,44 @@ def _fetch_cases(conn: sqlite3.Connection) -> list[dict]:
             "created_fmt":  _fmt_dt(r["created_at"]),
             "updated_fmt":  _fmt_dt(updated),
             "slug":        _slugify(r["name"])[:60],
+            "pattern":     _is_pattern_case(r["context_anchors"]),
         })
     return cases
 
 
-def _fetch_case_signals(conn: sqlite3.Connection, case_id: int) -> list[dict]:
+def _fetch_case_signals(conn: sqlite3.Connection, case_id: int,
+                        pattern: bool = False) -> list[dict]:
     rows = conn.execute("""
-        SELECT s.title, s.content, s.source, s.gravity_score,
-               s.timestamp, cs.note
+        SELECT s.signal_id, s.title, s.content, s.source, s.gravity_score,
+               s.timestamp, s.metadata_json, cs.note
         FROM   case_signals cs
         JOIN   signals s ON cs.signal_id = s.signal_id
         WHERE  cs.case_id = ?
-        ORDER  BY s.gravity_score DESC
+        ORDER  BY s.gravity_score DESC, s.signal_id ASC
     """, (case_id,)).fetchall()
 
-    return [{
-        "title":         r["title"],
-        "content":       _strip_html(r["content"] or ""),
-        "source":        _source_label(r["source"]),
-        "gravity_score": round(r["gravity_score"] or 0.0, 3),
-        "published_fmt": _fmt_dt(r["timestamp"]),
-        "note":          r["note"] or "",
-    } for r in rows]
+    out = []
+    for r in rows:
+        chk = _checked_fields(r["metadata_json"])
+        out.append({
+            "title":         r["title"],
+            "content":       _strip_html(r["content"] or ""),
+            "source":        _source_label(r["source"]),
+            "gravity_score": round(r["gravity_score"] or 0.0, 3),
+            "published_fmt": _fmt_dt(r["timestamp"]),
+            "incident":      chk["incident"],
+            "note":          r["note"] or "",
+            # Pattern cases sort by when it happened; the timestamp column is
+            # mostly the report time, which is what misled the Sprint 2 engines.
+            "_sort":         (chk["incident_start"] or r["timestamp"] or "")[:10],
+            "_id":           r["signal_id"],
+        })
+    if pattern:
+        out.sort(key=lambda x: (x["_sort"], x["_id"]))
+    for x in out:
+        x.pop("_sort")
+        x.pop("_id")
+    return out
 
 
 def _fetch_case_actors(conn: sqlite3.Connection, case_id: int) -> list[dict]:
@@ -897,6 +1025,9 @@ def _build_dist(
     ]
     articles = [a for a in articles if a["slug"] not in DIRECT_LINK_ONLY_ARTICLES]
 
+    # Link records -> drawer rows + map lines, before any render sees the pins.
+    intel_links = _resolve_links(signals)
+
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
     DIST_CASES.mkdir(exist_ok=True)
@@ -948,45 +1079,12 @@ def _build_dist(
     # Map — geo-tagged signals + cross-geography intel links
     geo_signals = [s for s in signals if s["lat"] and s["lng"]]
 
-    # Build cross-geography intel links: connect geo-tagged signals within
-    # the same case that are in different locations (>50km apart).
-    intel_links = []
-    ph = ",".join("?" * len(PUBLISHED_CASE_IDS))
-    case_geo_rows = conn.execute(f"""
-        SELECT c.case_id, c.name, s.lat, s.lng, s.stream
-        FROM   case_signals cs
-        JOIN   signals s ON s.signal_id = cs.signal_id
-        JOIN   cases c   ON c.case_id = cs.case_id
-        WHERE  cs.case_id IN ({ph})
-          AND  s.lat IS NOT NULL AND s.lng IS NOT NULL
-          AND  s.published_at IS NOT NULL
-        ORDER  BY cs.case_id, s.timestamp
-    """, PUBLISHED_CASE_IDS).fetchall()
-
-    from itertools import combinations
-    case_points: dict[int, list] = {}
-    for r in case_geo_rows:
-        if _slugify(r["name"])[:60] in DIRECT_LINK_ONLY_CASES:
-            continue
-        case_points.setdefault(r["case_id"], []).append(r)
-
-    for cid, points in case_points.items():
-        # Deduplicate by rough location (round to 0.5 degree)
-        seen_locs: set[tuple] = set()
-        unique_pts = []
-        for p in points:
-            loc_key = (round(p["lat"], 0), round(p["lng"], 0))
-            if loc_key not in seen_locs:
-                seen_locs.add(loc_key)
-                unique_pts.append(p)
-        if len(unique_pts) >= 2:
-            for a, b in combinations(unique_pts, 2):
-                intel_links.append({
-                    "from_lat": a["lat"], "from_lng": a["lng"],
-                    "to_lat": b["lat"], "to_lng": b["lng"],
-                    "case_name": a["name"],
-                    "stream": a["stream"] or "GLOBAL",
-                })
+    # Map lines (Sprint 3): one per approved incident link record between two
+    # published pins, and nothing else. The old code joined every pair of
+    # ~1-degree squares holding a pin from the same case (its comment said
+    # "0.5 degree" and ">50km apart"; neither was true), which drew lines
+    # between incidents nobody had linked. Case membership now draws nothing.
+    # intel_links was built by _resolve_links() at the top of this function.
 
     # Compute stream counts for map dashboard filter panel
     stream_counts = {}
@@ -1109,7 +1207,7 @@ def _build_dist(
     # individual case detail pages (cases already fetched above for index.html)
     case_tmpl = env.get_template("case_detail.html")
     for case in all_cases:
-        case_signals = _fetch_case_signals(conn, case["case_id"])
+        case_signals = _fetch_case_signals(conn, case["case_id"], case["pattern"])
         case_actors  = _fetch_case_actors(conn, case["case_id"])
         out = DIST_CASES / f"{case['slug']}.html"
         out.write_text(

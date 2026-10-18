@@ -36,6 +36,12 @@ def log_run(
     Write one pipeline_runs row.  Silently swallows all exceptions so a
     logging failure never crashes a collector or engine.
     """
+    # Called without the database first (log_run("gnews", "success", ...)),
+    # the component name was taken as a file path and a stray SQLite file
+    # named after it appeared in the working folder (Sprint 2). Refuse that
+    # shape rather than create files. Sprint 3.
+    if status not in ("success", "error"):
+        return
     try:
         conn = sqlite3.connect(str(db_path), timeout=60)
         conn.execute("PRAGMA journal_mode=WAL;")

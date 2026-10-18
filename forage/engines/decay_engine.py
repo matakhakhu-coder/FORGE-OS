@@ -152,7 +152,10 @@ class DecayEngine:
             rows = conn.execute(
                 "SELECT signal_id, timestamp, stream, is_priority, relevance_score "
                 "FROM signals "
-                "WHERE status != 'dismissed'"
+                "WHERE status != 'dismissed' "
+                # Hand-checked pins keep relevance 1.0: decay read their report
+                # time as their age, and the checked import undid it each run.
+                "AND COALESCE(source_type, '') != 'checked'"
             ).fetchall()
 
             log(f"Signals to process: {len(rows)}")

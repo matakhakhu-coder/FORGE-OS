@@ -1,3 +1,4 @@
+import os
 import html
 import logging
 import re
@@ -38,7 +39,7 @@ except ImportError:
 
 # Phase P1: DB path for heartbeat + enrichment queue — resolved once at module load
 import sqlite3 as _sqlite3
-_FORGE_DB_PATH = str(Path(__file__).resolve().parent.parent.parent / "database.db")
+_FORGE_DB_PATH = str((Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parent.parent.parent / "database.db"))  # FORGE_DB: isolated copy
 
 # Phase P2: Sources whose RSS content is typically stub-length and worth enriching
 _ENRICHABLE_SOURCES = frozenset({

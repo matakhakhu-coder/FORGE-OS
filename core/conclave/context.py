@@ -27,6 +27,16 @@ import logging
 log = logging.getLogger("forge.conclave.context")
 
 
+def _hook_key(fn) -> Optional[tuple]:
+    """(module, qualname) for a named function or method; None for a lambda
+    or a closure, which are never treated as the same hook."""
+    mod = getattr(fn, "__module__", None)
+    qual = getattr(fn, "__qualname__", None)
+    if not mod or not qual or "<" in qual:
+        return None
+    return (mod, qual)
+
+
 class ConclaveContext:
     """
     Shared registration context for Forge Native Modules.
@@ -100,7 +110,20 @@ class ConclaveContext:
         """
         if hook_name not in self._hooks:
             self._hooks[hook_name] = []
-        self._hooks[hook_name].append(fn)
+        # Registering the same named function again replaces it instead of
+        # adding a second copy. app.py's startup loads every add-on and then
+        # attaches it again, which ran each hook twice per ingested signal
+        # (Sprint 2). Closures and lambdas are left alone: two of them can
+        # differ in what they capture. Sprint 3.
+        key = _hook_key(fn)
+        hooks = self._hooks[hook_name]
+        dup = next((i for i, f in enumerate(hooks)
+                    if f is fn or (key and _hook_key(f) == key)), None)
+        if dup is not None:
+            hooks[dup] = fn
+            log.info(f"[FMS] Hook already registered, replaced: {hook_name} ← {getattr(fn, '__qualname__', fn)!r}")
+        else:
+            hooks.append(fn)
         if _owner:
             if hook_name not in self._hook_owners:
                 self._hook_owners[hook_name] = []

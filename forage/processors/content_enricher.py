@@ -37,6 +37,7 @@ __manifest__ = {
     "version":     "1.0.0",
 }
 
+import os
 import argparse
 import html
 import logging
@@ -55,7 +56,7 @@ from urllib.parse import urlparse
 _log = logging.getLogger("forge.content_enricher")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-DB_PATH   = Path(__file__).resolve().parent.parent.parent / "database.db"
+DB_PATH   = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parent.parent.parent / "database.db")
 BATCH_CAP = 200         # max signals per run
 REQ_DELAY = 1.0         # seconds between requests to the same domain
 CONTENT_CAP = 2000      # max chars to store in signals.content

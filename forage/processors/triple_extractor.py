@@ -29,6 +29,7 @@ Author: FORGE Phase 43 → 44
 
 from __future__ import annotations
 
+import os
 import argparse
 import json
 import re
@@ -39,7 +40,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH  = BASE_DIR / "database.db"
+DB_PATH  = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")
 
 # ---------------------------------------------------------------------------
 # Canonical verb -> relation_type mapping

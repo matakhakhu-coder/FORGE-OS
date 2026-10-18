@@ -964,7 +964,7 @@ def run_collector(
         duration = round(time.time() - start_time, 2)
         print(f"[court] No court roll items found. "
               f"Site may be down or rolls not yet published.")
-        log_run(SOURCE_ID, "success", 0, 0, duration)
+        log_run(DB_PATH, SOURCE_ID, "success", 0, 0, duration)
         return {
             "status": "done",
             "fetched": 0,
@@ -1031,7 +1031,7 @@ def run_collector(
               f"({duplicates} duplicates, {errors} errors)")
     print(f"[court] Done in {duration}s")
 
-    log_run(SOURCE_ID, "success", len(unique_items), inserted, duration)
+    log_run(DB_PATH, SOURCE_ID, "success", len(unique_items), inserted, duration)
 
     return {
         "status": "done",

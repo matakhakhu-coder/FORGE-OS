@@ -47,12 +47,35 @@ Retracting a pin: add it to its batch's "retractions" with a reason. The
 import withdraws it (published_at cleared, status 'dismissed' because the
 schema's CHECK allows no 'retracted' value) and keeps the reason in
 metadata_json["retracted"]. The pin's record stays in the file as history.
+
+Link records (Sprint 3): metadata.checked.links is an optional list of the
+pins this one is related to. Nothing links pins except these records, and
+only an approved incident link draws a line on the map:
+    {"to": "<signal_id of another checked pin>",
+     "type": "incident" | "shared_source" | "similar_pattern",
+     "label": "Same shooting"               short text for the line or drawer,
+     "basis": {"quote": "...", "url": "https://..."},
+     "approved_by": "mk", "approved_at": "2026-10-19"}
+    incident         the sources say it is the same or a connected incident.
+                     Needs both a quote and a link. Drawn as one labelled line.
+    shared_source    same police statement, spokesperson, reporter or
+                     community source: a paper trail, not a crime link.
+    similar_pattern  a similarity a person noticed (method, setting).
+    The last two never draw a line; they show as labelled text in the drawer.
+A link is recorded once, on either pin; both drawers show it. Adding or
+changing one is a hand edit, so restamp the fingerprint afterwards.
+
+Machine traces: the engines skip checked pins (Sprint 3), and the import also
+clears what an engine could leave outside the fingerprint (cluster_id,
+confidence_score, relevance_score and signal_entities name rows). verify
+fails if any of them is back.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import os
 import pathlib
 import re
 import sqlite3
@@ -61,7 +84,9 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DB_PATH = ROOT / "database.db"
+# FORGE_DB points every tool at another database (an isolated test copy).
+DB_PATH = (pathlib.Path(os.environ["FORGE_DB"]).expanduser().resolve()
+           if os.environ.get("FORGE_DB", "").strip() else ROOT / "database.db")
 INDEX_PATH = ROOT / "docs" / "signals" / "index.json"
 
 INDEX_SCHEMA = "forge.checked_signals.index"
@@ -78,6 +103,10 @@ STREAMS = {"GLOBAL", "CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"}
 PRECISIONS = {"time", "approx_time", "part_of_day", "day"}
 PARTS_OF_DAY = {"morning", "afternoon", "evening", "night"}
 EVENTS = {"occurred", "found"}
+LINK_TYPES = {"incident", "shared_source", "similar_pattern"}
+LINE_LINK_TYPES = {"incident"}          # the only kind that draws a map line
+LINK_LABEL_MAX = 80
+_UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 # Generous bounding boxes, a sanity check against swapped or mistyped
 # coordinates, not a border test. (forge_modules/geo_enrichment's boxes are too
@@ -280,7 +309,64 @@ def load_index(index_path: pathlib.Path = INDEX_PATH) -> CheckedSet:
         batches.append(b)
     cs = CheckedSet(batches)
     _reject_duplicates(cs.signals)
+    validate_links(cs)
     return cs
+
+
+def _is_url(v) -> bool:
+    return str(v or "").strip().lower().startswith(("https://", "http://"))
+
+
+def validate_links(cs: CheckedSet) -> None:
+    """Every link record must point at another checked pin, say what it is,
+    rest on a quote or link, and name who approved it."""
+    known = {s["signal_id"] for s in cs.signals}
+    pairs: dict[tuple, str] = {}
+    for s in cs.signals:
+        sid = s["signal_id"]
+        links = s["metadata"]["checked"].get("links")
+        if links is None:
+            continue
+        if not isinstance(links, list):
+            raise CheckedSignalError(f"{sid}: checked.links must be a list")
+        for i, ln in enumerate(links):
+            where = f"{sid}: checked.links[{i}]"
+            if not isinstance(ln, dict):
+                raise CheckedSignalError(f"{where} is not an object")
+            extra = set(ln) - {"to", "type", "label", "basis", "approved_by", "approved_at", "note"}
+            if extra:
+                raise CheckedSignalError(f"{where}: unknown fields {sorted(extra)}")
+            to = str(ln.get("to") or "").strip().lower()
+            if not _UUID_RE.match(to):
+                raise CheckedSignalError(f"{where}: 'to' must be the full signal_id of a checked pin")
+            if to == sid:
+                raise CheckedSignalError(f"{where}: a pin cannot link to itself")
+            if to not in known:
+                raise CheckedSignalError(f"{where}: {to} is not a checked pin in any batch")
+            kind = ln.get("type")
+            if kind not in LINK_TYPES:
+                raise CheckedSignalError(f"{where}: type must be one of {sorted(LINK_TYPES)}")
+            label = str(ln.get("label") or "").strip()
+            if not label or len(label) > LINK_LABEL_MAX:
+                raise CheckedSignalError(f"{where}: label is required, at most {LINK_LABEL_MAX} characters")
+            basis = ln.get("basis")
+            if not isinstance(basis, dict):
+                raise CheckedSignalError(f"{where}: basis must give the quote or link it rests on")
+            quote = str(basis.get("quote") or "").strip()
+            url = str(basis.get("url") or "").strip()
+            if url and not _is_url(url):
+                raise CheckedSignalError(f"{where}: basis.url must be an http(s) link")
+            if kind in LINE_LINK_TYPES and not (quote and url):
+                raise CheckedSignalError(f"{where}: an incident link needs both basis.quote and basis.url")
+            if not (quote or url):
+                raise CheckedSignalError(f"{where}: basis needs a quote or a link")
+            if not str(ln.get("approved_by") or "").strip():
+                raise CheckedSignalError(f"{where}: approved_by is required; links are approved by a person")
+            _parse_iso(ln.get("approved_at"), "approved_at", where)
+            key = (min(sid, to), max(sid, to), kind, label.lower())
+            if key in pairs:
+                raise CheckedSignalError(f"{where}: the same link is already recorded on {pairs[key][:8]}")
+            pairs[key] = sid
 
 
 def _reject_duplicates(signals: list[dict]) -> None:
@@ -298,23 +384,37 @@ UPSERT_SQL = """
 INSERT INTO signals
     (signal_id, source, external_id, title, content, lat, lng, timestamp,
      status, metadata_json, is_priority, stream, relevance_score, source_type,
-     gravity_score, processed_at, published_at)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 1.0, ?, NULL, ?, ?)
+     gravity_score, processed_at, published_at, cluster_id, confidence_score)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 1.0, ?, NULL, ?, ?, NULL, NULL)
 ON CONFLICT(signal_id) DO UPDATE SET
     source=excluded.source, external_id=excluded.external_id, title=excluded.title,
     content=excluded.content, lat=excluded.lat, lng=excluded.lng,
     timestamp=excluded.timestamp, status=excluded.status,
     metadata_json=excluded.metadata_json, is_priority=0, stream=excluded.stream,
     relevance_score=1.0, source_type=excluded.source_type, gravity_score=NULL,
-    processed_at=excluded.processed_at, published_at=excluded.published_at
+    processed_at=excluded.processed_at, published_at=excluded.published_at,
+    cluster_id=NULL, confidence_score=NULL
 """
 
 ROW_SQL = """
 SELECT signal_id, source, external_id, title, content, lat, lng, timestamp, status,
        metadata_json, is_priority, stream, relevance_score, source_type,
-       gravity_score, processed_at, published_at
+       gravity_score, processed_at, published_at, cluster_id, confidence_score
 FROM signals WHERE signal_id = ?
 """
+
+
+def _has_table(conn: sqlite3.Connection, name: str) -> bool:
+    return conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                        (name,)).fetchone() is not None
+
+
+def _name_rows(conn: sqlite3.Connection, sid: str) -> int:
+    """signal_entities rows (the name finder's output) attached to a pin."""
+    if not _has_table(conn, "signal_entities"):
+        return 0
+    return conn.execute("SELECT COUNT(*) FROM signal_entities WHERE signal_id = ?",
+                        (sid,)).fetchone()[0]
 
 
 def _row_dict(conn: sqlite3.Connection, sid: str) -> dict | None:
@@ -341,6 +441,8 @@ def _desired_row(s: dict, retraction: dict | None) -> dict:
         "source_type": SOURCE_TYPE, "gravity_score": None,
         "processed_at": s["published_at"],
         "published_at": None if retraction else s["published_at"],
+        # Machine traces: never part of a checked pin.
+        "cluster_id": None, "confidence_score": None,
     }
 
 
@@ -388,6 +490,8 @@ def plan(conn: sqlite3.Connection, cs: CheckedSet) -> list[Action]:
         changed = [k for k, v in want.items() if have.get(k) != v]
         if k_meta_equal(have.get("metadata_json"), want["metadata_json"]) and "metadata_json" in changed:
             changed.remove("metadata_json")
+        if _name_rows(conn, sid):
+            changed.append("signal_entities")
         if not changed:
             kind = "withdrawn" if sid in retracted else "unchanged"
         else:
@@ -424,6 +528,10 @@ def import_checked(conn: sqlite3.Connection, cs: CheckedSet, write: bool = False
                 r["signal_id"], r["source"], r["external_id"], r["title"], r["content"],
                 r["lat"], r["lng"], r["timestamp"], r["status"], r["metadata_json"],
                 r["stream"], r["source_type"], r["processed_at"], r["published_at"]))
+            if "signal_entities" in a.changed:
+                # Name-finder rows on a checked pin are machine traces: the
+                # batch rules allow no entity links. Only this pin's rows go.
+                conn.execute("DELETE FROM signal_entities WHERE signal_id = ?", (a.signal_id,))
         conn.commit()
     except Exception:
         conn.rollback()
@@ -450,9 +558,13 @@ def verify(conn: sqlite3.Connection, cs: CheckedSet) -> list[str]:
         if fingerprint(_record_from_row(row)) != s["fingerprint"]:
             problems.append(f"different from its checked file: {short}")
         want = _desired_row(s, None)
-        for col in ("status", "source_type", "gravity_score", "processed_at"):
+        for col in ("status", "source_type", "gravity_score", "processed_at",
+                    "relevance_score", "cluster_id", "confidence_score"):
             if row[col] != want[col]:
                 problems.append(f"{col} is {row[col]!r}, expected {want[col]!r}: {short}")
+        n = _name_rows(conn, sid)
+        if n:
+            problems.append(f"{n} machine name row(s) in signal_entities: {short}")
     known = {s["signal_id"] for s in cs.signals}
     for (sid, title) in conn.execute(
             "SELECT signal_id, title FROM signals WHERE source_type = ? AND published_at IS NOT NULL",

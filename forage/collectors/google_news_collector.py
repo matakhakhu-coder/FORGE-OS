@@ -461,7 +461,7 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     if not queries:
         print("[gnews] No queries to process — exiting")
         duration = time.time() - start_time
-        log_run(SOURCE_ID, "success", 0, 0, duration)
+        log_run(DB_PATH, SOURCE_ID, "success", 0, 0, duration)
         return {"status": "done", "fetched": 0, "inserted": 0, "duration_s": duration}
 
     # Collect from Google News RSS
@@ -517,7 +517,7 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         print(f"[gnews] Inserted {inserted} new signals ({len(all_signals) - inserted} duplicates)")
     print(f"[gnews] Done in {duration}s")
 
-    log_run(SOURCE_ID, "success", total_articles, inserted, duration)
+    log_run(DB_PATH, SOURCE_ID, "success", total_articles, inserted, duration)
 
     return {
         "status": "done",

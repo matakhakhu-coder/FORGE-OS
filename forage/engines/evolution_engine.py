@@ -35,6 +35,7 @@ Author: FORGE Phase 33
 
 from __future__ import annotations
 
+import os
 import argparse
 import json
 import re
@@ -47,7 +48,7 @@ from typing import Optional
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH  = BASE_DIR / "database.db"
+DB_PATH  = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")
 
 try:
     from forage.utils.pipeline_logger import log_run

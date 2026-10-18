@@ -154,7 +154,12 @@ class ClusterEngine:
     def _cluster(self, conn: sqlite3.Connection,
                  batch_size: int, only_null: bool) -> dict:
 
-        null_clause = "WHERE cluster_id IS NULL" if only_null else ""
+        # Hand-checked pins never get a cluster: the engine reads the report
+        # time as the incident time, and a shared cluster_id reads as a link
+        # nobody approved (Sprint 2 found six such pairs). Sprint 3.
+        not_checked = "COALESCE(source_type, '') != 'checked'"
+        null_clause = (f"WHERE cluster_id IS NULL AND {not_checked}" if only_null
+                       else f"WHERE {not_checked}")
 
         total_signals = conn.execute(
             f"SELECT COUNT(*) FROM signals {null_clause}"
