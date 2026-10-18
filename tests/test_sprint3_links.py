@@ -31,6 +31,7 @@ VOORBRUG = "2a87ec3f-8763-416c-99cf-6c060faab5a1"     # batch 2, 3 Oct
 N2_GATEWAY = "21b2a9b0-66c3-4045-924d-963eaa85b4a1"   # batch 2, 4 Oct
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"       # batch 1
 WORCESTER = "7bce2be1-912e-48e2-9fd4-c79d1611c16f"    # batch 1, 14 Oct
+ZOLA = "0d2ac747-e939-48fd-a116-3d99c1a95758"         # 16 Oct, about 06:30
 
 SRC = "https://example.org/test-source"
 
@@ -158,6 +159,17 @@ def test_pattern_case_shows_pattern_test_and_sorts_by_incident_date(tmp_path, mo
     assert -1 not in order and order == sorted(order)
     index_html = (dist / "index.html").read_text()
     assert re.search(r'case-entry__coe[^"]*">Pattern test<', index_html)
+
+
+def test_pattern_case_keeps_time_order_within_one_day(tmp_path, monkeypatch):
+    # Epping (16 Oct, 06:00) sorts after Zola Village (16 Oct, 06:30) by ID,
+    # so a date-only sort put 06:30 first.
+    index = _copy_signals(tmp_path)
+    dist = _build(tmp_path, monkeypatch, index, case_pins=[ZOLA, EPPING],
+                  anchors={"experiment": True, "links_incidents": False})
+    page = next((dist / "cases").glob("*.html")).read_text()
+    order = [page.find(t) for t in ("Epping", "Zola Village")]
+    assert -1 not in order and order == sorted(order)
 
 
 def test_ordinary_case_page_unchanged(tmp_path, monkeypatch):

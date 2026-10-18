@@ -717,7 +717,9 @@ def _fetch_case_signals(conn: sqlite3.Connection, case_id: int,
             "note":          r["note"] or "",
             # Pattern cases sort by when it happened; the timestamp column is
             # mostly the report time, which is what misled the Sprint 2 engines.
-            "_sort":         (chk["incident_start"] or r["timestamp"] or "")[:10],
+            # Full value, not just the date, so two incidents on the same day
+            # keep their time order (06:00 before 06:30).
+            "_sort":         str(chk["incident_start"] or r["timestamp"] or ""),
             "_id":           r["signal_id"],
         })
     if pattern:
