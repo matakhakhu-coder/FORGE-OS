@@ -1,0 +1,491 @@
+{
+  "batch": "Western Cape murders, batch 2 (reports published 1-18 Oct 2026), hand-checked 18 Oct 2026",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb or area is known. Sources that reuse one report or one police statement are not independent corroboration.",
+  "load_with": "python tools/seed_checked_signals.py docs/signals/western-cape-murders-2026-10-18-batch2.json --write",
+  "held_back": [
+    {"place": "Dunoon Taxi Rank", "reason": "Only one source (Daily Voice, 7 Oct). It says the killing came 'hours later' than a Tuesday 23:06 shooting but also 'at about 7.30am, yesterday', so the incident date (6 or 7 Oct) cannot be fixed. Needs a second report.", "source": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/"}
+  ],
+  "signals": [
+    {
+      "signal_id": "0f037fc3-9de9-4e2b-aa1f-00feda269a58",
+      "external_id": "checked:wc-2026-10-18b:A",
+      "source": "Plainsman",
+      "title": "Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct",
+      "content": "Police say a 43-year-old man sitting in a white Hyundai truck was pulled out by two men and shot dead in front of a premises on Trampoline Street, Beacon Valley, at 11:10 on Thursday 1 October; the suspects took his firearm and fled towards Hengelaar Road (Plainsman, quoting police spokesperson FC van Wyk).",
+      "lat": -34.04048,
+      "lng": 18.62456,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-01T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Plainsman",
+        "collected_external_id": "gnews:f94b047de7f9b87a",
+        "checked": {
+          "incident": "Thu 1 Oct 2026, 11:10 (police)",
+          "reported": "1 Oct 2026",
+          "location": "Trampoline Street, Beacon Valley (exact spot not given). The pin is the middle of the street, which OpenStreetMap places on the Eastridge side of Beacon Valley.",
+          "sources": [{"name": "Plainsman", "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "fdb570fb-11a4-4430-8966-b973f1ae3ede",
+      "external_id": "checked:wc-2026-10-18b:B",
+      "source": "Daily Voice",
+      "title": "Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct",
+      "content": "James Henn, 28, was stabbed in the neck during an alleged argument in Nasson Street, Hawston, at about 23:00 on Friday 2 October and was declared dead at the scene. Hermanus police registered a murder case and three suspects were arrested (Daily Voice, quoting police spokesperson Ndakhe Gwala).",
+      "lat": -34.38815,
+      "lng": 19.13882,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:161dd954ef99f7d0",
+        "checked": {
+          "incident": "Fri 2 Oct 2026, about 23:00 (police)",
+          "reported": "4 Oct 2026",
+          "location": "Nasson Street, Hawston (exact spot not given). The pin is on the street.",
+          "sources": [{"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "2a87ec3f-8763-416c-99cf-6c060faab5a1",
+      "external_id": "checked:wc-2026-10-18b:C",
+      "source": "Daily Voice",
+      "title": "Voorbrug, Delft (Camdeboo St, approx.): 2 men shot dead, 3 Oct",
+      "content": "Delft police registered a double murder case after two men were shot dead in Camdeboo Street, Anceba Court, Voorbrug, at about 18:40 on Saturday 3 October; both were declared dead at the scene and the motive is unknown (police spokesperson Ndakhe Gwala, via Daily Voice and TygerBurger). Both outlets carry the same police statement.",
+      "lat": -33.9695,
+      "lng": 18.6417,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:407dc221e09ba683",
+        "checked": {
+          "incident": "Sat 3 Oct 2026, about 18:40 (police)",
+          "reported": "4-5 Oct 2026",
+          "location": "Camdeboo Street, Anceba Court, Voorbrug, Delft (exact spot not given). OpenStreetMap has the street as Camdeboo Crescent; the pin is on it.",
+          "basis": "Both reports rest on the same police statement; not independent confirmation.",
+          "sources": [
+            {"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/"},
+            {"name": "TygerBurger", "url": "https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Both sources quote the same police statement; IOL/Cape Argus reprinted the Daily Voice text and is not listed. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "21b2a9b0-66c3-4045-924d-963eaa85b4a1",
+      "external_id": "checked:wc-2026-10-18b:D",
+      "source": "Daily Voice",
+      "title": "N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct",
+      "content": "A 20-year-old man was found dead with injuries to his neck along Bagzane Street, N2 Gateway, Delft, on the morning of Sunday 4 October; police opened a murder case (police spokesperson Ndakhe Gwala, via Daily Voice and TygerBurger). The time of death and how he was injured were not given.",
+      "lat": -33.96394,
+      "lng": 18.63438,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:407dc221e09ba683",
+        "checked": {
+          "incident": "Found Sun 4 Oct 2026, morning (time of death not given)",
+          "reported": "4-5 Oct 2026",
+          "location": "Bagzane Street, N2 Gateway, Delft (exact spot not given). The pin is on the street.",
+          "basis": "Both reports rest on the same police statement; not independent confirmation.",
+          "sources": [
+            {"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/"},
+            {"name": "TygerBurger", "url": "https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Both sources quote the same police statement. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "582ea2d7-5473-4f40-af91-a7343d865d0b",
+      "external_id": "checked:wc-2026-10-18b:E",
+      "source": "Cape Argus",
+      "title": "Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct",
+      "content": "Police found a 17-year-old girl dead on a bed with head injuries at a house in Kliplokasie on Volmoed farm, outside Oudtshoorn, on Saturday night 3 October, and launched a murder investigation; a 26-year-old man was arrested (Cape Argus, quoting police spokesperson Christopher Spies). Her aunt says she was struck and strangled.",
+      "lat": -33.65278,
+      "lng": 22.0875,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-07T11:56:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Cape Argus",
+        "collected_external_id": "gnews:bcf1d5d6227ffb77",
+        "checked": {
+          "incident": "Sat 3 Oct 2026, night (article of Wed 7 Oct says 'Saturday night')",
+          "reported": "7 Oct 2026",
+          "location": "A house in Kliplokasie on Volmoed farm, Oudtshoorn. The farm house is not on the map, so the pin is the Volmoed area point.",
+          "sources": [{"name": "Cape Argus", "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand. Cause of death beyond 'head injuries' is the family's account. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b",
+      "external_id": "checked:wc-2026-10-18b:F",
+      "source": "Cape Town ETC",
+      "title": "Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct",
+      "content": "A 31-year-old man was shot dead in his vehicle on Belgravia Road, outside Heatherdale Primary School, on Tuesday morning 6 October after reportedly dropping his child at school. Police say he had multiple gunshot wounds, the shooting may be gang-related, and no arrests were made (Cape Town ETC, quoting FC van Wyk). A separate incident from the 10 Oct Belgravia pin.",
+      "lat": -33.97252,
+      "lng": 18.51552,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-06T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Cape Town ETC",
+        "collected_external_id": "gnews:dc165307491f922b",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, morning (time not given)",
+          "reported": "6 Oct 2026",
+          "location": "Belgravia Road, outside Heatherdale Primary School, Athlone. The pin is the school; the exact spot on the road is not given.",
+          "sources": [{"name": "Cape Town ETC", "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "821f2edc-df43-41d1-ad4a-c18b8380809e",
+      "external_id": "checked:wc-2026-10-18b:G",
+      "source": "Southern Mail",
+      "title": "Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct",
+      "content": "Two men were shot dead and a woman wounded in Muir Court, Depsiton Crescent, Lavender Hill, shortly after 08:00 on Tuesday 6 October; the men were declared dead at the scene and the suspects fled (Southern Mail, quoting police spokesperson Wesley Twigg).",
+      "lat": -34.07326,
+      "lng": 18.4877,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-06T09:30:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Southern Mail",
+        "collected_external_id": "gnews:83d67136a810e2db",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, shortly after 08:00 (police)",
+          "reported": "6 Oct 2026",
+          "location": "Muir Court, Depsiton Crescent, Lavender Hill. Muir Court is not on the map, so the pin is Depsiton Crescent.",
+          "sources": [{"name": "Southern Mail", "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "0c5e795f-330b-4302-97c2-812543262e8b",
+      "external_id": "checked:wc-2026-10-18b:H",
+      "source": "City Vision",
+      "title": "Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct",
+      "content": "Khayelitsha police registered two counts of murder after two men aged 36 and 39 were shot dead at about 04:30 on Tuesday 6 October in Masikhanye, Site B; no arrests were made (City Vision, quoting police spokesperson Wesley Twigg).",
+      "lat": -34.02305,
+      "lng": 18.66632,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-06T10:27:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "City Vision",
+        "collected_external_id": "gnews:cd146f67823d7636",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, about 04:30 (police)",
+          "reported": "6 Oct 2026",
+          "location": "Masikhanye, Site B, Khayelitsha. Masikhanye could not be found on the map, so the pin is a general Site B point, not the scene.",
+          "sources": [{"name": "City Vision", "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "2a848e46-0a84-4d05-8efc-85e54c8aa636",
+      "external_id": "checked:wc-2026-10-18b:I",
+      "source": "Daily Voice",
+      "title": "Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct",
+      "content": "A 43-year-old man was shot multiple times in Jakkalsvlei Avenue, Bonteheuwel, at about 23:06 on Tuesday 6 October and declared dead at the scene; police opened a murder case and made no arrests (Daily Voice, quoting police spokesperson Wesley Twigg). The ward councillor said it appeared gang-related.",
+      "lat": -33.94476,
+      "lng": 18.54334,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-07T07:00:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:ed9f902f68d6476f",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, about 23:06 (police)",
+          "reported": "7 Oct 2026",
+          "location": "Jakkalsvlei Avenue, Bonteheuwel (exact spot not given). The pin is on the Bonteheuwel end of the avenue.",
+          "sources": [{"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "530a09b2-015a-4ac3-996e-0183e8599dfa",
+      "external_id": "checked:wc-2026-10-18b:K",
+      "source": "Southern Mail",
+      "title": "St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct",
+      "content": "A 31-year-old man was shot dead in St Bernard Street, St Montague Village, on Wednesday 7 October; Steenberg police responded at about 11:45 and detectives are investigating a murder case (Southern Mail, quoting police spokesperson Wesley Twigg).",
+      "lat": -34.07098,
+      "lng": 18.49354,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-07T12:44:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Southern Mail",
+        "collected_external_id": "gnews:b1416372e12b0a93",
+        "checked": {
+          "incident": "Wed 7 Oct 2026, about 11:45 (police)",
+          "reported": "7 Oct 2026",
+          "location": "St Bernard Street, St Montague Village (exact spot not given). OpenStreetMap has it as Saint Bernard Crescent; the pin is on it.",
+          "sources": [{"name": "Southern Mail", "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "03459a76-618b-4f7b-a538-c70eb89d5f99",
+      "external_id": "checked:wc-2026-10-18b:L",
+      "source": "Sentinel News",
+      "title": "Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct",
+      "content": "A 34-year-old man was killed in a shooting on OR Tambo Road, Imizamo Yethu, Hout Bay, at about 19:19 on Wednesday 7 October; Hout Bay police registered a murder case and made no arrests (Sentinel News, quoting police spokesperson Thembakazi Mpendukana).",
+      "lat": -34.02757,
+      "lng": 18.36167,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-08T09:51:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Sentinel News",
+        "collected_external_id": "gnews:72613c041d7b3308",
+        "checked": {
+          "incident": "Wed 7 Oct 2026, about 19:19 (police)",
+          "reported": "8 Oct 2026",
+          "location": "OR Tambo Road, Imizamo Yethu (exact spot not given). The pin is on the road.",
+          "sources": [{"name": "Sentinel News", "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "2fdd9a56-11a3-4877-891a-bd46f152c44b",
+      "external_id": "checked:wc-2026-10-18b:M",
+      "source": "Mossel Bay Advertiser",
+      "title": "D'Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct",
+      "content": "Da Gamaskop police are investigating a murder after a man's body with stab wounds was found in bushes in an open field between D'Almeida and Albert Luthuli Park, near Mountain View, at about 10:50 on Thursday 8 October. Three suspects aged 28 to 43 were later arrested and appeared in court on 13 October (Mossel Bay Advertiser).",
+      "lat": -34.175,
+      "lng": 22.10167,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-08T17:02:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Mossel Bay Advertiser",
+        "collected_external_id": "gnews:a0949df361f34bd2",
+        "checked": {
+          "incident": "Body found Thu 8 Oct 2026, about 10:50 (police); time of death not given",
+          "reported": "8 Oct 2026; arrests reported 15 Oct",
+          "location": "Open field between D'Almeida and Albert Luthuli Park, near Mountain View, Mossel Bay. The field is not on the map, so the pin is the D'Almeida suburb point.",
+          "basis": "Two reports from one outlet, both based on police statements.",
+          "sources": [
+            {"name": "Mossel Bay Advertiser (8 Oct)", "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714"},
+            {"name": "Mossel Bay Advertiser (15 Oct, arrests)", "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. A separate incident from the 4 Oct Asla Park pin. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "d09da7da-5705-46e3-8d10-5fef0db6c639",
+      "external_id": "checked:wc-2026-10-18b:N",
+      "source": "Mossel Bay Advertiser",
+      "title": "Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct",
+      "content": "Police say a 52-year-old man was stabbed in the chest with a knife during an argument with his wife at their house in Green Haven, Wolwedans, Great Brak River, just before 16:00 on Sunday 11 October, and was declared dead at the scene. His wife, 52, was arrested at the scene and faces a murder charge (Mossel Bay Advertiser).",
+      "lat": -34.03778,
+      "lng": 22.20917,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-12T11:20:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Mossel Bay Advertiser",
+        "collected_external_id": "gnews:02dc58c6b4c5bba3",
+        "checked": {
+          "incident": "Sun 11 Oct 2026, just before 16:00 (police)",
+          "reported": "12 Oct 2026",
+          "location": "A house in Green Haven, Wolwedans, Great Brak River. The pin is the Greenhaven area point, not the house.",
+          "sources": [{"name": "Mossel Bay Advertiser", "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "7acad00a-2081-462b-939c-be61b9d9b539",
+      "external_id": "checked:wc-2026-10-18b:O",
+      "source": "Voice of the Cape",
+      "title": "Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct",
+      "content": "Two men aged 20 and 25 were shot dead and a third wounded while sitting in a parked vehicle on Teenage Vuso Street, Zone 5, Langa, on Monday evening 12 October; police registered two counts of murder and one of attempted murder, with no arrests (Voice of the Cape, 13 Oct; Cape Argus, 14 Oct, quoting police spokesperson Ndakhe Gwala).",
+      "lat": -33.9469,
+      "lng": 18.5318,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-13T17:52:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Voice of the Cape",
+        "collected_external_id": "gnews:87a55548697768f5",
+        "checked": {
+          "incident": "Mon 12 Oct 2026, evening ('Monday evening' in reports of 13-14 Oct; time not given)",
+          "reported": "13-14 Oct 2026",
+          "location": "Teenage Vuso Street, Zone 5, Langa (exact spot not given). The pin is on the street.",
+          "basis": "Both reports quote the same community leader and police details; not fully independent.",
+          "sources": [
+            {"name": "Voice of the Cape", "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/"},
+            {"name": "Cape Argus", "url": "https://capeargus.co.za/news/2026-10-14-two-killed-and-one-wounded-in-langa-shooting/"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Both quote the same community leader and police details, so they are not fully independent. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d",
+      "external_id": "checked:wc-2026-10-18b:P",
+      "source": "Daily Voice",
+      "title": "Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct",
+      "content": "Khayelitsha police are investigating a murder after a 25-year-old man was shot dead by gunmen in Trekker Road, near an Engen garage, at about 17:00 on Tuesday 13 October (Daily Voice, quoting police spokesperson Ndakhe Gwala).",
+      "lat": -34.04059,
+      "lng": 18.66742,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-14T13:59:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:089ac5d3ef1c769b",
+        "checked": {
+          "incident": "Tue 13 Oct 2026, about 17:00 (police)",
+          "reported": "14 Oct 2026",
+          "location": "Trekker Road near an Engen garage, Khayelitsha. Trekker Road could not be found on the map, so the pin is a general Khayelitsha point, not the scene.",
+          "sources": [{"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "218c685c-2720-486e-8fc9-9af1dd3c2d5a",
+      "external_id": "checked:wc-2026-10-18b:Q",
+      "source": "TygerBurger",
+      "title": "Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct",
+      "content": "Mfuleni police responded to a shooting in Reindeer Street, Wesbank, at about 20:10 on Saturday 10 October: Lincoln Jonathan, 14, a Grade 8 learner at Silversands High School, died at the scene and a Grade 11 learner was wounded (TygerBurger, 12 Oct, quoting police spokesperson Wesley Twigg).",
+      "lat": -33.9637,
+      "lng": 18.659,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-12T10:23:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "TygerBurger",
+        "collected_external_id": "gnews:38202e83bb160c73",
+        "checked": {
+          "incident": "Sat 10 Oct 2026, about 20:10 (police, TygerBurger 12 Oct). TygerBurger's follow-up of 13 Oct wrongly says 17 October.",
+          "reported": "12-13 Oct 2026",
+          "location": "Corner of Reindeer Street, Wesbank (exact spot not given). OpenStreetMap has it as Reindeer Crescent; the pin is on it.",
+          "basis": "Two reports from one outlet; the date comes from the police statement in the first.",
+          "disagreements": ["TygerBurger's 13 Oct follow-up says Saturday 17 October, which is after it was published; its 12 Oct report quotes police giving Saturday 10 October."],
+          "sources": [
+            {"name": "TygerBurger (12 Oct)", "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/"},
+            {"name": "TygerBurger (13 Oct)", "url": "https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. Standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2",
+      "external_id": "checked:wc-2026-10-18b:R",
+      "source": "Daily Voice",
+      "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct",
+      "content": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the shooting is gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the police details give 15 October 2026.",
+      "lat": -33.9907,
+      "lng": 18.5354,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-15T13:12:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:d089101908347a3f",
+        "checked": {
+          "incident": "Thu 15 Oct 2026, about 06:05 (police)",
+          "reported": "15 Oct 2026",
+          "location": "Suria Walk, Hanover Park (exact spot not given). The pin is on the walkway.",
+          "sources": [{"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",
+      "external_id": "checked:wc-2026-10-18b:S",
+      "source": "Daily Voice",
+      "title": "Zola Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
+      "content": "Lwandle police are investigating a murder after a 35-year-old man's body was found burning in Christmas Tinto Park, near Simanyene High School, Zola Village, at about 06:30 on Friday 16 October; police say he had been stabbed (Daily Voice).",
+      "lat": -34.1077,
+      "lng": 18.8578,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-18T12:56:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "collected_external_id": "gnews:0d921f07fa866baa",
+        "checked": {
+          "incident": "Found burning Fri 16 Oct 2026, about 06:30 (police)",
+          "reported": "18 Oct 2026",
+          "location": "Christmas Tinto Park near Simanyene High School, Zola Village, Strand. The park is not on the map, so the pin sits between the two nearby schools.",
+          "sources": [{"name": "Daily Voice", "url": "https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/"}],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line)."
+        }
+      }
+    },
+    {
+      "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8",
+      "external_id": "checked:wc-2026-10-18b:T",
+      "source": "EWN",
+      "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct",
+      "content": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive, Tafelsig, where a body was found burning; it was burned beyond recognition, a murder case was registered and a post-mortem will identify the deceased (EWN, quoting police spokesperson FC van Wyk). EWN later reported it as a woman's body found on Saturday 17 October.",
+      "lat": -34.062,
+      "lng": 18.639,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-18T08:59:00Z",
+      "published_at": "2026-10-18T18:50:00Z",
+      "metadata": {
+        "source_outlet": "EWN",
+        "collected_external_id": "gnews:640aa67224c7db49",
+        "checked": {
+          "incident": "Found Sat 17 Oct 2026 (EWN, quoting Ian Cameron); time not given",
+          "reported": "18 Oct 2026",
+          "location": "Corner of Hugenot Street and AZ Berman Drive, Tafelsig. The pin is near the corner; OpenStreetMap spells it Huguenot.",
+          "basis": "Two reports from one outlet. Police gave the place; the Saturday date and that the victim was a woman come from the second report, quoting Ian Cameron.",
+          "sources": [
+            {"name": "EWN (police report)", "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town"},
+            {"name": "EWN (Cameron reaction)", "url": "https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron"}
+          ],
+          "checked_at": "2026-10-18T18:48:00Z",
+          "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. Standalone (no case, entity or map line)."
+        }
+      }
+    }
+  ]
+}

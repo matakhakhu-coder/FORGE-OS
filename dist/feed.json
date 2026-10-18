@@ -1,8 +1,255 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "18 Oct 2026 17:28 UTC",
+  "generated_at": "18 Oct 2026 18:50 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Police say a 43-year-old man sitting in a white Hyundai truck was pulled out by two men and shot dead in front of a premises on Trampoline Street, Beacon Valley, at 11:10 on Thursday 1 October; the suspects took his fire...",
+      "source": "PLAINSMAN",
+      "geo": {
+        "lat": -34.04048,
+        "lng": 18.62456
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "James Henn, 28, was stabbed in the neck during an alleged argument in Nasson Street, Hawston, at about 23:00 on Friday 2 October and was declared dead at the scene. Hermanus police registered a murder case and three susp...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -34.38815,
+        "lng": 19.13882
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Voorbrug, Delft (Camdeboo St, approx.): 2 men shot dead, 3 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Delft police registered a double murder case after two men were shot dead in Camdeboo Street, Anceba Court, Voorbrug, at about 18:40 on Saturday 3 October; both were declared dead at the scene and the motive is unknown (...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -33.9695,
+        "lng": 18.6417
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 20-year-old man was found dead with injuries to his neck along Bagzane Street, N2 Gateway, Delft, on the morning of Sunday 4 October; police opened a murder case (police spokesperson Ndakhe Gwala, via Daily Voice and T...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -33.96394,
+        "lng": 18.63438
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Police found a 17-year-old girl dead on a bed with head injuries at a house in Kliplokasie on Volmoed farm, outside Oudtshoorn, on Saturday night 3 October, and launched a murder investigation; a 26-year-old man was arre...",
+      "source": "CAPE ARGUS",
+      "geo": {
+        "lat": -33.65278,
+        "lng": 22.0875
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 31-year-old man was shot dead in his vehicle on Belgravia Road, outside Heatherdale Primary School, on Tuesday morning 6 October after reportedly dropping his child at school. Police say he had multiple gunshot wounds,...",
+      "source": "CAPE TOWN ETC",
+      "geo": {
+        "lat": -33.97252,
+        "lng": 18.51552
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Two men were shot dead and a woman wounded in Muir Court, Depsiton Crescent, Lavender Hill, shortly after 08:00 on Tuesday 6 October; the men were declared dead at the scene and the suspects fled (Southern Mail, quoting ...",
+      "source": "SOUTHERN MAIL",
+      "geo": {
+        "lat": -34.07326,
+        "lng": 18.4877
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Khayelitsha police registered two counts of murder after two men aged 36 and 39 were shot dead at about 04:30 on Tuesday 6 October in Masikhanye, Site B; no arrests were made (City Vision, quoting police spokesperson Wes...",
+      "source": "CITY VISION",
+      "geo": {
+        "lat": -34.02305,
+        "lng": 18.66632
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 43-year-old man was shot multiple times in Jakkalsvlei Avenue, Bonteheuwel, at about 23:06 on Tuesday 6 October and declared dead at the scene; police opened a murder case and made no arrests (Daily Voice, quoting poli...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -33.94476,
+        "lng": 18.54334
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 31-year-old man was shot dead in St Bernard Street, St Montague Village, on Wednesday 7 October; Steenberg police responded at about 11:45 and detectives are investigating a murder case (Southern Mail, quoting police s...",
+      "source": "SOUTHERN MAIL",
+      "geo": {
+        "lat": -34.07098,
+        "lng": 18.49354
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 34-year-old man was killed in a shooting on OR Tambo Road, Imizamo Yethu, Hout Bay, at about 19:19 on Wednesday 7 October; Hout Bay police registered a murder case and made no arrests (Sentinel News, quoting police spo...",
+      "source": "SENTINEL NEWS",
+      "geo": {
+        "lat": -34.02757,
+        "lng": 18.36167
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "D'Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Da Gamaskop police are investigating a murder after a man's body with stab wounds was found in bushes in an open field between D'Almeida and Albert Luthuli Park, near Mountain View, at about 10:50 on Thursday 8 October. ...",
+      "source": "MOSSEL BAY ADVERTISER",
+      "geo": {
+        "lat": -34.175,
+        "lng": 22.10167
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Police say a 52-year-old man was stabbed in the chest with a knife during an argument with his wife at their house in Green Haven, Wolwedans, Great Brak River, just before 16:00 on Sunday 11 October, and was declared dea...",
+      "source": "MOSSEL BAY ADVERTISER",
+      "geo": {
+        "lat": -34.03778,
+        "lng": 22.20917
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Two men aged 20 and 25 were shot dead and a third wounded while sitting in a parked vehicle on Teenage Vuso Street, Zone 5, Langa, on Monday evening 12 October; police registered two counts of murder and one of attempted...",
+      "source": "VOICE OF THE CAPE",
+      "geo": {
+        "lat": -33.9469,
+        "lng": 18.5318
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Khayelitsha police are investigating a murder after a 25-year-old man was shot dead by gunmen in Trekker Road, near an Engen garage, at about 17:00 on Tuesday 13 October (Daily Voice, quoting police spokesperson Ndakhe G...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -34.04059,
+        "lng": 18.66742
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Mfuleni police responded to a shooting in Reindeer Street, Wesbank, at about 20:10 on Saturday 10 October: Lincoln Jonathan, 14, a Grade 8 learner at Silversands High School, died at the scene and a Grade 11 learner was ...",
+      "source": "TYGERBURGER",
+      "geo": {
+        "lat": -33.9637,
+        "lng": 18.659
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the shooting is gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the p...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -33.9907,
+        "lng": 18.5354
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Zola Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Lwandle police are investigating a murder after a 35-year-old man's body was found burning in Christmas Tinto Park, near Simanyene High School, Zola Village, at about 06:30 on Friday 16 October; police say he had been st...",
+      "source": "DAILY VOICE",
+      "geo": {
+        "lat": -34.1077,
+        "lng": 18.8578
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-18T18:50:00Z",
+      "summary": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive, Tafelsig, where a body was found burning; it was burned beyond recognition, a murder case was registered and a post-mortem will iden...",
+      "source": "EWN",
+      "geo": {
+        "lat": -34.062,
+        "lng": 18.639
+      }
+    },
     {
       "kind": "signal",
       "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct",
