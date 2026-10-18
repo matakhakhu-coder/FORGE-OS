@@ -1040,6 +1040,15 @@ def migrate_db():
     def _columns(table):
         return {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
 
+    # Tables that SCHEMA_STATEMENTS does not create but later code depends on.
+    # Without these, --migrate on a fresh database crashed with
+    # "no such table: articles" (articles.tier below), and /api/archive
+    # failed with "no such table: signals_archive". Both are idempotent.
+    from migrations.add_publication_layer import apply as _apply_publication_layer
+    from migrations.migrate_archive import apply as _apply_archive_tables
+    _apply_publication_layer(conn)
+    _apply_archive_tables(conn)
+
     migrations = [
         ("artifacts",      "thumbnail",        "TEXT"),
         # Phase 10 — Narrative Threader columns on junction tables
