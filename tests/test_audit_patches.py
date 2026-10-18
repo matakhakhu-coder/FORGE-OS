@@ -129,3 +129,40 @@ def test_event_and_artifact_edit_pages_render(tmp_path, monkeypatch):
     ar = client.get("/artifact/1/edit")
     assert ev.status_code == 200 and "/event/1/delete" in ev.get_data(as_text=True)
     assert ar.status_code == 200 and "/artifact/1/delete" in ar.get_data(as_text=True)
+
+
+def test_new_event_form_does_not_render_admin_password(tmp_path, monkeypatch):
+    import core.web.blueprints.admin as admin_bp_module
+
+    canary = "canary-admin-pw-7f3c"
+    monkeypatch.setattr(admin_bp_module, "ADMIN_PASSWORD", canary)
+    client, _ = _client(tmp_path, monkeypatch)
+
+    for url in ("/admin/event/new", "/admin"):
+        resp = client.get(url)
+        assert resp.status_code == 200
+        assert canary not in resp.get_data(as_text=True), url
+
+    page = client.get("/admin/event/new").get_data(as_text=True)
+    assert 'type="password"' in page and 'name="password"' in page
+
+
+def test_new_event_post_rejects_wrong_password(tmp_path, monkeypatch):
+    import sqlite3
+    import core.web.blueprints.admin as admin_bp_module
+
+    monkeypatch.setattr(admin_bp_module, "ADMIN_PASSWORD", "right-pw")
+    client, db_file = _client(tmp_path, monkeypatch)
+
+    bad = client.post("/admin/event/new",
+                      data={"password": "wrong", "ev_title": "X", "signal_id": "sig-1"})
+    assert bad.status_code == 302 and "signal_id=sig-1" in bad.headers["Location"]
+
+    good = client.post("/admin/event/new", data={"password": "right-pw", "ev_title": "X"})
+    assert good.status_code == 302
+
+    conn = sqlite3.connect(str(db_file))
+    try:
+        assert conn.execute("SELECT COUNT(*) FROM events WHERE title='X'").fetchone()[0] == 1
+    finally:
+        conn.close()

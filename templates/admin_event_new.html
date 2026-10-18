@@ -93,7 +93,6 @@
 
     {# Hidden fields #}
     <input type="hidden" name="signal_id" value="{{ signal_id }}">
-    <input type="hidden" name="password"  value="{{ admin_password }}">
 
     {# ── Title ────────────────────────────────────────────────────────────── #}
     <div class="form-group">
@@ -184,6 +183,13 @@
       — will be pinned on the FORGE map.
     </div>
     {% endif %}
+
+    {# ── Admin password (typed by the user; never rendered into the page) ── #}
+    <div class="form-group">
+      <label class="form-label" for="ev_password">Admin Password</label>
+      <input type="password" id="ev_password" name="password" class="form-input"
+             placeholder="Enter admin password" autocomplete="current-password" required>
+    </div>
 
     {# ── Submit row ───────────────────────────────────────────────────────── #}
     <div class="form-actions">

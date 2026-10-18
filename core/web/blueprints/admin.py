@@ -230,7 +230,6 @@ def admin_event_new():
         signal_id=signal_id,
         source_signal=source_signal,
         event_categories=event_categories,
-        admin_password=ADMIN_PASSWORD,
     )
 
 
@@ -245,7 +244,9 @@ def admin_event_new_post():
 
     if request.form.get("password") != ADMIN_PASSWORD:
         flash("Incorrect password — event not saved.", "error")
-        return redirect(url_for("admin.admin_event_new"))
+        # Keep the originating signal so the pre-filled form comes back.
+        return redirect(url_for("admin.admin_event_new",
+                                signal_id=request.form.get("signal_id") or None))
 
     title    = request.form.get("ev_title",    "").strip()
     summary  = request.form.get("ev_summary",  "").strip() or None
@@ -596,7 +597,6 @@ def admin():
         event_categories=event_categories,
         actor_types_list=actor_types_list,
         actors_list=actors_list,
-        admin_password=ADMIN_PASSWORD,
     )
 
 
