@@ -142,7 +142,7 @@ Aesthetic: **classified document · dark-first · editorial precision**. Not a c
 ### Deploy Mechanics
 ```python
 # In tools/publish.py
-VERCEL_DEPLOY_HOOK = "https://api.vercel.com/v1/integrations/deploy/prj_ibD3AwjGwVKVA5tA43Evg93d5Xzf/QTHKub0Cbl"
+VERCEL_DEPLOY_HOOK = "<VERCEL_DEPLOY_HOOK_URL — kept out of the repo; store it as a secret>"
 PUBLISHED_CASE_IDS = (7, 8, 9, 10)
 ```
 Every `--deploy` run: builds dist/ → git commit → git push → POST to deploy hook → Vercel deploys.
