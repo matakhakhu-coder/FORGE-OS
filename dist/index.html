@@ -382,6 +382,21 @@
   /* ── Leaflet overrides ──────────────────────────────────────────────────── */
   .leaflet-control-zoom { display: none !important; }
 
+  /* Dark look for the OpenStreetMap basemap. Filter applies only to the
+     tile layer (className 'osm-basemap'), never to markers, popups or UI. */
+  #map { background: #0b1117; }
+  .osm-basemap {
+    filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(0.92) saturate(0.35);
+  }
+  /* Keep the OSM attribution visible above the bottom ticker */
+  #map .leaflet-bottom { bottom: 32px; }
+  #map .leaflet-control-attribution {
+    background: rgba(8,13,18,0.82);
+    color: #7a95aa;
+    font-size: 10px;
+  }
+  #map .leaflet-control-attribution a { color: #a9bccb; }
+
   /* ── Signal dot (divIcon) with data-driven pulse ─────────────────────── */
   .sig-dot {
     width: 14px; height: 14px;
@@ -2901,10 +2916,13 @@
      ══════════════════════════════════════════════════════════════════════════ */
   var map = L.map('map', { zoomControl: false }).setView([-28.5, 25], 5);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    subdomains: 'abcd',
+  // OpenStreetMap standard tiles (no API key). Usage policy:
+  // https://operations.osmfoundation.org/policies/tiles/ — keep the
+  // attribution visible and do not bulk-prefetch tiles.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
     maxZoom: 19,
+    className: 'osm-basemap',
   }).addTo(map);
 
   var STREAM_COLOR = {
