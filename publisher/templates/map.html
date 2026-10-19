@@ -1357,6 +1357,11 @@
         <dl class="sd-facts" id="sd-prov"></dl>
         <p class="sd-prov-note" id="sd-prov-note"></p>
       </section>
+      <section class="sd-section" id="sd-fact-wrap">
+        <h3 class="sd-label">What each fact rests on</h3>
+        <p id="sd-audit-status"></p>
+        <dl class="sd-facts" id="sd-fact-bases"></dl>
+      </section>
       <section class="sd-section" id="sd-rel-wrap" hidden>
         <h3 class="sd-label">Related pins</h3>
         <ul class="sd-rel" id="sd-rel"></ul>
@@ -2188,6 +2193,39 @@
       document.getElementById('sd-prov-note').textContent = pv.note || '';
     }
     section('sd-prov-wrap', !!pv);
+
+    // Fact-level audit is distinct from the overall report-independence label.
+    var fb = m.fact_basis || {status: 'not yet audited', facts: []};
+    document.getElementById('sd-audit-status').textContent = fb.status === 'audited' ?
+      'Saved-source audit, 19 October 2026. Not independent verification.' +
+      (fb.police_party ? ' Police are a party to the incident; their account is not an independent finding.' : '') : 'not yet audited';
+    var facts = document.getElementById('sd-fact-bases');
+    facts.textContent = '';
+    (fb.facts || []).forEach(function (f) {
+      facts.appendChild(el('dt', null, f.label));
+      var dd = el('dd');
+      dd.appendChild(el('p', null, f.claim));
+      dd.appendChild(el('p', null, f.basis));
+      if (f.detail) dd.appendChild(el('p', null, f.detail));
+      function evidenceLink(url, label) {
+        if (!/^https?:\/\//i.test(url || '')) return;
+        var a = el('a', null, label);
+        a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.addEventListener('click', function(e) { e.preventDefault(); openExtGate(url, a); });
+        dd.appendChild(a); dd.appendChild(document.createTextNode(' '));
+      }
+      (f.sources || []).forEach(function(s) {
+        dd.appendChild(el('p', null, s.quote));
+        evidenceLink(s.url, s.name || 'Source');
+        evidenceLink(s.archive, 'Archived source');
+      });
+      (f.conflicts || []).forEach(function(c) {
+        dd.appendChild(el('p', null, 'Recorded version' + (c.version ? ' (' + c.version + ')' : '') + ': ' + c.quote));
+        evidenceLink(c.url, 'Conflicting source');
+        evidenceLink(c.archive, 'Archived conflicting source');
+      });
+      facts.appendChild(dd);
+    });
 
     // Related pins: approved link records only. A shared source or a similar
     // pattern is text here and never a line; only a linked incident is drawn.

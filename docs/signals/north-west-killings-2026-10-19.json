@@ -19,7 +19,7 @@
       "external_id": "nwcheck:doornpan-ottosdal-2026-10-05",
       "source": "Taung Daily News",
       "title": "Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct",
-      "content": "SAPS says Hannetjie van Zyl, 55, was attacked while opening the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October. Her husband took her to hospital in Klerksdorp, where police say she died. The Klerksdorp Record puts the attack at about 19:00, says she was hit repeatedly on the head and neck with an iron bar and that her handbag and phone were taken, and says she died on the way to hospital. Police say two men, aged 32 and 33, were arrested after a witness identified them, and a third suspect is still being sought. Accounts differ: Platinum Weekly, quoting police, gives the two accused's ages as 28 and 29, says they face murder and robbery charges, and says they appeared in the Bloemhof Periodical Court on 8 October, with bail applications set for 15 October; the SAPS statement named the Ottosdal Magistrate's Court. The DA and the VF Plus criticised the police response; the DA says police took an hour to arrive.",
+      "content": "Reports place the attack on Hannetjie van Zyl, 55, at the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October; the saved SAPS statement does not itself give the incident date. Her husband took her to hospital in Klerksdorp, where police say she died. The Klerksdorp Record puts the attack at about 19:00, says she was hit repeatedly on the head and neck with an iron bar and that her handbag and phone were taken, and says she died on the way to hospital. Police say two men, aged 32 and 33, were arrested after a witness identified them, and a third suspect is still being sought. Accounts differ: Platinum Weekly, quoting police, gives the two accused's ages as 28 and 29, says they face murder and robbery charges, and says they appeared in the Bloemhof Periodical Court on 8 October, with bail applications set for 15 October; the SAPS statement named the Ottosdal Magistrate's Court. The DA and the VF Plus criticised the police response; the DA says police took an hour to arrive.",
       "lat": -26.8781,
       "lng": 25.8325,
       "stream": "CRIME_INTEL",
@@ -32,7 +32,7 @@
         "stream_reason": "general_media",
         "pubdate_raw": "2026-10-08T05:43:23+00:00",
         "checked": {
-          "incident": "Mon 5 Oct 2026, about 19:00 (Klerksdorp Record); SAPS says Monday evening",
+          "incident": "Mon 5 Oct 2026, about 19:00 (Klerksdorp Record); date not supplied in the saved SAPS statement",
           "reported": "7 Oct 2026 (SAPS statement); news reports 8-15 Oct",
           "location": "Doornpan Farm, outside Ottosdal, about 17 km from the town's police station (Klerksdorp Record, DA). No source gives the farm's position. The pin is a place-name database's point for a Doornpan farm about 19 km south-west of Ottosdal (GeoNames, via Mapcarta), which may not be the same farm. Municipality not confirmed: that database puts it in Tswaing (Ngaka Modiri Molema district), but if the farm is in Maquassi Hills it is in the Dr Kenneth Kaunda district. The DA calls it the Ottosdal/Wolmaransstad area.",
           "admin_area": {
@@ -77,7 +77,7 @@
         },
         "collected_title": "Banna ba le babedi ba tlhagelela kwa kgotlhatshekelo mabapi le polao - Taung Daily News"
       },
-      "fingerprint": "sha256:f40ad4fb908d491a911a4aaa69371590b76fa9819aae1c4983ce6eb1d60a633e"
+      "fingerprint": "sha256:f26ebf0a6112f21488f065edab2f92da1eb94b57e86c973dba8acd6161422c53"
     },
     {
       "signal_id": "318c89be-efbe-4c0d-a175-f423dcda6cc5",

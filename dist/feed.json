@@ -1,7 +1,7 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "19 Oct 2026 07:38 UTC",
+  "generated_at": "19 Oct 2026 13:57 UTC",
   "items": [
     {
       "kind": "signal",
@@ -177,7 +177,7 @@
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
       "published_at": "2026-10-19T00:50:00Z",
-      "summary": "SAPS says Hannetjie van Zyl, 55, was attacked while opening the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October. Her husband took her to hospital in Klerksdorp, where police say she died. The ...",
+      "summary": "Reports place the attack on Hannetjie van Zyl, 55, at the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October; the saved SAPS statement does not itself give the incident date. Her husband took her...",
       "source": "TAUNG DAILY NEWS",
       "region": "North West",
       "geo": {
@@ -219,7 +219,7 @@
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
       "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the shooting is gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the p...",
+      "summary": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the motive is believed to be gang-related (Daily Voice). The article's text misprints the year as 2006; its d...",
       "source": "DAILY VOICE",
       "region": "Western Cape",
       "geo": {

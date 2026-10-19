@@ -1,0 +1,3554 @@
+{
+  "schema": "forge.fact_bases",
+  "version": 1,
+  "as_of": "2026-10-19",
+  "unaudited_label": "not yet audited",
+  "pins": {
+    "7bce2be1-912e-48e2-9fd4-c79d1611c16f": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 24, found dead.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Worcester Standard, origin not stated",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "The circumstances surrounding the death of a 24-year-old man, found with a gunshot wound to the head, are under investigation."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Body discovered Wednesday morning, 14 October; time of death unstated.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Worcester Standard, origin not stated",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "His body was discovered on Wednesday morning (14 October) near a dam on a farm between Overhex, Worcester and MaGwaleni, Zwelethemba."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Unnamed farm between Overhex and MaGwaleni, near Worcester.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Worcester Standard, origin not stated",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "His body was discovered on Wednesday morning (14 October) near a dam on a farm between Overhex, Worcester and MaGwaleni, Zwelethemba."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Gunshot wound to the head.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Worcester Standard, origin not stated",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "found with a gunshot wound to the head"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Motive under investigation.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "He said the motive forms part of the investigation."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; arrest status not reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS",
+              "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "archive": "https://web.archive.org/web/20261018224027/https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+              "quote": "According to Lt-Col F.C. van Wyk, provincial police spokesperson, Worcester police registered a murder case."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men, aged 45 and 46, killed.",
+          "basis": "Police account only",
+          "detail": "Earlier police account calls the dead passengers; later police account and Codeta call them taxi owners. See saved NovaNews paragraph 3 and Cape Times paragraphs 7 and 14.",
+          "sources": [
+            {
+              "name": "Brigadier Novela Potelwa, SAPS",
+              "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "archive": "https://web.archive.org/web/20261018224146/https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "quote": "Two men aged 45 and 46 were killed during the shooting."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "16 October, about 06:00.",
+          "basis": "Police account only",
+          "detail": "06:00 appears in NovaNews only; later reports confirm the day, not the hour.",
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS",
+              "url": "https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/",
+              "archive": "https://web.archive.org/web/20261018224319/https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/",
+              "quote": "on Friday 16 October at about 06:00."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Fisher Avenue, Epping.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brigadier Novela Potelwa, SAPS",
+              "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "archive": "https://web.archive.org/web/20261018224146/https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "quote": "travelling in a sedan along Fisher Avenue"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": "NovaNews police quote: About six unidentified males; Cape Times police quote: Seven men.",
+          "sources": [
+            {
+              "name": "Brigadier Novela Potelwa, SAPS",
+              "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "archive": "https://web.archive.org/web/20261018224146/https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "quote": "Seven men from the taxi alighted and fired several shots at the other vehicle."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed taxi-related; Codeta describes a preceding dispute.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS",
+              "url": "https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/",
+              "archive": "https://web.archive.org/web/20261018224319/https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/",
+              "quote": "The motive is believed to be taxi-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two suspects arrested, facing murder charges; expected in court 19 October.",
+          "basis": "Police account only",
+          "detail": "Cape Town ETC embedded statement says 19/01, inconsistent with its own prose and Cape Times; retained as date typo, not resolved by asserting a hearing occurred.",
+          "sources": [
+            {
+              "name": "Brigadier Novela Potelwa, SAPS",
+              "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "archive": "https://web.archive.org/web/20261018224146/https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+              "quote": "the suspects were expected to appear in the Cape Town Magistrate’s Court on Monday, October 19."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "1a328ebb-28da-4b22-a7d6-f986d7852155": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Adult man and 65-year-old woman dead; third person wounded.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "archive": "https://web.archive.org/web/20261018224347/https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "quote": "One adult male and the 65-year-old female were declared deceased on the scene by medical personnel"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 10 October, about 19:00.",
+          "basis": "Police account only",
+          "detail": "7pm only in Cape Town ETC; Saturday night in SABC. Calendar day resolved from report date, not a second source.",
+          "sources": [
+            {
+              "name": "Athlone SAPS, unnamed spokesperson",
+              "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/",
+              "archive": "https://web.archive.org/web/20261018224426/https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/",
+              "quote": "According to police, Athlone SAPS responded to reports of a shooting at around 7pm"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Belgravia, Athlone; no street given.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SABC News, origin not stated",
+              "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "archive": "https://web.archive.org/web/20261018224347/https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "quote": "in Belgravia in Athlone in Cape Town on Saturday night."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "archive": "https://web.archive.org/web/20261018224347/https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "quote": "they found the victims who sustained gunshot wounds to their bodies."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed gang-related.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "archive": "https://web.archive.org/web/20261018224347/https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+              "quote": "The motive for the attack is believed to be gang-related"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrests reported as of 11 October.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Town ETC, origin not stated",
+              "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/",
+              "archive": "https://web.archive.org/web/20261018224426/https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/",
+              "quote": "No arrests have been made, and investigations into the circumstances surrounding the attack are ongoing."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "1b6fba13-ef88-48d7-8c17-16b4e7ba6650": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One 19-year-old dead.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Mossel Bay Advertiser, origin not stated",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "Paramedics declared him dead on the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "4 October; hour unstated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Warrant Officer Chris Spies, Southern Cape police",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "said according to the reports available at this stage, the police responded to a scene in Dunjwa Street on 4 October and found the victim with a stab wound to his chest."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Dunjwa Street, Asla Park.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Warrant Officer Chris Spies, Southern Cape police",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "said according to the reports available at this stage, the police responded to a scene in Dunjwa Street on 4 October and found the victim with a stab wound to his chest."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Stab wound to the chest.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Warrant Officer Chris Spies, Southern Cape police",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "said according to the reports available at this stage, the police responded to a scene in Dunjwa Street on 4 October and found the victim with a stab wound to his chest."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Alleged altercation with a group; underlying motive not established.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Warrant Officer Chris Spies, Southern Cape police",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "It is alleged that the injury was sustained during an altercation with a group"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrests reported as of 13 October.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Mossel Bay Advertiser, origin not stated",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "archive": "https://web.archive.org/web/20261018224731/https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+              "quote": "No arrests have been made."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0f037fc3-9de9-4e2b-aa1f-00feda269a58": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 43, killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, provincial police",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "The victim attempted to reach for his firearm when one of the suspects produced a firearm and shot him, killing him."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Thursday 1 October at 11:10.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Plainsman, origin not stated",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "The incident happened at 11.10am on Thursday, October 1, in front of a premises on Trampoline Street."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Trampoline Street, Beacon Valley.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Plainsman, origin not stated",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "The incident happened at 11.10am on Thursday, October 1, in front of a premises on Trampoline Street."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, provincial police",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "one of the suspects produced a firearm and shot him, killing him."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed robbery.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Plainsman, origin not stated",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "The motive is believed to be robbery."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder investigation; arrests not stated.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Plainsman, origin not stated",
+              "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "archive": "https://web.archive.org/web/20261018224854/https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+              "quote": "Mitchells Plain police are investigating a murder after a 43-year-old man was shot and killed in Beacon Valley."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "fdb570fb-11a4-4430-8966-b973f1ae3ede": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 28, dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "The suspects physically assaulted the deceased and stabbed him in the neck"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Friday 2 October, about 23:00.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "Provincial police spokesperson Constable Ndakhe Gwala told the Daily Voice Hermanus police registered a murder case following the incident at about 11pm on Friday, 2 October."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Nasson Street, Hawston.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "was allegedly attacked and stabbed in the neck in Nasson Street, Hawston, shortly after 11pm."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Stabbed in the neck.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "The suspects physically assaulted the deceased and stabbed him in the neck"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Alleged argument that escalated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "According to reports, the 28-year-old male had an argument with the suspects which escalated."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; three arrests and expected Monday appearance reported.",
+          "basis": "Police account only",
+          "detail": "Daily Voice narrates three arrests and an expected Monday first appearance, but does not explicitly attribute that sentence. These details do not acquire grade 2 from the attributed case registration.",
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "archive": "https://web.archive.org/web/20261018224920/https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+              "quote": "Hermanus police registered a murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "2a87ec3f-8763-416c-99cf-6c060faab5a1": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two adult men dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "They were both declared deceased on the scene by medical personnel."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 3 October, about 18:40.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "on Saturday 3 October 2026 at about 6.40pm."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Camdeboo Street, Anceba Court, Voorbrug.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "following a shooting at Camdeboo Street, Anceba Court"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "they found two bodies of adult males with multiple gunshot wounds inside a motor vehicle."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Police motive undetermined; local watch member speculates about gangs or extortion.",
+          "basis": "One account; independence not established",
+          "detail": "Police say motive yet to be determined in TygerBurger. Local watch comment speaks broadly about killings, and incident-specific knowledge is not shown.",
+          "sources": [
+            {
+              "name": "Unidentified Delft Neighbourhood Watch member",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "A Delft Neighbourhood Watch member, who asked not to be identified, alleged that the killings could be gang-related or linked to extortion."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Double-murder case registered; arrests not stated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "Delft police registered a double murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "21b2a9b0-66c3-4045-924d-963eaa85b4a1": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 20, found dead.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "On Sunday morning, a 20-year-old man was found dead along Bagzane Street in N2 Gateway, Delft, with injuries to his neck."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found Sunday morning, 4 October; time of death unknown.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "On Sunday morning, a 20-year-old man was found dead along Bagzane Street in N2 Gateway, Delft, with injuries to his neck."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Bagzane Street, N2 Gateway, Delft.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "along Bagzane Street in N2 Gateway, Delft, with injuries to his neck."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Neck injuries reported; killing mechanism not stated.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "The 20-year-old male sustained injuries to his neck."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Police motive undetermined; local watch member offers broad gang/extortion speculation.",
+          "basis": "One account; independence not established",
+          "detail": "Police quote says motive yet to be determined. Local speculation is not evidence identifying this victim or linking the discovery to gunshots.",
+          "sources": [
+            {
+              "name": "Unidentified Delft Neighbourhood Watch member",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "A Delft Neighbourhood Watch member, who asked not to be identified, alleged that the killings could be gang-related or linked to extortion."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened; arrests not reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "archive": "https://web.archive.org/web/20261018225018/https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+              "quote": "Gwala confirmed that police had opened a murder case."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "582ea2d7-5473-4f40-af91-a7343d865d0b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One girl, 17, found dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Warrant Officer Christopher Spies, Southern Cape police",
+              "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "archive": "https://web.archive.org/web/20261018225253/https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "quote": "officers found the teenager’s body lying on a bed with head injuries."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found Saturday night, 3 October; police response about 21:40.",
+          "basis": "Police account only",
+          "detail": "Aunt gives Saturday evening narrative; 21:40 comes from police-attributed outlet prose. Day number is inferred from Saturday before report date. Birthday tomorrow (Wednesday) versus 7 October dateline is an unrelated timing discrepancy.",
+          "sources": [
+            {
+              "name": "Angelina Botha, aunt",
+              "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "archive": "https://web.archive.org/web/20261018225253/https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "quote": "Later that evening, we received the news that she was found dead in her boyfriend’s house."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "House in Kliplokasie on Volmoed farm; farm-area marker only.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Argus, origin not stated",
+              "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "archive": "https://web.archive.org/web/20261018225253/https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "quote": "found dead at a house in Kliplokasie on Volmoed farm on Saturday night."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Aunt reports blunt-force head injuries and strangulation; police describe head injuries only.",
+          "basis": "Police account only",
+          "detail": "Aunt also states neck markings indicate strangulation; police report only head injuries. Keep family attribution and do not turn this into an autopsy finding independently checked by FORGE.",
+          "sources": [
+            {
+              "name": "Angelina Botha, aunt",
+              "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "archive": "https://web.archive.org/web/20261018225253/https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "quote": "We were told that Sharuney was hit with a blunt object to the head multiple times."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Underlying motive not stated; aunt relays a preceding family argument.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder investigation; man, 26, arrested and expected in court Tuesday.",
+          "basis": "Police account only",
+          "detail": "A 26-year-old arrest and planned Tuesday appearance are given in Cape Argus narration, not explicitly attributed to a spokesperson. Do not assert the appearance took place.",
+          "sources": [
+            {
+              "name": "Southern Cape police",
+              "url": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "archive": "https://web.archive.org/web/20261018225253/https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/",
+              "quote": "Police confirmed that a murder investigation was launched after officers responded to the scene at about 9.40pm."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 31, killed.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Town ETC, origin not stated",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "A 31-year-old Athlone man was shot dead in his vehicle on Belgravia Road"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday morning, 6 October.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Town ETC, origin not stated",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "after reportedly dropping his child at school on Tuesday morning"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Belgravia Road, outside Heatherdale Primary School.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Town ETC, origin not stated",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "The shooting happened outside Heatherdale Primary School"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot, with multiple gunshot wounds.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "The man sustained multiple gunshot wounds to his face and upper body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "May be gang-related, police belief.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS, spokesperson not specified for motive",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "Police believe the shooting may be gang-related"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened; no arrests reported.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Cape Town ETC, origin not stated",
+              "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "archive": "https://web.archive.org/web/20261018225412/https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+              "quote": "No arrests have been made. Athlone police have opened a murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0c5e795f-330b-4302-97c2-812543262e8b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men, 36 and 39, killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "where two males aged 36 and 39 were shot and fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 6 October, about 04:30.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "following a shooting on Tuesday morning, 6 October, at about 04:30 in Masikhanye, Site B"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Masikhanye, Site B, Khayelitsha; area marker.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "at about 04:30 in Masikhanye, Site B"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "they found the victims with gunshot wounds to their bodies."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Motive not established; community member infers planning.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "The circumstances surrounding the incident are under investigation"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two murder counts registered; no arrests as reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "archive": "https://web.archive.org/web/20261018225517/https://novanews.co.za/cityvision/khayelitsha-shooting/",
+              "quote": "The circumstances surrounding the incident are under investigation and no arrests have been made"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "2a848e46-0a84-4d05-8efc-85e54c8aa636": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 43, killed.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "TWO separate shootings in Bonteheuwel and Dunoon have left two 43-year-old men dead"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 6 October, about 23:06.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "at about 11.06pm on Tuesday."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Jakkalsvlei Avenue, Bonteheuwel.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "In Bonteheuwel, a man was shot multiple times in Jakkalsvlei Avenue"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot multiple times.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Daily Voice, origin not stated",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "the victim was found with multiple gunshot wounds."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Appeared gang-related, councillor inference.",
+          "basis": "One account; independence not established",
+          "detail": "Motive comes from councillor, not the police account.",
+          "sources": [
+            {
+              "name": "Angus McKenzie, ward councillor",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "Ward councillor Angus McKenzie said there was limited information about the shooting, but indicated that it appeared to be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened; no arrests reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "archive": "https://web.archive.org/web/20261018225645/https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+              "quote": "The circumstances surrounding this incident are under investigation and no arrests have been made."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "530a09b2-015a-4ac3-996e-0183e8599dfa": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man dead; age 31 reported by outlet.",
+          "basis": "Police account only",
+          "detail": "Age 31 appears in outlet opening narration, not police quote.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225711/https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "quote": "The victim was declared dead on the scene by medical personnel"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 7 October; police response about 11:45.",
+          "basis": "Report does not identify the original source",
+          "detail": "Twigg says police responded about 11:45; do not equate response time with exact incident time.",
+          "sources": [
+            {
+              "name": "Southern Mail, origin not stated",
+              "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225711/https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "quote": "on Wednesday, October 7."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "St Bernard Street, St Montague Village.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Southern Mail, origin not stated",
+              "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225711/https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "quote": "A 31-year-old man was shot dead in St Bernard Street, St Montague Village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225711/https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "quote": "According to Twigg, the victim was approached by a suspect who shot him before fleeing the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Not stated.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder investigation reported; arrests unstated.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Southern Mail, origin not stated",
+              "url": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225711/https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/",
+              "quote": "Steenberg detectives are investigating a murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "03459a76-618b-4f7b-a538-c70eb89d5f99": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 34, died en route to medical facility.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Thembakazi Mpendukana, SAPS",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "The 34-year-old male victim succumbed to his injuries on his way to a medical facility"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 7 October, about 19:19.",
+          "basis": "Police account only",
+          "detail": "Wednesday 7 October in opening narration; time in explicitly police-attributed sentence.",
+          "sources": [
+            {
+              "name": "Western Cape police",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "The incident occurred on OR Tambo Road at about 7:19pm, according to Western Cape police."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "OR Tambo Road, Imizamo Yethu.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Western Cape police",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "The incident occurred on OR Tambo Road at about 7:19pm, according to Western Cape police."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Thembakazi Mpendukana, SAPS",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "Spokesperson Thembakazi Mpendukana said Hout Bay police had registered a murder case following the shooting."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Not established.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Thembakazi Mpendukana, SAPS",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "Mpendukana said the investigation remains ongoing as police work to establish the circumstances surrounding the shooting."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; no arrests reported.",
+          "basis": "Police account only",
+          "detail": "No arrests have been made at this stage is outlet narration, not an explicit Mpendukana quote.",
+          "sources": [
+            {
+              "name": "Thembakazi Mpendukana, SAPS",
+              "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "archive": "https://web.archive.org/web/20261018225812/https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+              "quote": "Hout Bay police had registered a murder case following the shooting."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "2fdd9a56-11a3-4877-891a-bd46f152c44b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man found dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "archive": "https://web.archive.org/web/20261018225836/https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "quote": "Twigg said when the police arrived, they found the man had stab wounds on his body. The victim was declared dead on the scene by paramedics."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Body found Thursday 8 October, about 10:50.",
+          "basis": "Police account only",
+          "detail": "Day is outlet narration; 10:50 is police notification time, not proven time of death.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "archive": "https://web.archive.org/web/20261018225836/https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "quote": "said the police were alerted by members of the public at about 10:50"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Open field between D'Almeida and Albert Luthuli Park; suburb marker.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Mossel Bay Advertiser, origin not stated",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "archive": "https://web.archive.org/web/20261018225836/https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "quote": "in an open field between D’Almeida and Albert Luthuli Park, near Mountain View"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Stab wounds.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "archive": "https://web.archive.org/web/20261018225836/https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "quote": "Twigg said when the police arrived, they found the man had stab wounds on his body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Yet to be determined.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "archive": "https://web.archive.org/web/20261018225836/https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+              "quote": "the motive for the attack is yet to be determined"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Three arrested; court appearance 13 October reported.",
+          "basis": "Police account only",
+          "detail": "Three suspects aged 28 to 43 and appearance on 13 October are outlet narration; police explicitly confirm arrests, not the hearing in quoted text.",
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356",
+              "archive": "https://web.archive.org/web/20261018225908/https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356",
+              "quote": "According to Western Cape Police spokesperson Captain FC van Wyk, an around-the-clock investigation over the weekend after members of the public made the shocking discovery on Thursday morning led to the arrests."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "d09da7da-5705-46e3-8d10-5fef0db6c639": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 52, dead.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Mossel Bay Advertiser, origin not stated",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "The paramedics declared the man dead on the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "11 October, just before 16:00.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Great Brak River police, unnamed spokesperson",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "The police said an argument broke out between the couple in their house in Green Haven, Wolwedans, just before 16:00 yesterday."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "House in Green Haven, Wolwedans, Great Brak River; area marker.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Great Brak River police, unnamed spokesperson",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "The police said an argument broke out between the couple in their house in Green Haven, Wolwedans"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Allegedly stabbed in chest with knife.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Great Brak River police, unnamed spokesperson",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "the wife allegedly stabbed her husband in the chest with a knife."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Argument reported; underlying motive not established.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Great Brak River police, unnamed spokesperson",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "The police said an argument broke out between the couple"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Wife arrested; murder charge reported.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Mossel Bay Advertiser, origin not stated",
+              "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "archive": "https://web.archive.org/web/20261018225936/https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+              "quote": "The Great Brak River Police arrested the woman on the scene."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 25, killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "in which a 25-year-old male was fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 13 October; about 17:00 in outlet narration.",
+          "basis": "Police account only",
+          "detail": "5pm appears in outlet narration, not Gwala quote.",
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "following a shooting that occurred on Tuesday 13 October 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Khayelitsha; Trekker Road near Engen reported; area-only marker.",
+          "basis": "Police account only",
+          "detail": "Trekker Road and Engen garage appear in outlet narration; not explicitly police-confirmed.",
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "This office confirms that Khayelitsha police are investigating a case of murder"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "following a shooting that occurred on Tuesday 13 October 2026, in which a 25-year-old male was fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Yet to be determined.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "the motive is yet to be determined."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder investigation; arrests not reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Constable Ndakhe Gwala, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "archive": "https://web.archive.org/web/20261018230118/https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/",
+              "quote": "This office confirms that Khayelitsha police are investigating a case of murder"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 37, killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "in which a 37-year-old male was shot and fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "15 October 2026, about 06:05.",
+          "basis": "Police account only",
+          "detail": "Outlet opening says Thursday, 15 October 2006; police say this morning in 15 October 2026 article. Source inconsistency retained, not deleted.",
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "Philippi police registered a murder case following a shooting incident this morning at about 6.05am"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Suria Walk, Hanover Park.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "at Suria Walk, Hanover Park, Philippi"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "in which a 37-year-old male was shot and fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed gang-related.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "The motive is believed to be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; arrests not stated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Captain F.C. van Wyk, SAPS",
+              "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "archive": "https://web.archive.org/web/20261018230346/https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+              "quote": "Philippi police registered a murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0d2ac747-e939-48fd-a116-3d99c1a95758": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 35, found dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "following the discovery of the body of a 35-year-old man"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Body discovered 16 October 2026, about 06:30.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "at about 06:30 this morning at Christmas Tinto Park."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Christmas Tinto Park, Strand; approximate spot.",
+          "basis": "Police account only",
+          "detail": "Daily Voice says Zola Village near Simanyene High School; District Mail says near Asanda Village Wetland Park opposite Christmas Tinto Primary School. This does not verify the map point.",
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "at about 06:30 this morning at Christmas Tinto Park."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Body found burning with upper-body stab wounds; sequence and lethal mechanism not established.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "SAPS members attended the scene and found the deceased still burning. They assisted in extinguishing the fire. Upon further investigation, it was found that he had sustained stab wounds to his upper body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "CPF alleges retaliation for theft; police leave motive under investigation.",
+          "basis": "One account; independence not established",
+          "detail": "Police: The motive forms part of the police investigation. CPF account is the only suggested motive.",
+          "sources": [
+            {
+              "name": "Zintle Lubobo, Asanda Village CPF",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "the limited information we have suggests that the victim was allegedly caught stealing."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; arrests not announced in reporting.",
+          "basis": "Police account only",
+          "detail": "Daily Voice says Police have not announced any arrests; outlet narration, not an attributed police no-arrest statement.",
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "archive": "https://web.archive.org/web/20261018232113/https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+              "quote": "Lwandle police registered a murder case for investigation"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "19a71c43-7584-4483-8cb1-9c71f12a9cb8": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One deceased person; gender not police-confirmed.",
+          "basis": "Police account only",
+          "detail": "Second EWN report describes a woman in Ian Cameron reaction; police identification remains pending in first report.",
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "archive": "https://web.archive.org/web/20261018230529/https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "quote": "Van Wyk says a post-mortem will be conducted to identify the deceased."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Body discovered Saturday 17 October 2026; time not stated.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Ian Cameron, parliamentary police committee chair",
+              "url": "https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron",
+              "archive": "https://web.archive.org/web/20261018230632/https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron",
+              "quote": "Parliament’s Police Portfolio Committee chairperson, Ian Cameron, said the discovery of a woman's burnt body in Tafelsig, Mitchells Plain, on Saturday"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Corner Hugenot Street and AZ Berman Drive, Tafelsig.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "EWN, origin not stated",
+              "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "archive": "https://web.archive.org/web/20261018230529/https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "quote": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive where a body was found burning."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Cause of death not reported; body burned.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "archive": "https://web.archive.org/web/20261018230529/https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "quote": "The body was burned beyond recognition."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Not reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered; arrests not stated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "F.C. van Wyk, SAPS",
+              "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "archive": "https://web.archive.org/web/20261018230529/https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+              "quote": "A murder case was registered for investigation."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "318c89be-efbe-4c0d-a175-f423dcda6cc5": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man dead; age 22 in outlet narration.",
+          "basis": "Police account only",
+          "detail": "Age 22 is in opening outlet narration, not explicit police confirmation.",
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "Go ya ka sebueledi sa sepodisi mono Bokone Bophirima, Saresanta Kelebogile Morake, ba ditirelo tsa tshoganyetso ba ile ba netefatsa fa a tlhokafaletse kwa lefelong la tiragalo."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found 9 October 2026 after 20:00; not established time of death.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Taung Daily News, origin not stated",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "morago ga ura ya borobedi maitseboa ka di 9 Diphalane 2026."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Kgaka Street, Ipelegeng; street-only marker.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Taung Daily News, origin not stated",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "mme a rapaletse mo mmileng wa Kgaka kwa Ipelegeng"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Found with multiple stab wounds.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "Morake are mapodisi a ne a biletswa kwa lefelong la tiragalo, kwa motswasetlhabelo a neng a fitlhelwa a na le dintho di le dintsi tsa go tlhabiwa ka thipa."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Circumstances not yet clear; motive not established.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "maemo a a dikologileng polao eno ga a ise a tlhaloganyesege"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Suspect apprehended by CPF; charge and court dates reported.",
+          "basis": "Police account only",
+          "detail": "12 October appearance, murder charge, and 29 October bail application date: outlet narration, grade 3, not separately police-confirmed.",
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "archive": "https://web.archive.org/web/20261019005852/https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+              "quote": "o ne a tshwarwa ka Lamatlhatso ke maloko a Community Police Forum ya Ipelegeng"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "64b7adb5-4fc2-4184-b932-5ea0082259d7": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 37, found dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West statement embedded in SABC report, 18 October 2026",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": "https://web.archive.org/web/20261019010217/https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "quote": "following the death of a 37yr-old man in Seweding Village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Police: Saturday 17 October, early hours; SABC lead: Sunday.",
+          "basis": "Reports disagree",
+          "detail": "Police statement: Saturday 17 October 2026; response approximately 00:45; SABC lead: Sunday",
+          "sources": [
+            {
+              "name": "SAPS North West statement embedded in SABC report, 18 October 2026",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": "https://web.archive.org/web/20261019010217/https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "quote": "during the early hours of Saturday, 17/10."
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "who was allegedly killed following a confrontation with his girlfriend’s brother on Sunday.",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Seweding Village, Mahikeng/Mmabatho; village only.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West statement embedded in SABC report, 18 October 2026",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": "https://web.archive.org/web/20261019010217/https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "quote": "following the death of a 37yr-old man in Seweding Village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Lethal mechanism not reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Alleged domestic confrontation after intervention by girlfriend’s brother.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West statement embedded in SABC report, 18 October 2026",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": "https://web.archive.org/web/20261019010217/https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "quote": "Her brother, aged 47, allegedly intervened, resulting in a confrontation between the two men, leading to his death."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Suspect arrested; court appearance expected, not completed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Adele Myburgh, SAPS North West",
+              "url": "https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "archive": "https://web.archive.org/web/20261019010217/https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/",
+              "quote": "Provincial Police Spokesperson, Adele Myburgh says the suspect has been arrested and is expected to appear at Mmabatho Magistrate’s court soon."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "efbf9e6d-2d5d-4591-8d0e-11294babd050": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 37, died.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West account relaying EMRS",
+              "url": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "archive": "https://web.archive.org/web/20261019010254/https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "quote": "Emergency and Medical Rescue Services personnel declared him dead."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 17 October 2026, early morning; reported about 04:00.",
+          "basis": "Report does not identify the original source",
+          "detail": "04:00 describes the alleged stabbing; 03:00 the reported arrival. Do not treat them as contradictory incident times.",
+          "sources": [
+            {
+              "name": "NovaNews, origin not stated",
+              "url": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "archive": "https://web.archive.org/web/20261019010254/https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "quote": "Two 37-year-old men were killed in separate incidents in Mmabatho villages in the early hours of Saturday 17 October, and two suspects have been arrested."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Modimola Village, Mmabatho; village precision.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West via EWN",
+              "url": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "archive": "https://web.archive.org/web/20261019010005/https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "quote": "In the second incident, a 22-year-old suspect allegedly broke a window at a family home in Modimola."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Found with stab wounds; reported stabbing death.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS North West via EWN",
+              "url": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "archive": "https://web.archive.org/web/20261019010005/https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "quote": "A confrontation followed, and the 37-year-old victim was later found with stab wounds."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Alleged family confrontation following a broken bedroom window.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS relaying complainant",
+              "url": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "archive": "https://web.archive.org/web/20261019010254/https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+              "quote": "A complainant told police that a 22-year-old family member had arrived home at about 03:00 and broken a window of the room where she and the deceased were sleeping."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "A suspect, 22, arrested; murder court appearance expected.",
+          "basis": "Police account only",
+          "detail": "Both refers to separate Seweding and Modimola cases, not two suspects in this killing.",
+          "sources": [
+            {
+              "name": "Adele Myburgh, SAPS North West",
+              "url": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "archive": "https://web.archive.org/web/20261019010005/https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+              "quote": "Both suspects are expected to appear before the Mmabatho Magistrates Court soon on murder charges."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "578b93c8-a253-535c-b26f-eba38181683b": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One person declared dead; one other injured.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Komani News, origin not stated",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "During the incident, one person sustained an injury and another person was subsequently declared dead at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Early Sunday 4 October 2026, following approximately 01:15 return call-out.",
+          "basis": "Report does not identify the original source",
+          "detail": "01:15 is the return call-out time, not a medically established death time.",
+          "sources": [
+            {
+              "name": "Komani News, origin not stated",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "However, at approximately 01:15 on Sunday morning, police were called back to the same tavern after the same group of males allegedly returned."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Mawethu Tavern in Bholotwa; village precision.",
+          "basis": "Police account only",
+          "detail": "Mawethu name appears in outlet narration; mapped municipality is geographic interpretation, not source-confirmed.",
+          "sources": [
+            {
+              "name": "Capt Yolisa Mgolodela, SAPS",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "SAPS spokesperson Captain Yolisa Mgolodela said police initially attended the tavern on Saturday, 3 October, following a complaint from the owner that a group of males from the Mtwaku and Siqabeni localities were allegedly preventing patrons from leaving the premises."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Residents allege shooting; lethal mechanism and police causation unresolved.",
+          "basis": "One account; independence not established",
+          "detail": "Police quote says circumstances of injury and death are under investigation. Warning shots do not prove who caused the death.",
+          "sources": [
+            {
+              "name": "Unnamed residents contacting Komani News",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "Residents who contacted Komani News following the incident alleged that the deceased was a young man who was shot during the confrontation involving police."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Death circumstances under investigation; no established motive.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Yolisa Mgolodela, SAPS",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "The circumstances surrounding the injury and death are subject to further investigation,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Inquest and attempted murder/attack-on-police cases reported; arrest status unstated.",
+          "basis": "Report does not identify the original source",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Komani News, origin not stated",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+              "archive": "https://web.archive.org/web/20261019021308/https://www.komani.co.za/64-year-old-man-appears-in-court-over-unlicensed-firearm/",
+              "quote": "Police have opened an inquest as well as cases of attempted murder and an attack on police."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Five young men killed; another wounded.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "archive": "https://web.archive.org/web/20261019021300/https://dailydispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "quote": "Cases of murder, five counts, and attempted murder are being investigated"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 6 October 2026, night, about 21:50.",
+          "basis": "Police account only",
+          "detail": "Dispatch gives 9.51pm versus 21:50 elsewhere: one-minute detail discrepancy does not contradict day/night core.",
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/",
+              "archive": "https://web.archive.org/web/20261019021600/https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/",
+              "quote": "According to police spokesperson Brigadier Nobuntu Gantana, the incident occurred on 6 October at about 21:50."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Willowvale; town precision.",
+          "basis": "Police account only",
+          "detail": "Extension 1 and Ematyotyombeni detail appears in outlet narration; exact flat not mapped.",
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape",
+              "archive": "https://web.archive.org/web/20261019021439/https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape",
+              "quote": "Police spokesperson Brigadier Nobuntu Gantana said police responded to reports of a shooting in an informal settlement in Willowvale."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "archive": "https://web.archive.org/web/20261019021300/https://dailydispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "quote": "On arrival, members found four deceased male victims inside a two-room flat with multiple gunshot wounds to their upper bodies,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Some residents suspect a drug-territory dispute; police say unknown.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Unnamed residents interviewed by Daily Dispatch",
+              "url": "https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/",
+              "archive": "https://web.archive.org/web/20261019021434/https://dailydispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/",
+              "quote": "some said they believed the latest shooting was linked to a battle for drug territory between suspected druglords in Nxanxashe and Mboya."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Five murder counts and attempted murder investigated; arrest status not established.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "archive": "https://web.archive.org/web/20261019021300/https://dailydispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+              "quote": "Cases of murder, five counts, and attempted murder are being investigated"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "a86ff098-691e-5407-83f0-8496db67b418": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+              "archive": "https://web.archive.org/web/20261019021848/https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+              "quote": "Police spokesperson Sandra Janse van Rensburg says the bodies"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 7 October 2026, evening; found about 19:40.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+              "archive": "https://web.archive.org/web/20261019021848/https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+              "quote": "at about 19:40 on Wednesday, 7 October 2026."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Kuzwayo Street, KwaZakhele; street precision.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "archive": "https://web.archive.org/web/20261019021728/https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "quote": "following a shooting in Kuzwayo Street, Kwazakhele, at about 7.40pm on Wednesday."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Both had gunshot wounds to upper body and head.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "archive": "https://web.archive.org/web/20261019021728/https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "quote": "Both had gunshot wounds to the upper body and head."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "No motive reported for this shooting.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Double murder investigated; no arrest status established.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "archive": "https://web.archive.org/web/20261019021728/https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+              "quote": "Police spokesperson Captain Sandra Janse van Rensburg said Nelson Mandela Bay Intervention Task Team detectives were investigating a double murder"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "ba7824e3-f2de-56c4-914f-587aeba1639c": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One off-duty police sergeant died.",
+          "basis": "Police account only",
+          "detail": "Age 48 and officer identity appear in outlet narration; not separately independently confirmed.",
+          "sources": [
+            {
+              "name": "W/O Ndiphiwe Mhlakuvana, Hawks (DPCI)",
+              "url": "https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "archive": "https://web.archive.org/web/20261019022046/https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "quote": "The victim succumbed to her injuries."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 11 October 2026, afternoon, about 16:30.",
+          "basis": "Report does not identify the original source",
+          "detail": "Police spokesperson supplies approximately 4.30pm, described as reportedly occurred; no competing date found.",
+          "sources": [
+            {
+              "name": "The Citizen, origin not stated",
+              "url": "https://www.citizen.co.za/news/south-africa/crime/suspect-arrested-murder-police-officer-eastern-cape/",
+              "archive": "https://web.archive.org/web/20261019022035/https://www.citizen.co.za/news/south-africa/crime/suspect-arrested-murder-police-officer-eastern-cape/",
+              "quote": "The police officer was killed in Duncan Village, KuGompo City, on Sunday, 11 October 2026."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Duncan Village, KuGompo City; suburb precision.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "W/O Ndiphiwe Mhlakuvana, Hawks (DPCI)",
+              "url": "https://sundayworld.co.za/crime/police-officer-stabbed-to-death-in-eastern-cape/",
+              "archive": "https://web.archive.org/web/20261019022133/https://sundayworld.co.za/crime/police-officer-stabbed-to-death-in-eastern-cape/",
+              "quote": "According to the Hawks spokesperson, warrant officer Ndiphiwe Mhlakuvana, the incident happened at about 4.30pm at a residential property in Gardenia Street at Duncan Village, where the police officer and the suspect were renting separate rooms."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Reported fatal stabbing.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "W/O Ndiphiwe Mhlakuvana, Hawks (DPCI)",
+              "url": "https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "archive": "https://web.archive.org/web/20261019022046/https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "quote": "the suspect allegedly produced a knife and stabbed the police officer."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Reported argument during a welfare visit; motive not established as fact.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "W/O Ndiphiwe Mhlakuvana, Hawks (DPCI)",
+              "url": "https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "archive": "https://web.archive.org/web/20261019022046/https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "quote": "However, the interaction reportedly escalated into an argument,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Suspect, 30, arrested and under guard in hospital; court appearance expected.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "W/O Ndiphiwe Mhlakuvana, Hawks (DPCI)",
+              "url": "https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "archive": "https://web.archive.org/web/20261019022046/https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/",
+              "quote": "A 30-year-old male suspect was arrested in connection with the incident. He is currently receiving medical treatment in hospital for knife wounds and remains under police guard."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "417613e8-bc4b-5e22-a9ce-49531d161f70": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two people found dead; reported woman, 86, and man, 21.",
+          "basis": "Police account only",
+          "detail": "Ages 86 and 21 are outlet narration; no independent age confirmation.",
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "archive": "https://web.archive.org/web/20261019022328/https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "quote": "Police spokesperson Captain Sandra Janse van Rensburg said the bodies were found at a home in Sebothe Street at about 1.20am."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found early Monday 12 October 2026, about 01:20.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/",
+              "archive": "https://web.archive.org/web/20261019022352/https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/",
+              "quote": "The bodies were discovered at a house in Sebothe Street at about 01:20 on 12 October, according to police spokesperson Captain Sandra Janse van Rensburg."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Soweto-on-Sea, Gqeberha; suburb precision.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "archive": "https://web.archive.org/web/20261019022328/https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "quote": "Police spokesperson Captain Sandra Janse van Rensburg said the bodies were found at a home in Sebothe Street at about 1.20am."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Both sustained gunshot wounds.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "archive": "https://web.archive.org/web/20261019022328/https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "quote": "Both sustained gunshot wounds,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Motive unknown.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "archive": "https://web.archive.org/web/20261019022328/https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "quote": "She said the suspect or suspects have not yet been identified, and the motive for the killings is unknown."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Double murder investigated; suspect or suspects not yet identified.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Capt Sandra Janse van Rensburg, SAPS Eastern Cape",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "archive": "https://web.archive.org/web/20261019022328/https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+              "quote": "She said the suspect or suspects have not yet been identified, and the motive for the killings is unknown."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "a3d91502-d7c3-5257-99ac-0c99e948b038": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Headman, 44, and mother, 70, killed.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "archive": "https://web.archive.org/web/20261019022455/https://dailydispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "quote": "They opened fire, fatally wounding the 44-year-old headman and his 70-year-old mother, before fleeing the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 13 October 2026, evening, about 18:45.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement",
+              "url": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+              "archive": "https://web.archive.org/web/20261019022531/https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+              "quote": "According to a statement issued, two unidentified armed suspects stormed the homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at approximately 18:45 on Tuesday night, 13 October."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Komkhulu, Konkwana near Willowvale; approximate Willowvale town marker.",
+          "basis": "Police account only",
+          "detail": "Town marker is a reference point only, with 20 km uncertainty; does not assert that homestead lies in town.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement",
+              "url": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+              "archive": "https://web.archive.org/web/20261019022531/https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+              "quote": "According to a statement issued, two unidentified armed suspects stormed the homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at approximately 18:45 on Tuesday night, 13 October."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "archive": "https://web.archive.org/web/20261019022455/https://dailydispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "quote": "They opened fire, fatally wounding the 44-year-old headman and his 70-year-old mother, before fleeing the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Alleged demand for cash and a firearm before shooting.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "archive": "https://web.archive.org/web/20261019022455/https://dailydispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+              "quote": "It is further alleged that the suspects demanded cash and a firearm,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two murder counts opened; no arrests reported in Dispatch.",
+          "basis": "Police account only",
+          "detail": "Dispatch says no arrests made, but that sentence has no explicit origin; arrest-absence detail is grade 3, not an independently confirmed current status.",
+          "sources": [
+            {
+              "name": "Brig Nobuntu Gantana, SAPS Eastern Cape",
+              "url": "https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed",
+              "archive": "https://web.archive.org/web/20261019022626/https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed",
+              "quote": "Police have opened two counts of murder for further investigation."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "335b265d-2edd-54e2-969e-31e38733ff3a": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man fatally shot and declared dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "archive": "https://web.archive.org/web/20261019023155/https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "quote": "The suspect sustained fatal gunshot wounds and was declared dead on the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 17 October 2026; about 14:30 reported separately.",
+          "basis": "Police account only",
+          "detail": "About 14:30 is Pondoland Times detail, not independently confirmed; grade 3 for that clock-time detail.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "archive": "https://web.archive.org/web/20261019023155/https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "quote": "Eastern Cape SAPS said in a statement that members of the Tactical Response Team (TRT) were conducting a follow-up operation on Saturday 17 October regarding a suspect wanted in connection with a murder case."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Mbulawa Location, Mqanduli; town reference point only.",
+          "basis": "Police account only",
+          "detail": "Mbulawa is not mapped; Mqanduli point has 20 km uncertainty and does not confirm exact scene.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded",
+              "archive": "https://web.archive.org/web/20261019023722/https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded",
+              "quote": "She said members of the Tactical Response Team (TRT) were conducting a follow-up operation in connection with a murder case in Mbulawa Location, Mqanduli, when they spotted the suspect driving a bakkie."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot dead by responding police officers.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "archive": "https://web.archive.org/web/20261019023155/https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "quote": "Perceiving an imminent threat to their lives, the members retaliated. The suspect sustained fatal gunshot wounds and was declared dead on the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Police say officers perceived a threat after man pointed a firearm.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "archive": "https://web.archive.org/web/20261019023155/https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/",
+              "quote": "Perceiving an imminent threat to their lives, the members retaliated."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Police say IPID notified and will investigate; other-case involvement unproven.",
+          "basis": "Police account only",
+          "detail": "Wanted/person-of-interest descriptions and recovered firearm are police claims, not charges, convictions or ballistic matches.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement, Brig Nobuntu Gantana",
+              "url": "https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded",
+              "archive": "https://web.archive.org/web/20261019023722/https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded",
+              "quote": "She said the Independent Police Investigative Directorate (IPID) had been notified and would investigate the incident."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "821f2edc-df43-41d1-ad4a-c18b8380809e": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men dead; a woman wounded.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "Twigg said the two men were declared dead at the scene by medical personnel, while the woman was transported to a medical facility for treatment."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 6 October, shortly after 08:00.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "the shooting took place shortly after 8am in Muir Court, Depsiton Crescent, Lavender Hill."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Muir Court, Depsiton Crescent, Lavender Hill (street level).",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "the shooting took place shortly after 8am in Muir Court, Depsiton Crescent, Lavender Hill."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "upon arrival on the scene they found the victims with gunshot wounds to their bodies"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed to be gang-related (police).",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "The motive for the attack is believed to be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder and attempted murder cases; suspects fled, no arrests.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "archive": "https://web.archive.org/web/20261018225448/https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+              "quote": "The suspects fled the scene and are yet to be arrested"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "218c685c-2720-486e-8fc9-9af1dd3c2d5a": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One boy, 14, dead; a 17-year-old wounded.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "The 14-year-old victim was declared deceased on the scene by medical personnel"
+            },
+            {
+              "name": "Silversands High School (Facebook post quoted by TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "tragically lost his life"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 10 October, about 20:10.",
+          "basis": "Police account only",
+          "detail": "The same outlet's follow-up gives 17 October, a date after its own publication on 13 October, so that version is impossible on its face. Recorded; it does not lower the grade.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "on Saturday evening, 10 October, at about 20:10, in Reindeer Street, Wesbank"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "on Saturday evening, 10 October, at about 20:10",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "version": "Saturday 10 October"
+            },
+            {
+              "quote": "in a shooting in Wesbank on Saturday 17 October",
+              "url": "https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/",
+              "archive": "https://web.archive.org/web/20261018230248/https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/",
+              "version": "Saturday 17 October"
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Reindeer Street, Wesbank (street level).",
+          "basis": "Police account only",
+          "detail": "Exact spot is 'the corner'; OpenStreetMap calls it Reindeer Crescent.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "on Saturday evening, 10 October, at about 20:10, in Reindeer Street, Wesbank"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "they found two boys aged 14 and 17 who sustained gunshot wounds"
+            },
+            {
+              "name": "Silversands High School (Facebook post quoted by TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "who sustained gunshot wounds and is due to undergo surgery"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Yet to be determined (police).",
+          "basis": "Undetermined in the saved reports",
+          "detail": "WCED says the incident 'is not school-related'.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "The motive for the attack is yet to be determined."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder and attempted murder cases registered; no arrests (13 Oct).",
+          "basis": "One account; independence not established",
+          "detail": "'No arrests' is the outlet's own unattributed line, next to a police appeal.",
+          "sources": [
+            {
+              "name": "Sgt Wesley Twigg, SAPS Western Cape",
+              "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "archive": "https://web.archive.org/web/20261018230216/https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+              "quote": "Murder and attempted murder cases were registered for investigation"
+            },
+            {
+              "name": "TygerBurger (unattributed line)",
+              "url": "https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/",
+              "archive": "https://web.archive.org/web/20261018230248/https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/",
+              "quote": "No one has been arrested for the shooting."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "7acad00a-2081-462b-939c-be61b9d9b539": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men, 20 and 25, dead; a third wounded.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, SAPS spokesperson",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "found the bodies of two men, aged 20 and 25, inside a vehicle"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 12 October, evening.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Voice of the Cape (unattributed line)",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "The victims were shot while inside a car on Monday evening in Teenage Vuso Street, Zone 5, Langa."
+            },
+            {
+              "name": "Nomalungelo Bikitsha, Langa community leader",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "The incident happened around the time people were coming home from work. It was not even dark"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Teenage Vuso Street, Zone 5, Langa (street level).",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, SAPS spokesperson",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "Police spokesperson Ndakhe Gwala confirmed that Langa police had registered two counts of murder and one count of attempted murder following the shooting in Teenage Vuso Street, Zone 5, Langa."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot (in a parked vehicle).",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, SAPS spokesperson",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "The deceased had sustained multiple gunshot wounds to their upper bodies."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Under police investigation; community leader calls it targeted.",
+          "basis": "Undetermined in the saved reports",
+          "detail": "The community leader says the perpetrators 'knew exactly what they were doing and who they were looking for'; Cape Argus turns this into 'a targeted ambush' in its first line.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, SAPS spokesperson",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "The motive for the attack is the subject of a police investigation"
+            },
+            {
+              "name": "Nomalungelo Bikitsha, Langa community leader",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "We do not know what could have caused the shooting"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two murder counts and one attempted murder; no arrests.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, SAPS spokesperson",
+              "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "archive": "https://web.archive.org/web/20261018230003/https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+              "quote": "no arrests have been made at this stage"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "c64476ff-5b23-4307-944c-20c2a1a99835": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One woman, 55, died of her injuries.",
+          "basis": "Independent origins identified",
+          "detail": "Where she died: police say in hospital, the DA and the Klerksdorp Record say on the way. The death itself is not in dispute.",
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "archive": "https://web.archive.org/web/20261019005252/https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "quote": "o ne a tlhokafala kwa sepetlele ka ntlha ya dikgobalo tse a neng a di bone"
+            },
+            {
+              "name": "Freddy Sonakile, DA North West leader",
+              "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "archive": "https://web.archive.org/web/20261019005601/https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "quote": "He added that tragically, she lost her life on the way to hospital in Klerksdorp."
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "according to police, she later died from her injuries",
+              "url": "https://www.platinumweekly.co.za/community.php?story=4325",
+              "archive": "https://web.archive.org/web/20261019005733/https://www.platinumweekly.co.za/community.php?story=4325",
+              "version": "Died in hospital"
+            },
+            {
+              "quote": "maar het op pad na die hospitaal aan haar wonde beswyk",
+              "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "archive": "https://web.archive.org/web/20261019005428/https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "version": "Died on the way to hospital"
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 5 October, evening.",
+          "basis": "One account; independence not established",
+          "detail": "About 19:00 comes only from the Klerksdorp Record, with no origin given.",
+          "sources": [
+            {
+              "name": "Freddy Sonakile, DA North West leader",
+              "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "archive": "https://web.archive.org/web/20261019005601/https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "quote": "in the Ottosdal/Wolmaransstad area on 5 October 2026"
+            },
+            {
+              "name": "Klerksdorp Record ('available information')",
+              "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "archive": "https://web.archive.org/web/20261019005428/https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "quote": "Die voorval het omstreeks 19:00 by die plaashek op die Doornpanpad plaasgevind."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Gate of Doornpan Farm, outside Ottosdal (farm level).",
+          "basis": "One account; independence not established",
+          "detail": "No source gives the farm's position; the pin is a place-name point for a Doornpan farm that may not be this one.",
+          "sources": [
+            {
+              "name": "SAPS North West statement (Taung Daily News)",
+              "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "archive": "https://web.archive.org/web/20261019005252/https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "quote": "kwa polaseng ya Doornpan, kwa ntlenyana ga Ottosdal"
+            },
+            {
+              "name": "Freddy Sonakile, DA North West leader",
+              "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "archive": "https://web.archive.org/web/20261019005601/https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "quote": "took place at the entrance security gate to her farmhouse"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Beaten on the head and neck with an iron bar.",
+          "basis": "One account; independence not established",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Freddy Sonakile, DA North West leader",
+              "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "archive": "https://web.archive.org/web/20261019005601/https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "quote": "striking her several times on the neck and head with an iron bar"
+            },
+            {
+              "name": "Klerksdorp Record ('available information')",
+              "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "archive": "https://web.archive.org/web/20261019005428/https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "quote": "Sy is herhaaldelik met 'n ysterstaaf teen die kop en nek geslaan."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Robbery: handbag and phone taken; murder and robbery charges.",
+          "basis": "One account; independence not established",
+          "detail": "The SAPS statement says the circumstances are still being investigated. The DA and VF Plus call it a farm attack and say police first treated it as handbag theft.",
+          "sources": [
+            {
+              "name": "Freddy Sonakile, DA North West leader",
+              "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "archive": "https://web.archive.org/web/20261019005601/https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+              "quote": "before stealing her handbag and cell phone"
+            },
+            {
+              "name": "Sgt Kelebogile Morake (Platinum Weekly)",
+              "url": "https://www.platinumweekly.co.za/community.php?story=4325",
+              "archive": "https://web.archive.org/web/20261019005733/https://www.platinumweekly.co.za/community.php?story=4325",
+              "quote": "Both face charges of murder and robbery."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two men arrested after a witness identified them; a third sought; first court appearance 8 October.",
+          "basis": "Reports disagree",
+          "detail": "Two police-sourced versions disagree on the accused's ages (32 and 33, or 28 and 29) and the court (Ottosdal Magistrate's Court, or Bloemhof Periodical Court). The Klerksdorp Record of 9 October says nobody had been arrested at the time it went to print. No winner picked.",
+          "sources": [
+            {
+              "name": "Sgt Kelebogile Morake, SAPS North West",
+              "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "archive": "https://web.archive.org/web/20261019005252/https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "quote": "ba tshwerwe mabapi le polao eno morago ga gore ba lemogiwe ke mosupi"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "Kgotlatshekelo ya Bomaseterata ya Ottosdal ka Labone, 8 Diphalane 2026",
+              "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "archive": "https://web.archive.org/web/20261019005252/https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+              "version": "Due in the Ottosdal Magistrate's Court on 8 October (SAPS statement)"
+            },
+            {
+              "quote": "appeared before the Bloemhof Periodical Court on Thursday, 8 October 2026",
+              "url": "https://www.platinumweekly.co.za/community.php?story=4325",
+              "archive": "https://web.archive.org/web/20261019005733/https://www.platinumweekly.co.za/community.php?story=4325",
+              "version": "Appeared in the Bloemhof Periodical Court on 8 October (police, per Platinum Weekly)"
+            },
+            {
+              "quote": "Teen druktyd is niemand nog in hegtenis geneem nie.",
+              "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "archive": "https://web.archive.org/web/20261019005428/https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+              "version": "Nobody arrested at the time of print (9 October)"
+            }
+          ]
+        }
+      ]
+    },
+    "32b05eda-7499-59d2-b15c-4270972a7e49": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Four men dead; no police injured.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct), Capt Sandra Janse van Rensburg",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "four men were shot and declared deceased on the scene and no police members were injured"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 6 October, about 20:00.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "The incident occurred on Tuesday evening at about 20:00, 06 October 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Mtshekisani Street, KwaDwesi (suburb level).",
+          "basis": "Police account only",
+          "detail": "Police name Mtshekisani Street, which is not on OpenStreetMap.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "in the Kwadwesi or Kwazakele policing precincts"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot by police.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "the occupants allegedly opened fire and police struck back"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Police say they disrupted a suspected robbery plan and the men fired first.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "disrupting a suspected robbery plan led to four fatalities"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Four inquest dockets; attempted murder and attack-on-police cases; IPID investigating.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape statement (7 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "archive": "https://web.archive.org/web/20261019021728/https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+              "quote": "The Independent Police Investigative Directorate (IPID) was notified and will investigate the four counts of Inquest."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "c2601d28-ecde-4cd0-b9e3-0c19230dafac": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 30, and a woman, 46, dead.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS Western Cape",
+              "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "archive": "https://web.archive.org/web/20261018224449/https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "quote": "they found a 30-year-old male and a 46-year-old female who sustained fatal gunshot wounds"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Friday 9 October, about 09:15.",
+          "basis": "Police account only",
+          "detail": "09:15 is in the SAPS statement as retold by Cape Coast News and People's Post, and in an unattributed Cape Argus line.",
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS Western Cape",
+              "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "archive": "https://web.archive.org/web/20261018224449/https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "quote": "Steenberg police responded to a complaint of a shooting on Friday morning at the mentioned address"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A home in Cafda Village, Retreat (suburb level).",
+          "basis": "Police account only",
+          "detail": "Street name: Ensor Street (Cape Argus, People's Post) or Enzo Street (Cape Coast News). The pin is at suburb level, so the core claim is not affected.",
+          "sources": [
+            {
+              "name": "SAPS statement as retold by Cape Coast News (wording matches van Wyk's quote in Cape Argus)",
+              "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/",
+              "archive": "https://web.archive.org/web/20261018224604/https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/",
+              "quote": "a double murder that occurred in Cafda, Retreat, last week"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "were killed at a property in Ensor Street",
+              "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "archive": "https://web.archive.org/web/20261018224449/https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "version": "Ensor Street"
+            },
+            {
+              "quote": "at premises in Enzo Street, Cafda",
+              "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/",
+              "archive": "https://web.archive.org/web/20261018224604/https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/",
+              "version": "Enzo Street"
+            }
+          ]
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS Western Cape",
+              "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "archive": "https://web.archive.org/web/20261018224449/https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "quote": "who sustained fatal gunshot wounds"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Gang crossfire: gunmen chasing a rival gang member missed him and hit the two victims (police).",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS (People's Post: 'According to police')",
+              "url": "https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/",
+              "archive": "https://web.archive.org/web/20261018224531/https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/",
+              "quote": "According to police, unidentified men chased a rival gang member onto the property."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "A man, 32, arrested 14 October, due in Wynberg Magistrates' Court 16 October on two murder charges; two others held on firearm charges only.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lt-Col F.C. van Wyk, SAPS Western Cape",
+              "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "archive": "https://web.archive.org/web/20261018224449/https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+              "quote": "will appear at the Wynberg Magistrate's Court on Friday on two charges of murder"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    }
+  }
+}

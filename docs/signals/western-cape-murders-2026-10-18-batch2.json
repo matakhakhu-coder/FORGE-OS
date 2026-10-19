@@ -595,7 +595,7 @@
       "external_id": "checked:wc-2026-10-18b:R",
       "source": "Daily Voice",
       "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct",
-      "content": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the shooting is gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the police details give 15 October 2026.",
+      "content": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the motive is believed to be gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the police details give 15 October 2026.",
       "lat": -33.9907,
       "lng": 18.5354,
       "stream": "CRIME_INTEL",
@@ -622,7 +622,7 @@
           "reported_at": "2026-10-15"
         }
       },
-      "fingerprint": "sha256:21c651eebc75200f92f0c21ec4afa207e4f401ae276f25868fb5d9685ca10b76"
+      "fingerprint": "sha256:1e6c38e586f2fae515ef7e1fb478d983625927ced9cff1aafaafc6c6d842eac1"
     },
     {
       "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",

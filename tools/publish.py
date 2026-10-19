@@ -534,6 +534,7 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             **checked,
             # Where the reporting comes from (Sprint 4), checked pins only.
             "provenance":    _provenance_for(r["signal_id"]) if checked["checked"] else None,
+            "fact_basis":    _fact_basis_for(r["signal_id"]),
             # Province of the pin's batch file ("Western Cape", "North West"),
             # checked pins only. Shown on the drawer and the Wire so the
             # Western Cape pattern-test pins are never confused with others.
@@ -591,6 +592,19 @@ def _region_for(signal_id: str) -> str | None:
         except Exception:
             _REGION_CACHE = {}
     return _REGION_CACHE.get(signal_id)
+
+
+def _fact_basis_for(signal_id: str) -> dict:
+    """Missing entries remain visibly unaudited, never inferred from provenance."""
+    path = ROOT / "docs" / "signals" / "fact-bases.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entry = data.get("pins", {}).get(signal_id)
+        if isinstance(entry, dict) and entry.get("status") == "audited" and len(entry.get("facts", [])) == 6:
+            return entry
+    except (OSError, ValueError, TypeError):
+        pass
+    return {"status": "not yet audited", "facts": []}
 
 
 def _provenance_for(signal_id: str) -> dict | None:

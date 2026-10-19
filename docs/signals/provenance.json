@@ -29,13 +29,13 @@
         "Sgt Wesley Twigg"
       ],
       "other_voices": [
-        "a family member"
+        "Phiwe, community member"
       ],
       "outlets": [
         "City Vision"
       ],
       "independence": "single_report",
-      "note": "One report. The police statement, plus a family member."
+      "note": "One report. Police statement plus community member Phiwe; separate first-hand corroboration is not established."
     },
     "0d2ac747-e939-48fd-a116-3d99c1a95758": {
       "statement_from": "Police",
@@ -126,13 +126,14 @@
         "Sgt Wesley Twigg"
       ],
       "other_voices": [
-        "WCED spokesperson Millicent Merton"
+        "WCED spokesperson Millicent Merton",
+        "School Facebook post quoted by TygerBurger"
       ],
       "outlets": [
         "TygerBurger"
       ],
       "independence": "same_outlet",
-      "note": "Two reports from one paper by the same reporter. Police facts, plus the education department."
+      "note": "Two reports from one paper by the same reporter. Police facts, education department and a school post quoted by that outlet; not separately obtained independent reporting."
     },
     "21b2a9b0-66c3-4045-924d-963eaa85b4a1": {
       "statement_from": "Police",
