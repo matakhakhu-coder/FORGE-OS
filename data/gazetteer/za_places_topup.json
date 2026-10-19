@@ -1,0 +1,24 @@
+{
+  "schema": "forge.place_topup",
+  "version": 1,
+  "about": "Places the GeoNames list lacks that report pins sit in, plus other names people use. Merged into dist/places-za.json by tools/publish.py. Points are OpenStreetMap place nodes (looked up once by hand on 19 Oct 2026; OpenStreetMap contributors, ODbL) or, where marked, the pin's own suburb or village point. Places with no reliable point (Beacon Valley, Asla Park, St Montague Village, Wolwedans, N2 Gateway) are left out on purpose: use Place on the map for those.",
+  "places": [
+    {"name": "Bonteheuwel", "lat": -33.94917, "lng": 18.55306, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Delft", "lat": -33.96556, "lng": 18.64444, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Voorbrug", "lat": -33.97306, "lng": 18.64861, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Zwelethemba", "aliases": ["Zweletemba"], "lat": -33.65083, "lng": 19.49361, "kind": "suburb", "municipality": "Breede Valley", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Eastridge", "lat": -34.04984, "lng": 18.6303, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Site B, Khayelitsha", "aliases": ["Site B", "Nonqubela"], "lat": -34.02305, "lng": 18.66632, "kind": "area", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node (Nonqubela, Site B)"},
+    {"name": "Imizamo Yethu", "lat": -34.02881, "lng": 18.36192, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Great Brak River", "aliases": ["Groot-Brakrivier", "Groot Brakrivier"], "lat": -34.0425, "lng": 22.23139, "kind": "town", "municipality": "Mossel Bay", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Asanda Village", "aliases": ["Zola Village"], "lat": -34.10647, "lng": 18.84959, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "OSM place node"},
+    {"name": "Belgravia, Athlone", "aliases": ["Belgravia"], "lat": -33.97157, "lng": 18.51769, "kind": "suburb", "municipality": "City of Cape Town", "province": "Western Cape", "source": "pin suburb point"},
+    {"name": "Soweto on Sea", "aliases": ["Soweto-on-Sea"], "lat": -33.86402, "lng": 25.5773, "kind": "suburb", "municipality": "Nelson Mandela Bay", "province": "Eastern Cape", "source": "OSM place node"},
+    {"name": "KwaDwesi", "aliases": ["Kwadwesi"], "lat": -33.84334, "lng": 25.5157, "kind": "suburb", "municipality": "Nelson Mandela Bay", "province": "Eastern Cape", "source": "pin suburb point (OSM)"},
+    {"name": "Bolotwa", "aliases": ["Bholotwa"], "lat": -31.98583, "lng": 27.18889, "kind": "village", "municipality": "Intsika Yethu", "province": "Eastern Cape", "source": "pin village point (OSM)"},
+    {"name": "Gqeberha", "aliases": ["Port Elizabeth"], "lat": -33.96109, "lng": 25.61494, "kind": "city", "municipality": "Nelson Mandela Bay", "province": "Eastern Cape", "source": "GeoNames point, other name", "alias_only": true},
+    {"name": "Mafikeng", "aliases": ["Mahikeng"], "lat": -25.86522, "lng": 25.64421, "kind": "town", "municipality": "Mahikeng", "province": "North West", "source": "GeoNames point, other name", "alias_only": true},
+    {"name": "KwaZakhele", "aliases": ["Kwazakele"], "lat": -33.87593, "lng": 25.57432, "kind": "suburb", "municipality": "Nelson Mandela Bay", "province": "Eastern Cape", "source": "GeoNames point, other spelling", "alias_only": true},
+    {"name": "Willowvale", "aliases": ["Gatyana"], "lat": -32.26588, "lng": 28.50727, "kind": "town", "municipality": "Mbhashe", "province": "Eastern Cape", "source": "GeoNames point, other name", "alias_only": true}
+  ]
+}

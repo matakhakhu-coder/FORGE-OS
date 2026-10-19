@@ -813,8 +813,128 @@
   .wl-item__meta { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-dim); margin-top: 2px; }
   .wl-empty { text-align: center; padding: var(--sp-8) var(--sp-4); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.7rem; }
 
+  /* ── Area check (Sprint B) ──────────────────────────────────────────────── */
+  .ac-body { padding: var(--sp-3) var(--sp-4); font-family: var(--font-body, inherit); }
+  .ac-label {
+    font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-secondary);
+  }
+  .ac-row { display: flex; gap: var(--sp-2); align-items: stretch; margin-top: 4px; }
+  .ac-row--wrap { flex-wrap: wrap; margin-top: var(--sp-3); }
+  .ac-input {
+    flex: 1; min-width: 0; min-height: 40px;
+    font-size: 16px;   /* 16px stops iPhone zooming in on focus */
+    color: var(--text-primary); background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-mid); border-radius: var(--r-sm); padding: 6px 10px;
+  }
+  .ac-input:focus-visible, .ac-btn:focus-visible, .ac-chip:focus-visible, .ac-match:focus-visible,
+  .ac-res:focus-visible, .ac-link:focus-visible, .ac-bar__btn:focus-visible {
+    outline: 2px solid var(--accent-bright); outline-offset: 1px;
+  }
+  .ac-btn, .ac-bar__btn {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent-bright); background: rgba(200,148,58,0.10);
+    border: 1px solid rgba(200,148,58,0.45); border-radius: var(--r-sm);
+    min-height: 40px; padding: 6px 12px; cursor: pointer;
+  }
+  .ac-btn:hover, .ac-bar__btn:hover { background: rgba(200,148,58,0.2); }
+  .ac-btn--wide { width: 100%; margin-top: var(--sp-2); }
+  .ac-help { font-size: 0.72rem; color: var(--text-secondary); margin: 6px 0 0; line-height: 1.4; }
+  .ac-status { font-size: 0.75rem; color: var(--text-primary); margin: var(--sp-2) 0 0; }
+  .ac-status:empty { display: none; }
+  .ac-matches, .ac-results { list-style: none; margin: var(--sp-2) 0 0; padding: 0; }
+  .ac-match, .ac-res {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: transparent; border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+    padding: 8px 10px; margin-bottom: 6px; color: var(--text-primary); min-height: 44px;
+  }
+  .ac-match:hover, .ac-res:hover { border-color: var(--accent-muted); background: rgba(200,148,58,0.06); }
+  .ac-match__name, .ac-res__title { display: block; font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
+  .ac-match__meta, .ac-res__meta { display: block; font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-secondary); margin-top: 2px; }
+  .ac-res--maybe { border-style: dashed; }
+  .ac-set { border-top: 1px solid var(--border-dim); margin-top: var(--sp-3); padding-top: var(--sp-3); }
+  .ac-centre { margin: 0 0 var(--sp-2); font-size: 0.85rem; color: var(--text-primary); }
+  .ac-centre-kind { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
+  .ac-group { margin-top: var(--sp-3); }
+  .ac-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .ac-chip {
+    font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.05em;
+    color: var(--text-secondary); background: transparent;
+    border: 1px solid var(--border-mid); border-radius: 999px; padding: 6px 12px; min-height: 36px; cursor: pointer;
+  }
+  .ac-chip[aria-pressed="true"] { color: var(--accent-bright); border-color: var(--accent); background: rgba(200,148,58,0.12); }
+  .ac-custom { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--sp-2); }
+  .ac-custom[hidden] { display: none; }
+  .ac-date { flex: 1 1 120px; color-scheme: dark; }
+  .ac-summary { margin: var(--sp-3) 0 0; font-size: 0.85rem; color: var(--text-primary); line-height: 1.45; }
+  .ac-remember { display: flex; align-items: center; gap: 8px; margin-top: var(--sp-3); font-size: 0.78rem; color: var(--text-primary); min-height: 36px; cursor: pointer; }
+  .ac-remember input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .ac-link {
+    background: none; border: none; padding: 4px 0; cursor: pointer;
+    color: var(--accent-bright); font-size: 0.75rem; text-decoration: underline;
+  }
+  .ac-disclaimer {
+    margin: var(--sp-4) 0 0; padding: var(--sp-2) var(--sp-3);
+    border-left: 2px solid var(--accent-muted); background: rgba(200,148,58,0.05);
+    font-size: 0.75rem; color: var(--text-primary); line-height: 1.45;
+  }
+  .ac-credit { font-size: 0.65rem; color: var(--text-secondary); margin: var(--sp-2) 0 0; }
+  .ac-bar, .ac-placebar {
+    position: absolute; top: var(--sp-4); left: 50%; transform: translateX(-50%);
+    z-index: 410; display: flex; align-items: center; gap: var(--sp-2);
+    max-width: calc(100% - 2 * var(--sp-4) - 300px);
+    background: rgba(8,13,18,0.94); border: 1px solid var(--accent-muted);
+    border-radius: var(--r-md); padding: 6px 6px 6px 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  }
+  .ac-bar[hidden], .ac-placebar[hidden], .ac-cross[hidden] { display: none; }
+  .ac-bar__text, .ac-placebar__text {
+    font-size: 0.78rem; color: var(--text-primary); min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ac-bar__btn { min-height: 36px; padding: 4px 10px; flex-shrink: 0; }
+  .ac-bar__btn--main { color: #0b0f14; background: var(--accent-bright); }
+  .ac-bar__btn--main:hover { background: #f0c060; }
+  /* With a drawer open the top is busy (controls move left of the drawer), so
+     the bar drops to the bottom left, above the ticker and the map credit. */
+  .md-shell.drawer-open .ac-bar {
+    top: auto; bottom: 64px; left: 152px; transform: none;
+    max-width: calc(100% - 152px - 400px - 2 * var(--sp-4));
+  }
+  .ac-cross {
+    position: absolute; left: 50%; top: 50%; z-index: 405; pointer-events: none;
+    width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  }
+  .ac-cross::before, .ac-cross::after {
+    content: ''; position: absolute; background: var(--accent-bright); box-shadow: 0 0 0 1px rgba(0,0,0,0.6);
+  }
+  .ac-cross::before { left: 21px; top: 0; width: 2px; height: 44px; }
+  .ac-cross::after { top: 21px; left: 0; height: 2px; width: 44px; }
+  .ac-home-pin {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent-bright); border: 3px solid #0b0f14; box-shadow: 0 0 0 2px var(--accent-bright);
+  }
+  .sd-outside {
+    margin: 0 0 var(--sp-3); padding: var(--sp-2) var(--sp-3); font-size: 0.78rem;
+    color: var(--text-primary); border: 1px dashed var(--accent-muted); border-radius: var(--r-sm);
+  }
+  .sd-outside[hidden] { display: none; }
+
   /* ── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
+    /* Area check on a phone: the bar sits under the header, left of the
+       controls column; placing a point keeps the bar above the pill row. */
+    .ac-bar, .md-shell.drawer-open .ac-bar {
+      left: var(--sp-3); right: auto; transform: none; top: var(--sp-4); bottom: auto;
+      max-width: calc(100% - 140px);
+      flex-wrap: wrap; padding: 6px 8px;
+    }
+    .ac-bar__text { white-space: normal; flex-basis: 100%; font-size: 0.74rem; }
+    .ac-placebar {
+      left: var(--sp-3); right: var(--sp-3); top: auto; bottom: 112px; transform: none;
+      max-width: none; flex-wrap: wrap;
+    }
+    .ac-placebar__text { white-space: normal; flex-basis: 100%; }
     .md-sidebar {
       top: auto;
       bottom: 40px;
@@ -899,6 +1019,7 @@
 
   {# ── Left sidebar pills ─────────────────────────────────────────────────── #}
   <nav class="md-sidebar">
+    <button class="md-pill" data-panel="area" id="ac-pill" aria-controls="panel-area"><span class="md-pill__icon">&#9678;</span> Area check</button>
     <button class="md-pill" data-panel="wire"><span class="md-pill__icon">+</span> Wire</button>
     <button class="md-pill" data-panel="streams"><span class="md-pill__icon">&#9656;</span> Streams</button>
     <button class="md-pill" data-panel="cases"><span class="md-pill__icon">&#9650;</span> Cases</button>
@@ -1095,8 +1216,83 @@
     <div class="md-panel__body" id="wl-list"></div>
   </div>
 
+  {# Area check panel (Sprint B): built-in place list, map point, radius and #}
+  {# dates. Nothing typed here leaves the device. Driven by area-check.js.  #}
+  <div class="md-panel" id="panel-area" role="region" aria-labelledby="ac-title">
+    <div class="md-panel__header">
+      <div class="md-panel__dot" style="background:var(--accent);"></div>
+      <span class="md-panel__title" id="ac-title">Area check</span>
+      <button class="md-panel__close" id="ac-close" type="button" aria-label="Close Area check">&#10005;</button>
+    </div>
+    <div class="md-panel__body ac-body">
+      <form class="ac-search" id="ac-search" role="search" autocomplete="off">
+        <label class="ac-label" for="ac-q">Suburb or town</label>
+        <div class="ac-row">
+          <input class="ac-input" id="ac-q" type="search" maxlength="80" placeholder="e.g. Hanover Park" aria-describedby="ac-q-help">
+          <button class="ac-btn" type="submit">Find</button>
+        </div>
+        <p class="ac-help" id="ac-q-help">Searches a built-in list of South African places on your device. Street addresses are not supported yet.</p>
+      </form>
+      <p class="ac-status" id="ac-match-status" role="status" aria-live="polite"></p>
+      <ul class="ac-matches" id="ac-matches" aria-label="Matching places"></ul>
+      <button class="ac-btn ac-btn--wide" type="button" id="ac-place-btn">&#8982; Place on the map instead</button>
+
+      <div class="ac-set" id="ac-set" hidden>
+        <p class="ac-centre"><span class="ac-label">Centre</span> <strong id="ac-centre-name"></strong> <span class="ac-centre-kind" id="ac-centre-kind"></span></p>
+        <div class="ac-group" role="group" aria-labelledby="ac-radius-label">
+          <span class="ac-label" id="ac-radius-label">Radius</span>
+          <div class="ac-chips" id="ac-radius">
+            <button type="button" class="ac-chip" data-radius="500" aria-pressed="false">500 m</button>
+            <button type="button" class="ac-chip" data-radius="1000" aria-pressed="false">1 km</button>
+            <button type="button" class="ac-chip" data-radius="2000" aria-pressed="true">2 km</button>
+            <button type="button" class="ac-chip" data-radius="5000" aria-pressed="false">5 km</button>
+          </div>
+        </div>
+        <div class="ac-group" role="group" aria-labelledby="ac-dates-label">
+          <span class="ac-label" id="ac-dates-label">Dates</span>
+          <div class="ac-chips" id="ac-dates">
+            <button type="button" class="ac-chip" data-dates="all" aria-pressed="true" id="ac-dates-all">All</button>
+            <button type="button" class="ac-chip" data-dates="7" aria-pressed="false">Last 7 days</button>
+            <button type="button" class="ac-chip" data-dates="30" aria-pressed="false">Last 30 days</button>
+            <button type="button" class="ac-chip" data-dates="custom" aria-pressed="false">Pick dates</button>
+          </div>
+          <div class="ac-custom" id="ac-custom" hidden>
+            <label class="ac-label" for="ac-from">From</label> <input class="ac-input ac-date" id="ac-from" type="date">
+            <label class="ac-label" for="ac-to">To</label> <input class="ac-input ac-date" id="ac-to" type="date">
+          </div>
+        </div>
+        <p class="ac-summary" id="ac-summary" role="status" aria-live="polite" tabindex="-1"></p>
+        <ul class="ac-results" id="ac-results" aria-label="Reports in this area"></ul>
+        <div class="ac-row ac-row--wrap">
+          <button class="ac-btn" type="button" id="ac-toggle">Show all reports</button>
+          <button class="ac-btn" type="button" id="ac-fit">Zoom to circle</button>
+        </div>
+        <label class="ac-remember"><input type="checkbox" id="ac-remember"> Remember this place on this device</label>
+        <button class="ac-link" type="button" id="ac-forget">Forget this place</button>
+        <p class="ac-help" id="ac-storage-note" hidden>This browser won't let the page remember places, so it lasts until you close the tab.</p>
+      </div>
+
+      <p class="ac-disclaimer"><strong>No reports does not mean safe.</strong> This map only holds killings that news outlets reported and we checked by hand<span id="ac-checked-upto"></span>. Pins marked approximate can sit a few kilometres from the real place. The Wire panel and the ticker still list every report.</p>
+      <p class="ac-credit">Places: GeoNames (CC BY 4.0) and OpenStreetMap contributors.</p>
+    </div>
+  </div>
+
+  {# Area check: one-line bar while the panel is closed, and map placing. #}
+  <div class="ac-bar" id="ac-bar" hidden>
+    <span class="ac-bar__text" id="ac-bar-text" role="status" aria-live="polite"></span>
+    <button type="button" class="ac-bar__btn" id="ac-bar-edit">Edit</button>
+    <button type="button" class="ac-bar__btn" id="ac-bar-all">Show all</button>
+  </div>
+  <div class="ac-cross" id="ac-cross" aria-hidden="true" hidden></div>
+  <div class="ac-placebar" id="ac-placebar" role="dialog" aria-label="Place the centre on the map" hidden>
+    <span class="ac-placebar__text">Move the map until the cross is on the spot.</span>
+    <button type="button" class="ac-bar__btn ac-bar__btn--main" id="ac-place-use">Use this spot</button>
+    <button type="button" class="ac-bar__btn" id="ac-place-cancel">Cancel</button>
+  </div>
+
   {# ── Right controls ─────────────────────────────────────────────────────── #}
   <div class="md-controls">
+    <button class="md-ctrl" id="ac-home" type="button" hidden><span class="md-ctrl__icon">&#8962;</span> Home base</button>
     <button class="md-ctrl" id="ctrl-filter"><span class="md-ctrl__icon">&#9701;</span> Filter</button>
     <button class="md-ctrl" id="ctrl-zoomin"><span class="md-ctrl__icon">+</span> Zoom In</button>
     <button class="md-ctrl" id="ctrl-zoomout"><span class="md-ctrl__icon">&minus;</span> Zoom Out</button>
@@ -1111,6 +1307,7 @@
       <button type="button" class="sd-close" id="sd-close" aria-label="Close event details">&#10005;</button>
     </div>
     <div class="sd-body" id="sd-body">
+      <p class="sd-outside" id="sd-outside" hidden>Outside your Area check circle. <button type="button" class="ac-link" id="sd-outside-all">Show all reports</button></p>
       <h2 class="sd-title" id="sd-title" tabindex="-1"></h2>
       <p class="sd-story" id="sd-story"></p>
       <section class="sd-section" id="sd-when-wrap" hidden>
@@ -1206,6 +1403,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="static/js/area-check.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1365,12 +1563,44 @@
 
   /* ── Intel links ────────────────────────────────────────────────────────── */
   var INTEL_LINKS = {{ intel_links | tojson }};
+  var linkLayers = [];    // { layer, from, to } — Area check hides a line with a hidden end
   INTEL_LINKS.forEach(function (link) {
     var color = STREAM_COLOR[link.stream] || '#7a95aa';
-    L.polyline([[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]], {
+    var line = L.polyline([[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]], {
       color: color, weight: 1.2, opacity: 0.25, dashArray: '8 6',
     }).bindTooltip(link.label || link.case_name || 'Linked incident', { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
+    linkLayers.push({ layer: line, from: link.from || null, to: link.to || null });
   });
+
+  /* ── Which pins show: stream toggles + Area check ───────────────────────── */
+  // pinFilter is set by Area check: idx -> 'in' | 'maybe' | 'out'. The pin
+  // open in the drawer always shows, even outside the circle.
+  var pinFilter = null;
+  var areaUI = null;
+  function pinShowState(ml) {
+    if (streamVisible[ml.stream] === false) return 'out';
+    if (!pinFilter || ml.idx === drawerIdx) return 'in';
+    return pinFilter(ml.idx);
+  }
+  function refreshPins() {
+    var add = [], rem = [], shown = {};
+    allMarkerLayers.forEach(function (ml) {
+      var st = pinShowState(ml);
+      var want = st !== 'out';
+      ml.layer.setOpacity(st === 'maybe' ? 0.45 : 1);
+      var has = clusterGroup.hasLayer(ml.layer);
+      if (want && !has) add.push(ml.layer);
+      else if (!want && has) rem.push(ml.layer);
+      if (want) shown[String(RAW[ml.idx] && RAW[ml.idx].signal_id || '').slice(0, 8)] = true;
+    });
+    if (rem.length) clusterGroup.removeLayers(rem);
+    if (add.length) clusterGroup.addLayers(add);
+    linkLayers.forEach(function (ln) {
+      var vis = !pinFilter || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
+      if (vis && !map.hasLayer(ln.layer)) ln.layer.addTo(map);
+      else if (!vis && map.hasLayer(ln.layer)) map.removeLayer(ln.layer);
+    });
+  }
 
   /* ══════════════════════════════════════════════════════════════════════════
      DASHBOARD PANELS
@@ -1402,19 +1632,21 @@
     }
     document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
     document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
-    if (activePanel === name) { activePanel = null; return; }
+    if (activePanel === name) { activePanel = null; if (areaUI) areaUI.onPanel(null); return; }
     var panel = document.getElementById('panel-' + name);
     var pill = document.querySelector('[data-panel="' + name + '"]');
     if (panel) panel.classList.add('open');
     if (pill) pill.classList.add('active');
     activePanel = name;
     maybeInitPanel(name);
+    if (areaUI) areaUI.onPanel(name);
   };
 
   window.closePanel = function () {
     document.querySelectorAll('.md-panel').forEach(function (p) { p.classList.remove('open'); });
     document.querySelectorAll('.md-pill').forEach(function (p) { p.classList.remove('active'); });
     activePanel = null;
+    if (areaUI) areaUI.onPanel(null);
   };
 
   document.querySelectorAll('.md-pill').forEach(function (pill) {
@@ -2023,6 +2255,8 @@
     if (opts.trigger || !wasOpen) drawerTrigger = opts.trigger || null;
     fillDrawer(m);
     drawerIdx = idx;
+    if (pinFilter) refreshPins();   // the open pin shows even outside the Area check circle
+    if (areaUI) areaUI.onDrawer();
     markSelected(idx, true);
 
     if (isCompact()) { if (activePanel) closePanel(); }
@@ -2055,6 +2289,8 @@
     closeExtGate({ restoreFocus: false });
     markSelected(drawerIdx, false);
     drawerIdx = null;
+    if (pinFilter) refreshPins();
+    if (areaUI) areaUI.onDrawer();
     drawer.hidden = true;
     shellEl.classList.remove('drawer-open');
     var t = drawerTrigger;
@@ -2252,18 +2488,32 @@
       var stream = toggle.dataset.streamToggle;
       var visible = toggle.classList.contains('on');
       streamVisible[stream] = visible;
-
-      allMarkerLayers.forEach(function (ml) {
-        if (ml.stream === stream) {
-          if (visible) {
-            clusterGroup.addLayer(ml.layer);
-          } else {
-            clusterGroup.removeLayer(ml.layer);
-          }
-        }
-      });
+      refreshPins();
     });
   });
+
+  /* ── Area check (address radar, Sprints A and B) ────────────────────────── */
+  if (window.ZADArea) {
+    areaUI = window.ZADArea.mount({
+      L: L, map: map,
+      pins: allMarkerLayers.map(function (ml) {
+        var m = RAW[ml.idx] || {};
+        return { idx: ml.idx, lat: ml.lat, lng: ml.lng, unc: m.uncertainty_m || 0,
+                 precision: m.precision || null, incident_at: m.incident_at || null,
+                 incident_end: m.incident_end || null, event: m.incident_event || null,
+                 title: m.title || 'Report', published_at: m.published_at || null };
+      }),
+      setPinFilter: function (fn) { pinFilter = fn; refreshPins(); },
+      refreshPins: refreshPins,
+      showSignal: function (idx) { showSignal(idx); },
+      openPanel: function (name) { if (activePanel !== name) window.openPanel(name); },
+      closePanel: function () { window.closePanel(); },
+      activePanel: function () { return activePanel; },
+      drawerIdx: function () { return drawerIdx; },
+      isPhone: isPhone,
+      placesUrl: 'places-za.json'
+    });
+  }
 
   /* ── Right controls ─────────────────────────────────────────────────────── */
   document.getElementById('ctrl-zoomin').addEventListener('click', function () { map.zoomIn(); });

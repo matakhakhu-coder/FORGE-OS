@@ -266,6 +266,50 @@ def _incident_at(chk: dict) -> str | None:
     return incident_sort_key(chk) or None
 
 
+def _incident_end(chk: dict) -> str | None:
+    """UTC ISO end of the incident's start window (Area check date filter).
+
+    Equal to incident_at for a stated time; the end of the local day (or part
+    of day) otherwise. None when the record has no readable incident_start."""
+    from tools.checked_signals import incident_window
+    w = incident_window(chk)
+    return w[1].strftime("%Y-%m-%dT%H:%M:%SZ") if w else None
+
+
+# ── Pin precision (Area check, Sprint A) ─────────────────────────────────────
+# docs/signals/pin-precision.json says how exact each pin's map point is, kept
+# apart from the hand-checked pin files so their fingerprints and the locked
+# Sprint 5 predictions stay as they are. The radius count uses uncertainty_m.
+PRECISION_FILE = ROOT / "docs" / "signals" / "pin-precision.json"
+PRECISION_LEVELS = ("spot", "street", "area", "suburb", "village", "town", "farm")
+_PRECISION_CACHE: dict | None = None
+
+
+def _load_precision() -> dict:
+    global _PRECISION_CACHE
+    if _PRECISION_CACHE is None:
+        try:
+            _PRECISION_CACHE = json.loads(PRECISION_FILE.read_text(encoding="utf-8")).get("pins") or {}
+        except (OSError, ValueError):
+            _PRECISION_CACHE = {}
+    return _PRECISION_CACHE
+
+
+def _precision_for(signal_id: str) -> dict | None:
+    """{"precision", "uncertainty_m"} for a pin, or None when missing/invalid."""
+    ent = _load_precision().get(signal_id)
+    if not isinstance(ent, dict):
+        return None
+    level = ent.get("precision")
+    try:
+        unc = int(ent.get("uncertainty_m"))
+    except (TypeError, ValueError):
+        return None
+    if level not in PRECISION_LEVELS or not (0 < unc <= 50000):
+        return None
+    return {"precision": level, "uncertainty_m": unc}
+
+
 def _checked_fields(metadata_json: str | None) -> dict:
     """Hand-check details for a signal, read from metadata_json["checked"].
 
@@ -292,6 +336,7 @@ def _checked_fields(metadata_json: str | None) -> dict:
     empty = {"checked": False, "incident": None, "reported": None,
              "location_note": None, "source_links": [], "basis": None,
              "disagreements": [], "media": [], "incident_start": None,
+             "incident_end": None, "incident_event": None,
              "link_records": [], "search_aliases": []}
     if not metadata_json:
         return empty
@@ -333,6 +378,10 @@ def _checked_fields(metadata_json: str | None) -> dict:
         "incident_start": (str(chk["incident_start"]).strip() or None) if chk.get("incident_start") else None,
         # Machine-readable incident moment in UTC (Sprint 4); sorts by incident.
         "incident_at":   _incident_at(chk),
+        # End of that window, for the Area check date filter.
+        "incident_end":  _incident_end(chk),
+        # "occurred" or "found" (a body found later): the date filter says so.
+        "incident_event": chk.get("incident_event") if chk.get("incident_event") in ("occurred", "found") else None,
         # Raw link records; _resolve_links() turns them into drawer rows and
         # map lines, then drops this key so it never reaches the page.
         "link_records":  _clean_link_records(chk.get("links")),
@@ -435,6 +484,8 @@ def _resolve_links(signals: list[dict]) -> list[dict]:
                 lines.append({
                     "from_lat": s["lat"], "from_lng": s["lng"],
                     "to_lat": other["lat"], "to_lng": other["lng"],
+                    # Pin IDs, so Area check hides a line when either end is hidden.
+                    "from": s["signal_id"][:8], "to": other["signal_id"][:8],
                     "label": ln["label"],
                     "type": "incident",
                     "stream": s["stream"] or "GLOBAL",
@@ -487,6 +538,9 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             # checked pins only. Shown on the drawer and the Wire so the
             # Western Cape pattern-test pins are never confused with others.
             "region":        _region_for(r["signal_id"]) if checked["checked"] else None,
+            # How exact the map point is (Area check), checked pins only.
+            **((_precision_for(r["signal_id"]) if checked["checked"] else None)
+               or {"precision": None, "uncertainty_m": None}),
         })
     # Same publish time (a whole batch goes live at once): put the incidents
     # in the order they happened, newest first, not in signal-ID order.
@@ -1381,6 +1435,13 @@ def _build_dist(
     )
     print(f"[publish] search-index.json - {len(search_docs)} documents")
 
+    # places-za.json — the built-in place list for Area check (no outside service)
+    places = _build_places()
+    (DIST / "places-za.json").write_text(
+        json.dumps(places, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+    )
+    print(f"[publish] places-za.json - {len(places['rows'])} places")
+
     # entity-index.json — actor/entity names + slugs for client-side auto-linking
     entity_index = []
     try:
@@ -1593,6 +1654,86 @@ class CheckedGuardError(SystemExit):
     pass
 
 
+# ── Area check place list (Sprint B) ─────────────────────────────────────────────────────
+# A trimmed copy of data/gazetteer/za_places.json (GeoNames, CC BY 4.0) plus
+# data/gazetteer/za_places_topup.json (places the pins sit in that GeoNames
+# lacks, and other names). The browser searches it on the device: nothing a
+# visitor types is sent anywhere.
+GAZETTEER_FILE = ROOT / "data" / "gazetteer" / "za_places.json"
+PLACES_TOPUP_FILE = ROOT / "data" / "gazetteer" / "za_places_topup.json"
+PLACE_KINDS = ("city", "town", "town or village", "suburb", "locality", "area", "village")
+_ZA_BOX = (-35.2, -22.0, 16.3, 33.0)    # lat min, lat max, lng min, lng max
+
+
+def _place_norm(s: str) -> str:
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]", "", s)
+
+
+def _gn_kind(fcode: str, pop: int) -> str:
+    if fcode in ("PPLC", "PPLA", "PPLA2") and pop >= 100000:
+        return "city"
+    if fcode.startswith("PPLA") or fcode == "PPLC" or pop >= 20000:
+        return "town"
+    if fcode == "PPLX":
+        return "suburb"
+    if fcode == "PPLL":
+        return "locality"
+    return "town or village"
+
+
+def _build_places() -> dict:
+    """Compact place list: rows of [name, lat, lng, kind, province, municipality, aliases].
+
+    kind, province and municipality are indexes into "kinds", "provinces" and
+    "municipalities" (municipality tells apart the three Wesbanks); aliases is
+    a list of other names, or 0."""
+    gaz = json.loads(GAZETTEER_FILE.read_text(encoding="utf-8"))
+    topup = json.loads(PLACES_TOPUP_FILE.read_text(encoding="utf-8"))
+    lat0, lat1, lng0, lng1 = _ZA_BOX
+    rows, seen = [], set()
+    for row in gaz["rows"]:
+        name, lat, lng, fcode, pop, prov = row[:6]
+        muni = row[7] if len(row) > 7 else ""
+        if not (lat0 <= lat <= lat1 and lng0 <= lng <= lng1) or not prov:
+            continue
+        key = (_place_norm(name), round(lat, 2), round(lng, 2))
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append({"name": name, "lat": lat, "lng": lng,
+                     "kind": _gn_kind(fcode, int(pop or 0)), "pop": int(pop or 0),
+                     "province": prov, "muni": muni or "", "aliases": []})
+    for p in topup["places"]:
+        if p.get("alias_only"):
+            nk = _place_norm(p["name"])
+            hit = next((r for r in rows if _place_norm(r["name"]) == nk
+                        and r["province"] == p["province"]
+                        and abs(r["lat"] - p["lat"]) < 0.05 and abs(r["lng"] - p["lng"]) < 0.05), None)
+            if hit is None:
+                raise ValueError(f"places top-up: no GeoNames row for {p['name']} to add aliases to")
+            hit["aliases"] += [a for a in p.get("aliases", []) if a not in hit["aliases"]]
+            continue
+        rows.append({"name": p["name"], "lat": p["lat"], "lng": p["lng"], "kind": p["kind"],
+                     "pop": 0, "province": p["province"], "muni": p.get("municipality", ""),
+                     "aliases": list(p.get("aliases", []))})
+    provinces = sorted({r["province"] for r in rows})
+    munis = sorted({r["muni"] for r in rows})
+    rows.sort(key=lambda r: (-r["pop"], r["name"], r["lat"]))
+    out = [[r["name"], round(r["lat"], 4), round(r["lng"], 4), PLACE_KINDS.index(r["kind"]),
+            provinces.index(r["province"]), munis.index(r["muni"]), r["aliases"] or 0]
+           for r in rows]
+    return {
+        "v": 1,
+        "credit": "Places: GeoNames (CC BY 4.0) and OpenStreetMap contributors (ODbL)",
+        "kinds": list(PLACE_KINDS),
+        "provinces": provinces,
+        "municipalities": munis,
+        "rows": out,
+    }
+
+
 def _checked_guard_before(conn):
     from tools.checked_signals import CheckedSignalError, load_index, verify
     try:
@@ -1612,8 +1753,15 @@ def _checked_guard_before(conn):
         print(f"[publish] REFUSED: {len(missing)} checked pin(s) have no source provenance "
               f"in docs/signals/provenance.json: {', '.join(missing)}")
         raise CheckedGuardError(2)
+    no_prec = [s["signal_id"][:8] for s in cs.active if _precision_for(s["signal_id"]) is None]
+    if no_prec:
+        print(f"[publish] REFUSED: {len(no_prec)} checked pin(s) have no valid precision entry "
+              f"in docs/signals/pin-precision.json: {', '.join(no_prec)}")
+        print(f"[publish] Fix: add each one with a level ({', '.join(PRECISION_LEVELS)}) "
+              f"and uncertainty_m, from the pin's location note")
+        raise CheckedGuardError(2)
     print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted, "
-          f"all with source provenance")
+          f"all with source provenance and precision")
     return cs
 
 
