@@ -87,10 +87,6 @@
           "location": "Willowvale Extension 1 informal settlement, near Ematyotyombeni, Willowvale (SAPS, Dispatch). The settlement is not mapped; the pin is GeoNames' point for Willowvale town, inside the Willowvale SAPS precinct.",
           "sources": [
             {
-              "name": "SAPS Eastern Cape (7 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71657"
-            },
-            {
               "name": "Daily Dispatch (7 Oct)",
               "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/"
             },
@@ -132,7 +128,7 @@
         },
         "collected_title": "Five young men shot dead in brutal Willowvale mass shooting"
       },
-      "fingerprint": "sha256:3b8f54e015851848290f06c4758a4e62dac0de8f3235e2e741c2aebc364639a7"
+      "fingerprint": "sha256:cd35b3857a07f664b88f0b473f08f743f11cd6b8ae1e54302f5ad68297955cfb"
     },
     {
       "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49",
@@ -156,10 +152,6 @@
           "reported": "7 Oct 2026 (SAPS); 8 Oct 2026 (SABC News)",
           "location": "Mtshekisani Street, in the Kwadwesi or Kwazakele policing precinct (SAPS gives both). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for the KwaDwesi suburb, so it may be some way off.",
           "sources": [
-            {
-              "name": "SAPS Eastern Cape (7 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71666"
-            },
             {
               "name": "SABC News (8 Oct)",
               "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/"
@@ -185,7 +177,7 @@
         },
         "collected_title": "Four men killed in shootout with Gqeberha police"
       },
-      "fingerprint": "sha256:10895c87a8495cfe942eb12440badc2d9daf3426c4357e0e12a217e4430d861d"
+      "fingerprint": "sha256:40ba73ae9fc045d218cf132d01be9739ea11f4d7db22a5f59884efe3c84e5b7a"
     },
     {
       "signal_id": "a86ff098-691e-5407-83f0-8496db67b418",
@@ -209,10 +201,6 @@
           "reported": "9 Oct 2026",
           "location": "Kuzwayo Street, KwaZakhele (SAPS). OpenStreetMap has three short streets of that name within about 1 km, all in the New Brighton precinct, whose officers responded. The pin is the one not labelled Soweto on Sea; the exact spot is not given.",
           "sources": [
-            {
-              "name": "SAPS Eastern Cape (9 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71718"
-            },
             {
               "name": "The Herald (9 Oct)",
               "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/"
@@ -243,7 +231,7 @@
         },
         "collected_title": "Double murder probe launched after two men killed in Kwazakele, EC"
       },
-      "fingerprint": "sha256:23864779fede5c0a267f97dda4cbdf4cc7fbb64f1f44b934d67ceb1c753cacd7"
+      "fingerprint": "sha256:9882ff3a79fa425fcca9cc139e8eae88c33e4e6f450ef28d4ddf3986e4e930eb"
     },
     {
       "signal_id": "ba7824e3-f2de-56c4-914f-587aeba1639c",
@@ -338,10 +326,6 @@
           "location": "Sebothe Street, Soweto-on-Sea (SAPS). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for Soweto on Sea, inside the Kwazakele precinct, whose police are investigating.",
           "sources": [
             {
-              "name": "SAPS Eastern Cape (12 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71765"
-            },
-            {
               "name": "The Herald",
               "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/"
             },
@@ -371,7 +355,7 @@
         },
         "collected_title": "Police investigating double murder in Soweto-on-Sea"
       },
-      "fingerprint": "sha256:028247795c100c052a5f69a2eff5347de928a59aff55e25d355b6251053e58ac"
+      "fingerprint": "sha256:5849e89e32adb83c0bc067d7135d3e467090432bf9d9d54f03324ad55b3c3380"
     },
     {
       "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038",
@@ -395,10 +379,6 @@
           "reported": "14 Oct 2026",
           "location": "Komkhulu locality, Konkwana administrative area, near Willowvale (SAPS). Neither place is in OpenStreetMap, and GeoNames' places named Komkhulu are in other municipalities. The pin is Willowvale town, the same point as the Willowvale Extension 1 pin; the homestead may be well outside town.",
           "sources": [
-            {
-              "name": "SAPS Eastern Cape (14 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71811"
-            },
             {
               "name": "Daily Dispatch",
               "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/"
@@ -442,7 +422,7 @@
         },
         "collected_title": "Headman and elderly mother gunned down in Eastern Cape homestead attack"
       },
-      "fingerprint": "sha256:053745107ec53b8c7fa0144798d2513608944c45cc689476cf66f4a693a02af2"
+      "fingerprint": "sha256:cbea5e1bc893f4f0e9b603ef6a12ef0e3851774441b464e5d33cc112d1f9989b"
     },
     {
       "signal_id": "335b265d-2edd-54e2-969e-31e38733ff3a",
@@ -466,10 +446,6 @@
           "reported": "18 Oct 2026",
           "location": "Mbulawa Location, Mqanduli, after a chase on the R411 towards Coffee Bay (SAPS). Mbulawa is not in OpenStreetMap or GeoNames; the pin is GeoNames' point for Mqanduli town, inside the Mqanduli SAPS precinct.",
           "sources": [
-            {
-              "name": "SAPS Eastern Cape (18 Oct)",
-              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71934"
-            },
             {
               "name": "Pondoland Times",
               "url": "https://pondolandtimes.co.za/crime-courts/article/armed-suspect-shot-dead-by-police-near-mqanduli-ak-47-recovered/"
@@ -515,7 +491,7 @@
         },
         "collected_title": "Armed suspect shot dead by police near Mqanduli, AK-47 recovered"
       },
-      "fingerprint": "sha256:904bef64636ca26f39437d886189e5e60ceb2c226a1d0ac64dea16ad18bd38c4"
+      "fingerprint": "sha256:b1549784759bf79c12276dee65be79feb62455f5bfd5ee91b9910100aa88f718"
     }
   ]
 }

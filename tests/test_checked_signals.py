@@ -160,6 +160,8 @@ def test_eastern_cape_pins_stay_out_of_the_pattern_test_and_attribute_police_sho
     assert "Brickmakerskloof" in held and "Swartkops" in held
     titles = " ".join(s["title"] for s in data["signals"])
     assert "Brickmakerskloof" not in titles and "Swartkops" not in titles
+    # SAPS newsroom GET ?nid= links open an arbitrary statement, so none is published.
+    assert not any("saps.gov.za" in src["url"] for s in ec for src in s["metadata"]["checked"]["sources"])
     # No Eastern Cape pin cites a source that belongs to another incident.
     sebothe = next(s for s in ec if "Sebothe" in s["title"])
     assert not any("swartkops" in src["url"] for src in sebothe["metadata"]["checked"]["sources"])
