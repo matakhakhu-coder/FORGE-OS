@@ -18,6 +18,11 @@
       "file": "north-west-killings-2026-10-19.json",
       "province": "North West",
       "signals": 4
+    },
+    {
+      "file": "eastern-cape-killings-2026-10-19.json",
+      "province": "Eastern Cape",
+      "signals": 8
     }
   ]
 }

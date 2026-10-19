@@ -1,8 +1,120 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "19 Oct 2026 00:44 UTC",
+  "generated_at": "19 Oct 2026 02:09 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police-involved death. SAPS says Tactical Response Team members following up on a man wanted in connection with a murder case saw him driving a white Toyota bakkie in Mbulawa Location, Mqanduli, on Saturday 17 October (a...",
+      "source": "PONDOLAND TIMES",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -31.81919,
+        "lng": 28.76175
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police say two armed men stormed a homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at about 18:45 on Tuesday 13 October, held five people at gunpoint and demanded cash and a firearm, then s...",
+      "source": "NOVANEWS (PE EXPRESS)",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -32.26588,
+        "lng": 28.50727
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police say an 86-year-old woman and a 21-year-old man were found shot dead inside a house in Sebothe Street, Soweto-on-Sea, at about 01:20 on Monday 12 October. Police think the woman may have been shot after getting up ...",
+      "source": "THE HERALD",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -33.8640249,
+        "lng": 25.5773031
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "The Hawks say Sgt Nokuphumla Nyangwa, 48, of the Mdantsane Flying Squad, off duty, went to check on a fellow tenant at a property in Gardenia Street, Duncan Village, at about 16:30 on Sunday 11 October. An argument follo...",
+      "source": "NOVANEWS (PE EXPRESS)",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -33.01226,
+        "lng": 27.86332
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police say New Brighton officers responding to a shooting complaint at about 19:40 on Wednesday 7 October found a grey VW Polo on the pavement in Kuzwayo Street, KwaZakhele, with one man dead inside and one lying next to...",
+      "source": "SABC NEWS",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -33.876454,
+        "lng": 25.59849
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police say three unknown gunmen kicked open the door of a two-room flat at Willowvale Extension 1 informal settlement, near Ematyotyombeni, at about 21:50 on Tuesday 6 October and opened fire. Five young men aged 17 to 2...",
+      "source": "DAILY DISPATCH",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -32.26588,
+        "lng": 28.50727
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Police-involved deaths. SAPS says members of the Motherwell Tactical Response Team patrolling Mtshekisani Street at about 20:00 on Tuesday 6 October approached a suspicious vehicle, the occupants allegedly opened fire, a...",
+      "source": "SABC NEWS",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -33.843342,
+        "lng": 25.5156979
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T02:05:00Z",
+      "summary": "Komani News reports, quoting SAPS spokesperson Capt Yolisa Mgolodela, that Bholotwa police were called back to Mawethu Tavern at about 01:15 on Sunday 4 October after a group of men allegedly returned, some armed, stoppi...",
+      "source": "KOMANI NEWS",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -31.9858333,
+        "lng": 27.1888889
+      }
+    },
     {
       "kind": "signal",
       "title": "Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct",

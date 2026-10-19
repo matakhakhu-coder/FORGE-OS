@@ -114,6 +114,7 @@ _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 PROVINCE_BOUNDS = {
     "Western Cape": {"lat": (-34.90, -30.40), "lng": (17.70, 24.30)},
     "North West": {"lat": (-28.10, -24.50), "lng": (22.50, 28.40)},
+    "Eastern Cape": {"lat": (-34.30, -30.00), "lng": (22.50, 30.30)},
 }
 
 # The Sprint 5 pattern test (private/sprint5/predictions.md) is about Western

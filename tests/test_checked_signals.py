@@ -1,7 +1,7 @@
 """Sprint 1: hand-checked pins a rebuild can't drop (tools/checked_signals.py).
 
 Built on the standalone-signal and drawer tests: same fresh temp database,
-same committed batches (24 Western Cape pins, then 4 North West pins).
+same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eastern Cape pins).
 """
 from __future__ import annotations
 
@@ -21,7 +21,8 @@ SIGNALS_DIR = ROOT / "docs" / "signals"
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
 WC_PINS = 24          # Western Cape: the Sprint 5 pattern-test pins
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
-ALL_PINS = WC_PINS + NW_PINS
+EC_PINS = 8           # Eastern Cape, published 19 Oct 2026, outside the pattern test
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -87,15 +88,16 @@ def _markers(dist: Path) -> list[dict]:
 
 # ── The committed files ────────────────────────────────────────────────────────────
 
-def test_index_loads_all_28_pins_in_order():
+def test_index_loads_all_pins_in_order():
     from tools.checked_signals import load_index, stamp_files
 
     cs = load_index()
     assert [b.path.name for b in cs.batches] == [
         "western-cape-murders-2026-10-18.json",
         "western-cape-murders-2026-10-18-batch2.json",
-        "north-west-killings-2026-10-19.json"]
-    assert [b.province for b in cs.batches] == ["Western Cape", "Western Cape", "North West"]
+        "north-west-killings-2026-10-19.json",
+        "eastern-cape-killings-2026-10-19.json"]
+    assert [b.province for b in cs.batches] == ["Western Cape", "Western Cape", "North West", "Eastern Cape"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -133,7 +135,37 @@ def test_north_west_batch_holds_back_lebotloane():
     assert len(area["candidates"]) == 2
 
 
-def test_empty_db_one_import_builds_all_28_markers(tmp_path, monkeypatch):
+def test_eastern_cape_pins_stay_out_of_the_pattern_test_and_attribute_police_shootings():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    ec = [s for s in cs.active if prov[s["signal_id"]] == "Eastern Cape"]
+    assert len(ec) == EC_PINS and not ({s["signal_id"] for s in ec} & wc_ids)
+    for s in ec:
+        assert -34.3 <= s["lat"] <= -30.0 and 22.5 <= s["lng"] <= 30.3   # really in the Eastern Cape
+        assert "approx." in s["title"]
+        assert not s["metadata"].get("links")
+    police = [s for s in ec if "by police" in s["title"]]
+    assert len(police) == 2
+    for s in police:
+        assert "IPID" in s["content"] and "No ballistic result has been reported" in s["content"]
+        assert "not a finding of wrongdoing" in s["content"]
+    bholotwa = next(s for s in ec if "Bholotwa" in s["title"])
+    assert "cause not confirmed" in bholotwa["title"] and "not confirmed" in bholotwa["content"]
+    data = json.loads((SIGNALS_DIR / "eastern-cape-killings-2026-10-19.json").read_text(encoding="utf-8"))
+    assert "Sprint 5" in data["scope"]
+    held = " ".join(h["place"] for h in data["held_back"])
+    assert "Brickmakerskloof" in held and "Swartkops" in held
+    titles = " ".join(s["title"] for s in data["signals"])
+    assert "Brickmakerskloof" not in titles and "Swartkops" not in titles
+    # No Eastern Cape pin cites a source that belongs to another incident.
+    sebothe = next(s for s in ec if "Sebothe" in s["title"])
+    assert not any("swartkops" in src["url"] for src in sebothe["metadata"]["checked"]["sources"])
+
+
+def test_empty_db_one_import_builds_all_markers(tmp_path, monkeypatch):
     from tools.checked_signals import run_import
 
     conn, db_file = _fresh_db(tmp_path, monkeypatch)
@@ -144,6 +176,7 @@ def test_empty_db_one_import_builds_all_28_markers(tmp_path, monkeypatch):
     assert len(markers) == ALL_PINS
     regions = [m["region"] for m in markers]
     assert regions.count("Western Cape") == WC_PINS and regions.count("North West") == NW_PINS
+    assert regions.count("Eastern Cape") == EC_PINS
     conn = sqlite3.connect(str(db_file))
     assert conn.execute("SELECT COUNT(*) FROM signals WHERE source_type = 'checked' "
                         "AND status = 'reviewed' AND gravity_score IS NULL "
@@ -225,7 +258,7 @@ def test_retracted_pin_disappears_with_reason_kept(tmp_path, monkeypatch):
     from tools.checked_signals import load_index, import_checked, verify, CheckedSignalError
 
     conn, db_file = _fresh_db(tmp_path, monkeypatch)
-    import_checked(conn, load_index(), write=True)       # live state: 28 pins
+    import_checked(conn, load_index(), write=True)       # live state: every published pin
     index = _copy_signals(tmp_path)
     reason = "Test: police later said this was not a murder."
     _edit_batch(index, 0, lambda d: d["retractions"].append(

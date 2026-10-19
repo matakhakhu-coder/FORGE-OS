@@ -1,0 +1,521 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Eastern Cape",
+  "batch": "Eastern Cape killings, whole-province sweep (incidents 1-19 Oct 2026), hand-checked and approved 19 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins).",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb, village or town is known. Sources that reuse one report or one police statement are not independent corroboration. Accused people are not named on the map. Deaths in police shootings and during police call-outs are pinned as case-interest deaths at the user's decision (19 Oct 2026): the police account is attributed to police, IPID and ballistic results are reported only when published, and no wrongdoing by anyone is implied. A shared gun calibre is not a link.",
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Brickmakerskloof, Gqeberha (12 Oct)",
+      "reason": "An alleged robber was shot dead by the man he stabbed, with a licensed gun; police opened a murder case but it may have been self-defence. One report only (Algoa FM). Held pending the user's decision."
+    },
+    {
+      "place": "Swartkops River, Perseverance side, Gqeberha (body found 10 Oct)",
+      "reason": "An unidentified man's body was found. No cause of death is given and no murder case is named. Held."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "578b93c8-a253-535c-b26f-eba38181683b",
+      "external_id": "eccheck:bholotwa-mawethu-tavern-2026-10-04",
+      "source": "Komani News",
+      "title": "Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct",
+      "content": "Komani News reports, quoting SAPS spokesperson Capt Yolisa Mgolodela, that Bholotwa police were called back to Mawethu Tavern at about 01:15 on Sunday 4 October after a group of men allegedly returned, some armed, stopping patrons from leaving and assaulting people who tried to. Police say officers were attacked with bottles and fired warning shots while the van driver tried to reverse away. One person was injured and another was declared dead at the scene. SAPS has not confirmed that the person who died was struck by a police bullet, and says the circumstances of the injury and death are under investigation. Residents told the paper the dead man was a young man shot during the confrontation; SAPS has not confirmed this. Police opened an inquest and cases of attempted murder and attack on police. The person who died was not named. One report only.",
+      "lat": -31.9858333,
+      "lng": 27.1888889,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "Komani News",
+        "link": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-04 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Sun 4 Oct 2026, after about 01:15, when police were called back (Komani News, quoting SAPS)",
+          "reported": "4 Oct 2026",
+          "location": "Mawethu Tavern, Bholotwa, named by Komani News; the tavern itself is not mapped. The pin is OpenStreetMap's point for Bolotwa village (Intsika Yethu, Chris Hani), which lies in the SAPS Bholothwa precinct (2019 boundaries). Another Bolotwa in Mbhashe (GeoNames) was not used: the report names Bholotwa police and comes from a Chris Hani paper. Municipality not stated by any source.",
+          "sources": [
+            {
+              "name": "Komani News",
+              "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-04T01:15+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-04",
+          "search_aliases": [
+            "Bolotwa",
+            "Bholothwa",
+            "Intsika Yethu",
+            "Chris Hani",
+            "Komani",
+            "Mawethu Tavern"
+          ]
+        },
+        "collected_title": "BREAKING: One dead after violent incident at Bholotwa tavern"
+      },
+      "fingerprint": "sha256:4e93ac8855138d8977028fb55c6a93377df688e0a19131dfbb9e32b8ebb25c80"
+    },
+    {
+      "signal_id": "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940",
+      "external_id": "eccheck:willowvale-ext1-2026-10-06",
+      "source": "Daily Dispatch",
+      "title": "Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct",
+      "content": "Police say three unknown gunmen kicked open the door of a two-room flat at Willowvale Extension 1 informal settlement, near Ematyotyombeni, at about 21:50 on Tuesday 6 October and opened fire. Five young men aged 17 to 22 died, four in the flat and one on arrival at a clinic, and a man of 30 was wounded (SAPS, Brig Nobuntu Gantana). Numerous 9mm cartridges and projectiles were found. Police say the motive is unknown; no arrests reported in the sources read. The Daily Dispatch visited on 8 October: some residents said they believed it was linked to a fight over drug territory, which police have not said. Mbhashe Local Municipality condemned the killings. The victims were not named.",
+      "lat": -32.26588,
+      "lng": 28.50727,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-07T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "Daily Dispatch",
+        "link": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-07 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, about 21:50 (SAPS; Dispatch: about 9.51pm)",
+          "reported": "7 Oct 2026",
+          "location": "Willowvale Extension 1 informal settlement, near Ematyotyombeni, Willowvale (SAPS, Dispatch). The settlement is not mapped; the pin is GeoNames' point for Willowvale town, inside the Willowvale SAPS precinct.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (7 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71657"
+            },
+            {
+              "name": "Daily Dispatch (7 Oct)",
+              "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/"
+            },
+            {
+              "name": "The Herald (7 Oct, same text as the Dispatch)",
+              "url": "https://theherald.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/"
+            },
+            {
+              "name": "Daily Dispatch (9 Oct)",
+              "url": "https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/"
+            },
+            {
+              "name": "Algoa FM",
+              "url": "https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape"
+            },
+            {
+              "name": "Komani News",
+              "url": "https://www.komani.co.za/five-killed-in-willowvale-shooting/"
+            },
+            {
+              "name": "NovaNews (PE Express)",
+              "url": "https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-06T21:50+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-07",
+          "search_aliases": [
+            "Willowvale",
+            "Gatyana",
+            "Mbhashe",
+            "Amathole",
+            "Ematyotyombeni",
+            "Willowvale mass shooting"
+          ]
+        },
+        "collected_title": "Five young men shot dead in brutal Willowvale mass shooting"
+      },
+      "fingerprint": "sha256:3b8f54e015851848290f06c4758a4e62dac0de8f3235e2e741c2aebc364639a7"
+    },
+    {
+      "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49",
+      "external_id": "eccheck:kwadwesi-mtshekisani-police-shooting-2026-10-06",
+      "source": "SABC News",
+      "title": "Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct",
+      "content": "Police-involved deaths. SAPS says members of the Motherwell Tactical Response Team patrolling Mtshekisani Street at about 20:00 on Tuesday 6 October approached a suspicious vehicle, the occupants allegedly opened fire, and police fired back. Four men were declared dead at the scene; no police member was injured. SAPS says it recovered two unlicensed 9mm Norinco pistols with filed-off serial numbers and a toy gun, and describes the encounter as disrupting a suspected robbery plan. Kwadwesi SAPS opened four inquest dockets and cases of attempted murder and attack on police. The Independent Police Investigative Directorate (IPID) was notified and is investigating. No ballistic result has been reported. The men were not named. This is the police account. No independent account and no IPID finding has been reported; the pin records a reported death, not a finding of wrongdoing by anyone.",
+      "lat": -33.843342,
+      "lng": 25.5156979,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-08T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "SABC News",
+        "link": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-08 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Tue 6 Oct 2026, about 20:00 (SAPS)",
+          "reported": "7 Oct 2026 (SAPS); 8 Oct 2026 (SABC News)",
+          "location": "Mtshekisani Street, in the Kwadwesi or Kwazakele policing precinct (SAPS gives both). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for the KwaDwesi suburb, so it may be some way off.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (7 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71666"
+            },
+            {
+              "name": "SABC News (8 Oct)",
+              "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-06T20:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-07",
+          "search_aliases": [
+            "KwaDwesi",
+            "Kwadwesi",
+            "Kwazakele",
+            "Mtshekisani Street",
+            "Gqeberha",
+            "Port Elizabeth",
+            "Nelson Mandela Bay",
+            "police shooting",
+            "IPID"
+          ]
+        },
+        "collected_title": "Four men killed in shootout with Gqeberha police"
+      },
+      "fingerprint": "sha256:10895c87a8495cfe942eb12440badc2d9daf3426c4357e0e12a217e4430d861d"
+    },
+    {
+      "signal_id": "a86ff098-691e-5407-83f0-8496db67b418",
+      "external_id": "eccheck:kwazakhele-kuzwayo-2026-10-07",
+      "source": "SABC News",
+      "title": "Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct",
+      "content": "Police say New Brighton officers responding to a shooting complaint at about 19:40 on Wednesday 7 October found a grey VW Polo on the pavement in Kuzwayo Street, KwaZakhele, with one man dead inside and one lying next to it, both shot in the upper body and head; several cartridge cases were found (SAPS, Capt Sandra Janse van Rensburg). Police named them as Phumeza Thunywana, 44 (The Herald and SABC spell it Phumezo), and Xola Ngesimani, 38. The Nelson Mandela Bay Intervention Task Team is investigating a double murder; no arrests reported. The Herald says Thunywana was the stepfather of a pupil killed in May 2025; no source connects that case to this shooting.",
+      "lat": -33.876454,
+      "lng": 25.59849,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-09T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "SABC News",
+        "link": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-09 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Wed 7 Oct 2026, found about 19:40 (SAPS)",
+          "reported": "9 Oct 2026",
+          "location": "Kuzwayo Street, KwaZakhele (SAPS). OpenStreetMap has three short streets of that name within about 1 km, all in the New Brighton precinct, whose officers responded. The pin is the one not labelled Soweto on Sea; the exact spot is not given.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (9 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71718"
+            },
+            {
+              "name": "The Herald (9 Oct)",
+              "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/"
+            },
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/"
+            },
+            {
+              "name": "NovaNews",
+              "url": "https://novanews.co.za/police-probe-double-murder-after-kwazakhele-shooting/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-07T19:40+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-09",
+          "search_aliases": [
+            "Kwazakele",
+            "New Brighton",
+            "Kuzwayo Street",
+            "Gqeberha",
+            "Port Elizabeth",
+            "Nelson Mandela Bay"
+          ]
+        },
+        "collected_title": "Double murder probe launched after two men killed in Kwazakele, EC"
+      },
+      "fingerprint": "sha256:23864779fede5c0a267f97dda4cbdf4cc7fbb64f1f44b934d67ceb1c753cacd7"
+    },
+    {
+      "signal_id": "ba7824e3-f2de-56c4-914f-587aeba1639c",
+      "external_id": "eccheck:duncan-village-gardenia-2026-10-11",
+      "source": "NovaNews (PE Express)",
+      "title": "Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct",
+      "content": "The Hawks say Sgt Nokuphumla Nyangwa, 48, of the Mdantsane Flying Squad, off duty, went to check on a fellow tenant at a property in Gardenia Street, Duncan Village, at about 16:30 on Sunday 11 October. An argument followed and the man allegedly stabbed her; she died. A 30-year-old man was arrested and is under police guard in hospital with knife wounds (Hawks spokesperson W/O Ndiphiwe Mhlakuvana, first reported 13 Oct). The accused is not named here.",
+      "lat": -33.01226,
+      "lng": 27.86332,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-13T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "NovaNews (PE Express)",
+        "link": "https://novanews.co.za/peexpress/hawks-arrest-suspect-after-police-sergeant-is-stabbed-to-death/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-13 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Sun 11 Oct 2026, about 16:30 (Hawks)",
+          "reported": "13 Oct 2026",
+          "location": "Gardenia Street, Duncan Village, KuGompo City (East London), per the Hawks. The only Gardenia Street OpenStreetMap finds in KuGompo City is in Lennox Estate, not Duncan Village, so it was not used. The pin is GeoNames' point for Duncan Village, inside the Duncan Village SAPS precinct.",
+          "sources": [
+            {
+              "name": "Daily Dispatch (13 Oct, paywalled after the first paragraph)",
+              "url": "https://dispatch.co.za/news/2026-10-13-hawks-investigate-fatal-stabbing-of-off-duty-police-sergeant-in-duncan-village/"
+            },
+            {
+              "name": "Daily Dispatch (14 Oct)",
+              "url": "https://dispatch.co.za/news/2026-10-14-hawks-raise-alarm-after-policewoman-killed-in-eastern-cape/"
+            },
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/south-africa/crime/suspect-arrested-murder-police-officer-eastern-cape/"
+            },
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/"
+            },
+            {
+              "name": "Sunday World",
+              "url": "https://sundayworld.co.za/crime/police-officer-stabbed-to-death-in-eastern-cape/"
+            },
+            {
+              "name": "Joburg ETC",
+              "url": "https://www.joburgetc.com/news/eastern-cape-police-sergeant-murder-duncan-village/"
+            },
+            {
+              "name": "NovaNews (PE Express)",
+              "url": "https://novanews.co.za/peexpress/hawks-arrest-suspect-after-police-sergeant-is-stabbed-to-death/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-11T16:30+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-13",
+          "search_aliases": [
+            "East London",
+            "KuGompo",
+            "KuGompo City",
+            "Buffalo City",
+            "Gardenia Street",
+            "Nyangwa"
+          ]
+        },
+        "collected_title": "Hawks arrest suspect after police sergeant is stabbed to death"
+      },
+      "fingerprint": "sha256:ba95095d5e36588bc6464c6614c9a9489525cb6e1cf33f03e1099f91bf359412"
+    },
+    {
+      "signal_id": "417613e8-bc4b-5e22-a9ce-49531d161f70",
+      "external_id": "eccheck:soweto-on-sea-sebothe-2026-10-12",
+      "source": "The Herald",
+      "title": "Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct",
+      "content": "Police say an 86-year-old woman and a 21-year-old man were found shot dead inside a house in Sebothe Street, Soweto-on-Sea, at about 01:20 on Monday 12 October. Police think the woman may have been shot after getting up to check a disturbance at the door; the man was found in his bed. Nothing was reported stolen and the motive is unknown (SAPS, Capt Sandra Janse van Rensburg). Kwazakele SAPS is investigating a double murder; no arrests reported. The time is when they were found, not when they were shot. They were not named.",
+      "lat": -33.8640249,
+      "lng": 25.5773031,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-12T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "The Herald",
+        "link": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-12 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Mon 12 Oct 2026, found about 01:20 (SAPS)",
+          "reported": "12 Oct 2026",
+          "location": "Sebothe Street, Soweto-on-Sea (SAPS). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for Soweto on Sea, inside the Kwazakele precinct, whose police are investigating.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (12 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71765"
+            },
+            {
+              "name": "The Herald",
+              "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/"
+            },
+            {
+              "name": "Algoa FM",
+              "url": "https://www.algoafm.co.za/local/elderly-woman-killed-in-gq-double-murder"
+            },
+            {
+              "name": "NovaNews (PE Express)",
+              "url": "https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-12T01:20+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-12",
+          "search_aliases": [
+            "Soweto on Sea",
+            "Kwazakele",
+            "Sebothe Street",
+            "Gqeberha",
+            "Port Elizabeth",
+            "Nelson Mandela Bay"
+          ]
+        },
+        "collected_title": "Police investigating double murder in Soweto-on-Sea"
+      },
+      "fingerprint": "sha256:028247795c100c052a5f69a2eff5347de928a59aff55e25d355b6251053e58ac"
+    },
+    {
+      "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038",
+      "external_id": "eccheck:konkwana-komkhulu-2026-10-13",
+      "source": "NovaNews (PE Express)",
+      "title": "Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct",
+      "content": "Police say two armed men stormed a homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at about 18:45 on Tuesday 13 October, held five people at gunpoint and demanded cash and a firearm, then shot dead the headman, 44, and his mother, 70. His wife and two others were unhurt. The Provincial Serious and Violent Crime Investigation unit is on the case; no arrests reported. The Dispatch calls it the second killing of a traditional leader in Willowvale in about a month; no source links the two. The victims were not named.",
+      "lat": -32.26588,
+      "lng": 28.50727,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-14T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "NovaNews (PE Express)",
+        "link": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-14 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Tue 13 Oct 2026, about 18:45 (SAPS)",
+          "reported": "14 Oct 2026",
+          "location": "Komkhulu locality, Konkwana administrative area, near Willowvale (SAPS). Neither place is in OpenStreetMap, and GeoNames' places named Komkhulu are in other municipalities. The pin is Willowvale town, the same point as the Willowvale Extension 1 pin; the homestead may be well outside town.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (14 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71811"
+            },
+            {
+              "name": "Daily Dispatch",
+              "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/"
+            },
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/south-africa/crime/eastern-cape-headman-mother-gunned-down-willowvale/"
+            },
+            {
+              "name": "EWN",
+              "url": "https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed"
+            },
+            {
+              "name": "Joburg ETC",
+              "url": "https://www.joburgetc.com/news/willowvale-headman-mother-killed-shooting/"
+            },
+            {
+              "name": "NovaNews (PE Express)",
+              "url": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/"
+            },
+            {
+              "name": "Komani News",
+              "url": "https://www.komani.co.za/headman-and-mother-shot-dead-during-home-invasion-near-willowvale/"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-13T18:45+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-14",
+          "search_aliases": [
+            "Willowvale",
+            "Gatyana",
+            "Konkwana",
+            "Komkhulu",
+            "Mbhashe",
+            "Amathole",
+            "headman"
+          ]
+        },
+        "collected_title": "Headman and elderly mother gunned down in Eastern Cape homestead attack"
+      },
+      "fingerprint": "sha256:053745107ec53b8c7fa0144798d2513608944c45cc689476cf66f4a693a02af2"
+    },
+    {
+      "signal_id": "335b265d-2edd-54e2-969e-31e38733ff3a",
+      "external_id": "eccheck:mqanduli-mbulawa-police-shooting-2026-10-17",
+      "source": "Pondoland Times",
+      "title": "Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct",
+      "content": "Police-involved death. SAPS says Tactical Response Team members following up on a man wanted in connection with a murder case saw him driving a white Toyota bakkie in Mbulawa Location, Mqanduli, on Saturday 17 October (about 14:30, Pondoland Times). Police say he sped off, leading a chase along the R411 towards Coffee Bay, then slowed at Mbulawa and pointed a firearm at the police vehicle, and members fired. He died at the scene; no police member was injured. Police say an unlicensed AK-47 with a filed-off serial number was recovered. Police describe him as a person of interest in other murder cases, including the killing of a police officer at Eziko Tavern, Mqanduli; that is a police allegation, not a charge or a conviction. IPID is to investigate, which police call standard procedure. No ballistic result has been reported. He was not named. This is the police account. No independent account and no IPID finding has been reported; the pin records a reported death, not a finding of wrongdoing by anyone.",
+      "lat": -31.81919,
+      "lng": 28.76175,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-18T10:00:00Z",
+      "published_at": "2026-10-19T02:05:00Z",
+      "metadata": {
+        "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+        "source_outlet": "Pondoland Times",
+        "link": "https://pondolandtimes.co.za/crime-courts/article/armed-suspect-shot-dead-by-police-near-mqanduli-ak-47-recovered/",
+        "stream_reason": "general_media",
+        "pubdate_raw": "2026-10-18 (date only; the time in timestamp is a placeholder)",
+        "checked": {
+          "incident": "Sat 17 Oct 2026, about 14:30 (Pondoland Times; SAPS: Saturday)",
+          "reported": "18 Oct 2026",
+          "location": "Mbulawa Location, Mqanduli, after a chase on the R411 towards Coffee Bay (SAPS). Mbulawa is not in OpenStreetMap or GeoNames; the pin is GeoNames' point for Mqanduli town, inside the Mqanduli SAPS precinct.",
+          "sources": [
+            {
+              "name": "SAPS Eastern Cape (18 Oct)",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71934"
+            },
+            {
+              "name": "Pondoland Times",
+              "url": "https://pondolandtimes.co.za/crime-courts/article/armed-suspect-shot-dead-by-police-near-mqanduli-ak-47-recovered/"
+            },
+            {
+              "name": "NovaNews",
+              "url": "https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/"
+            },
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/south-africa/crime/man-linked-to-high-profile-murders-killed-by-police/"
+            },
+            {
+              "name": "EWN",
+              "url": "https://www.ewn.co.za/2026/10/18/ec-police-shoot-and-kill-armed-suspect-during-mqanduli-operation"
+            },
+            {
+              "name": "Sunday World",
+              "url": "https://sundayworld.co.za/crime/suspect-linked-to-police-officers-murder-killed-in-shoot-out-with-saps-ak-47-recovered-in-mqanduli/"
+            },
+            {
+              "name": "Algoa FM",
+              "url": "https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded"
+            }
+          ],
+          "checked_at": "2026-10-19T02:05:00Z",
+          "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-17T14:30+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-18",
+          "search_aliases": [
+            "Mqanduli",
+            "Mbulawa",
+            "Coffee Bay",
+            "R411",
+            "King Sabata Dalindyebo",
+            "OR Tambo",
+            "Mthatha",
+            "police shooting",
+            "IPID"
+          ]
+        },
+        "collected_title": "Armed suspect shot dead by police near Mqanduli, AK-47 recovered"
+      },
+      "fingerprint": "sha256:904bef64636ca26f39437d886189e5e60ceb2c226a1d0ac64dea16ad18bd38c4"
+    }
+  ]
+}

@@ -120,14 +120,16 @@ def _save(index: Path, path: Path, data: dict):
     stamp_files(index)
 
 
-def test_current_pins_make_six_areas_and_skip_held_places():
+def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 28
+    assert len(pins) == 36
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
-                    "north-west--mmabatho", "north-west--ottosdal", "north-west--schweizer-reneke"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 28
+                    "north-west--mmabatho", "north-west--ottosdal", "north-west--schweizer-reneke",
+                    "eastern-cape--gqeberha", "eastern-cape--willowvale", "eastern-cape--east-london",
+                    "eastern-cape--ilinge"}
+    assert sum(len(a["pins"]) for a in res["areas"]) == 36
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])
@@ -137,14 +139,15 @@ def test_current_pins_make_six_areas_and_skip_held_places():
     assert "Lebotloane" not in blob and "Moretele" not in blob
     # The pins hold the precincts the police statements came from.
     holders = {pr["name"] for a in res["areas"] for pr in a["precincts"] if pr["holds_pins"]}
-    assert {"Steenberg", "Ottosdal", "Ipelegeng", "Mmabatho"} <= holders
+    assert {"Steenberg", "Ottosdal", "Ipelegeng", "Mmabatho", "Kwadwesi", "Duncan Village", "Bholothwa"} <= holders
+    assert not any(a["pattern_test"] for a in res["areas"] if a["province"] == "Eastern Cape")
 
 
 def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
     first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
-    assert len(first["areas"]) == 6 and len(first["new_since_last_run"]) == 6   # first run: all new
+    assert len(first["areas"]) == 10 and len(first["new_since_last_run"]) == 10   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -159,7 +162,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     # Computing again the same day (compute, then sweep) keeps the flag.
     again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
     assert again["new_since_last_run"] == second["new_since_last_run"]
-    assert len(second["areas"]) == 7
+    assert len(second["areas"]) == 11
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
     assert added[0]["province"] == "North West" and not added[0]["pattern_test"]
@@ -181,7 +184,7 @@ def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     assert ip["signal_id"] not in {p["signal_id"] for p in pins}
     keys = {a["key"] for a in ca.compute_areas(pins)["areas"]}
     assert "north-west--schweizer-reneke" not in keys
-    assert not any("brits" in k for k in keys) and len(keys) == 5
+    assert not any("brits" in k for k in keys) and len(keys) == 9
 
 
 # ── Western Cape scoring stays apart ───────────────────────────────────────────
