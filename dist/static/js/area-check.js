@@ -1,9 +1,10 @@
-/* ZA Divergent — Area check (address radar, Sprints A and B).
+/* ZA Divergent — Area check (address radar, Sprints A, B and C).
  *
  * A visitor picks a suburb or town from a built-in place list (searched on
- * their own device; nothing they type is sent anywhere) or places a point on
- * the map, sets a radius and dates, and sees the reports inside. A home-base
- * button flies back to the place. No outside service, key or account.
+ * their own device; nothing they type there is sent anywhere), types a street
+ * address (Sprint C: sent to the address service in GEOCODER below, only when
+ * they press Search), or places a point on the map, sets a radius and dates,
+ * and sees the reports inside. A home-base button flies back to the place.
  *
  * The top half is plain functions (distance, inside / may-be-inside, date
  * overlap, place search, saved-place checks), tested in Node by
@@ -21,6 +22,21 @@
   var STORE_KEY = 'zad.areaCheck.v1';
   var SA_OFFSET_MS = 2 * 3600 * 1000;       // South Africa: UTC+2, no daylight saving
   var ZA_BOX = { s: -35.2, n: -22.0, w: 16.3, e: 33.0 };
+
+  /* ── Address service settings (Sprint C) ─────────────────────────────────────
+   * The one place that names the service and its key. To switch services, change
+   * `service` (and add an adapter to ADAPTERS below if it is new), then republish.
+   * service: 'off' hides the street-address box and nothing is ever sent.
+   * The key is a browser key: Geoapify only accepts it from the allowed origins
+   * set in its dashboard (forge-os-alpha.vercel.app and localhost). */
+  var GEOCODER = {
+    service: 'geoapify',
+    key: '49cb5c94ff9a424faa28fc6e532216f9',
+    endpoint: 'https://api.geoapify.com/v1/geocode/search',
+    timeoutMs: 6000,         // then: "Search didn't respond"
+    limit: 5,                // never more than five matches, never auto-picked
+    minConfidence: 0.2       // weaker guesses are dropped, not shown
+  };
 
   /* ── Distance and inside / may-be-inside ────────────────────────────────── */
   // Same great-circle formula and earth radius as Leaflet's CRS.Earth.distance.
@@ -191,6 +207,175 @@
     return s;
   }
 
+  /* ── Street-address search (Sprint C) ─────────────────────────────────────── */
+  var LABEL_MAX = 70;
+
+  // Text from the service, made safe for textContent and short: no control
+  // characters, single spaces, cut at a word with an ellipsis.
+  function cleanLabel(s, max) {
+    max = max || LABEL_MAX;
+    s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069]/g, ' ')
+                                 .replace(/\s+/g, ' ').trim();
+    if (s.length <= max) return s;
+    var cut = s.slice(0, max - 1);
+    var sp = cut.lastIndexOf(' ');
+    if (sp > max * 0.6) cut = cut.slice(0, sp);
+    return cut.replace(/[\s,;·-]+$/, '') + '…';
+  }
+
+  // How each kind of match is named, and whether it is a whole area.
+  var KINDS = {
+    building: { word: 'address', area: false },
+    amenity: { word: 'place', area: false },
+    street: { word: 'street', area: false },
+    suburb: { word: 'suburb', area: 'suburb' },
+    district: { word: 'district', area: 'suburb' },
+    postcode: { word: 'postcode area', area: 'postcode area' },
+    city: { word: 'town or city', area: 'town' },
+    county: { word: 'municipality', area: 'municipality' }
+  };
+  // Too big to be a centre: a province or the whole country.
+  var TOO_BIG = { state: 1, country: 1 };
+
+  // "gugulethu" and "guguletu", "ipelegeng" and "ipelegeng": a shared start
+  // of six letters (or the whole shorter word) counts as the same place name.
+  function similarWord(w, h) {
+    var n = 0, m = Math.min(w.length, h.length);
+    while (n < m && w.charAt(n) === h.charAt(n)) n++;
+    return n >= Math.min(6, w.length) && (n === m || n >= 6);
+  }
+
+  function queryContext(query) {
+    var parts = String(query || '').split(',');
+    return parts.length > 1 ? words(parts.slice(1).join(' ')).filter(function (w) { return w.length >= 3; }) : [];
+  }
+
+  var ADAPTERS = {
+    geoapify: {
+      url: function (query, cfg) {
+        return cfg.endpoint + '?text=' + encodeURIComponent(query) +
+          '&filter=countrycode:za&lang=en&format=json&limit=' + (cfg.limit || 5) +
+          '&apiKey=' + encodeURIComponent(cfg.key);
+      },
+      // Geoapify's "json" format gives lat and lon by name; its GeoJSON gives
+      // [lon, lat]. Both are read, so the order cannot be swapped by accident.
+      rows: function (data) {
+        if (data && Array.isArray(data.results)) {
+          return data.results.map(function (r) { return { r: r, lat: r.lat, lng: r.lon }; });
+        }
+        if (data && Array.isArray(data.features)) {
+          return data.features.map(function (f) {
+            var c = f && f.geometry && f.geometry.coordinates;
+            return { r: (f && f.properties) || {}, lat: c && c[1], lng: c && c[0] };
+          });
+        }
+        return null;
+      }
+    }
+  };
+
+  function addressUrl(query, cfg) {
+    cfg = cfg || GEOCODER;
+    var a = ADAPTERS[cfg.service];
+    return a ? a.url(String(query || '').trim(), cfg) : null;
+  }
+
+  // The service's answer -> up to `limit` matches the page can show, or null
+  // when the answer is not one it understands (shown as an error).
+  function parseAddressResults(data, query, cfg) {
+    cfg = cfg || GEOCODER;
+    var a = ADAPTERS[cfg.service];
+    var rows = a ? a.rows(data) : null;
+    if (!rows) return null;
+    var ctx = queryContext(query);
+    var out = [], seen = {};
+    rows.forEach(function (row) {
+      var r = row.r || {};
+      var lat = typeof row.lat === 'string' ? parseFloat(row.lat) : row.lat;
+      var lng = typeof row.lng === 'string' ? parseFloat(row.lng) : row.lng;
+      if (!inZA(lat, lng)) return;                              // outside South Africa
+      if (r.country_code && String(r.country_code).toLowerCase() !== 'za') return;
+      var type = String(r.result_type || 'unknown');
+      if (TOO_BIG[type]) return;
+      var rank = r.rank || {};
+      if (typeof rank.confidence === 'number' && rank.confidence < (cfg.minConfidence || 0)) return;
+      var k = KINDS[type] || { word: 'place', area: false };
+      var name = cleanLabel(r.address_line1 || r.name || r.formatted, 60);
+      if (!name) return;
+      var area = cleanLabel(r.address_line2 || '', 90);
+      if (area === name) area = '';
+      // Geoapify fell back to the suburb or town: the street was not found.
+      var fellBack = /^match_by_(city|postcode|country|state)/.test(String(rank.match_type || ''));
+      var key = (name + '|' + area).toLowerCase();
+      if (seen[key]) return;
+      seen[key] = 1;
+      var hay = words(name + ' ' + area + ' ' + (r.formatted || ''));
+      var missing = ctx.filter(function (w) { return !hay.some(function (h) { return similarWord(w, h); }); });
+      out.push({ name: name, area: area, type: type, kind: k.word, whole: k.area || false,
+                 fellBack: fellBack, missing: missing.length ? missing : null,
+                 lat: lat, lng: lng });
+    });
+    return out.slice(0, cfg.limit || 5);
+  }
+
+  // The centre's name and the line under it once a typed match is picked.
+  function addressPlace(m) {
+    var label = m.whole ? cleanLabel(m.name, 55) + ' (whole ' + m.whole + ')' : cleanLabel(m.name, 70);
+    var kind;
+    if (m.whole) kind = (m.fellBack ? 'Exact spot not found. ' : '') + 'Circle starts at the ' + m.whole + '’s centre.';
+    else if (m.type === 'street') kind = 'A point on this street. Long streets run further.';
+    else if (m.type === 'building') kind = 'Address point found by Geoapify.';
+    else kind = 'Map point found by Geoapify.';
+    return { lat: roundPoint(m.lat), lng: roundPoint(m.lng), label: label, kind: kind };
+  }
+
+  // One search at a time. Each search gets a number; an answer that arrives
+  // after a newer search started (or after cancel) is thrown away. Calls
+  // done(err, matches, seq): err is 'timeout', 'http', 'network' or 'bad'.
+  function makeAddressSearch(opts) {
+    opts = opts || {};
+    var cfg = opts.cfg || GEOCODER;
+    var fetchFn = opts.fetch || (typeof fetch === 'function' ? function (u, o) { return fetch(u, o); } : null);
+    var Abort = opts.AbortController || (typeof AbortController === 'function' ? AbortController : null);
+    var setT = opts.setTimeout || setTimeout, clearT = opts.clearTimeout || clearTimeout;
+    var seq = 0, live = null;
+    function cancel() {
+      seq++;
+      if (live) { clearT(live.timer); if (live.ctl) try { live.ctl.abort(); } catch (e) {} live = null; }
+    }
+    function search(query, done) {
+      cancel();
+      var my = seq;
+      var url = addressUrl(query, cfg);
+      if (!url || !fetchFn) { done('bad', null, my); return my; }
+      var ctl = Abort ? new Abort() : null;
+      var finished = false;
+      function finish(err, list) {
+        if (finished || my !== seq) return;     // late or cancelled: ignored
+        finished = true;
+        if (live) clearT(live.timer);
+        live = null;
+        done(err, list, my);
+      }
+      live = { ctl: ctl, timer: setT(function () {
+        finish('timeout', null);
+        if (ctl) try { ctl.abort(); } catch (e) {}
+      }, cfg.timeoutMs || 6000) };
+      fetchFn(url, { signal: ctl ? ctl.signal : undefined, credentials: 'omit', referrerPolicy: 'strict-origin',
+                     headers: { Accept: 'application/json' } })
+        .then(function (res) {
+          if (!res || !res.ok) { finish('http', null); return null; }
+          return res.json().then(function (data) {
+            var list = parseAddressResults(data, query, cfg);
+            finish(list ? null : 'bad', list);
+          });
+        })
+        .catch(function () { finish('network', null); });
+      return my;
+    }
+    return { search: search, cancel: cancel, busy: function () { return !!live; } };
+  }
+
   /* ── The page ───────────────────────────────────────────────────────────── */
   // bridge: what map.html hands over (map, L, pins, setPinFilter, refreshPins,
   // showSignal, openPanel, closePanel, activePanel, drawerIdx, isPhone,
@@ -209,7 +394,9 @@
       storageNote: $('ac-storage-note'), upto: $('ac-checked-upto'),
       bar: $('ac-bar'), barText: $('ac-bar-text'), barEdit: $('ac-bar-edit'), barAll: $('ac-bar-all'),
       cross: $('ac-cross'), placebar: $('ac-placebar'), placeUse: $('ac-place-use'), placeCancel: $('ac-place-cancel'),
-      home: $('ac-home'), outside: $('sd-outside'), outsideAll: $('sd-outside-all')
+      home: $('ac-home'), outside: $('sd-outside'), outsideAll: $('sd-outside-all'),
+      addr: $('ac-addr'), addrQ: $('ac-addr-q'), addrGo: $('ac-addr-go'), addrStatus: $('ac-addr-status'),
+      addrMatches: $('ac-addr-matches'), addrCancel: $('ac-addr-cancel')
     };
     if (!el.panel || !map || !L) return null;
 
@@ -445,6 +632,7 @@
         b.addEventListener('click', function () {
           el.matches.innerHTML = '';
           el.matchStatus.textContent = '';
+          cancelAddr(true);
           setPlace({ lat: m.lat, lng: m.lng, label: m.name,
                      kind: 'The ' + m.kind + '’s map point' + (m.municipality ? ', ' + m.municipality : '') + '. Not a street address.' });
           el.summary.focus();
@@ -464,8 +652,83 @@
       loadPlaces().then(function (d) { if (d) showMatches(searchPlaces(d, query, 5), query); });
     });
 
+    /* typed street address (Sprint C): sent only when Search is pressed */
+    var cfg = bridge.geocoder || GEOCODER;
+    var addrOn = !!(el.addr && el.addrQ && ADAPTERS[cfg.service] && cfg.key);
+    var addrSearch = addrOn ? makeAddressSearch({ cfg: cfg, fetch: bridge.fetch }) : null;
+    var ADDR_FAIL = 'Search didn\u2019t respond. Try again or place it on the map.';
+    function addrBusy(on) {
+      if (el.addrCancel) el.addrCancel.hidden = !on;
+      if (el.addrGo) { el.addrGo.disabled = on; el.addrGo.textContent = on ? 'Searching\u2026' : 'Search'; }
+    }
+    function cancelAddr(clearStatus) {
+      if (!addrSearch || !addrSearch.busy()) return;
+      addrSearch.cancel(); addrBusy(false);
+      if (clearStatus) el.addrStatus.textContent = '';
+    }
+    function showAddrMatches(list, query) {
+      el.addrMatches.innerHTML = '';
+      if (!list.length) {
+        el.addrStatus.textContent = 'No address found for \u201c' + cleanLabel(query, 60) +
+          '\u201d. Check the spelling, add the suburb or town, or place it on the map.';
+        return;
+      }
+      el.addrStatus.textContent = (list.length === 1 ? '1 match' : list.length + ' matches') +
+        '. Pick the right one, or place it on the map if none fit.';
+      list.forEach(function (m) {
+        var li = doc.createElement('li');
+        var b = doc.createElement('button');
+        b.type = 'button'; b.className = 'ac-match ac-match--addr';
+        var n = doc.createElement('span'); n.className = 'ac-match__name'; n.textContent = m.name;
+        var meta = doc.createElement('span'); meta.className = 'ac-match__meta';
+        meta.textContent = [m.whole ? 'whole ' + m.whole : m.kind, m.area].filter(Boolean).join(' \u00b7 ');
+        b.appendChild(n); b.appendChild(meta);
+        var flags = [];
+        if (m.fellBack) flags.push('Exact spot not found: this is the whole ' + (m.whole || 'area') + '.');
+        if (m.missing) flags.push('Does not mention \u201c' + cleanLabel(m.missing.join(' '), 40) + '\u201d.');
+        if (flags.length) {
+          var f = doc.createElement('span'); f.className = 'ac-match__flag'; f.textContent = flags.join(' ');
+          b.appendChild(f);
+        }
+        b.addEventListener('click', function () {
+          el.addrMatches.innerHTML = '';
+          el.addrStatus.textContent = '';
+          el.matches.innerHTML = ''; el.matchStatus.textContent = '';
+          setPlace(addressPlace(m));
+          el.summary.focus();
+        });
+        li.appendChild(b); el.addrMatches.appendChild(li);
+      });
+    }
+    if (addrOn) {
+      el.addr.hidden = false;
+      el.addr.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var query = cleanLabel(el.addrQ.value, 120);
+        el.addrMatches.innerHTML = '';
+        if (norm(query).length < 3) {
+          cancelAddr(false);
+          el.addrStatus.textContent = 'Type a street and its suburb or town.';
+          return;
+        }
+        el.addrStatus.textContent = 'Searching\u2026';
+        addrBusy(true);
+        addrSearch.search(query, function (err, list) {
+          addrBusy(false);
+          if (err) { el.addrStatus.textContent = ADDR_FAIL; return; }
+          showAddrMatches(list, query);
+        });
+      });
+      el.addrCancel.addEventListener('click', function () {
+        cancelAddr(false);
+        el.addrStatus.textContent = 'Search cancelled. Try again or place it on the map.';
+        el.addrQ.focus();
+      });
+    }
+
     /* placing a point on the map */
     function startPlacing() {
+      cancelAddr(true);
       placing = true;
       if (bridge.activePanel() === 'area') bridge.closePanel();
       el.cross.hidden = false; el.placebar.hidden = false; el.bar.hidden = true;
@@ -562,6 +825,7 @@
 
     return {
       onPanel: function (name) {
+        if (name !== 'area') cancelAddr(true);
         if (name === 'area') {
           loadPlaces();
           if (!state.place && !bridge.isPhone()) setTimeout(function () { el.q.focus(); }, 50);
@@ -580,6 +844,8 @@
     distanceM: distanceM, classify: classify, saDay: saDay, addDays: addDays, validDay: validDay,
     pinDays: pinDays, rangeFor: rangeFor, dateMatch: dateMatch, norm: norm,
     searchPlaces: searchPlaces, parseSaved: parseSaved, inZA: inZA, roundPoint: roundPoint,
-    summaryText: summaryText, fmtRadius: fmtRadius, fmtSpan: fmtSpan, mount: mount
+    summaryText: summaryText, fmtRadius: fmtRadius, fmtSpan: fmtSpan, mount: mount,
+    GEOCODER: GEOCODER, cleanLabel: cleanLabel, addressUrl: addressUrl,
+    parseAddressResults: parseAddressResults, addressPlace: addressPlace, makeAddressSearch: makeAddressSearch
   };
 });
