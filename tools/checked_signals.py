@@ -113,7 +113,13 @@ _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f
 # tight here: they cut off Cape Agulhas, Knysna and Plettenberg Bay.)
 PROVINCE_BOUNDS = {
     "Western Cape": {"lat": (-34.90, -30.40), "lng": (17.70, 24.30)},
+    "North West": {"lat": (-28.10, -24.50), "lng": (22.50, 28.40)},
 }
+
+# The Sprint 5 pattern test (private/sprint5/predictions.md) is about Western
+# Cape killings only. Pins from any other province are published on the map but
+# never feed its predictions, scoring, thresholds or the arrest-gap comparison.
+PATTERN_TEST_PROVINCE = "Western Cape"
 
 
 class CheckedSignalError(ValueError):
@@ -351,6 +357,18 @@ def load_index(index_path: pathlib.Path = INDEX_PATH) -> CheckedSet:
     _reject_duplicates(cs.signals)
     validate_links(cs)
     return cs
+
+
+def provinces(cs: "CheckedSet") -> dict[str, str]:
+    """signal_id -> the province its batch file declares."""
+    return {s["signal_id"]: b.province for b in cs.batches for s in b.signals}
+
+
+def pattern_test_pins(cs: "CheckedSet") -> list[dict]:
+    """The active pins the Western Cape pattern test may use. Everything the
+    Sprint 5 runs count must come from here, never from cs.active."""
+    prov = provinces(cs)
+    return [s for s in cs.active if prov.get(s["signal_id"]) == PATTERN_TEST_PROVINCE]
 
 
 def _is_url(v) -> bool:

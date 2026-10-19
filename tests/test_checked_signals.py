@@ -1,7 +1,7 @@
 """Sprint 1: hand-checked pins a rebuild can't drop (tools/checked_signals.py).
 
 Built on the standalone-signal and drawer tests: same fresh temp database,
-same committed Western Cape batches.
+same committed batches (24 Western Cape pins, then 4 North West pins).
 """
 from __future__ import annotations
 
@@ -19,6 +19,9 @@ sys.path.insert(0, str(ROOT))
 
 SIGNALS_DIR = ROOT / "docs" / "signals"
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
+WC_PINS = 24          # Western Cape: the Sprint 5 pattern-test pins
+NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
+ALL_PINS = WC_PINS + NW_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -84,14 +87,16 @@ def _markers(dist: Path) -> list[dict]:
 
 # ── The committed files ────────────────────────────────────────────────────────────
 
-def test_index_loads_all_24_western_cape_pins_in_order():
+def test_index_loads_all_28_pins_in_order():
     from tools.checked_signals import load_index, stamp_files
 
     cs = load_index()
     assert [b.path.name for b in cs.batches] == [
         "western-cape-murders-2026-10-18.json",
-        "western-cape-murders-2026-10-18-batch2.json"]
-    assert len(cs.signals) == 24 and len(cs.active) == 24 and cs.retracted == {}
+        "western-cape-murders-2026-10-18-batch2.json",
+        "north-west-killings-2026-10-19.json"]
+    assert [b.province for b in cs.batches] == ["Western Cape", "Western Cape", "North West"]
+    assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
         c = s["metadata"]["checked"]
@@ -101,7 +106,34 @@ def test_index_loads_all_24_western_cape_pins_in_order():
 
 # ── Done-when criteria ─────────────────────────────────────────────────────────────
 
-def test_empty_db_one_import_builds_all_24_markers(tmp_path, monkeypatch):
+def test_north_west_pins_stay_out_of_the_pattern_test():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces, PATTERN_TEST_PROVINCE
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc = pattern_test_pins(cs)
+    assert PATTERN_TEST_PROVINCE == "Western Cape"
+    assert len(wc) == WC_PINS and all(prov[s["signal_id"]] == "Western Cape" for s in wc)
+    nw = [s for s in cs.active if prov[s["signal_id"]] == "North West"]
+    assert len(nw) == NW_PINS and not ({s["signal_id"] for s in nw} & {s["signal_id"] for s in wc})
+    for s in nw:
+        assert -28.1 <= s["lat"] <= -24.5 and 22.5 <= s["lng"] <= 28.4   # really in North West
+        assert "approx." in s["title"]
+        assert not s["metadata"].get("links")
+
+
+def test_north_west_batch_holds_back_lebotloane():
+    data = json.loads((SIGNALS_DIR / "north-west-killings-2026-10-19.json").read_text(encoding="utf-8"))
+    assert "Sprint 5" in data["scope"]
+    assert all("Lebotloane" not in s["title"] for s in data["signals"])
+    assert any("Lebotloane" in h["place"] for h in data["held_back"])
+    doornpan = next(s for s in data["signals"] if s["title"].startswith("Doornpan"))
+    area = doornpan["metadata"]["checked"]["admin_area"]
+    assert area["municipality"] is None and area["district"] is None   # not stated as settled
+    assert len(area["candidates"]) == 2
+
+
+def test_empty_db_one_import_builds_all_28_markers(tmp_path, monkeypatch):
     from tools.checked_signals import run_import
 
     conn, db_file = _fresh_db(tmp_path, monkeypatch)
@@ -109,11 +141,13 @@ def test_empty_db_one_import_builds_all_24_markers(tmp_path, monkeypatch):
     run_import(db_file, write=True, out=lambda m: None)
     dist = _publish_to(tmp_path, monkeypatch, db_file)
     markers = _markers(dist)
-    assert len(markers) == 24
+    assert len(markers) == ALL_PINS
+    regions = [m["region"] for m in markers]
+    assert regions.count("Western Cape") == WC_PINS and regions.count("North West") == NW_PINS
     conn = sqlite3.connect(str(db_file))
     assert conn.execute("SELECT COUNT(*) FROM signals WHERE source_type = 'checked' "
                         "AND status = 'reviewed' AND gravity_score IS NULL "
-                        "AND processed_at IS NOT NULL").fetchone()[0] == 24
+                        "AND processed_at IS NOT NULL").fetchone()[0] == ALL_PINS
     assert conn.execute("SELECT COUNT(*) FROM signal_actors").fetchone()[0] == 0
 
 
@@ -122,7 +156,7 @@ def test_dry_run_writes_nothing(tmp_path, monkeypatch):
 
     conn, db_file = _fresh_db(tmp_path, monkeypatch)
     actions = run_import(db_file, write=False, out=lambda m: None)
-    assert {a.kind for a in actions} == {"insert"} and len(actions) == 24
+    assert {a.kind for a in actions} == {"insert"} and len(actions) == ALL_PINS
     assert conn.execute("SELECT COUNT(*) FROM signals").fetchone()[0] == 0
 
 
@@ -191,13 +225,13 @@ def test_retracted_pin_disappears_with_reason_kept(tmp_path, monkeypatch):
     from tools.checked_signals import load_index, import_checked, verify, CheckedSignalError
 
     conn, db_file = _fresh_db(tmp_path, monkeypatch)
-    import_checked(conn, load_index(), write=True)       # live state: 24 pins
+    import_checked(conn, load_index(), write=True)       # live state: 28 pins
     index = _copy_signals(tmp_path)
     reason = "Test: police later said this was not a murder."
     _edit_batch(index, 0, lambda d: d["retractions"].append(
         {"signal_id": EPPING, "reason": reason, "retracted_at": "2026-10-20T08:00:00Z"}))
     cs = load_index(index)
-    assert len(cs.active) == 23
+    assert len(cs.active) == ALL_PINS - 1
     assert any("retracted but still published" in p for p in verify(conn, cs))
     acts = {a.signal_id: a.kind for a in import_checked(conn, cs, write=True)}
     assert acts[EPPING] == "withdraw"
@@ -211,7 +245,7 @@ def test_retracted_pin_disappears_with_reason_kept(tmp_path, monkeypatch):
     conn.close()
     dist = _publish_to(tmp_path, monkeypatch, db_file, index=index)
     ids = {m["signal_id"] for m in _markers(dist)}
-    assert len(ids) == 23 and EPPING not in ids
+    assert len(ids) == ALL_PINS - 1 and EPPING not in ids
     # A retraction must name a pin in its own batch, with a reason.
     _edit_batch(index, 0, lambda d: d["retractions"].__setitem__(0, {"signal_id": EPPING, "reason": " ",
                                                                      "retracted_at": "2026-10-20"}))
@@ -227,7 +261,7 @@ def test_after_build_check_catches_a_dropped_marker(tmp_path):
     html = tmp_path / "index.html"
     html.write_text("<script>\nvar RAW = " + json.dumps(markers) + ";\n</script>")
     problems = count_markers_problems(html, cs)
-    assert any("fewer than the 24" in p for p in problems)
+    assert any(f"fewer than the {ALL_PINS}" in p for p in problems)
     assert any(cs.active[0]["signal_id"][:8] in p for p in problems)
 
 
@@ -348,7 +382,7 @@ def test_mega_ingest_imports_before_publishing(tmp_path, monkeypatch):
 
     monkeypatch.setattr(subprocess, "run", fake_run)
     assert mi.run_publish_deploy()["status"] == "success"
-    assert len(calls) == 1 and calls[0][1] == 24      # pins were in before publish.py ran
+    assert len(calls) == 1 and calls[0][1] == ALL_PINS   # pins were in before publish.py ran
 
     import tools.checked_signals as cmod
 
@@ -392,9 +426,9 @@ def test_local_map_checked_lens(tmp_path, monkeypatch):
                 for f in r.get_json()["features"]}
 
     checked = ids("checked")
-    assert len(checked) == 24 and "live-1" not in checked
+    assert len(checked) == ALL_PINS and "live-1" not in checked
     assert ids("live") == {"live-1"}
-    assert len(ids("all")) == 25
+    assert len(ids("all")) == ALL_PINS + 1
     page = client.get("/map?lens=checked")
     assert page.status_code == 200 and b"lens=checked" in page.data
 
@@ -406,7 +440,7 @@ def test_decontamination_keeps_checked_type(tmp_path, monkeypatch):
     conn, _ = _fresh_db(tmp_path, monkeypatch)
     import_checked(conn, load_index(), write=True)
     seed_source_type(conn, "signals")
-    assert conn.execute("SELECT COUNT(*) FROM signals WHERE source_type = 'checked'").fetchone()[0] == 24
+    assert conn.execute("SELECT COUNT(*) FROM signals WHERE source_type = 'checked'").fetchone()[0] == ALL_PINS
 
 
 def test_old_seed_command_is_a_shortcut(tmp_path, monkeypatch, capsys):
@@ -418,7 +452,7 @@ def test_old_seed_command_is_a_shortcut(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", ["seed", str(batch), "--write", "--db", str(db_file)])
     assert seed_mod.main() == 0
     n = sqlite3.connect(str(db_file)).execute("SELECT COUNT(*) FROM signals").fetchone()[0]
-    assert n == 24                                   # one command now loads both batches
+    assert n == ALL_PINS                             # one command now loads every batch
     stray = tmp_path / "stray.json"
     stray.write_text(batch.read_text())
     monkeypatch.setattr(sys, "argv", ["seed", str(stray), "--db", str(db_file)])

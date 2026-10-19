@@ -1853,7 +1853,7 @@
 
   function fillDrawer(m) {
     closeExtGate({ restoreFocus: false });
-    var kicker = [m.stream_label || m.stream || '', m.checked ? 'Hand-checked' : ''].filter(Boolean).join(' \u00b7 ');
+    var kicker = [m.stream_label || m.stream || '', m.checked ? 'Hand-checked' : '', m.region || ''].filter(Boolean).join(' \u00b7 ');
     document.getElementById('sd-kicker').textContent = kicker;
     document.getElementById('sd-title').textContent = m.title || '';
     document.getElementById('sd-story').textContent = m.story || m.summary || '';
@@ -2185,6 +2185,7 @@
         '<div class="wire-meta">' +
           '<span class="wire-sig ' + band.cls + '">' + escHtml(band.label) + '</span>' +
           '<span class="wire-source">' + escHtml(String(m.source || '').toUpperCase()) + '</span>' +
+          (m.region ? '<span class="wire-source wire-region">' + escHtml(String(m.region).toUpperCase()) + '</span>' : '') +
         '</div>' +
       '</div>' +
     '</div>';

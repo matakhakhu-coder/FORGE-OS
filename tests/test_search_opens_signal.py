@@ -194,7 +194,7 @@ def test_built_search_index_finds_asanda_by_either_name():
     docs = json.loads((ROOT / "dist/search-index.json").read_text(encoding="utf-8"))
     doc = next(d for d in docs if d.get("signal") == ASANDA)
     assert doc["title"].startswith("Asanda Village")
-    assert doc["aliases"] == "Zola Village"
+    assert doc["aliases"] == "Zola Village Western Cape"   # alias, then the region
     for page in ["index.html", "about.html"]:
         t = (ROOT / "dist" / page).read_text(encoding="utf-8")
         assert "fields: ['title', 'aliases']" in t, page

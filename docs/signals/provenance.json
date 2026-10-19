@@ -344,6 +344,62 @@
       ],
       "independence": "single_report",
       "note": "One report. The police statement, plus comment from the community."
+    },
+    "c64476ff-5b23-4307-944c-20c2a1a99835": {
+      "statement_from": "SAPS North West: a 7 Oct statement",
+      "spokesperson": [
+        "Sgt Kelebogile Morake"
+      ],
+      "other_voices": [
+        "DA: Carin Visser (Klerksdorp Record) and Freddy Sonakile (Taung Daily News)",
+        "VF Plus: Dr Corné Mulder (Klerksdorp Record)"
+      ],
+      "outlets": [
+        "Taung Daily News",
+        "Klerksdorp Record",
+        "Platinum Weekly"
+      ],
+      "independence": "partly_independent",
+      "note": "Taung Daily News (8 Oct) carries the SAPS statement, and Platinum Weekly quotes police on the court case. The Klerksdorp Record and the DA add details police did not give: the time, the iron bar, the stolen handbag and phone, and the slow police response. The reports differ on the accused's ages and the court. OFM also covered it, but its page could not be read, so it is not listed."
+    },
+    "318c89be-efbe-4c0d-a175-f423dcda6cc5": {
+      "statement_from": "Police, quoted by Taung Daily News (no SAPS statement found)",
+      "spokesperson": [
+        "Sgt Kelebogile Morake"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Taung Daily News"
+      ],
+      "independence": "single_report",
+      "note": "One Setswana report. It quotes police, but no SAPS statement was found and the police station is not named. The community police forum arrest and the court dates rest on this report alone."
+    },
+    "64b7adb5-4fc2-4184-b932-5ea0082259d7": {
+      "statement_from": "SAPS North West: an 18 Oct statement covering both Mmabatho killings",
+      "spokesperson": [
+        "Adele Myburgh"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "EWN",
+        "SABC News",
+        "NovaNews"
+      ],
+      "independence": "same_statement",
+      "note": "All three carry the same 18 Oct SAPS statement, which also covers the Modimola killing. SABC adds a quote from the police spokesperson and says Sunday rather than Saturday. No source outside the police."
+    },
+    "efbf9e6d-2d5d-4591-8d0e-11294babd050": {
+      "statement_from": "SAPS North West: an 18 Oct statement covering both Mmabatho killings",
+      "spokesperson": [
+        "Adele Myburgh"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "NovaNews",
+        "EWN"
+      ],
+      "independence": "same_statement",
+      "note": "Both carry the 18 Oct SAPS statement that also covers the Seweding killing. Police say the two are unrelated, so the pins are separate and not linked."
     }
   }
 }

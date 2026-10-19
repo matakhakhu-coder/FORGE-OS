@@ -13,6 +13,11 @@
       "file": "western-cape-murders-2026-10-18-batch2.json",
       "province": "Western Cape",
       "signals": 19
+    },
+    {
+      "file": "north-west-killings-2026-10-19.json",
+      "province": "North West",
+      "signals": 4
     }
   ]
 }

@@ -483,6 +483,10 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             **checked,
             # Where the reporting comes from (Sprint 4), checked pins only.
             "provenance":    _provenance_for(r["signal_id"]) if checked["checked"] else None,
+            # Province of the pin's batch file ("Western Cape", "North West"),
+            # checked pins only. Shown on the drawer and the Wire so the
+            # Western Cape pattern-test pins are never confused with others.
+            "region":        _region_for(r["signal_id"]) if checked["checked"] else None,
         })
     # Same publish time (a whole batch goes live at once): put the incidents
     # in the order they happened, newest first, not in signal-ID order.
@@ -518,6 +522,21 @@ def _load_provenance() -> dict:
         except (OSError, ValueError):
             _PROVENANCE_CACHE = {}
     return _PROVENANCE_CACHE
+
+
+_REGION_CACHE: dict | None = None
+
+
+def _region_for(signal_id: str) -> str | None:
+    """Province of a checked pin, from docs/signals/index.json."""
+    global _REGION_CACHE
+    if _REGION_CACHE is None:
+        try:
+            from tools.checked_signals import load_index, provinces
+            _REGION_CACHE = provinces(load_index(CHECKED_INDEX))
+        except Exception:
+            _REGION_CACHE = {}
+    return _REGION_CACHE.get(signal_id)
 
 
 def _provenance_for(signal_id: str) -> dict | None:
@@ -1249,6 +1268,8 @@ def _build_dist(
         if item["kind"] == "signal":
             entry["summary"] = item["summary"]
             entry["source"]  = item["source"]
+            if item.get("region"):
+                entry["region"] = item["region"]
             if item["lat"] and item["lng"]:
                 entry["geo"] = {"lat": item["lat"], "lng": item["lng"]}
         else:
@@ -1337,8 +1358,9 @@ def _build_dist(
             "kind": "signal",
             **_signal_search_target(s),
         }
-        if s.get("search_aliases"):
-            doc["aliases"] = " ".join(s["search_aliases"])
+        aliases = list(s.get("search_aliases") or []) + ([s["region"]] if s.get("region") else [])
+        if aliases:
+            doc["aliases"] = " ".join(aliases)
         search_docs.append(doc)
     for a in articles:
         search_docs.append({

@@ -1,8 +1,64 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "18 Oct 2026 23:33 UTC",
+  "generated_at": "19 Oct 2026 00:44 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T00:50:00Z",
+      "summary": "SAPS says a 37-year-old man was stabbed at Modimola Village, Mmabatho, at about 04:00 on Saturday 17 October. A woman told police a 22-year-old family member came home at about 03:00 and broke the window of the room wher...",
+      "source": "NOVANEWS",
+      "region": "North West",
+      "geo": {
+        "lat": -25.87135,
+        "lng": 25.44809
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend's brother, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T00:50:00Z",
+      "summary": "SAPS says a 37-year-old man died in Seweding Village, Mmabatho, in the early hours of Saturday 17 October. Police called to a complaint at about 00:45 found his body, and paramedics declared him dead. Police say prelimin...",
+      "source": "EWN",
+      "region": "North West",
+      "geo": {
+        "lat": -25.8625,
+        "lng": 25.58361
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T00:50:00Z",
+      "summary": "Taung Daily News reports that Atlholang Theteletsa, 22, was found with multiple stab wounds lying on Kgaka Street in Ipelegeng after 20:00 on Friday 9 October, and that paramedics confirmed he had died at the scene, acco...",
+      "source": "TAUNG DAILY NEWS",
+      "region": "North West",
+      "geo": {
+        "lat": -27.20251,
+        "lng": 25.29221
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T00:50:00Z",
+      "summary": "SAPS says Hannetjie van Zyl, 55, was attacked while opening the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October. Her husband took her to hospital in Klerksdorp, where police say she died. The ...",
+      "source": "TAUNG DAILY NEWS",
+      "region": "North West",
+      "geo": {
+        "lat": -26.8781,
+        "lng": 25.8325
+      }
+    },
     {
       "kind": "signal",
       "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct",
@@ -11,6 +67,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive, Tafelsig, where a body was found burning; it was burned beyond recognition, a murder case was registered and a post-mortem will iden...",
       "source": "EWN",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.062,
         "lng": 18.639
@@ -24,6 +81,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Lwandle police are investigating a murder after a 35-year-old man's body was found still burning at Christmas Tinto Park, Asanda Village, Strand, at about 06:30 on Friday 16 October; police found stab wounds to his upper...",
       "source": "DISTRICT MAIL (NOVANEWS)",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.1077,
         "lng": 18.8578
@@ -37,6 +95,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the shooting is gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the p...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.9907,
         "lng": 18.5354
@@ -50,6 +109,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Khayelitsha police are investigating a murder after a 25-year-old man was shot dead by gunmen in Trekker Road, near an Engen garage, at about 17:00 on Tuesday 13 October (Daily Voice, quoting police spokesperson Ndakhe G...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.04059,
         "lng": 18.66742
@@ -63,6 +123,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Two men aged 20 and 25 were shot dead and a third wounded while sitting in a parked vehicle on Teenage Vuso Street, Zone 5, Langa, on Monday evening 12 October; police registered two counts of murder and one of attempted...",
       "source": "VOICE OF THE CAPE",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.9469,
         "lng": 18.5318
@@ -76,6 +137,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Police say a 52-year-old man was stabbed in the chest with a knife during an argument with his wife at their house in Green Haven, Wolwedans, Great Brak River, just before 16:00 on Sunday 11 October, and was declared dea...",
       "source": "MOSSEL BAY ADVERTISER",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.03778,
         "lng": 22.20917
@@ -89,6 +151,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Mfuleni police responded to a shooting in Reindeer Street, Wesbank, at about 20:10 on Saturday 10 October: Lincoln Jonathan, 14, a Grade 8 learner at Silversands High School, died at the scene and a Grade 11 learner was ...",
       "source": "TYGERBURGER",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.9637,
         "lng": 18.659
@@ -102,6 +165,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Da Gamaskop police are investigating a murder after a man's body with stab wounds was found in bushes in an open field between D'Almeida and Albert Luthuli Park, near Mountain View, at about 10:50 on Thursday 8 October. ...",
       "source": "MOSSEL BAY ADVERTISER",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.175,
         "lng": 22.10167
@@ -115,6 +179,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 34-year-old man was killed in a shooting on OR Tambo Road, Imizamo Yethu, Hout Bay, at about 19:19 on Wednesday 7 October; Hout Bay police registered a murder case and made no arrests (Sentinel News, quoting police spo...",
       "source": "SENTINEL NEWS",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.02757,
         "lng": 18.36167
@@ -128,6 +193,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 31-year-old man was shot dead in St Bernard Street, St Montague Village, on Wednesday 7 October; Steenberg police responded at about 11:45 and detectives are investigating a murder case (Southern Mail, quoting police s...",
       "source": "SOUTHERN MAIL",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.07098,
         "lng": 18.49354
@@ -141,6 +207,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 43-year-old man was shot multiple times in Jakkalsvlei Avenue, Bonteheuwel, at about 23:06 on Tuesday 6 October and declared dead at the scene; police opened a murder case and made no arrests (Daily Voice, quoting poli...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.94476,
         "lng": 18.54334
@@ -154,6 +221,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Two men were shot dead and a woman wounded in Muir Court, Depsiton Crescent, Lavender Hill, shortly after 08:00 on Tuesday 6 October; the men were declared dead at the scene and the suspects fled (Southern Mail, quoting ...",
       "source": "SOUTHERN MAIL",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.07326,
         "lng": 18.4877
@@ -167,6 +235,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 31-year-old man was shot dead in his vehicle on Belgravia Road, outside Heatherdale Primary School, on Tuesday morning 6 October after reportedly dropping his child at school. Police say he had multiple gunshot wounds,...",
       "source": "CAPE TOWN ETC",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.97252,
         "lng": 18.51552
@@ -180,6 +249,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Khayelitsha police registered two counts of murder after two men aged 36 and 39 were shot dead at about 04:30 on Tuesday 6 October in Masikhanye, Site B; no arrests were made (City Vision, quoting police spokesperson Wes...",
       "source": "CITY VISION",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.02305,
         "lng": 18.66632
@@ -193,6 +263,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "A 20-year-old man was found dead with injuries to his neck along Bagzane Street, N2 Gateway, Delft, on the morning of Sunday 4 October; police opened a murder case (police spokesperson Ndakhe Gwala, via Daily Voice and T...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.96394,
         "lng": 18.63438
@@ -206,6 +277,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Police found a 17-year-old girl dead on a bed with head injuries at a house in Kliplokasie on Volmoed farm, outside Oudtshoorn, on Saturday night 3 October, and launched a murder investigation; a 26-year-old man was arre...",
       "source": "CAPE ARGUS",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.65278,
         "lng": 22.0875
@@ -219,6 +291,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Delft police registered a double murder case after two men were shot dead in Camdeboo Street, Anceba Court, Voorbrug, at about 18:40 on Saturday 3 October; both were declared dead at the scene and the motive is unknown (...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.9695,
         "lng": 18.6417
@@ -232,6 +305,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "James Henn, 28, was stabbed in the neck during an alleged argument in Nasson Street, Hawston, at about 23:00 on Friday 2 October and was declared dead at the scene. Hermanus police registered a murder case and three susp...",
       "source": "DAILY VOICE",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.38815,
         "lng": 19.13882
@@ -245,6 +319,7 @@
       "published_at": "2026-10-18T18:50:00Z",
       "summary": "Police say a 43-year-old man sitting in a white Hyundai truck was pulled out by two men and shot dead in front of a premises on Trampoline Street, Beacon Valley, at 11:10 on Thursday 1 October; the suspects took his fire...",
       "source": "PLAINSMAN",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.04048,
         "lng": 18.62456
@@ -258,6 +333,7 @@
       "published_at": "2026-10-18T17:28:41Z",
       "summary": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two sus...",
       "source": "CAPE TIMES (IOL)",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.93709,
         "lng": 18.53663
@@ -271,6 +347,7 @@
       "published_at": "2026-10-18T17:28:41Z",
       "summary": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police re...",
       "source": "WORCESTER STANDARD",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.652,
         "lng": 19.502
@@ -284,6 +361,7 @@
       "published_at": "2026-10-18T17:28:41Z",
       "summary": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the mot...",
       "source": "SABC NEWS",
+      "region": "Western Cape",
       "geo": {
         "lat": -33.97157,
         "lng": 18.51769
@@ -297,6 +375,7 @@
       "published_at": "2026-10-18T17:28:41Z",
       "summary": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit...",
       "source": "CAPE ARGUS (IOL)",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.06083,
         "lng": 18.48444
@@ -310,6 +389,7 @@
       "published_at": "2026-10-18T17:28:41Z",
       "summary": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an alt...",
       "source": "MOSSEL BAY ADVERTISER",
+      "region": "Western Cape",
       "geo": {
         "lat": -34.1762,
         "lng": 22.07302

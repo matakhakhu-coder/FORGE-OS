@@ -135,8 +135,10 @@ def build_coding() -> list[dict]:
     texts = _load("article_text.json")
     seed = {r["id"]: r for r in _load("coding_seed.json")}
     prov = load_provenance()
+    checked = cs.load_index()
+    province = cs.provinces(checked)
     out = []
-    for s in cs.load_index().active:
+    for s in checked.active:
         sid = s["signal_id"]
         chk = s["metadata"]["checked"]
         f = seed.get(sid[:8]) or {}
@@ -155,6 +157,9 @@ def build_coding() -> list[dict]:
         out.append({
             "signal_id": sid,
             "title": s["title"],
+            "province": province.get(sid),
+            # Only Western Cape pins belong to the Sprint 5 pattern test.
+            "in_pattern_test": province.get(sid) == cs.PATTERN_TEST_PROVINCE,
             "incident_start": chk["incident_start"],
             "incident_precision": chk["incident_precision"],
             "incident_event": chk["incident_event"],
@@ -171,7 +176,9 @@ def build_coding() -> list[dict]:
             "attributed_motive": motive(f),
             "arrests": {
                 "status": arrests,   # yes / none / null = not stated
-                "first_reported": first_arrest_report(chk["sources"], texts) if arrests == "yes" else None,
+                # A hand-coded date wins: the text scan only reads English.
+                "first_reported": (f.get("arrest_first_reported")
+                                   or first_arrest_report(chk["sources"], texts)) if arrests == "yes" else None,
             },
             "reported_at": chk["reported_at"],
             "report_dates": sorted({x["report_date"] for x in srcs if x["report_date"]}),
@@ -292,8 +299,15 @@ def cmd_wayback(a) -> int:
     if os.environ.get("FORGE_WAYBACK_APPROVED") != "1":
         print("[evidence] refused: --submit needs FORGE_WAYBACK_APPROVED=1 (the user's go-ahead).")
         return 2
+    # Keep the earlier backup: links already saved are skipped, new results are
+    # added to wayback.json rather than replacing it.
+    path = PRIVATE / "wayback.json"
+    prior = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    saved = {d["url"] for d in prior if d.get("ok")}
+    todo = [u for u in urls if u not in saved]
+    print(f"[evidence] {len(urls) - len(todo)} already archived, {len(todo)} to send")
     done = []
-    for u in urls:
+    for u in todo:
         try:
             req = urllib.request.Request("https://web.archive.org/save/" + u,
                                          headers={"User-Agent": "FORGE-OS source backup"})
@@ -303,8 +317,10 @@ def cmd_wayback(a) -> int:
         except Exception as exc:  # report, keep going
             done.append({"url": u, "error": str(exc), "ok": False})
         time.sleep(5)
-    (PRIVATE / "wayback.json").write_text(json.dumps(done, indent=2), encoding="utf-8")
-    print(f"[evidence] archived {sum(d['ok'] for d in done)}/{len(urls)}")
+    new_urls = {d["url"] for d in done}
+    merged = [d for d in prior if d["url"] not in new_urls] + done
+    path.write_text(json.dumps(merged, indent=2), encoding="utf-8")
+    print(f"[evidence] archived {sum(d['ok'] for d in done)}/{len(todo)} new links")
     return 0
 
 
