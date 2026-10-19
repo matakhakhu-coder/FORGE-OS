@@ -361,6 +361,10 @@
   }
   .md-ticker__scroll {
     display: flex;
+    /* As wide as its content, so translateX(-50%) moves exactly one copy of
+       the list. Without this the strip was only as wide as the screen and
+       crawled 2.7 px/s on a phone, snapping back after a headline or two. */
+    width: max-content;
     white-space: nowrap;
     animation: ticker-scroll var(--ticker-speed, 45s) linear infinite;
   }
@@ -1050,7 +1054,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="19 Oct 2026 05:17 UTC" title="19 Oct 2026 05:17 UTC">19 Oct 2026 05:17 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="19 Oct 2026 05:46 UTC" title="19 Oct 2026 05:46 UTC">19 Oct 2026 05:46 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1433,39 +1437,40 @@
         
         
         
-        <a class="md-ticker__item" href="index.html?signal=335b265d" data-signal="335b265d">Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=a3d91502" data-signal="a3d91502">Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mo</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=335b265d" data-signal="335b265d">Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=417613e8" data-signal="417613e8">Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=a3d91502" data-signal="a3d91502">Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=ba7824e3" data-signal="ba7824e3">Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty polic</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=417613e8" data-signal="417613e8">Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=a86ff098" data-signal="a86ff098">Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=ba7824e3" data-signal="ba7824e3">Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=fd2a6fae" data-signal="fd2a6fae">Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=a86ff098" data-signal="a86ff098">Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=32b05eda" data-signal="32b05eda">Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=fd2a6fae" data-signal="fd2a6fae">Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=578b93c8" data-signal="578b93c8">Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-ou</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=32b05eda" data-signal="32b05eda">Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=efbf9e6d" data-signal="efbf9e6d">Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oc</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=578b93c8" data-signal="578b93c8">Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=64b7adb5" data-signal="64b7adb5">Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=efbf9e6d" data-signal="efbf9e6d">Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=318c89be" data-signal="318c89be">Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=64b7adb5" data-signal="64b7adb5">Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend&#39;s brother, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=c64476ff" data-signal="c64476ff">Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm ga</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=318c89be" data-signal="318c89be">Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=19a71c43" data-signal="19a71c43">Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burni</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=c64476ff" data-signal="c64476ff">Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=0d2ac747" data-signal="0d2ac747">Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=19a71c43" data-signal="19a71c43">Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
+        
+        <a class="md-ticker__item" href="index.html?signal=0d2ac747" data-signal="0d2ac747">Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=0e974ffd" data-signal="0e974ffd">Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=a7c9880f" data-signal="a7c9880f">Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=7acad00a" data-signal="7acad00a">Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=7acad00a" data-signal="7acad00a">Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=d09da7da" data-signal="d09da7da">Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1475,17 +1480,17 @@
         
         <a class="md-ticker__item" href="index.html?signal=03459a76" data-signal="03459a76">Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=530a09b2" data-signal="530a09b2">St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=530a09b2" data-signal="530a09b2">St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=2a848e46" data-signal="2a848e46">Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=821f2edc" data-signal="821f2edc">Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=332d8ab4" data-signal="332d8ab4">Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=332d8ab4" data-signal="332d8ab4">Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=0c5e795f" data-signal="0c5e795f">Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=21b2a9b0" data-signal="21b2a9b0">N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries,</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=21b2a9b0" data-signal="21b2a9b0">N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=582ea2d7" data-signal="582ea2d7">Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1493,7 +1498,7 @@
         
         <a class="md-ticker__item" href="index.html?signal=fdb570fb" data-signal="fdb570fb">Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=0f037fc3" data-signal="0f037fc3">Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 O</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=0f037fc3" data-signal="0f037fc3">Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=dbf90d51" data-signal="dbf90d51">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1513,39 +1518,39 @@
         <span class="md-ticker__sep">&bull;</span>
         
         
-        <a class="md-ticker__item" href="index.html?signal=335b265d" data-signal="335b265d" tabindex="-1">Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=335b265d" data-signal="335b265d" tabindex="-1">Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=a3d91502" data-signal="a3d91502" tabindex="-1">Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mo</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=a3d91502" data-signal="a3d91502" tabindex="-1">Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=417613e8" data-signal="417613e8" tabindex="-1">Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=417613e8" data-signal="417613e8" tabindex="-1">Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=ba7824e3" data-signal="ba7824e3" tabindex="-1">Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty polic</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=ba7824e3" data-signal="ba7824e3" tabindex="-1">Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=a86ff098" data-signal="a86ff098" tabindex="-1">Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=a86ff098" data-signal="a86ff098" tabindex="-1">Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=fd2a6fae" data-signal="fd2a6fae" tabindex="-1">Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=fd2a6fae" data-signal="fd2a6fae" tabindex="-1">Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=32b05eda" data-signal="32b05eda" tabindex="-1">Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=32b05eda" data-signal="32b05eda" tabindex="-1">Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=578b93c8" data-signal="578b93c8" tabindex="-1">Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-ou</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=578b93c8" data-signal="578b93c8" tabindex="-1">Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=efbf9e6d" data-signal="efbf9e6d" tabindex="-1">Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oc</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=efbf9e6d" data-signal="efbf9e6d" tabindex="-1">Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=64b7adb5" data-signal="64b7adb5" tabindex="-1">Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=64b7adb5" data-signal="64b7adb5" tabindex="-1">Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend&#39;s brother, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=318c89be" data-signal="318c89be" tabindex="-1">Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=318c89be" data-signal="318c89be" tabindex="-1">Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=c64476ff" data-signal="c64476ff" tabindex="-1">Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm ga</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=c64476ff" data-signal="c64476ff" tabindex="-1">Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=19a71c43" data-signal="19a71c43" tabindex="-1">Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burni</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=19a71c43" data-signal="19a71c43" tabindex="-1">Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=0d2ac747" data-signal="0d2ac747" tabindex="-1">Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=0d2ac747" data-signal="0d2ac747" tabindex="-1">Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=0e974ffd" data-signal="0e974ffd" tabindex="-1">Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=a7c9880f" data-signal="a7c9880f" tabindex="-1">Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=7acad00a" data-signal="7acad00a" tabindex="-1">Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=7acad00a" data-signal="7acad00a" tabindex="-1">Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=d09da7da" data-signal="d09da7da" tabindex="-1">Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1555,17 +1560,17 @@
         
         <a class="md-ticker__item" href="index.html?signal=03459a76" data-signal="03459a76" tabindex="-1">Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=530a09b2" data-signal="530a09b2" tabindex="-1">St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot </a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=530a09b2" data-signal="530a09b2" tabindex="-1">St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=2a848e46" data-signal="2a848e46" tabindex="-1">Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=821f2edc" data-signal="821f2edc" tabindex="-1">Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=332d8ab4" data-signal="332d8ab4" tabindex="-1">Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=332d8ab4" data-signal="332d8ab4" tabindex="-1">Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=0c5e795f" data-signal="0c5e795f" tabindex="-1">Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=21b2a9b0" data-signal="21b2a9b0" tabindex="-1">N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries,</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=21b2a9b0" data-signal="21b2a9b0" tabindex="-1">N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=582ea2d7" data-signal="582ea2d7" tabindex="-1">Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1573,7 +1578,7 @@
         
         <a class="md-ticker__item" href="index.html?signal=fdb570fb" data-signal="fdb570fb" tabindex="-1">Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct</a><span class="md-ticker__sep">&bull;</span>
         
-        <a class="md-ticker__item" href="index.html?signal=0f037fc3" data-signal="0f037fc3" tabindex="-1">Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 O</a><span class="md-ticker__sep">&bull;</span>
+        <a class="md-ticker__item" href="index.html?signal=0f037fc3" data-signal="0f037fc3" tabindex="-1">Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct</a><span class="md-ticker__sep">&bull;</span>
         
         <a class="md-ticker__item" href="index.html?signal=dbf90d51" data-signal="dbf90d51" tabindex="-1">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</a><span class="md-ticker__sep">&bull;</span>
         
@@ -1615,7 +1620,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 19 Oct 2026 05:17 UTC
+        Generated 19 Oct 2026 05:46 UTC
       </div>
     </div>
   </footer>
@@ -1623,7 +1628,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Oct 2026 05:17 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 19 Oct 2026 05:46 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -2914,12 +2919,19 @@
   document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
 
   /* ── Ticker speed — scale with content ──────────────────────────────────── */
+  // A steady reading pace, whatever the length of the list.
+  var TICKER_PX_PER_SEC = 60;
   var ticker = document.getElementById('ticker-scroll');
   if (ticker) {
-    var w = ticker.scrollWidth / 2;
-    var speed = Math.max(15, Math.min(60, w / 120));
-    ticker.style.setProperty('--ticker-speed', speed + 's');
-    ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
+    var setTickerSpeed = function () {
+      var w = ticker.scrollWidth / 2;            // one copy of the list
+      var speed = Math.max(15, w / TICKER_PX_PER_SEC);
+      ticker.style.setProperty('--ticker-speed', speed + 's');
+      ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
+    };
+    setTickerSpeed();
+    // Widths change once the web font arrives; measure again then.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(setTickerSpeed);
   }
 
   /* ── Cases panel — fly to centroid ──────────────────────────────────────── */

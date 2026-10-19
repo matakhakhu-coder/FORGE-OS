@@ -351,6 +351,10 @@
   }
   .md-ticker__scroll {
     display: flex;
+    /* As wide as its content, so translateX(-50%) moves exactly one copy of
+       the list. Without this the strip was only as wide as the screen and
+       crawled 2.7 px/s on a phone, snapping back after a headline or two. */
+    width: max-content;
     white-space: nowrap;
     animation: ticker-scroll var(--ticker-speed, 45s) linear infinite;
   }
@@ -1389,8 +1393,9 @@
       <div class="md-ticker__scroll" id="ticker-scroll">
         {# Rendered twice for seamless infinite loop #}
         {# Hand-checked pins open the event drawer (?signal=); others keep their old link. #}
+        {# Full headline (they run to about 115 characters); only a runaway title is cut, at a word, with an ellipsis. #}
         {% for s in all_signals[:40] %}
-        {% if s.checked and s.lat is not none and s.lng is not none %}<a class="md-ticker__item" href="index.html?signal={{ s.signal_id[:8] }}" data-signal="{{ s.signal_id[:8] }}">{{ s.title[:80] }}</a>{% else %}<a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title[:80] }}</a>{% endif %}<span class="md-ticker__sep">&bull;</span>
+        {% if s.checked and s.lat is not none and s.lng is not none %}<a class="md-ticker__item" href="index.html?signal={{ s.signal_id[:8] }}" data-signal="{{ s.signal_id[:8] }}">{{ s.title|truncate(140, False, '…', 0) }}</a>{% else %}<a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title|truncate(140, False, '…', 0) }}</a>{% endif %}<span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for sponsor in sponsor_slots %}
         <span class="md-ticker__sponsor">
@@ -1400,7 +1405,7 @@
         <span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for s in all_signals[:40] %}
-        {% if s.checked and s.lat is not none and s.lng is not none %}<a class="md-ticker__item" href="index.html?signal={{ s.signal_id[:8] }}" data-signal="{{ s.signal_id[:8] }}" tabindex="-1">{{ s.title[:80] }}</a>{% else %}<a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title[:80] }}</a>{% endif %}<span class="md-ticker__sep">&bull;</span>
+        {% if s.checked and s.lat is not none and s.lng is not none %}<a class="md-ticker__item" href="index.html?signal={{ s.signal_id[:8] }}" data-signal="{{ s.signal_id[:8] }}" tabindex="-1">{{ s.title|truncate(140, False, '…', 0) }}</a>{% else %}<a class="md-ticker__item" href="{% if s.article_slug %}articles/{{ s.article_slug }}.html{% else %}index.html{% endif %}">{{ s.title|truncate(140, False, '…', 0) }}</a>{% endif %}<span class="md-ticker__sep">&bull;</span>
         {% endfor %}
         {% for sponsor in sponsor_slots %}
         <span class="md-ticker__sponsor">
@@ -2544,12 +2549,19 @@
   document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
 
   /* ── Ticker speed — scale with content ──────────────────────────────────── */
+  // A steady reading pace, whatever the length of the list.
+  var TICKER_PX_PER_SEC = 60;
   var ticker = document.getElementById('ticker-scroll');
   if (ticker) {
-    var w = ticker.scrollWidth / 2;
-    var speed = Math.max(15, Math.min(60, w / 120));
-    ticker.style.setProperty('--ticker-speed', speed + 's');
-    ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
+    var setTickerSpeed = function () {
+      var w = ticker.scrollWidth / 2;            // one copy of the list
+      var speed = Math.max(15, w / TICKER_PX_PER_SEC);
+      ticker.style.setProperty('--ticker-speed', speed + 's');
+      ticker.parentElement.parentElement.style.setProperty('--ticker-speed', speed + 's');
+    };
+    setTickerSpeed();
+    // Widths change once the web font arrives; measure again then.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(setTickerSpeed);
   }
 
   /* ── Cases panel — fly to centroid ──────────────────────────────────────── */
