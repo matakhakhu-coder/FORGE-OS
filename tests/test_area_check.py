@@ -13,6 +13,7 @@ FORGE_UI_BASE is set, a real browser runs tests/browser/area_check.browser.js.
 import gzip
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -151,11 +152,42 @@ def test_page_has_the_area_check_parts():
         assert needle in html, needle
 
 
-def test_no_outside_geocoder_or_key():
-    text = TEMPLATE.read_text(encoding="utf-8") + JS.read_text(encoding="utf-8")
-    for bad in ("nominatim", "geoapify", "maps.googleapis", "api.mapbox", "photon.komoot",
-                "apiKey", "api_key"):
-        assert bad.lower() not in text.lower(), bad
+PRIVACY_LINE = ("Typed addresses are sent to Geoapify, along with your IP address, to find the spot. "
+                "ZA Divergent never receives them.")
+
+
+def test_only_the_one_address_service_and_its_key():
+    """Sprint C: Geoapify is the only outside geocoder, and its key sits once, in the settings block."""
+    html = TEMPLATE.read_text(encoding="utf-8")
+    js = JS.read_text(encoding="utf-8")
+    for bad in ("nominatim", "maps.googleapis", "api.mapbox", "photon.komoot", "api_key"):
+        assert bad not in (html + js).lower(), bad
+    assert "apikey" not in html.lower()
+    keys = re.findall(r"\b[0-9a-f]{32}\b", js)
+    assert len(keys) == 1, keys
+    block = js[js.index("var GEOCODER = {"):js.index("};", js.index("var GEOCODER = {"))]
+    assert keys[0] in block and "service: 'geoapify'" in block and "timeoutMs: 6000" in block
+    assert js.count("api.geoapify.com") == 1
+
+
+def test_address_box_has_privacy_line_and_attribution():
+    html = TEMPLATE.read_text(encoding="utf-8")
+    form = html[html.index('id="ac-addr"'):html.index("</form>", html.index('id="ac-addr"'))]
+    assert PRIVACY_LINE in form
+    assert 'href="https://www.geoapify.com/privacy-policy/"' in form
+    assert "Powered by" in form and "https://www.geoapify.com/" in form
+    assert "OpenStreetMap" in form and "https://www.openstreetmap.org/copyright" in form
+    # the line sits above the results, before anything is searched
+    assert form.index(PRIVACY_LINE) > form.index('id="ac-addr-go"')
+    assert html.index('id="ac-addr"') < html.index('id="ac-addr-matches"') < html.index('id="ac-place-btn"')
+
+
+def test_address_search_only_on_press():
+    js = JS.read_text(encoding="utf-8")
+    body = js[js.index("typed street address (Sprint C)"):js.index("placing a point on the map")]
+    assert "addEventListener('submit'" in body
+    for bad in ("'input'", "'keyup'", "'keydown'", "'change'"):
+        assert bad not in body, bad
 
 
 def test_external_link_gate_and_drawer_still_present():
