@@ -494,14 +494,17 @@ def render_markdown(result: dict, held: list[dict], new_keys: list[str]) -> str:
 
 
 def write_areas(result: dict, out_dir: pathlib.Path = OUT_DIR,
-                index_path: pathlib.Path = cs_mod.INDEX_PATH) -> dict:
+                index_path: pathlib.Path = cs_mod.INDEX_PATH, today: str | None = None) -> dict:
+    """Save the areas. 'NEW' compares with the last areas saved on an earlier
+    day, so computing twice in one run (compute, then sweep) keeps the flags."""
     out_dir = _safe_out(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    stamp = today or datetime.now(SAST).strftime("%Y-%m-%d")
     latest = out_dir / "areas-latest.json"
-    previous = json.loads(latest.read_text()) if latest.exists() else None
+    earlier = sorted(f for f in out_dir.glob("areas-????-??-??.json") if f.stem[6:] < stamp)
+    previous = json.loads(earlier[-1].read_text()) if earlier else None
     keys = new_areas(result, previous)
-    result = {**result, "new_since_last_run": keys}
-    stamp = datetime.now(SAST).strftime("%Y-%m-%d")
+    result = {**result, "new_since_last_run": keys, "compared_with": earlier[-1].name if earlier else None}
     blob = json.dumps(result, indent=1, ensure_ascii=False)
     (out_dir / f"areas-{stamp}.json").write_text(blob)
     latest.write_text(blob)

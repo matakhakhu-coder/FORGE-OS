@@ -143,8 +143,8 @@ def test_current_pins_make_six_areas_and_skip_held_places():
 def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
-    first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index)
-    assert len(first["areas"]) == 6
+    first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
+    assert len(first["areas"]) == 6 and len(first["new_since_last_run"]) == 6   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -155,7 +155,10 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     data["signals"].append(new)
     _save(index, path, data)
 
-    second = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index)
+    second = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
+    # Computing again the same day (compute, then sweep) keeps the flag.
+    again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
+    assert again["new_since_last_run"] == second["new_since_last_run"]
     assert len(second["areas"]) == 7
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
