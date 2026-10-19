@@ -122,14 +122,14 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 36
+    assert len(pins) == 37
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
                     "north-west--mmabatho", "north-west--ottosdal", "north-west--schweizer-reneke",
                     "eastern-cape--gqeberha", "eastern-cape--willowvale", "eastern-cape--east-london",
                     "eastern-cape--ilinge"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 36
+    assert sum(len(a["pins"]) for a in res["areas"]) == 37
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])
@@ -214,7 +214,7 @@ def test_sweep_skips_wc_areas_marks_nothing_for_scoring_and_never_writes_sprint5
                  "published_sast": "2026-10-19 10:00"}]
 
     s5 = ROOT / "private" / "sprint5"
-    before = {p.name: _sha(p) for p in s5.glob("*")} if s5.exists() else {}
+    before = {str(p.relative_to(s5)): _sha(p) for p in s5.rglob("*") if p.is_file()} if s5.exists() else {}
     start = datetime(2026, 10, 19, tzinfo=SAST)
     rep = ca.sweep(res, start, start + timedelta(days=3), tmp_path / "run", 30, fake, known={})
     by = {a["pattern_test"]: a for a in rep["areas"]}
@@ -228,7 +228,7 @@ def test_sweep_skips_wc_areas_marks_nothing_for_scoring_and_never_writes_sprint5
         ca.sweep(res, start, start + timedelta(days=3), s5 / "coverage", 30, fake, known={})
     with pytest.raises(ValueError):
         ca.write_areas(res, ROOT / "docs" / "coverage")
-    after = {p.name: _sha(p) for p in s5.glob("*")} if s5.exists() else {}
+    after = {str(p.relative_to(s5)): _sha(p) for p in s5.rglob("*") if p.is_file()} if s5.exists() else {}
     assert before == after
 
 

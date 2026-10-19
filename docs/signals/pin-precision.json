@@ -17,6 +17,7 @@
     "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c": {"precision": "street", "uncertainty_m": 500, "note": "Fisher Avenue, Epping; an avenue, so a wider margin."},
     "1a328ebb-28da-4b22-a7d6-f986d7852155": {"precision": "suburb", "uncertainty_m": 1500, "note": "Belgravia suburb point."},
     "c2601d28-ecde-4cd0-b9e3-0c19230dafac": {"precision": "suburb", "uncertainty_m": 1000, "note": "Cafda Village suburb point; a small suburb."},
+    "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {"precision": "street", "uncertainty_m": 300, "note": "Bernstein Road, Cafda Village; a short street near the Retreat clinic."},
     "1b6fba13-ef88-48d7-8c17-16b4e7ba6650": {"precision": "street", "uncertainty_m": 300, "note": "Dunjwa Street, Asla Park."},
     "0f037fc3-9de9-4e2b-aa1f-00feda269a58": {"precision": "street", "uncertainty_m": 300, "note": "Middle of Trampoline Street."},
     "fdb570fb-11a4-4430-8966-b973f1ae3ede": {"precision": "street", "uncertainty_m": 300, "note": "Nasson Street, Hawston."},

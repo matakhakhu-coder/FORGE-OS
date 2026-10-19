@@ -1,7 +1,8 @@
 """Sprint 1: hand-checked pins a rebuild can't drop (tools/checked_signals.py).
 
 Built on the standalone-signal and drawer tests: same fresh temp database,
-same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eastern Cape pins).
+same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eastern Cape pins,
+then 1 Western Cape Sprint 5 pin: Cafda Village, Retreat, 18 Oct).
 """
 from __future__ import annotations
 
@@ -19,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 SIGNALS_DIR = ROOT / "docs" / "signals"
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
-WC_PINS = 24          # Western Cape: the Sprint 5 pattern-test pins
+WC_PINS = 25          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct)
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
 EC_PINS = 8           # Eastern Cape, published 19 Oct 2026, outside the pattern test
 ALL_PINS = WC_PINS + NW_PINS + EC_PINS
@@ -96,8 +97,10 @@ def test_index_loads_all_pins_in_order():
         "western-cape-murders-2026-10-18.json",
         "western-cape-murders-2026-10-18-batch2.json",
         "north-west-killings-2026-10-19.json",
-        "eastern-cape-killings-2026-10-19.json"]
-    assert [b.province for b in cs.batches] == ["Western Cape", "Western Cape", "North West", "Eastern Cape"]
+        "eastern-cape-killings-2026-10-19.json",
+        "western-cape-murders-2026-10-19-sprint5.json"]
+    assert [b.province for b in cs.batches] == [
+        "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:

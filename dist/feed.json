@@ -1,8 +1,22 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "19 Oct 2026 05:46 UTC",
+  "generated_at": "19 Oct 2026 07:38 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Cafda Village, Retreat (Bernstein Rd, approx.): man, 41, shot dead, three young men wounded, 18 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-19T07:45:00Z",
+      "summary": "Police say four people were shot on Bernstein Road near the Retreat Community Health Centre, in Cafda Village, on Sunday 18 October; police responded at about 15:30. A man of 41 died, and three young men aged 16 to 21 we...",
+      "source": "SMILE 90.4FM",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0601163,
+        "lng": 18.4813237
+      }
+    },
     {
       "kind": "signal",
       "title": "Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct",
