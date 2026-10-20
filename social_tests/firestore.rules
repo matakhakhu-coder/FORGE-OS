@@ -57,6 +57,41 @@ service cloud.firestore {
         !exists(messagePath(request.resource.data.lastMessageId)) &&
         validMessage(getAfter(messagePath(request.resource.data.lastMessageId)).data);
     }
+    function validProfile(p) {
+      return p.keys().hasAll(['displayName', 'createdAt'])
+        && p.keys().hasOnly(['displayName', 'createdAt'])
+        && p.displayName is string && p.displayName.size() >= 1
+        && p.displayName.size() <= 40 && p.displayName.matches('.*[^\\s].*')
+        && p.createdAt is timestamp;
+    }
+    function validReport(r) {
+      return r.keys().hasAll(['reporterId', 'messageId', 'reason', 'createdAt'])
+        && r.keys().hasOnly(['reporterId', 'messageId', 'reason', 'createdAt'])
+        && r.reporterId == request.auth.uid
+        && r.messageId is string && r.messageId.size() >= 1
+        && r.messageId.size() <= 128 && r.messageId.matches('^[A-Za-z0-9_-]+$')
+        && r.reason is string
+        && r.reason in ['doxxing', 'threat', 'unsupported-accusation', 'harassment', 'spam', 'other']
+        && r.createdAt == request.time && exists(messagePath(r.messageId));
+    }
+    match /profiles/{uid} {
+      allow get: if member() || moderator();
+      allow list: if false;
+      allow create: if member() && request.auth.uid == uid
+        && validProfile(request.resource.data) && request.resource.data.createdAt == request.time;
+      allow update: if member() && request.auth.uid == uid
+        && validProfile(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']);
+      allow delete: if false;
+    }
+    match /reports/{reportId} {
+      allow create: if member() && validReport(request.resource.data);
+      allow get: if moderator();
+      allow list: if moderator() && request.query.limit != null
+        && request.query.limit > 0 && request.query.limit <= 50;
+      allow update, delete: if false;
+    }
     match /{document=**} { allow read, write: if false; }
   }
 }
