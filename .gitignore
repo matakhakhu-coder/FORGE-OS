@@ -49,3 +49,17 @@ gdpr-data*
 
 # Sprint 4: private coding, saved article text, analysis results. Never commit.
 private/
+
+# Local scratch
+/wipe.sql
+/forge-*.txt
+/court_rolls_predictive
+/google_news_monitor
+/pmg_parliamentary
+/x_search
+.venv-mcp/
+/forge_mcp/audit/
+
+# SQLite working files
+*-shm
+*-wal
