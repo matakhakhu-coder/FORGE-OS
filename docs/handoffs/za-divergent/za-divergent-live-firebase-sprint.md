@@ -10,6 +10,46 @@ Live site identified in the preceding work: `https://forge-os-alpha.vercel.app`.
 
 Do not import the website into Firebase or move its hosting from Vercel. The website connects to Firebase through the Firebase SDK and live project's web app configuration. Authorizing a hostname permits sign-in from that hostname; it does not connect the website to Firestore.
 
+## Completed repository handoff and local sync
+
+The handoff files were committed and pushed to `work/v2-security-gate` in commit `5c41d9e`. This sprint receives a follow-up documentation commit on the same branch. The branch includes the tested rules commit `6f7b971`, which was already on `main`; the new handoff files are not on `main` unless separately merged. No Firebase deployment or production UI publication was performed.
+
+Repository: `https://github.com/matakhakhu-coder/FORGE-OS`. The eight handoff files are under `docs/handoffs/za-divergent/`:
+
+- `za-divergent-live-firebase-sprint.md`: current live-setup continuation plan, use this first.
+- `za_divergent_social_mvp_brief.md`: social product scope and constraints.
+- `za-divergent-firebase-laptop-handoff.md`: earlier isolated-test handoff, historical status may be outdated.
+- `firebase-test-agent-handoff.md`: earlier test-console instructions, not a live setup completion record.
+- `social_rate_limit_rule.md`: older rules draft, not the deployable authority; inspect the newer executable bundle in `social_tests/`.
+- `za_divergent_mockup_sprint_plan.md`: screen/layout specifications, not implemented social screens.
+- `za_divergent_mobile_overhaul_sprints.md`: earlier mobile overhaul plan.
+- `za-divergent-mobile-layout-sprints.md`: earlier mobile layout plan.
+
+The inspected working branch had no additional uncommitted social screen implementation to push. The UID helper and executable security tests are already tracked. Screen specifications must not be described as working profile/chat screens. Unrelated generated changes in another working checkout were deliberately left untouched, not bundled into this handoff.
+
+### Sync the laptop before continuing
+
+Run these commands in PowerShell from the existing FORGE repository. The path below is the previously reported checkout; use its actual location if it has moved.
+
+```powershell
+Set-Location 'C:\Users\matam\projects\forge'
+git status --short
+```
+
+If status lists local changes, stop and have the computer agent preserve them before switching branches. Do not reset, clean or discard anything to make these commands work. Once the checkout is clean:
+
+```powershell
+git fetch origin
+git switch work/v2-security-gate
+git pull --ff-only origin work/v2-security-gate
+git status -sb
+git log -2 --oneline
+```
+
+After fetching, `git switch` normally creates a local tracking branch automatically if only the matching remote branch exists. If it cannot resolve the branch and no local branch of that name exists, use `git switch --track origin/work/v2-security-gate`, then run the pull and verification commands above. If switching or fast-forwarding fails, stop and inspect rather than force it.
+
+Open `docs/handoffs/za-divergent/za-divergent-live-firebase-sprint.md` in that checkout and continue from task 1 below. Confirm the local branch matches `origin/work/v2-security-gate`; checking out `main` alone will not bring down the handoff files. Do not merge to `main` just to synchronize: keep release review separate.
+
 ## Starting evidence and unresolved items
 
 The preceding session reported GitHub main at commit `6f7b971`, containing changes to `social_tests/firestore.rules` and `social_tests/v2-security.test.mjs`. The combined local suite passed 30 tests with no failures or skips. The existing message/activity rules were preserved while profile and report rules were added. The computer agent must fetch and inspect the current repository rather than assume that commit is still the latest.
