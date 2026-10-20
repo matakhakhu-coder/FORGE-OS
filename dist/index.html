@@ -1912,11 +1912,9 @@
   /* ══════════════════════════════════════════════════════════════════════════
      MAP INIT
      ══════════════════════════════════════════════════════════════════════════ */
-  // Mobile opens over Africa; desktop keeps its existing South Africa view.
-  // Reset returns to the opening view. Map navigation remains enabled.
-  var mobileOpening = window.matchMedia('(max-width: 768px)').matches;
-  var HOME_CENTER = mobileOpening ? [0, 20] : [-28.5, 25];
-  var HOME_ZOOM = mobileOpening ? 3 : 5;
+  // Provisional South Africa view; frame available incidents after overlays mount.
+  var HOME_CENTER = [-28.5, 25];
+  var HOME_ZOOM = 5;
   var map = L.map('map', { zoomControl: false }).setView(HOME_CENTER, HOME_ZOOM);
   // Dynamic browser chrome and orientation can change the available map area.
   // Resize its canvas without resetting a user's pan or zoom.
@@ -2070,6 +2068,32 @@
   });
 
   map.addLayer(clusterGroup);
+
+  // Parameterized overlay padding, not map bearing or a shifted canvas.
+  function frameIncidents(options) {
+    options = options || {};
+    var header = document.querySelector('.site-header');
+    var headerHeight = options.headerHeight != null ? options.headerHeight : header.getBoundingClientRect().height;
+    var size = map.getSize();
+    var phone = window.matchMedia('(max-width: 768px)').matches;
+    var sidebar = document.querySelector('.md-sidebar');
+    var controls = document.querySelector('.md-controls');
+    var ticker = document.querySelector('.md-ticker');
+    var attribution = document.querySelector('.leaflet-control-attribution');
+    var left = options.left != null ? options.left : (phone ? 28 : sidebar.getBoundingClientRect().right + 24);
+    var right = options.right != null ? options.right : size.x - controls.getBoundingClientRect().left + 24;
+    var bottom = options.bottom != null ? options.bottom : Math.max(64, ticker.getBoundingClientRect().height + (attribution ? attribution.getBoundingClientRect().height : 0) + 28);
+    var top = options.top != null ? options.top : headerHeight + 28;
+    // Keep a usable framing rectangle on short landscape screens.
+    top = Math.min(top, size.y * 0.35); bottom = Math.min(bottom, size.y * 0.3);
+    left = Math.min(left, size.x * 0.35); right = Math.min(right, size.x * 0.3);
+    var points = allMarkerLayers.filter(function (m) { return clusterGroup.hasLayer(m.layer); })
+      .map(function (m) { return [m.lat, m.lng]; });
+    var bounds = points.length ? L.latLngBounds(points) : L.latLngBounds([[-35, 16], [-22, 33]]);
+    map.invalidateSize({pan: false});
+    map.fitBounds(bounds, {paddingTopLeft: [left, top], paddingBottomRight: [right, bottom], maxZoom: options.maxZoom != null ? options.maxZoom : 8, animate: false});
+  }
+  requestAnimationFrame(function () { frameIncidents(); });
 
   /* ── Intel links ────────────────────────────────────────────────────────── */
   var INTEL_LINKS = [];
@@ -3062,7 +3086,7 @@
   document.getElementById('ctrl-zoomin').addEventListener('click', function () { map.zoomIn(); });
   document.getElementById('ctrl-zoomout').addEventListener('click', function () { map.zoomOut(); });
   document.getElementById('ctrl-reset').addEventListener('click', function () {
-    map.setView(HOME_CENTER, HOME_ZOOM);
+    frameIncidents();
   });
   document.getElementById('ctrl-filter').addEventListener('click', function () { openPanel('streams'); });
 

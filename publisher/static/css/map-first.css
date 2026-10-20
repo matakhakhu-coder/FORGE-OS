@@ -1,4 +1,13 @@
-/* Map-first Sprint 1, scoped to the signal map only. */
+/* Map-first layout, scoped to the signal map only. */
+/* Sprint 3: improve interface readability without changing basemap/provider. */
+.signal-map-page .site-ts,
+.signal-map-page .md-pill,
+.signal-map-page .md-ctrl,
+.signal-map-page .md-panel__count,
+.signal-map-page .stream-count { color: #b8c7d4; }
+.signal-map-page .live-badge { color: #c7d4de; }
+.signal-map-page #map .leaflet-control-attribution { color: #b8c7d4; }
+.signal-map-page #map .leaflet-control-attribution a { color: #d0e2ef; }
 .signal-map-page { --map-header: 60px; margin: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 .signal-map-page .site-main { position: fixed; inset: 0; padding: 0; min-height: 0; }
 .signal-map-page .md-shell { position: absolute; inset: 0; width: 100%; height: 100%; }
