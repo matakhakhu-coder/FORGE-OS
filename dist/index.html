@@ -939,6 +939,58 @@
   }
   .sd-outside[hidden] { display: none; }
 
+  /* Sprint 1: a viewport-bound map and a fully visible mobile header.
+     Only the map page uses this shell; desktop and other pages are unchanged. */
+  @media (max-width: 768px) {
+    body.signal-map-page {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .signal-map-page .site-header { height: auto; flex: 0 0 auto; }
+    .signal-map-page .site-header__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 44px 44px;
+      gap: 6px 8px;
+      padding: 8px 12px;
+      max-width: none;
+    }
+    .signal-map-page .site-header__brand { grid-column: 1; grid-row: 1; min-width: 0; }
+    .signal-map-page .site-logo { font-size: 0.95rem; }
+    .signal-map-page .site-tagline { display: none; }
+    .signal-map-page .nav-toggle {
+      display: flex; grid-column: 2; grid-row: 1; width: 44px; height: 44px;
+    }
+    .signal-map-page .site-header__meta { display: contents; }
+    .signal-map-page .site-settings-btn {
+      grid-column: 3; grid-row: 1; width: 44px; height: 44px;
+    }
+    .signal-map-page .site-search { display: block; grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+    .signal-map-page #site-search {
+      width: 100% !important; min-height: 40px; box-sizing: border-box;
+      font-size: 16px !important;
+    }
+    .signal-map-page #search-results { width: 100% !important; box-sizing: border-box; }
+    .signal-map-page .live-badge { grid-column: 1; grid-row: 3; justify-self: start; white-space: nowrap; }
+    .signal-map-page .site-ts {
+      display: block; grid-column: 2 / -1; grid-row: 3; justify-self: end;
+      max-width: 100%; overflow-wrap: anywhere;
+    }
+    .signal-map-page .site-nav {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      margin: 0; padding: 12px; flex-direction: column;
+      background: var(--bg-void); border-bottom: 1px solid var(--border-dim);
+      z-index: 99;
+    }
+    .signal-map-page .site-nav--open { display: flex; }
+    .signal-map-page .site-main { flex: 1 1 0; min-height: 0; min-width: 0; }
+    .signal-map-page .md-shell { height: 100%; min-height: 0; width: 100%; }
+    .signal-map-page .site-footer { flex: 0 0 auto; }
+  }
+
   /* ── Responsive ─────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
     /* Area check on a phone: the bar sits under the header, left of the
@@ -1030,7 +1082,7 @@
 </style>
 
 </head>
-<body>
+<body class="signal-map-page">
 
   
   <header class="site-header">
@@ -1815,9 +1867,18 @@
   /* ══════════════════════════════════════════════════════════════════════════
      MAP INIT
      ══════════════════════════════════════════════════════════════════════════ */
-  // Opening view: all of South Africa. Reset returns here (not to the pins).
-  var HOME_CENTER = [-28.5, 25], HOME_ZOOM = 5;
+  // Mobile opens over Africa; desktop keeps its existing South Africa view.
+  // Reset returns to the opening view. Map navigation remains enabled.
+  var mobileOpening = window.matchMedia('(max-width: 768px)').matches;
+  var HOME_CENTER = mobileOpening ? [0, 20] : [-28.5, 25];
+  var HOME_ZOOM = mobileOpening ? 2 : 5;
   var map = L.map('map', { zoomControl: false }).setView(HOME_CENTER, HOME_ZOOM);
+  // Dynamic browser chrome and orientation can change the available map area.
+  // Resize its canvas without resetting a user's pan or zoom.
+  if (window.ResizeObserver) {
+    new ResizeObserver(function () { map.invalidateSize({ pan: false }); })
+      .observe(document.getElementById('map'));
+  }
 
   // OpenStreetMap standard tiles (no API key). Usage policy:
   // https://operations.osmfoundation.org/policies/tiles/ — keep the
