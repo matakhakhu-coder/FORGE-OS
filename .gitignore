@@ -63,3 +63,7 @@ private/
 # SQLite working files
 *-shm
 *-wal
+
+# Firebase emulator and test tooling
+node_modules/
+*-debug.log
