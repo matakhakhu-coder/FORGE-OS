@@ -561,6 +561,15 @@
     background: none; border: 1px solid transparent; border-radius: var(--r-sm); cursor: pointer;
   }
   .sd-close:hover, .sd-close:focus-visible { color: var(--text-primary); border-color: var(--border-mid); outline: none; }
+  .sd-share {
+    min-width: 44px; height: 44px; flex-shrink: 0; gap: 6px; padding: 0 var(--sp-2);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-secondary); background: none; border: 1px solid transparent; border-radius: var(--r-sm); cursor: pointer;
+  }
+  .sd-share:hover, .sd-share:focus-visible { color: var(--text-primary); border-color: var(--border-mid); outline: none; }
+  .sd-share.is-done { color: var(--accent, #f5c518); }
+  @media (max-width: 360px) { .sd-share__label { display: none; } }
   .sd-body {
     flex: 1; min-height: 0;
     overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
@@ -1468,6 +1477,8 @@
   <aside class="sd-drawer" id="signal-drawer" role="dialog" aria-modal="false" aria-labelledby="sd-title" hidden>
     <div class="sd-head">
       <span class="sd-kicker" id="sd-kicker"></span>
+      <button type="button" class="sd-share" id="sd-share" aria-label="Share this event"><svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span class="sd-share__label" id="sd-share-label">Share</span></button>
+      <span class="sd-sr-only" id="sd-share-status" role="status" aria-live="polite"></span>
       <button type="button" class="sd-close" id="sd-close" aria-label="Close event details">&#10005;</button>
     </div>
     <div class="sd-body" id="sd-body">
@@ -2939,6 +2950,65 @@
       openDrawer(idx, { trigger: mk && mk.getElement() });
     };
     if (popupByKey) { popupByKey = false; btn.focus({ preventScroll: true }); }
+  });
+
+  /* Share: the event's own ?signal= link. Phones get the system share sheet;
+     elsewhere the link is copied, with a visible and announced confirmation. */
+  var shareBtn = document.getElementById('sd-share');
+  var shareLabel = document.getElementById('sd-share-label');
+  var shareStatus = document.getElementById('sd-share-status');
+  var shareTimer = null;
+  function shareUrlFor(m) {
+    var u = new URL(window.location.href);
+    u.search = ''; u.hash = '';
+    u.searchParams.set('signal', shortId(m));
+    return u.href;
+  }
+  function shareFeedback(msg) {
+    shareLabel.textContent = msg;
+    shareBtn.classList.add('is-done');
+    shareStatus.textContent = msg;
+    clearTimeout(shareTimer);
+    shareTimer = setTimeout(function () {
+      shareLabel.textContent = 'Share';
+      shareBtn.classList.remove('is-done');
+      shareStatus.textContent = '';
+    }, 2200);
+  }
+  function legacyCopy(url) {
+    var ta = document.createElement('textarea');
+    ta.value = url; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    shareBtn.focus({ preventScroll: true });
+    if (ok) shareFeedback('Link copied');
+    else window.prompt('Copy this link', url);
+  }
+  function copyLink(url) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(function () { shareFeedback('Link copied'); },
+        function () { legacyCopy(url); });
+    } else {
+      legacyCopy(url);
+    }
+  }
+  shareBtn.addEventListener('click', function () {
+    if (drawerIdx === null) return;
+    var m = RAW[drawerIdx];
+    var url = shareUrlFor(m);
+    var data = { title: m.title || 'FORGE event', url: url };
+    var touch = isPhone() || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    if (touch && navigator.share && (!navigator.canShare || navigator.canShare(data))) {
+      navigator.share(data).catch(function (err) {
+        if (err && err.name === 'AbortError') return;   // user closed the sheet
+        copyLink(url);
+      });
+      return;
+    }
+    copyLink(url);
   });
 
   document.getElementById('sd-close').addEventListener('click', function () {
