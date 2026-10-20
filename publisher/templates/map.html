@@ -1543,7 +1543,7 @@
   // Reset returns to the opening view. Map navigation remains enabled.
   var mobileOpening = window.matchMedia('(max-width: 768px)').matches;
   var HOME_CENTER = mobileOpening ? [0, 20] : [-28.5, 25];
-  var HOME_ZOOM = mobileOpening ? 2 : 5;
+  var HOME_ZOOM = mobileOpening ? 3 : 5;
   var map = L.map('map', { zoomControl: false }).setView(HOME_CENTER, HOME_ZOOM);
   // Dynamic browser chrome and orientation can change the available map area.
   // Resize its canvas without resetting a user's pan or zoom.
