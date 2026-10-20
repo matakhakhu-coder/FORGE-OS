@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Emulator fixture ONLY. Replace with the owner's verified UID before deployment.
+    function moderator() {
+      return request.auth != null && request.auth.uid == 'emulator-moderator-only';
+    }
+    function member() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/members/$(request.auth.uid)).data.active == true;
+    }
+    function activityPath() {
+      return /databases/$(database)/documents/activity/$(request.auth.uid);
+    }
+    function messagePath(id) {
+      return /databases/$(database)/documents/rooms/main/messages/$(id);
+    }
+    function validMessage(m) {
+      return m.keys().hasAll(['authorId', 'body', 'createdAt']) &&
+        m.keys().hasOnly(['authorId', 'body', 'createdAt']) &&
+        m.authorId == request.auth.uid && m.body is string &&
+        m.body.size() > 0 && m.body.size() <= 500 && m.createdAt == request.time;
+    }
+    function validActivity(a) {
+      return a.keys().hasAll(['lastAt', 'lastMessageId']) &&
+        a.keys().hasOnly(['lastAt', 'lastMessageId']) &&
+        a.lastAt == request.time && a.lastMessageId is string &&
+        a.lastMessageId.size() > 0 && a.lastMessageId.size() <= 128 &&
+        a.lastMessageId.matches('^[A-Za-z0-9_-]+$');
+    }
+    function intervalPassed() {
+      return !exists(activityPath()) ||
+        request.time >= get(activityPath()).data.lastAt + duration.value(10, 's');
+    }
+    match /members/{uid} {
+      // A suspended user can still read their own status. Missing document means uninvited.
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+    match /rooms/main/messages/{id} {
+      allow get: if member() || moderator();
+      allow list: if (member() || moderator()) && request.query.limit != null &&
+        request.query.limit > 0 && request.query.limit <= 50;
+      allow create: if member() && validMessage(request.resource.data) &&
+        intervalPassed() && validActivity(getAfter(activityPath()).data) &&
+        getAfter(activityPath()).data.lastMessageId == id;
+      allow update: if false;
+      // Deletion does not delete/reset activity. Suspended users may remove their own content.
+      allow delete: if request.auth != null &&
+        (resource.data.authorId == request.auth.uid || moderator());
+    }
+    match /activity/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, delete: if false;
+      allow create, update: if member() && request.auth.uid == uid &&
+        validActivity(request.resource.data) && intervalPassed() &&
+        !exists(messagePath(request.resource.data.lastMessageId)) &&
+        validMessage(getAfter(messagePath(request.resource.data.lastMessageId)).data);
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

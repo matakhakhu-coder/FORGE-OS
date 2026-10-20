@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Firebase UID test</title>
+<style>
+:root{--ground:#F3F3F3;--card:#fff;--ink:#141414;--muted:#6E6C68;--rule:#DCDAD5;--serif:Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--mono:ui-monospace,monospace}*{box-sizing:border-box}body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.5 var(--sans);padding:10px 16px 64px}.wrap{max-width:680px;margin:auto}h1{font:600 32px/1.1 var(--serif);margin:28px 0 8px}.kicker,.updated{color:var(--muted)}.updated{font-size:14px}.lede{font-size:19px}.card{background:var(--card);border-radius:20px;padding:16px;margin:16px 0}.btn{display:block;width:100%;background:var(--ink);color:var(--ground);border:0;border-radius:999px;padding:16px;font:500 15px var(--sans);margin:10px 0;cursor:pointer}.btn:disabled{opacity:.5;cursor:default}label{display:block;margin-top:12px}input{width:100%;padding:12px;border:1px solid var(--rule);border-radius:8px;font:16px var(--sans)}output{display:block;overflow-wrap:anywhere;font:17px var(--mono);padding:12px 0}a{color:inherit}.sources{margin-top:32px;font-size:13px;color:var(--muted)}[hidden]{display:none!important}
+</style></head><body><div class="wrap">
+<h1>Google sign-in test</h1><p class="kicker">Separate test project · za-divergent-chat-test</p><p class="updated">Saved Oct 20, 2026, 5:30pm</p>
+<p class="lede">Sign in with Google to display your Firebase Authentication UID, without changing the map.</p>
+<p>This file is not deployed. Serve it over HTTPS or localhost; opening a downloaded file is not a working sign-in environment.</p>
+<section class="card"><h2>Project configuration</h2><p>The test project's public web API key is filled in. No installation is needed. Do not enter a password, sign-in code, or service-account key.</p>
+<form id="config"><label for="apiKey">Firebase web API key</label><input id="apiKey" required value="AIzaSyDiQszgFaNvy9Iu0ZLxwH_eQ9qpr9kNJNo" autocomplete="off" spellcheck="false"><label for="authDomain">Auth domain from the web app configuration</label><input id="authDomain" required value="za-divergent-chat-test.firebaseapp.com" autocomplete="off" spellcheck="false"><button class="btn" id="prepare">Prepare sign-in</button></form>
+<p>Add the exact hosting hostname under Authentication → Settings → Authorized domains. Localhost may also need to be added explicitly.</p></section>
+<section class="card"><button class="btn" id="login" disabled>Sign in with Google</button><p id="status" role="status" aria-live="polite">Configuration required.</p><label for="uid">Your Firebase UID</label><output id="uid">Not signed in</output><button class="btn" id="logout" hidden>Sign out</button><p>This creates a Firebase Auth account in the test project. It does not grant moderator access, create membership documents, or deploy rules.</p></section>
+<div class="sources"><b>Reference</b><p><a href="https://firebase.google.com/docs/auth/web/google-signin">Firebase Google sign-in documentation</a></p></div>
+</div><script type="module">
+const status=document.querySelector('#status'),login=document.querySelector('#login'),logout=document.querySelector('#logout'),uid=document.querySelector('#uid');
+let auth,api;
+const errors={
+ 'auth/unauthorized-domain':'This hosting hostname must be added in Authentication → Settings → Authorized domains.',
+ 'auth/popup-blocked':'The browser blocked the sign-in popup. Allow popups and tap Sign in again.',
+ 'auth/popup-closed-by-user':'Sign-in was closed. Tap Sign in to retry.',
+ 'auth/operation-not-allowed':'Enable Google under Authentication → Sign-in method.',
+ 'auth/invalid-api-key':'Check the web API key from this test project’s Web app configuration.',
+ 'auth/network-request-failed':'The network request failed. Check your connection and retry.'
+};
+const showError=e=>{status.textContent=errors[e.code]||('Sign-in failed: '+(e.code||e.message||'unknown error'));};
+document.querySelector('#config').addEventListener('submit',async e=>{
+ e.preventDefault();document.querySelector('#prepare').disabled=true;
+ try{
+ if(!['https:','http:'].includes(location.protocol))throw new Error('Serve this file over HTTPS or localhost before signing in.');
+ if(location.protocol==='http:'&&!['localhost','127.0.0.1','[::1]'].includes(location.hostname))throw new Error('Use HTTPS outside localhost.');
+ status.textContent='Loading Firebase…';
+ const [app,authModule]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js')]);api=authModule;
+ const firebaseApp=app.initializeApp({apiKey:document.querySelector('#apiKey').value.trim(),authDomain:document.querySelector('#authDomain').value.trim(),projectId:'za-divergent-chat-test'});
+ auth=api.getAuth(firebaseApp);await api.setPersistence(auth,api.inMemoryPersistence);
+ api.onAuthStateChanged(auth,user=>{uid.textContent=user?user.uid:'Not signed in';logout.hidden=!user;login.hidden=!!user;status.textContent=user?'Signed in. Your UID is shown below.':'Ready. Tap Sign in with Google.';},showError);
+ login.disabled=false;document.querySelector('#config').hidden=true;
+ }catch(error){showError(error);document.querySelector('#prepare').disabled=false;}
+});
+login.addEventListener('click',async()=>{if(!auth)return;login.disabled=true;status.textContent='Complete Google sign-in in the popup.';try{await api.signInWithPopup(auth,new api.GoogleAuthProvider());}catch(error){showError(error);}finally{login.disabled=false;}});
+logout.addEventListener('click',async()=>{try{await api.signOut(auth);}catch(error){showError(error);}});
+</script></body></html>
