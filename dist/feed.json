@@ -1,8 +1,22 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "21 Oct 2026 14:42 UTC",
+  "generated_at": "21 Oct 2026 16:52 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-21T15:48:00Z",
+      "summary": "Police say a man of 26 was found with multiple gunshot wounds in front of a property in Korvette Road, Strandfontein, when officers responded at about 20:45 on Monday 19 October (Lieutenant-Colonel Frederick van Wyk, via...",
+      "source": "TYGERBURGER (NOVA NEWS)",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0766913,
+        "lng": 18.5491929
+      }
+    },
     {
       "kind": "signal",
       "title": "Steenberg (Military Rd, approx.): two men, 23 and 37, shot dead; five arrested after chase, 20 Oct",
