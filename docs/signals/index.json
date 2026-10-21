@@ -33,6 +33,11 @@
       "file": "eastern-cape-killings-2026-10-21.json",
       "province": "Eastern Cape",
       "signals": 1
+    },
+    {
+      "file": "western-cape-murders-2026-10-21-sprint5.json",
+      "province": "Western Cape",
+      "signals": 1
     }
   ]
 }

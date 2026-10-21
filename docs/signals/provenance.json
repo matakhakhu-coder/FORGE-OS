@@ -556,6 +556,22 @@
       ],
       "independence": "same_statement",
       "note": "Three reports, all resting on police. The Herald and PE Express carry the same Gantana statement; Algoa FM carries Beetge's account of an initial report, and its motive line is its own narration. Repetition is not independent corroboration."
+    },
+    "048440e0-0be5-53d8-934a-1ba6233a0dfa": {
+      "statement_from": "SAPS Western Cape statement posted on X (20 Oct 2026, 15:15 SAST), quoted by Cape Times (IOL), Smile 90.4FM and Briefly News",
+      "spokesperson": [
+        "Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "City of Cape Town mayor, on X (via Briefly News only; the post itself not read), about the chase, arrests and weapons only"
+      ],
+      "outlets": [
+        "Cape Times (IOL)",
+        "Smile 90.4FM",
+        "Briefly News"
+      ],
+      "independence": "same_statement",
+      "note": "One police statement, three reports. SAPS posted it on X at 15:15 SAST, 24 minutes before Cape Times; Cape Times (IOL, one outlet group) quotes it word for word and credits it to Constable Ndakhe Gwala; Smile 90.4FM quotes it and adds Lakeside; Briefly News rewrites it and adds the mayor's post. Repetition is not independent corroboration. The mayor's post speaks to the chase, arrests and weapons, not the killing."
     }
   }
 }

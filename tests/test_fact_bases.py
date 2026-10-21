@@ -28,8 +28,8 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 38
-    assert sum(len(p['facts']) for p in exported.values()) == 228   # 222 + Gqeberha's six
+    assert len(exported) == 39
+    assert sum(len(p['facts']) for p in exported.values()) == 234   # 222 + Gqeberha's six + Steenberg's six
     assert SEPARATELY_AUDITED <= set(exported)
     text = json.dumps(exported)
     for key in ('credibility', 'source_grades', 'pin_notes', 'text_sha256'):

@@ -60,8 +60,9 @@ def test_incident_order_is_not_report_order():
     by_report = sorted(pins, key=lambda s: s["timestamp"])
     assert [s["signal_id"] for s in by_incident] != [s["signal_id"] for s in by_report]
     assert by_incident[0]["signal_id"].startswith("0f037fc3")    # 1 Oct, Mitchells Plain
-    assert by_incident[-1]["signal_id"].startswith("7aa4eea1")   # 18 Oct, Cafda Village, Retreat
-    assert by_incident[-2]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
+    assert by_incident[-1]["signal_id"].startswith("048440e0")   # 20 Oct, Steenberg (Military Rd)
+    assert by_incident[-2]["signal_id"].startswith("7aa4eea1")   # 18 Oct, Cafda Village, Retreat
+    assert by_incident[-3]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
 
 
 # ── Checked pins in the place-and-time matcher ────────────────────────────────────────
