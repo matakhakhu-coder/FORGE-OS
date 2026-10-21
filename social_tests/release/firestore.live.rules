@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Owner UID, verified against Authentication in za-divergent-live-dc022.
+    function moderator() {
+      return request.auth != null && request.auth.uid == 'WwxG72k6PxPRVImyFzXNLkBP2Iz1';
+    }
+    function member() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/members/$(request.auth.uid)).data.active == true;
+    }
+    function activityPath() {
+      return /databases/$(database)/documents/activity/$(request.auth.uid);
+    }
+    function messagePath(id) {
+      return /databases/$(database)/documents/rooms/main/messages/$(id);
+    }
+    function validMessage(m) {
+      return m.keys().hasAll(['authorId', 'body', 'createdAt']) &&
+        m.keys().hasOnly(['authorId', 'body', 'createdAt']) &&
+        m.authorId == request.auth.uid && m.body is string &&
+        m.body.size() > 0 && m.body.size() <= 500 && m.createdAt == request.time;
+    }
+    function validActivity(a) {
+      return a.keys().hasAll(['lastAt', 'lastMessageId']) &&
+        a.keys().hasOnly(['lastAt', 'lastMessageId']) &&
+        a.lastAt == request.time && a.lastMessageId is string &&
+        a.lastMessageId.size() > 0 && a.lastMessageId.size() <= 128 &&
+        a.lastMessageId.matches('^[A-Za-z0-9_-]+$');
+    }
+    function intervalPassed() {
+      return !exists(activityPath()) ||
+        request.time >= get(activityPath()).data.lastAt + duration.value(10, 's');
+    }
+    match /members/{uid} {
+      // A suspended user can still read their own status. Missing document means uninvited.
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+    match /rooms/main/messages/{id} {
+      allow get: if member() || moderator();
+      allow list: if (member() || moderator()) && request.query.limit != null &&
+        request.query.limit > 0 && request.query.limit <= 50;
+      allow create: if member() && validMessage(request.resource.data) &&
+        intervalPassed() && validActivity(getAfter(activityPath()).data) &&
+        getAfter(activityPath()).data.lastMessageId == id;
+      allow update: if false;
+      // Deletion does not delete/reset activity. Suspended users may remove their own content.
+      allow delete: if request.auth != null &&
+        (resource.data.authorId == request.auth.uid || moderator());
+    }
+    match /activity/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, delete: if false;
+      allow create, update: if member() && request.auth.uid == uid &&
+        validActivity(request.resource.data) && intervalPassed() &&
+        !exists(messagePath(request.resource.data.lastMessageId)) &&
+        validMessage(getAfter(messagePath(request.resource.data.lastMessageId)).data);
+    }
+    function validProfile(p) {
+      return p.keys().hasAll(['displayName', 'createdAt'])
+        && p.keys().hasOnly(['displayName', 'createdAt'])
+        && p.displayName is string && p.displayName.size() >= 1
+        && p.displayName.size() <= 40 && p.displayName.matches('.*[^\\s].*')
+        && p.createdAt is timestamp;
+    }
+    function validReport(r) {
+      return r.keys().hasAll(['reporterId', 'messageId', 'reason', 'createdAt'])
+        && r.keys().hasOnly(['reporterId', 'messageId', 'reason', 'createdAt'])
+        && r.reporterId == request.auth.uid
+        && r.messageId is string && r.messageId.size() >= 1
+        && r.messageId.size() <= 128 && r.messageId.matches('^[A-Za-z0-9_-]+$')
+        && r.reason is string
+        && r.reason in ['doxxing', 'threat', 'unsupported-accusation', 'harassment', 'spam', 'other']
+        && r.createdAt == request.time && exists(messagePath(r.messageId));
+    }
+    match /profiles/{uid} {
+      allow get: if member() || moderator();
+      allow list: if false;
+      allow create: if member() && request.auth.uid == uid
+        && validProfile(request.resource.data) && request.resource.data.createdAt == request.time;
+      allow update: if member() && request.auth.uid == uid
+        && validProfile(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']);
+      allow delete: if false;
+    }
+    match /reports/{reportId} {
+      allow create: if member() && validReport(request.resource.data);
+      allow get: if moderator();
+      allow list: if moderator() && request.query.limit != null
+        && request.query.limit > 0 && request.query.limit <= 50;
+      allow update, delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
