@@ -59,6 +59,52 @@
         "collected_title": "Two killed, five arrested after shooting and high-speed chase in Steenberg"
       },
       "fingerprint": "sha256:8147265cb59f62d762234b26bd6fd808194d395a542e26e866e3a35bec8ee6ae"
+    },
+    {
+      "signal_id": "adf99019-941e-5dd0-9851-635da0a1e146",
+      "external_id": "checked:wc-2026-10-21-s5:B",
+      "source": "TygerBurger (Nova News)",
+      "title": "Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct",
+      "content": "Police say a man of 26 was found with multiple gunshot wounds in front of a property in Korvette Road, Strandfontein, when officers responded at about 20:45 on Monday 19 October (Lieutenant-Colonel Frederick van Wyk, via Cape Argus and TygerBurger). No source says when he was shot. Strandfontein police registered a murder case; police believe the motive is gang-related. No arrest has been reported. The victim was not named. Two reports, both resting on one police account: TygerBurger and Cape Argus (IOL). Both also describe other Strandfontein shootings on 16 and 17 October; those are not part of this pin.",
+      "lat": -34.0766913,
+      "lng": 18.5491929,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-19T18:45:00Z",
+      "published_at": "2026-10-21T15:48:00Z",
+      "metadata": {
+        "source_outlet": "TygerBurger (Nova News)",
+        "link": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+        "pubdate_raw": "2026-10-20T10:53:20+00:00 (datePublished on the page)",
+        "checked": {
+          "incident": "Mon 19 Oct 2026, found when police responded at about 20:45 (police, via Cape Argus and TygerBurger). 20:45 is the response and discovery time, not a shooting time; no source gives one.",
+          "reported": "20 Oct 2026 (TygerBurger 12:53, Cape Argus 17:00 SAST)",
+          "location": "In front of a property in Korvette Road, Strandfontein (police, via Cape Argus). House not given. The pin is a street-level marker for Korvette Road (OpenStreetMap), kept where the builder put it on the owner's decision; it marks the road, not any building or house.",
+          "sources": [
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/"
+            },
+            {
+              "name": "Cape Argus (IOL)",
+              "url": "https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/"
+            }
+          ],
+          "checked_at": "2026-10-21T15:48:00Z",
+          "method": "Found in the 21 Oct 2026 new-signals draft run using the established Sprint 5 Google News queries (window 19-21 Oct); source pages read and claims, dates and place checked by hand, then both re-read, every quote matched word for word and the 12 recorded Sprint 5 query strings re-run on 21 Oct about 15:48 UTC (Batch H); standalone (no case, entity or map line). The other Strandfontein killings in the same reports are not linked.",
+          "incident_start": "2026-10-19T20:45+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-20",
+          "search_aliases": [
+            "Strandfontein",
+            "Korvette Road",
+            "Mitchells Plain",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Fourth person killed in Strandfontein as gang shootings continue"
+      },
+      "fingerprint": "sha256:26ab00d2988d6bb6eca110cb3d2b375c8f885f89b8565fd9089a564d7cd12b11"
     }
   ]
 }

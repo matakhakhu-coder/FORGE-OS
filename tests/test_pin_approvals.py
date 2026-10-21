@@ -184,8 +184,8 @@ def _no_env_enforce(monkeypatch):
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 40
-    assert report.pins_checked == 39
+    assert report.records == len(_real_record_files()) == 41
+    assert report.pins_checked == 40
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -223,7 +223,8 @@ def test_real_legacy_records_match_the_owner_confirmation():
             first[rec["signal_id"]] = rec
     new_pins = {sid for sid, rec in first.items() if rec["basis"] == "explicit"}
     assert new_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5",   # Gqeberha, approved in chat 21 Oct 2026
-                        "048440e0-0be5-53d8-934a-1ba6233a0dfa"}   # Steenberg, approved in chat 21 Oct 2026
+                        "048440e0-0be5-53d8-934a-1ba6233a0dfa",   # Steenberg, approved in chat 21 Oct 2026
+                        "adf99019-941e-5dd0-9851-635da0a1e146"}   # Strandfontein, approved in the live call 21 Oct 2026
     assert set(first) == active
     for sid, rec in first.items():
         if sid in new_pins:

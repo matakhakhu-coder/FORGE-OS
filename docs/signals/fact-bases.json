@@ -3857,6 +3857,108 @@
           "conflicts": []
         }
       ]
+    },
+    "adf99019-941e-5dd0-9851-635da0a1e146": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 26, dead.",
+          "basis": "Police account only",
+          "detail": "Found with multiple gunshot wounds. Both reports relay one police account. The victim was not named.",
+          "sources": [
+            {
+              "name": "Frederick van Wyk, police spokesperson (via Cape Argus)",
+              "url": "https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "archive": "https://web.archive.org/web/20261021160421/https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "quote": "they found the body of a 26-year-old male in the front of a premises at the mentioned street"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 19 October 2026; police responded at about 20:45.",
+          "basis": "Police account only",
+          "detail": "The time is when police responded and found him, not when he was shot; no source gives a shooting time. TygerBurger also says he was found at about 20:45.",
+          "sources": [
+            {
+              "name": "Cape Argus (IOL)",
+              "url": "https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "archive": "https://web.archive.org/web/20261021160421/https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "quote": "officers responded to the Korvette Road shooting at approximately 8.45pm on Monday"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Korvette Road, Strandfontein, in front of a property.",
+          "basis": "Police account only",
+          "detail": "Street only; house not given (Cape Argus, Van Wyk: in the front of a premises).",
+          "sources": [
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "archive": "https://web.archive.org/web/20261021160523/https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "quote": "The man was found with multiple gunshot wounds in Korvette Road on Monday at about 20:45"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot; multiple gunshot wounds.",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Frederick van Wyk, police spokesperson (via Cape Argus)",
+              "url": "https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "archive": "https://web.archive.org/web/20261021160421/https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "quote": "He sustained multiple gunshot wounds to his body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed gang-related (police).",
+          "basis": "Police account only",
+          "detail": "A police belief, not a finding. Cape Argus credits it to Lt-Col Frederick van Wyk in reported speech; TygerBurger states it without a speaker, in the paragraph after Van Wyk. No gang is named and no group is linked.",
+          "sources": [
+            {
+              "name": "Frederick van Wyk, police spokesperson (via Cape Argus, reported speech)",
+              "url": "https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "archive": "https://web.archive.org/web/20261021160421/https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/",
+              "quote": "Van Wyk said a murder case had been opened and the motive was believed to be gang-related."
+            },
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "archive": "https://web.archive.org/web/20261021160523/https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "quote": "The motive is believed to be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case registered by Strandfontein police; no arrest reported.",
+          "basis": "Police account only",
+          "detail": "No report mentions an arrest as of 20 October. Current status not checked.",
+          "sources": [
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "archive": "https://web.archive.org/web/20261021160523/https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/",
+              "quote": "Strandfontein police have registered a murder case for investigation."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

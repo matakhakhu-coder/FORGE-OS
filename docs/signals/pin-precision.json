@@ -51,6 +51,7 @@
     "a3d91502-d7c3-5257-99ac-0c99e948b038": {"precision": "town", "uncertainty_m": 20000, "note": "Willowvale town point; the homestead may be well outside town."},
     "335b265d-2edd-54e2-969e-31e38733ff3a": {"precision": "town", "uncertainty_m": 20000, "note": "Mqanduli town point; Mbulawa Location is not mapped."},
     "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {"precision": "street", "uncertainty_m": 1000, "note": "Russell Road, Central, Gqeberha; outside an unnamed corner shop. The road is over a kilometre long."},
-    "048440e0-0be5-53d8-934a-1ba6233a0dfa": {"precision": "street", "uncertainty_m": 1000, "note": "Military Road, Steenberg; spot not given and the road is long. The pin marks the shooting, not the abandonment (Kirstenhof) or arrest (Lakeside) locations."}
+    "048440e0-0be5-53d8-934a-1ba6233a0dfa": {"precision": "street", "uncertainty_m": 1000, "note": "Military Road, Steenberg; spot not given and the road is long. The pin marks the shooting, not the abandonment (Kirstenhof) or arrest (Lakeside) locations."},
+    "adf99019-941e-5dd0-9851-635da0a1e146": {"precision": "street", "uncertainty_m": 500, "note": "Korvette Road, Strandfontein; house not given. The point is a street-level marker kept on the owner's decision; in OpenStreetMap it falls on a church building at 57 Korvette Road, which no source names. It does not mark that building as the scene."}
   }
 }

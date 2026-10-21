@@ -572,6 +572,21 @@
       ],
       "independence": "same_statement",
       "note": "One police statement, three reports. SAPS posted it on X at 15:15 SAST, 24 minutes before Cape Times; Cape Times (IOL, one outlet group) quotes it word for word and credits it to Constable Ndakhe Gwala; Smile 90.4FM quotes it and adds Lakeside; Briefly News rewrites it and adds the mayor's post. Repetition is not independent corroboration. The mayor's post speaks to the chase, arrests and weapons, not the killing."
+    },
+    "adf99019-941e-5dd0-9851-635da0a1e146": {
+      "statement_from": "Police: Lt-Col Frederick van Wyk (Cape Argus: 'police spokesperson'; TygerBurger: 'commander of the provincial media centre'), quoted by TygerBurger and Cape Argus",
+      "spokesperson": [
+        "Frederick van Wyk"
+      ],
+      "other_voices": [
+        "Ward councillor Elton Jansen (about policing, not the killing)"
+      ],
+      "outlets": [
+        "TygerBurger (Nova News)",
+        "Cape Argus (IOL)"
+      ],
+      "independence": "same_statement",
+      "note": "One police account, two reports in different media groups (Nova News and Independent Media). Cape Argus quotes Van Wyk directly and in reported speech; TygerBurger paraphrases. Repetition is not independent corroboration. The councillor speaks only about the police response."
     }
   }
 }
