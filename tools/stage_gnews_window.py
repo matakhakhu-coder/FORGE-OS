@@ -9,6 +9,11 @@ source by hand, write the checked pins into a docs/signals batch, then load
 them with tools/checked_signals.py. (Used for the Western Cape batches of
 18 Oct 2026; committed in Sprint 1.)
 
+The output file is {"run": {...}, "items": [...]}. "run" records the full
+query list in order and the run settings, with each query's RSS URL and
+counts, including queries that fetched nothing or failed, so a search can be
+reproduced from the file alone. "items" is the list of staged items.
+
     python tools/stage_gnews_window.py \
         --keywords "Khayelitsha murder|Delft shooting" \
         --from 2026-10-01 --to 2026-10-17 --out /tmp/wc-staged.json
@@ -33,16 +38,18 @@ def main(argv=None) -> int:
     ap.add_argument('--to', dest='to', required=True, help='YYYY-MM-DD, SAST, inclusive')
     ap.add_argument('--out', required=True, help='JSON file to write (keep it out of the repo)')
     a = ap.parse_args(argv)
+    started = datetime.now(timezone.utc)
 
     start = datetime.strptime(a.frm, '%Y-%m-%d').replace(tzinfo=SAST)
     end = datetime.strptime(a.to, '%Y-%m-%d').replace(tzinfo=SAST) + timedelta(days=1)
     days = (datetime.now(timezone.utc) - start).days + 2
     queries = [k.strip() for k in a.keywords.split('|') if k.strip()]
-    seen, out = {}, []
+    seen, out, log = {}, [], []
     for i, q in enumerate(queries):
-        xml = g._fetch_rss(g._build_rss_url(q))
+        url = g._build_rss_url(q)
+        xml = g._fetch_rss(url)
         items = g._parse_rss_items(xml, q, days) if xml else []
-        kept = 0
+        kept = in_window = 0
         for it in items:
             try:
                 dt = datetime.strptime(it['pubdate_parsed'][:19], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc)
@@ -50,6 +57,7 @@ def main(argv=None) -> int:
                 continue
             if not (start <= dt < end):
                 continue
+            in_window += 1
             sig = g.build_signal(it, g._is_crime_context(q))
             key = sig['external_id']
             if key in seen:
@@ -61,11 +69,19 @@ def main(argv=None) -> int:
             seen[key] = rec
             out.append(rec)
             kept += 1
+        log.append({'query': q, 'rss_url': url, 'fetch_ok': bool(xml), 'fetched': len(items),
+                    'in_window': in_window, 'new_in_window': kept})
         print(f'[{i+1}/{len(queries)}] {q}: {len(items)} fetched, {kept} new in window', flush=True)
         if i < len(queries) - 1:
             time.sleep(g.REQUEST_DELAY)
     out.sort(key=lambda r: r['published_sast'])
-    Path(a.out).write_text(json.dumps(out, indent=1, ensure_ascii=False))
+    run = {'tool': 'tools/stage_gnews_window.py', 'keywords_arg': a.keywords,
+           'from': a.frm, 'to': a.to, 'window_timezone': 'SAST (UTC+02:00)',
+           'lookback_days': days, 'request_delay_s': g.REQUEST_DELAY,
+           'started_utc': started.strftime('%Y-%m-%dT%H:%M:%SZ'),
+           'finished_utc': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+           'query_count': len(queries), 'queries': log, 'unique_items': len(out)}
+    Path(a.out).write_text(json.dumps({'run': run, 'items': out}, indent=1, ensure_ascii=False))
     print(f'{len(out)} unique items -> {a.out}')
     return 0
 
