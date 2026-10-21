@@ -12,9 +12,11 @@ batches carry none, and nothing here writes to them.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import sqlite3
+import subprocess
 import sys
 from pathlib import Path
 
@@ -65,14 +67,16 @@ def _approve_test_edits(tmp_path, monkeypatch, index) -> int:
 
     The committed ledger approves the committed pins, so a pin a test has
     edited (here: given link records) no longer matches its approval and the
-    publisher refuses it. This copies the committed ledger and adds a
-    synthetic supersede record for each active pin whose data changed, then
-    points the approval check at the copy. Returns how many it approved.
+    publisher refuses it. This copies the committed ledger into a throwaway
+    git repo whose origin/main holds it, adds a synthetic supersede record for
+    each active pin whose data changed (new files only, as the append-only
+    rule allows), then points the approval check at that repo. The append-only
+    check runs against the copy, so it works with enforcement on. Returns how
+    many it approved.
     """
     from tools import approvals as ap
 
-    ledger = tmp_path / "approvals"
-    shutil.copytree(ap.APPROVALS_DIR, ledger)
+    ledger_repo, ledger = _ledger_repo(tmp_path, ap.APPROVALS_DIR)
     findings: list = []
     records = ap.load_records(ledger, findings)
     loaded, by_id = ap._batch_pins(index)
@@ -96,7 +100,23 @@ def _approve_test_edits(tmp_path, monkeypatch, index) -> int:
         (ledger / sid / f"{aid}.json").write_text(json.dumps(rec, indent=2, ensure_ascii=False))
     assert not [f for f in findings if f.kind == "violation"], [f.line() for f in findings]
     monkeypatch.setattr(ap, "APPROVALS_DIR", ledger)
+    monkeypatch.setattr(ap, "ROOT", ledger_repo)
     return n
+
+
+def _ledger_repo(tmp_path, source: Path) -> tuple[Path, Path]:
+    """A throwaway git repo holding a committed copy of the ledger, published as origin/main."""
+    repo = tmp_path / "ledger-repo"
+    ledger = repo / "docs" / "approvals" / "pins"
+    shutil.copytree(source, ledger)
+    env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(tmp_path)}
+    for args in (("init", "-q"), ("add", "-A"),
+                 ("-c", "user.name=t", "-c", "user.email=t@example.invalid",
+                  "-c", "core.hooksPath=/dev/null", "commit", "-q", "-m", "ledger"),
+                 ("update-ref", "refs/remotes/origin/main", "HEAD")):
+        r = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, text=True, env=env)
+        assert r.returncode == 0, r.stderr
+    return repo, ledger
 
 
 def _build(tmp_path, monkeypatch, index, case_pins=None, anchors=None):
@@ -199,6 +219,23 @@ def test_edited_pin_without_a_new_approval_is_refused(tmp_path, monkeypatch, cap
         _build(tmp_path, monkeypatch, index)
     out = capsys.readouterr().out
     assert "REFUSED: pin approval ledger" in out and VOORBRUG[:8] in out
+    assert not (tmp_path / "dist" / "index.html").exists()
+
+
+def test_edited_record_in_the_test_ledger_is_refused(tmp_path, monkeypatch, capsys):
+    """The test ledger is really checked: editing a record it holds refuses the publish."""
+    index = _copy_signals(tmp_path)
+    _add_links(index, 1, VOORBRUG, [_link(N2_GATEWAY)])
+    assert _approve_test_edits(tmp_path, monkeypatch, index) == 1
+    import tools.publish as pub
+    from tools import approvals as ap
+    f = sorted(p for p in ap.APPROVALS_DIR.glob("*/2026*.json"))[0]     # a committed record
+    rec = json.loads(f.read_text()); rec["owner"] = "someone-else"
+    f.write_text(json.dumps(rec, indent=2))
+    with pytest.raises(pub.CheckedGuardError):
+        _build(tmp_path, monkeypatch, index)
+    out = capsys.readouterr().out
+    assert "REFUSED: pin approval ledger" in out and "append-only" in out
     assert not (tmp_path / "dist" / "index.html").exists()
 
 

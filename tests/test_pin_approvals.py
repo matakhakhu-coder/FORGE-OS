@@ -5,10 +5,13 @@ Each test builds a throwaway git repo under tmp_path holding a copy of
 docs/signals and an approvals folder. No real database, no network, and the
 real docs/signals and docs/approvals are only read.
 
-The `repo` fixture copies only the ledger's rules (README, policy, schema,
-example), so the mechanics are tested from an empty ledger with synthetic
-records. The `real_repo` fixture copies the committed records as well, and
-the tests on it check what the real ledger holds.
+The `repo` fixture copies only the ledger's rules (README, schema, example)
+and writes its own policy.json with "enforce": false, so the mechanics are
+tested from an empty, unenforced ledger with synthetic records whatever the
+committed policy says. Tests of enforced behaviour turn it on explicitly
+(enforce=True, the environment, or by writing the fixture's policy). The
+`real_repo` fixture copies the committed ledger as it stands, records and
+policy included, and the tests on it check what the real ledger holds.
 """
 from __future__ import annotations
 
@@ -53,7 +56,14 @@ def _publish_base(repo: Path) -> None:
     _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
 
 
-LEDGER_RULES = ("README.md", "policy.json", "schema", "_examples")
+LEDGER_RULES = ("README.md", "schema", "_examples")   # policy.json: see _write_policy
+
+
+def _write_policy(ledger: Path, *, enforce: bool) -> None:
+    """The committed policy.json with an explicit enforce flag, for a fixture ledger."""
+    data = json.loads((REAL_LEDGER / "policy.json").read_text())
+    data["enforce"] = enforce
+    (ledger / "policy.json").write_text(json.dumps(data, indent=2))
 
 
 def _real_record_files() -> list[Path]:
@@ -72,6 +82,7 @@ def _make_repo(tmp_path: Path, *, with_records: bool) -> Path:
         for name in LEDGER_RULES:
             src = REAL_LEDGER / name
             (shutil.copytree if src.is_dir() else shutil.copy2)(src, ledger / name)
+        _write_policy(ledger, enforce=False)
     _git(r.parent, "init", "-q", str(r))
     _commit(r, "base")
     _publish_base(r)
@@ -80,13 +91,13 @@ def _make_repo(tmp_path: Path, *, with_records: bool) -> Path:
 
 @pytest.fixture
 def repo(tmp_path):
-    """docs/signals plus the ledger's rules only: no approval records yet."""
+    """docs/signals plus the ledger's rules only: no approval records, policy enforce=false."""
     return _make_repo(tmp_path, with_records=False)
 
 
 @pytest.fixture
 def real_repo(tmp_path):
-    """docs/signals plus the committed ledger, records included."""
+    """docs/signals plus the committed ledger, records and policy included."""
     return _make_repo(tmp_path, with_records=True)
 
 
@@ -170,16 +181,32 @@ def _no_env_enforce(monkeypatch):
 
 # ── the real repo files ───────────────────────────────────────────────────────────────
 
-def test_real_ledger_approves_every_active_pin_and_is_not_enforced():
+def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
-    assert not report.enforce                          # policy.json still says false
-    assert report.records == len(_real_record_files())
+    assert report.enforce                              # policy.json says true
+    assert report.records == len(_real_record_files()) == 38
     assert report.pins_checked == 37
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
-    strict = ap.verify(check_git=False, enforce=True)  # what turning enforcement on would see
-    assert strict.ok and not strict.gaps, [f.line() for f in strict.findings]
+
+
+def test_committed_policy_enforces_and_env_cannot_loosen(monkeypatch):
+    findings: list = []
+    assert ap.load_policy(REAL_LEDGER, findings) is True
+    assert findings == []                              # a well-formed policy, not a broken one
+    monkeypatch.setenv(ap.ENFORCE_ENV, "0")
+    assert ap.verify(check_git=False).enforce
+
+
+def test_committed_policy_refuses_a_pin_without_a_record(repo, monkeypatch):
+    """The committed policy, dropped into an empty ledger, refuses every gap."""
+    shutil.copy2(REAL_LEDGER / "policy.json", _ledger(repo) / "policy.json")
+    monkeypatch.setenv(ap.ENFORCE_ENV, "0")
+    r = _verify(repo, check_git=False)
+    assert r.enforce and not r.violations
+    assert len(r.gaps) == r.pins_checked and not r.ok
+    assert "gap(s) with enforcement on" in ap.refusal_reason(r)
 
 
 def test_real_legacy_records_match_the_owner_confirmation():

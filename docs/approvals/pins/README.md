@@ -66,6 +66,11 @@ The ledger starts empty, so every existing pin is a gap. `policy.json` therefore
 
 For a one-off strict run before step 3, set `FORGE_APPROVALS_ENFORCE=1`. The environment can only turn enforcement on, never off.
 
+Status: steps 1 and 2 are done (37 legacy records plus the Cafda version-2 supersede) and `policy.json` now says `"enforce": true`. That switch belongs on `main` only after the records are there. With enforcement on:
+
+- Every checkout that imports or publishes needs a fetched `origin/main` (`git fetch`), or the append-only check cannot run and the gap refuses.
+- The append-only check compares against `origin/main`. Until the records are on `main`, an uncommitted edit to a record's unhashed fields (owner, reference, summary) is not caught; hashed fields are always caught by `payload_sha256`.
+
 ## Limits
 
 - This repository has no GitHub checks, so the validator runs only where the tools run. A direct push to `main` can skip it; the history check catches an edited record the next time any tool runs.
