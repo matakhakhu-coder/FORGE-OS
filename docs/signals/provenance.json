@@ -527,7 +527,7 @@
       "note": "Police-involved death. Six outlets, all repeating the police statement, including its claim that the dead man was a person of interest in other murders. IPID is to investigate; no IPID finding and no ballistic result has been reported. No source outside the police."
     },
     "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {
-      "statement_from": "SAPS Western Cape, quoted by Smile 90.4FM",
+      "statement_from": "SAPS Western Cape, quoted by Smile 90.4FM and IOL",
       "spokesperson": [
         "Wesley Twigg"
       ],
@@ -535,10 +535,12 @@
         "Western Cape Department of Health and Wellness (Monique Johnstone)"
       ],
       "outlets": [
-        "Smile 90.4FM"
+        "Smile 90.4FM",
+        "Cape Times (IOL)",
+        "Cape Argus (IOL)"
       ],
-      "independence": "single_report",
-      "note": "One report. The incident facts come from police; the health department speaks only about the clinic closure."
+      "independence": "same_statement",
+      "note": "Two reports, both resting on police. IOL ran one story twice (Cape Times and Cape Argus), so it counts once. The health department speaks only about the clinic closure."
     }
   }
 }

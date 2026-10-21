@@ -220,6 +220,35 @@ def test_real_legacy_records_match_the_owner_confirmation():
         assert [s["url"] for s in rec["source_hashes"]] == list(dict.fromkeys(urls))
 
 
+CAFDA = "7aa4eea1-c1f4-55af-b761-d55ff2df3a51"
+CAFDA_IOL = ("https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-"
+             "reopens-after-fatal-shooting-nearby2/")
+
+
+def test_cafda_source_change_is_approved_as_version_2():
+    """The owner approved adding the IOL Cape Times article after the legacy push."""
+    recs = sorted((json.loads(f.read_text(encoding="utf-8"))
+                   for f in (REAL_LEDGER / CAFDA).glob("*.json")),
+                  key=lambda r: r["pin_version"])
+    assert [r["pin_version"] for r in recs] == [1, 2]
+    v1, v2 = recs
+    assert v1["basis"] == "legacy" and v1["approved_payload"]["content"].endswith("One report only.")
+    assert v2["action"] == "supersede" and v2["supersedes"] == v1["approval_id"]
+    assert v2["basis"] == "explicit" and v2["scope"] == "data-only"
+    assert v2["owner"] == "Riley Bishop" and v2["recorded_by"] == "Maya"
+    assert ap._iso_tz(v2["approved_at"]) > ap._iso_tz(v1["recorded_at"])
+    loaded, by_id = ap._batch_pins(REAL_SIGNALS / "index.json")
+    pin, _ = by_id[CAFDA]
+    assert v2["payload_sha256"] == ap.payload_sha256(pin)
+    urls = [s["url"] for s in pin["metadata"]["checked"]["sources"]]
+    assert urls == [v1["source_hashes"][0]["url"], CAFDA_IOL]
+    assert "One report only." not in pin["content"]
+    assert v2["source_hashes"][1]["content_sha256"].startswith("sha256:d80bb94e")
+    prov = json.loads((REAL_SIGNALS / "provenance.json").read_text(encoding="utf-8"))
+    assert prov["pins"][CAFDA]["independence"] == "same_statement"
+    assert prov["pins"][CAFDA]["spokesperson"] == ["Wesley Twigg"]      # no rank
+
+
 def test_real_records_catch_an_edited_pin(real_repo):
     assert _verify(real_repo, enforce=True).ok
     sid, _ = _pins(real_repo)[0]
