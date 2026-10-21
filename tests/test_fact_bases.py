@@ -2,17 +2,27 @@
 import json
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
+# Gitignored (private/ is never committed), so it exists only on audit machines.
+PRIVATE_AUDIT = ROOT / 'private/admiralty-audit/audit.json'
 
 
 def load(path):
     return json.loads((ROOT / path).read_text())
 
 
+def test_export_matches_private_audit_scope():
+    if not PRIVATE_AUDIT.exists():
+        pytest.skip('private Admiralty audit is gitignored; scope cross-check needs an audit machine')
+    exported = load('docs/signals/fact-bases.json')['pins']
+    audit = json.loads(PRIVATE_AUDIT.read_text())
+    assert set(exported) == {p['signal_id'] for p in audit}
+
+
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    audit = load('private/admiralty-audit/audit.json')
-    assert set(exported) == {p['signal_id'] for p in audit}
     assert len(exported) == 36
     assert sum(len(p['facts']) for p in exported.values()) == 216
     text = json.dumps(exported)
