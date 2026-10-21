@@ -112,7 +112,14 @@ from urllib.parse import urljoin
 _log = logging.getLogger("forge.bi196_collector")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-DB_PATH      = Path(__file__).resolve().parent.parent.parent / "database.db"
+# FORGE_DB / FORGE_ROLE handling lives in core.db.paths (this collector used to
+# ignore FORGE_DB and always write to the checkout's database.db).
+import sys as _forge_sys
+_FORGE_REPO_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+if _FORGE_REPO_ROOT not in _forge_sys.path:
+    _forge_sys.path.insert(0, _FORGE_REPO_ROOT)
+from core.db.paths import resolve_db_path as _resolve_db_path, connect_db as _connect_db  # noqa: E402
+DB_PATH      = _resolve_db_path(Path(__file__).resolve().parent.parent.parent / "database.db")
 REQ_DELAY    = 2.0    # seconds between HTTP requests
 MAX_ACTORS   = 20     # actors per actor-sweep run
 MAX_PDFS     = 15     # gazette PDFs per run
@@ -784,7 +791,7 @@ def run(
         "actor_sweep": 0,
         "total_written": 0,
     }
-    conn = sqlite3.connect(str(DB_PATH), timeout=60)
+    conn = _connect_db(DB_PATH, timeout=60)
     conn.row_factory = sqlite3.Row
     try:
         if actor_name:

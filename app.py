@@ -42,9 +42,30 @@ from werkzeug.utils import secure_filename
 # Configuration
 # ---------------------------------------------------------------------------
 from dotenv import load_dotenv
-load_dotenv(override=True)
+from core.db import paths as _forge_paths
 BASE_DIR  = Path(__file__).resolve().parent
-DB_PATH   = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
+# FORGE_ROLE comes from the process environment only, never from .env.
+# Staging reads no .env at all: app.py loads .env with override on, so a stray
+# file could otherwise repoint FORGE_DB. A .env that python-dotenv could find
+# from this folder or the working folder stops a staging process outright.
+_FORGE_ROLE_BEFORE_DOTENV = os.environ.get(_forge_paths.ROLE_ENV)
+if _forge_paths.is_staging():
+    _forge_dotenvs = _forge_paths.dotenv_files([BASE_DIR, os.getcwd()])
+    if _forge_dotenvs:
+        raise SystemExit(
+            "[FORGE] refused: FORGE_ROLE=staging and a .env file exists at "
+            + ", ".join(str(p) for p in _forge_dotenvs)
+            + ". Staging takes its settings only from its environment.")
+else:
+    load_dotenv(override=True)
+    if os.environ.get(_forge_paths.ROLE_ENV) != _FORGE_ROLE_BEFORE_DOTENV:
+        print("[FORGE] warning: FORGE_ROLE in .env is ignored; the role comes from "
+              "the process environment only.", file=sys.stderr)
+        if _FORGE_ROLE_BEFORE_DOTENV is None:
+            os.environ.pop(_forge_paths.ROLE_ENV, None)
+        else:
+            os.environ[_forge_paths.ROLE_ENV] = _FORGE_ROLE_BEFORE_DOTENV
+DB_PATH   = _forge_paths.resolve_db_path(BASE_DIR / "database.db")  # FORGE_DB: isolated copy
 MEDIA_DIR = BASE_DIR / "media"
 
 # core.db.connection was imported above, before .env was read, so a FORGE_DB
@@ -52,8 +73,10 @@ MEDIA_DIR = BASE_DIR / "media"
 # database as the app (Sprint 3). Without FORGE_DB nothing changes.
 import core.db.connection as _forge_conn  # noqa: E402
 import core.pipeline.ingest as _forge_ingest  # noqa: E402
+import core.web.helpers as _forge_helpers  # noqa: E402
 _forge_conn.DB_PATH = DB_PATH
 _forge_ingest._FORGE_DB_PATH = str(DB_PATH)
+_forge_helpers.DB_PATH = DB_PATH
 
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]
 ACTOR_PHOTO_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
@@ -1019,7 +1042,9 @@ END;
 
 
 def _open_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(DB_PATH), timeout=60)
+    # Default role: plain connect, as before. Staging: re-checked path, mode=rw,
+    # so --init-db works only on a file that was created and handed over first.
+    conn = _forge_paths.connect_db(DB_PATH, timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")

@@ -67,23 +67,33 @@ log = logging.getLogger("mega_runner")
 # Patch asyncio to allow nested event loops (required by some collectors)
 nest_asyncio.apply()
 
-# ── Path resolution ───────────────────────────────────────────────────────────
-# Prefer FORGE_DB env var; fall back to repo-root database.db
-_env_db = os.environ.get("FORGE_DB")
-if _env_db:
-    DB_PATH = Path(_env_db).resolve()
-else:
-    try:
-        from core.db.connection import DB_PATH as _core_db
-        DB_PATH = _core_db
-    except ImportError:
-        DB_PATH = Path(__file__).resolve().parent.parent / "database.db"
-
-log.info(f"[config] DB_PATH = {DB_PATH}")
-
 # ── FORGE path bootstrap — must come before any core/ imports ─────────────────
 import sys as _sys, os as _os
 _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
+# ── Path resolution ───────────────────────────────────────────────────────────
+# Default role (unchanged): FORGE_DB if set, else the repo-root database.db.
+# FORGE_ROLE=staging: FORGE_DB is required, there is no fallback, the file must
+# already exist, and symlinked or deny-listed paths are refused (core.db.paths).
+from core.db import paths as _forge_paths  # noqa: E402
+
+try:
+    DB_PATH = _forge_paths.resolve_db_path(Path(__file__).resolve().parent.parent / "database.db")
+except _forge_paths.DBPathError as _exc:
+    raise SystemExit(f"[mega_ingest] refused: {_exc}")
+STAGING = _forge_paths.is_staging()
+if STAGING:
+    # Collectors and engines started from here read FORGE_DB; make sure they all
+    # see the one checked path.
+    os.environ["FORGE_DB"] = str(DB_PATH)
+
+
+def _db_connect(timeout: float = 60.0) -> sqlite3.Connection:
+    """Open DB_PATH. Staging re-checks it and uses mode=rw (never creates a file)."""
+    return _forge_paths.connect_db(DB_PATH, timeout=timeout)
+
+
+log.info(f"[config] DB_PATH = {DB_PATH}" + ("  (FORGE_ROLE=staging)" if STAGING else ""))
 
 # ── FMS bootstrap (must come after log + path are defined) ───────────────────
 try:
@@ -380,7 +390,7 @@ def run_engines_processors() -> dict:
     # ── Vision status: report NULL cluster_id count before clustering ───────────
     # This gives the analyst a perception-restoration metric on every run.
     try:
-        _vc = sqlite3.connect(str(DB_PATH), timeout=10)
+        _vc = _db_connect(timeout=10)
         _null_before = _vc.execute(
             "SELECT COUNT(*) FROM signals WHERE cluster_id IS NULL"
         ).fetchone()[0]
@@ -419,7 +429,7 @@ def run_engines_processors() -> dict:
 
     # ── Vision status: post-run delta ─────────────────────────────────────────
     try:
-        _vc2 = sqlite3.connect(str(DB_PATH), timeout=10)
+        _vc2 = _db_connect(timeout=10)
         _null_after = _vc2.execute(
             "SELECT COUNT(*) FROM signals WHERE cluster_id IS NULL"
         ).fetchone()[0]
@@ -483,7 +493,7 @@ def bridge_ner_to_actors() -> dict:
     """
     from forage.engines.entity_engine import get_or_create_actor
 
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -575,7 +585,7 @@ def bridge_dork_to_cases() -> dict:
     Idempotent: case_signals has UNIQUE(case_id, signal_id) — safe to re-run.
     Gracefully skips actors that were pruned (MURDER, Date-actors, etc.).
     """
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -686,7 +696,7 @@ def bridge_pdf_signals_to_cases() -> dict:
     Idempotent: case_signals has UNIQUE(case_id, signal_id) — safe to re-run.
     Falls back to event_actors → case_events path when case_actors is empty.
     """
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -790,7 +800,7 @@ def bridge_events_to_cases() -> dict:
     Idempotent: case_events has PRIMARY KEY (case_id, event_id) — safe to
     re-run; INSERT OR IGNORE silently skips existing pins.
     """
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -867,7 +877,7 @@ def bridge_artifacts_to_cases() -> dict:
     lookup maps are built with one bulk query each instead, then joined
     in memory.
     """
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -956,7 +966,7 @@ def bridge_cooccurrence_to_relationships(min_shared: int = 2) -> dict:
     Must run AFTER Phase 2 (graph_engine has computed co-occurrence edges)
     and BEFORE Phase 3 (so dork_collector targets updated influence scores).
     """
-    conn = sqlite3.connect(str(DB_PATH), timeout=30)
+    conn = _db_connect(timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
 
@@ -1050,7 +1060,7 @@ def run_full_ingest(
     """
     log.info("[ingest] Opening signal batch...")
 
-    conn = sqlite3.connect(str(DB_PATH), timeout=60)
+    conn = _db_connect(timeout=60)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
@@ -1110,7 +1120,7 @@ def run_full_ingest(
     # Post-ingest DB counts — use correct schema column names
     db_actors = db_events = db_cases = db_signals_processed = 0
     try:
-        _c = sqlite3.connect(str(DB_PATH), timeout=10)
+        _c = _db_connect(timeout=10)
         _cur = _c.cursor()
         # actors.source_type, not actors.automated (column doesn't exist)
         _cur.execute("SELECT COUNT(*) FROM actors WHERE source_type = 'live'")
@@ -1167,7 +1177,14 @@ def import_checked_signals() -> dict:
     articles that are already checked pins) and again right before publishing
     (so anything the engines or ingest changed on a checked pin is put back).
     Non-fatal here; tools/publish.py refuses to build if the pins are not right.
+
+    FORGE_ROLE=staging: skipped. Hand-checked pins reach the authority only
+    through `checked_signals.py import --write` from the agent's own account,
+    never through a staging database.
     """
+    if STAGING:
+        log.info("[checked] skipped: FORGE_ROLE=staging never imports hand-checked pins")
+        return {"status": "skipped", "detail": "staging"}
     try:
         from tools.checked_signals import CheckedSignalError, run_import
     except Exception as exc:
@@ -1198,6 +1215,11 @@ def run_publish_deploy() -> dict:
     """
     import subprocess
     import os
+    if STAGING:
+        # Checked before FORGE_ALLOW_PUBLISH: staging never publishes.
+        log.warning("[publish] refused: FORGE_ROLE=staging never publishes "
+                    "(FORGE_ALLOW_PUBLISH is ignored)")
+        return {"status": "refused", "detail": "staging"}
     if os.environ.get("FORGE_ALLOW_PUBLISH") != "1":
         log.info("[publish] skipped: set FORGE_ALLOW_PUBLISH=1 to allow publishing")
         return {"status": "skipped"}
@@ -1230,7 +1252,7 @@ def _log_pipeline_run(
 ) -> None:
     """Write a pipeline_runs entry. Non-fatal on any error."""
     try:
-        conn = sqlite3.connect(str(DB_PATH), timeout=10)
+        conn = _db_connect(timeout=10)
         conn.execute("""
             INSERT INTO pipeline_runs
                 (component, status, records_in, records_out, duration_s, detail_json)

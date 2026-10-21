@@ -1,4 +1,3 @@
-import os
 import html
 import logging
 import re
@@ -38,8 +37,9 @@ except ImportError:
     _REL_EXTRACT_AVAILABLE = False
 
 # Phase P1: DB path for heartbeat + enrichment queue — resolved once at module load
-import sqlite3 as _sqlite3
-_FORGE_DB_PATH = str((Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else Path(__file__).resolve().parent.parent.parent / "database.db"))  # FORGE_DB: isolated copy
+from core.db.paths import resolve_db_path as _resolve_db_path, connect_db as _connect_db
+# FORGE_DB: isolated copy. Default role unchanged; staging requires FORGE_DB (core.db.paths).
+_FORGE_DB_PATH = str(_resolve_db_path(Path(__file__).resolve().parent.parent.parent / "database.db"))
 
 # Phase P2: Sources whose RSS content is typically stub-length and worth enriching
 _ENRICHABLE_SOURCES = frozenset({
@@ -407,10 +407,10 @@ def ingest_and_persist(signal: dict) -> dict:
         conn.close()
 
     # ── Phase P1: Pipeline Heartbeat ─────────────────────────────────────────
-    # Non-blocking. Uses module-level _sqlite3 and _FORGE_DB_PATH (resolved
+    # Non-blocking. Uses core.db.paths.connect_db and _FORGE_DB_PATH (resolved
     # once at import time). timeout=5 so a DB lock never stalls ingest.
     try:
-        _hb = _sqlite3.connect(_FORGE_DB_PATH, timeout=5)
+        _hb = _connect_db(_FORGE_DB_PATH, timeout=5)
         _hb.execute(
             "INSERT INTO pipeline_health (event_type, signal_count, source, recorded_at)"
             " VALUES (?, 1, ?, datetime('now'))",
@@ -437,7 +437,7 @@ def ingest_and_persist(signal: dict) -> dict:
             _article_url.startswith("http://") or _article_url.startswith("https://")
         ):
             try:
-                _eq = _sqlite3.connect(_FORGE_DB_PATH, timeout=5)
+                _eq = _connect_db(_FORGE_DB_PATH, timeout=5)
                 _eq.execute(
                     "INSERT OR IGNORE INTO enrichment_queue"
                     " (signal_id, url, source, queued_at, status)"

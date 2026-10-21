@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge.pin_approval.v1",
+  "title": "FORGE pin approval record, version 1",
+  "description": "One owner approval (or supersede, or revoke) of one exact pin payload. Append-only: never edit or delete a record; add a supersede or revoke record instead. tools/approvals.py verify enforces this schema plus the cross-field rules it cannot express (folder and file names, hash of approved_payload, chain order, legacy rules). An approval covers data only: it never authorises a build, publish or deploy.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "approval_id", "signal_id", "action", "pin_version", "supersedes",
+    "batch_file", "approved_payload", "payload_sha256", "source_hashes",
+    "diff_from_previous", "owner", "approved_at", "recorded_at", "recorded_by",
+    "approval_reference", "basis", "scope"
+  ],
+  "properties": {
+    "schema": { "const": "forge.pin_approval.v1" },
+    "approval_id": {
+      "description": "UTC time the record was made plus 8 random hex digits. Also the file name: <approval_id>.json.",
+      "type": "string",
+      "pattern": "^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$"
+    },
+    "signal_id": {
+      "description": "The pin's signal_id. Also the folder name.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "action": { "enum": ["approve", "supersede", "revoke"] },
+    "pin_version": {
+      "description": "1 for the first record; every later record is the previous one plus 1.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "supersedes": {
+      "description": "null on version 1; otherwise the approval_id of the current latest record.",
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$"
+    },
+    "batch_file": {
+      "description": "The docs/signals batch file that holds the pin (file name only). null on a revoke.",
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]+\\.json$"
+    },
+    "approved_payload": {
+      "description": "The pin's fingerprinted fields exactly as approved, in canonical form. null on a revoke.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["signal_id", "lat", "lng"],
+      "properties": {
+        "signal_id": { "type": "string" },
+        "external_id": {},
+        "source": {},
+        "title": {},
+        "content": {},
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "stream": {},
+        "timestamp": {},
+        "published_at": {},
+        "metadata": {}
+      }
+    },
+    "payload_sha256": {
+      "description": "sha256 of approved_payload serialised with sorted keys, UTF-8 and no spaces: the same value as the pin's fingerprint in docs/signals. null on a revoke.",
+      "type": ["string", "null"],
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "source_hashes": {
+      "description": "The sources behind the approved data. Unknown values stay null; nothing is filled in by guessing.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["url", "retrieved_at", "content_sha256"],
+        "properties": {
+          "url": { "type": "string", "pattern": "^https?://" },
+          "retrieved_at": { "type": ["string", "null"], "format": "date-time" },
+          "content_sha256": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "diff_from_previous": {
+      "description": "null on version 1; required on a supersede: what changed from the last approved version.",
+      "type": ["object", "array", "null"]
+    },
+    "owner": {
+      "description": "The approving owner, by pseudonym. Never an email address.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[^@]+$"
+    },
+    "approved_at": {
+      "description": "When the owner approved, with time zone. null only on a legacy record whose date was never recorded; no date is invented.",
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "recorded_at": {
+      "description": "When this record was written, with time zone.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "recorded_by": { "type": "string", "minLength": 1 },
+    "approval_reference": {
+      "description": "A short opaque ID and a one-line summary. No chat text goes into Git.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "summary"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,64}$" },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[^\\r\\n]+$" }
+      }
+    },
+    "basis": {
+      "description": "explicit: approved for this record. legacy: records an approval given before the ledger existed (first approve only).",
+      "enum": ["explicit", "legacy"]
+    },
+    "scope": {
+      "description": "The approval lets this exact data into the authority. It does not cover a build, publish or deploy.",
+      "const": "data-only"
+    }
+  }
+}

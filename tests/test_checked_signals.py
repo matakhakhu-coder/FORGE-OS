@@ -413,6 +413,8 @@ def test_mega_ingest_imports_before_publishing(tmp_path, monkeypatch):
     calls = []
 
     def fake_run(cmd, **kw):
+        if cmd[:1] == ["git"]:   # the approval ledger's read-only append-only check
+            return subprocess.CompletedProcess(cmd, 0, "", "")
         n = sqlite3.connect(str(db_file)).execute(
             "SELECT COUNT(*) FROM signals WHERE source_type = 'checked'").fetchone()[0]
         calls.append((cmd, n))

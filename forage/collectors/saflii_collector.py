@@ -56,7 +56,14 @@ from pathlib import Path
 _log = logging.getLogger("forge.saflii_collector")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-DB_PATH     = Path(__file__).resolve().parent.parent.parent / "database.db"
+# FORGE_DB / FORGE_ROLE handling lives in core.db.paths (this collector used to
+# ignore FORGE_DB and always write to the checkout's database.db).
+import sys as _forge_sys
+_FORGE_REPO_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+if _FORGE_REPO_ROOT not in _forge_sys.path:
+    _forge_sys.path.insert(0, _FORGE_REPO_ROOT)
+from core.db.paths import resolve_db_path as _resolve_db_path, connect_db as _connect_db  # noqa: E402
+DB_PATH     = _resolve_db_path(Path(__file__).resolve().parent.parent.parent / "database.db")
 REQ_DELAY   = 3.0
 UA          = "FORGE-OSINT/2.1 (legal research; non-commercial)"
 
@@ -423,7 +430,7 @@ def run(
     max_actors: int = 15,
     max_results: int = 5,
 ) -> dict:
-    conn = sqlite3.connect(str(DB_PATH), timeout=60)
+    conn = _connect_db(DB_PATH, timeout=60)
     conn.row_factory = sqlite3.Row
 
     all_actors = _load_all_actors(conn)

@@ -5,7 +5,12 @@ from pathlib import Path
 
 # Absolute Path Logic
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
+# FORGE_DB: isolated copy. Path rules (and the staging role) live in core.db.paths:
+# default role = FORGE_DB if set, else database.db (unchanged); staging = FORGE_DB
+# required, no fallback, no symlinks, deny-listed files refused.
+from core.db.paths import resolve_db_path as _resolve_db_path, is_staging as _is_staging, \
+    check_staging_path as _check_staging_path
+DB_PATH = _resolve_db_path(BASE_DIR / "database.db")
 
 # ── Phase 68 Hard-Lock — Process-level FK enforcement ────────────────────────
 # Python's stdlib sqlite3 module does NOT honour `_foreign_keys` as a URI
@@ -57,6 +62,10 @@ REQUIRED_TABLES = [
 
 def get_connection():
     db_abs_path = str(DB_PATH.absolute())
+
+    if _is_staging():
+        # Staging: re-check every rule right before opening (path may have changed).
+        _check_staging_path(db_abs_path)
 
     if not os.path.exists(db_abs_path):
         raise FileNotFoundError(f"[FORGE ERROR] Database missing at: {db_abs_path}. Run 'python app.py --init-db'")

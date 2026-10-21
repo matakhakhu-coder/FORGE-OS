@@ -1,0 +1,6 @@
+{
+  "schema": "forge.pin_approvals.policy",
+  "version": 1,
+  "enforce": false,
+  "note": "Off until the legacy approval records for the existing pins are committed (a separate, approved step). Turning it on is a reviewed change to this file. FORGE_APPROVALS_ENFORCE=1 turns it on for one run; nothing turns it off once this says true."
+}

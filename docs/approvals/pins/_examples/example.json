@@ -1,0 +1,45 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261001T000000Z-00000000",
+  "signal_id": "00000000-0000-4000-8000-000000000000",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "example-batch.json",
+  "approved_payload": {
+    "content": "Example pin used to show the approval record format. It is not in any batch.",
+    "external_id": "https://example.org/news/example-incident",
+    "lat": -23.0,
+    "lng": 29.9,
+    "metadata": {
+      "checked": {
+        "example": true
+      }
+    },
+    "published_at": "2026-10-01T00:00:00Z",
+    "signal_id": "00000000-0000-4000-8000-000000000000",
+    "source": "example",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-01T00:00:00Z",
+    "title": "Example only: not a real incident"
+  },
+  "payload_sha256": "sha256:d7ae8a0aa60410f4ac77e3c4707a1f1cebb8d572fa94e7872fa9987532028066",
+  "source_hashes": [
+    {
+      "url": "https://example.org/news/example-incident",
+      "retrieved_at": "2026-10-01T00:00:00+00:00",
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "example-owner",
+  "approved_at": "2026-10-01T00:00:00+02:00",
+  "recorded_at": "2026-10-01T00:05:00+02:00",
+  "recorded_by": "example-agent",
+  "approval_reference": {
+    "id": "example-0001",
+    "summary": "Example only; this is not an approval."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

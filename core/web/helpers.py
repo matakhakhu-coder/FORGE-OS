@@ -11,7 +11,10 @@ from flask import g
 from core.db.connection import get_connection
 
 BASE_DIR  = Path(__file__).resolve().parent.parent.parent
-DB_PATH   = (Path(os.environ["FORGE_DB"]).expanduser().resolve() if os.environ.get("FORGE_DB", "").strip() else BASE_DIR / "database.db")  # FORGE_DB: isolated copy
+from core.db.paths import resolve_db_path as _resolve_db_path  # noqa: E402
+# FORGE_DB: isolated copy. Default role unchanged; staging requires FORGE_DB (core.db.paths).
+# app.py re-points this at its own DB_PATH after reading .env.
+DB_PATH   = _resolve_db_path(BASE_DIR / "database.db")
 MEDIA_DIR = BASE_DIR / "media"
 
 MEDIA_SUBDIRS = ["images", "videos", "documents", "audio", "actors"]

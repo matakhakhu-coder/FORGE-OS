@@ -1489,6 +1489,10 @@ def _git_deploy(now_str: str) -> None:
     """
     cwd = str(ROOT)
     import os as _os
+    from core.db.paths import is_staging as _is_staging
+    if _is_staging():
+        print("[deploy] blocked: FORGE_ROLE=staging never pushes (FORGE_ALLOW_PUBLISH is ignored)")
+        return
     if _os.environ.get("FORGE_ALLOW_PUBLISH") != "1":
         print("[deploy] blocked: set FORGE_ALLOW_PUBLISH=1 to allow git push")
         return
@@ -1755,6 +1759,20 @@ def _checked_guard_before(conn):
     except CheckedSignalError as exc:
         print(f"[publish] REFUSED: checked-signal files are not loadable: {exc}")
         raise CheckedGuardError(2)
+    # Pin approval ledger (tools/approvals.py). Problems with existing records
+    # always refuse; pins with no record refuse only once enforcement is on
+    # (docs/approvals/pins/policy.json or FORGE_APPROVALS_ENFORCE=1).
+    from tools import approvals as _approvals
+    try:
+        approval_report = _approvals.verify(index_path=CHECKED_INDEX)
+    except Exception as exc:   # the ledger could not be checked at all
+        print(f"[publish] REFUSED: the pin approval ledger could not be checked: {exc}")
+        raise CheckedGuardError(2)
+    for line in _approvals.report_lines(approval_report):
+        print(f"[publish] {line}")
+    if not approval_report.ok:
+        print("[publish] REFUSED: pin approval ledger: " + _approvals.refusal_reason(approval_report))
+        raise CheckedGuardError(2)
     problems = verify(conn, cs)
     if problems:
         print(f"[publish] REFUSED: {len(problems)} hand-checked pin problem(s); nothing was built.")
@@ -1792,6 +1810,12 @@ def _checked_guard_after(cs):
 
 
 def main() -> None:
+    from core.db.paths import DBPathError, refuse_publish_if_staging
+    try:
+        refuse_publish_if_staging("tools/publish.py")
+    except DBPathError as exc:
+        print(f"[publish] REFUSED: {exc}")
+        raise SystemExit(2)
     parser = argparse.ArgumentParser(description="ZA-DIVERGENT static site publisher")
     parser.add_argument(
         "--deploy",

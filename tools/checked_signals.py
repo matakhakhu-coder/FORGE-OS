@@ -75,7 +75,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import pathlib
 import re
 import sqlite3
@@ -84,9 +83,20 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from core.db import paths as _paths  # noqa: E402
+
 # FORGE_DB points every tool at another database (an isolated test copy).
-DB_PATH = (pathlib.Path(os.environ["FORGE_DB"]).expanduser().resolve()
-           if os.environ.get("FORGE_DB", "").strip() else ROOT / "database.db")
+# Path rules live in core.db.paths. Under FORGE_ROLE=staging a missing or refused
+# FORGE_DB leaves DB_PATH as None; file checks (stamp, load_index) still work and
+# anything that needs the database refuses with the reason.
+try:
+    DB_PATH: pathlib.Path | None = _paths.resolve_db_path(ROOT / "database.db")
+    _DB_PATH_ERROR: str | None = None
+except _paths.DBPathError as _exc:
+    DB_PATH = None
+    _DB_PATH_ERROR = str(_exc)
 INDEX_PATH = ROOT / "docs" / "signals" / "index.json"
 
 INDEX_SCHEMA = "forge.checked_signals.index"
@@ -683,17 +693,52 @@ def stamp_files(index_path: pathlib.Path = INDEX_PATH, check: bool = False) -> l
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
-def _connect(db: pathlib.Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(db), timeout=60)
+def _connect(db: pathlib.Path | None) -> sqlite3.Connection:
+    """Open an existing database read-write. Never creates a file (mode=rw)."""
+    if db is None:
+        raise CheckedSignalError(f"no database to open: {_DB_PATH_ERROR or 'no path given'}")
+    try:
+        db = _paths.checked_path(db)
+    except _paths.DBPathError as exc:
+        raise CheckedSignalError(str(exc)) from None
+    db = pathlib.Path(db)
+    if not db.is_file():
+        raise CheckedSignalError(f"{db} does not exist. Run: python app.py --init-db, then --migrate")
+    try:
+        conn = sqlite3.connect(_paths.sqlite_uri(db.absolute(), "rw"), uri=True, timeout=60)
+    except sqlite3.OperationalError as exc:
+        raise CheckedSignalError(f"{db} cannot be opened read-write: {exc}") from None
     if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='signals'").fetchone() is None:
         conn.close()
         raise CheckedSignalError(f"{db} has no signals table. Run: python app.py --init-db, then --migrate")
     return conn
 
 
-def run_import(db: pathlib.Path = DB_PATH, index: pathlib.Path = INDEX_PATH,
+def _approval_check(index: pathlib.Path, write: bool, out) -> None:
+    """The pin approval ledger (tools/approvals.py) before anything is written.
+
+    Problems with records that exist always refuse a write. Pins with no record
+    refuse only once docs/approvals/pins/policy.json (or FORGE_APPROVALS_ENFORCE=1)
+    turns enforcement on; until then they are reported, so current imports keep
+    working while the legacy records are added. A dry run only reports.
+    """
+    from tools import approvals  # lazy: approvals imports this module
+    report = approvals.verify(index_path=index)
+    for line in approvals.report_lines(report):
+        out(("" if write else "[dry run] ") + line)
+    if write and not report.ok:
+        raise CheckedSignalError("pin approval ledger refused the import: "
+                                 + approvals.refusal_reason(report))
+
+
+def run_import(db: pathlib.Path | None = DB_PATH, index: pathlib.Path = INDEX_PATH,
                write: bool = False, out=print) -> list[Action]:
+    if write and _paths.is_staging():
+        raise CheckedSignalError(
+            "import --write refused: FORGE_ROLE=staging never imports hand-checked pins; "
+            "they reach the authority only from the agent's own account")
     cs = load_index(index)
+    _approval_check(index, write, out)
     conn = _connect(db)
     try:
         actions = import_checked(conn, cs, write=write)

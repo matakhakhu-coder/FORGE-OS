@@ -55,7 +55,20 @@ from typing import Optional
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-DB_PATH  = BASE_DIR / "database.db"
+# FORGE_DB / FORGE_ROLE handling lives in core.db.paths (this collector used to
+# ignore FORGE_DB and always write to the checkout's database.db).
+import sys as _forge_sys
+_FORGE_REPO_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+if _FORGE_REPO_ROOT not in _forge_sys.path:
+    _forge_sys.path.insert(0, _FORGE_REPO_ROOT)
+from core.db.paths import resolve_db_path as _resolve_db_path, connect_db as _connect_db  # noqa: E402
+DB_PATH  = _resolve_db_path(BASE_DIR / "database.db")
+
+
+def _forge_db_arg(db: Path) -> Path:
+    """A --db argument: resolved as before by default; checked, never resolved, in staging."""
+    from core.db.paths import checked_path, is_staging
+    return checked_path(db) if is_staging() else db.resolve()
 
 # ── Phase 32: path-safe pipeline logger ───────────────────────────────────
 def _log_run_safe(*args, **kwargs):
@@ -654,7 +667,7 @@ def _open_db(path: Path) -> sqlite3.Connection:
         raise FileNotFoundError(
             f"Database not found at {path}. Run: python app.py --init-db"
         )
-    conn = sqlite3.connect(str(path), detect_types=sqlite3.PARSE_DECLTYPES, timeout=60)
+    conn = _connect_db(path, detect_types=sqlite3.PARSE_DECLTYPES, timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA foreign_keys=ON;")
@@ -850,7 +863,7 @@ if __name__ == "__main__":
     _parser.add_argument("--db", type=Path, default=None, help="Path to database.db")
     _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
     _args = _parser.parse_args()
-    db = _args.db.resolve() if _args.db else DB_PATH
+    db = _forge_db_arg(_args.db) if _args.db else DB_PATH
     if _args.dry_run:
         print("[civic_intel] DRY RUN — would connect to:", db)
         print("[civic_intel] Dry run complete (no writes)")
