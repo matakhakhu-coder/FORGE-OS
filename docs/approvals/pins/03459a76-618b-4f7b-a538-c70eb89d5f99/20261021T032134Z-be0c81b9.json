@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-be0c81b9",
+  "signal_id": "03459a76-618b-4f7b-a538-c70eb89d5f99",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "A 34-year-old man was killed in a shooting on OR Tambo Road, Imizamo Yethu, Hout Bay, at about 19:19 on Wednesday 7 October; Hout Bay police registered a murder case and made no arrests (Sentinel News, quoting police spokesperson Thembakazi Mpendukana).",
+    "external_id": "checked:wc-2026-10-18b:L",
+    "lat": -34.02757,
+    "lng": 18.36167,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Wed 7 Oct 2026, about 19:19 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-07T19:19+02:00",
+        "location": "OR Tambo Road, Imizamo Yethu (exact spot not given). The pin is on the road.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "8 Oct 2026",
+        "reported_at": "2026-10-08",
+        "sources": [
+          {
+            "name": "Sentinel News",
+            "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:72613c041d7b3308",
+      "source_outlet": "Sentinel News"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "03459a76-618b-4f7b-a538-c70eb89d5f99",
+    "source": "Sentinel News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-08T09:51:00Z",
+    "title": "Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct"
+  },
+  "payload_sha256": "sha256:c3ca51455175f37438fe7cc7273d1382ccaaf82cfda54aa21d58148dcf2f00b1",
+  "source_hashes": [
+    {
+      "url": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

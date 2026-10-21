@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-96d7a715",
+  "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Police-involved deaths. SAPS says members of the Motherwell Tactical Response Team patrolling Mtshekisani Street at about 20:00 on Tuesday 6 October approached a suspicious vehicle, the occupants allegedly opened fire, and police fired back. Four men were declared dead at the scene; no police member was injured. SAPS says it recovered two unlicensed 9mm Norinco pistols with filed-off serial numbers and a toy gun, and describes the encounter as disrupting a suspected robbery plan. Kwadwesi SAPS opened four inquest dockets and cases of attempted murder and attack on police. The Independent Police Investigative Directorate (IPID) was notified and is investigating. No ballistic result has been reported. The men were not named. This is the police account. No independent account and no IPID finding has been reported; the pin records a reported death, not a finding of wrongdoing by anyone.",
+    "external_id": "eccheck:kwadwesi-mtshekisani-police-shooting-2026-10-06",
+    "lat": -33.843342,
+    "lng": 25.5156979,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Tue 6 Oct 2026, about 20:00 (SAPS)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-06T20:00+02:00",
+        "location": "Mtshekisani Street, in the Kwadwesi or Kwazakele policing precinct (SAPS gives both). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for the KwaDwesi suburb, so it may be some way off.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "7 Oct 2026 (SAPS); 8 Oct 2026 (SABC News)",
+        "reported_at": "2026-10-07",
+        "search_aliases": [
+          "KwaDwesi",
+          "Kwadwesi",
+          "Kwazakele",
+          "Mtshekisani Street",
+          "Gqeberha",
+          "Port Elizabeth",
+          "Nelson Mandela Bay",
+          "police shooting",
+          "IPID"
+        ],
+        "sources": [
+          {
+            "name": "SABC News (8 Oct)",
+            "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/"
+          }
+        ]
+      },
+      "collected_title": "Four men killed in shootout with Gqeberha police",
+      "link": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+      "pubdate_raw": "2026-10-08 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "SABC News",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49",
+    "source": "SABC News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-08T10:00:00Z",
+    "title": "Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct"
+  },
+  "payload_sha256": "sha256:40ba73ae9fc045d218cf132d01be9739ea11f4d7db22a5f59884efe3c84e5b7a",
+  "source_hashes": [
+    {
+      "url": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

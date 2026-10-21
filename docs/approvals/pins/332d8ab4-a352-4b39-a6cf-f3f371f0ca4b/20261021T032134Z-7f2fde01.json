@@ -1,0 +1,62 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-7f2fde01",
+  "signal_id": "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "A 31-year-old man was shot dead in his vehicle on Belgravia Road, outside Heatherdale Primary School, on Tuesday morning 6 October after reportedly dropping his child at school. Police say he had multiple gunshot wounds, the shooting may be gang-related, and no arrests were made (Cape Town ETC, quoting FC van Wyk). A separate incident from the 10 Oct Belgravia pin.",
+    "external_id": "checked:wc-2026-10-18b:F",
+    "lat": -33.97252,
+    "lng": 18.51552,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Tue 6 Oct 2026, morning (time not given)",
+        "incident_event": "occurred",
+        "incident_part": "morning",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-06",
+        "location": "Belgravia Road, outside Heatherdale Primary School, Athlone. The pin is the school; the exact spot on the road is not given.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "6 Oct 2026",
+        "reported_at": "2026-10-06",
+        "sources": [
+          {
+            "name": "Cape Town ETC",
+            "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:dc165307491f922b",
+      "source_outlet": "Cape Town ETC"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b",
+    "source": "Cape Town ETC",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-06T07:00:00Z",
+    "title": "Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct"
+  },
+  "payload_sha256": "sha256:e29061551b3e918e8d8b978c860bed07de5a1dd982206273da59c7b0bee71469",
+  "source_hashes": [
+    {
+      "url": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

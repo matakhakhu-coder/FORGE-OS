@@ -1,0 +1,73 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-ebad6d58",
+  "signal_id": "578b93c8-a253-535c-b26f-eba38181683b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Komani News reports, quoting SAPS spokesperson Capt Yolisa Mgolodela, that Bholotwa police were called back to Mawethu Tavern at about 01:15 on Sunday 4 October after a group of men allegedly returned, some armed, stopping patrons from leaving and assaulting people who tried to. Police say officers were attacked with bottles and fired warning shots while the van driver tried to reverse away. One person was injured and another was declared dead at the scene. SAPS has not confirmed that the person who died was struck by a police bullet, and says the circumstances of the injury and death are under investigation. Residents told the paper the dead man was a young man shot during the confrontation; SAPS has not confirmed this. Police opened an inquest and cases of attempted murder and attack on police. The person who died was not named. One report only.",
+    "external_id": "eccheck:bholotwa-mawethu-tavern-2026-10-04",
+    "lat": -31.9858333,
+    "lng": 27.1888889,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Sun 4 Oct 2026, after about 01:15, when police were called back (Komani News, quoting SAPS)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-04T01:15+02:00",
+        "location": "Mawethu Tavern, Bholotwa, named by Komani News; the tavern itself is not mapped. The pin is OpenStreetMap's point for Bolotwa village (Intsika Yethu, Chris Hani), which lies in the SAPS Bholothwa precinct (2019 boundaries). Another Bolotwa in Mbhashe (GeoNames) was not used: the report names Bholotwa police and comes from a Chris Hani paper. Municipality not stated by any source.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "4 Oct 2026",
+        "reported_at": "2026-10-04",
+        "search_aliases": [
+          "Bolotwa",
+          "Bholothwa",
+          "Intsika Yethu",
+          "Chris Hani",
+          "Komani",
+          "Mawethu Tavern"
+        ],
+        "sources": [
+          {
+            "name": "Komani News",
+            "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/"
+          }
+        ]
+      },
+      "collected_title": "BREAKING: One dead after violent incident at Bholotwa tavern",
+      "link": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+      "pubdate_raw": "2026-10-04 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "Komani News",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "578b93c8-a253-535c-b26f-eba38181683b",
+    "source": "Komani News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T10:00:00Z",
+    "title": "Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct"
+  },
+  "payload_sha256": "sha256:4e93ac8855138d8977028fb55c6a93377df688e0a19131dfbb9e32b8ebb25c80",
+  "source_hashes": [
+    {
+      "url": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

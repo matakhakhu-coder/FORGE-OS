@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-3342806d",
+  "signal_id": "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the motive is believed to be gang-related (Daily Voice). The article's text misprints the year as 2006; its date and the police details give 15 October 2026.",
+    "external_id": "checked:wc-2026-10-18b:R",
+    "lat": -33.9907,
+    "lng": 18.5354,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Thu 15 Oct 2026, about 06:05 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-15T06:05+02:00",
+        "location": "Suria Walk, Hanover Park (exact spot not given). The pin is on the walkway.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "15 Oct 2026",
+        "reported_at": "2026-10-15",
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:d089101908347a3f",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-15T13:12:00Z",
+    "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct"
+  },
+  "payload_sha256": "sha256:1e6c38e586f2fae515ef7e1fb478d983625927ced9cff1aafaafc6c6d842eac1",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

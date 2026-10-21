@@ -1,0 +1,91 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-f156264f",
+  "signal_id": "a86ff098-691e-5407-83f0-8496db67b418",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Police say New Brighton officers responding to a shooting complaint at about 19:40 on Wednesday 7 October found a grey VW Polo on the pavement in Kuzwayo Street, KwaZakhele, with one man dead inside and one lying next to it, both shot in the upper body and head; several cartridge cases were found (SAPS, Capt Sandra Janse van Rensburg). Police named them as Phumeza Thunywana, 44 (The Herald and SABC spell it Phumezo), and Xola Ngesimani, 38. The Nelson Mandela Bay Intervention Task Team is investigating a double murder; no arrests reported. The Herald says Thunywana was the stepfather of a pupil killed in May 2025; no source connects that case to this shooting.",
+    "external_id": "eccheck:kwazakhele-kuzwayo-2026-10-07",
+    "lat": -33.876454,
+    "lng": 25.59849,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Wed 7 Oct 2026, found about 19:40 (SAPS)",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-07T19:40+02:00",
+        "location": "Kuzwayo Street, KwaZakhele (SAPS). OpenStreetMap has three short streets of that name within about 1 km, all in the New Brighton precinct, whose officers responded. The pin is the one not labelled Soweto on Sea; the exact spot is not given.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "9 Oct 2026",
+        "reported_at": "2026-10-09",
+        "search_aliases": [
+          "Kwazakele",
+          "New Brighton",
+          "Kuzwayo Street",
+          "Gqeberha",
+          "Port Elizabeth",
+          "Nelson Mandela Bay"
+        ],
+        "sources": [
+          {
+            "name": "The Herald (9 Oct)",
+            "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/"
+          },
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/"
+          },
+          {
+            "name": "NovaNews",
+            "url": "https://novanews.co.za/police-probe-double-murder-after-kwazakhele-shooting/"
+          }
+        ]
+      },
+      "collected_title": "Double murder probe launched after two men killed in Kwazakele, EC",
+      "link": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+      "pubdate_raw": "2026-10-09 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "SABC News",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "a86ff098-691e-5407-83f0-8496db67b418",
+    "source": "SABC News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-09T10:00:00Z",
+    "title": "Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct"
+  },
+  "payload_sha256": "sha256:9882ff3a79fa425fcca9cc139e8eae88c33e4e6f450ef28d4ddf3986e4e930eb",
+  "source_hashes": [
+    {
+      "url": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/police-probe-double-murder-after-kwazakhele-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

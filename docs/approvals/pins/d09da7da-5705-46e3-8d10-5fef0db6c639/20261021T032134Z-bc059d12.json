@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-bc059d12",
+  "signal_id": "d09da7da-5705-46e3-8d10-5fef0db6c639",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Police say a 52-year-old man was stabbed in the chest with a knife during an argument with his wife at their house in Green Haven, Wolwedans, Great Brak River, just before 16:00 on Sunday 11 October, and was declared dead at the scene. His wife, 52, was arrested at the scene and faces a murder charge (Mossel Bay Advertiser).",
+    "external_id": "checked:wc-2026-10-18b:N",
+    "lat": -34.03778,
+    "lng": 22.20917,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Sun 11 Oct 2026, just before 16:00 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-11T16:00+02:00",
+        "location": "A house in Green Haven, Wolwedans, Great Brak River. The pin is the Greenhaven area point, not the house.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "12 Oct 2026",
+        "reported_at": "2026-10-12",
+        "sources": [
+          {
+            "name": "Mossel Bay Advertiser",
+            "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:02dc58c6b4c5bba3",
+      "source_outlet": "Mossel Bay Advertiser"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "d09da7da-5705-46e3-8d10-5fef0db6c639",
+    "source": "Mossel Bay Advertiser",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-12T11:20:00Z",
+    "title": "Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct"
+  },
+  "payload_sha256": "sha256:61799d1f2378c07d6d41e72fe5e0a3202ff66b4d274a551f65014272ae3df603",
+  "source_hashes": [
+    {
+      "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

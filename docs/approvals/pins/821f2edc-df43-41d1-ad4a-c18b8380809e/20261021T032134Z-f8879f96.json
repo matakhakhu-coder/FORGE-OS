@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-f8879f96",
+  "signal_id": "821f2edc-df43-41d1-ad4a-c18b8380809e",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Two men were shot dead and a woman wounded in Muir Court, Depsiton Crescent, Lavender Hill, shortly after 08:00 on Tuesday 6 October; the men were declared dead at the scene and the suspects fled (Southern Mail, quoting police spokesperson Wesley Twigg).",
+    "external_id": "checked:wc-2026-10-18b:G",
+    "lat": -34.07326,
+    "lng": 18.4877,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Tue 6 Oct 2026, shortly after 08:00 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-06T08:00+02:00",
+        "location": "Muir Court, Depsiton Crescent, Lavender Hill. Muir Court is not on the map, so the pin is Depsiton Crescent.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "6 Oct 2026",
+        "reported_at": "2026-10-06",
+        "sources": [
+          {
+            "name": "Southern Mail",
+            "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:83d67136a810e2db",
+      "source_outlet": "Southern Mail"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "821f2edc-df43-41d1-ad4a-c18b8380809e",
+    "source": "Southern Mail",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-06T09:30:00Z",
+    "title": "Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct"
+  },
+  "payload_sha256": "sha256:80aff77afb7a47a41dcc1ae1937806a61939eab3c584aaf46aca12d97a45030d",
+  "source_hashes": [
+    {
+      "url": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

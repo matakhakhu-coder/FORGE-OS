@@ -1,0 +1,65 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-87dc7bea",
+  "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18.json",
+  "approved_payload": {
+    "content": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police registered a murder case; spokesperson Lt-Col F.C. van Wyk said the motive is part of the investigation (Worcester Standard). One source only, and it does not say when he died.",
+    "external_id": "gnews:08f700cec8c83fce",
+    "lat": -33.652,
+    "lng": 19.502,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T17:23:07Z",
+        "incident": "Body found Wed 14 Oct 2026, morning (time of death not given)",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-14",
+        "location": "A farm between Overhex and MaGwaleni, Zwelethemba, outside Worcester. The farm is not named, so the pin marks the general area.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "15 Oct 2026",
+        "reported_at": "2026-10-15",
+        "sources": [
+          {
+            "name": "Worcester Standard",
+            "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/"
+          }
+        ]
+      },
+      "collected_title": "Murder investigation launched after man’s body discovered on farm near Worcester - https://worcesterstandard.co.za/",
+      "link": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPN1RJV0FxN3RpTjF1aURTWk1kZ0FaMFl1eld0TWV3T055NjF6RUhLbkJSalNlaURIVlJOc09CTGZUOGFTRVhqREFrdTBBWFV1RVJMc1pkampfN1hJSlNtdUo1LXprREpNbkQzRkJIVEV4bjdLcU52MERCQll3YXVGejJQWVhBV0duXy1ZZGtaQ0tOU2M0TFdmdW5oMndyTmRzLTNtdTRGZ2IwQnROTjhRS1ZhdGFsRHNqZ0lDYjNn?oc=5",
+      "pubdate_raw": "Thu, 15 Oct 2026 09:23:33 GMT",
+      "query": "Paarl OR Stellenbosch OR Worcester murder",
+      "source_outlet": "https://worcesterstandard.co.za/",
+      "stream_reason": "crime_context_match"
+    },
+    "published_at": "2026-10-18T17:28:41Z",
+    "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f",
+    "source": "Worcester Standard",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-15T09:23:33Z",
+    "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct"
+  },
+  "payload_sha256": "sha256:631743eea733a4d4407d1191999c66c511c6f5aabe66e4aec058ef49b66d3091",
+  "source_hashes": [
+    {
+      "url": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

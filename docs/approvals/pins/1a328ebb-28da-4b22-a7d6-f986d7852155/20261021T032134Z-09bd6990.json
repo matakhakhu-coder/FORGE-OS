@@ -1,0 +1,74 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-09bd6990",
+  "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18.json",
+  "approved_payload": {
+    "content": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the motive is believed to be gang-related (SABC News). No arrests had been made by 11 October (Cape Town ETC). Neither source gives a street.",
+    "external_id": "gnews:f34a14c6cd45d290",
+    "lat": -33.97157,
+    "lng": 18.51769,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T17:23:07Z",
+        "incident": "Sat 10 Oct 2026, about 19:00 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-10T19:00+02:00",
+        "location": "Belgravia, Athlone. Suburb only, so the pin is the suburb's map point, not the scene.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "11 Oct 2026",
+        "reported_at": "2026-10-11",
+        "sources": [
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/"
+          },
+          {
+            "name": "Cape Town ETC",
+            "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/"
+          }
+        ]
+      },
+      "collected_title": "Police launch manhunt after double murder in Athlone, CTN - SABC News",
+      "link": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNNm9VUkF6TUNoOGp3bkpxWGtRbGo5WU85dVVrSk1aaXdWVTlOZkJZajFhSFctZ3YwWFhxdGFlOHVSbmdsWWo3bXBPZzk4UWVsMVlEUEpuZHUyVWxrcFk2MFJEQWhJZEVHdzJ1dzg3YmlTZWRuYmRmQW12WWdwQTdJODJnX3pLTS1MeEdMUTkwdE80ODZvX0E?oc=5",
+      "pubdate_raw": "Sun, 11 Oct 2026 09:29:38 GMT",
+      "query": "Cape Town murder police",
+      "source_outlet": "SABC News",
+      "stream_reason": "crime_context_match"
+    },
+    "published_at": "2026-10-18T17:28:41Z",
+    "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155",
+    "source": "SABC News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-11T09:29:38Z",
+    "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct"
+  },
+  "payload_sha256": "sha256:ae7691f7012f2e8871907e956ad96d6badb170d438371ca30467e43bbc69ee8e",
+  "source_hashes": [
+    {
+      "url": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

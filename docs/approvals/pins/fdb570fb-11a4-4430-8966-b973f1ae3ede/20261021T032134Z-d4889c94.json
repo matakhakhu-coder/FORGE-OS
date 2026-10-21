@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-d4889c94",
+  "signal_id": "fdb570fb-11a4-4430-8966-b973f1ae3ede",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "James Henn, 28, was stabbed in the neck during an alleged argument in Nasson Street, Hawston, at about 23:00 on Friday 2 October and was declared dead at the scene. Hermanus police registered a murder case and three suspects were arrested (Daily Voice, quoting police spokesperson Ndakhe Gwala).",
+    "external_id": "checked:wc-2026-10-18b:B",
+    "lat": -34.38815,
+    "lng": 19.13882,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Fri 2 Oct 2026, about 23:00 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-02T23:00+02:00",
+        "location": "Nasson Street, Hawston (exact spot not given). The pin is on the street.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "4 Oct 2026",
+        "reported_at": "2026-10-04",
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:161dd954ef99f7d0",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "fdb570fb-11a4-4430-8966-b973f1ae3ede",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T07:00:00Z",
+    "title": "Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct"
+  },
+  "payload_sha256": "sha256:5f23005c7aaf6e53feee46c9952a36a2568be1bf2811bd40562ecc36ac037884",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

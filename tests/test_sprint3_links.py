@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sqlite3
 import sys
 from pathlib import Path
@@ -59,6 +60,45 @@ def _intel_links(dist: Path) -> list[dict]:
     return json.loads(re.search(r"var INTEL_LINKS = (\[.*?\]);", html).group(1))
 
 
+def _approve_test_edits(tmp_path, monkeypatch, index) -> int:
+    """Approve the test's own pin edits, as the real workflow would.
+
+    The committed ledger approves the committed pins, so a pin a test has
+    edited (here: given link records) no longer matches its approval and the
+    publisher refuses it. This copies the committed ledger and adds a
+    synthetic supersede record for each active pin whose data changed, then
+    points the approval check at the copy. Returns how many it approved.
+    """
+    from tools import approvals as ap
+
+    ledger = tmp_path / "approvals"
+    shutil.copytree(ap.APPROVALS_DIR, ledger)
+    findings: list = []
+    records = ap.load_records(ledger, findings)
+    loaded, by_id = ap._batch_pins(index)
+    n = 0
+    for p in loaded.active:
+        sid = p["signal_id"]
+        tip = ap.chain_tip(sid, records.get(sid, []), findings)
+        pin, batch = by_id[sid]
+        digest = ap.payload_sha256(pin)
+        if tip is None or tip["payload_sha256"] == digest:
+            continue
+        n += 1
+        aid = f"20991231T000000Z-{n:08x}"
+        rec = dict(tip, approval_id=aid, action="supersede", pin_version=tip["pin_version"] + 1,
+                   supersedes=tip["approval_id"], batch_file=batch,
+                   approved_payload=ap.approved_payload(pin), payload_sha256=digest,
+                   diff_from_previous={"note": "synthetic test edit"}, basis="explicit",
+                   owner="test-owner", approved_at="2026-10-21T05:00:00+02:00",
+                   recorded_at="2026-10-21T05:00:00+02:00", recorded_by="test",
+                   approval_reference={"id": "test-edit", "summary": "Synthetic test approval."})
+        (ledger / sid / f"{aid}.json").write_text(json.dumps(rec, indent=2, ensure_ascii=False))
+    assert not [f for f in findings if f.kind == "violation"], [f.line() for f in findings]
+    monkeypatch.setattr(ap, "APPROVALS_DIR", ledger)
+    return n
+
+
 def _build(tmp_path, monkeypatch, index, case_pins=None, anchors=None):
     """Fresh DB, import the given batches, optionally a published case."""
     import tools.publish as pub
@@ -95,6 +135,7 @@ def test_case_with_three_pins_and_no_link_records_draws_no_lines(tmp_path, monke
 def test_one_approved_incident_link_draws_one_labelled_line(tmp_path, monkeypatch):
     index = _copy_signals(tmp_path)
     _add_links(index, 1, VOORBRUG, [_link(N2_GATEWAY, label="Same suspects (test)")])
+    assert _approve_test_edits(tmp_path, monkeypatch, index) == 1
     dist = _build(tmp_path, monkeypatch, index, case_pins=[VOORBRUG, N2_GATEWAY, EPPING])
     lines = _intel_links(dist)
     assert len(lines) == 1
@@ -109,6 +150,7 @@ def test_shared_source_link_draws_no_line_but_shows_in_both_drawers(tmp_path, mo
     _add_links(index, 1, LAVENDER, [_link(
         ST_MONTAGUE, kind="shared_source", label="Same community source (test)",
         quote="", url=SRC)])
+    assert _approve_test_edits(tmp_path, monkeypatch, index) == 1
     dist = _build(tmp_path, monkeypatch, index, case_pins=[LAVENDER, ST_MONTAGUE])
     assert _intel_links(dist) == []
     rel = {x["title"][:12]: x["related"] for x in _markers(dist) if x.get("related")}
@@ -126,6 +168,7 @@ def test_similar_pattern_link_draws_no_line(tmp_path, monkeypatch):
     index = _copy_signals(tmp_path)
     _add_links(index, 0, EPPING, [_link(LAVENDER, kind="similar_pattern",
                                        label="Group shooting (test)", url="")])
+    assert _approve_test_edits(tmp_path, monkeypatch, index) == 1
     dist = _build(tmp_path, monkeypatch, index)
     assert _intel_links(dist) == []
     assert sum(1 for x in _markers(dist) if x.get("related")) == 2
@@ -140,9 +183,23 @@ def test_link_to_a_retracted_pin_draws_nothing(tmp_path, monkeypatch):
                                 "retracted_at": "2026-10-19"}]
     _edit_batch(index, 1, retract)
     _restamp(index)
+    assert _approve_test_edits(tmp_path, monkeypatch, index) == 1
     dist = _build(tmp_path, monkeypatch, index)
     assert _intel_links(dist) == []
     assert not any(x.get("related") for x in _markers(dist))
+
+
+def test_edited_pin_without_a_new_approval_is_refused(tmp_path, monkeypatch, capsys):
+    """Adding a link changes the pin, so its committed approval no longer covers it."""
+    import tools.publish as pub
+
+    index = _copy_signals(tmp_path)
+    _add_links(index, 1, VOORBRUG, [_link(N2_GATEWAY)])
+    with pytest.raises(pub.CheckedGuardError):
+        _build(tmp_path, monkeypatch, index)
+    out = capsys.readouterr().out
+    assert "REFUSED: pin approval ledger" in out and VOORBRUG[:8] in out
+    assert not (tmp_path / "dist" / "index.html").exists()
 
 
 def test_pattern_case_shows_pattern_test_and_sorts_by_incident_date(tmp_path, monkeypatch):

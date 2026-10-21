@@ -4,6 +4,11 @@ tools/approvals.py: the pin approval ledger.
 Each test builds a throwaway git repo under tmp_path holding a copy of
 docs/signals and an approvals folder. No real database, no network, and the
 real docs/signals and docs/approvals are only read.
+
+The `repo` fixture copies only the ledger's rules (README, policy, schema,
+example), so the mechanics are tested from an empty ledger with synthetic
+records. The `real_repo` fixture copies the committed records as well, and
+the tests on it check what the real ledger holds.
 """
 from __future__ import annotations
 
@@ -48,16 +53,41 @@ def _publish_base(repo: Path) -> None:
     _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
 
 
-@pytest.fixture
-def repo(tmp_path):
+LEDGER_RULES = ("README.md", "policy.json", "schema", "_examples")
+
+
+def _real_record_files() -> list[Path]:
+    return sorted(p for p in REAL_LEDGER.glob("*/*.json")
+                  if p.parent.name not in ("schema", "_examples"))
+
+
+def _make_repo(tmp_path: Path, *, with_records: bool) -> Path:
     r = tmp_path / "repo"
     shutil.copytree(REAL_SIGNALS, r / "docs" / "signals")
     ledger = r / "docs" / "approvals" / "pins"
-    shutil.copytree(REAL_LEDGER, ledger)
+    if with_records:
+        shutil.copytree(REAL_LEDGER, ledger)
+    else:
+        ledger.mkdir(parents=True)
+        for name in LEDGER_RULES:
+            src = REAL_LEDGER / name
+            (shutil.copytree if src.is_dir() else shutil.copy2)(src, ledger / name)
     _git(r.parent, "init", "-q", str(r))
     _commit(r, "base")
     _publish_base(r)
     return r
+
+
+@pytest.fixture
+def repo(tmp_path):
+    """docs/signals plus the ledger's rules only: no approval records yet."""
+    return _make_repo(tmp_path, with_records=False)
+
+
+@pytest.fixture
+def real_repo(tmp_path):
+    """docs/signals plus the committed ledger, records included."""
+    return _make_repo(tmp_path, with_records=True)
 
 
 def _index(repo: Path) -> Path:
@@ -140,21 +170,78 @@ def _no_env_enforce(monkeypatch):
 
 # ── the real repo files ───────────────────────────────────────────────────────────────
 
-def test_real_ledger_starts_empty_and_not_enforced():
+def test_real_ledger_approves_every_active_pin_and_is_not_enforced():
     report = ap.verify(check_git=False)
-    assert report.records == 0
-    assert not report.enforce
-    assert not report.violations
-    assert report.pins_checked > 0
-    assert len(report.gaps) == report.pins_checked     # every pin: no-approval gap
-    assert report.ok                                   # current production keeps working
-    assert not ap.verify(check_git=False, enforce=True).ok
+    assert not report.enforce                          # policy.json still says false
+    assert report.records == len(_real_record_files())
+    assert report.pins_checked == 37
+    assert report.approved_pins == report.pins_checked
+    assert not report.violations and not report.gaps, [f.line() for f in report.findings]
+    assert report.ok
+    strict = ap.verify(check_git=False, enforce=True)  # what turning enforcement on would see
+    assert strict.ok and not strict.gaps, [f.line() for f in strict.findings]
 
 
-def test_example_record_is_valid_and_skipped():
+def test_real_legacy_records_match_the_owner_confirmation():
+    """One legacy version-1 record per active pin, as the owner confirmed on 21 Oct 2026."""
+    loaded, by_id = ap._batch_pins(REAL_SIGNALS / "index.json")
+    active = {p["signal_id"] for p in loaded.active}
+    first, later = {}, {}
+    for f in _real_record_files():
+        rec = json.loads(f.read_text(encoding="utf-8"))
+        if rec["pin_version"] > 1:
+            later.setdefault(rec["signal_id"], []).append(rec)
+        if rec["pin_version"] == 1:
+            assert rec["signal_id"] not in first, f"two version-1 records for {rec['signal_id']}"
+            first[rec["signal_id"]] = rec
+    assert set(first) == active
+    for sid, rec in first.items():
+        pin, batch = by_id[sid]
+        assert rec["action"] == "approve" and rec["supersedes"] is None
+        assert rec["basis"] == "legacy" and rec["scope"] == "data-only"
+        assert rec["owner"] == "Riley Bishop" and rec["recorded_by"] == "Maya"
+        assert rec["approval_reference"]["id"] == "confirmed-by-user-in-session-2026-10-21"
+        assert rec["approval_reference"]["summary"].startswith(
+            "confirmed by user in session on October 21")
+        assert "approximate" in rec["approval_reference"]["summary"]
+        # The owner gave the time as about 03:40 SAST; the record was made later.
+        assert rec["approved_at"] == "2026-10-21T03:40:00+02:00"
+        assert ap._iso_tz(rec["recorded_at"]) > ap._iso_tz(rec["approved_at"])
+        assert rec["batch_file"] == batch
+        # Unknown retrieval times and page hashes stay null.
+        assert all(s["retrieved_at"] is None and s["content_sha256"] is None
+                   for s in rec["source_hashes"])
+        if sid in later:
+            continue        # the pin changed after this approval; a later record covers it
+        # Otherwise the record approves exactly the committed pin, with its own URLs.
+        assert rec["payload_sha256"] == ap.payload_sha256(pin)
+        assert rec["approved_payload"] == ap.approved_payload(pin)
+        urls = [s["url"] for s in pin["metadata"]["checked"]["sources"]]
+        assert [s["url"] for s in rec["source_hashes"]] == list(dict.fromkeys(urls))
+
+
+def test_real_records_catch_an_edited_pin(real_repo):
+    assert _verify(real_repo, enforce=True).ok
+    sid, _ = _pins(real_repo)[0]
+    _edit_pin(real_repo, sid, title="Edited after approval")
+    r = _verify(real_repo)
+    assert not r.ok and "hash-mismatch" in _codes(r, "violation")
+
+
+def test_real_records_are_append_only_once_on_main(real_repo):
+    f = sorted(p for p in _ledger(real_repo).glob("*/*.json")
+               if p.parent.name not in ("schema", "_examples"))[0]
+    rec = json.loads(f.read_text()); rec["owner"] = "someone-else"
+    f.write_text(json.dumps(rec, indent=2))
+    r = _verify(real_repo)
+    assert not r.ok and "append-only" in _codes(r, "violation")
+
+
+def test_example_record_is_valid_and_skipped(repo):
     ex = json.loads((REAL_LEDGER / "_examples" / "example.json").read_text())
     assert ap.validate_record(ex, signal_id=ex["signal_id"], approval_id=ex["approval_id"]) == []
-    assert ap.verify(check_git=False).records == 0
+    assert _verify(repo, check_git=False).records == 0       # the rules-only ledger
+    assert ex["signal_id"] not in {p.parent.name for p in _real_record_files()}
 
 
 def test_schema_file_matches_validator():
@@ -181,7 +268,9 @@ def test_payload_hash_is_the_pin_fingerprint(repo):
 # ── policy and rollout ─────────────────────────────────────────────────────────────────
 
 def test_gaps_refuse_only_when_enforced(repo, monkeypatch):
-    assert _verify(repo).ok
+    r = _verify(repo)
+    assert len(r.gaps) == r.pins_checked     # empty ledger: every pin is a gap
+    assert r.ok
     assert not _verify(repo, enforce=True).ok
     monkeypatch.setenv(ap.ENFORCE_ENV, "1")
     assert not _verify(repo).ok

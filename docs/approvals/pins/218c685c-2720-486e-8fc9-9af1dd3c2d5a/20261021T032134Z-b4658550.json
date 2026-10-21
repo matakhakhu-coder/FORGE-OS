@@ -1,0 +1,74 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-b4658550",
+  "signal_id": "218c685c-2720-486e-8fc9-9af1dd3c2d5a",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Mfuleni police responded to a shooting in Reindeer Street, Wesbank, at about 20:10 on Saturday 10 October: Lincoln Jonathan, 14, a Grade 8 learner at Silversands High School, died at the scene and a Grade 11 learner was wounded (TygerBurger, 12 Oct, quoting police spokesperson Wesley Twigg).",
+    "external_id": "checked:wc-2026-10-18b:Q",
+    "lat": -33.9637,
+    "lng": 18.659,
+    "metadata": {
+      "checked": {
+        "basis": "Two reports from one outlet; the date comes from the police statement in the first.",
+        "checked_at": "2026-10-18T18:48:00Z",
+        "disagreements": [
+          "TygerBurger's 13 Oct follow-up says Saturday 17 October, which is after it was published; its 12 Oct report quotes police giving Saturday 10 October."
+        ],
+        "incident": "Sat 10 Oct 2026, about 20:10 (police, TygerBurger 12 Oct). TygerBurger's follow-up of 13 Oct wrongly says 17 October.",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-10T20:10+02:00",
+        "location": "Corner of Reindeer Street, Wesbank (exact spot not given). OpenStreetMap has it as Reindeer Crescent; the pin is on it.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. Standalone (no case, entity or map line).",
+        "reported": "12-13 Oct 2026",
+        "reported_at": "2026-10-12",
+        "sources": [
+          {
+            "name": "TygerBurger (12 Oct)",
+            "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/"
+          },
+          {
+            "name": "TygerBurger (13 Oct)",
+            "url": "https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:38202e83bb160c73",
+      "source_outlet": "TygerBurger"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "218c685c-2720-486e-8fc9-9af1dd3c2d5a",
+    "source": "TygerBurger",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-12T10:23:00Z",
+    "title": "Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct"
+  },
+  "payload_sha256": "sha256:ddc5ff99420697ab09c895f8b04fb1f646dfdf412539354fbbd45c02ff65f93f",
+  "source_hashes": [
+    {
+      "url": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

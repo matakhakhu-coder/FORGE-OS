@@ -1,0 +1,91 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-c8f06821",
+  "signal_id": "417613e8-bc4b-5e22-a9ce-49531d161f70",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Police say an 86-year-old woman and a 21-year-old man were found shot dead inside a house in Sebothe Street, Soweto-on-Sea, at about 01:20 on Monday 12 October. Police think the woman may have been shot after getting up to check a disturbance at the door; the man was found in his bed. Nothing was reported stolen and the motive is unknown (SAPS, Capt Sandra Janse van Rensburg). Kwazakele SAPS is investigating a double murder; no arrests reported. The time is when they were found, not when they were shot. They were not named.",
+    "external_id": "eccheck:soweto-on-sea-sebothe-2026-10-12",
+    "lat": -33.8640249,
+    "lng": 25.5773031,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Mon 12 Oct 2026, found about 01:20 (SAPS)",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-12T01:20+02:00",
+        "location": "Sebothe Street, Soweto-on-Sea (SAPS). The street is not in OpenStreetMap; the pin is OpenStreetMap's point for Soweto on Sea, inside the Kwazakele precinct, whose police are investigating.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "12 Oct 2026",
+        "reported_at": "2026-10-12",
+        "search_aliases": [
+          "Soweto on Sea",
+          "Kwazakele",
+          "Sebothe Street",
+          "Gqeberha",
+          "Port Elizabeth",
+          "Nelson Mandela Bay"
+        ],
+        "sources": [
+          {
+            "name": "The Herald",
+            "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/"
+          },
+          {
+            "name": "Algoa FM",
+            "url": "https://www.algoafm.co.za/local/elderly-woman-killed-in-gq-double-murder"
+          },
+          {
+            "name": "NovaNews (PE Express)",
+            "url": "https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/"
+          }
+        ]
+      },
+      "collected_title": "Police investigating double murder in Soweto-on-Sea",
+      "link": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+      "pubdate_raw": "2026-10-12 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "The Herald",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "417613e8-bc4b-5e22-a9ce-49531d161f70",
+    "source": "The Herald",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-12T10:00:00Z",
+    "title": "Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct"
+  },
+  "payload_sha256": "sha256:5849e89e32adb83c0bc067d7135d3e467090432bf9d9d54f03324ad55b3c3380",
+  "source_hashes": [
+    {
+      "url": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.algoafm.co.za/local/elderly-woman-killed-in-gq-double-murder",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

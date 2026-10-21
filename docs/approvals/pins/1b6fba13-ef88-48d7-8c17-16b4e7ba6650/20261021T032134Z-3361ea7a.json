@@ -1,0 +1,65 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-3361ea7a",
+  "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18.json",
+  "approved_payload": {
+    "content": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an altercation with a group. No arrests had been made (Mossel Bay Advertiser, 13 October). One source only.",
+    "external_id": "gnews:63bc4c93d56aef76",
+    "lat": -34.1762,
+    "lng": 22.07302,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T17:23:07Z",
+        "incident": "4 Oct 2026 (time not given)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-04",
+        "location": "Dunjwa Street, Asla Park, KwaNonqaba, named by police. The pin is on that street; the exact spot was not given.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "13 Oct 2026",
+        "reported_at": "2026-10-13",
+        "sources": [
+          {
+            "name": "Mossel Bay Advertiser",
+            "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945"
+          }
+        ]
+      },
+      "collected_title": "Kwa Police investigate murder of 19-year-old - Mossel Bay Advertiser",
+      "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOcTVzVFBkRmgyX2hBVmY5UG5reVJXTlFlRlhjUncza2xOMGtacENXQjV6TmFNalBYTjhSTU1DVEdBUlNrR1k3bHlKQXp6UTVYVjlXQWk2cjRVMDVjeE1JZ0xDRTV3NGdvWVNvWGhQa0NGTWFKZUN6enhhV1JVb0tGZnZ5amppYlVLNGtIRi1HRW1NNTNtaURsNldVYXBLX3ZHYm5OY1NYZ0NLYjBBN1BnLVltbk40NUJr?oc=5",
+      "pubdate_raw": "Tue, 13 Oct 2026 08:00:00 GMT",
+      "query": "George OR Mossel Bay OR Oudtshoorn murder",
+      "source_outlet": "Mossel Bay Advertiser",
+      "stream_reason": "crime_context_match"
+    },
+    "published_at": "2026-10-18T17:28:41Z",
+    "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650",
+    "source": "Mossel Bay Advertiser",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T08:00:00Z",
+    "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct"
+  },
+  "payload_sha256": "sha256:4abb1c8127715bae1811a65a78de3bca4a59686196fda3faec127da88af74e83",
+  "source_hashes": [
+    {
+      "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

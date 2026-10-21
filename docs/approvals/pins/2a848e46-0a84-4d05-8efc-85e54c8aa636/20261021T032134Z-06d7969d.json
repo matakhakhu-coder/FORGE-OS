@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-06d7969d",
+  "signal_id": "2a848e46-0a84-4d05-8efc-85e54c8aa636",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "A 43-year-old man was shot multiple times in Jakkalsvlei Avenue, Bonteheuwel, at about 23:06 on Tuesday 6 October and declared dead at the scene; police opened a murder case and made no arrests (Daily Voice, quoting police spokesperson Wesley Twigg). The ward councillor said it appeared gang-related.",
+    "external_id": "checked:wc-2026-10-18b:I",
+    "lat": -33.94476,
+    "lng": 18.54334,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Tue 6 Oct 2026, about 23:06 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-06T23:06+02:00",
+        "location": "Jakkalsvlei Avenue, Bonteheuwel (exact spot not given). The pin is on the Bonteheuwel end of the avenue.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "7 Oct 2026",
+        "reported_at": "2026-10-07",
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:ed9f902f68d6476f",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "2a848e46-0a84-4d05-8efc-85e54c8aa636",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-07T07:00:00Z",
+    "title": "Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct"
+  },
+  "payload_sha256": "sha256:dfc8f29254d63edc4b561c097694621f369c859281bdfcaf1248de5bd00ec75a",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

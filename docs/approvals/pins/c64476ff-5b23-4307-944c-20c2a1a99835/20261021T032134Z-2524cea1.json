@@ -1,0 +1,107 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-2524cea1",
+  "signal_id": "c64476ff-5b23-4307-944c-20c2a1a99835",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "north-west-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Reports place the attack on Hannetjie van Zyl, 55, at the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October; the saved SAPS statement does not itself give the incident date. Her husband took her to hospital in Klerksdorp, where police say she died. The Klerksdorp Record puts the attack at about 19:00, says she was hit repeatedly on the head and neck with an iron bar and that her handbag and phone were taken, and says she died on the way to hospital. Police say two men, aged 32 and 33, were arrested after a witness identified them, and a third suspect is still being sought. Accounts differ: Platinum Weekly, quoting police, gives the two accused's ages as 28 and 29, says they face murder and robbery charges, and says they appeared in the Bloemhof Periodical Court on 8 October, with bail applications set for 15 October; the SAPS statement named the Ottosdal Magistrate's Court. The DA and the VF Plus criticised the police response; the DA says police took an hour to arrive.",
+    "external_id": "nwcheck:doornpan-ottosdal-2026-10-05",
+    "lat": -26.8781,
+    "lng": 25.8325,
+    "metadata": {
+      "checked": {
+        "admin_area": {
+          "basis": "Unconfirmed. Only a place-name database (GeoNames via Mapcarta) puts a Doornpan farm in Tswaing; no news or police source names the municipality.",
+          "candidates": [
+            "Tswaing (Ngaka Modiri Molema)",
+            "Maquassi Hills (Dr Kenneth Kaunda)"
+          ],
+          "district": null,
+          "municipality": null
+        },
+        "checked_at": "2026-10-19T00:50:00Z",
+        "incident": "Mon 5 Oct 2026, about 19:00 (Klerksdorp Record); date not supplied in the saved SAPS statement",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-05T19:00+02:00",
+        "location": "Doornpan Farm, outside Ottosdal, about 17 km from the town's police station (Klerksdorp Record, DA). No source gives the farm's position. The pin is a place-name database's point for a Doornpan farm about 19 km south-west of Ottosdal (GeoNames, via Mapcarta), which may not be the same farm. Municipality not confirmed: that database puts it in Tswaing (Ngaka Modiri Molema district), but if the farm is in Maquassi Hills it is in the Dr Kenneth Kaunda district. The DA calls it the Ottosdal/Wolmaransstad area.",
+        "method": "Found in the whole North West sweep (SAPS newsroom, local outlets, web search); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "7 Oct 2026 (SAPS statement); news reports 8-15 Oct",
+        "reported_at": "2026-10-07",
+        "search_aliases": [
+          "Ottosdal",
+          "Doornpan",
+          "farm murder",
+          "Klerksdorp"
+        ],
+        "sources": [
+          {
+            "name": "Taung Daily News (8 Oct, SAPS statement, Setswana)",
+            "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/"
+          },
+          {
+            "name": "Klerksdorp Record (Afrikaans)",
+            "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek"
+          },
+          {
+            "name": "Taung Daily News (15 Oct, DA)",
+            "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/"
+          },
+          {
+            "name": "Platinum Weekly",
+            "url": "https://www.platinumweekly.co.za/community.php?story=4325"
+          }
+        ]
+      },
+      "collected_title": "Banna ba le babedi ba tlhagelela kwa kgotlhatshekelo mabapi le polao - Taung Daily News",
+      "link": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+      "pubdate_raw": "2026-10-08T05:43:23+00:00",
+      "query": "North West whole-province sweep: Ottosdal murder",
+      "source_outlet": "Taung Daily News",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T00:50:00Z",
+    "signal_id": "c64476ff-5b23-4307-944c-20c2a1a99835",
+    "source": "Taung Daily News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-08T05:43:23Z",
+    "title": "Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct"
+  },
+  "payload_sha256": "sha256:f26ebf0a6112f21488f065edab2f92da1eb94b57e86c973dba8acd6161422c53",
+  "source_hashes": [
+    {
+      "url": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.platinumweekly.co.za/community.php?story=4325",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

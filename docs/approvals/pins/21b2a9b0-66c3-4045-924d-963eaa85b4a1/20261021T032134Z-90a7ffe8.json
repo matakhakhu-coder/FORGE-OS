@@ -1,0 +1,72 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-90a7ffe8",
+  "signal_id": "21b2a9b0-66c3-4045-924d-963eaa85b4a1",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "A 20-year-old man was found dead with injuries to his neck along Bagzane Street, N2 Gateway, Delft, on the morning of Sunday 4 October; police opened a murder case (police spokesperson Ndakhe Gwala, via Daily Voice and TygerBurger). The time of death and how he was injured were not given.",
+    "external_id": "checked:wc-2026-10-18b:D",
+    "lat": -33.96394,
+    "lng": 18.63438,
+    "metadata": {
+      "checked": {
+        "basis": "Both reports rest on the same police statement; not independent confirmation.",
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Found Sun 4 Oct 2026, morning (time of death not given)",
+        "incident_event": "found",
+        "incident_part": "morning",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-04",
+        "location": "Bagzane Street, N2 Gateway, Delft (exact spot not given). The pin is on the street.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Both sources quote the same police statement. Standalone (no case, entity or map line).",
+        "reported": "4-5 Oct 2026",
+        "reported_at": "2026-10-04",
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/"
+          },
+          {
+            "name": "TygerBurger",
+            "url": "https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:407dc221e09ba683",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "21b2a9b0-66c3-4045-924d-963eaa85b4a1",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T07:00:00Z",
+    "title": "N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct"
+  },
+  "payload_sha256": "sha256:2d320cbec4af07197bd065f108da2f61cb2e7e580dc5ff6c8a63a89b4084e0c1",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

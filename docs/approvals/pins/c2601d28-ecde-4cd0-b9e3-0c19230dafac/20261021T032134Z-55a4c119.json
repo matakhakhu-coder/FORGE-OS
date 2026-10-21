@@ -1,0 +1,83 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-55a4c119",
+  "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18.json",
+  "approved_payload": {
+    "content": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit them. Anti-Gang Unit detectives arrested a 32-year-old man on 14 October; he was due in the Wynberg Magistrates' Court on 16 October on two murder charges. Two men arrested after a chase on 9 October face firearm and stolen-property charges, not murder (Cape Argus). Reports name the street as Ensor or Enzo Street.",
+    "external_id": "gnews:d79369d15d939c85",
+    "lat": -34.06083,
+    "lng": 18.48444,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T17:23:07Z",
+        "incident": "Fri 9 Oct 2026, about 09:15 (SAPS)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-09T09:15+02:00",
+        "location": "Cafda Village, Retreat. Reports differ on the street (Ensor or Enzo), so the pin is the suburb's map point.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "14-15 Oct 2026",
+        "reported_at": "2026-10-14",
+        "sources": [
+          {
+            "name": "Cape Argus (IOL)",
+            "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/"
+          },
+          {
+            "name": "People's Post",
+            "url": "https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/"
+          },
+          {
+            "name": "Cape Coast News",
+            "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/"
+          }
+        ]
+      },
+      "collected_title": "Two arrested after high-speed chase linked to Cafda double murder - IOL",
+      "link": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPaVVFaUgtMkN2WkJrejJVOWpfYlhtSGpRYTZJWXpxS0RRWFpxY210MVFMWklrUXRKVk5ob2xWY1E4dXVzaWNiUFdFTkhJQ3daN0p3ckZoaVVMOE9CaDBNQU5leWl6X0EyREprWngxTzdwZDV6aWZLMW8zNmRQUmxmTV9rdG5CLTFxT1k5LWFYQ0RINFBwU0NNSjVoS2tMdWVreUpLaGJscVp2VlhmOHln?oc=5",
+      "pubdate_raw": "Wed, 14 Oct 2026 05:05:05 GMT",
+      "query": "Cape Town murder police",
+      "source_outlet": "IOL",
+      "stream_reason": "crime_context_match"
+    },
+    "published_at": "2026-10-18T17:28:41Z",
+    "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac",
+    "source": "Cape Argus (IOL)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-14T05:05:05Z",
+    "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct"
+  },
+  "payload_sha256": "sha256:6f35e083a8defb9cbcc31c1be3e3fead94ecb699658631d4be74efe8d6311887",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-fe134146",
+  "signal_id": "318c89be-efbe-4c0d-a175-f423dcda6cc5",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "north-west-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Taung Daily News reports that Atlholang Theteletsa, 22, was found with multiple stab wounds lying on Kgaka Street in Ipelegeng after 20:00 on Friday 9 October, and that paramedics confirmed he had died at the scene, according to police spokesperson Sgt Kelebogile Morake. A 25-year-old man was caught by members of the Ipelegeng Community Police Forum at a shop in Schweizer-Reneke on Saturday 10 October. He appeared in the Schweizer-Reneke court on 12 October on a murder charge, and the case was postponed to 29 October for a formal bail application. Police say the circumstances are not yet clear. The report is in Setswana; this is a translation. No SAPS statement was found.",
+    "external_id": "nwcheck:ipelegeng-kgaka-2026-10-09",
+    "lat": -27.20251,
+    "lng": 25.29221,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T00:50:00Z",
+        "incident": "Fri 9 Oct 2026; found after 20:00 (Taung Daily News, quoting police)",
+        "incident_event": "found",
+        "incident_part": "night",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-09",
+        "location": "Kgaka Street, Ipelegeng, Schweizer-Reneke (Taung Daily News). No spot on the street is given. The pin is the middle of Kgaka Street as OpenStreetMap maps it, the only street of that name in Schweizer-Reneke. OpenStreetMap does not label the township, so that this street is in Ipelegeng rests on the report. Police station not named.",
+        "method": "Found in the whole North West sweep (Taung Daily News October archive); source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "13 Oct 2026",
+        "reported_at": "2026-10-13",
+        "search_aliases": [
+          "Schweizer-Reneke",
+          "Schweizer Reneke",
+          "Kgaka Street",
+          "Mamusa"
+        ],
+        "sources": [
+          {
+            "name": "Taung Daily News (Setswana)",
+            "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/"
+          }
+        ]
+      },
+      "collected_title": "Monna o tshwerwe morago ga polao - Taung Daily News",
+      "link": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+      "pubdate_raw": "2026-10-13T05:13:43+00:00",
+      "query": "North West whole-province sweep: Taung Daily News October archive",
+      "source_outlet": "Taung Daily News",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T00:50:00Z",
+    "signal_id": "318c89be-efbe-4c0d-a175-f423dcda6cc5",
+    "source": "Taung Daily News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T05:13:43Z",
+    "title": "Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct"
+  },
+  "payload_sha256": "sha256:218caca79bbc2bbd051ffb20b28bbaabd148868bd999f180bc5e26d46b3a189e",
+  "source_hashes": [
+    {
+      "url": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-76f0abec",
+  "signal_id": "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Police say three unknown gunmen kicked open the door of a two-room flat at Willowvale Extension 1 informal settlement, near Ematyotyombeni, at about 21:50 on Tuesday 6 October and opened fire. Five young men aged 17 to 22 died, four in the flat and one on arrival at a clinic, and a man of 30 was wounded (SAPS, Brig Nobuntu Gantana). Numerous 9mm cartridges and projectiles were found. Police say the motive is unknown; no arrests reported in the sources read. The Daily Dispatch visited on 8 October: some residents said they believed it was linked to a fight over drug territory, which police have not said. Mbhashe Local Municipality condemned the killings. The victims were not named.",
+    "external_id": "eccheck:willowvale-ext1-2026-10-06",
+    "lat": -32.26588,
+    "lng": 28.50727,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Tue 6 Oct 2026, about 21:50 (SAPS; Dispatch: about 9.51pm)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-06T21:50+02:00",
+        "location": "Willowvale Extension 1 informal settlement, near Ematyotyombeni, Willowvale (SAPS, Dispatch). The settlement is not mapped; the pin is GeoNames' point for Willowvale town, inside the Willowvale SAPS precinct.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "7 Oct 2026",
+        "reported_at": "2026-10-07",
+        "search_aliases": [
+          "Willowvale",
+          "Gatyana",
+          "Mbhashe",
+          "Amathole",
+          "Ematyotyombeni",
+          "Willowvale mass shooting"
+        ],
+        "sources": [
+          {
+            "name": "Daily Dispatch (7 Oct)",
+            "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/"
+          },
+          {
+            "name": "The Herald (7 Oct, same text as the Dispatch)",
+            "url": "https://theherald.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/"
+          },
+          {
+            "name": "Daily Dispatch (9 Oct)",
+            "url": "https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/"
+          },
+          {
+            "name": "Algoa FM",
+            "url": "https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape"
+          },
+          {
+            "name": "Komani News",
+            "url": "https://www.komani.co.za/five-killed-in-willowvale-shooting/"
+          },
+          {
+            "name": "NovaNews (PE Express)",
+            "url": "https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/"
+          }
+        ]
+      },
+      "collected_title": "Five young men shot dead in brutal Willowvale mass shooting",
+      "link": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+      "pubdate_raw": "2026-10-07 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "Daily Dispatch",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940",
+    "source": "Daily Dispatch",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-07T10:00:00Z",
+    "title": "Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct"
+  },
+  "payload_sha256": "sha256:cd35b3857a07f664b88f0b473f08f743f11cd6b8ae1e54302f5ad68297955cfb",
+  "source_hashes": [
+    {
+      "url": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://theherald.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.komani.co.za/five-killed-in-willowvale-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-284e4a4b",
+  "signal_id": "7acad00a-2081-462b-939c-be61b9d9b539",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Two men aged 20 and 25 were shot dead and a third wounded while sitting in a parked vehicle on Teenage Vuso Street, Zone 5, Langa, on Monday evening 12 October; police registered two counts of murder and one of attempted murder, with no arrests (Voice of the Cape, 13 Oct; Cape Argus, 14 Oct, quoting police spokesperson Ndakhe Gwala).",
+    "external_id": "checked:wc-2026-10-18b:O",
+    "lat": -33.9469,
+    "lng": 18.5318,
+    "metadata": {
+      "checked": {
+        "basis": "Both reports quote the same community leader and police details; not fully independent.",
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Mon 12 Oct 2026, evening ('Monday evening' in reports of 13-14 Oct; time not given)",
+        "incident_event": "occurred",
+        "incident_part": "evening",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-12",
+        "location": "Teenage Vuso Street, Zone 5, Langa (exact spot not given). The pin is on the street.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Both quote the same community leader and police details, so they are not fully independent. Standalone (no case, entity or map line).",
+        "reported": "13-14 Oct 2026",
+        "reported_at": "2026-10-13",
+        "sources": [
+          {
+            "name": "Voice of the Cape",
+            "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/"
+          },
+          {
+            "name": "Cape Argus",
+            "url": "https://capeargus.co.za/news/2026-10-14-two-killed-and-one-wounded-in-langa-shooting/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:87a55548697768f5",
+      "source_outlet": "Voice of the Cape"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "7acad00a-2081-462b-939c-be61b9d9b539",
+    "source": "Voice of the Cape",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T17:52:00Z",
+    "title": "Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct"
+  },
+  "payload_sha256": "sha256:47227a33c1693ce31850a95afd2f2ad7ad240067658ee670e6ecc79860f22ac9",
+  "source_hashes": [
+    {
+      "url": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://capeargus.co.za/news/2026-10-14-two-killed-and-one-wounded-in-langa-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-e42e2148",
+  "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "Police say two armed men stormed a homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at about 18:45 on Tuesday 13 October, held five people at gunpoint and demanded cash and a firearm, then shot dead the headman, 44, and his mother, 70. His wife and two others were unhurt. The Provincial Serious and Violent Crime Investigation unit is on the case; no arrests reported. The Dispatch calls it the second killing of a traditional leader in Willowvale in about a month; no source links the two. The victims were not named.",
+    "external_id": "eccheck:konkwana-komkhulu-2026-10-13",
+    "lat": -32.26588,
+    "lng": 28.50727,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T02:05:00Z",
+        "incident": "Tue 13 Oct 2026, about 18:45 (SAPS)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-13T18:45+02:00",
+        "location": "Komkhulu locality, Konkwana administrative area, near Willowvale (SAPS). Neither place is in OpenStreetMap, and GeoNames' places named Komkhulu are in other municipalities. The pin is Willowvale town, the same point as the Willowvale Extension 1 pin; the homestead may be well outside town.",
+        "method": "Found in the whole Eastern Cape sweep (SAPS newsroom statements, outlet lists and feeds); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "14 Oct 2026",
+        "reported_at": "2026-10-14",
+        "search_aliases": [
+          "Willowvale",
+          "Gatyana",
+          "Konkwana",
+          "Komkhulu",
+          "Mbhashe",
+          "Amathole",
+          "headman"
+        ],
+        "sources": [
+          {
+            "name": "Daily Dispatch",
+            "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/"
+          },
+          {
+            "name": "The Citizen",
+            "url": "https://www.citizen.co.za/news/south-africa/crime/eastern-cape-headman-mother-gunned-down-willowvale/"
+          },
+          {
+            "name": "EWN",
+            "url": "https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed"
+          },
+          {
+            "name": "Joburg ETC",
+            "url": "https://www.joburgetc.com/news/willowvale-headman-mother-killed-shooting/"
+          },
+          {
+            "name": "NovaNews (PE Express)",
+            "url": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/"
+          },
+          {
+            "name": "Komani News",
+            "url": "https://www.komani.co.za/headman-and-mother-shot-dead-during-home-invasion-near-willowvale/"
+          }
+        ]
+      },
+      "collected_title": "Headman and elderly mother gunned down in Eastern Cape homestead attack",
+      "link": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+      "pubdate_raw": "2026-10-14 (date only; the time in timestamp is a placeholder)",
+      "query": "Eastern Cape whole-province sweep (19 Oct 2026)",
+      "source_outlet": "NovaNews (PE Express)",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T02:05:00Z",
+    "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038",
+    "source": "NovaNews (PE Express)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-14T10:00:00Z",
+    "title": "Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct"
+  },
+  "payload_sha256": "sha256:cbea5e1bc893f4f0e9b603ef6a12ef0e3851774441b464e5d33cc112d1f9989b",
+  "source_hashes": [
+    {
+      "url": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.citizen.co.za/news/south-africa/crime/eastern-cape-headman-mother-gunned-down-willowvale/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.joburgetc.com/news/willowvale-headman-mother-killed-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.komani.co.za/headman-and-mother-shot-dead-during-home-invasion-near-willowvale/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: batch also marked approved 19 Oct 2026 in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

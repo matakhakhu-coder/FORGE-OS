@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-9170b8a2",
+  "signal_id": "0f037fc3-9de9-4e2b-aa1f-00feda269a58",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Police say a 43-year-old man sitting in a white Hyundai truck was pulled out by two men and shot dead in front of a premises on Trampoline Street, Beacon Valley, at 11:10 on Thursday 1 October; the suspects took his firearm and fled towards Hengelaar Road (Plainsman, quoting police spokesperson FC van Wyk).",
+    "external_id": "checked:wc-2026-10-18b:A",
+    "lat": -34.04048,
+    "lng": 18.62456,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Thu 1 Oct 2026, 11:10 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-10-01T11:10+02:00",
+        "location": "Trampoline Street, Beacon Valley (exact spot not given). The pin is the middle of the street, which OpenStreetMap places on the Eastridge side of Beacon Valley.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "1 Oct 2026",
+        "reported_at": "2026-10-01",
+        "sources": [
+          {
+            "name": "Plainsman",
+            "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:f94b047de7f9b87a",
+      "source_outlet": "Plainsman"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "0f037fc3-9de9-4e2b-aa1f-00feda269a58",
+    "source": "Plainsman",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-01T07:00:00Z",
+    "title": "Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct"
+  },
+  "payload_sha256": "sha256:cd3079a7ad00edcdc176bff12570c17698021d2f1b2d9cbd8ea8d2f91a2283e9",
+  "source_hashes": [
+    {
+      "url": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

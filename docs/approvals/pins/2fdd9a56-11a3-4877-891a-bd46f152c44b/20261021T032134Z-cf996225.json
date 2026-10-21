@@ -1,0 +1,71 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-cf996225",
+  "signal_id": "2fdd9a56-11a3-4877-891a-bd46f152c44b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Da Gamaskop police are investigating a murder after a man's body with stab wounds was found in bushes in an open field between D'Almeida and Albert Luthuli Park, near Mountain View, at about 10:50 on Thursday 8 October. Three suspects aged 28 to 43 were later arrested and appeared in court on 13 October (Mossel Bay Advertiser).",
+    "external_id": "checked:wc-2026-10-18b:M",
+    "lat": -34.175,
+    "lng": 22.10167,
+    "metadata": {
+      "checked": {
+        "basis": "Two reports from one outlet, both based on police statements.",
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Body found Thu 8 Oct 2026, about 10:50 (police); time of death not given",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-08T10:50+02:00",
+        "location": "Open field between D'Almeida and Albert Luthuli Park, near Mountain View, Mossel Bay. The field is not on the map, so the pin is the D'Almeida suburb point.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. A separate incident from the 4 Oct Asla Park pin. Standalone (no case, entity or map line).",
+        "reported": "8 Oct 2026; arrests reported 15 Oct",
+        "reported_at": "2026-10-08",
+        "sources": [
+          {
+            "name": "Mossel Bay Advertiser (8 Oct)",
+            "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714"
+          },
+          {
+            "name": "Mossel Bay Advertiser (15 Oct, arrests)",
+            "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:a0949df361f34bd2",
+      "source_outlet": "Mossel Bay Advertiser"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "2fdd9a56-11a3-4877-891a-bd46f152c44b",
+    "source": "Mossel Bay Advertiser",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-08T17:02:00Z",
+    "title": "D'Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct"
+  },
+  "payload_sha256": "sha256:2518ee8c3f06d31cc841b7ded7fa0be475f6da1f8e664e29325129064230af0a",
+  "source_hashes": [
+    {
+      "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-d1751b0b",
+  "signal_id": "0c5e795f-330b-4302-97c2-812543262e8b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Khayelitsha police registered two counts of murder after two men aged 36 and 39 were shot dead at about 04:30 on Tuesday 6 October in Masikhanye, Site B; no arrests were made (City Vision, quoting police spokesperson Wesley Twigg).",
+    "external_id": "checked:wc-2026-10-18b:H",
+    "lat": -34.02305,
+    "lng": 18.66632,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Tue 6 Oct 2026, about 04:30 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-06T04:30+02:00",
+        "location": "Masikhanye, Site B, Khayelitsha. Masikhanye could not be found on the map, so the pin is a general Site B point, not the scene.",
+        "method": "Collected by google_news_collector --keywords; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "6 Oct 2026",
+        "reported_at": "2026-10-06",
+        "sources": [
+          {
+            "name": "City Vision",
+            "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:cd146f67823d7636",
+      "source_outlet": "City Vision"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "0c5e795f-330b-4302-97c2-812543262e8b",
+    "source": "City Vision",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-06T10:27:00Z",
+    "title": "Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct"
+  },
+  "payload_sha256": "sha256:eb67232ea835d9ae4a2676e8e63015879702bf0541c24f1e7825a90fcb08a188",
+  "source_hashes": [
+    {
+      "url": "https://novanews.co.za/cityvision/khayelitsha-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

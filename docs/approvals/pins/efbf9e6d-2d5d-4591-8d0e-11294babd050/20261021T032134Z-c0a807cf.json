@@ -1,0 +1,79 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-c0a807cf",
+  "signal_id": "efbf9e6d-2d5d-4591-8d0e-11294babd050",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "north-west-killings-2026-10-19.json",
+  "approved_payload": {
+    "content": "SAPS says a 37-year-old man was stabbed at Modimola Village, Mmabatho, at about 04:00 on Saturday 17 October. A woman told police a 22-year-old family member came home at about 03:00 and broke the window of the room where she and the man were sleeping; the man went outside to confront him and they fought. She went to neighbours for help and, on returning, found him on the ground with stab wounds; paramedics declared him dead. A 22-year-old suspect was arrested and is expected in the Mmabatho Magistrate's Court on a murder charge. The same police statement reported the Seweding killing that night; police say the two are unrelated.",
+    "external_id": "nwcheck:modimola-mahikeng-2026-10-17",
+    "lat": -25.87135,
+    "lng": 25.44809,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T00:50:00Z",
+        "incident": "Sat 17 Oct 2026, about 04:00 (SAPS)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-17T04:00+02:00",
+        "location": "Modimola Village, west of Mahikeng, named by SAPS. No street or house is given. The pin is OpenStreetMap's point for Modimola.",
+        "method": "Found in the whole North West sweep (SAPS newsroom statement of 18 Oct); source pages read and claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "18 Oct 2026",
+        "reported_at": "2026-10-18",
+        "search_aliases": [
+          "Mmabatho",
+          "Mafikeng",
+          "Modimola"
+        ],
+        "sources": [
+          {
+            "name": "NovaNews",
+            "url": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/"
+          },
+          {
+            "name": "EWN",
+            "url": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents"
+          }
+        ]
+      },
+      "collected_title": "North West police arrest two after separate Mmabatho murders - NovaNews",
+      "link": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+      "pubdate_raw": "2026-10-18T12:00:00+00:00",
+      "query": "North West whole-province sweep: SAPS newsroom",
+      "source_outlet": "NovaNews",
+      "stream_reason": "general_media"
+    },
+    "published_at": "2026-10-19T00:50:00Z",
+    "signal_id": "efbf9e6d-2d5d-4591-8d0e-11294babd050",
+    "source": "NovaNews",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-18T12:00:00Z",
+    "title": "Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct"
+  },
+  "payload_sha256": "sha256:05c2fe934b47c0701facff00f7bd931d4df2bd9f1a761224ebe4946443490fd0",
+  "source_hashes": [
+    {
+      "url": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

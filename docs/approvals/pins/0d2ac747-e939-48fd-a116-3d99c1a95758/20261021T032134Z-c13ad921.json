@@ -1,0 +1,89 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-c13ad921",
+  "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Lwandle police are investigating a murder after a 35-year-old man's body was found still burning at Christmas Tinto Park, Asanda Village, Strand, at about 06:30 on Friday 16 October; police found stab wounds to his upper body. District Mail quotes a police spokesperson saying preliminary investigation showed he was allegedly assaulted, stabbed and placed in a wheelie bin in Celiwe Street at around 03:00, then dumped near the Asanda Village Wetland Park, opposite Christmas Tinto Primary School. Police say the motive is under investigation, and no arrest has been reported (District Mail and Voice of the Cape, 16 Oct; Daily Voice, 18 Oct, which places the park in Zola Village).",
+    "external_id": "checked:wc-2026-10-18b:S",
+    "lat": -34.1077,
+    "lng": 18.8578,
+    "metadata": {
+      "checked": {
+        "basis": "Three outlets. The facts of the killing come from police in all three; Voice of the Cape adds a community policing forum member, Daily Voice the ward councillor and District Mail its own reporter at the scene.",
+        "checked_at": "2026-10-18T23:15:00Z",
+        "disagreements": [
+          "Daily Voice (18 Oct) places Christmas Tinto Park in Zola Village; Voice of the Cape and District Mail (16 Oct) place it in Asanda Village."
+        ],
+        "incident": "Found still burning Fri 16 Oct 2026, about 06:30 (police). District Mail quotes police saying the victim was allegedly attacked in Celiwe Street around 03:00 and dumped at the park afterwards.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-16T06:30+02:00",
+        "location": "Christmas Tinto Park, opposite Christmas Tinto Primary School and near the Asanda Village Wetland Park, Asanda Village, Strand (Voice of the Cape, District Mail). Daily Voice calls the area Zola Village. The park is not on the map; the pin is about 80 m from the primary school.",
+        "method": "Collected by google_news_collector --keywords; Daily Voice read 18 Oct. Area corrected 19 Oct after reading Voice of the Cape and District Mail (both 16 Oct); claims, dates and place checked by hand; standalone (no case, entity or map line).",
+        "reported": "16-18 Oct 2026",
+        "reported_at": "2026-10-16",
+        "search_aliases": [
+          "Zola Village"
+        ],
+        "sources": [
+          {
+            "date": "16 Oct",
+            "name": "District Mail (NovaNews)",
+            "url": "https://novanews.co.za/districtmailhelderberg/man-stabbed-torched-near-primary-school-near-strand/"
+          },
+          {
+            "date": "16 Oct",
+            "name": "Voice of the Cape",
+            "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/"
+          },
+          {
+            "date": "18 Oct",
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:0d921f07fa866baa",
+      "source_outlet": "District Mail (NovaNews)"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",
+    "source": "District Mail (NovaNews)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-16T09:20:00Z",
+    "title": "Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct"
+  },
+  "payload_sha256": "sha256:c92fea8bbb77210dc86e8200cc7cbe3c1d070e321cf438e4c79e2174bfe62588",
+  "source_hashes": [
+    {
+      "url": "https://novanews.co.za/districtmailhelderberg/man-stabbed-torched-near-primary-school-near-strand/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}

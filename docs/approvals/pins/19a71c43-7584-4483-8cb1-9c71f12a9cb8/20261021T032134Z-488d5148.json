@@ -1,0 +1,71 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T032134Z-488d5148",
+  "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-18-batch2.json",
+  "approved_payload": {
+    "content": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive, Tafelsig, where a body was found burning; it was burned beyond recognition, a murder case was registered and a post-mortem will identify the deceased (EWN, quoting police spokesperson FC van Wyk). EWN later reported it as a woman's body found on Saturday 17 October.",
+    "external_id": "checked:wc-2026-10-18b:T",
+    "lat": -34.062,
+    "lng": 18.639,
+    "metadata": {
+      "checked": {
+        "basis": "Two reports from one outlet. Police gave the place; the Saturday date and that the victim was a woman come from the second report, quoting Ian Cameron.",
+        "checked_at": "2026-10-18T18:48:00Z",
+        "incident": "Found Sat 17 Oct 2026 (EWN, quoting Ian Cameron); time not given",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-17",
+        "location": "Corner of Hugenot Street and AZ Berman Drive, Tafelsig. The pin is near the corner; OpenStreetMap spells it Huguenot.",
+        "method": "Collected by google_news_collector --keywords; source pages read and claims, dates and place checked by hand. Two reports from the same outlet, not independent. Standalone (no case, entity or map line).",
+        "reported": "18 Oct 2026",
+        "reported_at": "2026-10-18",
+        "sources": [
+          {
+            "name": "EWN (police report)",
+            "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town"
+          },
+          {
+            "name": "EWN (Cameron reaction)",
+            "url": "https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron"
+          }
+        ]
+      },
+      "collected_external_id": "gnews:640aa67224c7db49",
+      "source_outlet": "EWN"
+    },
+    "published_at": "2026-10-18T18:50:00Z",
+    "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8",
+    "source": "EWN",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-18T08:59:00Z",
+    "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct"
+  },
+  "payload_sha256": "sha256:509a5030d542d7f181828309313e0b9ad31fa9e4e7114704ff9bd99d9eebd74e",
+  "source_hashes": [
+    {
+      "url": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T03:40:00+02:00",
+  "recorded_at": "2026-10-21T05:21:34+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "confirmed-by-user-in-session-2026-10-21",
+    "summary": "confirmed by user in session on October 21 (2026, approved_at approximate: about 03:40 SAST). Legacy: no earlier approval wording in Git. Data only."
+  },
+  "basis": "legacy",
+  "scope": "data-only"
+}
