@@ -1,8 +1,22 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "21 Oct 2026 12:11 UTC",
+  "generated_at": "21 Oct 2026 14:42 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Steenberg (Military Rd, approx.): two men, 23 and 37, shot dead; five arrested after chase, 20 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-21T12:41:00Z",
+      "summary": "Police say two men, aged 23 and 37, were fatally wounded in a shooting in Military Road, Steenberg, at about 12:30 on Tuesday 20 October. The suspects fled in a red VW Polo, abandoned it in Kirstenhof after a high-speed ...",
+      "source": "CAPE TIMES (IOL)",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0751134,
+        "lng": 18.4789251
+      }
+    },
     {
       "kind": "signal",
       "title": "Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct",
