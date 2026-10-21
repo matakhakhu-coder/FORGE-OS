@@ -3549,6 +3549,102 @@
           "conflicts": []
         }
       ]
+    },
+    "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 41, dead.",
+          "basis": "Police account only",
+          "detail": "Three other males aged 16 to 21 wounded (police, via Smile 90.4FM: 'injured'; IOL: 'seriously injured'). IOL Cape Times adds that the man was declared dead at the scene. Briefly News gives the wounded ages as 16, 18 and 21 without saying where that comes from. All three news reports relay one police account; repetition by IOL is not independent corroboration.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, SAPS Western Cape spokesperson (via Smile 90.4FM)",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "one 41-year-old man was killed in the incident"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 18 October, police responded at about 15:30.",
+          "basis": "Police account only",
+          "detail": "15:30 is when police responded, not a stated time of the shooting; IOL writes the shooting 'occurred at about 3:30 pm'. The day comes from 'on Sunday' in a report dated 19 October. The health department notice separately dates a 'safety incident outside the facility' to 18 October; it does not mention a shooting.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, SAPS Western Cape spokesperson (via Smile 90.4FM)",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "He noted that police responded to the incident at around 15:30."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Bernstein Road, Cafda Village, Retreat, near the Retreat Community Health Centre (street level).",
+          "basis": "Police account only",
+          "detail": "The exact spot on the road is not given. Briefly News says 'Bernstein Street', unattributed; recorded as a detail, not a conflict of comparable standing. The health notice places the incident 'outside the facility'.",
+          "sources": [
+            {
+              "name": "SAPS Western Cape, as reported by Smile 90.4FM",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "four people were shot on Bernstein Road near the clinic, in Cafda Village, on Sunday"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot.",
+          "basis": "Police account only",
+          "detail": "IOL: 'suffered fatal gunshot wounds'. Police say suspects in a vehicle opened fire, 'according to reports'.",
+          "sources": [
+            {
+              "name": "SAPS Western Cape, as reported by Smile 90.4FM",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "The Western Cape SAPS confirmed that four people were shot"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "None reported; police say the circumstances are under investigation.",
+          "basis": "Undetermined in the saved reports",
+          "detail": "No gang or other motive is attributed in any saved report. The police account of what happened ('According to reports' the victims were standing in the road when suspects in a vehicle opened fire) describes circumstances, not motive. IOL says 'alongside the road'.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, SAPS Western Cape spokesperson (via Smile 90.4FM)",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "The circumstances surrounding the incident are under investigation"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder and attempted murder cases opened by Steenberg police; no arrest reported.",
+          "basis": "Police account only",
+          "detail": "No report says whether anyone was arrested; 'no arrest reported' means none is mentioned as of the 19 October reports. Current arrest or court status was not checked.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, SAPS Western Cape spokesperson (via Smile 90.4FM)",
+              "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "archive": "http://web.archive.org/web/20261019111634/https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+              "quote": "Twigg confirmed that Steenberg police are investigating murder and attempted murder cases"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }
