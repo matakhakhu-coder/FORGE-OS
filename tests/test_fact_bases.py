@@ -9,7 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_AUDIT = ROOT / 'private/admiralty-audit/audit.json'
 # Audited separately after the frozen 36-pin Admiralty audit; the private audit is not widened.
 CAFDA = '7aa4eea1-c1f4-55af-b761-d55ff2df3a51'
-SEPARATELY_AUDITED = {CAFDA}
+# Sprint 5 pins, each checked claim by claim in its own evidence batch (Gqeberha B, Steenberg E, Strandfontein H).
+GQEBERHA = 'b842a3b5-eda7-5b97-bfe1-0448fe0272a5'
+STEENBERG = '048440e0-0be5-53d8-934a-1ba6233a0dfa'
+STRANDFONTEIN = 'adf99019-941e-5dd0-9851-635da0a1e146'
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN}
 
 
 def load(path):
