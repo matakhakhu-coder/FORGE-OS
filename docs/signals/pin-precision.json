@@ -49,6 +49,7 @@
     "ba7824e3-f2de-56c4-914f-587aeba1639c": {"precision": "suburb", "uncertainty_m": 1500, "note": "Duncan Village point; Gardenia Street is not mapped."},
     "417613e8-bc4b-5e22-a9ce-49531d161f70": {"precision": "suburb", "uncertainty_m": 1500, "note": "Soweto on Sea suburb point; Sebothe Street is not mapped."},
     "a3d91502-d7c3-5257-99ac-0c99e948b038": {"precision": "town", "uncertainty_m": 20000, "note": "Willowvale town point; the homestead may be well outside town."},
-    "335b265d-2edd-54e2-969e-31e38733ff3a": {"precision": "town", "uncertainty_m": 20000, "note": "Mqanduli town point; Mbulawa Location is not mapped."}
+    "335b265d-2edd-54e2-969e-31e38733ff3a": {"precision": "town", "uncertainty_m": 20000, "note": "Mqanduli town point; Mbulawa Location is not mapped."},
+    "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {"precision": "street", "uncertainty_m": 1000, "note": "Russell Road, Central, Gqeberha; outside an unnamed corner shop. The road is over a kilometre long."}
   }
 }

@@ -3645,6 +3645,109 @@
           "conflicts": []
         }
       ]
+    },
+    "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 52, dead.",
+          "basis": "Police account only",
+          "detail": "Police give his age as 52 (Gantana, via The Herald). Algoa FM also reports 52, in its own words rather than as a police figure. PE Express gives 50; its body paraphrases the same Gantana statement, so the 50 is most likely its own error. Declared dead at the scene. All three reports relay police.",
+          "sources": [
+            {
+              "name": "Nobuntu Gantana, SAPS spokesperson (via The Herald)",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+              "archive": null,
+              "quote": "a 52-year-old male was shot and killed by two unknown male suspects"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "A 50-year-old man was shot and killed in his vehicle",
+              "url": "https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 19 October 2026, at about 12:50.",
+          "basis": "Police account only",
+          "detail": "Police time; Algoa FM says shortly before 1 pm.",
+          "sources": [
+            {
+              "name": "Nobuntu Gantana, SAPS spokesperson (via The Herald)",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+              "archive": null,
+              "quote": "at about 12.50pm on October 19"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Russell Road, Central, Gqeberha, outside a corner shop.",
+          "basis": "Police account only",
+          "detail": "Street only; the shop is not named. Humewood police station area.",
+          "sources": [
+            {
+              "name": "The Herald",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+              "archive": null,
+              "quote": "gunned down in broad daylight outside a corner shop in Russell Road, Central"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot by two suspects while in his car; suspects fled in a white VW Polo.",
+          "basis": "Police account only",
+          "detail": "The getaway car's colour rests on the Gantana statement; Algoa FM says only a separate Volkswagen Polo.",
+          "sources": [
+            {
+              "name": "Nobuntu Gantana, SAPS spokesperson (via The Herald)",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+              "archive": null,
+              "quote": "the victim was in his vehicle, a white VW Polo, when the two suspects opened fire on him"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Unknown.",
+          "basis": "One account; independence not established",
+          "detail": "Algoa FM's own narration, after the paragraphs citing police spokesperson Captain Andre Beetge; not a direct police quote. Neither The Herald nor PE Express mentions motive.",
+          "sources": [
+            {
+              "name": "Algoa FM (reporter's narration, after citing police)",
+              "url": "https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha",
+              "archive": null,
+              "quote": "The motive for the shooting is unknown at this stage."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened by Humewood police; no arrest reported.",
+          "basis": "Police account only",
+          "detail": "No report mentions an arrest as of 20 October. Current status not checked.",
+          "sources": [
+            {
+              "name": "Nobuntu Gantana, SAPS spokesperson (via The Herald)",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+              "archive": null,
+              "quote": "A murder case has been opened and is being investigated by SAPS Humewood."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

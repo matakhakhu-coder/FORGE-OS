@@ -1,0 +1,66 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Eastern Cape",
+  "batch": "Eastern Cape killings, incidents 19-21 Oct 2026, hand-checked and approved 21 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins).",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb or area is known. Sources that reuse one report or one police statement are not independent corroboration. Being near another pin is not a link. Private individuals (victims and suspects) are not named.",
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "b842a3b5-eda7-5b97-bfe1-0448fe0272a5",
+      "external_id": "checked:ec-2026-10-21:A",
+      "source": "The Herald",
+      "title": "Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct",
+      "content": "Police say a man of 52 was shot by two male suspects while sitting in his car, a white VW Polo, outside a corner shop in Russell Road, Central, Gqeberha, at about 12:50 on Monday 19 October. He tried to get out, collapsed behind the car and died at the scene; the suspects fled in another white VW Polo (police spokesperson Brigadier Nobuntu Gantana, via The Herald). Humewood police opened a murder case. Algoa FM, in its own reporting after citing police, says the motive is unknown at this stage. No arrest has been reported. The victim is not named here. Three reports, all resting on police: The Herald, Algoa FM and PE Express (PE Express gives his age as 50).",
+      "lat": -33.9590722,
+      "lng": 25.6177624,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-19T10:50:00Z",
+      "published_at": "2026-10-21T11:16:00Z",
+      "metadata": {
+        "source_outlet": "The Herald",
+        "link": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+        "pubdate_raw": "2026-10-20T14:59:56+0000 (datePublished on the page)",
+        "checked": {
+          "incident": "Mon 19 Oct 2026, at about 12:50 (police, via The Herald and PE Express; Algoa FM: shortly before 1 pm)",
+          "reported": "20 Oct 2026 (Algoa FM 08:12, PE Express 12:17, The Herald 16:59 SAST)",
+          "location": "Outside a corner shop in Russell Road, Central, Gqeberha (police, via The Herald). Exact shop not named. The pin is a point on Russell Road in Central (OpenStreetMap way 30696735), the owner's choice of two Russell Road points about 48 m apart; no source gives anything finer than the road.",
+          "sources": [
+            {
+              "name": "The Herald",
+              "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/"
+            },
+            {
+              "name": "Algoa FM",
+              "url": "https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha"
+            },
+            {
+              "name": "PE Express (Nova News)",
+              "url": "https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/"
+            }
+          ],
+          "checked_at": "2026-10-21T11:16:00Z",
+          "method": "Found in the 21 Oct 2026 new-signals draft run (web and news search; not part of the 19 Oct Eastern Cape sweep, which ended on 19 Oct); source pages read and claims, dates and place checked by hand, then all three re-read and every quote matched word for word on 21 Oct about 11:16 UTC (Batch B); standalone (no case, entity or map line).",
+          "incident_start": "2026-10-19T12:50+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-20",
+          "search_aliases": [
+            "Gqeberha",
+            "Port Elizabeth",
+            "Central",
+            "Russell Road",
+            "Russel Road",
+            "Humewood",
+            "Nelson Mandela Bay"
+          ]
+        },
+        "collected_title": "Man shot dead in broad daylight in Central"
+      },
+      "fingerprint": "sha256:be7470eaeea51fe6714c8c98cedd5569969e6c5e094358897b39f68d6192daa4"
+    }
+  ]
+}

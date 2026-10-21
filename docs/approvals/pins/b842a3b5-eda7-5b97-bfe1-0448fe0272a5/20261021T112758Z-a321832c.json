@@ -1,0 +1,90 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261021T112758Z-a321832c",
+  "signal_id": "b842a3b5-eda7-5b97-bfe1-0448fe0272a5",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "eastern-cape-killings-2026-10-21.json",
+  "approved_payload": {
+    "content": "Police say a man of 52 was shot by two male suspects while sitting in his car, a white VW Polo, outside a corner shop in Russell Road, Central, Gqeberha, at about 12:50 on Monday 19 October. He tried to get out, collapsed behind the car and died at the scene; the suspects fled in another white VW Polo (police spokesperson Brigadier Nobuntu Gantana, via The Herald). Humewood police opened a murder case. Algoa FM, in its own reporting after citing police, says the motive is unknown at this stage. No arrest has been reported. The victim is not named here. Three reports, all resting on police: The Herald, Algoa FM and PE Express (PE Express gives his age as 50).",
+    "external_id": "checked:ec-2026-10-21:A",
+    "lat": -33.9590722,
+    "lng": 25.6177624,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-21T11:16:00Z",
+        "incident": "Mon 19 Oct 2026, at about 12:50 (police, via The Herald and PE Express; Algoa FM: shortly before 1 pm)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-19T12:50+02:00",
+        "location": "Outside a corner shop in Russell Road, Central, Gqeberha (police, via The Herald). Exact shop not named. The pin is a point on Russell Road in Central (OpenStreetMap way 30696735), the owner's choice of two Russell Road points about 48 m apart; no source gives anything finer than the road.",
+        "method": "Found in the 21 Oct 2026 new-signals draft run (web and news search; not part of the 19 Oct Eastern Cape sweep, which ended on 19 Oct); source pages read and claims, dates and place checked by hand, then all three re-read and every quote matched word for word on 21 Oct about 11:16 UTC (Batch B); standalone (no case, entity or map line).",
+        "reported": "20 Oct 2026 (Algoa FM 08:12, PE Express 12:17, The Herald 16:59 SAST)",
+        "reported_at": "2026-10-20",
+        "search_aliases": [
+          "Gqeberha",
+          "Port Elizabeth",
+          "Central",
+          "Russell Road",
+          "Russel Road",
+          "Humewood",
+          "Nelson Mandela Bay"
+        ],
+        "sources": [
+          {
+            "name": "The Herald",
+            "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/"
+          },
+          {
+            "name": "Algoa FM",
+            "url": "https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha"
+          },
+          {
+            "name": "PE Express (Nova News)",
+            "url": "https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/"
+          }
+        ]
+      },
+      "collected_title": "Man shot dead in broad daylight in Central",
+      "link": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+      "pubdate_raw": "2026-10-20T14:59:56+0000 (datePublished on the page)",
+      "source_outlet": "The Herald"
+    },
+    "published_at": "2026-10-21T11:16:00Z",
+    "signal_id": "b842a3b5-eda7-5b97-bfe1-0448fe0272a5",
+    "source": "The Herald",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-19T10:50:00Z",
+    "title": "Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct"
+  },
+  "payload_sha256": "sha256:be7470eaeea51fe6714c8c98cedd5569969e6c5e094358897b39f68d6192daa4",
+  "source_hashes": [
+    {
+      "url": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/",
+      "retrieved_at": "2026-10-21T10:31:42Z",
+      "content_sha256": "sha256:c9ad7f62218ca06cabf582af994aaa1cfa8f200d154f6e2a8bbfb329137e51c0"
+    },
+    {
+      "url": "https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha",
+      "retrieved_at": "2026-10-21T10:31:43Z",
+      "content_sha256": "sha256:5fd133b62f6950665aa2cc899b308fd4c0a26c5d5a78be851001daed1df6bb10"
+    },
+    {
+      "url": "https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/",
+      "retrieved_at": "2026-10-21T10:31:43Z",
+      "content_sha256": "sha256:34e4c1c4e509976c5b9035864016b6c93044d1f02c8273dafa195579271263ca"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-21T13:26:21+02:00",
+  "recorded_at": "2026-10-21T13:27:58+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "new-signals-2026-10-21",
+    "summary": "confirmed by user in chat on October 21 (2026): 'Approved point A', after the Batch C review. approved_at is when the recording task started, just after. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

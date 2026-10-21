@@ -184,8 +184,8 @@ def _no_env_enforce(monkeypatch):
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 38
-    assert report.pins_checked == 37
+    assert report.records == len(_real_record_files()) == 39
+    assert report.pins_checked == 38
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -221,8 +221,12 @@ def test_real_legacy_records_match_the_owner_confirmation():
         if rec["pin_version"] == 1:
             assert rec["signal_id"] not in first, f"two version-1 records for {rec['signal_id']}"
             first[rec["signal_id"]] = rec
+    new_pins = {sid for sid, rec in first.items() if rec["basis"] == "explicit"}
+    assert new_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5"}  # Gqeberha, approved in chat 21 Oct 2026
     assert set(first) == active
     for sid, rec in first.items():
+        if sid in new_pins:
+            continue
         pin, batch = by_id[sid]
         assert rec["action"] == "approve" and rec["supersedes"] is None
         assert rec["basis"] == "legacy" and rec["scope"] == "data-only"

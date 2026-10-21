@@ -541,6 +541,21 @@
       ],
       "independence": "same_statement",
       "note": "Two reports, both resting on police. IOL ran one story twice (Cape Times and Cape Argus), so it counts once. The health department speaks only about the clinic closure."
+    },
+    "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {
+      "statement_from": "SAPS Eastern Cape, quoted by The Herald, Algoa FM and PE Express",
+      "spokesperson": [
+        "Nobuntu Gantana",
+        "Andre Beetge"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "The Herald",
+        "Algoa FM",
+        "PE Express (Nova News)"
+      ],
+      "independence": "same_statement",
+      "note": "Three reports, all resting on police. The Herald and PE Express carry the same Gantana statement; Algoa FM carries Beetge's account of an initial report, and its motive line is its own narration. Repetition is not independent corroboration."
     }
   }
 }
