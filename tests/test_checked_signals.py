@@ -189,6 +189,20 @@ def test_empty_db_one_import_builds_all_markers(tmp_path, monkeypatch):
     assert conn.execute("SELECT COUNT(*) FROM signal_actors").fetchone()[0] == 0
 
 
+def test_publish_no_longer_writes_entity_index(tmp_path, monkeypatch):
+    """The unused entity-index.json block was removed (it only ever wrote []
+    because `entities` was undefined and a blanket except hid the NameError).
+    A publish into an empty temp dist/ must not create the file."""
+    from tools.checked_signals import run_import
+
+    conn, db_file = _fresh_db(tmp_path, monkeypatch)
+    conn.close()
+    run_import(db_file, write=True, out=lambda m: None)
+    dist = _publish_to(tmp_path, monkeypatch, db_file)
+    assert (dist / "search-index.json").exists()
+    assert not (dist / "entity-index.json").exists()
+
+
 def test_dry_run_writes_nothing(tmp_path, monkeypatch):
     from tools.checked_signals import run_import
 
