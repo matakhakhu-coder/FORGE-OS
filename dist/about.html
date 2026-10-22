@@ -113,6 +113,39 @@
   color: var(--text-secondary);
   line-height: 1.5;
 }
+
+.about-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-top: var(--sp-3);
+}
+.about-body ul { margin: 0 0 var(--sp-4) var(--sp-5); padding: 0; }
+.about-body li { margin-bottom: var(--sp-2); }
+.about-body a { color: var(--accent); }
+.about-body h3 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: var(--sp-5) 0 var(--sp-2);
+}
+.about-note {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  margin: var(--sp-4) 0;
+}
+.about-note p:last-child { margin-bottom: 0; }
+.about-table td:first-child { white-space: nowrap; color: var(--text-primary); }
+@media (max-width: 560px) {
+  .about-shell { padding: var(--sp-6) var(--sp-4) var(--sp-12); }
+  .about-table th, .about-table td { padding: var(--sp-2) var(--sp-2); }
+  .about-table td:first-child { white-space: normal; }
+  .about-flow { grid-template-columns: 1fr; }
+}
 </style>
 
 </head>
@@ -140,7 +173,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 15:53 UTC" title="22 Oct 2026 15:53 UTC">22 Oct 2026 15:53 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 17:11 UTC" title="22 Oct 2026 17:11 UTC">22 Oct 2026 17:11 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -198,184 +231,259 @@
     <div class="about-header__eyebrow">Methodology &middot; ZA-DIVERGENT</div>
     <h1 class="about-header__title">How It Works</h1>
     <p class="about-header__sub">
-      ZA-DIVERGENT is a machine-scored intelligence bulletin covering South African
-      corruption, crime, and governance. Signals are collected from open sources,
-      verified against court records, and organized into active investigations.
+      ZA-DIVERGENT is an open map of incidents reported in South African news.
+      Every pin is checked by hand against its sources and approved by the site&rsquo;s
+      owner before it goes on the map. An AI assistant, Maya, does much of the
+      searching and checking. The owner decides what is published.
     </p>
+    <p class="about-header__meta">Method last updated 22 October 2026</p>
   </div>
 
   
   <div class="about-section">
-    <div class="about-section__title">What is ZA-DIVERGENT</div>
+    <h2 class="about-section__title">What ZA-DIVERGENT is</h2>
     <div class="about-body">
       <p>
-        ZA-DIVERGENT is the public intelligence bulletin produced by the
-        <strong>FORGE OSINT Engine</strong> &mdash; a local-first, analyst-grade
-        intelligence operating system built for the collection, scoring, and
-        visual analysis of open-source intelligence.
+        ZA-DIVERGENT is the public map built on <strong>FORGE</strong>, the research
+        system behind it. Each pin is one incident a news outlet reported. Each pin
+        carries its sources, the quotes its key facts rest on, and an honest note of
+        how exact its place and time are.
       </p>
       <p>
-        Every signal on this site is sourced from publicly available material:
-        news outlets, government gazettes, court records, satellite data, and
-        social media. Nothing on this site is classified, leaked, or obtained
-        through non-public means.
+        Pins are filed under one of the map&rsquo;s streams: Crime &amp; Security,
+        Infrastructure, Priority Intelligence, and Africa &amp; World. As of
+        22 October 2026, every approved pin is a killing, or a death police are
+        investigating, under Crime &amp; Security. The pins so far cover incidents from
+        1 October 2026 in the Western Cape, Eastern Cape and North West.
       </p>
       <p>
-        The bulletin is designed and operated out of <strong>South Africa</strong>,
-        with a primary focus on domestic and regional open-source intelligence.
+        Everything is free. The map, the <a href="records.html">Records</a> table and
+        the CSV and JSON downloads have no paywall and no sign-in.
       </p>
     </div>
   </div>
 
   
   <div class="about-section">
-    <div class="about-section__title">Collection Pipeline</div>
+    <h2 class="about-section__title">Who does what</h2>
     <div class="about-body">
-      <p>
-        Signals are collected by automated collectors that scan open sources on a
-        regular schedule. Each collector is purpose-built for a specific source type:
-      </p>
+      <h3>Maya, the AI assistant, does the legwork</h3>
+      <ul>
+        <li>Runs the news searches and finds candidate incidents.</li>
+        <li>Reads the original articles. Keeps the incident date apart from the report date.</li>
+        <li>Drafts each pin: its title, its story, when it happened and where.</li>
+        <li>Marks how exact the map point is, and whether the reports are independent of each other.</li>
+        <li>Checks each key fact against a quote from a source, and saves archive copies of sources where it can.</li>
+        <li>Follows up on earlier pins, for example whether an arrest was reported.</li>
+        <li>Re-checks parked cases for new reporting.</li>
+        <li>Records the owner&rsquo;s approvals and builds and tests the site.</li>
+      </ul>
+      <h3>The owner decides</h3>
+      <ul>
+        <li>Which incidents become pins, and the exact data on each one.</li>
+        <li>Every change to a pin, and whether a pin is withdrawn.</li>
+        <li>The rules: what counts as an incident, and how pins are labelled.</li>
+        <li>What happens to held-back and parked cases.</li>
+        <li>Whether any pins are linked to each other, or to a case or an entity.</li>
+      </ul>
+      <div class="about-note">
+        <p>
+          <strong>Maya can&rsquo;t publish a pin on its own.</strong> Each owner approval
+          is saved as a record in the project&rsquo;s public Git repository. The steps
+          that load pins and build the site refuse any pin without a matching approval
+          record. You can see every record in the
+          <a href="https://github.com/matakhakhu-coder/FORGE-OS/tree/main/docs/approvals/pins" target="_blank" rel="noopener noreferrer">approval ledger</a>.
+        </p>
+      </div>
     </div>
-    <table class="about-table">
-      <thead>
-        <tr><th>Source</th><th>What it collects</th><th>Update frequency</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>News Wire</td><td>SA investigative journalism (amaBhungane, Daily Maverick, News24, GroundUp, TimesLive)</td><td>Every pipeline run</td></tr>
-        <tr><td>Court Records</td><td>SAFLII case law involving tracked actors &mdash; provides external schema authority via immutable case numbers</td><td>Every pipeline run</td></tr>
-        <tr><td>Company Registry</td><td>CIPC corporate registration checks on procurement-linked actors</td><td>On demand</td></tr>
-        <tr><td>SA Gazette</td><td>Government procurement notices and tenders</td><td>Weekly</td></tr>
-        <tr><td>GDELT / ACLED</td><td>Global conflict and event data for regional context</td><td>Daily</td></tr>
-        <tr><td>Health Alert</td><td>Disease outbreak monitoring (WHO, ProMED, CDC)</td><td>Daily</td></tr>
-        <tr><td>Incident Report</td><td>Manually authored signals for specific events under investigation</td><td>As needed</td></tr>
-      </tbody>
-    </table>
   </div>
 
   
   <div class="about-section">
-    <div class="about-section__title">Gravity Scoring</div>
-    <div class="about-body">
-      <p>
-        Every signal is assigned a <strong>gravity score</strong> between 0.0 and 1.0
-        by the FORGE analytical pipeline. This score represents editorial weight &mdash;
-        how significant the signal is based on source reliability, recency, keyword
-        density, and corroboration with existing intelligence.
-      </p>
-      <p>The score is displayed as a named significance band:</p>
-    </div>
-    <table class="about-table">
-      <thead>
-        <tr><th>Score range</th><th>Band</th><th>Meaning</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>0.75 &ndash; 1.00</td><td>Critical</td><td>Multiple corroborating sources, high urgency, verified actors</td></tr>
-        <tr><td>0.55 &ndash; 0.74</td><td>High</td><td>Strong source, significant subject matter, escalation threshold</td></tr>
-        <tr><td>0.35 &ndash; 0.54</td><td>Significant</td><td>Established signal, meets monitoring threshold</td></tr>
-        <tr><td>0.20 &ndash; 0.34</td><td>Notable</td><td>Single-source or developing, worth tracking</td></tr>
-        <tr><td>0.00 &ndash; 0.19</td><td>Routine</td><td>Low-weight background signal</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  
-  <div class="about-section">
-    <div class="about-section__title">Evidence Confidence (Cases)</div>
-    <div class="about-body">
-      <p>
-        Each investigation case has an <strong>Evidence Confidence</strong> score &mdash;
-        the average gravity score across all signals pinned to that case. This
-        reflects the overall evidentiary weight of the investigation:
-      </p>
-    </div>
-    <table class="about-table">
-      <thead>
-        <tr><th>Score range</th><th>Label</th><th>What it means</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>0.75+</td><td>Corroborated</td><td>Multiple independent high-quality sources confirm the investigation's findings</td></tr>
-        <tr><td>0.55 &ndash; 0.74</td><td>Strong</td><td>Reliable sources with substantial corroboration</td></tr>
-        <tr><td>0.35 &ndash; 0.54</td><td>Established</td><td>Investigation has a solid evidence base from verified sources</td></tr>
-        <tr><td>0.20 &ndash; 0.34</td><td>Developing</td><td>Early-stage investigation, limited corroboration so far</td></tr>
-        <tr><td>Below 0.20</td><td>Preliminary</td><td>Sparse evidence, mostly single-source signals</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  
-  <div class="about-section">
-    <div class="about-section__title">Pipeline Flow</div>
+    <h2 class="about-section__title">From news report to pin</h2>
     <div class="about-flow">
       <div class="about-flow__step">
         <div class="about-flow__num">1</div>
-        <div class="about-flow__label">Collect</div>
-        <div class="about-flow__desc">Automated collectors scan open sources for new signals</div>
+        <div class="about-flow__label">Find</div>
+        <div class="about-flow__desc">Saved news searches turn up candidate incidents</div>
       </div>
       <div class="about-flow__step">
         <div class="about-flow__num">2</div>
-        <div class="about-flow__label">Score</div>
-        <div class="about-flow__desc">Gravity engine assigns significance based on source, content, and context</div>
+        <div class="about-flow__label">Check</div>
+        <div class="about-flow__desc">Original articles read, facts matched to quotes</div>
       </div>
       <div class="about-flow__step">
         <div class="about-flow__num">3</div>
-        <div class="about-flow__label">Link</div>
-        <div class="about-flow__desc">Signals are linked to actors, cases, and geographic locations</div>
+        <div class="about-flow__label">Label</div>
+        <div class="about-flow__desc">How exact the place is, and how independent the reports are</div>
       </div>
       <div class="about-flow__step">
         <div class="about-flow__num">4</div>
+        <div class="about-flow__label">Approve</div>
+        <div class="about-flow__desc">The owner approves the exact pin, and the approval is recorded</div>
+      </div>
+      <div class="about-flow__step">
+        <div class="about-flow__num">5</div>
         <div class="about-flow__label">Publish</div>
-        <div class="about-flow__desc">Verified signals are published to this bulletin as a static site</div>
+        <div class="about-flow__desc">The site is rebuilt from approved pins only</div>
       </div>
     </div>
-  </div>
-
-  
-  <div class="about-section">
-    <div class="about-section__title">Trust and Transparency</div>
     <div class="about-body">
       <p>
-        <strong>All sources are open.</strong> Every signal on this site is derived from
-        publicly available material. Source attribution is displayed on every signal card.
+        <strong>Find.</strong> Candidates come from news searches, outlets&rsquo; own
+        sites, police (SAPS) statements, and web and X searches. In the Western Cape a
+        fixed set of 14 standard news searches runs on a schedule, currently every
+        three days. Elsewhere, the searches cover the area around each published pin,
+        about 30 km. A search result is only a lead. Nothing goes on the map until it
+        has been checked and approved.
       </p>
       <p>
-        <strong>Court records provide external authority.</strong> When SAFLII case numbers
-        appear (e.g. [2024] ZAGPPHC 441), these are immutable, verifiable identifiers that
-        can be independently checked on <a href="https://www.saflii.org" target="_blank" rel="noopener">saflii.org</a>.
+        <strong>Check.</strong> The original articles are read in full, not search
+        snippets. The date of the incident is kept apart from the date it was reported.
+        Several outlets repeating one police statement count as one account, not as
+        corroboration. Each key fact, such as the deaths, the date and time, and the
+        place, is matched to a quote from a named source. Where reports disagree, the
+        pin says so.
       </p>
       <p>
-        <strong>Inclusion is not accusation.</strong> An actor appearing in the entity
-        directory reflects relevance to a published investigation, not a legal finding.
-        Analytical conclusions are clearly labelled as assessments.
+        <strong>Label.</strong> Each map point gets a precision level and an uncertainty
+        distance (see below). A point FORGE had to work out, because the reports
+        don&rsquo;t pin the place down, is marked as inferred.
       </p>
       <p>
-        <strong>Corrections are published.</strong> When information is found to be incorrect,
-        corrections are noted at the top of the affected article or profile.
+        <strong>Approve and publish.</strong> The owner approves the exact pin data, and
+        the approval is recorded with its version and date. The site and the Records
+        downloads are then rebuilt from approved pins only.
+      </p>
+      <h3>Held back and parked</h3>
+      <p>
+        Incidents that don&rsquo;t meet the rules aren&rsquo;t published. For example,
+        a report might give no cause of death or no usable place. Some are held back,
+        with the reason written down. Others are parked while there isn&rsquo;t enough
+        reporting. Maya re-checks parked cases for new reporting, roughly hourly when
+        no other FORGE work is running. New evidence goes back to the owner to decide.
+        It never publishes anything automatically.
       </p>
     </div>
   </div>
 
   
   <div class="about-section">
-    <div class="about-section__title">Map Markers</div>
+    <h2 class="about-section__title">What a pin shows</h2>
+    <div class="about-body">
+      <p>Open any pin to see:</p>
+      <ul>
+        <li><strong>The story</strong> in full, with <strong>when</strong> it happened and who gave the time.</li>
+        <li><strong>Where the pin is:</strong> what the map point marks, and why it is there.</li>
+        <li><strong>Where the reports differ</strong>, if they do.</li>
+        <li><strong>Sources:</strong> links to the original articles. A link opens only after a notice that you&rsquo;re leaving the site.</li>
+        <li><strong>Where the reporting comes from:</strong> whether the reports are independent of each other.</li>
+        <li><strong>What each fact rests on:</strong> the quote behind each key fact, with an archive copy of the source where one was saved.</li>
+        <li><strong>Save</strong> and <strong>Share</strong> buttons.</li>
+      </ul>
+
+      <h3>How independent the reporting is</h3>
+      <table class="about-table">
+        <thead><tr><th>Label</th><th>What it means</th></tr></thead>
+        <tbody>
+          <tr><td>One report only</td><td>A single report, with nothing to check it against.</td></tr>
+          <tr><td>One outlet only</td><td>More than one report, all from one outlet. Not independent.</td></tr>
+          <tr><td>All from police statements</td><td>Several outlets, all resting on police statements. Not independent of the police account.</td></tr>
+          <tr><td>One account, repeated</td><td>Several outlets, but one repeats another&rsquo;s wording. Counts as one account.</td></tr>
+          <tr><td>Partly independent</td><td>Several outlets. Most facts come from police, and at least one report adds its own non-police source.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>How exact the map point is</h3>
+      <table class="about-table">
+        <thead><tr><th>Level</th><th>What the point stands for</th></tr></thead>
+        <tbody>
+          <tr><td>Spot</td><td>A named spot, such as a school, a corner, or a set distance from a landmark.</td></tr>
+          <tr><td>Street</td><td>Somewhere on a named street. The pin is on that street.</td></tr>
+          <tr><td>Area</td><td>A general point for a named part of a suburb or township.</td></tr>
+          <tr><td>Suburb</td><td>The suburb&rsquo;s own map point. The street isn&rsquo;t mapped.</td></tr>
+          <tr><td>Village</td><td>The village&rsquo;s own map point.</td></tr>
+          <tr><td>Town</td><td>The town&rsquo;s map point. The place itself may be outside the town.</td></tr>
+          <tr><td>Farm</td><td>A farm or farm-area point. The farm may not be exactly here.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Each point also has an uncertainty distance: the furthest the real place could
+        plausibly be from the pin. Titles say &ldquo;approx.&rdquo; when only a street,
+        suburb, village or town is known, and &ldquo;map point inferred&rdquo; when FORGE
+        worked the point out itself.
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <h2 class="about-section__title">Tools on the map</h2>
+    <div class="about-body">
+      <ul>
+        <li><strong>Area check:</strong> pick a place and a radius from 500 m to 5 km, and a date range, to see the pins inside the circle. A pin counts as inside only when its whole uncertainty distance fits in the circle. Otherwise it&rsquo;s listed as &ldquo;may be inside&rdquo;. Place-name search runs on your device. A typed address is sent to Geoapify to find it, never to ZA-DIVERGENT.</li>
+        <li><strong>Wire:</strong> every pin as a list. Hand-checked pins are marked &ldquo;Hand-checked&rdquo; and have no machine-made score.</li>
+        <li><strong>Filter:</strong> show or hide each stream.</li>
+        <li><strong>Cases, Graph and Entities:</strong> these show investigations, the people, places and institutions involved, and the connections between them. They are empty for now, because no case has been published. A case appears only after the owner approves it. A shared place, gun calibre or pattern is never drawn as a link.</li>
+        <li><strong>Watchlist:</strong> tap the star on a pin or an entity to save it, and reopen it from the Watchlist. Saved items stay in your own browser only. Nothing is sent to us, they don&rsquo;t move between your devices, and clearing your browser data removes them.</li>
+      </ul>
+      <p>
+        <strong>On the map,</strong> numbered bubbles group pins that sit close
+        together. Click one to zoom in. The colour shows the size of the group: green
+        for small, amber for medium and red for large. A dashed line between two pins
+        appears only for a link the owner has approved.
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <h2 class="about-section__title">Records and downloads</h2>
     <div class="about-body">
       <p>
-        Markers on the signal map represent geo-tagged intelligence. Their visual behaviour
-        communicates two dimensions:
+        <a href="records.html">Records</a> lists every pin on the map as a table you
+        can filter and download as CSV or JSON. Each row has the incident time and how
+        exact it is, where the reports place it, the map point and its uncertainty,
+        whether that point is reported or inferred, the independence label, the outlets
+        and source links, how many sources have archive copies, how many facts the
+        reports disagree on, and the approval record and pin version it matches. Each
+        download names the version of the data it was built from.
+      </p>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <h2 class="about-section__title">Known limitations</h2>
+    <div class="about-body">
+      <ul>
+        <li><strong>Only what FORGE has checked.</strong> The map holds incidents that were reported in the news, found by our searches, checked and approved. It is not complete. Many incidents are never reported, or are reported where our searches don&rsquo;t reach.</li>
+        <li><strong>Not a crime rate.</strong> Pin counts show what FORGE has checked, not how much crime happens anywhere. An area with no pins is not shown to be safe. Don&rsquo;t compare areas by pin counts.</li>
+        <li><strong>Pins lag the news.</strong> Checking and approval take time. As of 22 October 2026, pins went on the map between the same day and 17 days after the earliest report found, with a median of six days. The earliest report found is not proven to be the first.</li>
+        <li><strong>It depends on news reports.</strong> Most pins rest on a single report, or on police statements repeated by several outlets. Reports can be wrong, and can change after they&rsquo;re published. Check the source links before relying on a pin.</li>
+        <li><strong>Map points are approximate.</strong> Read each pin&rsquo;s precision level and uncertainty distance. Inferred points are marked in the title and in the Records <code>location_basis</code> column.</li>
+      </ul>
+    </div>
+  </div>
+
+  
+  <div class="about-section">
+    <h2 class="about-section__title">Trust and corrections</h2>
+    <div class="about-body">
+      <p>
+        <strong>All sources are open.</strong> Every pin comes from publicly available
+        news reports and police statements, and links to them. Nothing here is
+        classified, leaked or obtained through non-public means.
       </p>
       <p>
-        <strong>Pulsing markers</strong> indicate signals published within the last 48 hours.
-        Fast, bright pulses indicate high gravity (Critical/High significance). Slower pulses
-        indicate moderate gravity. Static markers represent older, digested signals.
+        <strong>A pin is not an accusation.</strong> It records what was reported about
+        an incident, attributed to whoever said it. It is not a finding about anyone.
       </p>
       <p>
-        <strong>Cluster bubbles</strong> with numbers appear when multiple signals overlap
-        geographically. Click to zoom in and separate them. The cluster colour indicates
-        density: green (small), amber (medium), red (large cluster).
-      </p>
-      <p>
-        <strong>Dashed lines</strong> between markers connect signals from the same
-        investigation case that are geographically separated, showing the spatial extent
-        of an investigation.
+        <strong>Corrections are versioned.</strong> When a pin needs correcting, the
+        owner approves a new version, and the old record stays in the ledger. A pin can
+        also be withdrawn. The <code>pin_version</code> and <code>approved_at</code>
+        columns in Records show the latest version of each pin and when it was approved.
       </p>
     </div>
   </div>
@@ -400,7 +508,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 22 Oct 2026 15:53 UTC
+        Generated 22 Oct 2026 17:11 UTC
       </div>
     </div>
   </footer>
@@ -408,7 +516,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 15:53 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 17:11 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
