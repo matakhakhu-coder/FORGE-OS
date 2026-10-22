@@ -15,6 +15,8 @@
     { "src": "/entities\\.html", "status": 302, "headers": { "Location": "/?panel=entities" } },
     { "src": "/watchlist\\.html", "status": 302, "headers": { "Location": "/?panel=watchlist" } },
     { "src": "/map\\.html", "status": 302, "headers": { "Location": "/" } },
+    { "src": "/(?:subscribe|thankyou)(?:\\.html)?/?", "status": 301, "headers": { "Location": "/records" } },
+    { "src": "/pro-feed\\.json", "status": 301, "headers": { "Location": "/records.json" } },
     { "src": "/(.*)", "dest": "/dist/$1" }
   ]
 }

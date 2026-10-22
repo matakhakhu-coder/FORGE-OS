@@ -3,8 +3,13 @@ from __future__ import annotations
 """
 Revenue module configuration.
 
-REVENUE_LIVE = False  →  simulation mode (all surfaces render, payments are no-ops)
-REVENUE_LIVE = True   →  live mode (real payment links, gated content enforced)
+REVENUE_LIVE = False  →  simulation mode (support button and sponsor slots render as previews)
+REVENUE_LIVE = True   →  live mode (support button links out)
+
+There is no paid tier and nothing is gated: since 22 Oct 2026 every page,
+the map and the Records download are free and open. The free/pro tier
+table, the Paystack/EFT checkout settings and the paid API feed were
+removed with the Access Tiers page.
 
 This file is the ONLY place revenue behavior is configured.
 If revenue/ directory is absent, publish.py works exactly as before.
@@ -14,28 +19,6 @@ import os
 
 # ── Master switch ────────────────────────────────────────────────────────────
 REVENUE_LIVE: bool = os.environ.get("FORGE_REVENUE_LIVE", "true").lower() == "true"
-
-# ── Tier definitions ─────────────────────────────────────────────────────────
-TIERS = {
-    "free": {
-        "label": "Public Bulletin",
-        "signals_limit": None,       # all signals — current site is fully free
-        "case_detail": True,         # full case detail — free
-        "entity_detail": True,       # full entity profiles — free
-        "articles_limit": None,      # all articles — free
-        "api_feed": False,           # pro-feed.json — future pro feature
-        "digest": False,             # email digest — future pro feature
-    },
-    "pro": {
-        "label": "Pro Intelligence",
-        "signals_limit": None,
-        "case_detail": True,
-        "entity_detail": True,
-        "articles_limit": None,
-        "api_feed": True,
-        "digest": True,
-    },
-}
 
 # ── Membership button (Ko-fi / Buy Me a Coffee / custom URL) ────────────────
 # Set to a URL to render the button. None = hidden.
@@ -48,23 +31,6 @@ MEMBERSHIP_LABEL: str = "Support Independent OSINT"
 SPONSOR_SLOTS: list[dict] = [
     {"text": "Turn your kid's art into real products — DreamPrint SA", "url": "https://dreamprint-web.vercel.app", "label": "SPONSORED"},
 ]
-
-# ── Paystack (SA payment gateway) ────────────────────────────────────────────
-PAYSTACK_PUBLIC_KEY: str | None = os.environ.get("FORGE_PAYSTACK_PUBLIC_KEY", None)
-PAYSTACK_AMOUNT_ZAR: int = int(os.environ.get("FORGE_PAYSTACK_AMOUNT_ZAR", "4900"))
-PAYSTACK_CURRENCY: str = "ZAR"
-
-# ── Manual EFT fallback (always visible as backup) ───────────────────────────
-MANUAL_EFT: dict = {
-    "bank": os.environ.get("FORGE_EFT_BANK", ""),
-    "account": os.environ.get("FORGE_EFT_ACCOUNT", ""),
-    "branch": os.environ.get("FORGE_EFT_BRANCH", ""),
-    "reference_prefix": "ZAD",
-    "email": os.environ.get("FORGE_EFT_EMAIL", ""),
-}
-
-# ── Legacy payment provider config (kept for redirect fallback) ──────────────
-PAYMENT_CHECKOUT_URL: str | None = os.environ.get("FORGE_PAYMENT_CHECKOUT_URL", None)
 
 # ── Digest provider ──────────────────────────────────────────────────────────
 DIGEST_PROVIDER: str | None = os.environ.get("FORGE_DIGEST_PROVIDER", None)
@@ -79,11 +45,4 @@ def get_template_context() -> dict:
         "membership_label": MEMBERSHIP_LABEL,
         "membership_sim": bool(MEMBERSHIP_URL) and not REVENUE_LIVE,
         "sponsor_slots": SPONSOR_SLOTS,
-        "payment_checkout_url": PAYMENT_CHECKOUT_URL if REVENUE_LIVE else None,
-        "paystack_public_key": PAYSTACK_PUBLIC_KEY if REVENUE_LIVE else None,
-        "paystack_amount": PAYSTACK_AMOUNT_ZAR,
-        "paystack_currency": PAYSTACK_CURRENCY,
-        "paystack_sim": bool(PAYSTACK_PUBLIC_KEY) and not REVENUE_LIVE,
-        "manual_eft": MANUAL_EFT if MANUAL_EFT.get("bank") else None,
-        "manual_eft_sim": not MANUAL_EFT.get("bank"),
     }

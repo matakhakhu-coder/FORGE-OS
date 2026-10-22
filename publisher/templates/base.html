@@ -29,7 +29,7 @@
       </button>
       <nav class="site-nav">
         <a href="{% block nav_about %}about.html{% endblock %}" class="site-nav__link {% block nav_about_active %}{% endblock %}">How It Works</a>
-        <a href="{% block nav_subscribe %}subscribe.html{% endblock %}" class="site-nav__link {% block nav_subscribe_active %}{% endblock %}" style="color:var(--accent);">Pro</a>
+        <a href="{% block nav_records %}records.html{% endblock %}" class="site-nav__link {% block nav_records_active %}{% endblock %}">Records</a>
       </nav>
       <div class="site-header__meta">
         <div class="site-search" style="position:relative;">
@@ -97,7 +97,8 @@
     <div class="site-footer__inner">
       <div class="site-footer__left mono">
         ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
-        <a href="{% block footer_about %}about.html{% endblock %}" style="color:var(--text-dim);">How It Works</a>
+        <a href="{% block footer_about %}about.html{% endblock %}" style="color:var(--text-dim);">How It Works</a> ·
+        <a href="{% block footer_records %}records.html{% endblock %}" style="color:var(--text-dim);">Records</a>
       </div>
       {% if membership_url or membership_sim %}
       <a href="{{ membership_url or '#' }}" target="_blank" rel="noopener"

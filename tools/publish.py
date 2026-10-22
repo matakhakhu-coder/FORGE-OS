@@ -35,7 +35,7 @@ except ImportError:
     def _get_revenue_context() -> dict:
         return {
             "revenue_live": False, "membership_url": None, "membership_label": "",
-            "membership_sim": False, "sponsor_slots": [], "payment_checkout_url": None,
+            "membership_sim": False, "sponsor_slots": [],
         }
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
@@ -53,6 +53,10 @@ DIST_STATIC = DIST / "static"
 DIST_ART    = DIST / "articles"
 DIST_CASES  = DIST / "cases"
 DIST_ENTITIES = DIST / "entities"
+# Files from the old free/paid split (Access Tiers page, post-payment page,
+# paid API feed). Removed 22 Oct 2026; a build deletes any leftover copy and
+# vercel.json redirects their addresses to the open Records page.
+RETIRED_DIST_FILES = ("subscribe.html", "thankyou.html", "pro-feed.json")
 
 VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
@@ -754,8 +758,7 @@ def _build_graph_data(conn: sqlite3.Connection) -> dict:
 def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
     rows = conn.execute("""
         SELECT article_id, title, slug, summary, body_markdown,
-               stream, author, published_at, tags,
-               COALESCE(tier, 'free') AS tier
+               stream, author, published_at, tags
         FROM   articles
         WHERE  status = 'published'
         ORDER  BY published_at DESC, article_id ASC
@@ -784,7 +787,6 @@ def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
             "published_at":  r["published_at"],
             "published_fmt": _fmt_dt(r["published_at"]),
             "tags":          tags,
-            "tier":          r["tier"],
         })
     return items
 
@@ -1272,56 +1274,17 @@ def _build_dist(
     print(f"[publish] index.html  - {len(geo_signals)} geo signals, {len(intel_links)} intel links, "
           f"{span.get('total', 0)} wire items, {len(graph_data['nodes'])} graph nodes, {len(directory_actors)} entities")
 
-    # article pages — tier-aware rendering
+    # article pages — every article is published in full (no paid tier, 22 Oct 2026)
     tmpl = env.get_template("article.html")
-    gate_tmpl = env.get_template("gate.html")
-    gated_count = 0
     for art in pages_articles:
-        article_tier = art.get("tier", "free")
         art["case_study"] = CASE_STUDY_NOTES.get(art["slug"])
         out = DIST_ART / f"{art['slug']}.html"
-
-        if article_tier == "premium":
-            gated_count += 1
-            out.write_text(
-                gate_tmpl.render(
-                    gate_title=art["title"],
-                    gate_description=art.get("summary") or "This intelligence brief is available to Pro subscribers.",
-                    back_url="../index.html",
-                    back_label="Bulletin",
-                    generated_at=now_str,
-                    **rev,
-                ),
-                encoding="utf-8",
-            )
-        elif article_tier == "preview":
-            gated_count += 1
-            full_html = md_parser.render(art["body_markdown"])
-            preview_chars = 300
-            preview_text = art["body_markdown"][:preview_chars]
-            if len(art["body_markdown"]) > preview_chars:
-                last_space = preview_text.rfind(" ")
-                if last_space > 200:
-                    preview_text = preview_text[:last_space]
-                preview_text += "..."
-            preview_html = md_parser.render(preview_text)
-            out.write_text(
-                tmpl.render(
-                    article=art, body_html=preview_html,
-                    is_gated=True, generated_at=now_str, **rev,
-                ),
-                encoding="utf-8",
-            )
-        else:
-            body_html = md_parser.render(art["body_markdown"])
-            out.write_text(
-                tmpl.render(
-                    article=art, body_html=body_html,
-                    is_gated=False, generated_at=now_str, **rev,
-                ),
-                encoding="utf-8",
-            )
-    print(f"[publish] articles/   - {len(pages_articles)} pages ({gated_count} gated)")
+        body_html = md_parser.render(art["body_markdown"])
+        out.write_text(
+            tmpl.render(article=art, body_html=body_html, generated_at=now_str, **rev),
+            encoding="utf-8",
+        )
+    print(f"[publish] articles/   - {len(pages_articles)} pages")
 
     # feed.json
     feed_items = []
@@ -1405,17 +1368,35 @@ def _build_dist(
         encoding="utf-8",
     )
 
-    # subscribe.html — pricing/feature comparison page with Paystack checkout
-    (DIST / "subscribe.html").write_text(
-        env.get_template("subscribe.html").render(generated_at=now_str, **rev),
+    # records.html, records.csv, records.json — the open Records view.
+    # Approved map pins only (tools/records_export.py), free to read and
+    # download; there is no paid tier (22 Oct 2026).
+    from tools.records_export import (
+        CAVEATS, FIELD_HELP, RECORD_FIELDS, build_records, data_version, write_records,
+    )
+    rec_version = data_version(ROOT)
+    records = build_records(conn, index_path=CHECKED_INDEX, version=rec_version)
+    records_payload = write_records(DIST, records, rec_version)
+    (DIST / "records.html").write_text(
+        env.get_template("records.html").render(
+            generated_at=now_str,
+            records=records,
+            records_json=records_payload,
+            caveats=CAVEATS,
+            fields=[(f, FIELD_HELP[f]) for f in RECORD_FIELDS],
+            data_version=rec_version,
+            **rev,
+        ),
         encoding="utf-8",
     )
+    print(f"[publish] records.html - {len(records)} approved pins (also records.csv, records.json)")
 
-    # thankyou.html — post-payment landing page
-    (DIST / "thankyou.html").write_text(
-        env.get_template("thankyou.html").render(generated_at=now_str, **rev),
-        encoding="utf-8",
-    )
+    # Pages and feeds from the old free/paid split are gone; don't leave
+    # stale copies in dist/ (vercel.json redirects their old addresses).
+    for stale in RETIRED_DIST_FILES:
+        if (DIST / stale).exists():
+            (DIST / stale).unlink()
+            print(f"[publish] removed retired {stale}")
 
     # search-index.json — flat document list for client-side MiniSearch
     search_docs = []
@@ -1510,72 +1491,6 @@ def _git_deploy(now_str: str) -> None:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def _build_gate_pages(
-    env: Environment,
-    conn: sqlite3.Connection,
-    signals: list[dict],
-    articles: list[dict],
-    now_str: str,
-) -> None:
-    """Replace case detail and entity profile pages with gate pages in free tier."""
-    rev = _get_revenue_context()
-    gate_tmpl = env.get_template("gate.html")
-
-    # Gate case detail pages (cases/ directory already built with limited data)
-    cases = _fetch_cases(conn)
-    for case in cases:
-        gate_html = gate_tmpl.render(
-            gate_title=f"Case: {case['name'][:50]}",
-            gate_description="Full case evidence chains, linked actors, and analyst briefs are available to Pro subscribers.",
-            back_url="../cases.html",
-            back_label="Cases",
-            generated_at=now_str,
-            **rev,
-        )
-        out = DIST_CASES / f"{case['slug']}.html"
-        out.write_text(gate_html, encoding="utf-8")
-
-    # Gate entity profile pages (entities/ directory already built)
-    directory_actors = _fetch_directory_actors(conn)
-    for actor in directory_actors:
-        gate_html = gate_tmpl.render(
-            gate_title=f"Entity: {actor['name']}",
-            gate_description="Complete entity dossiers with source signals, known events, and relationship networks are available to Pro subscribers.",
-            back_url="../entities.html",
-            back_label="Entities",
-            generated_at=now_str,
-            **rev,
-        )
-        out = DIST_ENTITIES / f"{actor['slug']}.html"
-        out.write_text(gate_html, encoding="utf-8")
-
-    print(f"[publish] Gate pages: {len(cases)} cases + {len(directory_actors)} entities")
-
-
-def _build_pro_feed(signals: list[dict], conn: sqlite3.Connection) -> list[dict]:
-    """Build enriched signal data for pro-feed.json with case/actor linkages."""
-    pro_items = []
-    for s in signals:
-        gs = s.get("gravity_score") or 0
-        sig_label = ("Critical" if gs >= 0.75 else ("High" if gs >= 0.55
-                     else ("Significant" if gs >= 0.35 else ("Notable" if gs >= 0.20 else "Routine"))))
-        pro_items.append({
-            "title":            s["title"],
-            "stream":           s["stream"],
-            "stream_label":     s["stream_label"],
-            "source":           s["source"],
-            "gravity_score":    s.get("gravity_score"),
-            "significance":     sig_label,
-            "lat":              s.get("lat"),
-            "lng":              s.get("lng"),
-            "published_at":     s.get("published_at"),
-            "published_fmt":    s.get("published_fmt"),
-            "slug":             s.get("slug"),
-            "article_slug":     s.get("article_slug"),
-        })
-    return pro_items
-
-
 def _build_digest(
     env: Environment,
     signals: list[dict],
@@ -1629,16 +1544,6 @@ def _build_digest(
     # Update last-digest timestamp
     state_file.parent.mkdir(exist_ok=True)
     state_file.write_text(now_str)
-
-
-def _writes_pro_feed(tier: str) -> bool:
-    """Whether this build writes dist/pro-feed.json.
-
-    pro-feed.json is the paid API feed (revenue/config.py: api_feed is False
-    for the free tier; docs/MONETIZATION_PLAN.md Module 5). The default
-    'current' build is deployed publicly, so it must not include it.
-    """
-    return tier == "pro"
 
 
 # ── Rebuild guard for hand-checked pins (Sprint 1) ─────────────────────────────
@@ -1806,12 +1711,6 @@ def main() -> None:
         help="After building, commit dist/ to the publication branch and push to GitHub",
     )
     parser.add_argument(
-        "--tier",
-        choices=["free", "pro", "current"],
-        default="current",
-        help="Build tier: 'free' (gated), 'pro' (full), 'current' (default single build as today)",
-    )
-    parser.add_argument(
         "--digest",
         action="store_true",
         help="Generate intelligence digest email (dist/digest.html)",
@@ -1834,36 +1733,9 @@ def main() -> None:
         signals  = _fetch_signals(conn)
         articles = _fetch_articles(conn)
 
-        # ── Tier-aware build ─────────────────────────────────────────────
-        tier = args.tier
-        try:
-            from revenue.config import TIERS
-        except ImportError:
-            TIERS = None
-
-        if tier == "free" and TIERS:
-            tier_cfg = TIERS["free"]
-            limited_signals = signals[:tier_cfg["signals_limit"]] if tier_cfg["signals_limit"] else signals
-            limited_articles = articles[:tier_cfg["articles_limit"]] if tier_cfg["articles_limit"] else articles
-            print(f"[publish] FREE tier: {len(limited_signals)} signals / {len(limited_articles)} articles")
-            _build_dist(env, conn, limited_signals, limited_articles, now_str)
-            # Generate gate pages for gated content
-            _build_gate_pages(env, conn, signals, articles, now_str)
-        else:
-            print(f"[publish] {len(signals)} published signals / {len(articles)} published articles")
-            _build_dist(env, conn, signals, articles, now_str)
-            # Pro API feed — only for an explicit pro build (see _writes_pro_feed)
-            pro_feed_path = DIST / "pro-feed.json"
-            if _writes_pro_feed(tier):
-                pro_feed = _build_pro_feed(signals, conn)
-                pro_feed_path.write_text(
-                    json.dumps(pro_feed, indent=2), encoding="utf-8"
-                )
-                print(f"[publish] pro-feed.json — {len(pro_feed)} signals")
-            elif pro_feed_path.exists():
-                # Don't leave a stale paid feed behind in a public build.
-                pro_feed_path.unlink()
-                print("[publish] removed stale pro-feed.json (not a pro build)")
+        # One open build: no free/paid tiers, no gated pages, no paid feed.
+        print(f"[publish] {len(signals)} published signals / {len(articles)} published articles")
+        _build_dist(env, conn, signals, articles, now_str)
 
         # ── Digest ───────────────────────────────────────────────────────
         if args.digest:

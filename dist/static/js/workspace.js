@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    ZA-DIVERGENT — Analyst Workspace (localStorage-backed)
-   Premium feature: custom evidence notes, entity auto-linking, JSON export
+   Open feature: custom evidence notes, entity auto-linking, JSON export
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function() {

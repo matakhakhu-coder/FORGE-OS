@@ -175,12 +175,14 @@ def test_api_health_reports_ok(tmp_path, monkeypatch):
     assert resp.get_json() == {"status": "ok", "db": "ok"}
 
 
-def test_pro_feed_only_written_for_pro_builds():
-    from tools.publish import _writes_pro_feed
+def test_paid_pro_feed_is_retired():
+    """pro-feed.json used to be written only for --tier pro builds. The paid
+    tier was removed on 22 Oct 2026: no build writes it, a build deletes any
+    leftover copy, and the open records.json replaces it."""
+    import tools.publish as pub
 
-    assert _writes_pro_feed("pro") is True
-    assert _writes_pro_feed("current") is False
-    assert _writes_pro_feed("free") is False
+    assert not hasattr(pub, "_writes_pro_feed")
+    assert "pro-feed.json" in pub.RETIRED_DIST_FILES
 
 
 def test_api_archive_lists_archived_cases(tmp_path, monkeypatch):

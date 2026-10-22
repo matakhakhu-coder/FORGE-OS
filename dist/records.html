@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Records — ZA-DIVERGENT — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+  <link rel="apple-touch-icon" href="static/apple-touch-icon.png">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<style>
+.rec { max-width: 1180px; margin: 0 auto; padding: var(--sp-8, 2rem) var(--sp-6, 1.5rem) var(--sp-12, 3rem); }
+.rec__eyebrow { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+.rec__title { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 0.5rem; }
+.rec__lede { color: var(--text-secondary); max-width: 62ch; line-height: 1.6; margin: 0 0 1.25rem; }
+.rec-caveats { border: 1px solid var(--accent-muted); border-left: 3px solid var(--accent); background: var(--accent-glow); border-radius: var(--r-md, 6px); padding: 0.9rem 1.1rem; margin: 0 0 1.25rem; }
+.rec-caveats__head { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.4rem; }
+.rec-caveats ul { margin: 0; padding-left: 1.1rem; color: var(--text-primary); line-height: 1.55; font-size: 0.9rem; }
+.rec-caveats li + li { margin-top: 0.3rem; }
+.rec-dl { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0 0 1.25rem; }
+.rec-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.55rem 1rem; border-radius: var(--r-md, 6px); border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.78rem; text-decoration: none; cursor: pointer; }
+.rec-btn:hover { border-color: var(--accent); color: var(--accent); }
+.rec-btn--primary { background: var(--accent); border-color: var(--accent); color: #0a0c10; font-weight: 600; }
+.rec-btn--primary:hover { color: #0a0c10; filter: brightness(1.08); }
+.rec-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.rec-js-only { display: none; }
+.rec-js .rec-js-only { display: inline-flex; }
+.rec-js .rec-filter-box.rec-js-only { display: block; }
+.rec-filter-box { margin: 0 0 0.9rem; }
+.rec-filter-box > summary { list-style: none; width: 100%; box-sizing: border-box; justify-content: space-between; }
+.rec-filter-box > summary::-webkit-details-marker { display: none; }
+.rec-filter-box > summary::after { content: "+"; font-size: 1rem; margin-left: 0.75rem; }
+.rec-filter-box[open] > summary::after { content: "\2212"; }
+.rec-filter-box[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.rec-filter-box .rec-filters { display: grid; margin: 0; border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+.rec-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); }
+.rec-filters { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.7rem; background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); padding: 0.9rem; margin: 0 0 0.9rem; }
+.rec-filters label { display: flex; flex-direction: column; gap: 0.3rem; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
+.rec-filters input, .rec-filters select { min-height: 44px; padding: 0.45rem 0.6rem; border-radius: var(--r-sm, 4px); border: 1px solid var(--border-mid); background: var(--bg-void); color: var(--text-primary); font-family: var(--font-body); font-size: 16px; text-transform: none; letter-spacing: 0; width: 100%; box-sizing: border-box; }
+.rec-filters__wide { grid-column: 1 / -1; }
+.rec-filters__actions { display: flex; align-items: flex-end; }
+.rec-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.6rem; }
+.rec-table-wrap { overflow-x: auto; border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); }
+.rec-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.rec-table th { text-align: left; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); background: var(--bg-surface); padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border-dim); white-space: nowrap; }
+.rec-table td { padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--border-dim); vertical-align: top; line-height: 1.45; }
+.rec-table tr:last-child td { border-bottom: 0; }
+.rec-title { font-weight: 600; color: var(--text-primary); }
+.rec-sub { display: block; color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.2rem; }
+.rec-tag { display: inline-block; font-family: var(--font-mono); font-size: 0.64rem; padding: 0.1rem 0.4rem; border-radius: 3px; border: 1px solid var(--border-mid); color: var(--text-secondary); margin: 0.15rem 0.25rem 0 0; white-space: nowrap; }
+.rec-tag--warn { border-color: var(--accent); color: var(--accent); }
+.rec-src a { color: var(--accent); text-decoration: none; word-break: break-word; }
+.rec-src a:hover { text-decoration: underline; }
+.rec-src ol { margin: 0; padding-left: 1.1rem; }
+.rec-map { color: var(--accent); white-space: nowrap; font-family: var(--font-mono); font-size: 0.75rem; text-decoration: none; }
+.rec-where summary { cursor: pointer; color: var(--text-secondary); font-size: 0.75rem; font-family: var(--font-mono); margin-top: 0.35rem; }
+.rec-where p { margin: 0.35rem 0 0; color: var(--text-secondary); font-size: 0.8rem; }
+.rec-empty { padding: 1.2rem; text-align: center; color: var(--text-secondary); }
+.rec-help { margin: 1.5rem 0 0; }
+.rec-help summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
+.rec-help dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.82rem; margin: 0.75rem 0 0; }
+.rec-help dt { font-family: var(--font-mono); color: var(--text-primary); }
+.rec-help dd { margin: 0; color: var(--text-secondary); }
+
+/* Phones: each record becomes a card. */
+@media (max-width: 760px) {
+  .rec { padding: 1.25rem 0.9rem 2.5rem; }
+  .rec-table-wrap { border: 0; overflow: visible; }
+  .rec-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .rec-table, .rec-table tbody, .rec-table tr, .rec-table td { display: block; width: 100%; box-sizing: border-box; }
+  .rec-table tr { border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); background: var(--bg-surface); margin: 0 0 0.75rem; padding: 0.35rem 0; }
+  .rec-table tr[hidden] { display: none; }
+  .rec-table td { border: 0; padding: 0.35rem 0.85rem; }
+  .rec-table td[data-label]::before { content: attr(data-label); display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.1rem; }
+  .rec-table td.rec-cell-title::before { display: none; }
+  .rec-help dl { grid-template-columns: 1fr; }
+  .rec-help dd { margin-bottom: 0.4rem; }
+  .rec-dl .rec-btn { flex: 1 1 100%; }
+}
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="index.html" class="site-logo">ZA-DIVERGENT</a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="about.html" class="site-nav__link ">How It Works</a>
+        <a href="records.html" class="site-nav__link site-nav__link--active">Records</a>
+      </nav>
+      <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 14:24 UTC" title="22 Oct 2026 14:24 UTC">22 Oct 2026 14:24 UTC</span>
+        <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel" id="settings-panel">
+      <div class="settings-panel__header">
+        <span class="settings-panel__dot"></span>
+        <span class="settings-panel__title">Settings</span>
+        <button class="settings-panel__close" id="settings-close">&#10005;</button>
+      </div>
+
+      <div class="settings-panel__body">
+        <div class="settings-group">
+          <div class="settings-group__label">Theme</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-theme="dark">Dark</button>
+            <button class="settings-opt" data-theme="light">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Timezone</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-tz="utc">UTC</button>
+            <button class="settings-opt" data-tz="sast">SAST</button>
+            <button class="settings-opt" data-tz="local">Local</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Time Display</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-timemode="age">Data Age</button>
+            <button class="settings-opt" data-timemode="absolute">Timestamp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+
+
+
+<main class="rec" id="records">
+  <div class="rec__eyebrow">Open data · free · no account</div>
+  <h1 class="rec__title">Records</h1>
+  <p class="rec__lede">Every pin on the map, as a table you can filter and download. Each row is a killing reported in the news that FORGE checked by hand and the owner approved before it went on the map. Nothing here is behind a paywall or a sign-in.</p>
+
+  <section class="rec-caveats" aria-labelledby="rec-caveats-head">
+    <p class="rec-caveats__head" id="rec-caveats-head">Read this before using the data</p>
+    <ul>
+      <li>These are hand-checked news reports of killings, not crime statistics. They are not complete and not representative of all crime in any area.</li>
+      <li>Most rows rest on a single report or on police statements repeated by several outlets; see reporting_independence.</li>
+      <li>Map points are approximate. uncertainty_m says how far off a point can be, and location_basis says when a point is inferred rather than reported.</li>
+      <li>Reports can be wrong or change after publication. Check the source links before relying on any row.</li>
+      
+    </ul>
+  </section>
+
+  <div class="rec-dl">
+    <a class="rec-btn rec-btn--primary" href="records.csv" download="za-divergent-records-4876276.csv">Download all 45 (CSV)</a>
+    <button type="button" class="rec-btn rec-js-only" id="rec-download-filtered">Download these rows (CSV)</button>
+    <a class="rec-btn" href="records.json">JSON</a>
+    <span class="rec-meta">Data version 4876276 · built 22 Oct 2026 14:24 UTC</span>
+  </div>
+
+  <details class="rec-filter-box rec-js-only" id="rec-filter-box">
+  <summary class="rec-btn">Filter and sort</summary>
+  <form class="rec-filters" id="rec-filters" role="search" aria-label="Filter records">
+    <label class="rec-filters__wide">Search
+      <input type="search" name="q" placeholder="Place, street, outlet…" autocomplete="off" enterkeyhint="search">
+    </label>
+    <label>Province
+      <select name="province">
+        <option value="">All</option>
+        <option value="Eastern Cape">Eastern Cape</option>
+        <option value="North West">North West</option>
+        <option value="Western Cape">Western Cape</option>
+        
+      </select>
+    </label>
+    <label>Incident from
+      <input type="date" name="from">
+    </label>
+    <label>Incident to
+      <input type="date" name="to">
+    </label>
+    <label>Map point
+      <select name="precision">
+        <option value="">Any precision</option>
+        <option value="spot">Spot</option>
+        <option value="street">Street</option>
+        <option value="area">Area</option>
+        <option value="suburb">Suburb</option>
+        <option value="village">Village</option>
+        <option value="town">Town</option>
+        <option value="farm">Farm</option>
+        
+      </select>
+    </label>
+    <label>Reporting
+      <select name="independence">
+        <option value="">Any</option>
+        <option value="All from police statements">All from police statements</option>
+        <option value="One account, repeated">One account, repeated</option>
+        <option value="One outlet only">One outlet only</option>
+        <option value="One report only">One report only</option>
+        <option value="Partly independent">Partly independent</option>
+        
+      </select>
+    </label>
+    <label>Location basis
+      <select name="basis">
+        <option value="">Any</option>
+        <option value="reported">Named in reports</option>
+        <option value="inferred">Inferred by FORGE</option>
+      </select>
+    </label>
+    <label>Sort
+      <select name="sort">
+        <option value="incident_desc">Newest incident first</option>
+        <option value="incident_asc">Oldest incident first</option>
+        <option value="published_desc">Most recently mapped</option>
+      </select>
+    </label>
+    <div class="rec-filters__actions"><button type="reset" class="rec-btn" style="width:100%;">Clear filters</button></div>
+  </form>
+  </details>
+
+  <p class="rec-count" id="rec-count" aria-live="polite">45 records</p>
+
+  <div class="rec-table-wrap">
+    <table class="rec-table">
+      <thead>
+        <tr>
+          <th scope="col">Incident</th>
+          <th scope="col">When</th>
+          <th scope="col">Map point</th>
+          <th scope="col">Reporting</th>
+          <th scope="col">Sources</th>
+          <th scope="col">Map</th>
+        </tr>
+      </thead>
+      <tbody id="rec-rows">
+        
+        <tr data-id="49773d55-5704-5fcb-ac36-1f7eda5de54b">
+          <td class="rec-cell-title">
+            <span class="rec-title">Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Inside a barbershop in Paulsberg Street, Tafelsig (police, via Cape Times). Shop not located. The pin is the middle of Paulsberg Street in OpenStreetMap (way 32214287); it marks the street, not the shop.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 20 Oct 2026 at about 20:07 (police statement, via Cape Times)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-21</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 500 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: SAPS Western Cape, quoted by Cape Times (IOL)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=49773d55">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="048440e0-0be5-53d8-934a-1ba6233a0dfa">
+          <td class="rec-cell-title">
+            <span class="rec-title">Steenberg (Military Rd, approx.): two men, 23 and 37, shot dead; five arrested after chase, 20 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Military Road, Steenberg (SAPS statement, quoted via Cape Times). Exact spot not given. The pin marks the shooting only, not Kirstenhof (where the car was abandoned) or Lakeside (where the arrests reportedly were). The pin is a point on Military Road in Steenberg (OpenStreetMap way 316992334), the owner&#39;s choice of two Military Road points about 114 m apart; no source gives anything finer than the road.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 20 Oct 2026, at about 12:30 (SAPS statement on X; Cape Times, Smile 90.4FM and Briefly News give the same time)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 1,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Western Cape statement posted on X (20 Oct 2026, 15:15 SAST), quoted by Cape Times (IOL), Smile 90.4FM and Briefly News</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://iol.co.za/capetimes/news/2026-10-20-breaking-two-killed-five-arrested-after-shooting-and-high-speed-chase-in-steenberg/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              <li><a href="https://smilefm.co.za/double-murder-in-steenberg-ends-in-high-speed-chase-and-five-arrests/" target="_blank" rel="noopener noreferrer">smilefm.co.za</a></li>
+              <li><a href="https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/" target="_blank" rel="noopener noreferrer">briefly.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=048440e0">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0caa5a74-cc5e-5f04-a0cb-aa13466552d4">
+          <td class="rec-cell-title">
+            <span class="rec-title">Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Angela Street, Valhalla Park (police, via Daily Voice); in a vlei or canal. The spot on the water is not given. The pin is the middle of Angela Street in OpenStreetMap (way 30690124), which OSM labels Nooitgedacht/Elsies River; the street also holds the Valhalla Park Community Centre. It marks the street, not where the body lay.</p></details>
+          </td>
+          <td data-label="When">
+            Body found Tue 20 Oct 2026 at about 07:04 (police, via Daily Voice and TygerBurger). 07:04 is the discovery time; no source gives when he was killed.
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 1,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Western Cape, quoted by Daily Voice and TygerBurger</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/daily-voice/news/5422112972996608/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              <li><a href="https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0caa5a74">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="adf99019-941e-5dd0-9851-635da0a1e146">
+          <td class="rec-cell-title">
+            <span class="rec-title">Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>In front of a property in Korvette Road, Strandfontein (police, via Cape Argus). House not given. The pin is a street-level marker for Korvette Road (OpenStreetMap), kept where the builder put it on the owner&#39;s decision; it marks the road, not any building or house.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 19 Oct 2026, found when police responded at about 20:45 (police, via Cape Argus and TygerBurger). 20:45 is the response and discovery time, not a shooting time; no source gives one.
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 500 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: Police: Lt-Col Frederick van Wyk (Cape Argus: &#39;police spokesperson&#39;; TygerBurger: &#39;commander of the provincial media centre&#39;), quoted by TygerBurger and Cape Argus</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=adf99019">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="06219161-76ad-5b50-91d0-e58235427edf">
+          <td class="rec-cell-title">
+            <span class="rec-title">Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Inside a vehicle at the corner of Bokmakierie Street and 7th Avenue (police, via Daily Voice; Heart FM). The pin is the shared node of the two streets in OpenStreetMap.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 19 Oct 2026 at about 13:25 (police statement, via Daily Voice and Crime Scene Report). SABC News and Megazone say Monday night.
+            
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Spot, within 150 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Western Cape, quoted by Daily Voice, SABC News, Heart FM and Crime Scene Report</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              <li><a href="https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              <li><a href="https://heartfm.co.za/man-shot-and-killed-in-car/" target="_blank" rel="noopener noreferrer">heartfm.co.za</a></li>
+              <li><a href="http://news-stuff.co.za/tag/athlone-murder/" target="_blank" rel="noopener noreferrer">news-stuff.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=06219161">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="b842a3b5-eda7-5b97-bfe1-0448fe0272a5">
+          <td class="rec-cell-title">
+            <span class="rec-title">Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Outside a corner shop in Russell Road, Central, Gqeberha (police, via The Herald). Exact shop not named. The pin is a point on Russell Road in Central (OpenStreetMap way 30696735), the owner&#39;s choice of two Russell Road points about 48 m apart; no source gives anything finer than the road.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 19 Oct 2026, at about 12:50 (police, via The Herald and PE Express; Algoa FM: shortly before 1 pm)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 1,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape, quoted by The Herald, Algoa FM and PE Express</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/" target="_blank" rel="noopener noreferrer">theherald.co.za</a></li>
+              <li><a href="https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha" target="_blank" rel="noopener noreferrer">algoafm.co.za</a></li>
+              <li><a href="https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=b842a3b5">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0c9f233c-6c38-5da4-a660-c6776f575667">
+          <td class="rec-cell-title">
+            <span class="rec-title">St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Corner of St Alexander Circle and St Christopher Avenue, St Montague Village (Southern Mail). The pin is the midpoint between the nearest nodes of the two streets in OpenStreetMap (ways 701190631 and 30631994, about 30 m apart).</p></details>
+          </td>
+          <td data-label="When">
+            Sun 18 Oct 2026, police responded at about 18:30 (police, via Southern Mail)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-20</span>
+          </td>
+          <td data-label="Map point">
+            Spot, within 150 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: SAPS Western Cape, quoted by Southern Mail</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/" target="_blank" rel="noopener noreferrer">southernmail.co.za</a></li>
+              <li><a href="https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/" target="_blank" rel="noopener noreferrer">briefly.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0c9f233c">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="7aa4eea1-c1f4-55af-b761-d55ff2df3a51">
+          <td class="rec-cell-title">
+            <span class="rec-title">Cafda Village, Retreat (Bernstein Rd, approx.): man, 41, shot dead, three young men wounded, 18 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Bernstein Road, Cafda Village, Retreat, near the Retreat Community Health Centre (police, via Smile 90.4FM). Exact spot not given. The pin is the middle of Bernstein Road, a short street (about 160 m) in OpenStreetMap.</p></details>
+          </td>
+          <td data-label="When">
+            Sun 18 Oct 2026, police responded at about 15:30 (police, via Smile 90.4FM)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-19</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Western Cape, quoted by Smile 90.4FM, IOL and Southern Mail</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/" target="_blank" rel="noopener noreferrer">smilefm.co.za</a></li>
+              <li><a href="https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-reopens-after-fatal-shooting-nearby2/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              <li><a href="https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/" target="_blank" rel="noopener noreferrer">southernmail.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=7aa4eea1">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="e0fa3712-df77-531e-a040-437dee019c3c">
+          <td class="rec-cell-title">
+            <span class="rec-title">Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>&#39;In front of a premises in Firethorne, near Geelhout Street&#39; (police, via Athlone News); address not given. &#39;Firethorne&#39; is not a suburb or street in OpenStreetMap. The pin is INFERRED: the midpoint of Geelhout Road, Bonteheuwel (OSM ways 704572595 and 30349364, about 448 m), which meets Firethorn Street (OSM way 30349369) at both ends of its loop, inside the Bishop Lavis police area per the 22 Oct source check. The spelling differs (Firethorn) and the article gives no street-level location; the point marks the area, not the scene. OSM &#39;Geelhout Street&#39; in the Lotus River area (Ward 65) is a different street and is not used.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 17 Oct 2026 at about 23:05 (police, via Athlone News)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-22</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 400 m
+            <span class="rec-tag rec-tag--warn">inferred</span>
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: SAPS Western Cape (Lt Col FC van Wyk), quoted by Athlone News</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/" target="_blank" rel="noopener noreferrer">athlonenews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=e0fa3712">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="335b265d-2edd-54e2-969e-31e38733ff3a">
+          <td class="rec-cell-title">
+            <span class="rec-title">Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Mbulawa Location, Mqanduli, after a chase on the R411 towards Coffee Bay (SAPS). Mbulawa is not in OpenStreetMap or GeoNames; the pin is GeoNames&#39; point for Mqanduli town, inside the Mqanduli SAPS precinct.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 17 Oct 2026, about 14:30 (Pondoland Times; SAPS: Saturday)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-18</span>
+          </td>
+          <td data-label="Map point">
+            Town, within 20,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape (statement of 18 Oct)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://pondolandtimes.co.za/crime-courts/article/armed-suspect-shot-dead-by-police-near-mqanduli-ak-47-recovered/" target="_blank" rel="noopener noreferrer">pondolandtimes.co.za</a></li>
+              <li><a href="https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://www.citizen.co.za/news/south-africa/crime/man-linked-to-high-profile-murders-killed-by-police/" target="_blank" rel="noopener noreferrer">citizen.co.za</a></li>
+              <li><a href="https://www.ewn.co.za/2026/10/18/ec-police-shoot-and-kill-armed-suspect-during-mqanduli-operation" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              <li><a href="https://sundayworld.co.za/crime/suspect-linked-to-police-officers-murder-killed-in-shoot-out-with-saps-ak-47-recovered-in-mqanduli/" target="_blank" rel="noopener noreferrer">sundayworld.co.za</a></li>
+              <li><a href="https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded" target="_blank" rel="noopener noreferrer">algoafm.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=335b265d">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="efbf9e6d-2d5d-4591-8d0e-11294babd050">
+          <td class="rec-cell-title">
+            <span class="rec-title">Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct</span>
+            <span class="rec-sub">North West</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Modimola Village, west of Mahikeng, named by SAPS. No street or house is given. The pin is OpenStreetMap&#39;s point for Modimola.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 17 Oct 2026, about 04:00 (SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-18</span>
+          </td>
+          <td data-label="Map point">
+            Village, within 2,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS North West: an 18 Oct statement covering both Mmabatho killings</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=efbf9e6d">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="64b7adb5-4fc2-4184-b932-5ea0082259d7">
+          <td class="rec-cell-title">
+            <span class="rec-title">Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend&#39;s brother, 17 Oct</span>
+            <span class="rec-sub">North West</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Seweding Village, Mahikeng (Mmabatho), named by SAPS. No street or house is given. The pin is OpenStreetMap&#39;s point for Seweding.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 17 Oct 2026, early hours; police found him dead at about 00:45 (SAPS). SABC says Sunday
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-18</span>
+          </td>
+          <td data-label="Map point">
+            Village, within 2,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS North West: an 18 Oct statement covering both Mmabatho killings</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              <li><a href="https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              <li><a href="https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=64b7adb5">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="19a71c43-7584-4483-8cb1-9c71f12a9cb8">
+          <td class="rec-cell-title">
+            <span class="rec-title">Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Corner of Hugenot Street and AZ Berman Drive, Tafelsig. The pin is near the corner; OpenStreetMap spells it Huguenot.</p></details>
+          </td>
+          <td data-label="When">
+            Found Sat 17 Oct 2026 (EWN, quoting Ian Cameron); time not given
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-18</span>
+          </td>
+          <td data-label="Map point">
+            Spot, within 200 m
+            
+          </td>
+          <td data-label="Reporting">
+            One outlet only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              <li><a href="https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=19a71c43">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0d2ac747-e939-48fd-a116-3d99c1a95758">
+          <td class="rec-cell-title">
+            <span class="rec-title">Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Christmas Tinto Park, opposite Christmas Tinto Primary School and near the Asanda Village Wetland Park, Asanda Village, Strand (Voice of the Cape, District Mail). Daily Voice calls the area Zola Village. The park is not on the map; the pin is about 80 m from the primary school.</p></details>
+          </td>
+          <td data-label="When">
+            Found still burning Fri 16 Oct 2026, about 06:30 (police). District Mail quotes police saying the victim was allegedly attacked in Celiwe Street around 03:00 and dumped at the park afterwards.
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-16</span>
+          </td>
+          <td data-label="Map point">
+            Spot, within 200 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/districtmailhelderberg/man-stabbed-torched-near-primary-school-near-strand/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/" target="_blank" rel="noopener noreferrer">vocfm.co.za</a></li>
+              <li><a href="https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0d2ac747">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c">
+          <td class="rec-cell-title">
+            <span class="rec-title">Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Fisher Avenue, Epping 1, named by SAPS. The pin is on that street; the exact spot was not given.</p></details>
+          </td>
+          <td data-label="When">
+            Fri 16 Oct 2026, about 06:00 (SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-17</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 500 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: SAPS: a 17 Oct statement and an 18 Oct arrest statement</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              <li><a href="https://www.capetownetc.com/news/murder-charges-epping-taxi-shooting/" target="_blank" rel="noopener noreferrer">capetownetc.com</a></li>
+              <li><a href="https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=dbf90d51">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2">
+          <td class="rec-cell-title">
+            <span class="rec-title">Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Suria Walk, Hanover Park (exact spot not given). The pin is on the walkway.</p></details>
+          </td>
+          <td data-label="When">
+            Thu 15 Oct 2026, about 06:05 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-15</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0e974ffd">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="7bce2be1-912e-48e2-9fd4-c79d1611c16f">
+          <td class="rec-cell-title">
+            <span class="rec-title">Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>A farm between Overhex and MaGwaleni, Zwelethemba, outside Worcester. The farm is not named, so the pin marks the general area.</p></details>
+          </td>
+          <td data-label="When">
+            Body found Wed 14 Oct 2026, morning (time of death not given)
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-15</span>
+          </td>
+          <td data-label="Map point">
+            Farm, within 5,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Worcester police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=7bce2be1">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="a3d91502-d7c3-5257-99ac-0c99e948b038">
+          <td class="rec-cell-title">
+            <span class="rec-title">Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Komkhulu locality, Konkwana administrative area, near Willowvale (SAPS). Neither place is in OpenStreetMap, and GeoNames&#39; places named Komkhulu are in other municipalities. The pin is Willowvale town, the same point as the Willowvale Extension 1 pin; the homestead may be well outside town.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 13 Oct 2026, about 18:45 (SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-14</span>
+          </td>
+          <td data-label="Map point">
+            Town, within 20,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/" target="_blank" rel="noopener noreferrer">dispatch.co.za</a></li>
+              <li><a href="https://www.citizen.co.za/news/south-africa/crime/eastern-cape-headman-mother-gunned-down-willowvale/" target="_blank" rel="noopener noreferrer">citizen.co.za</a></li>
+              <li><a href="https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed" target="_blank" rel="noopener noreferrer">ewn.co.za</a></li>
+              <li><a href="https://www.joburgetc.com/news/willowvale-headman-mother-killed-shooting/" target="_blank" rel="noopener noreferrer">joburgetc.com</a></li>
+              <li><a href="https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://www.komani.co.za/headman-and-mother-shot-dead-during-home-invasion-near-willowvale/" target="_blank" rel="noopener noreferrer">komani.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=a3d91502">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d">
+          <td class="rec-cell-title">
+            <span class="rec-title">Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Trekker Road near an Engen garage, Khayelitsha. Trekker Road could not be found on the map, so the pin is a general Khayelitsha point, not the scene.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 13 Oct 2026, about 17:00 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-14</span>
+          </td>
+          <td data-label="Map point">
+            Area, within 3,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=a7c9880f">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="417613e8-bc4b-5e22-a9ce-49531d161f70">
+          <td class="rec-cell-title">
+            <span class="rec-title">Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Sebothe Street, Soweto-on-Sea (SAPS). The street is not in OpenStreetMap; the pin is OpenStreetMap&#39;s point for Soweto on Sea, inside the Kwazakele precinct, whose police are investigating.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 12 Oct 2026, found about 01:20 (SAPS)
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-12</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 1,500 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/" target="_blank" rel="noopener noreferrer">theherald.co.za</a></li>
+              <li><a href="https://www.algoafm.co.za/local/elderly-woman-killed-in-gq-double-murder" target="_blank" rel="noopener noreferrer">algoafm.co.za</a></li>
+              <li><a href="https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=417613e8">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="7acad00a-2081-462b-939c-be61b9d9b539">
+          <td class="rec-cell-title">
+            <span class="rec-title">Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Teenage Vuso Street, Zone 5, Langa (exact spot not given). The pin is on the street.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 12 Oct 2026, evening (&#39;Monday evening&#39; in reports of 13-14 Oct; time not given)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-13</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One account, repeated
+            <span class="rec-sub">Rests on: Police and a community leader</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/" target="_blank" rel="noopener noreferrer">vocfm.co.za</a></li>
+              <li><a href="https://capeargus.co.za/news/2026-10-14-two-killed-and-one-wounded-in-langa-shooting/" target="_blank" rel="noopener noreferrer">capeargus.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=7acad00a">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="ba7824e3-f2de-56c4-914f-587aeba1639c">
+          <td class="rec-cell-title">
+            <span class="rec-title">Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Gardenia Street, Duncan Village, KuGompo City (East London), per the Hawks. The only Gardenia Street OpenStreetMap finds in KuGompo City is in Lennox Estate, not Duncan Village, so it was not used. The pin is GeoNames&#39; point for Duncan Village, inside the Duncan Village SAPS precinct.</p></details>
+          </td>
+          <td data-label="When">
+            Sun 11 Oct 2026, about 16:30 (Hawks)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-13</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 1,500 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: The Hawks (DPCI, part of SAPS)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dispatch.co.za/news/2026-10-13-hawks-investigate-fatal-stabbing-of-off-duty-police-sergeant-in-duncan-village/" target="_blank" rel="noopener noreferrer">dispatch.co.za</a></li>
+              <li><a href="https://dispatch.co.za/news/2026-10-14-hawks-raise-alarm-after-policewoman-killed-in-eastern-cape/" target="_blank" rel="noopener noreferrer">dispatch.co.za</a></li>
+              <li><a href="https://www.citizen.co.za/news/south-africa/crime/suspect-arrested-murder-police-officer-eastern-cape/" target="_blank" rel="noopener noreferrer">citizen.co.za</a></li>
+              <li><a href="https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              <li><a href="https://sundayworld.co.za/crime/police-officer-stabbed-to-death-in-eastern-cape/" target="_blank" rel="noopener noreferrer">sundayworld.co.za</a></li>
+              <li><a href="https://www.joburgetc.com/news/eastern-cape-police-sergeant-murder-duncan-village/" target="_blank" rel="noopener noreferrer">joburgetc.com</a></li>
+              <li><a href="https://novanews.co.za/peexpress/hawks-arrest-suspect-after-police-sergeant-is-stabbed-to-death/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=ba7824e3">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="d09da7da-5705-46e3-8d10-5fef0db6c639">
+          <td class="rec-cell-title">
+            <span class="rec-title">Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>A house in Green Haven, Wolwedans, Great Brak River. The pin is the Greenhaven area point, not the house.</p></details>
+          </td>
+          <td data-label="When">
+            Sun 11 Oct 2026, just before 16:00 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-12</span>
+          </td>
+          <td data-label="Map point">
+            Area, within 1,500 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police (no spokesperson named)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124" target="_blank" rel="noopener noreferrer">mosselbayadvertiser.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=d09da7da">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="218c685c-2720-486e-8fc9-9af1dd3c2d5a">
+          <td class="rec-cell-title">
+            <span class="rec-title">Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Corner of Reindeer Street, Wesbank (exact spot not given). OpenStreetMap has it as Reindeer Crescent; the pin is on it.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 10 Oct 2026, about 20:10 (police, TygerBurger 12 Oct). TygerBurger&#39;s follow-up of 13 Oct wrongly says 17 October.
+            
+            <span class="rec-sub">Earliest report found: 2026-10-12</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One outlet only
+            <span class="rec-sub">Rests on: Police</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=218c685c">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="1a328ebb-28da-4b22-a7d6-f986d7852155">
+          <td class="rec-cell-title">
+            <span class="rec-title">Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Belgravia, Athlone. Suburb only, so the pin is the suburb&#39;s map point, not the scene.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 10 Oct 2026, about 19:00 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-11</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 1,500 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              <li><a href="https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/" target="_blank" rel="noopener noreferrer">capetownetc.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=1a328ebb">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="c2601d28-ecde-4cd0-b9e3-0c19230dafac">
+          <td class="rec-cell-title">
+            <span class="rec-title">Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Cafda Village, Retreat. Reports differ on the street (Ensor or Enzo), so the pin is the suburb&#39;s map point.</p></details>
+          </td>
+          <td data-label="When">
+            Fri 9 Oct 2026, about 09:15 (SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-14</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 1,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS, including its arrest statement</span>
+            <span class="rec-tag rec-tag--warn">1 conflicting fact</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/" target="_blank" rel="noopener noreferrer">iol.co.za</a></li>
+              <li><a href="https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              <li><a href="https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/" target="_blank" rel="noopener noreferrer">ccnews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=c2601d28">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="318c89be-efbe-4c0d-a175-f423dcda6cc5">
+          <td class="rec-cell-title">
+            <span class="rec-title">Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct</span>
+            <span class="rec-sub">North West</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Kgaka Street, Ipelegeng, Schweizer-Reneke (Taung Daily News). No spot on the street is given. The pin is the middle of Kgaka Street as OpenStreetMap maps it, the only street of that name in Schweizer-Reneke. OpenStreetMap does not label the township, so that this street is in Ipelegeng rests on the report. Police station not named.</p></details>
+          </td>
+          <td data-label="When">
+            Fri 9 Oct 2026; found after 20:00 (Taung Daily News, quoting police)
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-13</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police, quoted by Taung Daily News (no SAPS statement found)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/" target="_blank" rel="noopener noreferrer">taungdailynews.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=318c89be">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="2fdd9a56-11a3-4877-891a-bd46f152c44b">
+          <td class="rec-cell-title">
+            <span class="rec-title">D&#39;Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Open field between D&#39;Almeida and Albert Luthuli Park, near Mountain View, Mossel Bay. The field is not on the map, so the pin is the D&#39;Almeida suburb point.</p></details>
+          </td>
+          <td data-label="When">
+            Body found Thu 8 Oct 2026, about 10:50 (police); time of death not given
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-08</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 1,500 m
+            
+          </td>
+          <td data-label="Reporting">
+            One outlet only
+            <span class="rec-sub">Rests on: Police: the first report, then an arrest update</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714" target="_blank" rel="noopener noreferrer">mosselbayadvertiser.com</a></li>
+              <li><a href="https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356" target="_blank" rel="noopener noreferrer">mosselbayadvertiser.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=2fdd9a56">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="a86ff098-691e-5407-83f0-8496db67b418">
+          <td class="rec-cell-title">
+            <span class="rec-title">Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Kuzwayo Street, KwaZakhele (SAPS). OpenStreetMap has three short streets of that name within about 1 km, all in the New Brighton precinct, whose officers responded. The pin is the one not labelled Soweto on Sea; the exact spot is not given.</p></details>
+          </td>
+          <td data-label="When">
+            Wed 7 Oct 2026, found about 19:40 (SAPS)
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-09</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 1,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/" target="_blank" rel="noopener noreferrer">theherald.co.za</a></li>
+              <li><a href="https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              <li><a href="https://novanews.co.za/police-probe-double-murder-after-kwazakhele-shooting/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=a86ff098">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="03459a76-618b-4f7b-a538-c70eb89d5f99">
+          <td class="rec-cell-title">
+            <span class="rec-title">Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>OR Tambo Road, Imizamo Yethu (exact spot not given). The pin is on the road.</p></details>
+          </td>
+          <td data-label="When">
+            Wed 7 Oct 2026, about 19:19 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-08</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 500 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/" target="_blank" rel="noopener noreferrer">sentinelnews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=03459a76">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="530a09b2-015a-4ac3-996e-0183e8599dfa">
+          <td class="rec-cell-title">
+            <span class="rec-title">St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>St Bernard Street, St Montague Village (exact spot not given). OpenStreetMap has it as Saint Bernard Crescent; the pin is on it.</p></details>
+          </td>
+          <td data-label="When">
+            Wed 7 Oct 2026, about 11:45 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/" target="_blank" rel="noopener noreferrer">southernmail.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=530a09b2">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="2a848e46-0a84-4d05-8efc-85e54c8aa636">
+          <td class="rec-cell-title">
+            <span class="rec-title">Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Jakkalsvlei Avenue, Bonteheuwel (exact spot not given). The pin is on the Bonteheuwel end of the avenue.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, about 23:06 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 500 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=2a848e46">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="fd2a6fae-7fdf-58f7-aa95-e3f20fce9940">
+          <td class="rec-cell-title">
+            <span class="rec-title">Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Willowvale Extension 1 informal settlement, near Ematyotyombeni, Willowvale (SAPS, Dispatch). The settlement is not mapped; the pin is GeoNames&#39; point for Willowvale town, inside the Willowvale SAPS precinct.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, about 21:50 (SAPS; Dispatch: about 9.51pm)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Town, within 5,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: SAPS Eastern Cape</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/" target="_blank" rel="noopener noreferrer">dispatch.co.za</a></li>
+              <li><a href="https://theherald.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/" target="_blank" rel="noopener noreferrer">theherald.co.za</a></li>
+              <li><a href="https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/" target="_blank" rel="noopener noreferrer">dispatch.co.za</a></li>
+              <li><a href="https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape" target="_blank" rel="noopener noreferrer">algoafm.co.za</a></li>
+              <li><a href="https://www.komani.co.za/five-killed-in-willowvale-shooting/" target="_blank" rel="noopener noreferrer">komani.co.za</a></li>
+              <li><a href="https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=fd2a6fae">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="32b05eda-7499-59d2-b15c-4270972a7e49">
+          <td class="rec-cell-title">
+            <span class="rec-title">Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Mtshekisani Street, in the Kwadwesi or Kwazakele policing precinct (SAPS gives both). The street is not in OpenStreetMap; the pin is OpenStreetMap&#39;s point for the KwaDwesi suburb, so it may be some way off.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, about 20:00 (SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Suburb, within 3,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            All from police statements
+            <span class="rec-sub">Rests on: SAPS Eastern Cape (statement of 7 Oct)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/" target="_blank" rel="noopener noreferrer">sabcnews.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=32b05eda">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="821f2edc-df43-41d1-ad4a-c18b8380809e">
+          <td class="rec-cell-title">
+            <span class="rec-title">Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Muir Court, Depsiton Crescent, Lavender Hill. Muir Court is not on the map, so the pin is Depsiton Crescent.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, shortly after 08:00 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-06</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/" target="_blank" rel="noopener noreferrer">southernmail.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=821f2edc">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0c5e795f-330b-4302-97c2-812543262e8b">
+          <td class="rec-cell-title">
+            <span class="rec-title">Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Masikhanye, Site B, Khayelitsha. Masikhanye could not be found on the map, so the pin is a general Site B point, not the scene.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, about 04:30 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-06</span>
+          </td>
+          <td data-label="Map point">
+            Area, within 2,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://novanews.co.za/cityvision/khayelitsha-shooting/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0c5e795f">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="332d8ab4-a352-4b39-a6cf-f3f371f0ca4b">
+          <td class="rec-cell-title">
+            <span class="rec-title">Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Belgravia Road, outside Heatherdale Primary School, Athlone. The pin is the school; the exact spot on the road is not given.</p></details>
+          </td>
+          <td data-label="When">
+            Tue 6 Oct 2026, morning (time not given)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-06</span>
+          </td>
+          <td data-label="Map point">
+            Spot, within 200 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/" target="_blank" rel="noopener noreferrer">capetownetc.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=332d8ab4">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="c64476ff-5b23-4307-944c-20c2a1a99835">
+          <td class="rec-cell-title">
+            <span class="rec-title">Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct</span>
+            <span class="rec-sub">North West</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Doornpan Farm, outside Ottosdal, about 17 km from the town&#39;s police station (Klerksdorp Record, DA). No source gives the farm&#39;s position. The pin is a place-name database&#39;s point for a Doornpan farm about 19 km south-west of Ottosdal (GeoNames, via Mapcarta), which may not be the same farm. Municipality not confirmed: that database puts it in Tswaing (Ngaka Modiri Molema district), but if the farm is in Maquassi Hills it is in the Dr Kenneth Kaunda district. The DA calls it the Ottosdal/Wolmaransstad area.</p></details>
+          </td>
+          <td data-label="When">
+            Mon 5 Oct 2026, about 19:00 (Klerksdorp Record); date not supplied in the saved SAPS statement
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Farm, within 10,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: SAPS North West: a 7 Oct statement</span>
+            <span class="rec-tag rec-tag--warn">2 conflicting facts</span>
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/" target="_blank" rel="noopener noreferrer">taungdailynews.com</a></li>
+              <li><a href="https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek" target="_blank" rel="noopener noreferrer">northwestnewspapers.co.za</a></li>
+              <li><a href="https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/" target="_blank" rel="noopener noreferrer">taungdailynews.com</a></li>
+              <li><a href="https://www.platinumweekly.co.za/community.php?story=4325" target="_blank" rel="noopener noreferrer">platinumweekly.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=c64476ff">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="578b93c8-a253-535c-b26f-eba38181683b">
+          <td class="rec-cell-title">
+            <span class="rec-title">Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct</span>
+            <span class="rec-sub">Eastern Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Mawethu Tavern, Bholotwa, named by Komani News; the tavern itself is not mapped. The pin is OpenStreetMap&#39;s point for Bolotwa village (Intsika Yethu, Chris Hani), which lies in the SAPS Bholothwa precinct (2019 boundaries). Another Bolotwa in Mbhashe (GeoNames) was not used: the report names Bholotwa police and comes from a Chris Hani paper. Municipality not stated by any source.</p></details>
+          </td>
+          <td data-label="When">
+            Sun 4 Oct 2026, after about 01:15, when police were called back (Komani News, quoting SAPS)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-04</span>
+          </td>
+          <td data-label="Map point">
+            Village, within 3,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police, quoted by Komani News (no SAPS newsroom statement found)</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/" target="_blank" rel="noopener noreferrer">komani.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=578b93c8">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="21b2a9b0-66c3-4045-924d-963eaa85b4a1">
+          <td class="rec-cell-title">
+            <span class="rec-title">N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Bagzane Street, N2 Gateway, Delft (exact spot not given). The pin is on the street.</p></details>
+          </td>
+          <td data-label="When">
+            Found Sun 4 Oct 2026, morning (time of death not given)
+            <span class="rec-tag">time body was found</span>
+            <span class="rec-sub">Earliest report found: 2026-10-04</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              <li><a href="https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=21b2a9b0">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="1b6fba13-ef88-48d7-8c17-16b4e7ba6650">
+          <td class="rec-cell-title">
+            <span class="rec-title">Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Dunjwa Street, Asla Park, KwaNonqaba, named by police. The pin is on that street; the exact spot was not given.</p></details>
+          </td>
+          <td data-label="When">
+            4 Oct 2026 (time not given)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-13</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Southern Cape police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945" target="_blank" rel="noopener noreferrer">mosselbayadvertiser.com</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=1b6fba13">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="2a87ec3f-8763-416c-99cf-6c060faab5a1">
+          <td class="rec-cell-title">
+            <span class="rec-title">Voorbrug, Delft (Camdeboo St, approx.): 2 men shot dead, 3 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Camdeboo Street, Anceba Court, Voorbrug, Delft (exact spot not given). OpenStreetMap has the street as Camdeboo Crescent; the pin is on it.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 3 Oct 2026, about 18:40 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-04</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            Partly independent
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              <li><a href="https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/" target="_blank" rel="noopener noreferrer">novanews.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=2a87ec3f">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="582ea2d7-5473-4f40-af91-a7343d865d0b">
+          <td class="rec-cell-title">
+            <span class="rec-title">Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>A house in Kliplokasie on Volmoed farm, Oudtshoorn. The farm house is not on the map, so the pin is the Volmoed area point.</p></details>
+          </td>
+          <td data-label="When">
+            Sat 3 Oct 2026, night (article of Wed 7 Oct says &#39;Saturday night&#39;)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-07</span>
+          </td>
+          <td data-label="Map point">
+            Farm, within 5,000 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/" target="_blank" rel="noopener noreferrer">capeargus.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=582ea2d7">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="fdb570fb-11a4-4430-8966-b973f1ae3ede">
+          <td class="rec-cell-title">
+            <span class="rec-title">Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Nasson Street, Hawston (exact spot not given). The pin is on the street.</p></details>
+          </td>
+          <td data-label="When">
+            Fri 2 Oct 2026, about 23:00 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-04</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/" target="_blank" rel="noopener noreferrer">dailyvoice.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=fdb570fb">View on map →</a></td>
+        </tr>
+        
+        <tr data-id="0f037fc3-9de9-4e2b-aa1f-00feda269a58">
+          <td class="rec-cell-title">
+            <span class="rec-title">Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct</span>
+            <span class="rec-sub">Western Cape</span>
+            <details class="rec-where"><summary>Where exactly</summary><p>Trampoline Street, Beacon Valley (exact spot not given). The pin is the middle of the street, which OpenStreetMap places on the Eastridge side of Beacon Valley.</p></details>
+          </td>
+          <td data-label="When">
+            Thu 1 Oct 2026, 11:10 (police)
+            
+            <span class="rec-sub">Earliest report found: 2026-10-01</span>
+          </td>
+          <td data-label="Map point">
+            Street, within 300 m
+            
+          </td>
+          <td data-label="Reporting">
+            One report only
+            <span class="rec-sub">Rests on: Provincial police</span>
+            
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              <li><a href="https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/" target="_blank" rel="noopener noreferrer">plainsman.co.za</a></li>
+              
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="index.html?signal=0f037fc3">View on map →</a></td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="rec-empty" id="rec-empty" hidden>No records match these filters.</p>
+  </div>
+
+  <details class="rec-help">
+    <summary>What each CSV column means</summary>
+    <dl>
+      <dt>signal_id</dt><dd>FORGE&#39;s ID for the pin.</dd>
+      <dt>short_id</dt><dd>First 8 characters of the ID, as used in map links.</dd>
+      <dt>title</dt><dd>The pin&#39;s title on the map.</dd>
+      <dt>province</dt><dd>Province of the batch the pin was published in.</dd>
+      <dt>incident_start</dt><dd>When the incident happened or began, as best the reports allow (ISO 8601).</dd>
+      <dt>incident_precision</dt><dd>How exact incident_start is: time, approx_time, part_of_day or day.</dd>
+      <dt>incident_event</dt><dd>occurred = when it happened; found = when a body was found.</dd>
+      <dt>incident_described</dt><dd>The incident time in words, with who gave it.</dd>
+      <dt>reported_at</dt><dd>Date of the earliest report found (not proven to be the first).</dd>
+      <dt>location_described</dt><dd>Where the reports place it, and what the map point marks.</dd>
+      <dt>latitude</dt><dd>Map point latitude, rounded to 5 decimals. Not an exact scene.</dd>
+      <dt>longitude</dt><dd>Map point longitude, rounded to 5 decimals. Not an exact scene.</dd>
+      <dt>map_precision</dt><dd>What the map point stands for: spot, street, area, suburb, village, town or farm.</dd>
+      <dt>uncertainty_m</dt><dd>How far, at most, the real place can plausibly be from the point, in metres.</dd>
+      <dt>location_basis</dt><dd>reported = the reports name this place; inferred = FORGE&#39;s reading of a place the reports do not pin down.</dd>
+      <dt>reporting_independence</dt><dd>Whether the reports are independent of each other (most are not).</dd>
+      <dt>statement_from</dt><dd>Who the reporting rests on, usually police.</dd>
+      <dt>outlets</dt><dd>News outlets that reported it, separated by &#39; | &#39;.</dd>
+      <dt>source_urls</dt><dd>Source article links, separated by &#39; | &#39;.</dd>
+      <dt>source_count</dt><dd>Number of source articles linked.</dd>
+      <dt>archived_source_count</dt><dd>How many of those links have a saved archive copy.</dd>
+      <dt>fact_conflict_count</dt><dd>Facts on which the reports disagree.</dd>
+      <dt>fact_audit</dt><dd>Whether the pin&#39;s key facts were checked claim by claim against the sources.</dd>
+      <dt>approval_id</dt><dd>The owner approval record this row matches.</dd>
+      <dt>pin_version</dt><dd>Version of the pin&#39;s approved data.</dd>
+      <dt>approved_at</dt><dd>When that approval was given.</dd>
+      <dt>published_at</dt><dd>When the pin went on the map.</dd>
+      <dt>map_link</dt><dd>The pin on the map (relative to the site).</dd>
+      <dt>data_version</dt><dd>Git commit of the pin and approval files this export was built from.</dd>
+      
+    </dl>
+  </details>
+</main>
+
+<script id="records-data" type="application/json">{"caveats": ["These are hand-checked news reports of killings, not crime statistics. They are not complete and not representative of all crime in any area.", "Most rows rest on a single report or on police statements repeated by several outlets; see reporting_independence.", "Map points are approximate. uncertainty_m says how far off a point can be, and location_basis says when a point is inferred rather than reported.", "Reports can be wrong or change after publication. Check the source links before relying on any row."], "count": 45, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fields": [{"help": "FORGE\u0027s ID for the pin.", "name": "signal_id"}, {"help": "First 8 characters of the ID, as used in map links.", "name": "short_id"}, {"help": "The pin\u0027s title on the map.", "name": "title"}, {"help": "Province of the batch the pin was published in.", "name": "province"}, {"help": "When the incident happened or began, as best the reports allow (ISO 8601).", "name": "incident_start"}, {"help": "How exact incident_start is: time, approx_time, part_of_day or day.", "name": "incident_precision"}, {"help": "occurred = when it happened; found = when a body was found.", "name": "incident_event"}, {"help": "The incident time in words, with who gave it.", "name": "incident_described"}, {"help": "Date of the earliest report found (not proven to be the first).", "name": "reported_at"}, {"help": "Where the reports place it, and what the map point marks.", "name": "location_described"}, {"help": "Map point latitude, rounded to 5 decimals. Not an exact scene.", "name": "latitude"}, {"help": "Map point longitude, rounded to 5 decimals. Not an exact scene.", "name": "longitude"}, {"help": "What the map point stands for: spot, street, area, suburb, village, town or farm.", "name": "map_precision"}, {"help": "How far, at most, the real place can plausibly be from the point, in metres.", "name": "uncertainty_m"}, {"help": "reported = the reports name this place; inferred = FORGE\u0027s reading of a place the reports do not pin down.", "name": "location_basis"}, {"help": "Whether the reports are independent of each other (most are not).", "name": "reporting_independence"}, {"help": "Who the reporting rests on, usually police.", "name": "statement_from"}, {"help": "News outlets that reported it, separated by \u0027 | \u0027.", "name": "outlets"}, {"help": "Source article links, separated by \u0027 | \u0027.", "name": "source_urls"}, {"help": "Number of source articles linked.", "name": "source_count"}, {"help": "How many of those links have a saved archive copy.", "name": "archived_source_count"}, {"help": "Facts on which the reports disagree.", "name": "fact_conflict_count"}, {"help": "Whether the pin\u0027s key facts were checked claim by claim against the sources.", "name": "fact_audit"}, {"help": "The owner approval record this row matches.", "name": "approval_id"}, {"help": "Version of the pin\u0027s approved data.", "name": "pin_version"}, {"help": "When that approval was given.", "name": "approved_at"}, {"help": "When the pin went on the map.", "name": "published_at"}, {"help": "The pin on the map (relative to the site).", "name": "map_link"}, {"help": "Git commit of the pin and approval files this export was built from.", "name": "data_version"}], "records": [{"approval_id": "20261022T104912Z-619720c2", "approved_at": "2026-10-22T12:42:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 20 Oct 2026 at about 20:07 (police statement, via Cape Times)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-20T20:07+02:00", "latitude": -34.06261, "location_basis": "reported", "location_described": "Inside a barbershop in Paulsberg Street, Tafelsig (police, via Cape Times). Shop not located. The pin is the middle of Paulsberg Street in OpenStreetMap (way 32214287); it marks the street, not the shop.", "longitude": 18.63118, "map_link": "index.html?signal=49773d55", "map_precision": "street", "outlets": "Cape Times (IOL)", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-22T10:25:00Z", "reported_at": "2026-10-21", "reporting_independence": "One report only", "short_id": "49773d55", "signal_id": "49773d55-5704-5fcb-ac36-1f7eda5de54b", "source_count": 1, "source_urls": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/", "statement_from": "SAPS Western Cape, quoted by Cape Times (IOL)", "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct", "uncertainty_m": 500}, {"approval_id": "20261021T130239Z-fe18c55e", "approved_at": "2026-10-21T15:00:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Tue 20 Oct 2026, at about 12:30 (SAPS statement on X; Cape Times, Smile 90.4FM and Briefly News give the same time)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-20T12:30+02:00", "latitude": -34.07511, "location_basis": "reported", "location_described": "Military Road, Steenberg (SAPS statement, quoted via Cape Times). Exact spot not given. The pin marks the shooting only, not Kirstenhof (where the car was abandoned) or Lakeside (where the arrests reportedly were). The pin is a point on Military Road in Steenberg (OpenStreetMap way 316992334), the owner\u0027s choice of two Military Road points about 114 m apart; no source gives anything finer than the road.", "longitude": 18.47893, "map_link": "index.html?signal=048440e0", "map_precision": "street", "outlets": "Cape Times (IOL) | Smile 90.4FM | Briefly News", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-21T12:41:00Z", "reported_at": "2026-10-20", "reporting_independence": "All from police statements", "short_id": "048440e0", "signal_id": "048440e0-0be5-53d8-934a-1ba6233a0dfa", "source_count": 3, "source_urls": "https://iol.co.za/capetimes/news/2026-10-20-breaking-two-killed-five-arrested-after-shooting-and-high-speed-chase-in-steenberg/ | https://smilefm.co.za/double-murder-in-steenberg-ends-in-high-speed-chase-and-five-arrests/ | https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/", "statement_from": "SAPS Western Cape statement posted on X (20 Oct 2026, 15:15 SAST), quoted by Cape Times (IOL), Smile 90.4FM and Briefly News", "title": "Steenberg (Military Rd, approx.): two men, 23 and 37, shot dead; five arrested after chase, 20 Oct", "uncertainty_m": 1000}, {"approval_id": "20261022T104912Z-587fdc41", "approved_at": "2026-10-22T12:42:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Body found Tue 20 Oct 2026 at about 07:04 (police, via Daily Voice and TygerBurger). 07:04 is the discovery time; no source gives when he was killed.", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-20T07:04+02:00", "latitude": -33.95354, "location_basis": "reported", "location_described": "Angela Street, Valhalla Park (police, via Daily Voice); in a vlei or canal. The spot on the water is not given. The pin is the middle of Angela Street in OpenStreetMap (way 30690124), which OSM labels Nooitgedacht/Elsies River; the street also holds the Valhalla Park Community Centre. It marks the street, not where the body lay.", "longitude": 18.57462, "map_link": "index.html?signal=0caa5a74", "map_precision": "street", "outlets": "Daily Voice | TygerBurger (Nova News)", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-22T10:25:00Z", "reported_at": "2026-10-20", "reporting_independence": "All from police statements", "short_id": "0caa5a74", "signal_id": "0caa5a74-cc5e-5f04-a0cb-aa13466552d4", "source_count": 2, "source_urls": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/ | https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/", "statement_from": "SAPS Western Cape, quoted by Daily Voice and TygerBurger", "title": "Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct", "uncertainty_m": 1000}, {"approval_id": "20261021T161426Z-efca5d62", "approved_at": "2026-10-21T18:10:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Mon 19 Oct 2026, found when police responded at about 20:45 (police, via Cape Argus and TygerBurger). 20:45 is the response and discovery time, not a shooting time; no source gives one.", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-19T20:45+02:00", "latitude": -34.07669, "location_basis": "reported", "location_described": "In front of a property in Korvette Road, Strandfontein (police, via Cape Argus). House not given. The pin is a street-level marker for Korvette Road (OpenStreetMap), kept where the builder put it on the owner\u0027s decision; it marks the road, not any building or house.", "longitude": 18.54919, "map_link": "index.html?signal=adf99019", "map_precision": "street", "outlets": "TygerBurger (Nova News) | Cape Argus (IOL)", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-21T15:48:00Z", "reported_at": "2026-10-20", "reporting_independence": "All from police statements", "short_id": "adf99019", "signal_id": "adf99019-941e-5dd0-9851-635da0a1e146", "source_count": 2, "source_urls": "https://novanews.co.za/tygerburger/fourth-person-killed-in-strandfontein-as-gang-shootings-continue/ | https://iol.co.za/capeargus/news/2026-10-20-strandfontein-shootings-four-killed-in-days-as-violence-rocks-one-of-cape-towns-safer-suburbs/", "statement_from": "Police: Lt-Col Frederick van Wyk (Cape Argus: \u0027police spokesperson\u0027; TygerBurger: \u0027commander of the provincial media centre\u0027), quoted by TygerBurger and Cape Argus", "title": "Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct", "uncertainty_m": 500}, {"approval_id": "20261022T104912Z-f889f8d8", "approved_at": "2026-10-22T12:42:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Mon 19 Oct 2026 at about 13:25 (police statement, via Daily Voice and Crime Scene Report). SABC News and Megazone say Monday night.", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-19T13:25+02:00", "latitude": -33.95372, "location_basis": "reported", "location_described": "Inside a vehicle at the corner of Bokmakierie Street and 7th Avenue (police, via Daily Voice; Heart FM). The pin is the shared node of the two streets in OpenStreetMap.", "longitude": 18.50696, "map_link": "index.html?signal=06219161", "map_precision": "spot", "outlets": "Daily Voice | SABC News | Heart FM | Crime Scene Report (news-stuff.co.za) | Megazone", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-22T10:25:00Z", "reported_at": "2026-10-20", "reporting_independence": "All from police statements", "short_id": "06219161", "signal_id": "06219161-76ad-5b50-91d0-e58235427edf", "source_count": 4, "source_urls": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/ | https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/ | https://heartfm.co.za/man-shot-and-killed-in-car/ | http://news-stuff.co.za/tag/athlone-murder/", "statement_from": "SAPS Western Cape, quoted by Daily Voice, SABC News, Heart FM and Crime Scene Report", "title": "Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct", "uncertainty_m": 150}, {"approval_id": "20261021T112758Z-a321832c", "approved_at": "2026-10-21T13:26:21+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Mon 19 Oct 2026, at about 12:50 (police, via The Herald and PE Express; Algoa FM: shortly before 1 pm)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-19T12:50+02:00", "latitude": -33.95907, "location_basis": "reported", "location_described": "Outside a corner shop in Russell Road, Central, Gqeberha (police, via The Herald). Exact shop not named. The pin is a point on Russell Road in Central (OpenStreetMap way 30696735), the owner\u0027s choice of two Russell Road points about 48 m apart; no source gives anything finer than the road.", "longitude": 25.61776, "map_link": "index.html?signal=b842a3b5", "map_precision": "street", "outlets": "The Herald | Algoa FM | PE Express (Nova News)", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-21T11:16:00Z", "reported_at": "2026-10-20", "reporting_independence": "All from police statements", "short_id": "b842a3b5", "signal_id": "b842a3b5-eda7-5b97-bfe1-0448fe0272a5", "source_count": 3, "source_urls": "https://theherald.co.za/news/2026-10-20-man-shot-dead-in-broad-daylight-in-central/ | https://www.algoafm.co.za/local/man-shot-in-broad-daylight-in-his-car-in-central-gqeberha | https://novanews.co.za/peexpress/broad-daylight-ambush-50-year-old-gunned-down-on-russel-road/", "statement_from": "SAPS Eastern Cape, quoted by The Herald, Algoa FM and PE Express", "title": "Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct", "uncertainty_m": 1000}, {"approval_id": "20261022T104912Z-e9c55039", "approved_at": "2026-10-22T12:42:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sun 18 Oct 2026, police responded at about 18:30 (police, via Southern Mail)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-18T18:30+02:00", "latitude": -34.06845, "location_basis": "reported", "location_described": "Corner of St Alexander Circle and St Christopher Avenue, St Montague Village (Southern Mail). The pin is the midpoint between the nearest nodes of the two streets in OpenStreetMap (ways 701190631 and 30631994, about 30 m apart).", "longitude": 18.48963, "map_link": "index.html?signal=0c9f233c", "map_precision": "spot", "outlets": "Southern Mail | Briefly News", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-22T10:25:00Z", "reported_at": "2026-10-20", "reporting_independence": "One report only", "short_id": "0c9f233c", "signal_id": "0c9f233c-6c38-5da4-a660-c6776f575667", "source_count": 2, "source_urls": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/ | https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/", "statement_from": "SAPS Western Cape, quoted by Southern Mail", "title": "St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct", "uncertainty_m": 150}, {"approval_id": "20261022T104912Z-a3a0573f", "approved_at": "2026-10-22T12:42:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sun 18 Oct 2026, police responded at about 15:30 (police, via Smile 90.4FM)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-18T15:30+02:00", "latitude": -34.06012, "location_basis": "reported", "location_described": "Bernstein Road, Cafda Village, Retreat, near the Retreat Community Health Centre (police, via Smile 90.4FM). Exact spot not given. The pin is the middle of Bernstein Road, a short street (about 160 m) in OpenStreetMap.", "longitude": 18.48132, "map_link": "index.html?signal=7aa4eea1", "map_precision": "street", "outlets": "Smile 90.4FM | Cape Times (IOL) | Cape Argus (IOL) | Southern Mail", "pin_version": 3, "province": "Western Cape", "published_at": "2026-10-19T07:45:00Z", "reported_at": "2026-10-19", "reporting_independence": "All from police statements", "short_id": "7aa4eea1", "signal_id": "7aa4eea1-c1f4-55af-b761-d55ff2df3a51", "source_count": 3, "source_urls": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/ | https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-reopens-after-fatal-shooting-nearby2/ | https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/", "statement_from": "SAPS Western Cape, quoted by Smile 90.4FM, IOL and Southern Mail", "title": "Cafda Village, Retreat (Bernstein Rd, approx.): man, 41, shot dead, three young men wounded, 18 Oct", "uncertainty_m": 300}, {"approval_id": "20261022T115217Z-6f8cecdf", "approved_at": "2026-10-22T13:48:00+02:00", "archived_source_count": 0, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 17 Oct 2026 at about 23:05 (police, via Athlone News)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-17T23:05+02:00", "latitude": -33.94946, "location_basis": "inferred", "location_described": "\u0027In front of a premises in Firethorne, near Geelhout Street\u0027 (police, via Athlone News); address not given. \u0027Firethorne\u0027 is not a suburb or street in OpenStreetMap. The pin is INFERRED: the midpoint of Geelhout Road, Bonteheuwel (OSM ways 704572595 and 30349364, about 448 m), which meets Firethorn Street (OSM way 30349369) at both ends of its loop, inside the Bishop Lavis police area per the 22 Oct source check. The spelling differs (Firethorn) and the article gives no street-level location; the point marks the area, not the scene. OSM \u0027Geelhout Street\u0027 in the Lotus River area (Ward 65) is a different street and is not used.", "longitude": 18.54867, "map_link": "index.html?signal=e0fa3712", "map_precision": "street", "outlets": "Athlone News", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-22T11:45:00Z", "reported_at": "2026-10-22", "reporting_independence": "One report only", "short_id": "e0fa3712", "signal_id": "e0fa3712-df77-531e-a040-437dee019c3c", "source_count": 1, "source_urls": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/", "statement_from": "SAPS Western Cape (Lt Col FC van Wyk), quoted by Athlone News", "title": "Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct", "uncertainty_m": 400}, {"approval_id": "20261021T032134Z-6e79840b", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 17 Oct 2026, about 14:30 (Pondoland Times; SAPS: Saturday)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-17T14:30+02:00", "latitude": -31.81919, "location_basis": "reported", "location_described": "Mbulawa Location, Mqanduli, after a chase on the R411 towards Coffee Bay (SAPS). Mbulawa is not in OpenStreetMap or GeoNames; the pin is GeoNames\u0027 point for Mqanduli town, inside the Mqanduli SAPS precinct.", "longitude": 28.76175, "map_link": "index.html?signal=335b265d", "map_precision": "town", "outlets": "Pondoland Times | NovaNews | The Citizen | EWN | Sunday World | Algoa FM", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-18", "reporting_independence": "All from police statements", "short_id": "335b265d", "signal_id": "335b265d-2edd-54e2-969e-31e38733ff3a", "source_count": 6, "source_urls": "https://pondolandtimes.co.za/crime-courts/article/armed-suspect-shot-dead-by-police-near-mqanduli-ak-47-recovered/ | https://novanews.co.za/tactical-response-team-fatally-wounds-suspect-linked-to-cop-murder/ | https://www.citizen.co.za/news/south-africa/crime/man-linked-to-high-profile-murders-killed-by-police/ | https://www.ewn.co.za/2026/10/18/ec-police-shoot-and-kill-armed-suspect-during-mqanduli-operation | https://sundayworld.co.za/crime/suspect-linked-to-police-officers-murder-killed-in-shoot-out-with-saps-ak-47-recovered-in-mqanduli/ | https://www.algoafm.co.za/local/wanted-ec-murder-suspect-fatally-wounded", "statement_from": "SAPS Eastern Cape (statement of 18 Oct)", "title": "Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct", "uncertainty_m": 20000}, {"approval_id": "20261021T032134Z-c0a807cf", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 17 Oct 2026, about 04:00 (SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-17T04:00+02:00", "latitude": -25.87135, "location_basis": "reported", "location_described": "Modimola Village, west of Mahikeng, named by SAPS. No street or house is given. The pin is OpenStreetMap\u0027s point for Modimola.", "longitude": 25.44809, "map_link": "index.html?signal=efbf9e6d", "map_precision": "village", "outlets": "NovaNews | EWN", "pin_version": 1, "province": "North West", "published_at": "2026-10-19T00:50:00Z", "reported_at": "2026-10-18", "reporting_independence": "All from police statements", "short_id": "efbf9e6d", "signal_id": "efbf9e6d-2d5d-4591-8d0e-11294babd050", "source_count": 2, "source_urls": "https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/ | https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents", "statement_from": "SAPS North West: an 18 Oct statement covering both Mmabatho killings", "title": "Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct", "uncertainty_m": 2000}, {"approval_id": "20261021T032134Z-a321c652", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Sat 17 Oct 2026, early hours; police found him dead at about 00:45 (SAPS). SABC says Sunday", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-17T00:45+02:00", "latitude": -25.8625, "location_basis": "reported", "location_described": "Seweding Village, Mahikeng (Mmabatho), named by SAPS. No street or house is given. The pin is OpenStreetMap\u0027s point for Seweding.", "longitude": 25.58361, "map_link": "index.html?signal=64b7adb5", "map_precision": "village", "outlets": "EWN | SABC News | NovaNews", "pin_version": 1, "province": "North West", "published_at": "2026-10-19T00:50:00Z", "reported_at": "2026-10-18", "reporting_independence": "All from police statements", "short_id": "64b7adb5", "signal_id": "64b7adb5-4fc2-4184-b932-5ea0082259d7", "source_count": 3, "source_urls": "https://www.ewn.co.za/2026/10/18/two-arrested-after-murders-of-2-men-in-separate-mmabatho-incidents | https://www.sabcnews.com/sabcnews/man-allegedly-killed-by-his-girlfriends-brother-in-mahikeng/ | https://novanews.co.za/north-west-police-arrest-two-after-separate-mmabatho-murders/", "statement_from": "SAPS North West: an 18 Oct statement covering both Mmabatho killings", "title": "Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend\u0027s brother, 17 Oct", "uncertainty_m": 2000}, {"approval_id": "20261021T032134Z-488d5148", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Found Sat 17 Oct 2026 (EWN, quoting Ian Cameron); time not given", "incident_event": "found", "incident_precision": "day", "incident_start": "2026-10-17", "latitude": -34.062, "location_basis": "reported", "location_described": "Corner of Hugenot Street and AZ Berman Drive, Tafelsig. The pin is near the corner; OpenStreetMap spells it Huguenot.", "longitude": 18.639, "map_link": "index.html?signal=19a71c43", "map_precision": "spot", "outlets": "EWN", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-18", "reporting_independence": "One outlet only", "short_id": "19a71c43", "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8", "source_count": 2, "source_urls": "https://www.ewn.co.za/2026/10/18/another-weekend-of-violence-in-cape-town | https://www.ewn.co.za/2026/10/18/discovery-of-burnt-body-in-tafelsig-a-reminder-sa-still-failing-to-protect-women-cameron", "statement_from": "Police", "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct", "uncertainty_m": 200}, {"approval_id": "20261021T032134Z-c13ad921", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Found still burning Fri 16 Oct 2026, about 06:30 (police). District Mail quotes police saying the victim was allegedly attacked in Celiwe Street around 03:00 and dumped at the park afterwards.", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-16T06:30+02:00", "latitude": -34.1077, "location_basis": "reported", "location_described": "Christmas Tinto Park, opposite Christmas Tinto Primary School and near the Asanda Village Wetland Park, Asanda Village, Strand (Voice of the Cape, District Mail). Daily Voice calls the area Zola Village. The park is not on the map; the pin is about 80 m from the primary school.", "longitude": 18.8578, "map_link": "index.html?signal=0d2ac747", "map_precision": "spot", "outlets": "District Mail (NovaNews) | Voice of the Cape | Daily Voice", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-16", "reporting_independence": "Partly independent", "short_id": "0d2ac747", "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758", "source_count": 3, "source_urls": "https://novanews.co.za/districtmailhelderberg/man-stabbed-torched-near-primary-school-near-strand/ | https://vocfm.co.za/man-stabbed-and-burnt-to-death-in-strand-cpf-condemns-mob-justice/ | https://dailyvoice.co.za/news/western-cape/2026-10-18-lwandle-police-probe-murder-after-burning-body-found-in-zola-village-park/", "statement_from": "Police", "title": "Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct", "uncertainty_m": 200}, {"approval_id": "20261021T032134Z-ea4e08f5", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Fri 16 Oct 2026, about 06:00 (SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-16T06:00+02:00", "latitude": -33.93709, "location_basis": "reported", "location_described": "Fisher Avenue, Epping 1, named by SAPS. The pin is on that street; the exact spot was not given.", "longitude": 18.53663, "map_link": "index.html?signal=dbf90d51", "map_precision": "street", "outlets": "Cape Times (IOL) | Cape Town ETC | NovaNews", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T17:28:41Z", "reported_at": "2026-10-17", "reporting_independence": "Partly independent", "short_id": "dbf90d51", "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c", "source_count": 3, "source_urls": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/ | https://www.capetownetc.com/news/murder-charges-epping-taxi-shooting/ | https://novanews.co.za/double-murder-in-epping-passengers-shot-dead-in-taxi-violence-attack/", "statement_from": "SAPS: a 17 Oct statement and an 18 Oct arrest statement", "title": "Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct", "uncertainty_m": 500}, {"approval_id": "20261021T032134Z-3342806d", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Thu 15 Oct 2026, about 06:05 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-15T06:05+02:00", "latitude": -33.9907, "location_basis": "reported", "location_described": "Suria Walk, Hanover Park (exact spot not given). The pin is on the walkway.", "longitude": 18.5354, "map_link": "index.html?signal=0e974ffd", "map_precision": "street", "outlets": "Daily Voice", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-15", "reporting_independence": "One report only", "short_id": "0e974ffd", "signal_id": "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2", "source_count": 1, "source_urls": "https://dailyvoice.co.za/news/2026-10-15-from-klipgooi-na-gunskiet-hanover-park-man-shot-dead-as-gangs-recruit-laaities/", "statement_from": "Police", "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-87dc7bea", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Body found Wed 14 Oct 2026, morning (time of death not given)", "incident_event": "found", "incident_precision": "day", "incident_start": "2026-10-14", "latitude": -33.652, "location_basis": "reported", "location_described": "A farm between Overhex and MaGwaleni, Zwelethemba, outside Worcester. The farm is not named, so the pin marks the general area.", "longitude": 19.502, "map_link": "index.html?signal=7bce2be1", "map_precision": "farm", "outlets": "Worcester Standard", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T17:28:41Z", "reported_at": "2026-10-15", "reporting_independence": "One report only", "short_id": "7bce2be1", "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f", "source_count": 1, "source_urls": "https://novanews.co.za/worcesterstandard/murder-investigation-launched-after-mans-body-discovered-on-farm-near-worcester/", "statement_from": "Worcester police", "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct", "uncertainty_m": 5000}, {"approval_id": "20261021T032134Z-e42e2148", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 3, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 13 Oct 2026, about 18:45 (SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-13T18:45+02:00", "latitude": -32.26588, "location_basis": "reported", "location_described": "Komkhulu locality, Konkwana administrative area, near Willowvale (SAPS). Neither place is in OpenStreetMap, and GeoNames\u0027 places named Komkhulu are in other municipalities. The pin is Willowvale town, the same point as the Willowvale Extension 1 pin; the homestead may be well outside town.", "longitude": 28.50727, "map_link": "index.html?signal=a3d91502", "map_precision": "town", "outlets": "Daily Dispatch | The Citizen | EWN | Joburg ETC | NovaNews | Komani News", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-14", "reporting_independence": "All from police statements", "short_id": "a3d91502", "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038", "source_count": 6, "source_urls": "https://dispatch.co.za/news/2026-10-14-another-willowvale-headman-and-mother-gunned-down/ | https://www.citizen.co.za/news/south-africa/crime/eastern-cape-headman-mother-gunned-down-willowvale/ | https://www.ewn.co.za/2026/10/14/eastern-cape-police-launch-murder-probe-after-willowvale-traditional-leader-and-mother-killed | https://www.joburgetc.com/news/willowvale-headman-mother-killed-shooting/ | https://novanews.co.za/peexpress/headman-and-elderly-mother-gunned-down-in-eastern-cape-homestead-attack/ | https://www.komani.co.za/headman-and-mother-shot-dead-during-home-invasion-near-willowvale/", "statement_from": "SAPS Eastern Cape", "title": "Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct", "uncertainty_m": 20000}, {"approval_id": "20261021T032134Z-f1d23124", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 13 Oct 2026, about 17:00 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-13T17:00+02:00", "latitude": -34.04059, "location_basis": "reported", "location_described": "Trekker Road near an Engen garage, Khayelitsha. Trekker Road could not be found on the map, so the pin is a general Khayelitsha point, not the scene.", "longitude": 18.66742, "map_link": "index.html?signal=a7c9880f", "map_precision": "area", "outlets": "Daily Voice", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-14", "reporting_independence": "One report only", "short_id": "a7c9880f", "signal_id": "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d", "source_count": 1, "source_urls": "https://dailyvoice.co.za/news/2026-10-14-man-25-shot-dead-in-khayelitshas-trekker-road/", "statement_from": "Police", "title": "Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct", "uncertainty_m": 3000}, {"approval_id": "20261021T032134Z-c8f06821", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Mon 12 Oct 2026, found about 01:20 (SAPS)", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-12T01:20+02:00", "latitude": -33.86402, "location_basis": "reported", "location_described": "Sebothe Street, Soweto-on-Sea (SAPS). The street is not in OpenStreetMap; the pin is OpenStreetMap\u0027s point for Soweto on Sea, inside the Kwazakele precinct, whose police are investigating.", "longitude": 25.5773, "map_link": "index.html?signal=417613e8", "map_precision": "suburb", "outlets": "The Herald | Algoa FM | NovaNews", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-12", "reporting_independence": "All from police statements", "short_id": "417613e8", "signal_id": "417613e8-bc4b-5e22-a9ce-49531d161f70", "source_count": 3, "source_urls": "https://theherald.co.za/news/2026-10-12-police-investigating-double-murder-in-soweto-on-sea/ | https://www.algoafm.co.za/local/elderly-woman-killed-in-gq-double-murder | https://novanews.co.za/peexpress/soweto-on-sea-double-murder-woman-86-and-man-21-shot-dead/", "statement_from": "SAPS Eastern Cape", "title": "Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct", "uncertainty_m": 1500}, {"approval_id": "20261021T032134Z-284e4a4b", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Mon 12 Oct 2026, evening (\u0027Monday evening\u0027 in reports of 13-14 Oct; time not given)", "incident_event": "occurred", "incident_precision": "part_of_day", "incident_start": "2026-10-12", "latitude": -33.9469, "location_basis": "reported", "location_described": "Teenage Vuso Street, Zone 5, Langa (exact spot not given). The pin is on the street.", "longitude": 18.5318, "map_link": "index.html?signal=7acad00a", "map_precision": "street", "outlets": "Voice of the Cape | Cape Argus (IOL)", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-13", "reporting_independence": "One account, repeated", "short_id": "7acad00a", "signal_id": "7acad00a-2081-462b-939c-be61b9d9b539", "source_count": 2, "source_urls": "https://vocfm.co.za/langa-shooting-leaves-two-dead-one-hospitalised-as-community-vows-to-tighten-security/ | https://capeargus.co.za/news/2026-10-14-two-killed-and-one-wounded-in-langa-shooting/", "statement_from": "Police and a community leader", "title": "Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-6e5dd656", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 3, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sun 11 Oct 2026, about 16:30 (Hawks)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-11T16:30+02:00", "latitude": -33.01226, "location_basis": "reported", "location_described": "Gardenia Street, Duncan Village, KuGompo City (East London), per the Hawks. The only Gardenia Street OpenStreetMap finds in KuGompo City is in Lennox Estate, not Duncan Village, so it was not used. The pin is GeoNames\u0027 point for Duncan Village, inside the Duncan Village SAPS precinct.", "longitude": 27.86332, "map_link": "index.html?signal=ba7824e3", "map_precision": "suburb", "outlets": "Daily Dispatch | The Citizen | SABC News | Sunday World | Joburg ETC | NovaNews", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-13", "reporting_independence": "All from police statements", "short_id": "ba7824e3", "signal_id": "ba7824e3-f2de-56c4-914f-587aeba1639c", "source_count": 7, "source_urls": "https://dispatch.co.za/news/2026-10-13-hawks-investigate-fatal-stabbing-of-off-duty-police-sergeant-in-duncan-village/ | https://dispatch.co.za/news/2026-10-14-hawks-raise-alarm-after-policewoman-killed-in-eastern-cape/ | https://www.citizen.co.za/news/south-africa/crime/suspect-arrested-murder-police-officer-eastern-cape/ | https://www.sabcnews.com/sabcnews/police-officer-killed-in-alleged-knife-attack-at-duncan-village-ec/ | https://sundayworld.co.za/crime/police-officer-stabbed-to-death-in-eastern-cape/ | https://www.joburgetc.com/news/eastern-cape-police-sergeant-murder-duncan-village/ | https://novanews.co.za/peexpress/hawks-arrest-suspect-after-police-sergeant-is-stabbed-to-death/", "statement_from": "The Hawks (DPCI, part of SAPS)", "title": "Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct", "uncertainty_m": 1500}, {"approval_id": "20261021T032134Z-bc059d12", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sun 11 Oct 2026, just before 16:00 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-11T16:00+02:00", "latitude": -34.03778, "location_basis": "reported", "location_described": "A house in Green Haven, Wolwedans, Great Brak River. The pin is the Greenhaven area point, not the house.", "longitude": 22.20917, "map_link": "index.html?signal=d09da7da", "map_precision": "area", "outlets": "Mossel Bay Advertiser", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-12", "reporting_independence": "One report only", "short_id": "d09da7da", "signal_id": "d09da7da-5705-46e3-8d10-5fef0db6c639", "source_count": 1, "source_urls": "https://www.mosselbayadvertiser.com/News/Article/Local-News/great-brak-woman-arrested-in-connection-with-husband-s-murder-202610120124", "statement_from": "Police (no spokesperson named)", "title": "Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct", "uncertainty_m": 1500}, {"approval_id": "20261021T032134Z-b4658550", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Sat 10 Oct 2026, about 20:10 (police, TygerBurger 12 Oct). TygerBurger\u0027s follow-up of 13 Oct wrongly says 17 October.", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-10T20:10+02:00", "latitude": -33.9637, "location_basis": "reported", "location_described": "Corner of Reindeer Street, Wesbank (exact spot not given). OpenStreetMap has it as Reindeer Crescent; the pin is on it.", "longitude": 18.659, "map_link": "index.html?signal=218c685c", "map_precision": "street", "outlets": "TygerBurger", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-12", "reporting_independence": "One outlet only", "short_id": "218c685c", "signal_id": "218c685c-2720-486e-8fc9-9af1dd3c2d5a", "source_count": 2, "source_urls": "https://novanews.co.za/tygerburger/grade-8-learner-shot-and-killed-over-the-weekend/ | https://novanews.co.za/tygerburger/education-department-to-provide-counselling-after-grade-8-learner-is-killed/", "statement_from": "Police", "title": "Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-09bd6990", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 10 Oct 2026, about 19:00 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-10T19:00+02:00", "latitude": -33.97157, "location_basis": "reported", "location_described": "Belgravia, Athlone. Suburb only, so the pin is the suburb\u0027s map point, not the scene.", "longitude": 18.51769, "map_link": "index.html?signal=1a328ebb", "map_precision": "suburb", "outlets": "SABC News | Cape Town ETC", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T17:28:41Z", "reported_at": "2026-10-11", "reporting_independence": "All from police statements", "short_id": "1a328ebb", "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155", "source_count": 2, "source_urls": "https://www.sabcnews.com/sabcnews/police-launch-manhunt-after-double-murder-in-athlone-ctn/ | https://www.capetownetc.com/news/belgravia-shooting-two-killed-in-latest-athlone-attack/", "statement_from": "Police", "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct", "uncertainty_m": 1500}, {"approval_id": "20261021T032134Z-55a4c119", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 3, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 1, "incident_described": "Fri 9 Oct 2026, about 09:15 (SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-09T09:15+02:00", "latitude": -34.06083, "location_basis": "reported", "location_described": "Cafda Village, Retreat. Reports differ on the street (Ensor or Enzo), so the pin is the suburb\u0027s map point.", "longitude": 18.48444, "map_link": "index.html?signal=c2601d28", "map_precision": "suburb", "outlets": "Cape Argus (IOL) | People\u0027s Post | Cape Coast News", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T17:28:41Z", "reported_at": "2026-10-14", "reporting_independence": "All from police statements", "short_id": "c2601d28", "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac", "source_count": 3, "source_urls": "https://iol.co.za/capeargus/news/2026-10-15-third-suspect-to-appear-in-court-over-retreat-double-murder/ | https://novanews.co.za/peoplespost/cafda-village-double-murder-arrest-2026/ | https://ccnews.co.za/2026/10/15/anti-gang-unit-detectives-arrest-suspect/", "statement_from": "SAPS, including its arrest statement", "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct", "uncertainty_m": 1000}, {"approval_id": "20261021T032134Z-fe134146", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Fri 9 Oct 2026; found after 20:00 (Taung Daily News, quoting police)", "incident_event": "found", "incident_precision": "part_of_day", "incident_start": "2026-10-09", "latitude": -27.20251, "location_basis": "reported", "location_described": "Kgaka Street, Ipelegeng, Schweizer-Reneke (Taung Daily News). No spot on the street is given. The pin is the middle of Kgaka Street as OpenStreetMap maps it, the only street of that name in Schweizer-Reneke. OpenStreetMap does not label the township, so that this street is in Ipelegeng rests on the report. Police station not named.", "longitude": 25.29221, "map_link": "index.html?signal=318c89be", "map_precision": "street", "outlets": "Taung Daily News", "pin_version": 1, "province": "North West", "published_at": "2026-10-19T00:50:00Z", "reported_at": "2026-10-13", "reporting_independence": "One report only", "short_id": "318c89be", "signal_id": "318c89be-efbe-4c0d-a175-f423dcda6cc5", "source_count": 1, "source_urls": "https://taungdailynews.com/2026/10/13/monna-o-tshwerwe-morago-ga-polao/", "statement_from": "Police, quoted by Taung Daily News (no SAPS statement found)", "title": "Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-cf996225", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Body found Thu 8 Oct 2026, about 10:50 (police); time of death not given", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-08T10:50+02:00", "latitude": -34.175, "location_basis": "reported", "location_described": "Open field between D\u0027Almeida and Albert Luthuli Park, near Mountain View, Mossel Bay. The field is not on the map, so the pin is the D\u0027Almeida suburb point.", "longitude": 22.10167, "map_link": "index.html?signal=2fdd9a56", "map_precision": "suburb", "outlets": "Mossel Bay Advertiser", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-08", "reporting_independence": "One outlet only", "short_id": "2fdd9a56", "signal_id": "2fdd9a56-11a3-4877-891a-bd46f152c44b", "source_count": 2, "source_urls": "https://www.mosselbayadvertiser.com/News/Article/Local-News/murder-case-opened-after-man-s-body-found-near-mountain-view-202610080714 | https://www.mosselbayadvertiser.com/News/Article/Local-News/body-found-in-mossel-bay-suspects-arrested-victim-identified-202610150356", "statement_from": "Police: the first report, then an arrest update", "title": "D\u0027Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct", "uncertainty_m": 1500}, {"approval_id": "20261021T032134Z-f156264f", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 2, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Wed 7 Oct 2026, found about 19:40 (SAPS)", "incident_event": "found", "incident_precision": "approx_time", "incident_start": "2026-10-07T19:40+02:00", "latitude": -33.87645, "location_basis": "reported", "location_described": "Kuzwayo Street, KwaZakhele (SAPS). OpenStreetMap has three short streets of that name within about 1 km, all in the New Brighton precinct, whose officers responded. The pin is the one not labelled Soweto on Sea; the exact spot is not given.", "longitude": 25.59849, "map_link": "index.html?signal=a86ff098", "map_precision": "street", "outlets": "The Herald | SABC News | NovaNews", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-09", "reporting_independence": "All from police statements", "short_id": "a86ff098", "signal_id": "a86ff098-691e-5407-83f0-8496db67b418", "source_count": 3, "source_urls": "https://theherald.co.za/news/2026-10-09-stepdad-of-murdered-gqeberha-pupil-hailie-jade-coboza-gunned-down-in-kwazakhele/ | https://www.sabcnews.com/sabcnews/double-murder-probe-launched-after-two-men-killed-in-kwazakele-ec/ | https://novanews.co.za/police-probe-double-murder-after-kwazakhele-shooting/", "statement_from": "SAPS Eastern Cape", "title": "Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct", "uncertainty_m": 1000}, {"approval_id": "20261021T032134Z-be0c81b9", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Wed 7 Oct 2026, about 19:19 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-07T19:19+02:00", "latitude": -34.02757, "location_basis": "reported", "location_described": "OR Tambo Road, Imizamo Yethu (exact spot not given). The pin is on the road.", "longitude": 18.36167, "map_link": "index.html?signal=03459a76", "map_precision": "street", "outlets": "Sentinel News", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-08", "reporting_independence": "One report only", "short_id": "03459a76", "signal_id": "03459a76-618b-4f7b-a538-c70eb89d5f99", "source_count": 1, "source_urls": "https://sentinelnews.co.za/news/2026-10-08-34-year-old-man-killed-in-imizamo-yethu-shooting/", "statement_from": "Police", "title": "Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct", "uncertainty_m": 500}, {"approval_id": "20261021T032134Z-36e7cbb8", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Wed 7 Oct 2026, about 11:45 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-07T11:45+02:00", "latitude": -34.07098, "location_basis": "reported", "location_described": "St Bernard Street, St Montague Village (exact spot not given). OpenStreetMap has it as Saint Bernard Crescent; the pin is on it.", "longitude": 18.49354, "map_link": "index.html?signal=530a09b2", "map_precision": "street", "outlets": "Southern Mail", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-07", "reporting_independence": "One report only", "short_id": "530a09b2", "signal_id": "530a09b2-015a-4ac3-996e-0183e8599dfa", "source_count": 1, "source_urls": "https://southernmail.co.za/news/2026-10-07-31-year-old-man-killed-in-lavender-hill-shooting/", "statement_from": "Police", "title": "St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-06d7969d", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, about 23:06 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-06T23:06+02:00", "latitude": -33.94476, "location_basis": "reported", "location_described": "Jakkalsvlei Avenue, Bonteheuwel (exact spot not given). The pin is on the Bonteheuwel end of the avenue.", "longitude": 18.54334, "map_link": "index.html?signal=2a848e46", "map_precision": "street", "outlets": "Daily Voice", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-07", "reporting_independence": "One report only", "short_id": "2a848e46", "signal_id": "2a848e46-0a84-4d05-8efc-85e54c8aa636", "source_count": 1, "source_urls": "https://dailyvoice.co.za/news/2026-10-07-cape-town-is-a-graveyard-anti-crime-activists-react-to-two-men-shot-dead/", "statement_from": "Police", "title": "Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct", "uncertainty_m": 500}, {"approval_id": "20261021T032134Z-76f0abec", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 4, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, about 21:50 (SAPS; Dispatch: about 9.51pm)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-06T21:50+02:00", "latitude": -32.26588, "location_basis": "reported", "location_described": "Willowvale Extension 1 informal settlement, near Ematyotyombeni, Willowvale (SAPS, Dispatch). The settlement is not mapped; the pin is GeoNames\u0027 point for Willowvale town, inside the Willowvale SAPS precinct.", "longitude": 28.50727, "map_link": "index.html?signal=fd2a6fae", "map_precision": "town", "outlets": "Daily Dispatch | The Herald | Algoa FM | Komani News | NovaNews", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-07", "reporting_independence": "Partly independent", "short_id": "fd2a6fae", "signal_id": "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940", "source_count": 6, "source_urls": "https://dispatch.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/ | https://theherald.co.za/news/2026-10-07-five-young-men-shot-dead-in-brutal-willowvale-mass-shooting/ | https://dispatch.co.za/news/2026-10-09-willowvale-mass-shooting-follows-five-year-trail-of-bloodshed/ | https://www.algoafm.co.za/local/five-men-gunned-down-in-willowvale-in-the-eastern-cape | https://www.komani.co.za/five-killed-in-willowvale-shooting/ | https://novanews.co.za/peexpress/five-dead-in-willowvale-mass-shooting-saps-investigates/", "statement_from": "SAPS Eastern Cape", "title": "Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct", "uncertainty_m": 5000}, {"approval_id": "20261021T032134Z-96d7a715", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, about 20:00 (SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-06T20:00+02:00", "latitude": -33.84334, "location_basis": "reported", "location_described": "Mtshekisani Street, in the Kwadwesi or Kwazakele policing precinct (SAPS gives both). The street is not in OpenStreetMap; the pin is OpenStreetMap\u0027s point for the KwaDwesi suburb, so it may be some way off.", "longitude": 25.5157, "map_link": "index.html?signal=32b05eda", "map_precision": "suburb", "outlets": "SABC News", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-07", "reporting_independence": "All from police statements", "short_id": "32b05eda", "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49", "source_count": 1, "source_urls": "https://www.sabcnews.com/sabcnews/four-men-killed-in-shootout-with-gqeberha-police/", "statement_from": "SAPS Eastern Cape (statement of 7 Oct)", "title": "Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct", "uncertainty_m": 3000}, {"approval_id": "20261021T032134Z-f8879f96", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, shortly after 08:00 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-06T08:00+02:00", "latitude": -34.07326, "location_basis": "reported", "location_described": "Muir Court, Depsiton Crescent, Lavender Hill. Muir Court is not on the map, so the pin is Depsiton Crescent.", "longitude": 18.4877, "map_link": "index.html?signal=821f2edc", "map_precision": "street", "outlets": "Southern Mail", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-06", "reporting_independence": "One report only", "short_id": "821f2edc", "signal_id": "821f2edc-df43-41d1-ad4a-c18b8380809e", "source_count": 1, "source_urls": "https://southernmail.co.za/news/2026-10-06-two-men-killed-woman-injured-in-lavender-hill-shooting/", "statement_from": "Police", "title": "Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-d1751b0b", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, about 04:30 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-06T04:30+02:00", "latitude": -34.02305, "location_basis": "reported", "location_described": "Masikhanye, Site B, Khayelitsha. Masikhanye could not be found on the map, so the pin is a general Site B point, not the scene.", "longitude": 18.66632, "map_link": "index.html?signal=0c5e795f", "map_precision": "area", "outlets": "City Vision", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-06", "reporting_independence": "One report only", "short_id": "0c5e795f", "signal_id": "0c5e795f-330b-4302-97c2-812543262e8b", "source_count": 1, "source_urls": "https://novanews.co.za/cityvision/khayelitsha-shooting/", "statement_from": "Police", "title": "Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct", "uncertainty_m": 2000}, {"approval_id": "20261021T032134Z-7f2fde01", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Tue 6 Oct 2026, morning (time not given)", "incident_event": "occurred", "incident_precision": "part_of_day", "incident_start": "2026-10-06", "latitude": -33.97252, "location_basis": "reported", "location_described": "Belgravia Road, outside Heatherdale Primary School, Athlone. The pin is the school; the exact spot on the road is not given.", "longitude": 18.51552, "map_link": "index.html?signal=332d8ab4", "map_precision": "spot", "outlets": "Cape Town ETC", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-06", "reporting_independence": "One report only", "short_id": "332d8ab4", "signal_id": "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b", "source_count": 1, "source_urls": "https://www.capetownetc.com/news/athlone-man-killed-dropping-child-school/", "statement_from": "Police", "title": "Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct", "uncertainty_m": 200}, {"approval_id": "20261021T032134Z-2524cea1", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 4, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 2, "incident_described": "Mon 5 Oct 2026, about 19:00 (Klerksdorp Record); date not supplied in the saved SAPS statement", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-05T19:00+02:00", "latitude": -26.8781, "location_basis": "reported", "location_described": "Doornpan Farm, outside Ottosdal, about 17 km from the town\u0027s police station (Klerksdorp Record, DA). No source gives the farm\u0027s position. The pin is a place-name database\u0027s point for a Doornpan farm about 19 km south-west of Ottosdal (GeoNames, via Mapcarta), which may not be the same farm. Municipality not confirmed: that database puts it in Tswaing (Ngaka Modiri Molema district), but if the farm is in Maquassi Hills it is in the Dr Kenneth Kaunda district. The DA calls it the Ottosdal/Wolmaransstad area.", "longitude": 25.8325, "map_link": "index.html?signal=c64476ff", "map_precision": "farm", "outlets": "Taung Daily News | Klerksdorp Record | Platinum Weekly", "pin_version": 1, "province": "North West", "published_at": "2026-10-19T00:50:00Z", "reported_at": "2026-10-07", "reporting_independence": "Partly independent", "short_id": "c64476ff", "signal_id": "c64476ff-5b23-4307-944c-20c2a1a99835", "source_count": 4, "source_urls": "https://taungdailynews.com/2026/10/08/banna-ba-le-babedi-ba-tlhagelela-kwa-kgotlhatshekelo-mabapi-le-polao/ | https://www.northwestnewspapers.co.za/klerksdorprecord/news/latest-news/boervrou-sterf-na-aanval-by-plaashek | https://taungdailynews.com/2026/10/15/another-brutal-farm-murder-causes-outcry/ | https://www.platinumweekly.co.za/community.php?story=4325", "statement_from": "SAPS North West: a 7 Oct statement", "title": "Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct", "uncertainty_m": 10000}, {"approval_id": "20261021T032134Z-ebad6d58", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sun 4 Oct 2026, after about 01:15, when police were called back (Komani News, quoting SAPS)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-04T01:15+02:00", "latitude": -31.98583, "location_basis": "reported", "location_described": "Mawethu Tavern, Bholotwa, named by Komani News; the tavern itself is not mapped. The pin is OpenStreetMap\u0027s point for Bolotwa village (Intsika Yethu, Chris Hani), which lies in the SAPS Bholothwa precinct (2019 boundaries). Another Bolotwa in Mbhashe (GeoNames) was not used: the report names Bholotwa police and comes from a Chris Hani paper. Municipality not stated by any source.", "longitude": 27.18889, "map_link": "index.html?signal=578b93c8", "map_precision": "village", "outlets": "Komani News", "pin_version": 1, "province": "Eastern Cape", "published_at": "2026-10-19T02:05:00Z", "reported_at": "2026-10-04", "reporting_independence": "One report only", "short_id": "578b93c8", "signal_id": "578b93c8-a253-535c-b26f-eba38181683b", "source_count": 1, "source_urls": "https://www.komani.co.za/breaking-one-dead-after-violent-incident-at-bholotwa-tavern/", "statement_from": "Police, quoted by Komani News (no SAPS newsroom statement found)", "title": "Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct", "uncertainty_m": 3000}, {"approval_id": "20261021T032134Z-90a7ffe8", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Found Sun 4 Oct 2026, morning (time of death not given)", "incident_event": "found", "incident_precision": "part_of_day", "incident_start": "2026-10-04", "latitude": -33.96394, "location_basis": "reported", "location_described": "Bagzane Street, N2 Gateway, Delft (exact spot not given). The pin is on the street.", "longitude": 18.63438, "map_link": "index.html?signal=21b2a9b0", "map_precision": "street", "outlets": "Daily Voice | TygerBurger", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-04", "reporting_independence": "Partly independent", "short_id": "21b2a9b0", "signal_id": "21b2a9b0-66c3-4045-924d-963eaa85b4a1", "source_count": 2, "source_urls": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/ | https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/", "statement_from": "Police", "title": "N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-3361ea7a", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "4 Oct 2026 (time not given)", "incident_event": "occurred", "incident_precision": "day", "incident_start": "2026-10-04", "latitude": -34.1762, "location_basis": "reported", "location_described": "Dunjwa Street, Asla Park, KwaNonqaba, named by police. The pin is on that street; the exact spot was not given.", "longitude": 22.07302, "map_link": "index.html?signal=1b6fba13", "map_precision": "street", "outlets": "Mossel Bay Advertiser", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T17:28:41Z", "reported_at": "2026-10-13", "reporting_independence": "One report only", "short_id": "1b6fba13", "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650", "source_count": 1, "source_urls": "https://www.mosselbayadvertiser.com/News/Article/Local-News/kwa-police-investigate-murder-of-19-year-old-202610130945", "statement_from": "Southern Cape police", "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-ec60d5d4", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 3 Oct 2026, about 18:40 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-03T18:40+02:00", "latitude": -33.9695, "location_basis": "reported", "location_described": "Camdeboo Street, Anceba Court, Voorbrug, Delft (exact spot not given). OpenStreetMap has the street as Camdeboo Crescent; the pin is on it.", "longitude": 18.6417, "map_link": "index.html?signal=2a87ec3f", "map_precision": "street", "outlets": "Daily Voice | TygerBurger", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-04", "reporting_independence": "Partly independent", "short_id": "2a87ec3f", "signal_id": "2a87ec3f-8763-416c-99cf-6c060faab5a1", "source_count": 2, "source_urls": "https://dailyvoice.co.za/news/2026-10-04-three-men-killed-in-a-dodelike-delft-weekend/ | https://novanews.co.za/tygerburger/three-people-killed-in-delft-over-the-weekend/", "statement_from": "Police", "title": "Voorbrug, Delft (Camdeboo St, approx.): 2 men shot dead, 3 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-90a63040", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Sat 3 Oct 2026, night (article of Wed 7 Oct says \u0027Saturday night\u0027)", "incident_event": "occurred", "incident_precision": "part_of_day", "incident_start": "2026-10-03", "latitude": -33.65278, "location_basis": "reported", "location_described": "A house in Kliplokasie on Volmoed farm, Oudtshoorn. The farm house is not on the map, so the pin is the Volmoed area point.", "longitude": 22.0875, "map_link": "index.html?signal=582ea2d7", "map_precision": "farm", "outlets": "Cape Argus (IOL)", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-07", "reporting_independence": "One report only", "short_id": "582ea2d7", "signal_id": "582ea2d7-5473-4f40-af91-a7343d865d0b", "source_count": 1, "source_urls": "https://capeargus.co.za/news/2026-10-07-she-had-a-gentle-heart-17-year-old-oudtshoorn-girl-found-dead-days-before-her-birthday/", "statement_from": "Police", "title": "Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct", "uncertainty_m": 5000}, {"approval_id": "20261021T032134Z-d4889c94", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Fri 2 Oct 2026, about 23:00 (police)", "incident_event": "occurred", "incident_precision": "approx_time", "incident_start": "2026-10-02T23:00+02:00", "latitude": -34.38815, "location_basis": "reported", "location_described": "Nasson Street, Hawston (exact spot not given). The pin is on the street.", "longitude": 19.13882, "map_link": "index.html?signal=fdb570fb", "map_precision": "street", "outlets": "Daily Voice", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-04", "reporting_independence": "One report only", "short_id": "fdb570fb", "signal_id": "fdb570fb-11a4-4430-8966-b973f1ae3ede", "source_count": 1, "source_urls": "https://dailyvoice.co.za/news/western-cape/2026-10-04-senseless--three-suspects-arrested-for-murder-of-hawston-man/", "statement_from": "Police", "title": "Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct", "uncertainty_m": 300}, {"approval_id": "20261021T032134Z-9170b8a2", "approved_at": "2026-10-21T03:40:00+02:00", "archived_source_count": 1, "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db", "fact_audit": "audited", "fact_conflict_count": 0, "incident_described": "Thu 1 Oct 2026, 11:10 (police)", "incident_event": "occurred", "incident_precision": "time", "incident_start": "2026-10-01T11:10+02:00", "latitude": -34.04048, "location_basis": "reported", "location_described": "Trampoline Street, Beacon Valley (exact spot not given). The pin is the middle of the street, which OpenStreetMap places on the Eastridge side of Beacon Valley.", "longitude": 18.62456, "map_link": "index.html?signal=0f037fc3", "map_precision": "street", "outlets": "Plainsman", "pin_version": 1, "province": "Western Cape", "published_at": "2026-10-18T18:50:00Z", "reported_at": "2026-10-01", "reporting_independence": "One report only", "short_id": "0f037fc3", "signal_id": "0f037fc3-9de9-4e2b-aa1f-00feda269a58", "source_count": 1, "source_urls": "https://plainsman.co.za/news/2026-10-01-man-43-shot-dead-in-beacon-valley-suspects-flee-with-firearm/", "statement_from": "Provincial police", "title": "Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct", "uncertainty_m": 300}], "schema": "za-divergent.records", "version": 1}</script>
+<script src="static/js/records.js"></script>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        <a href="about.html" style="color:var(--text-dim);">How It Works</a> ·
+        <a href="records.html" style="color:var(--text-dim);">Records</a>
+      </div>
+      
+      <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener"
+         class="membership-btn">
+        
+        Support Independent OSINT
+      </a>
+      
+      <div class="site-footer__right mono">
+        Generated 22 Oct 2026 14:24 UTC
+      </div>
+    </div>
+  </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 14:24 UTC</span>
+  </div>
+
+  <script src="static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    var indexUrl = 'search-index.json';
+    // Result urls are relative to the site root, where search-index.json sits,
+    // so resolve them against the index (pages in articles/ etc. load ../).
+    var siteRoot = new URL(indexUrl, window.location.href);
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    fetch(indexUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title', 'aliases'], storeFields: ['title', 'kind', 'url', 'signal'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        var href = new URL(r.url, siteRoot).href;
+        var title = String(r.title || '');
+        return '<a href="' + esc(href) + '"' + (r.signal ? ' data-signal="' + esc(r.signal) + '"' : '') + ' style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          esc(title.slice(0, 60)) + (title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    // On the map page a signal result opens its event drawer in place
+    // (the map sets window.forgeOpenSignal). Anywhere else, or if the pin
+    // isn't on this map, the link loads index.html?signal=..., which opens it.
+    box.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-signal]') : null;
+      if (!a || typeof window.forgeOpenSignal !== 'function') return;
+      if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (!window.forgeOpenSignal(a.getAttribute('data-signal'), input)) return;
+      e.preventDefault();
+      box.style.display = 'none';
+      input.blur();
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    var PREFS_KEY = 'za_divergent_prefs';
+
+    function loadPrefs() {
+      try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
+    function savePrefs(p) { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); }
+    var prefs = loadPrefs();
+
+    /* ── Settings panel toggle ──────────────────────────────────────────── */
+    var overlay = document.getElementById('settings-overlay');
+    var toggleBtn = document.getElementById('settings-toggle');
+    var closeBtn = document.getElementById('settings-close');
+    if (toggleBtn && overlay) {
+      toggleBtn.addEventListener('click', function () { overlay.classList.toggle('open'); });
+      closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.remove('open'); });
+    }
+
+    /* ── Theme ──────────────────────────────────────────────────────────── */
+    function applyTheme(t) {
+      document.body.classList.toggle('theme-light', t === 'light');
+      document.querySelectorAll('[data-theme]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.theme === t);
+      });
+      prefs.theme = t;
+      savePrefs(prefs);
+    }
+    if (prefs.theme) applyTheme(prefs.theme);
+    document.querySelectorAll('[data-theme]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTheme(b.dataset.theme); });
+    });
+
+    /* ── Timezone ───────────────────────────────────────────────────────── */
+    function applyTz(tz) {
+      document.querySelectorAll('[data-tz]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.tz === tz);
+      });
+      prefs.tz = tz;
+      savePrefs(prefs);
+    }
+    if (prefs.tz) applyTz(prefs.tz);
+    document.querySelectorAll('[data-tz]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTz(b.dataset.tz); });
+    });
+
+    /* ── Time display mode ──────────────────────────────────────────────── */
+    var dataAgeEl = document.getElementById('data-age');
+    var generatedAt = dataAgeEl ? dataAgeEl.dataset.generated : null;
+    var generatedMs = generatedAt ? Date.now() : 0;
+
+    if (generatedAt) {
+      var parts = generatedAt.match(/(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+)/);
+      if (parts) {
+        var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        generatedMs = Date.UTC(+parts[3], months[parts[2]] || 0, +parts[1], +parts[4], +parts[5]);
+      }
+    }
+
+    function formatAge() {
+      var diff = Math.max(0, Date.now() - generatedMs);
+      var mins = Math.floor(diff / 60000);
+      var hrs = Math.floor(mins / 60);
+      var days = Math.floor(hrs / 24);
+      if (days > 0) return 'DATA AGE: ' + days + 'D ' + (hrs % 24) + 'H';
+      if (hrs > 0) return 'DATA AGE: ' + hrs + 'H ' + (mins % 60) + 'M';
+      return 'DATA AGE: ' + mins + 'M';
+    }
+
+    function applyTimeMode(mode) {
+      document.querySelectorAll('[data-timemode]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.timemode === mode);
+      });
+      prefs.timemode = mode;
+      savePrefs(prefs);
+      updateTimeDisplay();
+    }
+
+    function updateTimeDisplay() {
+      if (!dataAgeEl) return;
+      var mode = prefs.timemode || 'age';
+      if (mode === 'age' && generatedMs) {
+        dataAgeEl.textContent = formatAge();
+      } else {
+        dataAgeEl.textContent = generatedAt || '';
+      }
+    }
+
+    if (prefs.timemode) applyTimeMode(prefs.timemode);
+    else updateTimeDisplay();
+
+    document.querySelectorAll('[data-timemode]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTimeMode(b.dataset.timemode); });
+    });
+
+    // Tick every 60 seconds
+    if (generatedMs) setInterval(updateTimeDisplay, 60000);
+
+  })();
+  </script>
+  
+</body>
+</html>

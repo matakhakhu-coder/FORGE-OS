@@ -2,6 +2,7 @@
 
 **Classification:** INTERNAL — DEVELOPMENT BRIEF  
 **Status:** Pre-implementation  
+**Update, 22 Oct 2026:** the free/pro tier split is retired. The Access Tiers page (`subscribe.html`), the post-payment page (`thankyou.html`), gated article/case/entity pages, the `--tier` build flag and the paid `pro-feed.json` were removed; their addresses redirect to the open Records page (`records.html`, `records.csv`, `records.json`). Sections below about tiers, checkout and gating are historical.  
 **Constraint:** Zero financial dependencies. Everything runs in simulation mode with a switch (`REVENUE_LIVE = False`) that activates real payment/delivery integrations when providers are configured. Every module is pluggable — its absence does not break the pipeline.
 
 ---

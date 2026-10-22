@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Records — ZA-DIVERGENT{% endblock %}
+{% block description %}Every approved pin on the ZA-DIVERGENT map as an open, filterable table with a free CSV download. Hand-checked news reports, not crime statistics.{% endblock %}
+{% block nav_records_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+<style>
+.rec { max-width: 1180px; margin: 0 auto; padding: var(--sp-8, 2rem) var(--sp-6, 1.5rem) var(--sp-12, 3rem); }
+.rec__eyebrow { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+.rec__title { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 0.5rem; }
+.rec__lede { color: var(--text-secondary); max-width: 62ch; line-height: 1.6; margin: 0 0 1.25rem; }
+.rec-caveats { border: 1px solid var(--accent-muted); border-left: 3px solid var(--accent); background: var(--accent-glow); border-radius: var(--r-md, 6px); padding: 0.9rem 1.1rem; margin: 0 0 1.25rem; }
+.rec-caveats__head { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.4rem; }
+.rec-caveats ul { margin: 0; padding-left: 1.1rem; color: var(--text-primary); line-height: 1.55; font-size: 0.9rem; }
+.rec-caveats li + li { margin-top: 0.3rem; }
+.rec-dl { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0 0 1.25rem; }
+.rec-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.55rem 1rem; border-radius: var(--r-md, 6px); border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-primary); font-family: var(--font-mono); font-size: 0.78rem; text-decoration: none; cursor: pointer; }
+.rec-btn:hover { border-color: var(--accent); color: var(--accent); }
+.rec-btn--primary { background: var(--accent); border-color: var(--accent); color: #0a0c10; font-weight: 600; }
+.rec-btn--primary:hover { color: #0a0c10; filter: brightness(1.08); }
+.rec-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.rec-js-only { display: none; }
+.rec-js .rec-js-only { display: inline-flex; }
+.rec-js .rec-filter-box.rec-js-only { display: block; }
+.rec-filter-box { margin: 0 0 0.9rem; }
+.rec-filter-box > summary { list-style: none; width: 100%; box-sizing: border-box; justify-content: space-between; }
+.rec-filter-box > summary::-webkit-details-marker { display: none; }
+.rec-filter-box > summary::after { content: "+"; font-size: 1rem; margin-left: 0.75rem; }
+.rec-filter-box[open] > summary::after { content: "\2212"; }
+.rec-filter-box[open] > summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.rec-filter-box .rec-filters { display: grid; margin: 0; border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+.rec-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); }
+.rec-filters { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.7rem; background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); padding: 0.9rem; margin: 0 0 0.9rem; }
+.rec-filters label { display: flex; flex-direction: column; gap: 0.3rem; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
+.rec-filters input, .rec-filters select { min-height: 44px; padding: 0.45rem 0.6rem; border-radius: var(--r-sm, 4px); border: 1px solid var(--border-mid); background: var(--bg-void); color: var(--text-primary); font-family: var(--font-body); font-size: 16px; text-transform: none; letter-spacing: 0; width: 100%; box-sizing: border-box; }
+.rec-filters__wide { grid-column: 1 / -1; }
+.rec-filters__actions { display: flex; align-items: flex-end; }
+.rec-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.6rem; }
+.rec-table-wrap { overflow-x: auto; border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); }
+.rec-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.rec-table th { text-align: left; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); background: var(--bg-surface); padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border-dim); white-space: nowrap; }
+.rec-table td { padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--border-dim); vertical-align: top; line-height: 1.45; }
+.rec-table tr:last-child td { border-bottom: 0; }
+.rec-title { font-weight: 600; color: var(--text-primary); }
+.rec-sub { display: block; color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.2rem; }
+.rec-tag { display: inline-block; font-family: var(--font-mono); font-size: 0.64rem; padding: 0.1rem 0.4rem; border-radius: 3px; border: 1px solid var(--border-mid); color: var(--text-secondary); margin: 0.15rem 0.25rem 0 0; white-space: nowrap; }
+.rec-tag--warn { border-color: var(--accent); color: var(--accent); }
+.rec-src a { color: var(--accent); text-decoration: none; word-break: break-word; }
+.rec-src a:hover { text-decoration: underline; }
+.rec-src ol { margin: 0; padding-left: 1.1rem; }
+.rec-map { color: var(--accent); white-space: nowrap; font-family: var(--font-mono); font-size: 0.75rem; text-decoration: none; }
+.rec-where summary { cursor: pointer; color: var(--text-secondary); font-size: 0.75rem; font-family: var(--font-mono); margin-top: 0.35rem; }
+.rec-where p { margin: 0.35rem 0 0; color: var(--text-secondary); font-size: 0.8rem; }
+.rec-empty { padding: 1.2rem; text-align: center; color: var(--text-secondary); }
+.rec-help { margin: 1.5rem 0 0; }
+.rec-help summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
+.rec-help dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1rem; font-size: 0.82rem; margin: 0.75rem 0 0; }
+.rec-help dt { font-family: var(--font-mono); color: var(--text-primary); }
+.rec-help dd { margin: 0; color: var(--text-secondary); }
+
+/* Phones: each record becomes a card. */
+@media (max-width: 760px) {
+  .rec { padding: 1.25rem 0.9rem 2.5rem; }
+  .rec-table-wrap { border: 0; overflow: visible; }
+  .rec-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .rec-table, .rec-table tbody, .rec-table tr, .rec-table td { display: block; width: 100%; box-sizing: border-box; }
+  .rec-table tr { border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); background: var(--bg-surface); margin: 0 0 0.75rem; padding: 0.35rem 0; }
+  .rec-table tr[hidden] { display: none; }
+  .rec-table td { border: 0; padding: 0.35rem 0.85rem; }
+  .rec-table td[data-label]::before { content: attr(data-label); display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.1rem; }
+  .rec-table td.rec-cell-title::before { display: none; }
+  .rec-help dl { grid-template-columns: 1fr; }
+  .rec-help dd { margin-bottom: 0.4rem; }
+  .rec-dl .rec-btn { flex: 1 1 100%; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% set provinces = records | map(attribute='province') | unique | sort | list %}
+{% set precisions = records | map(attribute='map_precision') | unique | list %}
+{% set independences = records | map(attribute='reporting_independence') | unique | sort | list %}
+<main class="rec" id="records">
+  <div class="rec__eyebrow">Open data · free · no account</div>
+  <h1 class="rec__title">Records</h1>
+  <p class="rec__lede">Every pin on the map, as a table you can filter and download. Each row is a killing reported in the news that FORGE checked by hand and the owner approved before it went on the map. Nothing here is behind a paywall or a sign-in.</p>
+
+  <section class="rec-caveats" aria-labelledby="rec-caveats-head">
+    <p class="rec-caveats__head" id="rec-caveats-head">Read this before using the data</p>
+    <ul>
+      {% for c in caveats %}<li>{{ c }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <div class="rec-dl">
+    <a class="rec-btn rec-btn--primary" href="records.csv" download="za-divergent-records-{{ data_version[:7] }}.csv">Download all {{ records|length }} (CSV)</a>
+    <button type="button" class="rec-btn rec-js-only" id="rec-download-filtered">Download these rows (CSV)</button>
+    <a class="rec-btn" href="records.json">JSON</a>
+    <span class="rec-meta">Data version {{ data_version[:7] }} · built {{ generated_at }}</span>
+  </div>
+
+  <details class="rec-filter-box rec-js-only" id="rec-filter-box">
+  <summary class="rec-btn">Filter and sort</summary>
+  <form class="rec-filters" id="rec-filters" role="search" aria-label="Filter records">
+    <label class="rec-filters__wide">Search
+      <input type="search" name="q" placeholder="Place, street, outlet…" autocomplete="off" enterkeyhint="search">
+    </label>
+    <label>Province
+      <select name="province">
+        <option value="">All</option>
+        {% for p in provinces %}<option value="{{ p }}">{{ p }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Incident from
+      <input type="date" name="from">
+    </label>
+    <label>Incident to
+      <input type="date" name="to">
+    </label>
+    <label>Map point
+      <select name="precision">
+        <option value="">Any precision</option>
+        {% for lvl in ['spot','street','area','suburb','village','town','farm'] if lvl in precisions %}<option value="{{ lvl }}">{{ lvl|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Reporting
+      <select name="independence">
+        <option value="">Any</option>
+        {% for i in independences %}<option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Location basis
+      <select name="basis">
+        <option value="">Any</option>
+        <option value="reported">Named in reports</option>
+        <option value="inferred">Inferred by FORGE</option>
+      </select>
+    </label>
+    <label>Sort
+      <select name="sort">
+        <option value="incident_desc">Newest incident first</option>
+        <option value="incident_asc">Oldest incident first</option>
+        <option value="published_desc">Most recently mapped</option>
+      </select>
+    </label>
+    <div class="rec-filters__actions"><button type="reset" class="rec-btn" style="width:100%;">Clear filters</button></div>
+  </form>
+  </details>
+
+  <p class="rec-count" id="rec-count" aria-live="polite">{{ records|length }} records</p>
+
+  <div class="rec-table-wrap">
+    <table class="rec-table">
+      <thead>
+        <tr>
+          <th scope="col">Incident</th>
+          <th scope="col">When</th>
+          <th scope="col">Map point</th>
+          <th scope="col">Reporting</th>
+          <th scope="col">Sources</th>
+          <th scope="col">Map</th>
+        </tr>
+      </thead>
+      <tbody id="rec-rows">
+        {% for r in records %}
+        <tr data-id="{{ r.signal_id }}">
+          <td class="rec-cell-title">
+            <span class="rec-title">{{ r.title }}</span>
+            <span class="rec-sub">{{ r.province }}</span>
+            {% if r.location_described %}<details class="rec-where"><summary>Where exactly</summary><p>{{ r.location_described }}</p></details>{% endif %}
+          </td>
+          <td data-label="When">
+            {{ r.incident_described or r.incident_start[:10] }}
+            {% if r.incident_event == 'found' %}<span class="rec-tag">time body was found</span>{% endif %}
+            {% if r.reported_at %}<span class="rec-sub">Earliest report found: {{ r.reported_at[:10] }}</span>{% endif %}
+          </td>
+          <td data-label="Map point">
+            {{ r.map_precision|capitalize }}, within {{ '{:,}'.format(r.uncertainty_m) }} m
+            {% if r.location_basis == 'inferred' %}<span class="rec-tag rec-tag--warn">inferred</span>{% endif %}
+          </td>
+          <td data-label="Reporting">
+            {{ r.reporting_independence }}
+            {% if r.statement_from %}<span class="rec-sub">Rests on: {{ r.statement_from }}</span>{% endif %}
+            {% if r.fact_audit != 'audited' %}<span class="rec-tag">facts not yet audited</span>{% elif r.fact_conflict_count %}<span class="rec-tag rec-tag--warn">{{ r.fact_conflict_count }} conflicting fact{{ 's' if r.fact_conflict_count != 1 }}</span>{% endif %}
+          </td>
+          <td data-label="Sources" class="rec-src">
+            <ol>
+              {% for u in r.source_urls.split(' | ') if u %}<li><a href="{{ u }}" target="_blank" rel="noopener noreferrer">{{ u.split('/')[2] | replace('www.', '') }}</a></li>
+              {% endfor %}
+            </ol>
+          </td>
+          <td data-label="Map"><a class="rec-map" href="{{ r.map_link }}">View on map →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="rec-empty" id="rec-empty" hidden>No records match these filters.</p>
+  </div>
+
+  <details class="rec-help">
+    <summary>What each CSV column means</summary>
+    <dl>
+      {% for name, help in fields %}<dt>{{ name }}</dt><dd>{{ help }}</dd>
+      {% endfor %}
+    </dl>
+  </details>
+</main>
+
+<script id="records-data" type="application/json">{{ records_json | tojson }}</script>
+<script src="static/js/records.js"></script>
+{% endblock %}

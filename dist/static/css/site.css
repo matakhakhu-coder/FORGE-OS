@@ -810,7 +810,6 @@ body.theme-light .site-footer {
 /* Cards + panels get a subtle shadow instead of relying on border contrast */
 body.theme-light .tl__card,
 body.theme-light .case-card,
-body.theme-light .pricing-card,
 body.theme-light .cd-signal,
 body.theme-light .ap-infobox,
 body.theme-light .eft-section,
@@ -1126,18 +1125,6 @@ body.theme-light .md-ticker__sponsor-label { color: #8a5e18; border-color: #c4a0
 .hero-sovereign__btn--primary:hover { background:#facc15; color:#0f172a; }
 .hero-sovereign__btn--secondary { background:transparent; color:#94a3b8; border:1px solid rgba(148,163,184,0.3); }
 .hero-sovereign__btn--secondary:hover { border-color:#eab308; color:#eab308; }
-
-/* ── Premium access badge ────────────────────────────────────────────────── */
-.premium-badge { display:inline-flex; align-items:center; gap:6px; background:#0f172a; border:1px solid #eab308; color:#fff; font-family:var(--font-mono); font-size:0.65rem; font-weight:500; padding:4px 12px; border-radius:var(--r-md); text-transform:uppercase; letter-spacing:0.08em; }
-.premium-badge__dot { width:6px; height:6px; border-radius:50%; background:#eab308; animation:ppulse 2s infinite; }
-@keyframes ppulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(234,179,8,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 4px rgba(234,179,8,0)} }
-
-/* ── Premium callout block ───────────────────────────────────────────────── */
-.premium-callout { background:#0f172a; border:1px solid #eab308; border-radius:6px; padding:var(--sp-6) var(--sp-4); text-align:center; margin:var(--sp-8) 0; }
-.premium-callout__title { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:var(--sp-2); }
-.premium-callout__text { font-size:0.8rem; color:#94a3b8; margin-bottom:var(--sp-4); }
-.premium-callout__btn { display:inline-block; background:#eab308; color:#0f172a; font-family:var(--font-mono); font-size:0.75rem; font-weight:600; padding:var(--sp-2) var(--sp-6); border-radius:var(--r-md); text-transform:uppercase; letter-spacing:0.06em; transition:background var(--t-mid); text-decoration:none; }
-.premium-callout__btn:hover { background:#facc15; color:#0f172a; }
 
 /* ── Workspace modal ─────────────────────────────────────────────────────── */
 .workspace-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:900; display:none; align-items:center; justify-content:center; }
