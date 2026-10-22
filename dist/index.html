@@ -570,6 +570,17 @@
   .sd-share:hover, .sd-share:focus-visible { color: var(--text-primary); border-color: var(--border-mid); outline: none; }
   .sd-share.is-done { color: var(--accent, #f5c518); }
   @media (max-width: 360px) { .sd-share__label { display: none; } }
+  /* Watchlist star for the open pin (saved in this browser only). */
+  .sd-star {
+    min-width: 44px; height: 44px; flex-shrink: 0; gap: 6px; padding: 0 var(--sp-2);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-secondary); background: none; border: 1px solid transparent; border-radius: var(--r-sm); cursor: pointer;
+  }
+  .sd-star:hover, .sd-star:focus-visible { color: var(--text-primary); border-color: var(--border-mid); outline: none; }
+  .sd-star__icon { font-size: 1rem; line-height: 1; }
+  .sd-star.wl-active { color: var(--accent-bright, #f5c518); }
+  @media (max-width: 420px) { .sd-star__label { display: none; } }
   .sd-body {
     flex: 1; min-height: 0;
     overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
@@ -1161,7 +1172,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 15:03 UTC" title="22 Oct 2026 15:03 UTC">22 Oct 2026 15:03 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 15:53 UTC" title="22 Oct 2026 15:53 UTC">22 Oct 2026 15:53 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1486,6 +1497,8 @@
   <aside class="sd-drawer" id="signal-drawer" role="dialog" aria-modal="false" aria-labelledby="sd-title" hidden>
     <div class="sd-head">
       <span class="sd-kicker" id="sd-kicker"></span>
+      <button type="button" class="sd-star" id="sd-star" aria-pressed="false" aria-label="Save this event to your Watchlist"><span class="sd-star__icon" id="sd-star-icon" aria-hidden="true">&#9734;</span><span class="sd-star__label" id="sd-star-label">Save</span></button>
+      <span class="sd-sr-only" id="sd-star-status" role="status" aria-live="polite"></span>
       <button type="button" class="sd-share" id="sd-share" aria-label="Share this event"><svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span class="sd-share__label" id="sd-share-label">Share</span></button>
       <span class="sd-sr-only" id="sd-share-status" role="status" aria-live="polite"></span>
       <button type="button" class="sd-close" id="sd-close" aria-label="Close event details">&#10005;</button>
@@ -1759,7 +1772,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 22 Oct 2026 15:03 UTC
+        Generated 22 Oct 2026 15:53 UTC
       </div>
     </div>
   </footer>
@@ -1767,7 +1780,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 15:03 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 15:53 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -2650,8 +2663,47 @@
     }
   }, true);
 
+  /* Watchlist star: saves the open pin in this browser, under its full
+     signal id, with the pin's own ?signal= address to come back to it. */
+  var starBtn = document.getElementById('sd-star');
+  var starIcon = document.getElementById('sd-star-icon');
+  var starLabel = document.getElementById('sd-star-label');
+  var starStatus = document.getElementById('sd-star-status');
+  function pinBookmark(m) {
+    var WL = window.ZADWatchlist;
+    var id = String(m.signal_id || '');
+    var url = WL && WL.pinUrl ? WL.pinUrl(id) : '';
+    if (!url) return null;
+    return { id: id, title: m.title || '', type: 'signals', url: url };
+  }
+  function syncStar(m, announce) {
+    var WL = window.ZADWatchlist;
+    var bm = m && WL ? pinBookmark(m) : null;
+    starBtn.hidden = !bm;
+    if (!bm) return;
+    var on = false;
+    try { on = WL.isWatchlisted('signals', bm.id); } catch (e) { on = false; }
+    starBtn.classList.toggle('wl-active', on);
+    starBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    starBtn.setAttribute('aria-label', on ? 'Remove this event from your Watchlist' : 'Save this event to your Watchlist');
+    starIcon.textContent = on ? '\u2605' : '\u2606';
+    starLabel.textContent = on ? 'Saved' : 'Save';
+    starStatus.textContent = announce ? (on ? 'Saved to your Watchlist' : 'Removed from your Watchlist') : '';
+  }
+  starBtn.addEventListener('click', function () {
+    if (drawerIdx === null || !window.ZADWatchlist) return;
+    var m = RAW[drawerIdx];
+    var bm = pinBookmark(m);
+    if (!bm) return;
+    try { window.ZADWatchlist.toggleItem('signals', bm); }
+    catch (e) { starStatus.textContent = 'Could not save: this browser is blocking storage'; return; }
+    syncStar(m, true);
+    if (activePanel === 'watchlist') window.ZADWatchlist.renderWatchlistPage();
+  });
+
   function fillDrawer(m) {
     closeExtGate({ restoreFocus: false });
+    syncStar(m, false);
     var kicker = [m.stream_label || m.stream || '', m.checked ? 'Hand-checked' : '', m.region || ''].filter(Boolean).join(' \u00b7 ');
     document.getElementById('sd-kicker').textContent = kicker;
     document.getElementById('sd-title').textContent = m.title || '';
@@ -3124,6 +3176,17 @@
     showSignal(idx, { trigger: trigger || null });
     return true;
   };
+
+  /* ── Watchlist: a saved pin opens its drawer in place ───────────────────── */
+  var wlListEl = document.getElementById('wl-list');
+  if (wlListEl) {
+    wlListEl.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-wl-signal]') : null;
+      if (!a) return;
+      // A pin no longer on the map falls back to the link (the plain map).
+      if (window.forgeOpenSignal(a.getAttribute('data-wl-signal'), a)) e.preventDefault();
+    });
+  }
 
   /* ── Shared link: ?signal=<id> opens with the drawer showing ─────────────── */
   (function () {

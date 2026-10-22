@@ -98,6 +98,21 @@
     return raw;
   }
 
+  // A saved pin is stored under its full signal id. Its link is rebuilt from
+  // that id (the map's own ?signal= address), never taken from storage, and
+  // only when the id looks like a signal id.
+  var SIGNAL_ID_RE = /^[0-9a-f-]{8,36}$/i;
+  function pinShortId(id) {
+    var s = String(id == null ? '' : id).trim();
+    return SIGNAL_ID_RE.test(s) ? s.slice(0, 8).toLowerCase() : '';
+  }
+  function pinUrl(id) {
+    var sid = pinShortId(id);
+    return sid ? 'index.html?signal=' + sid : '';
+  }
+
+  var TYPE_LABEL = { signals: 'Pin', actors: 'Entity' };
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -117,18 +132,26 @@
 
     if (all.length === 0) {
       container.appendChild(el('div', 'wl-empty',
-        'No bookmarked items yet. Click the star on any signal or entity to add it here.'));
+        'No bookmarked items yet. Tap the star on any pin or entity to add it here.'));
       return;
     }
 
     all.forEach(function (item) {
       var date = item.addedAt ? new Date(item.addedAt).toLocaleDateString() : '';
       var link = el('a', 'wl-item');
-      link.setAttribute('href', safeHref(item.url));
+      var sid = item.type === 'signals' ? pinShortId(item.id) : '';
+      if (sid) {
+        link.setAttribute('href', pinUrl(item.id));
+        // The map opens this pin's drawer in place instead of reloading.
+        link.setAttribute('data-wl-signal', sid);
+      } else {
+        link.setAttribute('href', safeHref(item.url));
+      }
       link.appendChild(el('span', 'wl-item__star', '★'));
       var body = el('div', 'wl-item__body');
       body.appendChild(el('div', 'wl-item__title', item.title || item.id || ''));
-      body.appendChild(el('div', 'wl-item__meta', (item.type || '') + ' · saved ' + date));
+      var typeLabel = Object.prototype.hasOwnProperty.call(TYPE_LABEL, item.type) ? TYPE_LABEL[item.type] : (item.type || '');
+      body.appendChild(el('div', 'wl-item__meta', typeLabel + ' · saved ' + date));
       link.appendChild(body);
       container.appendChild(link);
     });
@@ -145,5 +168,7 @@
     toggleItem: toggleItem,
     renderWatchlistPage: renderWatchlistPage,
     safeHref: safeHref,
+    pinUrl: pinUrl,
+    pinShortId: pinShortId,
   };
 })();
