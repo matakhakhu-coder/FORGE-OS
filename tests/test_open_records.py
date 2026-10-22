@@ -255,7 +255,9 @@ def test_build_writes_records_and_no_tier_pages(tmp_path, monkeypatch):
 
     page = (dist / "records.html").read_text()
     assert page.count('<tr data-id="') == ALL_PINS
-    assert "not crime statistics" in page and "approximate" in page
+    assert "not statistics" in page and "approximate" in page
+    lede = page.split('class="rec__lede">', 1)[1].split("</p>", 1)[0]
+    assert "killing" not in lede.lower() and "streams" in lede
     assert 'href="records.csv"' in page and "Download" in page
     assert "<script" not in json.dumps(payload)
 

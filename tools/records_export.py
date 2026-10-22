@@ -16,8 +16,8 @@ only when all of these hold:
 Every value comes from an explicit allowlist (RECORD_FIELDS). Nothing is
 read from private/, from the database's raw or unreviewed rows, from
 analyst notes or from the sprint files, and no verbatim source quote is
-exported. The data is a small hand-checked sample of news-reported killings,
-not crime statistics; the caveats travel with the files (CAVEATS).
+exported. The data is a small hand-checked sample of news-reported incidents
+across the map's streams, not crime statistics; the caveats travel with the files (CAVEATS).
 """
 from __future__ import annotations
 
@@ -99,8 +99,8 @@ FIELD_HELP: dict[str, str] = {
 }
 
 CAVEATS: tuple[str, ...] = (
-    "These are hand-checked news reports of killings, not crime statistics. "
-    "They are not complete and not representative of all crime in any area.",
+    "These are hand-checked news reports of incidents across the map's streams, not statistics. "
+    "They are not complete and not representative of everything that happens in any area.",
     "Most rows rest on a single report or on police statements repeated by several outlets; "
     "see reporting_independence.",
     "Map points are approximate. uncertainty_m says how far off a point can be, "
