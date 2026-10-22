@@ -660,6 +660,114 @@
       ],
       "independence": "single_report",
       "note": "One report of the police account (reporter Siyavuya Khaya, per the page's author tag), in an article that also covers the separate Loganberry Street, Bonteheuwel, killing of 18 October."
+    },
+    "f217ddf4-4573-5fe1-995d-64f8da89a86d": {
+      "statement_from": "SAPS Limpopo (media statement of 2 Oct), quoted by SABC News",
+      "spokesperson": [
+        "Hlulani Mashaba"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SABC News"
+      ],
+      "independence": "single_report",
+      "note": "One public report. SABC News quotes the SAPS Limpopo statement, which says the same; the statement is on the SAPS newsroom, whose pages cannot be linked to directly, so it is not listed as a link. Nothing independent of police."
+    },
+    "0caff1cd-7cbe-51b2-aab4-ea3528b56f88": {
+      "statement_from": "SAPS Limpopo, quoted by Review Online",
+      "spokesperson": [
+        "Maphure Manamela"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Review Online (The Citizen)"
+      ],
+      "independence": "single_report",
+      "note": "One report, resting on police. The same article covers a separate culpable-homicide case (a pedestrian struck near the stadium) and a body found at Polokwane Golf Club; those are not part of this pin. Police have not linked any of the deaths to the event."
+    },
+    "1f7dbda3-e019-52ae-8832-8cae6ab01b47": {
+      "statement_from": "SAPS Limpopo (media statement of 12 Oct), quoted by TimesLIVE and SABC News",
+      "spokesperson": [
+        "Malesela Ledwaba"
+      ],
+      "other_voices": [
+        "Lt-Gen Jan Scheepers, Limpopo provincial commissioner (condemnation)"
+      ],
+      "outlets": [
+        "TimesLIVE",
+        "SABC News"
+      ],
+      "independence": "same_statement",
+      "note": "Two outlets carrying the same SAPS statement; SABC News embeds it in full. Not independent of the police account. A Central News report seen in the collection pass was not saved in full and is not used."
+    },
+    "c889d991-c9d9-541d-9976-934dc46c385c": {
+      "statement_from": "SAPS Limpopo, posted by SAPS (@SAPoliceService) on X",
+      "spokesperson": [],
+      "other_voices": [],
+      "outlets": [
+        "SAPS (@SAPoliceService on X)"
+      ],
+      "independence": "single_report",
+      "note": "The police post is the only source; no news outlet carried it in the saved searches. It is the police account and nothing else. The same text is the SAPS Limpopo media statement of 14 Oct (SAPS newsroom, not linkable)."
+    },
+    "fb9450c3-dd3b-5402-8c4f-5e26f433d317": {
+      "statement_from": "SAPS Limpopo (media statement of 14 Oct), carried by Review Online and Limpopo Chronicle",
+      "spokesperson": [],
+      "other_voices": [
+        "Lt-Gen Jan Scheepers, Limpopo provincial commissioner (condemnation of vigilantism)"
+      ],
+      "outlets": [
+        "Review Online (The Citizen)",
+        "Limpopo Chronicle"
+      ],
+      "independence": "same_statement",
+      "note": "Both reports retell the same police account in near-identical order and wording. No spokesperson is named in either. Not independent of the police account."
+    },
+    "c99779f1-095f-5d2d-88c3-19f74e8c39d6": {
+      "statement_from": "SAPS Limpopo (media statement of 14 Oct), quoted by Jacaranda FM and retold by Daily Sun",
+      "spokesperson": [
+        "Malesela Ledwaba"
+      ],
+      "other_voices": [
+        "Lt-Gen Jan Scheepers, Limpopo provincial commissioner (condemnation)"
+      ],
+      "outlets": [
+        "Jacaranda FM",
+        "Daily Sun"
+      ],
+      "independence": "same_statement",
+      "note": "Both reports retell the same police account; Daily Sun adds its own colour (\"fear and shock\") but no new source. Not independent of the police account."
+    },
+    "eaf77245-e677-5ccb-955d-764253f566d2": {
+      "statement_from": "SAPS Limpopo (media statement of 17 Oct and arrest update), quoted by EWN, Limpopo Chronicle and SABC News",
+      "spokesperson": [
+        "Hlulani Mashaba"
+      ],
+      "other_voices": [
+        "Lt-Gen Jan Scheepers, Limpopo provincial commissioner (condemnation)"
+      ],
+      "outlets": [
+        "EWN",
+        "Limpopo Chronicle",
+        "SABC News"
+      ],
+      "independence": "same_statement",
+      "note": "All three rest on police. Limpopo Chronicle and SABC News were written before the arrests and say no arrests; EWN reports the arrests a day later. SABC News adds \"near a tavern\" and \"a group of men\" without saying where that comes from. Not independent of the police account."
+    },
+    "cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7": {
+      "statement_from": "SAPS Limpopo, quoted by TimesLIVE and retold by Limpopo Chronicle",
+      "spokesperson": [
+        "Malesela Ledwaba"
+      ],
+      "other_voices": [
+        "Lt-Gen Jan Scheepers, Limpopo provincial commissioner (condemnation)"
+      ],
+      "outlets": [
+        "TimesLIVE",
+        "Limpopo Chronicle"
+      ],
+      "independence": "same_statement",
+      "note": "Both rest on the police account. Limpopo Chronicle names no village. An IOL report seen in the collection pass was not saved in full and is not used. The suspect is a serving police officer and police are the only source: there is no independent account of the shooting."
     }
   }
 }

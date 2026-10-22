@@ -1,0 +1,70 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T202721Z-be91f480",
+  "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say a 29-year-old man was seriously injured in a confrontation with a group of people near the stadium in the early hours of 4 October, after the Shandesh One Woman Show at the Peter Mokaba rugby field, and was later certified dead in hospital. A friend who arrived to collect him fired one shot from his licensed firearm and the group dispersed; police seized the firearm for ballistic analysis. The case is investigated as murder; no arrests, though police say they have strong leads (police spokesperson Sergeant Maphure Manamela, via Review Online). Police have not confirmed whether this death is connected to the event. The victim is not named here. One report, resting on police: Review Online, 16 October. The pin is approximate: the stadium's map point, not the scene.",
+    "external_id": "checked:lp-2026-10-22:B",
+    "lat": -23.92481,
+    "lng": 29.46796,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Sun 4 Oct 2026, early hours (police, via Review Online)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-04",
+        "location": "Near the stadium, in the early hours after a show at the Peter Mokaba rugby field, Polokwane (police, via Review Online). No street or exact spot given. The pin is the Peter Mokaba Stadium map point, inside the Polokwane police precinct; approximate, within about 1.5 km. It is not the scene.",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "16 Oct 2026 (Review Online)",
+        "reported_at": "2026-10-16",
+        "search_aliases": [
+          "Polokwane",
+          "Pietersburg",
+          "Peter Mokaba Stadium",
+          "Peter Mokaba",
+          "Shandesh"
+        ],
+        "sources": [
+          {
+            "name": "Review Online (The Citizen)",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/"
+          }
+        ]
+      },
+      "collected_title": "3 deaths linked to Shandesh show as police probe",
+      "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+      "pubdate_raw": "2026-10-16 (date on the page; time not saved)",
+      "source_outlet": "Review Online (The Citizen)"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
+    "source": "Review Online (The Citizen)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-03T22:00:00Z",
+    "title": "Near Peter Mokaba Stadium, Polokwane (approx.): man, 29, assaulted by a group, dies in hospital, 4 Oct"
+  },
+  "payload_sha256": "sha256:07c1972ecb395a35c0534be37bcbfa4de0d2453af0c708b0d3f7acfe4d33e521",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:4e7494bb993070d680220c6da421d44cdc9961584a81f57c295ea0bd91b3ae64"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:27:21+02:00",
+  "recorded_at": "2026-10-22T22:27:21+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-pins-2026-10-22",
+    "summary": "DRAFT - provisional scratch record, not an approval. Limpopo pin from the 22 Oct 2026 review batch (limpopo-killings-2026-10-22.json), approved by the owner after reviewing the review note. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

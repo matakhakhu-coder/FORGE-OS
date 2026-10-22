@@ -123,7 +123,7 @@
     <label>Map point
       <select name="precision">
         <option value="">Any precision</option>
-        {% for lvl in ['spot','street','area','suburb','village','town','farm'] if lvl in precisions %}<option value="{{ lvl }}">{{ lvl|capitalize }}</option>
+        {% for lvl in ['spot','street','area','suburb','village','town','farm','precinct'] if lvl in precisions %}<option value="{{ lvl }}">{{ lvl|capitalize }}</option>
         {% endfor %}
       </select>
     </label>

@@ -34,6 +34,17 @@ from tools import checked_signals as cs  # noqa: E402
 
 REAL_SIGNALS = ROOT / "docs" / "signals"
 REAL_LEDGER = ROOT / "docs" / "approvals" / "pins"
+# Limpopo batch (limpopo-killings-2026-10-22.json): explicit owner-approval records, not legacy.
+LIMPOPO_PINS = {
+    "f217ddf4-4573-5fe1-995d-64f8da89a86d",   # A Mamaolo tavern owner
+    "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",   # B near Peter Mokaba Stadium
+    "1f7dbda3-e019-52ae-8832-8cae6ab01b47",   # C Rostock (estimated map point)
+    "c889d991-c9d9-541d-9976-934dc46c385c",   # D Malope Section, Masemola
+    "fb9450c3-dd3b-5402-8c4f-5e26f433d317",   # E Sekurung (estimated map point)
+    "c99779f1-095f-5d2d-88c3-19f74e8c39d6",   # F Nkuri-Tomu
+    "eaf77245-e677-5ccb-955d-764253f566d2",   # G Madonsi Boltman B
+    "cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7",   # H Martinique village
+}
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────────
@@ -184,8 +195,8 @@ def _no_env_enforce(monkeypatch):
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 47
-    assert report.pins_checked == 45
+    assert report.records == len(_real_record_files()) == 55   # 45 version-1 + 2 later versions + 8 Limpopo
+    assert report.pins_checked == 53
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -229,8 +240,18 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "06219161-76ad-5b50-91d0-e58235427edf",   # Athlone, approved in the live call 22 Oct 2026
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
-                        "e0fa3712-df77-531e-a040-437dee019c3c"}   # Firethorne, approved in chat 22 Oct 2026
+                        "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
+                        } | LIMPOPO_PINS                          # Limpopo batch: new records, never legacy
     assert set(first) == active
+    for sid in LIMPOPO_PINS:
+        rec = first[sid]
+        pin, batch = by_id[sid]
+        assert rec["basis"] == "explicit" and rec["action"] == "approve" and rec["supersedes"] is None
+        assert rec["batch_file"] == batch == "limpopo-killings-2026-10-22.json"
+        assert rec["approval_reference"]["id"] != "confirmed-by-user-in-session-2026-10-21"
+        assert rec["approved_at"] != "2026-10-21T03:40:00+02:00"   # not dated as the legacy confirmation
+        assert rec["payload_sha256"] == ap.payload_sha256(pin)
+        assert rec["approved_payload"] == ap.approved_payload(pin)
     for sid, rec in first.items():
         if sid in new_pins:
             continue
@@ -256,6 +277,18 @@ def test_real_legacy_records_match_the_owner_confirmation():
         assert rec["approved_payload"] == ap.approved_payload(pin)
         urls = [s["url"] for s in pin["metadata"]["checked"]["sources"]]
         assert [s["url"] for s in rec["source_hashes"]] == list(dict.fromkeys(urls))
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "The Limpopo records in the scratch ledger are drafts ('DRAFT - provisional scratch record, "
+    "not an approval'). Replace them with the owner's real approval reference and time before "
+    "publishing; this test then passes and the marker must be removed."))
+def test_limpopo_records_carry_a_real_owner_approval():
+    for f in _real_record_files():
+        rec = json.loads(f.read_text(encoding="utf-8"))
+        if rec["signal_id"] in LIMPOPO_PINS:
+            assert "DRAFT" not in rec["approval_reference"]["summary"]
+            assert "not an approval" not in rec["approval_reference"]["summary"]
 
 
 CAFDA = "7aa4eea1-c1f4-55af-b761-d55ff2df3a51"

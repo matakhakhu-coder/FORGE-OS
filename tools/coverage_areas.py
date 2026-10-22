@@ -77,6 +77,12 @@ MAX_QUERIES_PER_AREA = 45
 # Western Cape areas are collected by the locked Sprint 5 pass; leave False
 # unless the user asks for an extra Western Cape sweep (kept out of scoring).
 SWEEP_PATTERN_TEST_AREAS = False
+# Provinces where pins share an area only when they also lie in the same SAPS
+# precinct (from the gazetteer outlines). Limpopo's rural pins are reported by
+# village and policing area, and at 2 x 30 km single linkage chains across
+# districts: on 22 Oct 2026 it put Polokwane (Capricorn), Masemola and
+# Mecklenburg (Sekhukhune) under Lebowakgomo.
+PRECINCT_SPLIT_PROVINCES = {"Limpopo"}
 
 GAZ_DIR = ROOT / "data" / "gazetteer"
 PLACES_PATH = GAZ_DIR / "za_places.json"
@@ -243,6 +249,8 @@ def cluster_pins(pins: list[dict], r_km: float) -> list[list[dict]]:
         for j in range(i + 1, len(pins)):
             if pins[i]["province"] != pins[j]["province"]:
                 continue
+            if pins[i].get("precinct") != pins[j].get("precinct"):
+                continue
             if haversine_km(pins[i]["lat"], pins[i]["lng"], pins[j]["lat"], pins[j]["lng"]) <= 2 * r_km:
                 parent[find(i)] = find(j)
     groups: dict[int, list[dict]] = {}
@@ -369,6 +377,15 @@ def describe_area(members: list[dict], r_km: float, places: list, precincts: lis
     return area
 
 
+def holding_precinct(pin: dict, precincts: list) -> str:
+    """Name of the SAPS precinct whose outline holds the pin ('' if none)."""
+    for pr in precincts:
+        if pr["_bbox"] is not None and _bbox_near(pr["_bbox"], pin["lat"], pin["lng"], 0) \
+                and point_in_rings(pin["lat"], pin["lng"], pr["rings"]):
+            return pr["name"]
+    return ""
+
+
 def _latlng(place: dict, rows: list) -> tuple[float, float]:
     # places entries carry only km; look the point up once by name+municipality.
     key = (id(rows), place["name"], place["municipality"])
@@ -425,6 +442,8 @@ def compute_areas(pins: list[dict], r_km: float | None = None,
                   precincts_path: pathlib.Path = PRECINCTS_PATH) -> dict:
     r = radius_km(r_km)
     places, precincts = load_gazetteer(places_path, precincts_path)
+    pins = [{**p, "precinct": holding_precinct(p, precincts)}
+            if p["province"] in PRECINCT_SPLIT_PROVINCES else p for p in pins]
     areas = [describe_area(m, r, places, precincts) for m in cluster_pins(pins, r)]
     # Keys must be unique; add a number when two areas share an anchor.
     seen: dict[str, int] = {}

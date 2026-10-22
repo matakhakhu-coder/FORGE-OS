@@ -79,9 +79,9 @@ FIELD_HELP: dict[str, str] = {
     "location_described": "Where the reports place it, and what the map point marks.",
     "latitude": "Map point latitude, rounded to 5 decimals. Not an exact scene.",
     "longitude": "Map point longitude, rounded to 5 decimals. Not an exact scene.",
-    "map_precision": "What the map point stands for: spot, street, area, suburb, village, town or farm.",
+    "map_precision": "What the map point stands for: spot, street, area, suburb, village, town, farm or precinct (an estimate for the police area only).",
     "uncertainty_m": "How far, at most, the real place can plausibly be from the point, in metres.",
-    "location_basis": "reported = the reports name this place; inferred = FORGE's reading of a place the reports do not pin down.",
+    "location_basis": "reported = the reports name this place; inferred = FORGE's reading of a place the reports do not pin down; estimated = the place could not be mapped, so the point stands for the police area that handled the case.",
     "reporting_independence": "Whether the reports are independent of each other (most are not).",
     "statement_from": "Who the reporting rests on, usually police.",
     "outlets": "News outlets that reported it, separated by ' | '.",
@@ -104,7 +104,7 @@ CAVEATS: tuple[str, ...] = (
     "Most rows rest on a single report or on police statements repeated by several outlets; "
     "see reporting_independence.",
     "Map points are approximate. uncertainty_m says how far off a point can be, "
-    "and location_basis says when a point is inferred rather than reported.",
+    "and location_basis says when a point is inferred or estimated rather than reported.",
     "Reports can be wrong or change after publication. Check the source links "
     "before relying on any row.",
 )
@@ -117,7 +117,7 @@ INDEPENDENCE_LABELS = {
     "partly_independent": "Partly independent",
     "independent": "Independent reports",
 }
-PRECISION_LEVELS = ("spot", "street", "area", "suburb", "village", "town", "farm")
+PRECISION_LEVELS = ("spot", "street", "area", "suburb", "village", "town", "farm", "precinct")
 LIST_SEP = " | "
 
 # Cells starting with these can be read as formulas by spreadsheet apps.
@@ -210,6 +210,8 @@ def _location_basis(precision_entry: dict, title: str) -> str:
     note = _clean(precision_entry.get("note"))
     if note.upper().startswith("INFERRED") or "map point inferred" in title.lower():
         return "inferred"
+    if note.upper().startswith("ESTIMATE") or "map point estimated" in title.lower():
+        return "estimated"
     return "reported"
 
 

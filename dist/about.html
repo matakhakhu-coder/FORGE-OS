@@ -173,7 +173,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 17:11 UTC" title="22 Oct 2026 17:11 UTC">22 Oct 2026 17:11 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="22 Oct 2026 20:42 UTC" title="22 Oct 2026 20:42 UTC">22 Oct 2026 20:42 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -254,7 +254,7 @@
         Infrastructure, Priority Intelligence, and Africa &amp; World. As of
         22 October 2026, every approved pin is a killing, or a death police are
         investigating, under Crime &amp; Security. The pins so far cover incidents from
-        1 October 2026 in the Western Cape, Eastern Cape and North West.
+        1 October 2026 in the Western Cape, Eastern Cape, North West and Limpopo.
       </p>
       <p>
         Everything is free. The map, the <a href="records.html">Records</a> table and
@@ -334,7 +334,8 @@
         sites, police (SAPS) statements, and web and X searches. In the Western Cape a
         fixed set of 14 standard news searches runs on a schedule, currently every
         three days. Elsewhere, the searches cover the area around each published pin,
-        about 30 km. A search result is only a lead. Nothing goes on the map until it
+        about 30 km. In Limpopo, pins share one search area only when they are also in
+        the same police precinct. A search result is only a lead. Nothing goes on the map until it
         has been checked and approved.
       </p>
       <p>
@@ -348,7 +349,9 @@
       <p>
         <strong>Label.</strong> Each map point gets a precision level and an uncertainty
         distance (see below). A point FORGE had to work out, because the reports
-        don&rsquo;t pin the place down, is marked as inferred.
+        don&rsquo;t pin the place down, is marked as inferred. When the place can&rsquo;t
+        be put on a map at all, the pin may sit on the police station for the area, and
+        is marked as estimated.
       </p>
       <p>
         <strong>Approve and publish.</strong> The owner approves the exact pin data, and
@@ -405,13 +408,15 @@
           <tr><td>Village</td><td>The village&rsquo;s own map point.</td></tr>
           <tr><td>Town</td><td>The town&rsquo;s map point. The place itself may be outside the town.</td></tr>
           <tr><td>Farm</td><td>A farm or farm-area point. The farm may not be exactly here.</td></tr>
+          <tr><td>Precinct</td><td>An estimate. The place couldn&rsquo;t be found on a map, so the pin marks the police precinct that handled the case, usually at its station. It is not the scene, and the uncertainty distance covers the whole precinct.</td></tr>
         </tbody>
       </table>
       <p>
         Each point also has an uncertainty distance: the furthest the real place could
         plausibly be from the pin. Titles say &ldquo;approx.&rdquo; when only a street,
-        suburb, village or town is known, and &ldquo;map point inferred&rdquo; when FORGE
-        worked the point out itself.
+        suburb, village or town is known, &ldquo;map point inferred&rdquo; when FORGE
+        worked the point out itself, and &ldquo;map point estimated&rdquo; when the pin
+        marks only the police precinct.
       </p>
     </div>
   </div>
@@ -444,7 +449,7 @@
         <a href="records.html">Records</a> lists every pin on the map as a table you
         can filter and download as CSV or JSON. Each row has the incident time and how
         exact it is, where the reports place it, the map point and its uncertainty,
-        whether that point is reported or inferred, the independence label, the outlets
+        whether that point is reported, inferred or estimated, the independence label, the outlets
         and source links, how many sources have archive copies, how many facts the
         reports disagree on, and the approval record and pin version it matches. Each
         download names the version of the data it was built from.
@@ -461,7 +466,7 @@
         <li><strong>Not a crime rate.</strong> Pin counts show what FORGE has checked, not how much crime happens anywhere. An area with no pins is not shown to be safe. Don&rsquo;t compare areas by pin counts.</li>
         <li><strong>Pins lag the news.</strong> Checking and approval take time. As of 22 October 2026, pins went on the map between the same day and 17 days after the earliest report found, with a median of six days. The earliest report found is not proven to be the first.</li>
         <li><strong>It depends on news reports.</strong> Most pins rest on a single report, or on police statements repeated by several outlets. Reports can be wrong, and can change after they&rsquo;re published. Check the source links before relying on a pin.</li>
-        <li><strong>Map points are approximate.</strong> Read each pin&rsquo;s precision level and uncertainty distance. Inferred points are marked in the title and in the Records <code>location_basis</code> column.</li>
+        <li><strong>Map points are approximate.</strong> Read each pin&rsquo;s precision level and uncertainty distance. Inferred and estimated points are marked in the title and in the Records <code>location_basis</code> column.</li>
       </ul>
     </div>
   </div>
@@ -508,7 +513,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 22 Oct 2026 17:11 UTC
+        Generated 22 Oct 2026 20:42 UTC
       </div>
     </div>
   </footer>
@@ -516,7 +521,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 17:11 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 22 Oct 2026 20:42 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>

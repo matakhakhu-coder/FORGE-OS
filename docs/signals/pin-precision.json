@@ -9,7 +9,8 @@
     "suburb": "The suburb's own map point; the street is not mapped.",
     "village": "The village's own map point.",
     "town": "The town's map point; the place itself may be outside the town.",
-    "farm": "A farm or farm-area point; the farm may not be exactly here."
+    "farm": "A farm or farm-area point; the farm may not be exactly here.",
+    "precinct": "An estimated point for the police precinct that handled the case, used only when the place itself could not be put on a map. The pin is a reference (usually the station), not the scene; the uncertainty covers the whole precinct."
   },
   "updated": "2026-10-19",
   "pins": {
@@ -57,6 +58,14 @@
     "06219161-76ad-5b50-91d0-e58235427edf": {"precision": "spot", "uncertainty_m": 150, "note": "Corner of Bokmakierie Street and 7th Avenue (police and Heart FM)."},
     "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {"precision": "street", "uncertainty_m": 1000, "note": "Angela Street, Valhalla Park; the spot on the water is not given and the street is over a kilometre long."},
     "0c9f233c-6c38-5da4-a660-c6776f575667": {"precision": "spot", "uncertainty_m": 150, "note": "Corner of St Alexander Circle and St Christopher Avenue (Southern Mail only)."},
-    "e0fa3712-df77-531e-a040-437dee019c3c": {"precision": "street", "uncertainty_m": 400, "note": "INFERRED. The article says 'Firethorne, near Geelhout Street' and gives no street-level location. The point is the midpoint of OpenStreetMap's Geelhout Road, Bonteheuwel (about 448 m), which meets Firethorn Street (about 838 m) at two junctions; the spelling differs. It marks the area, not the scene."}
+    "e0fa3712-df77-531e-a040-437dee019c3c": {"precision": "street", "uncertainty_m": 400, "note": "INFERRED. The article says 'Firethorne, near Geelhout Street' and gives no street-level location. The point is the midpoint of OpenStreetMap's Geelhout Road, Bonteheuwel (about 448 m), which meets Firethorn Street (about 838 m) at two junctions; the spelling differs. It marks the area, not the scene."},
+    "f217ddf4-4573-5fe1-995d-64f8da89a86d": {"precision": "village", "uncertainty_m": 3000, "note": "Mamaolo village, Ga-Mphahlele; Maribeng Section not found in the place-name lookups. Pin is the centre of the mapped Mamaolo landmarks (school, taxi rank, cemetery, fuel station), inside the Lebowakgomo precinct outline."},
+    "0caff1cd-7cbe-51b2-aab4-ea3528b56f88": {"precision": "area", "uncertainty_m": 1500, "note": "Near Peter Mokaba Stadium, Polokwane; no street. Pin is the stadium map point."},
+    "1f7dbda3-e019-52ae-8832-8cae6ab01b47": {"precision": "precinct", "uncertainty_m": 27000, "note": "ESTIMATE. Rostock village (Mecklenburg policing area) not placed on a map. Pin is the Mecklenburg SAPS station point (in-repo gazetteer, station points v1.2.5, 2021), a reference only. Uncertainty = farthest point of the Mecklenburg precinct outline (2019) from the station, 26.2 km, rounded up. Not the scene, the village or the hospital."},
+    "c889d991-c9d9-541d-9976-934dc46c385c": {"precision": "town", "uncertainty_m": 15000, "note": "Malope Section, Masemola policing area; section not confirmed on a map (an OSM Malope point lies about 12 km west of Masemola station; not shown to be this section). Pin is the Ga-Masemola town point, owner-approved wide pin (22 Oct 2026 call)."},
+    "fb9450c3-dd3b-5402-8c4f-5e26f433d317": {"precision": "precinct", "uncertainty_m": 32000, "note": "ESTIMATE. Sekurung village / Sekurung Mountain (Lebowakgomo policing area) not placed on a map. Pin is the Lebowakgomo SAPS station point (in-repo gazetteer, station points v1.2.5, 2021), a reference only. Uncertainty = farthest point of the Lebowakgomo precinct outline (2019) from the station, 31.9 km, rounded up. The owner's unverified search answer (Ga-Mphahlele/Seleteng, about -24.2994, 29.6454) lies inside this radius and is not used as the pin. Not the scene or the village."},
+    "c99779f1-095f-5d2d-88c3-19f74e8c39d6": {"precision": "village", "uncertainty_m": 4000, "note": "Nkuri-Tomu village near Giyani; pin is the OSM Ka-Nkuri village point."},
+    "eaf77245-e677-5ccb-955d-764253f566d2": {"precision": "village", "uncertainty_m": 4000, "note": "Madonsi Boltman B, Malamulele (SABC: Madonsi-Shitasini); pin is the OSM Ka-Madonsi village point."},
+    "cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7": {"precision": "village", "uncertainty_m": 3000, "note": "Martinique village, Villa Nora policing area; pin is the OSM Martinique village point. TimesLIVE lead says Abbotspoort; owner kept Martinique (22 Oct 2026)."}
   }
 }

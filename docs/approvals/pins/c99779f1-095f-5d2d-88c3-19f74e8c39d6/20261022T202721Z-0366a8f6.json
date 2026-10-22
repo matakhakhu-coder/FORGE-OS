@@ -1,0 +1,80 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T202721Z-0366a8f6",
+  "signal_id": "c99779f1-095f-5d2d-88c3-19f74e8c39d6",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say a 35-year-old woman was shot dead at about 11 pm on Tuesday 13 October at a house in Nkuri-Tomu village near Giyani. Officers on patrol received a complaint about a shooting and were directed to the house by the victim's brother-in-law; she was lying in the sitting room with multiple gunshot wounds to her head and upper body, with a steel axe and ammunition next to her, and was declared dead at the scene. Her 73-year-old husband was arrested at the house and a firearm seized; police say domestic violence has not been ruled out (police spokesperson Malesela Ledwaba, via Jacaranda FM). No one is named here. Two reports, both resting on police: Jacaranda FM and Daily Sun. The pin is approximate (village level).",
+    "external_id": "checked:lp-2026-10-22:F",
+    "lat": -23.25278,
+    "lng": 30.53972,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Tue 13 Oct 2026, at about 23:00 (police, via Jacaranda FM and Daily Sun)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-13T23:00+02:00",
+        "location": "At a house in Nkuri-Tomu village, near Giyani (police, via Jacaranda FM and Daily Sun). No address. The pin is the Ka-Nkuri village point on OpenStreetMap, inside the Giyani police precinct; approximate, village level (about 4 km). Tomu is part of the village name in the reports and is not separately mapped.",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "15 Oct 2026 (Jacaranda FM, Daily Sun); SAPS Limpopo statement 14 Oct",
+        "reported_at": "2026-10-15",
+        "search_aliases": [
+          "Nkuri",
+          "Ka-Nkuri",
+          "Nkuri-Tomu",
+          "Tomu",
+          "Giyani",
+          "Greater Giyani"
+        ],
+        "sources": [
+          {
+            "name": "Jacaranda FM",
+            "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/"
+          },
+          {
+            "name": "Daily Sun",
+            "url": "https://snl24.com/news/madala-bust-for-young-wifes-murder-20261015/"
+          }
+        ]
+      },
+      "collected_title": "73-year-old man arrested for alleged murder of wife in Limpopo",
+      "link": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+      "pubdate_raw": "2026-10-15 (date on the page; time not saved)",
+      "source_outlet": "Jacaranda FM"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "c99779f1-095f-5d2d-88c3-19f74e8c39d6",
+    "source": "Jacaranda FM",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T21:00:00Z",
+    "title": "Nkuri-Tomu village, near Giyani (approx.): woman, 35, shot dead at home; husband, 73, arrested, 13 Oct"
+  },
+  "payload_sha256": "sha256:b8ed93deaa31c33f83d211b04cde4ecbee1a4a988a5338c152c41774ea416341",
+  "source_hashes": [
+    {
+      "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:01a04f06d6044add629a983766feafe69020315d18fa2efe525ab6024081615d"
+    },
+    {
+      "url": "https://snl24.com/news/madala-bust-for-young-wifes-murder-20261015/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:b0a57c10bc17b2b810c3117ea23d72d7b2035d2d61940d5b345f00430a7d9ae1"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:27:21+02:00",
+  "recorded_at": "2026-10-22T22:27:21+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-pins-2026-10-22",
+    "summary": "DRAFT - provisional scratch record, not an approval. Limpopo pin from the 22 Oct 2026 review batch (limpopo-killings-2026-10-22.json), approved by the owner after reviewing the review note. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

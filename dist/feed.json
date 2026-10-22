@@ -1,8 +1,120 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "22 Oct 2026 15:53 UTC",
+  "generated_at": "22 Oct 2026 20:42 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Martinique village, Villa Nora police area (approx.): woman, 35, shot dead; police sergeant suspect later found dead, 21 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say a 39-year-old police sergeant stationed at Witpoort police station allegedly shot his 35-year-old wife dead on Wednesday 21 October in Martinique village, in the Villa Nora policing area; she was declared dead...",
+      "source": "TIMESLIVE",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.42472,
+        "lng": 28.06389
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Madonsi Boltman B, Malamulele (approx.): comedian Skeem Mafenya, 20, stabbed to death; three arrested, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say 20-year-old comedian and content creator Skeem Mafenya was found lying motionless inside a yard at Madonsi Boltman B, in the Malamulele policing area, with multiple stab wounds to his upper body after a report...",
+      "source": "EWN",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.945,
+        "lng": 30.75583
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Nkuri-Tomu village, near Giyani (approx.): woman, 35, shot dead at home; husband, 73, arrested, 13 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say a 35-year-old woman was shot dead at about 11 pm on Tuesday 13 October at a house in Nkuri-Tomu village near Giyani. Officers on patrol received a complaint about a shooting and were directed to the house by t...",
+      "source": "JACARANDA FM",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.25278,
+        "lng": 30.53972
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Sekurung village, Lebowakgomo police area (map point estimated): girl, 2, taken from home and killed; woman, 20, arrested, 13 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say a two-year-old girl was taken from her home at Sekurung village and fatally stabbed; she also had burn wounds, as the suspect allegedly set fire to the child's home before leaving with her. Police responding t...",
+      "source": "REVIEW ONLINE (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -24.32098,
+        "lng": 29.48187
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Malope Section, Masemola police area (approx.): man dies after being held as a burglary suspect; two charged with murder, 13 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say they responded to a complaint of a residential burglary in progress at about 04:00 on Tuesday 13 October at Malope Section in the Masemola policing area, Sekhukhune District. They found an adult man lying on t...",
+      "source": "SAPS (@SAPOLICESERVICE ON X)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -24.56876,
+        "lng": 29.65187
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Rostock village, Mecklenburg police area (map point estimated): man, 18, dies after mob attack, 11 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say an 18-year-old man died after community members, who accused him of trying to rob a foreign-owned shop in Rostock village, attacked him with sticks, stones and cables at about 18:00 on Sunday 11 October. His f...",
+      "source": "TIMESLIVE",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -24.38627,
+        "lng": 30.07359
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Near Peter Mokaba Stadium, Polokwane (approx.): man, 29, assaulted by a group, dies in hospital, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say a 29-year-old man was seriously injured in a confrontation with a group of people near the stadium in the early hours of 4 October, after the Shandesh One Woman Show at the Peter Mokaba rugby field, and was la...",
+      "source": "REVIEW ONLINE (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.92481,
+        "lng": 29.46796
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mamaolo village, Ga-Mphahlele (Maribeng Section, approx.): tavern owner, 53, found murdered and robbed, 2 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T20:16:00Z",
+      "summary": "Police say a 53-year-old tavern owner was found by his sister at his business premises at Ga-Mphahlele, Maribeng Section, in Mamaolo village outside Lebowakgomo. The garage doors were open and he was lying face down in a...",
+      "source": "SABC NEWS",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -24.30606,
+        "lng": 29.5672
+      }
+    },
     {
       "kind": "signal",
       "title": "Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct",
@@ -589,48 +701,6 @@
       "geo": {
         "lat": -33.652,
         "lng": 19.502
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Belgravia, Athlone (approx.): woman, 65, and man shot dead, 10 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:28:41Z",
-      "summary": "Police say a 65-year-old woman and an adult man were shot dead in Belgravia, Athlone, on Saturday 10 October at about 19:00; a third person was wounded and taken to hospital. Police spokesperson Wesley Twigg said the mot...",
-      "source": "SABC NEWS",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.97157,
-        "lng": 18.51769
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Cafda, Retreat (approx.): man, 30, and woman, 46, shot dead at home, 9 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:28:41Z",
-      "summary": "SAPS says a 30-year-old man and a 46-year-old woman were shot dead at their home in Cafda, Retreat, on Friday 9 October at about 09:15, when gunmen chasing a rival gang member who ran onto the property missed him and hit...",
-      "source": "CAPE ARGUS (IOL)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.06083,
-        "lng": 18.48444
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Asla Park, Mossel Bay (Dunjwa St, approx.): man, 19, stabbed dead, 4 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:28:41Z",
-      "summary": "Southern Cape police say officers found a 19-year-old with a stab wound to the chest at a scene in Dunjwa Street, Asla Park, Mossel Bay, on 4 October; paramedics declared him dead. Police allege he was hurt during an alt...",
-      "source": "MOSSEL BAY ADVERTISER",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.1762,
-        "lng": 22.07302
       }
     }
   ]

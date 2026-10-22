@@ -149,7 +149,7 @@ def test_case_with_three_pins_and_no_link_records_draws_no_lines(tmp_path, monke
     # Three pins far apart: the old code joined every pair (3 lines).
     dist = _build(tmp_path, monkeypatch, index, case_pins=[EPPING, WORCESTER, LAVENDER])
     assert _intel_links(dist) == []
-    assert len(_markers(dist)) == 45          # 32 Western Cape + 4 North West + 9 Eastern Cape
+    assert len(_markers(dist)) == 53          # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo
 
 
 def test_one_approved_incident_link_draws_one_labelled_line(tmp_path, monkeypatch):

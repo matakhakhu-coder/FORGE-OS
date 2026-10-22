@@ -4501,6 +4501,726 @@
           "conflicts": []
         }
       ]
+    },
+    "f217ddf4-4573-5fe1-995d-64f8da89a86d": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 53, a tavern owner, dead.",
+          "basis": "Police account only",
+          "detail": "Age and occupation from police. Not named.",
+          "sources": [
+            {
+              "name": "Hlulani Mashaba, SAPS spokesperson (via SABC News)",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "murder of a 53-year-old tavern owner at Ga-Mphahlele, Maribeng Section in Mamaolo village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found on Friday 2 October 2026; time not given.",
+          "basis": "Police account only",
+          "detail": "The date is from the SAPS Limpopo statement of 2 October (“Friday, 02 October 2026”), which is on the SAPS newsroom and cannot be linked. SABC News, 3 October, gives no date for the killing. When he was killed before he was found is not reported.",
+          "sources": [
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "The sister of the deceased went to check on her brother at his business premises"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "His business premises at Ga-Mphahlele, Maribeng Section, Mamaolo village, outside Lebowakgomo.",
+          "basis": "Police account only",
+          "detail": "No address. The pin is village level, not the premises.",
+          "sources": [
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "A tavern owner has been killed at his premises at Mamaolo village, outside Lebowakgomo in Limpopo."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Struck on the head with a sharp object.",
+          "basis": "Police account only",
+          "detail": "Found face down in a pool of blood.",
+          "sources": [
+            {
+              "name": "Hlulani Mashaba (via SABC News)",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "the deceased was struck on the head with a sharp object"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What was taken",
+          "claim": "Cash and his white Isuzu bakkie.",
+          "basis": "Police account only",
+          "detail": "Police are investigating business robbery and murder.",
+          "sources": [
+            {
+              "name": "Hlulani Mashaba (via SABC News)",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "cash and white Isuzu bakkie were stolen"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "None reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": "Police launched a manhunt.",
+          "sources": [
+            {
+              "name": "Hlulani Mashaba (via SABC News)",
+              "url": "https://www.sabcnews.com/sabcnews/tavern-owner-killed-at-his-premises-in-mamaolo-village-limpopo/",
+              "archive": null,
+              "quote": "The police in Lebowakgomo have launched an intensive manhunt"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0caff1cd-7cbe-51b2-aab4-ea3528b56f88": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 29, dead.",
+          "basis": "Police account only",
+          "detail": "Certified dead in hospital. Not named.",
+          "sources": [
+            {
+              "name": "Review Online, citing police",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "a 29-year-old man sustained serious injuries during a confrontation with a group of people near the stadium"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Early hours of Sunday 4 October 2026.",
+          "basis": "Police account only",
+          "detail": "No clock time given.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "Two of the deaths occurred in the early hours of October 4, in separate incidents near the stadium."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Near the stadium, Polokwane.",
+          "basis": "Police account only",
+          "detail": "The show was at the Peter Mokaba rugby field. No street given.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "hosted at the Peter Mokaba rugby field on October 3"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Assaulted by a group of people.",
+          "basis": "Police account only",
+          "detail": "A friend fired one shot from his licensed firearm and the group dispersed; police seized the firearm for ballistic analysis.",
+          "sources": [
+            {
+              "name": "Review Online, citing police",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "a friend of the deceased had arrived at the scene to collect him when he saw that the man was being assaulted by a group of people"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case",
+          "claim": "Investigated as murder; no arrests.",
+          "basis": "Police account only",
+          "detail": "Police say they have strong leads.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "The matter is being investigated as murder. No arrests have been made in connection with the fatal incident"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Link to the event",
+          "claim": "Not confirmed by police.",
+          "basis": "Undetermined in the saved reports",
+          "detail": "The article ties three deaths to the show; police have not said whether they are connected.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/16/3-deaths-linked-to-shandesh-show-as-police-probe/",
+              "archive": null,
+              "quote": "Police have not confirmed whether the three deaths are connected to the event."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "1f7dbda3-e019-52ae-8832-8cae6ab01b47": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 18, dead.",
+          "basis": "Police account only",
+          "detail": "Died on arrival at a local hospital; the hospital is not named. Not named.",
+          "sources": [
+            {
+              "name": "TimesLIVE, citing police",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+              "archive": null,
+              "quote": "An 18-year-old man died after he was allegedly beaten by community members"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 11 October 2026, at about 18:00.",
+          "basis": "Police account only",
+          "detail": "TimesLIVE says Sunday evening.",
+          "sources": [
+            {
+              "name": "SAPS statement (via SABC News)",
+              "url": "https://www.sabcnews.com/sabcnews/police-investigate-fatal-mob-attack-on-teen-in-limpopo/",
+              "archive": null,
+              "quote": "in Rostock village on Sunday 11/10 at about 18:00"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Rostock village, outside Burgersfort; Mecklenburg police area.",
+          "basis": "Police account only",
+          "detail": "The village could not be placed on a map. The pin is an estimate on the Mecklenburg police station, not the scene.",
+          "sources": [
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/police-investigate-fatal-mob-attack-on-teen-in-limpopo/",
+              "archive": null,
+              "quote": "at Rostock Village outside Burgersfort in Limpopo"
+            },
+            {
+              "name": "TimesLIVE",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+              "archive": null,
+              "quote": "Mecklenburg police have opened a murder case"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Attacked by community members with sticks, stones and cables.",
+          "basis": "Police account only",
+          "detail": "Police say the community accused him of trying to rob a foreign-owned shop; that accusation is unproven.",
+          "sources": [
+            {
+              "name": "TimesLIVE, citing police",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+              "archive": null,
+              "quote": "Community members allegedly mobilised and attacked him with sticks, stones and cables."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "None reported; suspects not identified.",
+          "basis": "Police account only",
+          "detail": "Murder case opened; manhunt launched.",
+          "sources": [
+            {
+              "name": "TimesLIVE",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+              "archive": null,
+              "quote": "launched a manhunt for the suspects, who have yet to be identified"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "c889d991-c9d9-541d-9976-934dc46c385c": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "An adult man dead.",
+          "basis": "Police account only",
+          "detail": "Age not given. Not named.",
+          "sources": [
+            {
+              "name": "SAPS (on X)",
+              "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+              "archive": null,
+              "quote": "police found an adult male lying on the floor with visible injuries. He was unresponsive and was later declared deceased"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 13 October 2026; police called at about 04:00.",
+          "basis": "Police account only",
+          "detail": "The time is when police responded, not a confirmed time of death.",
+          "sources": [
+            {
+              "name": "SAPS (on X)",
+              "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+              "archive": null,
+              "quote": "The suspects were arrested on Tuesday, 13/10, after police responded to a complaint of a residential burglary in progress at approximately 04:00."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A residence in Malope Section, Masemola policing area, Sekhukhune District.",
+          "basis": "Police account only",
+          "detail": "No address. The pin is a wide town-level point, not the scene.",
+          "sources": [
+            {
+              "name": "SAPS (on X)",
+              "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+              "archive": null,
+              "quote": "a murder incident at Malope Section in the Masemola policing area, Sekhukhune District, Limpopo"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Allegedly apprehended by people who suspected him of a burglary; how he died is under investigation.",
+          "basis": "Police account only",
+          "detail": "Police give no cause of death. That he was a burglar is a suspicion, not a finding.",
+          "sources": [
+            {
+              "name": "SAPS (on X)",
+              "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+              "archive": null,
+              "quote": "the deceased was allegedly apprehended by individuals who suspected him of being involved in a burglary at the residence"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "Two men, 29 and 32, charged with murder.",
+          "basis": "Police account only",
+          "detail": "Due in the Nebo Magistrate’s Court on Thursday 15 October; no outcome found.",
+          "sources": [
+            {
+              "name": "SAPS (on X)",
+              "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+              "archive": null,
+              "quote": "Two suspects, aged 29 and 32, are expected to appear before the Nebo Magistrate’s Court on Thursday, 15/10"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "fb9450c3-dd3b-5402-8c4f-5e26f433d317": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A girl, 2, dead.",
+          "basis": "Police account only",
+          "detail": "Identified by her mother. Not named.",
+          "sources": [
+            {
+              "name": "Review Online, citing police",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/",
+              "archive": null,
+              "quote": "A 20-year-old woman has been arrested after a two-year-old child was found dead on Sekurung Mountain in Limpopo."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 13 October 2026; kidnapping reported at about 11:55.",
+          "basis": "Police account only",
+          "detail": "When the child was killed is not given.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle, citing police",
+              "url": "https://www.limpopochronicle.co.za/2026/10/15/limpopo-woman-arrested-for-murder-of-two-year-old-child/",
+              "archive": null,
+              "quote": "officers responded to a reported kidnapping incident at approximately 11:55"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Sekurung village and Sekurung Mountain, Lebowakgomo policing area.",
+          "basis": "Police account only",
+          "detail": "The village could not be placed on a map. The pin is an estimate on the Lebowakgomo police station, not the scene.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/",
+              "archive": null,
+              "quote": "at Sekurung village, under the Lebowakgomo policing area, on Tuesday, October 13"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Taken from her home and fatally stabbed; also burn wounds.",
+          "basis": "Police account only",
+          "detail": "Police say the suspect set fire to the child’s home before leaving with her. Motive unclear.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle, citing police",
+              "url": "https://www.limpopochronicle.co.za/2026/10/15/limpopo-woman-arrested-for-murder-of-two-year-old-child/",
+              "archive": null,
+              "quote": "The child was allegedly taken from her home before being fatally stabbed."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "A woman, 20, arrested for murder at the scene.",
+          "basis": "Police account only",
+          "detail": "Due in the Lebowakgomo Magistrate’s Court on 15 October; no outcome found.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/15/limpopo-woman-arrested-for-murder-of-two-year-old-child/",
+              "archive": null,
+              "quote": "The suspect was still at the scene and was subsequently arrested on a charge of murder."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Afterwards",
+          "claim": "Some community members allegedly set the suspect's house alight.",
+          "basis": "Police account only",
+          "detail": "Police are investigating; the provincial commissioner condemned vigilantism.",
+          "sources": [
+            {
+              "name": "Review Online",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/",
+              "archive": null,
+              "quote": "some angry community members allegedly set the suspect’s house alight"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "c99779f1-095f-5d2d-88c3-19f74e8c39d6": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A woman, 35, dead.",
+          "basis": "Police account only",
+          "detail": "Declared dead at the scene. Not named.",
+          "sources": [
+            {
+              "name": "Jacaranda FM, citing police",
+              "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+              "archive": null,
+              "quote": "Police in Limpopo have arrested a 73-year-old man for the alleged murder of his 35-year-old wife in Nkuri-Tomu village, near Giyani."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 13 October 2026, at about 23:00.",
+          "basis": "Police account only",
+          "detail": "Daily Sun says Tuesday night, 13 October.",
+          "sources": [
+            {
+              "name": "Jacaranda FM",
+              "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+              "archive": null,
+              "quote": "The woman was allegedly shot and killed at around 11 pm on Tuesday night."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A house in Nkuri-Tomu village, near Giyani.",
+          "basis": "Police account only",
+          "detail": "No address. The pin is village level.",
+          "sources": [
+            {
+              "name": "Daily Sun",
+              "url": "https://snl24.com/news/madala-bust-for-young-wifes-murder-20261015/",
+              "archive": null,
+              "quote": "the quiet village of Nkuri-Tomu outside Giyani, Limpopo"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Shot: multiple gunshot wounds to the head and upper body.",
+          "basis": "Police account only",
+          "detail": "A steel axe and ammunition were found next to her body.",
+          "sources": [
+            {
+              "name": "Jacaranda FM, citing police",
+              "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+              "archive": null,
+              "quote": "with multiple gunshot wounds to her head and upper body"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "Her husband, 73, arrested at the house; a firearm seized.",
+          "basis": "Police account only",
+          "detail": "Due in the Giyani Magistrate’s Court on 15 October; no outcome found. Motive unknown; domestic violence not ruled out.",
+          "sources": [
+            {
+              "name": "Jacaranda FM",
+              "url": "https://www.jacarandafm.com/news/news/73-year-old-man-arrested-for-alleged-murder-of-wife/",
+              "archive": null,
+              "quote": "The suspect was arrested at the house, and a firearm believed to have been used in the killing was seized."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "eaf77245-e677-5ccb-955d-764253f566d2": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 20, comedian Skeem Mafenya, dead.",
+          "basis": "Police account only",
+          "detail": "Named by his public stage name, the owner’s decision of 22 October 2026.",
+          "sources": [
+            {
+              "name": "EWN",
+              "url": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder",
+              "archive": null,
+              "quote": "Three suspects have been arrested in connection with the murder of popular Limpopo comedian and content creator Skeem Mafenya."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 17 October 2026; police received the report at about 03:35.",
+          "basis": "Police account only",
+          "detail": "The time is the report to police, not a confirmed time of death.",
+          "sources": [
+            {
+              "name": "EWN, citing police",
+              "url": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder",
+              "archive": null,
+              "quote": "Limpopo police said they received a report at about 03:35 on Saturday morning of a person lying motionless inside a yard."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Inside a yard at Madonsi Boltman B, Malamulele.",
+          "basis": "Reports differ in wording",
+          "detail": "SABC News calls the place Madonsi-Shitasini village, near a tavern. The pin is village level.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/17/popular-malamulele-comedian-skeem-mafenya-found-murdered/",
+              "archive": null,
+              "quote": "was found murdered at Madonsi Boltman B in the early hours of Saturday, 17 October 2026"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "the murder of 20-year-old comedian at Madonsi-Shitasini village near Malamulele",
+              "url": "https://www.sabcnews.com/sabcnews/limpopo-police-hunt-for-suspects-after-20-year-old-comedian-murdered/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "How",
+          "claim": "Multiple stab wounds to the upper body.",
+          "basis": "Police account only",
+          "detail": "SABC News says a group of men, near a tavern; police statements quoted by EWN and Limpopo Chronicle do not say who.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/17/popular-malamulele-comedian-skeem-mafenya-found-murdered/",
+              "archive": null,
+              "quote": "found lying motionless inside a yard with multiple stab wounds to his upper body"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "Three suspects, aged 17 to 23, arrested hours later.",
+          "basis": "Police account only",
+          "detail": "Earlier reports (Limpopo Chronicle, SABC News, 17 October) said no arrests yet. Motive unknown.",
+          "sources": [
+            {
+              "name": "EWN, citing police",
+              "url": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder",
+              "archive": null,
+              "quote": "Police said the suspects, aged between 17 and 23, were arrested just hours after the killing following an intelligence-driven operation."
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "The motive for the killing remains unknown, and no arrests have been made.",
+              "url": "https://www.limpopochronicle.co.za/2026/10/17/popular-malamulele-comedian-skeem-mafenya-found-murdered/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        }
+      ]
+    },
+    "cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A woman, 35, dead. The suspect, a police sergeant, 39, was found dead the next morning.",
+          "basis": "Police account only",
+          "detail": "The pin is for the woman’s killing. An inquest docket covers the sergeant’s death. Neither is named.",
+          "sources": [
+            {
+              "name": "TimesLIVE, citing police",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-22-limpopo-police-sergeant-found-dead-under-tree-after-allegedly-killing-wife/",
+              "archive": null,
+              "quote": "A 39-year-old police sergeant was found dead with a gunshot wound to the head on Thursday morning, hours after allegedly shooting his 35-year-old wife dead"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 21 October 2026; time not given.",
+          "basis": "Police account only",
+          "detail": "The sergeant was found at about 06:30 on Thursday 22 October.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/22/limpopo-police-sergeant-found-dead-hours-after-allegedly-killing-his-wife/",
+              "archive": null,
+              "quote": "after the shooting on Wednesday, 21 October 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Martinique village, Villa Nora policing area.",
+          "basis": "Reports differ in wording",
+          "detail": "TimesLIVE’s opening line says Abbotspoort village; its next paragraph says Martinique. Limpopo Chronicle names no village. Owner kept Martinique.",
+          "sources": [
+            {
+              "name": "TimesLIVE, citing police",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-22-limpopo-police-sergeant-found-dead-under-tree-after-allegedly-killing-wife/",
+              "archive": null,
+              "quote": "allegedly shot his wife on Wednesday in Martinique village, in the Villa Nora policing area"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "hours after allegedly shooting his 35-year-old wife dead in Abbotspoort village, Limpopo",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-22-limpopo-police-sergeant-found-dead-under-tree-after-allegedly-killing-wife/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "Suspect",
+          "claim": "Her husband, a police sergeant stationed at Witpoort police station.",
+          "basis": "Police account only",
+          "detail": "He fled in his white Isuzu bakkie and was later found dead with his state-issued firearm next to him.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/22/limpopo-police-sergeant-found-dead-hours-after-allegedly-killing-his-wife/",
+              "archive": null,
+              "quote": "A 39-year-old police sergeant stationed at Witpoort South African Police Service (SAPS) under the Waterberg District"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case",
+          "claim": "Inquest docket opened at Tom Burke; motive unknown.",
+          "basis": "Police account only",
+          "detail": "Domestic violence not ruled out.",
+          "sources": [
+            {
+              "name": "Malesela Ledwaba (via TimesLIVE)",
+              "url": "https://www.timeslive.co.za/news/south-africa/2026-10-22-limpopo-police-sergeant-found-dead-under-tree-after-allegedly-killing-wife/",
+              "archive": null,
+              "quote": "The motive for the incident is unknown at this stage, but domestic violence cannot be ruled out"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

@@ -4,7 +4,8 @@ Built on the standalone-signal and drawer tests: same fresh temp database,
 same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eastern Cape pins,
 then 1 Western Cape Sprint 5 pin: Cafda Village, Retreat, 18 Oct, then 1 Eastern Cape pin: Gqeberha,
 then 3 Western Cape Sprint 5 pins: Steenberg, 20 Oct, Strandfontein, 19 Oct, and Athlone, 19 Oct,
-then 4 Western Cape Sprint 5 pins: Tafelsig barber, Valhalla Park, St Montague Village and Firethorne).
+then 4 Western Cape Sprint 5 pins: Tafelsig barber, Valhalla Park, St Montague Village and Firethorne,
+then 8 Limpopo pins: incidents 1-22 Oct 2026, outside the pattern test).
 """
 from __future__ import annotations
 
@@ -25,7 +26,8 @@ EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
 WC_PINS = 32          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct + Steenberg, Strandfontein and Athlone, 21 Oct + Tafelsig barber, Valhalla Park, St Montague Village and Firethorne, 22 Oct)
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
 EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct), outside the pattern test
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS
+LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, outside the pattern test
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -103,10 +105,11 @@ def test_index_loads_all_pins_in_order():
         "western-cape-murders-2026-10-19-sprint5.json",
         "eastern-cape-killings-2026-10-21.json",
         "western-cape-murders-2026-10-21-sprint5.json",
-        "western-cape-murders-2026-10-22-sprint5.json"]
+        "western-cape-murders-2026-10-22-sprint5.json",
+        "limpopo-killings-2026-10-22.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape"]
+        "Western Cape", "Western Cape", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -131,6 +134,25 @@ def test_north_west_pins_stay_out_of_the_pattern_test():
         assert -28.1 <= s["lat"] <= -24.5 and 22.5 <= s["lng"] <= 28.4   # really in North West
         assert "approx." in s["title"]
         assert not s["metadata"].get("links")
+
+
+def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo"]
+    assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
+    for s in lp:
+        assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
+        assert "approx." in s["title"] or "map point estimated" in s["title"]
+        assert not s["metadata"].get("links")
+    # Rostock and Sekurung sit on their police station points, so their titles say so.
+    estimated = sorted(s["title"].split(",")[0] for s in lp if "map point estimated" in s["title"])
+    assert estimated == ["Rostock village", "Sekurung village"]
+    data = json.loads((SIGNALS_DIR / "limpopo-killings-2026-10-22.json").read_text(encoding="utf-8"))
+    assert "Sprint 5" in data["scope"]
 
 
 def test_north_west_batch_holds_back_lebotloane():

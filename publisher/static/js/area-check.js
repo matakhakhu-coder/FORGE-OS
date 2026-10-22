@@ -512,7 +512,8 @@
     function precisionWord(p) {
       if (!p.precision || p.precision === 'spot') return '';
       return { street: 'street only', area: 'area only', suburb: 'suburb only', village: 'village only',
-               town: 'town only', farm: 'farm area only' }[p.precision] || 'approximate';
+               town: 'town only', farm: 'farm area only',
+               precinct: 'estimate, police area only' }[p.precision] || 'approximate';
     }
 
     function render() {

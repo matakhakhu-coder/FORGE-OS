@@ -21,7 +21,19 @@ C5 = {
     '0c9f233c-6c38-5da4-a660-c6776f575667',  # St Montague Village
     'e0fa3712-df77-531e-a040-437dee019c3c',  # Firethorne (draft batch C5c, eight quotes re-matched)
 }
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5
+# Limpopo batch (limpopo-killings-2026-10-22.json): each fact matched to a quote in the
+# batch's own evidence pass, outside the frozen 36-pin Admiralty audit.
+LIMPOPO = {
+    'f217ddf4-4573-5fe1-995d-64f8da89a86d',  # A Mamaolo tavern owner
+    '0caff1cd-7cbe-51b2-aab4-ea3528b56f88',  # B near Peter Mokaba Stadium
+    '1f7dbda3-e019-52ae-8832-8cae6ab01b47',  # C Rostock (estimated map point)
+    'c889d991-c9d9-541d-9976-934dc46c385c',  # D Malope Section, Masemola
+    'fb9450c3-dd3b-5402-8c4f-5e26f433d317',  # E Sekurung (estimated map point)
+    'c99779f1-095f-5d2d-88c3-19f74e8c39d6',  # F Nkuri-Tomu
+    'eaf77245-e677-5ccb-955d-764253f566d2',  # G Madonsi Boltman B
+    'cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7',  # H Martinique village
+}
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO
 
 
 def load(path):
@@ -40,8 +52,10 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 45
-    assert sum(len(p['facts']) for p in exported.values()) == 270   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne
+    assert len(exported) == 53                                      # 36 audited + 17 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 313   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo
+    assert sum(len(exported[s]['facts']) for s in LIMPOPO) == 43     # A, B, E six each; C, D, F, G, H five each
+    assert all(exported[s]['status'] == 'audited' for s in LIMPOPO)
     assert SEPARATELY_AUDITED <= set(exported)
     text = json.dumps(exported)
     for key in ('credibility', 'source_grades', 'pin_notes', 'text_sha256'):

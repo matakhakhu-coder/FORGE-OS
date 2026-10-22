@@ -1,0 +1,81 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T202721Z-6796e1fd",
+  "signal_id": "1f7dbda3-e019-52ae-8832-8cae6ab01b47",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say an 18-year-old man died after community members, who accused him of trying to rob a foreign-owned shop in Rostock village, attacked him with sticks, stones and cables at about 18:00 on Sunday 11 October. His family took him from the scene while he was still breathing; he died on arrival at a local hospital (police spokesperson Col Malesela Ledwaba, via TimesLIVE and SABC News). Mecklenburg police opened a murder case and are looking for the suspects, who have not been identified. No arrest has been reported. The victim is not named here. Two reports, both resting on the same police statement: TimesLIVE and SABC News. MAP POINT ESTIMATED: Rostock village could not be placed on a map, so the pin sits on the Mecklenburg police station, the police area that handled the case. It is not the scene; the village may be up to about 27 km away.",
+    "external_id": "checked:lp-2026-10-22:C",
+    "lat": -24.38627,
+    "lng": 30.07359,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Sun 11 Oct 2026, at about 18:00 (SAPS statement quoted by SABC News)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-11T18:00+02:00",
+        "location": "ESTIMATED MAP POINT. Rostock village, outside Burgersfort, in the Mecklenburg police area (police, via TimesLIVE and SABC News). The village could not be placed on a map: place-name lookups found no Rostock village, and two OpenStreetMap searches returned no data at all, so whether the village is mapped is neither confirmed nor ruled out. The pin is on the Mecklenburg police station (SAPS station point), used only as a reference for the police area that handled the case. It is not the scene, the village or the hospital. The village may be anywhere in the Mecklenburg police area, up to about 27 km from the pin.",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "12 Oct 2026 (TimesLIVE; SAPS Limpopo statement); 13 Oct 2026 (SABC News)",
+        "reported_at": "2026-10-12",
+        "search_aliases": [
+          "Rostock",
+          "Rostok",
+          "Mecklenburg",
+          "Burgersfort",
+          "Sekhukhune",
+          "Fetakgomo",
+          "Tubatse"
+        ],
+        "sources": [
+          {
+            "name": "TimesLIVE",
+            "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/"
+          },
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/police-investigate-fatal-mob-attack-on-teen-in-limpopo/"
+          }
+        ]
+      },
+      "collected_title": "Limpopo teenager dies after mob attack over alleged foreign shop robbery",
+      "link": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+      "pubdate_raw": "2026-10-12 (date in the page address; time not saved)",
+      "source_outlet": "TimesLIVE"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "1f7dbda3-e019-52ae-8832-8cae6ab01b47",
+    "source": "TimesLIVE",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-11T16:00:00Z",
+    "title": "Rostock village, Mecklenburg police area (map point estimated): man, 18, dies after mob attack, 11 Oct"
+  },
+  "payload_sha256": "sha256:08ac0af6544d34a575214c43c16f0649742bdbab12953bb9162d6b0dcb8c1558",
+  "source_hashes": [
+    {
+      "url": "https://www.timeslive.co.za/news/south-africa/2026-10-12-limpopo-teenager-dies-after-mob-attack-over-alleged-foreign-shop-robbery/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:d11c61cb71275afce92b86d36ba558713c2d09cc25314a22a2ba0290c6fa5f4a"
+    },
+    {
+      "url": "https://www.sabcnews.com/sabcnews/police-investigate-fatal-mob-attack-on-teen-in-limpopo/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:a9971ed1c26ea04c6fbc2de3e30006c3ec3549ec15c33039ae54596bb7324ee5"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:27:21+02:00",
+  "recorded_at": "2026-10-22T22:27:21+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-pins-2026-10-22",
+    "summary": "DRAFT - provisional scratch record, not an approval. Limpopo pin from the 22 Oct 2026 review batch (limpopo-killings-2026-10-22.json), approved by the owner after reviewing the review note. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

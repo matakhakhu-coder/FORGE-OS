@@ -285,7 +285,7 @@ def _incident_end(chk: dict) -> str | None:
 # apart from the hand-checked pin files so their fingerprints and the locked
 # Sprint 5 predictions stay as they are. The radius count uses uncertainty_m.
 PRECISION_FILE = ROOT / "docs" / "signals" / "pin-precision.json"
-PRECISION_LEVELS = ("spot", "street", "area", "suburb", "village", "town", "farm")
+PRECISION_LEVELS = ("spot", "street", "area", "suburb", "village", "town", "farm", "precinct")
 _PRECISION_CACHE: dict | None = None
 
 
