@@ -85,31 +85,53 @@
     });
   }
 
+  // Bookmarks come from localStorage and from names in the data, so nothing
+  // from them is ever parsed as markup: every value goes in as plain text
+  // (textContent), and a link only keeps a relative or http(s) address.
+  function safeHref(url) {
+    var raw = String(url == null ? '' : url).trim();
+    if (!raw) return '#';
+    // Browsers ignore tabs, newlines and control characters inside a scheme
+    // ("java\tscript:"), so check the address with those removed.
+    var bare = raw.replace(/[\u0000-\u0020\u007f]+/g, '');
+    if (/^[a-z][a-z0-9+.\-]*:/i.test(bare) && !/^https?:/i.test(bare)) return '#';
+    return raw;
+  }
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = String(text);
+    return node;
+  }
+
   function renderWatchlistPage() {
     var container = document.getElementById('wl-list');
     if (!container) return;
 
     var wl = getWatchlist();
     var all = (wl.actors || []).concat(wl.signals || []);
-    all.sort(function (a, b) { return (b.addedAt || '').localeCompare(a.addedAt || ''); });
+    all.sort(function (a, b) { return String(b.addedAt || '').localeCompare(String(a.addedAt || '')); });
+
+    container.textContent = '';
 
     if (all.length === 0) {
-      container.innerHTML = '<div class="wl-empty">No bookmarked items yet. Click the star on any signal or entity to add it here.</div>';
+      container.appendChild(el('div', 'wl-empty',
+        'No bookmarked items yet. Click the star on any signal or entity to add it here.'));
       return;
     }
 
-    var html = '';
     all.forEach(function (item) {
       var date = item.addedAt ? new Date(item.addedAt).toLocaleDateString() : '';
-      html += '<a href="' + (item.url || '#') + '" class="wl-item">' +
-        '<span class="wl-item__star">★</span>' +
-        '<div class="wl-item__body">' +
-          '<div class="wl-item__title">' + (item.title || item.id) + '</div>' +
-          '<div class="wl-item__meta">' + (item.type || '') + ' · saved ' + date + '</div>' +
-        '</div>' +
-      '</a>';
+      var link = el('a', 'wl-item');
+      link.setAttribute('href', safeHref(item.url));
+      link.appendChild(el('span', 'wl-item__star', '★'));
+      var body = el('div', 'wl-item__body');
+      body.appendChild(el('div', 'wl-item__title', item.title || item.id || ''));
+      body.appendChild(el('div', 'wl-item__meta', (item.type || '') + ' · saved ' + date));
+      link.appendChild(body);
+      container.appendChild(link);
     });
-    container.innerHTML = html;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -122,5 +144,6 @@
     isWatchlisted: isWatchlisted,
     toggleItem: toggleItem,
     renderWatchlistPage: renderWatchlistPage,
+    safeHref: safeHref,
   };
 })();
