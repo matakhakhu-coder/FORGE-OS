@@ -40,7 +40,9 @@ this repo, this runs only where the tools run; a direct push can skip it.
 Findings and rollout
 --------------------
     violation  something wrong with records that exist (bad field, broken
-               chain, hash mismatch, revoked pin still live, edited record).
+               chain, hash mismatch, revoked pin still live, edited record,
+               or a current record labelled draft / provisional / "not an
+               approval", which leaves its pin unapproved).
                Always refuses an import --write or a publish.
     gap        a pin with no approval record, or a check that could not run
                (no git, no origin/main). Refuses only when enforcement is on.
@@ -97,6 +99,10 @@ UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]
 SHA_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 REF_ID_RE = re.compile(r"^[A-Za-z0-9._:-]{1,64}$")
 BATCH_FILE_RE = re.compile(r"^[A-Za-z0-9._-]+\.json$")
+# A record whose approval_reference says it is a draft, provisional, or "not an
+# approval" is a placeholder, not the owner's approval. v1 has no status field
+# (unknown fields are already invalid), so the label is the only marker.
+DRAFT_RE = re.compile(r"\bdraft\b|\bprovisional\b|\bnot an approval\b", re.IGNORECASE)
 
 
 class ApprovalError(Exception):
@@ -341,6 +347,16 @@ def validate_record(rec, *, signal_id: str | None = None,
     return errs
 
 
+def is_draft(rec: dict) -> bool:
+    """True when a record labels itself a draft or provisional, or says it is not
+    an approval. Such a record never approves anything."""
+    ref = rec.get("approval_reference") if isinstance(rec, dict) else None
+    if not isinstance(ref, dict):
+        return False
+    text = " ".join(str(ref.get(k) or "") for k in ("id", "summary"))
+    return bool(DRAFT_RE.search(text))
+
+
 def load_records(approvals_dir: pathlib.Path,
                  findings: list[Finding]) -> dict[str, list[dict]]:
     """Every valid record, grouped by signal_id. Problems become violations."""
@@ -532,6 +548,14 @@ def verify(index_path: pathlib.Path | None = None,
                                         "approval was revoked but the pin is still active; "
                                         "retract or remove it before any publish", sid))
                 continue
+            if is_draft(tip):
+                findings.append(Finding("violation", "draft-approval",
+                                        f"{str(pin.get('title') or '')[:70]!r}: "
+                                        f"current record {tip['approval_id']} is a draft, not the "
+                                        f"owner's approval (approval_reference: "
+                                        f"{tip['approval_reference']['summary'][:80]!r}); the pin is "
+                                        f"unapproved until a real approval record replaces it", sid))
+                continue
             current = payload_sha256(pin)
             if tip["payload_sha256"] != current:
                 findings.append(Finding("violation", "hash-mismatch",
@@ -580,6 +604,10 @@ def report_lines(report: Report, limit: int = 10) -> list[str]:
 
 def refusal_reason(report: Report) -> str:
     parts = []
+    drafts = [f.signal_id or "?" for f in report.violations if f.code == "draft-approval"]
+    if drafts:
+        parts.append(f"{len(drafts)} pin(s) whose only approval is a draft, not the owner's "
+                     f"approval: {', '.join(drafts)}")
     if report.violations:
         parts.append(f"{len(report.violations)} violation(s), first: {report.violations[0].line()}")
     if report.enforce and report.gaps:

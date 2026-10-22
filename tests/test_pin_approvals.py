@@ -192,6 +192,10 @@ def _no_env_enforce(monkeypatch):
 
 # ── the real repo files ───────────────────────────────────────────────────────────────
 
+@pytest.mark.xfail(strict=True, reason=(
+    "The eight Limpopo approval records are drafts ('DRAFT - provisional scratch record, not an "
+    "approval'), and the ledger now refuses a draft as an approval, so the real ledger refuses the "
+    "build. Once the owner's real approval records replace them this passes; remove the marker."))
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
@@ -279,16 +283,26 @@ def test_real_legacy_records_match_the_owner_confirmation():
         assert [s["url"] for s in rec["source_hashes"]] == list(dict.fromkeys(urls))
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "The Limpopo records in the scratch ledger are drafts ('DRAFT - provisional scratch record, "
-    "not an approval'). Replace them with the owner's real approval reference and time before "
-    "publishing; this test then passes and the marker must be removed."))
-def test_limpopo_records_carry_a_real_owner_approval():
-    for f in _real_record_files():
-        rec = json.loads(f.read_text(encoding="utf-8"))
-        if rec["signal_id"] in LIMPOPO_PINS:
-            assert "DRAFT" not in rec["approval_reference"]["summary"]
-            assert "not an approval" not in rec["approval_reference"]["summary"]
+def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_pass():
+    """The ledger as committed: the 45 published pins all pass; the only refusals are
+    draft approvals, and only Limpopo pins may have one. Holds before and after the
+    owner's real approvals replace the drafts."""
+    report = ap.verify(check_git=False)
+    loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
+    active = {p["signal_id"] for p in loaded.active}
+    published = active - LIMPOPO_PINS
+    assert len(published) == 45
+    assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
+    assert {f.code for f in report.violations} <= {"draft-approval"}, \
+        [f.line() for f in report.violations]
+    drafts = {f.signal_id for f in report.violations}
+    assert drafts <= LIMPOPO_PINS
+    assert not drafts & published
+    assert report.approved_pins == report.pins_checked - len(drafts) >= 45
+    assert report.ok == (not drafts)
+    for sid in drafts:
+        assert any(f.signal_id == sid and "draft" in f.message for f in report.violations)
+        assert sid in ap.refusal_reason(report)
 
 
 CAFDA = "7aa4eea1-c1f4-55af-b761-d55ff2df3a51"
@@ -331,11 +345,16 @@ def test_cafda_source_changes_are_approved_as_versions_2_and_3():
 
 
 def test_real_records_catch_an_edited_pin(real_repo):
-    assert _verify(real_repo, enforce=True).ok
-    sid, _ = _pins(real_repo)[0]
+    before = _verify(real_repo, enforce=True)
+    # Only draft Limpopo approvals may refuse (see the draft-approval tests).
+    assert {(f.code, f.signal_id in LIMPOPO_PINS) for f in before.violations} <= {("draft-approval", True)}
+    assert not before.gaps
+    sid = next(s for s, _ in _pins(real_repo) if s not in LIMPOPO_PINS)
+    assert not any(f.signal_id == sid for f in before.findings)
     _edit_pin(real_repo, sid, title="Edited after approval")
     r = _verify(real_repo)
-    assert not r.ok and "hash-mismatch" in _codes(r, "violation")
+    assert not r.ok
+    assert any(f.code == "hash-mismatch" and f.signal_id == sid for f in r.violations)
 
 
 def test_real_records_are_append_only_once_on_main(real_repo):
@@ -418,6 +437,70 @@ def test_valid_approval_counts(repo):
     r = _verify(repo)
     assert r.ok and r.records == 1 and r.approved_pins == 1
     assert not any(f.signal_id == sid for f in r.gaps)
+
+
+@pytest.mark.parametrize("summary", [
+    "DRAFT - provisional scratch record, not an approval.",
+    "draft for the owner's review",
+    "Provisional until the owner replies.",
+    "Prepared by the agent; this is not an approval.",
+])
+def test_draft_record_never_approves_and_names_the_pin(repo, summary):
+    """A well-formed record labelled draft or provisional leaves its pin unapproved,
+    and refuses even with enforcement off."""
+    sid, _ = _pins(repo)[0]
+    rec = _record(repo, sid)
+    rec["approval_reference"]["summary"] = summary
+    assert ap.validate_record(rec) == []             # shaped correctly; the label is what fails it
+    assert ap.is_draft(rec)
+    _write(repo, rec)
+    for kw in ({}, {"enforce": True}):
+        r = _verify(repo, check_git=False, **kw)
+        assert not r.ok and r.approved_pins == 0
+        drafts = [f for f in r.violations if f.code == "draft-approval"]
+        assert [f.signal_id for f in drafts] == [sid]
+        assert rec["approval_id"] in drafts[0].message
+        assert sid in ap.refusal_reason(r) and "draft" in ap.refusal_reason(r)
+
+
+def test_draft_label_in_reference_id_is_a_draft(repo):
+    sid, _ = _pins(repo)[0]
+    rec = _record(repo, sid)
+    rec["approval_reference"]["id"] = "draft-0001"
+    assert ap.is_draft(rec)
+
+
+def test_draft_supersede_leaves_the_pin_unapproved(repo):
+    """A draft on top of a real approval is the current record, so the pin is refused."""
+    sid, _ = _pins(repo)[0]
+    v1 = _record(repo, sid)
+    _write(repo, v1)
+    v2 = _record(repo, sid, version=2, action="supersede", supersedes=v1["approval_id"],
+                 approval_id="20261021T020000Z-0000000b", diff={"note": "none"})
+    v2["approval_reference"]["summary"] = "DRAFT - provisional, not an approval."
+    _write(repo, v2)
+    r = _verify(repo, check_git=False)
+    assert "draft-approval" in _codes(r, "violation") and not r.ok
+
+
+def test_real_approvals_are_not_drafts():
+    """Every legacy and real explicit record in the ledger reads as a real approval;
+    only the Limpopo placeholders may read as drafts."""
+    for f in _real_record_files():
+        rec = json.loads(f.read_text(encoding="utf-8"))
+        if rec["signal_id"] not in LIMPOPO_PINS:
+            assert not ap.is_draft(rec), f.name
+
+
+def test_real_approval_passes_enforced(repo):
+    sid, _ = _pins(repo)[0]
+    rec = _record(repo, sid)
+    rec["approval_reference"] = {"id": "owner-chat-2026-10-23",
+                                 "summary": "Approved by the owner in chat after reading the review."}
+    assert not ap.is_draft(rec)
+    _write(repo, rec)
+    r = _verify(repo, check_git=False)
+    assert r.ok and r.approved_pins == 1 and not r.violations
 
 
 def test_every_pin_approved_passes_enforcement(repo):
@@ -766,3 +849,29 @@ def test_publish_guard_refuses_on_violation(repo, tmp_path, monkeypatch, capsys)
     finally:
         conn.close()
     assert "revoked-active" in capsys.readouterr().out
+
+
+def test_publish_refuses_a_draft_approval_and_builds_nothing(repo, tmp_path, monkeypatch, capsys):
+    """publish.py with a draft as a pin's only approval: refused before any site
+    output is written, naming the pin and why."""
+    import tools.publish as publish
+    monkeypatch.setattr(ap, "APPROVALS_DIR", _ledger(repo))
+    monkeypatch.setattr(ap, "ROOT", repo)
+    monkeypatch.setattr(publish, "CHECKED_INDEX", _index(repo))
+    db = _fresh_db(tmp_path / "dummy.db")
+    cs.run_import(db, _index(repo), write=True, out=lambda *_: None)
+    sid, _ = _pins(repo)[0]
+    rec = _record(repo, sid)
+    rec["approval_reference"]["summary"] = "DRAFT - provisional scratch record, not an approval."
+    _write(repo, rec)
+    built: list = []
+    monkeypatch.setattr(publish, "DB_PATH", db)
+    monkeypatch.setattr(publish, "_build_dist", lambda *a, **k: built.append(a))
+    monkeypatch.setattr(sys, "argv", ["publish.py"])
+    with pytest.raises(publish.CheckedGuardError) as exc:
+        publish.main()
+    assert exc.value.code == 2
+    assert built == []                                 # no site output
+    out = capsys.readouterr().out
+    assert f"violation draft-approval {sid}" in out
+    assert "REFUSED: pin approval ledger" in out and sid in out.split("REFUSED: pin approval ledger")[1]
