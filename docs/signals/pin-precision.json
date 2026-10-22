@@ -56,6 +56,7 @@
     "49773d55-5704-5fcb-ac36-1f7eda5de54b": {"precision": "street", "uncertainty_m": 500, "note": "Paulsberg Street, Tafelsig; shop not located. The street is about 300 m long in OpenStreetMap."},
     "06219161-76ad-5b50-91d0-e58235427edf": {"precision": "spot", "uncertainty_m": 150, "note": "Corner of Bokmakierie Street and 7th Avenue (police and Heart FM)."},
     "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {"precision": "street", "uncertainty_m": 1000, "note": "Angela Street, Valhalla Park; the spot on the water is not given and the street is over a kilometre long."},
-    "0c9f233c-6c38-5da4-a660-c6776f575667": {"precision": "spot", "uncertainty_m": 150, "note": "Corner of St Alexander Circle and St Christopher Avenue (Southern Mail only)."}
+    "0c9f233c-6c38-5da4-a660-c6776f575667": {"precision": "spot", "uncertainty_m": 150, "note": "Corner of St Alexander Circle and St Christopher Avenue (Southern Mail only)."},
+    "e0fa3712-df77-531e-a040-437dee019c3c": {"precision": "street", "uncertainty_m": 400, "note": "INFERRED. The article says 'Firethorne, near Geelhout Street' and gives no street-level location. The point is the midpoint of OpenStreetMap's Geelhout Road, Bonteheuwel (about 448 m), which meets Firethorn Street (about 838 m) at two junctions; the spelling differs. It marks the area, not the scene."}
   }
 }

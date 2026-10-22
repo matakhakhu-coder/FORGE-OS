@@ -646,6 +646,20 @@
       ],
       "independence": "single_report",
       "note": "One report of the police account; Briefly News is a later rewrite with no new detail or quote."
+    },
+    "e0fa3712-df77-531e-a040-437dee019c3c": {
+      "statement_from": "SAPS Western Cape (Lt Col FC van Wyk), quoted by Athlone News",
+      "spokesperson": [
+        "FC van Wyk"
+      ],
+      "other_voices": [
+        "Ward 50 councillor Angus McKenzie (about the separate Loganberry Street killing only)"
+      ],
+      "outlets": [
+        "Athlone News"
+      ],
+      "independence": "single_report",
+      "note": "One report of the police account (reporter Siyavuya Khaya, per the page's author tag), in an article that also covers the separate Loganberry Street, Bonteheuwel, killing of 18 October."
     }
   }
 }

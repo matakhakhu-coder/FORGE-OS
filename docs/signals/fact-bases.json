@@ -4393,6 +4393,114 @@
           "conflicts": []
         }
       ]
+    },
+    "e0fa3712-df77-531e-a040-437dee019c3c": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 33, dead.",
+          "basis": "Police account only",
+          "detail": "Found by Bishop Lavis police with multiple gunshot wounds. Not named.",
+          "sources": [
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "found the body of a man with multiple gunshot wounds"
+            },
+            {
+              "name": "Athlone News (police reports)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "the 33-year-old victim was walking near the address"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 17 October 2026, about 23:05.",
+          "basis": "Police account only",
+          "detail": "Time from the police spokesperson as reported by Athlone News.",
+          "sources": [
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "the first incident occurred on Saturday, October 17, at approximately 11.05pm in Firethorne, near Geelhout Street"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "In front of a premises in Firethorne, near Geelhout Street.",
+          "basis": "Police account only",
+          "detail": "Address not given. 'Firethorne' is not a suburb in OpenStreetMap; the pin is placed by inference on Geelhout Road beside Firethorn Street, Bonteheuwel (see the pin note).",
+          "sources": [
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "Bishop Lavis police attended the shooting incident in front of a premises in Firethorne"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot from a vehicle and chased; gunshot wounds to the chest and head.",
+          "basis": "Police account only",
+          "detail": "The occupants of a white vehicle 'allegedly' opened fire, per police reports as relayed by Athlone News.",
+          "sources": [
+            {
+              "name": "Athlone News (police reports)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "a white vehicle stopped alongside him. The occupants allegedly opened fire and chased him until he collapsed."
+            },
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "the victim sustained gunshot wounds to his chest and head"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed gang-related (police).",
+          "basis": "Police account only",
+          "detail": "A police belief, not a finding.",
+          "sources": [
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "Bishop Lavis detectives are investigating a murder case, with the motive believed to be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported.",
+          "basis": "Police account only",
+          "detail": "Murder case opened. The article does not mention an arrest either way. The first report came on day 5 (22 Oct), so there is no report from by day 3 to read.",
+          "sources": [
+            {
+              "name": "FC van Wyk, provincial police spokesperson (via Athlone News)",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+              "archive": null,
+              "quote": "Bishop Lavis detectives are investigating a murder case"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

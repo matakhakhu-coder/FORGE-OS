@@ -148,6 +148,52 @@
         "collected_title": "Retreat clinic reopens after shooting leaves one dead, three wounded"
       },
       "fingerprint": "sha256:29f81639bab042bc2df230199ef6f61fe7f42a5a9c3bf8910b3cca0e77526124"
+    },
+    {
+      "signal_id": "e0fa3712-df77-531e-a040-437dee019c3c",
+      "external_id": "checked:wc-2026-10-22-s5:F",
+      "source": "Athlone News",
+      "title": "Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct",
+      "content": "Police say a man of 33 was shot dead in Firethorne, near Geelhout Street, at about 23:05 on Saturday 17 October (Lieutenant Colonel FC van Wyk, provincial police spokesperson, via Athlone News). He was walking near a premises when a white vehicle stopped alongside him; the occupants allegedly opened fire and chased him until he collapsed. Bishop Lavis police found his body with gunshot wounds to the chest and head. Bishop Lavis detectives are investigating a murder case; police believe the motive is gang-related. No arrest has been reported. The victim was not named. One report found, resting on police: Athlone News, published 22 October. 'Firethorne' is not a suburb on the map; the pin is on Geelhout Road beside Firethorn Street in Bonteheuwel, an inferred location the article does not give. Not the Loganberry Street, Bonteheuwel, shooting of 18 October in the same article.",
+      "lat": -33.9494589,
+      "lng": 18.5486674,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-17T21:05:00Z",
+      "published_at": "2026-10-22T11:45:00Z",
+      "metadata": {
+        "source_outlet": "Athlone News",
+        "link": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/",
+        "pubdate_raw": "2026-10-22T09:55:48+0000 (datePublished on the page; dateModified the same, rechecked 22 Oct about 13:45 SAST)",
+        "checked": {
+          "incident": "Sat 17 Oct 2026 at about 23:05 (police, via Athlone News)",
+          "reported": "22 Oct 2026 (Athlone News 11:55 SAST, earliest and only report found). Earliest found, not proven earliest: window eligibility is PROVISIONAL on 'no earlier report found' (owner, 22 Oct about 13:39 SAST) and is reviewed if a report published before 19 Oct 00:00 SAST surfaces.",
+          "location": "'In front of a premises in Firethorne, near Geelhout Street' (police, via Athlone News); address not given. 'Firethorne' is not a suburb or street in OpenStreetMap. The pin is INFERRED: the midpoint of Geelhout Road, Bonteheuwel (OSM ways 704572595 and 30349364, about 448 m), which meets Firethorn Street (OSM way 30349369) at both ends of its loop, inside the Bishop Lavis police area per the 22 Oct source check. The spelling differs (Firethorn) and the article gives no street-level location; the point marks the area, not the scene. OSM 'Geelhout Street' in the Lotus River area (Ward 65) is a different street and is not used.",
+          "sources": [
+            {
+              "name": "Athlone News",
+              "url": "https://athlonenews.co.za/news/2026-10-22-two-men-killed-in-separate-shootings-in-firethorne-and-bonteheuwel/"
+            }
+          ],
+          "checked_at": "2026-10-22T11:45:00Z",
+          "method": "Athlone News item surfaced by four of the original 14 standard Google News query strings ('Western Cape body found police', 'Cape Town murder police', 'Cape Town shot dead', 'Cape Flats shooting killed') in the re-run at about 13:15 SAST on 22 Oct; source-checked about 13:30 SAST; page re-fetched about 13:44 SAST (text identical, dateModified equals datePublished) and quotes matched word for word against the saved copy.",
+          "incident_start": "2026-10-17T23:05+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-22",
+          "search_aliases": [
+            "Firethorne",
+            "Firethorn Street",
+            "Geelhout Street",
+            "Geelhout Road",
+            "Bonteheuwel",
+            "Bishop Lavis",
+            "Cape Flats",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Two men killed in separate shootings in Firethorne and Bonteheuwel"
+      },
+      "fingerprint": "sha256:2cda38c40df8b4598b3c2aaff8c2967bb5bf3bf40c9ed6e484f0fb119ebaf9b4"
     }
   ]
 }

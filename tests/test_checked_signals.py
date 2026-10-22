@@ -4,7 +4,7 @@ Built on the standalone-signal and drawer tests: same fresh temp database,
 same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eastern Cape pins,
 then 1 Western Cape Sprint 5 pin: Cafda Village, Retreat, 18 Oct, then 1 Eastern Cape pin: Gqeberha,
 then 3 Western Cape Sprint 5 pins: Steenberg, 20 Oct, Strandfontein, 19 Oct, and Athlone, 19 Oct,
-then 3 Western Cape Sprint 5 pins: Tafelsig barber, Valhalla Park and St Montague Village).
+then 4 Western Cape Sprint 5 pins: Tafelsig barber, Valhalla Park, St Montague Village and Firethorne).
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT))
 
 SIGNALS_DIR = ROOT / "docs" / "signals"
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
-WC_PINS = 31          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct + Steenberg, Strandfontein and Athlone, 21 Oct + Tafelsig barber, Valhalla Park and St Montague Village, 22 Oct)
+WC_PINS = 32          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct + Steenberg, Strandfontein and Athlone, 21 Oct + Tafelsig barber, Valhalla Park, St Montague Village and Firethorne, 22 Oct)
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
 EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct), outside the pattern test
 ALL_PINS = WC_PINS + NW_PINS + EC_PINS

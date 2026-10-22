@@ -184,8 +184,8 @@ def _no_env_enforce(monkeypatch):
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 46
-    assert report.pins_checked == 44
+    assert report.records == len(_real_record_files()) == 47
+    assert report.pins_checked == 45
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -228,7 +228,8 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "49773d55-5704-5fcb-ac36-1f7eda5de54b",   # Tafelsig barber, approved in the live call 22 Oct 2026
                         "06219161-76ad-5b50-91d0-e58235427edf",   # Athlone, approved in the live call 22 Oct 2026
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
-                        "0c9f233c-6c38-5da4-a660-c6776f575667"}   # St Montague Village, approved in the live call 22 Oct 2026
+                        "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
+                        "e0fa3712-df77-531e-a040-437dee019c3c"}   # Firethorne, approved in chat 22 Oct 2026
     assert set(first) == active
     for sid, rec in first.items():
         if sid in new_pins:

@@ -122,14 +122,14 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 44
+    assert len(pins) == 45
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
                     "north-west--mmabatho", "north-west--ottosdal", "north-west--schweizer-reneke",
                     "eastern-cape--gqeberha", "eastern-cape--willowvale", "eastern-cape--east-london",
                     "eastern-cape--ilinge"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 44
+    assert sum(len(a["pins"]) for a in res["areas"]) == 45
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])

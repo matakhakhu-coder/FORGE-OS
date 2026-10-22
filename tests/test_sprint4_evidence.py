@@ -67,7 +67,8 @@ def test_incident_order_is_not_report_order():
     assert by_incident[-5]["signal_id"].startswith("06219161")   # 19 Oct, Athlone (Bokmakierie St)
     assert by_incident[-6]["signal_id"].startswith("0c9f233c")   # 18 Oct, St Montague Village
     assert by_incident[-7]["signal_id"].startswith("7aa4eea1")   # 18 Oct, Cafda Village, Retreat
-    assert by_incident[-8]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
+    assert by_incident[-8]["signal_id"].startswith("e0fa3712")   # 17 Oct 23:05, Firethorne (near Geelhout St)
+    assert by_incident[-9]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
 
 
 # ── Checked pins in the place-and-time matcher ────────────────────────────────────────

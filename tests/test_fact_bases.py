@@ -19,6 +19,7 @@ C5 = {
     '06219161-76ad-5b50-91d0-e58235427edf',  # Athlone
     '0caa5a74-cc5e-5f04-a0cb-aa13466552d4',  # Valhalla Park
     '0c9f233c-6c38-5da4-a660-c6776f575667',  # St Montague Village
+    'e0fa3712-df77-531e-a040-437dee019c3c',  # Firethorne (draft batch C5c, eight quotes re-matched)
 }
 SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5
 
@@ -39,8 +40,8 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 44
-    assert sum(len(p['facts']) for p in exported.values()) == 264   # 222 + six each for Gqeberha, Steenberg, Strandfontein and the four C5 pins
+    assert len(exported) == 45
+    assert sum(len(p['facts']) for p in exported.values()) == 270   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne
     assert SEPARATELY_AUDITED <= set(exported)
     text = json.dumps(exported)
     for key in ('credibility', 'source_grades', 'pin_notes', 'text_sha256'):
