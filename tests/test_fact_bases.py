@@ -13,7 +13,14 @@ CAFDA = '7aa4eea1-c1f4-55af-b761-d55ff2df3a51'
 GQEBERHA = 'b842a3b5-eda7-5b97-bfe1-0448fe0272a5'
 STEENBERG = '048440e0-0be5-53d8-934a-1ba6233a0dfa'
 STRANDFONTEIN = 'adf99019-941e-5dd0-9851-635da0a1e146'
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN}
+# Sprint 5 draft batch C5: every quote re-matched word for word against the saved copies (22 Oct 2026).
+C5 = {
+    '49773d55-5704-5fcb-ac36-1f7eda5de54b',  # Tafelsig barber
+    '06219161-76ad-5b50-91d0-e58235427edf',  # Athlone
+    '0caa5a74-cc5e-5f04-a0cb-aa13466552d4',  # Valhalla Park
+    '0c9f233c-6c38-5da4-a660-c6776f575667',  # St Montague Village
+}
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5
 
 
 def load(path):
@@ -32,8 +39,8 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 40
-    assert sum(len(p['facts']) for p in exported.values()) == 240   # 222 + Gqeberha's, Steenberg's and Strandfontein's six each
+    assert len(exported) == 44
+    assert sum(len(p['facts']) for p in exported.values()) == 264   # 222 + six each for Gqeberha, Steenberg, Strandfontein and the four C5 pins
     assert SEPARATELY_AUDITED <= set(exported)
     text = json.dumps(exported)
     for key in ('credibility', 'source_grades', 'pin_notes', 'text_sha256'):

@@ -1,0 +1,80 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T104912Z-e9c55039",
+  "signal_id": "0c9f233c-6c38-5da4-a660-c6776f575667",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-22-sprint5.json",
+  "approved_payload": {
+    "content": "Police say two men, aged 37 and 46, were shot dead at the corner of St Alexander Circle and St Christopher Avenue in St Montague Village on Sunday evening, 18 October; Steenberg police responded at about 18:30 (Sergeant Wesley Twigg, via Southern Mail). According to police, two suspects approached the men, opened fire and fled on foot. Police believe the motive may be gang-related. Steenberg detectives are investigating two counts of murder. No arrest has been reported. The victims were not named. One report found, resting on police: Southern Mail; Briefly News mentions the shooting later without new detail. Not the St Montague Village shooting of 7 October, which is a separate pin.",
+    "external_id": "checked:wc-2026-10-22-s5:C",
+    "lat": -34.0684541,
+    "lng": 18.4896295,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T10:25:00Z",
+        "incident": "Sun 18 Oct 2026, police responded at about 18:30 (police, via Southern Mail)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-18T18:30+02:00",
+        "location": "Corner of St Alexander Circle and St Christopher Avenue, St Montague Village (Southern Mail). The pin is the midpoint between the nearest nodes of the two streets in OpenStreetMap (ways 701190631 and 30631994, about 30 m apart).",
+        "method": "Found in the 22 Oct 2026 scheduled pass (Southern Mail item surfaced by five of the 14 standard queries); targeted St Montague searches found no pre-19 Oct report; quotes re-matched word for word against saved copies.",
+        "reported": "20 Oct 2026 (Southern Mail 08:45 SAST, earliest found)",
+        "reported_at": "2026-10-20",
+        "search_aliases": [
+          "St Montague Village",
+          "Steenberg",
+          "Lavender Hill",
+          "St Alexander Circle",
+          "St Christopher Avenue",
+          "Cape Town"
+        ],
+        "sources": [
+          {
+            "name": "Southern Mail",
+            "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/"
+          },
+          {
+            "name": "Briefly News",
+            "url": "https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/"
+          }
+        ]
+      },
+      "collected_title": "Retreat clinic reopens after shooting leaves one dead, three wounded",
+      "link": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+      "pubdate_raw": "2026-10-20T06:45:01+0000 (datePublished on the page)",
+      "source_outlet": "Southern Mail"
+    },
+    "published_at": "2026-10-22T10:25:00Z",
+    "signal_id": "0c9f233c-6c38-5da4-a660-c6776f575667",
+    "source": "Southern Mail",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-18T16:30:00Z",
+    "title": "St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct"
+  },
+  "payload_sha256": "sha256:29f81639bab042bc2df230199ef6f61fe7f42a5a9c3bf8910b3cca0e77526124",
+  "source_hashes": [
+    {
+      "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+      "retrieved_at": "2026-10-22T10:48:18Z",
+      "content_sha256": "sha256:6c17fbc6823581500e855438d1106b6ee83db6d432970cb4716cba3dcd504550"
+    },
+    {
+      "url": "https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/",
+      "retrieved_at": "2026-10-22T10:48:19Z",
+      "content_sha256": "sha256:0dcf79dfb842e256cd30de2a61a97237215d745a5d46f53532528a13b0d8aa4a"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T12:42:00+02:00",
+  "recorded_at": "2026-10-22T12:49:12+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "sprint5-c5-2026-10-22",
+    "summary": "confirmed by user in live call on October 22 (2026): 'also approved.' to approving the four C5 drafts and the Cafda label; Athlone gang link confirmed. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

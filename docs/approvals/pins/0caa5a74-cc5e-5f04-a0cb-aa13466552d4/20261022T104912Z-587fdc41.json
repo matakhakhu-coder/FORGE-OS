@@ -1,0 +1,81 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T104912Z-587fdc41",
+  "signal_id": "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-22-sprint5.json",
+  "approved_payload": {
+    "content": "Police say the body of a man of 21 was found in Angela Street, Valhalla Park, at about 07:04 on Tuesday 20 October, with stab wounds to his throat (Sergeant Wesley Twigg, via Daily Voice and TygerBurger). He was declared dead at the scene. Bishop Lavis police registered a murder case; no arrest has been reported. The reports place the body in water, a vlei (Daily Voice) or a canal (TygerBurger), with tyres over it. No source says when he was killed: the date and time are when the body was found. Police give no motive. A name shared online was not verified by TygerBurger, so the victim is not named here. Two reports, both resting on one police account: Daily Voice and TygerBurger.",
+    "external_id": "checked:wc-2026-10-22-s5:B",
+    "lat": -33.953542,
+    "lng": 18.5746216,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T10:25:00Z",
+        "incident": "Body found Tue 20 Oct 2026 at about 07:04 (police, via Daily Voice and TygerBurger). 07:04 is the discovery time; no source gives when he was killed.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-20T07:04+02:00",
+        "location": "Angela Street, Valhalla Park (police, via Daily Voice); in a vlei or canal. The spot on the water is not given. The pin is the middle of Angela Street in OpenStreetMap (way 30690124), which OSM labels Nooitgedacht/Elsies River; the street also holds the Valhalla Park Community Centre. It marks the street, not where the body lay.",
+        "method": "Found in the 22 Oct 2026 scheduled pass by two of the 14 standard Google News queries (TygerBurger item); second source (Daily Voice) found in the 22 Oct source checks; quotes re-matched word for word against saved copies.",
+        "reported": "20 Oct 2026 (Daily Voice 18:00 SAST)",
+        "reported_at": "2026-10-20",
+        "search_aliases": [
+          "Valhalla Park",
+          "Bishop Lavis",
+          "Angela Street",
+          "canal",
+          "vlei",
+          "Cape Flats",
+          "Cape Town"
+        ],
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/"
+          },
+          {
+            "name": "TygerBurger (Nova News)",
+            "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/"
+          }
+        ]
+      },
+      "collected_title": "Body with tyres over head found in vlei",
+      "link": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+      "pubdate_raw": "2026-10-20T16:00:00+0000 (datePublished on the page)",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-22T10:25:00Z",
+    "signal_id": "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-20T05:04:00Z",
+    "title": "Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct"
+  },
+  "payload_sha256": "sha256:7db90b421a98e6836d88e6a846cead676a911b88eb5a5d78ca22cbf262032672",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+      "retrieved_at": "2026-10-22T10:48:17Z",
+      "content_sha256": "sha256:4d3270631c8a066d9a09e6865904aa28284a0716093e4871b2f9662e256345cb"
+    },
+    {
+      "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+      "retrieved_at": "2026-10-22T10:48:18Z",
+      "content_sha256": "sha256:3a62c5865e11db8a773a46bb49e3ec6ea59684160145926a5cb1b64c68832537"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T12:42:00+02:00",
+  "recorded_at": "2026-10-22T12:49:12+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "sprint5-c5-2026-10-22",
+    "summary": "confirmed by user in live call on October 22 (2026): 'also approved.' to approving the four C5 drafts and the Cafda label; Athlone gang link confirmed. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

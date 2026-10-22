@@ -105,6 +105,62 @@
         "collected_title": "Fourth person killed in Strandfontein as gang shootings continue"
       },
       "fingerprint": "sha256:26ab00d2988d6bb6eca110cb3d2b375c8f885f89b8565fd9089a564d7cd12b11"
+    },
+    {
+      "signal_id": "06219161-76ad-5b50-91d0-e58235427edf",
+      "external_id": "checked:wc-2026-10-21-s5:C",
+      "source": "Daily Voice",
+      "title": "Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct",
+      "content": "Police say a man of 35 was found with multiple gunshot wounds inside a vehicle at the corner of Bokmakierie Street and 7th Avenue after a shooting at about 13:25 on Monday 19 October (Constable Ndakhe Gwala, via Daily Voice). He was declared dead at the scene. Athlone police registered a murder case; police believe the motive is gang-related. No arrest has been reported. The victim was not named. SABC News (citing police) and Megazone say Monday night; the police statement quoted by Daily Voice gives about 13:25, and Heart FM says the afternoon. Four reports, all resting on one police account: SABC News, Heart FM, Daily Voice and Crime Scene Report (news-stuff.co.za).",
+      "lat": -33.9537161,
+      "lng": 18.5069615,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-19T11:25:00Z",
+      "published_at": "2026-10-22T10:25:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "link": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+        "pubdate_raw": "2026-10-20T15:00:00+0000 (datePublished on the page)",
+        "checked": {
+          "incident": "Mon 19 Oct 2026 at about 13:25 (police statement, via Daily Voice and Crime Scene Report). SABC News and Megazone say Monday night.",
+          "reported": "20 Oct 2026 (SABC News 12:29 SAST, earliest found)",
+          "location": "Inside a vehicle at the corner of Bokmakierie Street and 7th Avenue (police, via Daily Voice; Heart FM). The pin is the shared node of the two streets in OpenStreetMap.",
+          "sources": [
+            {
+              "name": "Daily Voice",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/"
+            },
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/"
+            },
+            {
+              "name": "Heart FM",
+              "url": "https://heartfm.co.za/man-shot-and-killed-in-car/"
+            },
+            {
+              "name": "Crime Scene Report (news-stuff.co.za)",
+              "url": "http://news-stuff.co.za/tag/athlone-murder/"
+            }
+          ],
+          "checked_at": "2026-10-22T10:25:00Z",
+          "method": "First drafted 21 Oct from an SABC News listing and parked; found again in the 22 Oct scheduled pass by three of the 14 standard Google News queries (Central News item, staged-2026-10-22-pass5.json); date and time confirmed from the police statement in the 22 Oct source checks; quotes re-matched word for word against saved copies.",
+          "incident_start": "2026-10-19T13:25+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-20",
+          "search_aliases": [
+            "Athlone",
+            "Bokmakierie",
+            "Bokmakierie Street",
+            "7th Avenue",
+            "Cape Flats",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Bokmakierie rocked by deadly double shooting"
+      },
+      "fingerprint": "sha256:06a8065c09b854a4d3a6995df9aa93df23b4af71bfba4e379d20881c5d02b190"
     }
   ]
 }

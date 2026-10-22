@@ -60,10 +60,14 @@ def test_incident_order_is_not_report_order():
     by_report = sorted(pins, key=lambda s: s["timestamp"])
     assert [s["signal_id"] for s in by_incident] != [s["signal_id"] for s in by_report]
     assert by_incident[0]["signal_id"].startswith("0f037fc3")    # 1 Oct, Mitchells Plain
-    assert by_incident[-1]["signal_id"].startswith("048440e0")   # 20 Oct, Steenberg (Military Rd)
-    assert by_incident[-2]["signal_id"].startswith("adf99019")   # 19 Oct, Strandfontein (Korvette Rd)
-    assert by_incident[-3]["signal_id"].startswith("7aa4eea1")   # 18 Oct, Cafda Village, Retreat
-    assert by_incident[-4]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
+    assert by_incident[-1]["signal_id"].startswith("49773d55")   # 20 Oct evening, Tafelsig barber (Paulsberg St)
+    assert by_incident[-2]["signal_id"].startswith("048440e0")   # 20 Oct, Steenberg (Military Rd)
+    assert by_incident[-3]["signal_id"].startswith("0caa5a74")   # 20 Oct, Valhalla Park, body found
+    assert by_incident[-4]["signal_id"].startswith("adf99019")   # 19 Oct, Strandfontein (Korvette Rd)
+    assert by_incident[-5]["signal_id"].startswith("06219161")   # 19 Oct, Athlone (Bokmakierie St)
+    assert by_incident[-6]["signal_id"].startswith("0c9f233c")   # 18 Oct, St Montague Village
+    assert by_incident[-7]["signal_id"].startswith("7aa4eea1")   # 18 Oct, Cafda Village, Retreat
+    assert by_incident[-8]["signal_id"].startswith("19a71c43")   # 17 Oct, Tafelsig
 
 
 # ── Checked pins in the place-and-time matcher ────────────────────────────────────────

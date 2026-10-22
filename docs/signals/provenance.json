@@ -527,7 +527,7 @@
       "note": "Police-involved death. Six outlets, all repeating the police statement, including its claim that the dead man was a person of interest in other murders. IPID is to investigate; no IPID finding and no ballistic result has been reported. No source outside the police."
     },
     "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {
-      "statement_from": "SAPS Western Cape, quoted by Smile 90.4FM and IOL",
+      "statement_from": "SAPS Western Cape, quoted by Smile 90.4FM, IOL and Southern Mail",
       "spokesperson": [
         "Wesley Twigg"
       ],
@@ -537,10 +537,11 @@
       "outlets": [
         "Smile 90.4FM",
         "Cape Times (IOL)",
-        "Cape Argus (IOL)"
+        "Cape Argus (IOL)",
+        "Southern Mail"
       ],
       "independence": "same_statement",
-      "note": "Two reports, both resting on police. IOL ran one story twice (Cape Times and Cape Argus), so it counts once. The health department speaks only about the clinic closure."
+      "note": "Three reports, all resting on police. IOL ran one story twice (Cape Times and Cape Argus), so it counts once. Southern Mail also quotes the provincial Health Department, which speaks only about the clinic closure."
     },
     "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {
       "statement_from": "SAPS Eastern Cape, quoted by The Herald, Algoa FM and PE Express",
@@ -587,6 +588,64 @@
       ],
       "independence": "same_statement",
       "note": "One police account, two reports in different media groups (Nova News and Independent Media). Cape Argus quotes Van Wyk directly and in reported speech; TygerBurger paraphrases. Repetition is not independent corroboration. The councillor speaks only about the police response."
+    },
+    "49773d55-5704-5fcb-ac36-1f7eda5de54b": {
+      "statement_from": "SAPS Western Cape, quoted by Cape Times (IOL)",
+      "spokesperson": [],
+      "other_voices": [
+        "Unnamed Tafelsig resident"
+      ],
+      "outlets": [
+        "Cape Times (IOL)"
+      ],
+      "independence": "single_report",
+      "note": "One report. The police statement is quoted without a named spokesperson for the barber killing (Gwala is named only on the unrest arrests)."
+    },
+    "06219161-76ad-5b50-91d0-e58235427edf": {
+      "statement_from": "SAPS Western Cape, quoted by Daily Voice, SABC News, Heart FM and Crime Scene Report",
+      "spokesperson": [
+        "Ndakhe Gwala"
+      ],
+      "other_voices": [
+        "Unnamed Athlone crime forum member (general remarks)"
+      ],
+      "outlets": [
+        "Daily Voice",
+        "SABC News",
+        "Heart FM",
+        "Crime Scene Report (news-stuff.co.za)",
+        "Megazone"
+      ],
+      "independence": "same_statement",
+      "note": "All reports relay one police account. Central News (blocked by a robot check) and Megazone repeat it."
+    },
+    "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {
+      "statement_from": "SAPS Western Cape, quoted by Daily Voice and TygerBurger",
+      "spokesperson": [
+        "Wesley Twigg"
+      ],
+      "other_voices": [
+        "Woman heard in a social media video (Daily Voice)"
+      ],
+      "outlets": [
+        "Daily Voice",
+        "TygerBurger (Nova News)"
+      ],
+      "independence": "same_statement",
+      "note": "Two reports of one police account; both also describe the same social media video."
+    },
+    "0c9f233c-6c38-5da4-a660-c6776f575667": {
+      "statement_from": "SAPS Western Cape, quoted by Southern Mail",
+      "spokesperson": [
+        "Wesley Twigg"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Southern Mail",
+        "Briefly News"
+      ],
+      "independence": "single_report",
+      "note": "One report of the police account; Briefly News is a later rewrite with no new detail or quote."
     }
   }
 }

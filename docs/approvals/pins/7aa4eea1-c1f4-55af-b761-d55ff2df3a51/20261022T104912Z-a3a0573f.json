@@ -1,0 +1,109 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T104912Z-a3a0573f",
+  "signal_id": "7aa4eea1-c1f4-55af-b761-d55ff2df3a51",
+  "action": "supersede",
+  "pin_version": 3,
+  "supersedes": "20261021T032852Z-4a0ca4f1",
+  "batch_file": "western-cape-murders-2026-10-19-sprint5.json",
+  "approved_payload": {
+    "content": "Police say four people were shot on Bernstein Road near the Retreat Community Health Centre, in Cafda Village, on Sunday 18 October; police responded at about 15:30. A man of 41 died, and three young men aged 16 to 21 were wounded (Smile 90.4FM, quoting police spokesperson Wesley Twigg). Steenberg police are investigating murder and attempted murder cases. No motive and no arrest have been reported. The clinic was locked down after the shooting and reopened on 19 October (Department of Health and Wellness). The victims were not named. Three reports, all resting on police: Smile 90.4FM, IOL (Cape Times; Cape Argus ran the same story) and Southern Mail, which also quotes the provincial Health Department.",
+    "external_id": "checked:wc-2026-10-19-s5:A",
+    "lat": -34.0601163,
+    "lng": 18.4813237,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-19T07:45:00Z",
+        "incident": "Sun 18 Oct 2026, police responded at about 15:30 (police, via Smile 90.4FM)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-18T15:30+02:00",
+        "location": "Bernstein Road, Cafda Village, Retreat, near the Retreat Community Health Centre (police, via Smile 90.4FM). Exact spot not given. The pin is the middle of Bernstein Road, a short street (about 160 m) in OpenStreetMap.",
+        "method": "Found in the 19 Oct 2026 Sprint 5 collection run; source page read and claims, dates and place checked by hand; standalone (no case, entity or map line). IOL Cape Times article added on 21 Oct 2026 after the fact audit; it repeats the police account. Southern Mail article (20 Oct 2026) added on 22 Oct 2026; it repeats the police account and adds a provincial Health Department statement.",
+        "reported": "19 Oct 2026",
+        "reported_at": "2026-10-19",
+        "search_aliases": [
+          "Cafda",
+          "Retreat",
+          "Steenberg",
+          "Bernstein Road",
+          "Retreat clinic",
+          "Retreat Community Health Centre",
+          "Cape Town"
+        ],
+        "sources": [
+          {
+            "name": "Smile 90.4FM",
+            "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/"
+          },
+          {
+            "name": "Cape Times (IOL)",
+            "url": "https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-reopens-after-fatal-shooting-nearby2/"
+          },
+          {
+            "name": "Southern Mail",
+            "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/"
+          }
+        ]
+      },
+      "collected_title": "Retreat clinic reopened, after fatal shooting",
+      "link": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+      "pubdate_raw": "2026-10-19T06:07:02+00:00 (datePublished on the page)",
+      "source_outlet": "Smile 90.4FM"
+    },
+    "published_at": "2026-10-19T07:45:00Z",
+    "signal_id": "7aa4eea1-c1f4-55af-b761-d55ff2df3a51",
+    "source": "Smile 90.4FM",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-18T13:30:00Z",
+    "title": "Cafda Village, Retreat (Bernstein Rd, approx.): man, 41, shot dead, three young men wounded, 18 Oct"
+  },
+  "payload_sha256": "sha256:73d7017a03f69ad6d3c5dc643e8e565310560f47fda19a4f2417a3de6843c37b",
+  "source_hashes": [
+    {
+      "url": "https://smilefm.co.za/retreat-clinic-reopened-after-fatal-shooting/",
+      "retrieved_at": "2026-10-22T10:48:19Z",
+      "content_sha256": "sha256:f8b66c6e95c95e01f6dd5873a8f0e54c177ca8c3eb881230600e925f6211d156"
+    },
+    {
+      "url": "https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-reopens-after-fatal-shooting-nearby2/",
+      "retrieved_at": "2026-10-22T10:48:23Z",
+      "content_sha256": "sha256:a65f2b538f9ed980167f3fdc74d3a98f28922f0d134d250ba28013d8b692bb5d"
+    },
+    {
+      "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+      "retrieved_at": "2026-10-22T10:48:18Z",
+      "content_sha256": "sha256:6c17fbc6823581500e855438d1106b6ee83db6d432970cb4716cba3dcd504550"
+    }
+  ],
+  "diff_from_previous": {
+    "content": {
+      "from": "... The victims were not named. Two reports, both resting on police: Smile 90.4FM and IOL (Cape Times; Cape Argus ran the same story).",
+      "to": "... The victims were not named. Three reports, all resting on police: Smile 90.4FM, IOL (Cape Times; Cape Argus ran the same story) and Southern Mail, which also quotes the provincial Health Department."
+    },
+    "metadata.checked.sources": {
+      "added": {
+        "name": "Southern Mail",
+        "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/"
+      }
+    },
+    "metadata.checked.method": {
+      "appended": "Southern Mail article (20 Oct 2026) added on 22 Oct 2026; it repeats the police account and adds a provincial Health Department statement."
+    },
+    "fingerprint": {
+      "from": "sha256:c5d334972715928e444330f480d8a84a8ed0c5a95c0a958e2cbbc2a37d43a370",
+      "to": "sha256:73d7017a03f69ad6d3c5dc643e8e565310560f47fda19a4f2417a3de6843c37b"
+    },
+    "unchanged": "every other approved field"
+  },
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T12:42:00+02:00",
+  "recorded_at": "2026-10-22T12:49:12+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "cafda-label-2026-10-22",
+    "summary": "confirmed by user in live call on October 22 (2026): 'also approved.' Cafda label now three reports (Southern Mail added), all resting on police. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

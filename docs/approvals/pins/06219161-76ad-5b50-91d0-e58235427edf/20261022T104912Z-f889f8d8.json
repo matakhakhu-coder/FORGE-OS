@@ -1,0 +1,98 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T104912Z-f889f8d8",
+  "signal_id": "06219161-76ad-5b50-91d0-e58235427edf",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-21-sprint5.json",
+  "approved_payload": {
+    "content": "Police say a man of 35 was found with multiple gunshot wounds inside a vehicle at the corner of Bokmakierie Street and 7th Avenue after a shooting at about 13:25 on Monday 19 October (Constable Ndakhe Gwala, via Daily Voice). He was declared dead at the scene. Athlone police registered a murder case; police believe the motive is gang-related. No arrest has been reported. The victim was not named. SABC News (citing police) and Megazone say Monday night; the police statement quoted by Daily Voice gives about 13:25, and Heart FM says the afternoon. Four reports, all resting on one police account: SABC News, Heart FM, Daily Voice and Crime Scene Report (news-stuff.co.za).",
+    "external_id": "checked:wc-2026-10-21-s5:C",
+    "lat": -33.9537161,
+    "lng": 18.5069615,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T10:25:00Z",
+        "incident": "Mon 19 Oct 2026 at about 13:25 (police statement, via Daily Voice and Crime Scene Report). SABC News and Megazone say Monday night.",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-19T13:25+02:00",
+        "location": "Inside a vehicle at the corner of Bokmakierie Street and 7th Avenue (police, via Daily Voice; Heart FM). The pin is the shared node of the two streets in OpenStreetMap.",
+        "method": "First drafted 21 Oct from an SABC News listing and parked; found again in the 22 Oct scheduled pass by three of the 14 standard Google News queries (Central News item, staged-2026-10-22-pass5.json); date and time confirmed from the police statement in the 22 Oct source checks; quotes re-matched word for word against saved copies.",
+        "reported": "20 Oct 2026 (SABC News 12:29 SAST, earliest found)",
+        "reported_at": "2026-10-20",
+        "search_aliases": [
+          "Athlone",
+          "Bokmakierie",
+          "Bokmakierie Street",
+          "7th Avenue",
+          "Cape Flats",
+          "Cape Town"
+        ],
+        "sources": [
+          {
+            "name": "Daily Voice",
+            "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/"
+          },
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/"
+          },
+          {
+            "name": "Heart FM",
+            "url": "https://heartfm.co.za/man-shot-and-killed-in-car/"
+          },
+          {
+            "name": "Crime Scene Report (news-stuff.co.za)",
+            "url": "http://news-stuff.co.za/tag/athlone-murder/"
+          }
+        ]
+      },
+      "collected_title": "Bokmakierie rocked by deadly double shooting",
+      "link": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+      "pubdate_raw": "2026-10-20T15:00:00+0000 (datePublished on the page)",
+      "source_outlet": "Daily Voice"
+    },
+    "published_at": "2026-10-22T10:25:00Z",
+    "signal_id": "06219161-76ad-5b50-91d0-e58235427edf",
+    "source": "Daily Voice",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-19T11:25:00Z",
+    "title": "Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct"
+  },
+  "payload_sha256": "sha256:06a8065c09b854a4d3a6995df9aa93df23b4af71bfba4e379d20881c5d02b190",
+  "source_hashes": [
+    {
+      "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+      "retrieved_at": "2026-10-22T10:48:07Z",
+      "content_sha256": "sha256:0cdb312c6eea72d4b57b241b68d9b326de04a262f7272940d9f4ec0757ee6be0"
+    },
+    {
+      "url": "https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/",
+      "retrieved_at": "2026-10-22T10:48:07Z",
+      "content_sha256": "sha256:c812eeba16eaace82fe91a01f61b1988dd330e5216f9640d8eaa4cd71885a413"
+    },
+    {
+      "url": "https://heartfm.co.za/man-shot-and-killed-in-car/",
+      "retrieved_at": "2026-10-22T10:48:10Z",
+      "content_sha256": "sha256:cba817ce49a0b3814fc51600ce007da9b50808c06b72f50a95187fda113b0d65"
+    },
+    {
+      "url": "http://news-stuff.co.za/tag/athlone-murder/",
+      "retrieved_at": "2026-10-22T10:48:13Z",
+      "content_sha256": "sha256:9f3db67f5f49e295b327aa949f2dcc161306875e3e9c39f1b0156516c4987a04"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T12:42:00+02:00",
+  "recorded_at": "2026-10-22T12:49:12+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "sprint5-c5-2026-10-22",
+    "summary": "confirmed by user in live call on October 22 (2026): 'also approved.' to approving the four C5 drafts and the Cafda label; Athlone gang link confirmed. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

@@ -184,8 +184,8 @@ def _no_env_enforce(monkeypatch):
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 41
-    assert report.pins_checked == 40
+    assert report.records == len(_real_record_files()) == 46
+    assert report.pins_checked == 44
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -224,7 +224,11 @@ def test_real_legacy_records_match_the_owner_confirmation():
     new_pins = {sid for sid, rec in first.items() if rec["basis"] == "explicit"}
     assert new_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5",   # Gqeberha, approved in chat 21 Oct 2026
                         "048440e0-0be5-53d8-934a-1ba6233a0dfa",   # Steenberg, approved in chat 21 Oct 2026
-                        "adf99019-941e-5dd0-9851-635da0a1e146"}   # Strandfontein, approved in the live call 21 Oct 2026
+                        "adf99019-941e-5dd0-9851-635da0a1e146",   # Strandfontein, approved in the live call 21 Oct 2026
+                        "49773d55-5704-5fcb-ac36-1f7eda5de54b",   # Tafelsig barber, approved in the live call 22 Oct 2026
+                        "06219161-76ad-5b50-91d0-e58235427edf",   # Athlone, approved in the live call 22 Oct 2026
+                        "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
+                        "0c9f233c-6c38-5da4-a660-c6776f575667"}   # St Montague Village, approved in the live call 22 Oct 2026
     assert set(first) == active
     for sid, rec in first.items():
         if sid in new_pins:
@@ -256,15 +260,17 @@ def test_real_legacy_records_match_the_owner_confirmation():
 CAFDA = "7aa4eea1-c1f4-55af-b761-d55ff2df3a51"
 CAFDA_IOL = ("https://iol.co.za/capetimes/2026-10-19-retreat-community-health-centre-"
              "reopens-after-fatal-shooting-nearby2/")
+CAFDA_SOUTHERN_MAIL = ("https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-"
+                       "shooting-leaves-one-dead-three-wounded/")
 
 
-def test_cafda_source_change_is_approved_as_version_2():
+def test_cafda_source_changes_are_approved_as_versions_2_and_3():
     """The owner approved adding the IOL Cape Times article after the legacy push."""
     recs = sorted((json.loads(f.read_text(encoding="utf-8"))
                    for f in (REAL_LEDGER / CAFDA).glob("*.json")),
                   key=lambda r: r["pin_version"])
-    assert [r["pin_version"] for r in recs] == [1, 2]
-    v1, v2 = recs
+    assert [r["pin_version"] for r in recs] == [1, 2, 3]
+    v1, v2, v3 = recs
     assert v1["basis"] == "legacy" and v1["approved_payload"]["content"].endswith("One report only.")
     assert v2["action"] == "supersede" and v2["supersedes"] == v1["approval_id"]
     assert v2["basis"] == "explicit" and v2["scope"] == "data-only"
@@ -272,11 +278,19 @@ def test_cafda_source_change_is_approved_as_version_2():
     assert ap._iso_tz(v2["approved_at"]) > ap._iso_tz(v1["recorded_at"])
     loaded, by_id = ap._batch_pins(REAL_SIGNALS / "index.json")
     pin, _ = by_id[CAFDA]
-    assert v2["payload_sha256"] == ap.payload_sha256(pin)
-    urls = [s["url"] for s in pin["metadata"]["checked"]["sources"]]
-    assert urls == [v1["source_hashes"][0]["url"], CAFDA_IOL]
+    assert v2["approved_payload"]["content"].endswith("Cape Argus ran the same story).")
+    assert [s["url"] for s in v2["source_hashes"]] == [v1["source_hashes"][0]["url"], CAFDA_IOL]
     assert "One report only." not in pin["content"]
     assert v2["source_hashes"][1]["content_sha256"].startswith("sha256:d80bb94e")
+    # Version 3: the owner approved the three-report label (Southern Mail added) in the live call, 22 Oct 2026.
+    assert v3["action"] == "supersede" and v3["supersedes"] == v2["approval_id"]
+    assert v3["basis"] == "explicit" and v3["scope"] == "data-only"
+    assert v3["payload_sha256"] == ap.payload_sha256(pin)
+    urls = [s["url"] for s in pin["metadata"]["checked"]["sources"]]
+    assert urls == [v1["source_hashes"][0]["url"], CAFDA_IOL, CAFDA_SOUTHERN_MAIL]
+    assert pin["content"].endswith("Three reports, all resting on police: Smile 90.4FM, IOL (Cape Times; "
+                                   "Cape Argus ran the same story) and Southern Mail, which also quotes the "
+                                   "provincial Health Department.")
     prov = json.loads((REAL_SIGNALS / "provenance.json").read_text(encoding="utf-8"))
     assert prov["pins"][CAFDA]["independence"] == "same_statement"
     assert prov["pins"][CAFDA]["spokesperson"] == ["Wesley Twigg"]      # no rank

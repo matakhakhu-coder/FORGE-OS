@@ -1,0 +1,71 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T104912Z-619720c2",
+  "signal_id": "49773d55-5704-5fcb-ac36-1f7eda5de54b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "western-cape-murders-2026-10-22-sprint5.json",
+  "approved_payload": {
+    "content": "Police say a man was shot inside a barbershop in Paulsberg Street, Tafelsig, at about 20:07 on Tuesday 20 October; according to reports, unknown suspects came out of a minibus taxi and shot at him (police, via Cape Times). He was declared dead at the scene. Mitchells Plain police registered a murder case. Police say the motive is unknown, and no arrest has been reported. Cape Times describes him as a well-known local barber. One report found, resting on police: Cape Times (IOL). A resident quoted in the same article calls the shooting gang-related; police do not. This is not the burnt body found in Tafelsig on 17 October, which is a separate pin.",
+    "external_id": "checked:wc-2026-10-22-s5:A",
+    "lat": -34.0626078,
+    "lng": 18.631183,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T10:25:00Z",
+        "incident": "Tue 20 Oct 2026 at about 20:07 (police statement, via Cape Times)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-20T20:07+02:00",
+        "location": "Inside a barbershop in Paulsberg Street, Tafelsig (police, via Cape Times). Shop not located. The pin is the middle of Paulsberg Street in OpenStreetMap (way 32214287); it marks the street, not the shop.",
+        "method": "Found in the 22 Oct 2026 Sprint 5 collection run (pass 5) as two feed items (Cape Times, IOL) surfaced by four of the 14 standard Google News queries; source page read and claims, dates and place checked by hand; quotes re-matched word for word against the saved copy in this draft batch.",
+        "reported": "21 Oct 2026 (earliest found; see sprint5.first_report)",
+        "reported_at": "2026-10-21",
+        "search_aliases": [
+          "Tafelsig",
+          "Mitchells Plain",
+          "Paulsberg Street",
+          "barbershop",
+          "Cape Flats",
+          "Cape Town"
+        ],
+        "sources": [
+          {
+            "name": "Cape Times (IOL)",
+            "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/"
+          }
+        ]
+      },
+      "collected_title": "Tafelsig barber killed inside shop after community unrest",
+      "link": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+      "pubdate_raw": "2026-10-21T18:00:00+0000 (datePublished on the page)",
+      "source_outlet": "Cape Times (IOL)"
+    },
+    "published_at": "2026-10-22T10:25:00Z",
+    "signal_id": "49773d55-5704-5fcb-ac36-1f7eda5de54b",
+    "source": "Cape Times (IOL)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-20T18:07:00Z",
+    "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct"
+  },
+  "payload_sha256": "sha256:1c7daccfbda96dcd25171c156e3fac70d1f7187d852c36f2cb9ddea7e14eca0b",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+      "retrieved_at": "2026-10-22T10:48:06Z",
+      "content_sha256": "sha256:3e2de5cc4fec6661f54a1f35b7e877c7d9c1a8d96db1ba40e798b6884303e5a1"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T12:42:00+02:00",
+  "recorded_at": "2026-10-22T12:49:12+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "sprint5-c5-2026-10-22",
+    "summary": "confirmed by user in live call on October 22 (2026): 'also approved.' to approving the four C5 drafts and the Cafda label; Athlone gang link confirmed. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

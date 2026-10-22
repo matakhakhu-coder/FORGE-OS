@@ -37,7 +37,12 @@
     {
       "file": "western-cape-murders-2026-10-21-sprint5.json",
       "province": "Western Cape",
-      "signals": 2
+      "signals": 3
+    },
+    {
+      "file": "western-cape-murders-2026-10-22-sprint5.json",
+      "province": "Western Cape",
+      "signals": 3
     }
   ]
 }

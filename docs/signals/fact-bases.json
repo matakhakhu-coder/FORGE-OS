@@ -3959,6 +3959,440 @@
           "conflicts": []
         }
       ]
+    },
+    "49773d55-5704-5fcb-ac36-1f7eda5de54b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man dead.",
+          "basis": "Police account only",
+          "detail": "Declared dead at the scene by medical personnel (Cape Times, reporting police).",
+          "sources": [
+            {
+              "name": "Police statement (via Cape Times, IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "He sustained two gunshot wounds and was declared dead at the scene by medical personnel."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 20 October 2026, about 20:07.",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Police statement (via Cape Times, IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "a shooting incident at a barbershop in Paulsberg Street, Tafelsig on Tuesday 20 October 2026 at about 20:07"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A barbershop in Paulsberg Street, Tafelsig.",
+          "basis": "Police account only",
+          "detail": "Shop number not given.",
+          "sources": [
+            {
+              "name": "Police statement (via Cape Times, IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "a barbershop in Paulsberg Street, Tafelsig"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot by suspects who came out of a minibus taxi.",
+          "basis": "Police account only",
+          "detail": "Police attribute this to 'reports'.",
+          "sources": [
+            {
+              "name": "Police statement (via Cape Times, IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "the deceased was inside the barbershop when unknown suspects came out of a minibus taxi and shot at him"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Unknown (police).",
+          "basis": "Police account only",
+          "detail": "An unnamed resident says 'The shooting is gang related'; that is not police wording and is not coded.",
+          "sources": [
+            {
+              "name": "Cape Times (IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "Police said the motive for the attack remained unknown"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported.",
+          "basis": "Police account only",
+          "detail": "As of the Cape Times report (21 Oct). Not rechecked as an arrest read.",
+          "sources": [
+            {
+              "name": "Cape Times (IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+              "archive": null,
+              "quote": "no arrests had been made in connection with the barber’s murder"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "06219161-76ad-5b50-91d0-e58235427edf": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 35, dead.",
+          "basis": "Police account only",
+          "detail": "Declared dead at the scene by medical personnel.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "on arrival they found the lifeless body of a 35-year-old male inside a vehicle"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 19 October 2026, about 13:25.",
+          "basis": "Police account only",
+          "detail": "The 21 Oct draft's part-of-day conflict is settled by the police statement; SABC and Megazone's 'Monday night' is kept as a conflict.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "on Monday, 19 October 2026 at about 1.25pm"
+            },
+            {
+              "name": "Ndakhe Gwala, police (via Crime Scene Report)",
+              "url": "http://news-stuff.co.za/tag/athlone-murder/",
+              "archive": null,
+              "quote": "on Monday, 19 October 2026 at about 13:25"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "the victim came under a hail of bullets on Monday night",
+              "url": "https://www.sabcnews.com/sabcnews/man-shot-dead-in-suspected-gang-related-attack-in-athlone/",
+              "archive": null,
+              "version": null
+            },
+            {
+              "quote": "The shooting occurred on Monday night",
+              "url": "https://app.megazone.fm/news/i/98437518/man-shot-dead-suspected-gang-related-attack-athlone",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Corner of Bokmakierie Street and 7th Avenue.",
+          "basis": "Police account only",
+          "detail": "Heart FM gives the same corner.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "a shooting at the corner of Bokmakierie Street and 7th Avenue"
+            },
+            {
+              "name": "Heart FM",
+              "url": "https://heartfm.co.za/man-shot-and-killed-in-car/",
+              "archive": null,
+              "quote": "found inside a vehicle at the corner of Bokmakierie Street and 7th Avenue"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot; multiple gunshot wounds.",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "He sustained multiple gunshot wounds to his body"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Believed gang-related (police).",
+          "basis": "Police account only",
+          "detail": "A police belief, not a finding.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "the motive is believed to be gang-related"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported.",
+          "basis": "Police account only",
+          "detail": "SABC and Megazone: manhunt launched. Not rechecked as an arrest read.",
+          "sources": [
+            {
+              "name": "Ndakhe Gwala, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/news/2026-10-20-bokmakierie-rocked-by-deadly-double-shooting/",
+              "archive": null,
+              "quote": "At this stage, no arrest has been effected."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A man, 21, dead.",
+          "basis": "Police account only",
+          "detail": "Declared dead at the scene by medical personnel.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+              "archive": null,
+              "quote": "after the body of a 21-year-old male was found in Angela Street, Valhalla Park"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Body found Tuesday 20 October 2026, about 07:04; time of death unknown.",
+          "basis": "Police account only",
+          "detail": "Discovery time only. Not used as a killing time.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+              "archive": null,
+              "quote": "on Tuesday morning, 20 October 2026, at about 7.04am"
+            },
+            {
+              "name": "Wesley Twigg, police spokesperson (via TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+              "archive": null,
+              "quote": "registered a murder case after the body was discovered at about 07:04"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Angela Street, Valhalla Park; in a vlei or canal.",
+          "basis": "Reports differ in wording",
+          "detail": "Daily Voice: a vlei; TygerBurger: a canal. Same water body is likely, not confirmed.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+              "archive": null,
+              "quote": "found in Angela Street, Valhalla Park"
+            },
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+              "archive": null,
+              "quote": "whose body was found in a canal in Valhalla Park"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "found dead in a vlei in Valhalla Park",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+              "archive": null,
+              "version": null
+            }
+          ]
+        },
+        {
+          "label": "Method",
+          "claim": "Stab wounds to the throat.",
+          "basis": "Police account only",
+          "detail": "Both reports describe tyres over or on top of the body (from a video).",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Daily Voice)",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+              "archive": null,
+              "quote": "The victim sustained stabbed wounds to his throat"
+            },
+            {
+              "name": "Wesley Twigg, police spokesperson (via TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+              "archive": null,
+              "quote": "The victim sustained stab wounds to his throat"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "None given.",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+              "archive": null,
+              "quote": "The circumstances surrounding the incident are under investigation"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported.",
+          "basis": "Police account only",
+          "detail": "As of 21 Oct. Not rechecked as an arrest read.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via TygerBurger)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/",
+              "archive": null,
+              "quote": "arrests are yet to be made"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0c9f233c-6c38-5da4-a660-c6776f575667": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men, 37 and 46, dead.",
+          "basis": "Police account only",
+          "detail": "Declared dead at the scene by medical personnel.",
+          "sources": [
+            {
+              "name": "Southern Mail",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "two men, aged 37 and 46, were shot dead"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 18 October 2026; police responded at about 18:30.",
+          "basis": "Police account only",
+          "detail": "Response time, not an exact shooting time.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Southern Mail)",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "Steenberg police responded to the shooting at about 6.30pm"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Corner of St Alexander Circle and St Christopher Avenue, St Montague Village.",
+          "basis": "One report",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Southern Mail",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "at the corner of St Alexander Circle and St Christopher Avenue in St Montague Village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot by two suspects who fled on foot.",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Southern Mail)",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "two suspects approached the victims, opened fire and fled on foot"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "May be gang-related (police).",
+          "basis": "Police account only",
+          "detail": "Hedged police wording, kept as is. Counted as a gang link by owner decision (22 Oct, about 12:13 SAST); not a confirmed motive. Briefly News' 'suspected gang attack' is the outlet's own wording and is not the basis.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Southern Mail)",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "Police believe the motive may be gang-related."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported.",
+          "basis": "Police account only",
+          "detail": "Detectives investigating two counts of murder. Not rechecked as an arrest read.",
+          "sources": [
+            {
+              "name": "Wesley Twigg, police spokesperson (via Southern Mail)",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+              "archive": null,
+              "quote": "Steenberg detectives are investigating two counts of murder."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

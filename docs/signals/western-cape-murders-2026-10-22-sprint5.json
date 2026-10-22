@@ -1,0 +1,153 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Western Cape",
+  "batch": "Western Cape murders, Sprint 5 (first reported 20-21 Oct 2026), hand-checked and approved 22 Oct 2026",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb or area is known. Sources that reuse one report or one police statement are not independent corroboration. Being near another pin is not a link. Private individuals (victims and suspects) are not named.",
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "49773d55-5704-5fcb-ac36-1f7eda5de54b",
+      "external_id": "checked:wc-2026-10-22-s5:A",
+      "source": "Cape Times (IOL)",
+      "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct",
+      "content": "Police say a man was shot inside a barbershop in Paulsberg Street, Tafelsig, at about 20:07 on Tuesday 20 October; according to reports, unknown suspects came out of a minibus taxi and shot at him (police, via Cape Times). He was declared dead at the scene. Mitchells Plain police registered a murder case. Police say the motive is unknown, and no arrest has been reported. Cape Times describes him as a well-known local barber. One report found, resting on police: Cape Times (IOL). A resident quoted in the same article calls the shooting gang-related; police do not. This is not the burnt body found in Tafelsig on 17 October, which is a separate pin.",
+      "lat": -34.0626078,
+      "lng": 18.631183,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-20T18:07:00Z",
+      "published_at": "2026-10-22T10:25:00Z",
+      "metadata": {
+        "source_outlet": "Cape Times (IOL)",
+        "link": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/",
+        "pubdate_raw": "2026-10-21T18:00:00+0000 (datePublished on the page)",
+        "checked": {
+          "incident": "Tue 20 Oct 2026 at about 20:07 (police statement, via Cape Times)",
+          "reported": "21 Oct 2026 (earliest found; see sprint5.first_report)",
+          "location": "Inside a barbershop in Paulsberg Street, Tafelsig (police, via Cape Times). Shop not located. The pin is the middle of Paulsberg Street in OpenStreetMap (way 32214287); it marks the street, not the shop.",
+          "sources": [
+            {
+              "name": "Cape Times (IOL)",
+              "url": "https://iol.co.za/capetimes/2026-10-21-tafelsig-barber-killed-inside-shop-after-community-unrest/"
+            }
+          ],
+          "checked_at": "2026-10-22T10:25:00Z",
+          "method": "Found in the 22 Oct 2026 Sprint 5 collection run (pass 5) as two feed items (Cape Times, IOL) surfaced by four of the 14 standard Google News queries; source page read and claims, dates and place checked by hand; quotes re-matched word for word against the saved copy in this draft batch.",
+          "incident_start": "2026-10-20T20:07+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-21",
+          "search_aliases": [
+            "Tafelsig",
+            "Mitchells Plain",
+            "Paulsberg Street",
+            "barbershop",
+            "Cape Flats",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Tafelsig barber killed inside shop after community unrest"
+      },
+      "fingerprint": "sha256:1c7daccfbda96dcd25171c156e3fac70d1f7187d852c36f2cb9ddea7e14eca0b"
+    },
+    {
+      "signal_id": "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",
+      "external_id": "checked:wc-2026-10-22-s5:B",
+      "source": "Daily Voice",
+      "title": "Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct",
+      "content": "Police say the body of a man of 21 was found in Angela Street, Valhalla Park, at about 07:04 on Tuesday 20 October, with stab wounds to his throat (Sergeant Wesley Twigg, via Daily Voice and TygerBurger). He was declared dead at the scene. Bishop Lavis police registered a murder case; no arrest has been reported. The reports place the body in water, a vlei (Daily Voice) or a canal (TygerBurger), with tyres over it. No source says when he was killed: the date and time are when the body was found. Police give no motive. A name shared online was not verified by TygerBurger, so the victim is not named here. Two reports, both resting on one police account: Daily Voice and TygerBurger.",
+      "lat": -33.953542,
+      "lng": 18.5746216,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-20T05:04:00Z",
+      "published_at": "2026-10-22T10:25:00Z",
+      "metadata": {
+        "source_outlet": "Daily Voice",
+        "link": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/",
+        "pubdate_raw": "2026-10-20T16:00:00+0000 (datePublished on the page)",
+        "checked": {
+          "incident": "Body found Tue 20 Oct 2026 at about 07:04 (police, via Daily Voice and TygerBurger). 07:04 is the discovery time; no source gives when he was killed.",
+          "reported": "20 Oct 2026 (Daily Voice 18:00 SAST)",
+          "location": "Angela Street, Valhalla Park (police, via Daily Voice); in a vlei or canal. The spot on the water is not given. The pin is the middle of Angela Street in OpenStreetMap (way 30690124), which OSM labels Nooitgedacht/Elsies River; the street also holds the Valhalla Park Community Centre. It marks the street, not where the body lay.",
+          "sources": [
+            {
+              "name": "Daily Voice",
+              "url": "https://dailyvoice.co.za/daily-voice/news/5422112972996608/"
+            },
+            {
+              "name": "TygerBurger (Nova News)",
+              "url": "https://novanews.co.za/tygerburger/body-with-tyres-on-top-found-in-valhalla-park-canal/"
+            }
+          ],
+          "checked_at": "2026-10-22T10:25:00Z",
+          "method": "Found in the 22 Oct 2026 scheduled pass by two of the 14 standard Google News queries (TygerBurger item); second source (Daily Voice) found in the 22 Oct source checks; quotes re-matched word for word against saved copies.",
+          "incident_start": "2026-10-20T07:04+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-20",
+          "search_aliases": [
+            "Valhalla Park",
+            "Bishop Lavis",
+            "Angela Street",
+            "canal",
+            "vlei",
+            "Cape Flats",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Body with tyres over head found in vlei"
+      },
+      "fingerprint": "sha256:7db90b421a98e6836d88e6a846cead676a911b88eb5a5d78ca22cbf262032672"
+    },
+    {
+      "signal_id": "0c9f233c-6c38-5da4-a660-c6776f575667",
+      "external_id": "checked:wc-2026-10-22-s5:C",
+      "source": "Southern Mail",
+      "title": "St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct",
+      "content": "Police say two men, aged 37 and 46, were shot dead at the corner of St Alexander Circle and St Christopher Avenue in St Montague Village on Sunday evening, 18 October; Steenberg police responded at about 18:30 (Sergeant Wesley Twigg, via Southern Mail). According to police, two suspects approached the men, opened fire and fled on foot. Police believe the motive may be gang-related. Steenberg detectives are investigating two counts of murder. No arrest has been reported. The victims were not named. One report found, resting on police: Southern Mail; Briefly News mentions the shooting later without new detail. Not the St Montague Village shooting of 7 October, which is a separate pin.",
+      "lat": -34.0684541,
+      "lng": 18.4896295,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-18T16:30:00Z",
+      "published_at": "2026-10-22T10:25:00Z",
+      "metadata": {
+        "source_outlet": "Southern Mail",
+        "link": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/",
+        "pubdate_raw": "2026-10-20T06:45:01+0000 (datePublished on the page)",
+        "checked": {
+          "incident": "Sun 18 Oct 2026, police responded at about 18:30 (police, via Southern Mail)",
+          "reported": "20 Oct 2026 (Southern Mail 08:45 SAST, earliest found)",
+          "location": "Corner of St Alexander Circle and St Christopher Avenue, St Montague Village (Southern Mail). The pin is the midpoint between the nearest nodes of the two streets in OpenStreetMap (ways 701190631 and 30631994, about 30 m apart).",
+          "sources": [
+            {
+              "name": "Southern Mail",
+              "url": "https://southernmail.co.za/news/2026-10-20-retreat-clinic-reopens-after-shooting-leaves-one-dead-three-wounded/"
+            },
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/south-africa/256578-steenberg-double-murder-5-gang-members-arrested-assault-rifles-car-chase/"
+            }
+          ],
+          "checked_at": "2026-10-22T10:25:00Z",
+          "method": "Found in the 22 Oct 2026 scheduled pass (Southern Mail item surfaced by five of the 14 standard queries); targeted St Montague searches found no pre-19 Oct report; quotes re-matched word for word against saved copies.",
+          "incident_start": "2026-10-18T18:30+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-20",
+          "search_aliases": [
+            "St Montague Village",
+            "Steenberg",
+            "Lavender Hill",
+            "St Alexander Circle",
+            "St Christopher Avenue",
+            "Cape Town"
+          ]
+        },
+        "collected_title": "Retreat clinic reopens after shooting leaves one dead, three wounded"
+      },
+      "fingerprint": "sha256:29f81639bab042bc2df230199ef6f61fe7f42a5a9c3bf8910b3cca0e77526124"
+    }
+  ]
+}
