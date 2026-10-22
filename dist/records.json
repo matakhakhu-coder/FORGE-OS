@@ -4,7 +4,7 @@
   "data_version": "4876276eecb1876e0c2e60849328a9279e17e5db",
   "count": 45,
   "caveats": [
-    "These are hand-checked news reports of killings, not crime statistics. They are not complete and not representative of all crime in any area.",
+    "These are hand-checked news reports of incidents across the map's streams, not statistics. They are not complete and not representative of everything that happens in any area.",
     "Most rows rest on a single report or on police statements repeated by several outlets; see reporting_independence.",
     "Map points are approximate. uncertainty_m says how far off a point can be, and location_basis says when a point is inferred rather than reported.",
     "Reports can be wrong or change after publication. Check the source links before relying on any row."
