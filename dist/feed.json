@@ -1,8 +1,64 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "21 Oct 2026 16:52 UTC",
+  "generated_at": "22 Oct 2026 10:53 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T10:25:00Z",
+      "summary": "Police say a man was shot inside a barbershop in Paulsberg Street, Tafelsig, at about 20:07 on Tuesday 20 October; according to reports, unknown suspects came out of a minibus taxi and shot at him (police, via Cape Times...",
+      "source": "CAPE TIMES (IOL)",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0626078,
+        "lng": 18.631183
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T10:25:00Z",
+      "summary": "Police say the body of a man of 21 was found in Angela Street, Valhalla Park, at about 07:04 on Tuesday 20 October, with stab wounds to his throat (Sergeant Wesley Twigg, via Daily Voice and TygerBurger). He was declared...",
+      "source": "DAILY VOICE",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.953542,
+        "lng": 18.5746216
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T10:25:00Z",
+      "summary": "Police say a man of 35 was found with multiple gunshot wounds inside a vehicle at the corner of Bokmakierie Street and 7th Avenue after a shooting at about 13:25 on Monday 19 October (Constable Ndakhe Gwala, via Daily Vo...",
+      "source": "DAILY VOICE",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.9537161,
+        "lng": 18.5069615
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T10:25:00Z",
+      "summary": "Police say two men, aged 37 and 46, were shot dead at the corner of St Alexander Circle and St Christopher Avenue in St Montague Village on Sunday evening, 18 October; Steenberg police responded at about 18:30 (Sergeant ...",
+      "source": "SOUTHERN MAIL",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0684541,
+        "lng": 18.4896295
+      }
+    },
     {
       "kind": "signal",
       "title": "Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct",
