@@ -1,8 +1,22 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "22 Oct 2026 10:53 UTC",
+  "generated_at": "22 Oct 2026 11:56 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-22T11:45:00Z",
+      "summary": "Police say a man of 33 was shot dead in Firethorne, near Geelhout Street, at about 23:05 on Saturday 17 October (Lieutenant Colonel FC van Wyk, provincial police spokesperson, via Athlone News). He was walking near a pre...",
+      "source": "ATHLONE NEWS",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.9494589,
+        "lng": 18.5486674
+      }
+    },
     {
       "kind": "signal",
       "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct",
