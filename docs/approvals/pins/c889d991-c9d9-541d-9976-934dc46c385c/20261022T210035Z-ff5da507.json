@@ -1,0 +1,81 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T210035Z-ff5da507",
+  "signal_id": "c889d991-c9d9-541d-9976-934dc46c385c",
+  "action": "supersede",
+  "pin_version": 2,
+  "supersedes": "20261022T202721Z-8a223607",
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say they responded to a complaint of a residential burglary in progress at about 04:00 on Tuesday 13 October at Malope Section in the Masemola policing area, Sekhukhune District. They found an adult man lying on the floor with visible injuries; he was unresponsive and was later declared dead. Police say he was allegedly apprehended by people who suspected him of being involved in a burglary at the residence; the circumstances of his death are under investigation. Two suspects, aged 29 and 32, were arrested and charged with murder, due in the Nebo Magistrate's Court on 15 October (SAPS, on X, 14 October). The man is not named here. One source: the police post itself; no news report found. The pin is approximate: a wide town-level point for Ga-Masemola, not the scene.",
+    "external_id": "checked:lp-2026-10-22:D",
+    "lat": -24.56876,
+    "lng": 29.65187,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Tue 13 Oct 2026, police called at about 04:00 (SAPS, on X)",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-13T04:00+02:00",
+        "location": "At a residence in Malope Section, in the Masemola police area, Sekhukhune District (police, on X). No address. Malope Section could not be confirmed on a map: OpenStreetMap has a place called Malope about 12 km west of the Masemola police station, but nothing shows it is this section. The pin is the Ga-Masemola town point (the owner's choice, 22 Oct), wide enough (about 15 km) to cover both. It is not the scene.",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "14 Oct 2026 (SAPS post on X, 21:18 SAST; same text as the SAPS Limpopo media statement)",
+        "reported_at": "2026-10-14",
+        "search_aliases": [
+          "Malope",
+          "Masemola",
+          "Ga-Masemola",
+          "Nebo",
+          "Sekhukhune",
+          "Makhuduthamaga"
+        ],
+        "sources": [
+          {
+            "name": "SAPS (@SAPoliceService on X)",
+            "url": "https://x.com/SAPoliceService/status/2110450145623978305"
+          }
+        ]
+      },
+      "collected_title": "TWO SUSPECTS TO APPEAR IN NEBO COURT FOR MURDER",
+      "link": "https://x.com/SAPoliceService/status/2110450145623978305",
+      "pubdate_raw": "2026-10-14T19:18:19Z (post time on X)",
+      "source_outlet": "SAPS (@SAPoliceService on X)"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "c889d991-c9d9-541d-9976-934dc46c385c",
+    "source": "SAPS (@SAPoliceService on X)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T02:00:00Z",
+    "title": "Malope Section, Masemola police area (approx.): man dies after being held as a burglary suspect; two charged with murder, 13 Oct"
+  },
+  "payload_sha256": "sha256:7e0dc479ca7097d90d64b0a652beb2ec6754393e4c15f14afb6760dd843b6125",
+  "source_hashes": [
+    {
+      "url": "https://x.com/SAPoliceService/status/2110450145623978305",
+      "retrieved_at": "2026-10-22T20:40:00Z",
+      "content_sha256": "sha256:8134dbf5d4d0c868e96e5e7f032580ef0b406ae7899c76d887c5d49446d5c0a9"
+    }
+  ],
+  "diff_from_previous": {
+    "approved_payload": "unchanged (same payload_sha256)",
+    "approval_reference": {
+      "from": "limpopo-pins-2026-10-22 (unapproved placeholder written while preparing the review)",
+      "to": "limpopo-approval-2026-10-22 (the owner's approval in chat)"
+    },
+    "approved_at": {
+      "from": "2026-10-22T22:27:21+02:00",
+      "to": "2026-10-22T22:57:00+02:00"
+    }
+  },
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:57:00+02:00",
+  "recorded_at": "2026-10-22T23:00:35+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-approval-2026-10-22",
+    "summary": "confirmed by user in chat on October 22 (2026): 'Approved, use that time and go' to the Limpopo review; all eight pins, published time 22 Oct 22:16 kept. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

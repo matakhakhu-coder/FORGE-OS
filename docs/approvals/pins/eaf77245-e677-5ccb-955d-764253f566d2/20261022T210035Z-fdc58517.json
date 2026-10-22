@@ -1,0 +1,100 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T210035Z-fdc58517",
+  "signal_id": "eaf77245-e677-5ccb-955d-764253f566d2",
+  "action": "supersede",
+  "pin_version": 2,
+  "supersedes": "20261022T202721Z-be319a4d",
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say 20-year-old comedian and content creator Skeem Mafenya was found lying motionless inside a yard at Madonsi Boltman B, in the Malamulele policing area, with multiple stab wounds to his upper body after a report at about 03:35 on Saturday 17 October; he was declared dead at the scene. A community member had heard a knock and seen a man bleeding through a window. Three suspects aged 17 to 23 were arrested hours later, police told EWN; the motive is unknown. SABC News names the place as Madonsi-Shitasini village and says he was stabbed by a group of men near a tavern. Three reports, all resting on police: EWN, Limpopo Chronicle and SABC News. He is named here by his public stage name, by the owner's decision of 22 October. The pin is approximate (village level).",
+    "external_id": "checked:lp-2026-10-22:G",
+    "lat": -22.945,
+    "lng": 30.75583,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Sat 17 Oct 2026, reported to police at about 03:35 (police, via EWN, Limpopo Chronicle and SABC News)",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-17T03:35+02:00",
+        "location": "Inside a yard at Madonsi Boltman B, Malamulele policing area (police, via EWN and Limpopo Chronicle). SABC News calls it Madonsi-Shitasini village, near a tavern. No address. The pin is the Ka-Madonsi village point on OpenStreetMap, inside the Malamulele police precinct; approximate, village level (about 4 km).",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "17 Oct 2026 (Limpopo Chronicle, SABC News); 18 Oct 2026 (EWN, arrests)",
+        "reported_at": "2026-10-17",
+        "search_aliases": [
+          "Madonsi",
+          "Ka-Madonsi",
+          "Boltman",
+          "Madonsi Boltman B",
+          "Shitasini",
+          "Malamulele",
+          "Skeem Mafenya"
+        ],
+        "sources": [
+          {
+            "name": "EWN",
+            "url": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder"
+          },
+          {
+            "name": "Limpopo Chronicle",
+            "url": "https://www.limpopochronicle.co.za/2026/10/17/popular-malamulele-comedian-skeem-mafenya-found-murdered/"
+          },
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/limpopo-police-hunt-for-suspects-after-20-year-old-comedian-murdered/"
+          }
+        ]
+      },
+      "collected_title": "3 suspects nabbed for Limpopo comedian Skeem Mafenya’s murder",
+      "link": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder",
+      "pubdate_raw": "2026-10-18T08:00 SAST (time on the page)",
+      "source_outlet": "EWN"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "eaf77245-e677-5ccb-955d-764253f566d2",
+    "source": "EWN",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-17T01:35:00Z",
+    "title": "Madonsi Boltman B, Malamulele (approx.): comedian Skeem Mafenya, 20, stabbed to death; three arrested, 17 Oct"
+  },
+  "payload_sha256": "sha256:c7ee800a2acb146c4ca3a67d95eb13841253dde4dc6f97af4be11e313d7119dd",
+  "source_hashes": [
+    {
+      "url": "https://www.ewn.co.za/2026/10/18/3-suspects-nabbed-for-limpopo-comedian-skeem-mafenya-s-murder",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:e262d97926515f31cac8b7109f0532bed878a4a1ce1eac6edee8ce09f8f63b78"
+    },
+    {
+      "url": "https://www.limpopochronicle.co.za/2026/10/17/popular-malamulele-comedian-skeem-mafenya-found-murdered/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:77376ac46182227bc83fc27b3d167c7db18cea6a7fb38fe163e4af92479ca878"
+    },
+    {
+      "url": "https://www.sabcnews.com/sabcnews/limpopo-police-hunt-for-suspects-after-20-year-old-comedian-murdered/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:f6dcf9af0504e4bb0061bd193a05082b8a7191927cc6091911f8a550127d24ce"
+    }
+  ],
+  "diff_from_previous": {
+    "approved_payload": "unchanged (same payload_sha256)",
+    "approval_reference": {
+      "from": "limpopo-pins-2026-10-22 (unapproved placeholder written while preparing the review)",
+      "to": "limpopo-approval-2026-10-22 (the owner's approval in chat)"
+    },
+    "approved_at": {
+      "from": "2026-10-22T22:27:21+02:00",
+      "to": "2026-10-22T22:57:00+02:00"
+    }
+  },
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:57:00+02:00",
+  "recorded_at": "2026-10-22T23:00:35+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-approval-2026-10-22",
+    "summary": "confirmed by user in chat on October 22 (2026): 'Approved, use that time and go' to the Limpopo review; all eight pins, published time 22 Oct 22:16 kept. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

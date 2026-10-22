@@ -1,0 +1,90 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261022T210035Z-fcb58f05",
+  "signal_id": "fb9450c3-dd3b-5402-8c4f-5e26f433d317",
+  "action": "supersede",
+  "pin_version": 2,
+  "supersedes": "20261022T202721Z-3f5ae3b1",
+  "batch_file": "limpopo-killings-2026-10-22.json",
+  "approved_payload": {
+    "content": "Police say a two-year-old girl was taken from her home at Sekurung village and fatally stabbed; she also had burn wounds, as the suspect allegedly set fire to the child's home before leaving with her. Police responding to a kidnapping report at about 11:55 on Tuesday 13 October found community members gathered on Sekurung Mountain, where the child's body was found. A 20-year-old woman who was still at the scene was arrested for murder; police also opened a case of malicious damage to property. Afterwards some community members allegedly set the suspect's house alight. The motive is unclear (police, via Review Online and Limpopo Chronicle). No one is named here. Two reports, both resting on police. MAP POINT ESTIMATED: Sekurung could not be placed on a map, so the pin sits on the Lebowakgomo police station, the police area that handled the case. It is not the scene; the village may be up to about 32 km away.",
+    "external_id": "checked:lp-2026-10-22:E",
+    "lat": -24.32098,
+    "lng": 29.48187,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-22T20:16:00Z",
+        "incident": "Tue 13 Oct 2026; kidnapping reported at about 11:55, body found on Sekurung Mountain (police, via Review Online and Limpopo Chronicle)",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-13T11:55+02:00",
+        "location": "ESTIMATED MAP POINT. Sekurung village and Sekurung Mountain, in the Lebowakgomo police area (police, via Review Online and Limpopo Chronicle). The village could not be placed on a map: place-name lookups found no Sekurung, and two OpenStreetMap searches returned no data at all, so whether it is mapped is neither confirmed nor ruled out. The pin is on the Lebowakgomo police station (SAPS station point), used only as a reference for the police area that handled the case. It is not the scene or the village. The village may be anywhere in the Lebowakgomo police area, up to about 32 km from the pin. Being near the Mamaolo pin is not a link.",
+        "method": "Found in the 22 Oct 2026 Limpopo collection pass (SAPS Limpopo statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 22 Oct about 20:16 UTC. Prepared for owner review; standalone (no case, entity or map line).",
+        "reported": "15 Oct 2026 (Review Online, Limpopo Chronicle); SAPS Limpopo statement 14 Oct",
+        "reported_at": "2026-10-15",
+        "search_aliases": [
+          "Sekurung",
+          "Sekurung Mountain",
+          "Lebowakgomo",
+          "Ga-Mphahlele",
+          "Seleteng",
+          "Lepelle-Nkumpi"
+        ],
+        "sources": [
+          {
+            "name": "Review Online (The Citizen)",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/"
+          },
+          {
+            "name": "Limpopo Chronicle",
+            "url": "https://www.limpopochronicle.co.za/2026/10/15/limpopo-woman-arrested-for-murder-of-two-year-old-child/"
+          }
+        ]
+      },
+      "collected_title": "Woman arrested after 2-year-old found dead in Lebowakgomo",
+      "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/",
+      "pubdate_raw": "2026-10-15 (date in the page address; time not saved)",
+      "source_outlet": "Review Online (The Citizen)"
+    },
+    "published_at": "2026-10-22T20:16:00Z",
+    "signal_id": "fb9450c3-dd3b-5402-8c4f-5e26f433d317",
+    "source": "Review Online (The Citizen)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-13T09:55:00Z",
+    "title": "Sekurung village, Lebowakgomo police area (map point estimated): girl, 2, taken from home and killed; woman, 20, arrested, 13 Oct"
+  },
+  "payload_sha256": "sha256:ea9541cd855dfb7cc389becc5c6380056b53a801cd3628c4581ed36d4b794538",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/15/woman-arrested-after-2-year-old-found-dead-in-lebowakgomo/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:e6239eef681ec55b75693f32acb8a0adf31d575efd0251b1b2a1189354606f51"
+    },
+    {
+      "url": "https://www.limpopochronicle.co.za/2026/10/15/limpopo-woman-arrested-for-murder-of-two-year-old-child/",
+      "retrieved_at": "2026-10-22T19:26:12Z",
+      "content_sha256": "sha256:356422bf252499377c14729f6db4049543c5243e2e33abf174e2d44bfcf91831"
+    }
+  ],
+  "diff_from_previous": {
+    "approved_payload": "unchanged (same payload_sha256)",
+    "approval_reference": {
+      "from": "limpopo-pins-2026-10-22 (unapproved placeholder written while preparing the review)",
+      "to": "limpopo-approval-2026-10-22 (the owner's approval in chat)"
+    },
+    "approved_at": {
+      "from": "2026-10-22T22:27:21+02:00",
+      "to": "2026-10-22T22:57:00+02:00"
+    }
+  },
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-22T22:57:00+02:00",
+  "recorded_at": "2026-10-22T23:00:35+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-approval-2026-10-22",
+    "summary": "confirmed by user in chat on October 22 (2026): 'Approved, use that time and go' to the Limpopo review; all eight pins, published time 22 Oct 22:16 kept. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

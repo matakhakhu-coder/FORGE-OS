@@ -192,14 +192,12 @@ def _no_env_enforce(monkeypatch):
 
 # ── the real repo files ───────────────────────────────────────────────────────────────
 
-@pytest.mark.xfail(strict=True, reason=(
-    "The eight Limpopo approval records are drafts ('DRAFT - provisional scratch record, not an "
-    "approval'), and the ledger now refuses a draft as an approval, so the real ledger refuses the "
-    "build. Once the owner's real approval records replace them this passes; remove the marker."))
 def test_real_ledger_approves_every_active_pin_and_is_enforced():
     report = ap.verify(check_git=False)
     assert report.enforce                              # policy.json says true
-    assert report.records == len(_real_record_files()) == 55   # 45 version-1 + 2 later versions + 8 Limpopo
+    # 45 version-1 + 2 later Cafda versions + 8 Limpopo version-1 placeholders + 8 Limpopo
+    # version-2 supersedes carrying the owner's approval (chat, 22 Oct 2026, about 22:57 SAST)
+    assert report.records == len(_real_record_files()) == 63
     assert report.pins_checked == 53
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
