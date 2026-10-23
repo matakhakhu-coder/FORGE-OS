@@ -1,0 +1,86 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T151915Z-cc087351",
+  "signal_id": "09124894-bed2-5f4e-bd80-e3f7b162ff59",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-polokwane-sweep-2026-10-23.json",
+  "approved_payload": {
+    "content": "The Limpopo Department of Health says 43 learners from M.E. Makgato Secondary School in Seshego were taken to hospital with stomach complaints (SABC News, 16 October). Spokesperson Neil Shikwambana said they were taken to Seshego, Helen Franz, Botlokwa and WF Knobel hospitals and that 13 were still being treated at Seshego Hospital. Briefly News, 17 October, adds that they were Grade 12 and other senior learners with acute stomach cramps and diarrhoea, that the others had been assessed and discharged, and that no deaths had been reported as of Friday 16 October. The cause is not confirmed: Briefly News reports that health authorities opened an investigation and that no definitive cause had been confirmed. When the learners fell ill is not reported. No learners are named. This is a health alert, not a crime report. Both reports rest on the health department. The map point is estimated: the school is not on the map, so the pin is the Seshego suburb point.",
+    "external_id": "checked:lp-polokwane-2026-10-23:H1",
+    "lat": -23.8494,
+    "lng": 29.3894,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T15:30:00Z",
+        "incident": "Reported by the Limpopo Department of Health on Fri 16 Oct 2026 (SABC News); when the learners fell ill is not given. The pin date is the report date.",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-16",
+        "location": "ESTIMATED MAP POINT. M.E. Makgato Secondary School, Seshego (health department, via SABC News). The school is not on OpenStreetMap, so the pin is the Seshego suburb point, used as a reference only, not the school. Suburb level (about 3 km).",
+        "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "16 Oct 2026 (SABC News); 17 Oct 2026 (Briefly News)",
+        "reported_at": "2026-10-16",
+        "search_aliases": [
+          "Seshego",
+          "Polokwane",
+          "Makgato",
+          "M.E. Makgato Secondary School",
+          "learners",
+          "stomach illness",
+          "diarrhoea",
+          "Seshego Hospital",
+          "Helen Franz Hospital",
+          "Botlokwa Hospital",
+          "WF Knobel Hospital",
+          "health alert"
+        ],
+        "sources": [
+          {
+            "name": "SABC News",
+            "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/"
+          },
+          {
+            "name": "Briefly News",
+            "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/"
+          }
+        ]
+      },
+      "collected_title": "43 learners hospitalised with stomach complaints in Limpopo",
+      "link": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+      "pubdate_raw": "2026-10-16T17:54:59+02:00",
+      "source_outlet": "SABC News"
+    },
+    "published_at": "2026-10-23T15:30:00Z",
+    "signal_id": "09124894-bed2-5f4e-bd80-e3f7b162ff59",
+    "source": "SABC News",
+    "stream": "GLOBAL",
+    "timestamp": "2026-10-16T10:00:00Z",
+    "title": "Seshego (map point estimated): 43 learners from one school taken to hospital with stomach illness, reported 16 Oct; cause not confirmed"
+  },
+  "payload_sha256": "sha256:2399a7608cc6efa62f02f51a0528e4cd21aa76a9370089b65184754d80599b4a",
+  "source_hashes": [
+    {
+      "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+      "retrieved_at": "2026-10-23T15:11:22Z",
+      "content_sha256": "sha256:7fbaed9548debb8099607a93c0275858cd4386c1d2813e3ac473bb6720d3144c"
+    },
+    {
+      "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+      "retrieved_at": "2026-10-23T15:12:20Z",
+      "content_sha256": "sha256:fe86c030176769205bfccc5a9f289c421f1ba4eb4796c79a8922a7a1e826aff5"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T17:05:00+02:00",
+  "recorded_at": "2026-10-23T17:19:15+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "polokwane-approval-2026-10-23",
+    "summary": "Owner: 'Included' (Seshego school illness, Africa & World, estimated point, cause unconfirmed), then 'Yes' to publishing; voice call 23 Oct 2026 about 17:05 SAST. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

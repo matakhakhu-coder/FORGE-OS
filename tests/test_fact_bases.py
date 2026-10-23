@@ -55,7 +55,12 @@ LIMPOPO_DEATHS = {
     'c10e0702-2833-5c8d-87f6-3be64471c858',  # Madombidzha, cause unknown (inquest)
     '4ce322ea-9266-55c2-a78c-eb366be96aa4',  # Mashawana mountain, cause unknown
 }  # approved 23 Oct 2026, voice call
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA | LIMPOPO_DEATHS
+POLOKWANE_SWEEP = {
+    'befc9ba6-05fd-5471-ac93-fc32257d498b',  # Polokwane International Airport officers (Priority Intelligence; police are a party)
+    '891844fa-852b-53f7-aad5-395f7bd4291f',  # Capricorn TVET College official (Priority Intelligence)
+    '09124894-bed2-5f4e-bd80-e3f7b162ff59',  # Seshego school stomach illness (Africa & World health alert)
+}  # approved 23 Oct 2026, voice call
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA | LIMPOPO_DEATHS | POLOKWANE_SWEEP
 
 
 def load(path):
@@ -74,13 +79,16 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 65                                      # 36 audited + 29 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 385   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths
+    assert len(exported) == 68                                      # 36 audited + 32 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 403   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths + 18 Polokwane sweep
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
     assert sum(len(exported[s]['facts']) for s in KZN_INFRA) == 6
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in KZN_INFRA)
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_DEATHS) == 12
+    assert sum(len(exported[s]['facts']) for s in POLOKWANE_SWEEP) == 18   # six each
+    assert exported['befc9ba6-05fd-5471-ac93-fc32257d498b']['police_party'] is True   # airport officers are SAPS members
+    assert all(any(f['label'] == 'Case status' for f in exported[s]['facts']) for s in POLOKWANE_SWEEP if s != '09124894-bed2-5f4e-bd80-e3f7b162ff59')
     assert all(any(f['label'] == 'Cause of death' and f['claim'].startswith('Not reported') for f in exported[s]['facts']) for s in LIMPOPO_DEATHS)
     assert sum(len(exported[s]['facts']) for s in MPUMALANGA) == 30  # six each
     assert all(exported[s]['status'] == 'audited' for s in MPUMALANGA)

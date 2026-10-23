@@ -68,6 +68,11 @@
       "file": "limpopo-unresolved-deaths-2026-10-23.json",
       "province": "Limpopo",
       "signals": 2
+    },
+    {
+      "file": "limpopo-polokwane-sweep-2026-10-23.json",
+      "province": "Limpopo",
+      "signals": 3
     }
   ]
 }

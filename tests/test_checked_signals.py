@@ -34,8 +34,11 @@ LPI_PINS = 4          # Limpopo infrastructure (Infrastructure stream): approved
 KZI_PINS = 1          # KwaZulu-Natal infrastructure (Newcastle, Upper Signal Hill water outage): approved 23 Oct 2026, outside the pattern test
 LPD_PINS = 2          # Limpopo unresolved deaths (Madombidzha, Mashawana; Crime & Security, cause unknown): approved 23 Oct 2026, outside the pattern test
 LPD_IDS = {"c10e0702-2833-5c8d-87f6-3be64471c858", "4ce322ea-9266-55c2-a78c-eb366be96aa4"}
+PI_PINS = 2           # Priority Intelligence (Polokwane sweep): airport officers, Capricorn TVET official; approved 23 Oct 2026, outside the pattern test
+GLOBAL_PINS = 1       # Africa & World (Polokwane sweep): Seshego school stomach illness health alert; approved 23 Oct 2026, outside the pattern test
+LPS_IDS = {"befc9ba6-05fd-5471-ac93-fc32257d498b", "891844fa-852b-53f7-aad5-395f7bd4291f", "09124894-bed2-5f4e-bd80-e3f7b162ff59"}
 INFRA_PINS = LPI_PINS + KZI_PINS
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -118,10 +121,11 @@ def test_index_loads_all_pins_in_order():
         "mpumalanga-killings-2026-10-23.json",
         "limpopo-infrastructure-2026-10-23.json",
         "kwazulu-natal-infrastructure-2026-10-23.json",
-        "limpopo-unresolved-deaths-2026-10-23.json"]
+        "limpopo-unresolved-deaths-2026-10-23.json",
+        "limpopo-polokwane-sweep-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -155,7 +159,7 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"
-          and s["signal_id"] not in LPD_IDS]
+          and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
@@ -652,3 +656,37 @@ def test_limpopo_unresolved_deaths_say_cause_unknown_and_stay_out_of_the_pattern
     assert "does not say whether an inquest or a murder case was opened" in w["content"]
     assert "supersedes its held_back entry" in " ".join(d["decision"] for d in data["owner_decisions"])
 
+
+
+def test_polokwane_sweep_pins_follow_the_priority_intelligence_and_health_alert_rules():
+    # Owner decisions, voice call 23 Oct 2026: airport officers and the Capricorn TVET official in
+    # Priority Intelligence, the Seshego school illness as an Africa & World health alert; then "Yes" to publish.
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    data = json.loads((SIGNALS_DIR / "limpopo-polokwane-sweep-2026-10-23.json").read_text(encoding="utf-8"))
+    pins = {s["signal_id"]: s for s in data["signals"]}
+    assert set(pins) == LPS_IDS and not (set(pins) & wc_ids)
+    assert "Sprint 5" in data["scope"] and data["retractions"] == []
+    assert sum(s["stream"] == "PRIORITY" for s in pins.values()) == PI_PINS
+    assert sum(s["stream"] == "GLOBAL" for s in pins.values()) == GLOBAL_PINS
+    for sid, s in pins.items():
+        assert prov[sid] == "Limpopo" and not s["metadata"].get("links")
+        assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95
+        assert "not named here" in s["content"] or "No learners are named" in s["content"]
+    pi = [s for s in pins.values() if s["stream"] == "PRIORITY"]
+    for s in pi:
+        assert "Case status: accused" in s["content"] and "allegations" in s["content"]
+        assert "convicted" in s["content"]   # says no one has been convicted
+    airport = pins["befc9ba6-05fd-5471-ac93-fc32257d498b"]
+    # The arrests (19 Oct 2026) are the pin date; the alleged April 2025 conduct is given in words only.
+    assert airport["metadata"]["checked"]["incident_start"] == "2026-10-19"
+    assert "17 April 2025" in airport["content"] and "corrected" in airport["content"]
+    tvet, health = pins["891844fa-852b-53f7-aad5-395f7bd4291f"], pins["09124894-bed2-5f4e-bd80-e3f7b162ff59"]
+    for s in (tvet, health):
+        assert "map point estimated" in s["title"]
+        assert s["metadata"]["checked"]["location"].startswith("ESTIMATED MAP POINT")
+    assert "R100,000" in tvet["title"] and "alleged" in tvet["title"]
+    assert "cause not confirmed" in health["title"] and "The cause is not confirmed" in health["content"]
+    assert "Bus" not in " ".join(s["title"] for s in pins.values())

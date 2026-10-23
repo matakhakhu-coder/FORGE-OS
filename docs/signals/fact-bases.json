@@ -6385,6 +6385,358 @@
           ]
         }
       ]
+    },
+    "befc9ba6-05fd-5471-ac93-fc32257d498b": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Who is accused",
+          "claim": "SAPS members attached to Polokwane International Airport: five accused in court on 20 October.",
+          "basis": "Police and court report",
+          "detail": "Not named here. The corrected police statement of 20 October describes the three first arrested as two men and a woman aged between 44 and 49.",
+          "sources": [
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+              "archive": null,
+              "quote": "The five SAPS members attached to Polokwane International Airport have been granted bail of R1,000 each"
+            },
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+              "archive": null,
+              "quote": "The three suspects – two men and a woman aged between 44 and 49 – were arrested on Monday evening (October 19)"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "Arrests began on the evening of Monday 19 October; police corrected the first figure of five to three arrested and two sought. By 21 October five accused had been arrested.",
+          "basis": "Police account only",
+          "detail": "Who arrested the other two, and when, is not reported.",
+          "sources": [
+            {
+              "name": "Review Online, 19 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+              "archive": null,
+              "quote": "Five police officers were arrested at Polokwane International Airport on Monday evening"
+            },
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+              "archive": null,
+              "quote": "While police initially said that five people were arrested, it has since been confirmed that only three were arrested, while the other two are still at large."
+            },
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+              "archive": null,
+              "quote": "The five accused were arrested earlier this week"
+            }
+          ],
+          "conflicts": [
+            "The first report said five were arrested on 19 October; police corrected this the next day to three, with two still being sought."
+          ]
+        },
+        {
+          "label": "Charges",
+          "claim": "Defeating the ends of justice and contravening section 49 of the Immigration Act.",
+          "basis": "Police and court report",
+          "detail": "The first report described the allegations as corruption and defeating the ends of justice; the charges listed after the court appearance do not include corruption.",
+          "sources": [
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+              "archive": null,
+              "quote": "facing charges of defeating the ends of justice and contravening Section 49 of the Immigration Act"
+            },
+            {
+              "name": "Review Online, 19 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+              "archive": null,
+              "quote": "in connection with allegations of corruption and defeating the ends of justice"
+            }
+          ],
+          "conflicts": [
+            "19 Oct report: corruption and defeating the ends of justice. 21 Oct court report: defeating the ends of justice and section 49 of the Immigration Act."
+          ]
+        },
+        {
+          "label": "What is alleged",
+          "claim": "On 17 April 2025, five airport officers allegedly took over 46 undocumented foreign nationals stopped in a minibus on the N1 near Polokwane, saying they would take them to Polokwane police station; neither the officers nor the passengers were later found there.",
+          "basis": "Police account only",
+          "detail": "These are police allegations, not findings of a court. The April 2025 date is the alleged conduct, about 18 months before the arrests; it is not the pin date.",
+          "sources": [
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+              "archive": null,
+              "quote": "the investigation stems from an incident on April 17, 2025, when a traffic officer stopped a 22-seater minibus on the N1 near Polokwane."
+            },
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+              "archive": null,
+              "quote": "SAPS alleges that four male officers and one female officer arrived at the scene and told the traffic officer that arrangements had been made with the station commander to transport the passengers to Polokwane police station for further processing."
+            },
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+              "archive": null,
+              "quote": "neither the officers nor the foreign nationals could be found."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case status",
+          "claim": "Accused, on bail of R1,000 each; postponed to 30 November 2026 for further investigation. No conviction.",
+          "basis": "Police and court report",
+          "detail": "Police say investigations are continuing.",
+          "sources": [
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+              "archive": null,
+              "quote": "The officers appeared in court on Tuesday, October 20"
+            },
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+              "archive": null,
+              "quote": "The matter was postponed for further investigation. The next court date has been set for November 30."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Arrested at Polokwane International Airport; the alleged 2025 incident was on the N1 near Polokwane.",
+          "basis": "Police account only",
+          "detail": "The pin is the airport point, not the roadside stop.",
+          "sources": [
+            {
+              "name": "Review Online, 19 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+              "archive": null,
+              "quote": "Five police officers were arrested at Polokwane International Airport on Monday evening"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "891844fa-852b-53f7-aad5-395f7bd4291f": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Who is accused",
+          "claim": "A 58-year-old official attached to Capricorn TVET College in Polokwane.",
+          "basis": "Police account only",
+          "detail": "Not named here.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "A 58-year-old official attached to Capricorn TVET College in Polokwane has been arrested on allegations of corruption and extortion"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What is alleged",
+          "claim": "He allegedly demanded a R100,000 bribe from a farmer for the release of R750,000 in project funding, and allegedly posed as a Department of Agriculture official.",
+          "basis": "Police account only",
+          "detail": "The funding was meant for land for practical training of 33 students. Police allegations, not court findings.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "after allegedly demanding a R100,000 bribe from a farmer in exchange for the release of R750,000 in project funding."
+            },
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "The official is also alleged to have misrepresented himself as an official from the Department of Agriculture."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrest",
+          "claim": "Arrested on Friday 16 October in a covert entrapment operation in Polokwane, after the farmer handed over R40,000 in cash.",
+          "basis": "Police account only",
+          "detail": "By the Provincial Anti-Corruption Unit with the Provincial Organised Crime Unit and the Capricorn Flying Squad. The money was seized.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "A covert entrapment operation was conducted in Polokwane on Friday, 16 October 2026. During the operation, the farmer handed over R40,000 in cash, after which the suspect was arrested."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Charges",
+          "claim": "Corruption and extortion.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "facing charges of corruption and extortion."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case status",
+          "claim": "Expected in the Polokwane Magistrate's Court on Monday 19 October 2026. No conviction.",
+          "basis": "One report",
+          "detail": "The outcome of the 19 October appearance was not found.",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "The suspect is expected to appear before the Polokwane Magistrate’s Court on Monday, 19 October 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Polokwane; no address or campus given.",
+          "basis": "One report",
+          "detail": "The map point is estimated (Polokwane town point).",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+              "archive": null,
+              "quote": "A covert entrapment operation was conducted in Polokwane"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "09124894-bed2-5f4e-bd80-e3f7b162ff59": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Who was affected",
+          "claim": "43 learners from M.E. Makgato Secondary School in Seshego.",
+          "basis": "Health department account only",
+          "detail": "Briefly News says they were Grade 12 and other senior learners. No learners are named.",
+          "sources": [
+            {
+              "name": "SABC News (health department)",
+              "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+              "archive": null,
+              "quote": "The Department of Health in Limpopo says 43 learners from M.E Makgato Secondary School in Seshego have been taken to hospital complaining of runny stomachs."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Symptoms",
+          "claim": "Stomach complaints: acute cramps and diarrhoea.",
+          "basis": "Health department account only",
+          "detail": "SABC says \"runny stomachs\"; the cramps and diarrhoea are from Briefly News.",
+          "sources": [
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+              "archive": null,
+              "quote": "presenting with acute stomach cramps and severe diarrhoea"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Hospitals",
+          "claim": "Taken to Seshego, Helen Franz, Botlokwa and WF Knobel hospitals; 13 still being treated at Seshego Hospital.",
+          "basis": "Health department account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SABC News (health department)",
+              "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+              "archive": null,
+              "quote": "Health Department spokesperson Neil Shikwambana says the learners were taken to Seshego, Helen Franz, Botlokwa and WF Knobel hospitals."
+            },
+            {
+              "name": "SABC News (health department)",
+              "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+              "archive": null,
+              "quote": "Shikwambana says 13 learners are still receiving treatment at Seshego hospital."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Deaths",
+          "claim": "None reported as of Friday 16 October.",
+          "basis": "Health department account only",
+          "detail": "From Briefly News only.",
+          "sources": [
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+              "archive": null,
+              "quote": "No fatalities have been reported."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Cause",
+          "claim": "Not confirmed. Health authorities opened an investigation into the origin.",
+          "basis": "Undetermined in the saved reports",
+          "detail": "No cause is confirmed in either source. FORGE does not suggest one.",
+          "sources": [
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+              "archive": null,
+              "quote": "Health authorities have opened a formal investigation to determine the origin of the illness."
+            },
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+              "archive": null,
+              "quote": "No definitive cause has been confirmed at this stage."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date",
+          "claim": "Reported on 16 October 2026; when the learners fell ill is not given.",
+          "basis": "Health department account only",
+          "detail": "The pin date is the report date.",
+          "sources": [
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/",
+              "archive": null,
+              "quote": "As of Friday, 16 October, Shikwambana confirmed that 13 learners remained admitted at Seshego Hospital"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

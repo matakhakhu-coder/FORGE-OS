@@ -1,8 +1,50 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "23 Oct 2026 15:12 UTC",
+  "generated_at": "23 Oct 2026 15:19 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Polokwane International Airport: five airport police accused, arrested from 19 Oct, over 46 undocumented nationals who vanished in Apr 2025",
+      "stream": "PRIORITY",
+      "stream_label": "Priority Intelligence",
+      "published_at": "2026-10-23T15:30:00Z",
+      "summary": "Police officers attached to Polokwane International Airport were arrested by the Limpopo Provincial Anti-Corruption Unit, assisted by the Polokwane Tactical Response Team, on the evening of Monday 19 October (Review Onli...",
+      "source": "REVIEW ONLINE (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.84498,
+        "lng": 29.45322
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Seshego (map point estimated): 43 learners from one school taken to hospital with stomach illness, reported 16 Oct; cause not confirmed",
+      "stream": "GLOBAL",
+      "stream_label": "Africa & World",
+      "published_at": "2026-10-23T15:30:00Z",
+      "summary": "The Limpopo Department of Health says 43 learners from M.E. Makgato Secondary School in Seshego were taken to hospital with stomach complaints (SABC News, 16 October). Spokesperson Neil Shikwambana said they were taken t...",
+      "source": "SABC NEWS",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.8494,
+        "lng": 29.3894
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Polokwane (map point estimated): Capricorn TVET College official, 58, arrested in a police sting over an alleged R100,000 bribe, 16 Oct",
+      "stream": "PRIORITY",
+      "stream_label": "Priority Intelligence",
+      "published_at": "2026-10-23T15:30:00Z",
+      "summary": "A 58-year-old official attached to Capricorn TVET College in Polokwane was arrested on Friday 16 October in a covert entrapment operation in Polokwane by the Provincial Anti-Corruption Unit, assisted by the Provincial Or...",
+      "source": "LIMPOPO CHRONICLE",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.9045,
+        "lng": 29.4688
+      }
+    },
     {
       "kind": "signal",
       "title": "Mashawana mountain, Thohoyandou police area (approx.): two unidentified men found dead; cause unknown, police investigating, 4 Oct",
@@ -659,48 +701,6 @@
       "geo": {
         "lat": -34.03778,
         "lng": 22.20917
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Wesbank (Reindeer St, approx.): boy, 14, shot dead, teen wounded, 10 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Mfuleni police responded to a shooting in Reindeer Street, Wesbank, at about 20:10 on Saturday 10 October: Lincoln Jonathan, 14, a Grade 8 learner at Silversands High School, died at the scene and a Grade 11 learner was ...",
-      "source": "TYGERBURGER",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9637,
-        "lng": 18.659
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "D'Almeida, Mossel Bay (open field, approx.): man found stabbed dead, 8 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Da Gamaskop police are investigating a murder after a man's body with stab wounds was found in bushes in an open field between D'Almeida and Albert Luthuli Park, near Mountain View, at about 10:50 on Thursday 8 October. ...",
-      "source": "MOSSEL BAY ADVERTISER",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.175,
-        "lng": 22.10167
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Imizamo Yethu, Hout Bay (OR Tambo Rd, approx.): man, 34, shot dead, 7 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 34-year-old man was killed in a shooting on OR Tambo Road, Imizamo Yethu, Hout Bay, at about 19:19 on Wednesday 7 October; Hout Bay police registered a murder case and made no arrests (Sentinel News, quoting police spo...",
-      "source": "SENTINEL NEWS",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.02757,
-        "lng": 18.36167
       }
     }
   ]

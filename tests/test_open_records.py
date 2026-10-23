@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tests.test_checked_signals import (  # noqa: E402
-    ALL_PINS, INFRA_PINS, _copy_signals, _edit_batch, _fresh_db, _markers, _publish_to, _restamp,
+    ALL_PINS, INFRA_PINS, PI_PINS, GLOBAL_PINS, _copy_signals, _edit_batch, _fresh_db, _markers, _publish_to, _restamp,
 )
 from tools import records_export as rx  # noqa: E402
 
@@ -355,7 +355,9 @@ def test_every_record_and_row_carries_its_map_stream(tmp_path, monkeypatch):
         assert r["stream"] == rx.STREAM_LABELS[markers[sid]["stream"]]
     infra = {sid for sid, r in by_id.items() if r["stream"] == "Infrastructure"}
     assert len(infra) == INFRA_PINS
-    assert sum(r["stream"] == "Crime & Security" for r in recs) == ALL_PINS - INFRA_PINS
+    assert sum(r["stream"] == "Crime & Security" for r in recs) == ALL_PINS - INFRA_PINS - PI_PINS - GLOBAL_PINS
+    assert sum(r["stream"] == "Priority Intelligence" for r in recs) == PI_PINS
+    assert sum(r["stream"] == "Africa & World" for r in recs) == GLOBAL_PINS
     rows = list(csv.DictReader(io.StringIO((dist / "records.csv").read_text(encoding="utf-8-sig"))))
     cols = list(rows[0])
     assert cols[cols.index("province") + 1] == "stream"
@@ -367,12 +369,13 @@ def test_every_record_and_row_carries_its_map_stream(tmp_path, monkeypatch):
     assert html.count('<td data-label="Stream">') == ALL_PINS
     tabs = re.findall(r'<button type="button" class="rec-stream-tab" data-stream="([^"]*)"[^>]*>.*?'
                       r'<span class="rec-stream-tab__n">(\d+)</span>', html, re.S)
-    assert tabs == [("", str(ALL_PINS)), ("Crime &amp; Security", str(ALL_PINS - INFRA_PINS)),
-                    ("Infrastructure", str(INFRA_PINS))]
+    assert tabs == [("", str(ALL_PINS)), ("Crime &amp; Security", str(ALL_PINS - INFRA_PINS - PI_PINS - GLOBAL_PINS)),
+                    ("Infrastructure", str(INFRA_PINS)), ("Priority Intelligence", str(PI_PINS)),
+                    ("Africa &amp; World", str(GLOBAL_PINS))]
     trs = re.findall(r'<tr data-id="([^"]+)" data-stream="([^"]+)" class="rec-row rec-row--([a-z-]+)">', html)
     assert len(trs) == ALL_PINS
     assert {i for i, _, slug in trs if slug == "infrastructure"} == infra
-    assert {slug for _, _, slug in trs} == {"crime-security", "infrastructure"}
+    assert {slug for _, _, slug in trs} == {"crime-security", "infrastructure", "priority-intelligence", "africa-world"}
     assert '<option value="Infrastructure">Infrastructure</option>' in html
 
 

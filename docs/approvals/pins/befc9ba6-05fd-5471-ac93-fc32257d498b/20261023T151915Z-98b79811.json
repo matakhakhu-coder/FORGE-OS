@@ -1,0 +1,95 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T151915Z-98b79811",
+  "signal_id": "befc9ba6-05fd-5471-ac93-fc32257d498b",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-polokwane-sweep-2026-10-23.json",
+  "approved_payload": {
+    "content": "Police officers attached to Polokwane International Airport were arrested by the Limpopo Provincial Anti-Corruption Unit, assisted by the Polokwane Tactical Response Team, on the evening of Monday 19 October (Review Online, 19 and 20 October). Police first said five were arrested, then corrected this: three (two men and a woman aged 44 to 49) were arrested and two colleagues were still being sought (police statement via Review Online, 20 October). On Tuesday 20 October five SAPS members attached to the airport appeared in the Polokwane Magistrate's Court on charges of defeating the ends of justice and contravening section 49 of the Immigration Act, and were granted bail of R1,000 each; the case was postponed to 30 November for further investigation (Review Online, 21 October). The case is about an older incident. According to police, on 17 April 2025 a traffic officer stopped a minibus carrying 46 undocumented foreign nationals on the N1 near Polokwane; police allege that four male officers and one female officer from the airport arrived, said the station commander had arranged for the passengers to be taken to Polokwane police station, and that neither the officers nor the passengers could later be found there. These are allegations: no one has been convicted, and the accused are not named here. Case status: accused, on bail, next court date 30 November 2026. All three reports come from one outlet and rest on police statements. The pin marks the airport, where the arrests took place and where the officers work, not the April 2025 roadside stop.",
+    "external_id": "checked:lp-polokwane-2026-10-23:A1",
+    "lat": -23.84498,
+    "lng": 29.45322,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T15:30:00Z",
+        "incident": "Arrests on the evening of Mon 19 Oct 2026 (three, per the corrected police statement; five accused had been arrested by 21 Oct); court appearance and bail on Tue 20 Oct 2026. The conduct alleged dates from Fri 17 Apr 2025, about 18 months earlier, and is not the pin date.",
+        "incident_event": "occurred",
+        "incident_part": "evening",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-19",
+        "location": "Polokwane International Airport, where the arrests were made and where the officers are stationed (Review Online). The pin is the airport's own map point (OpenStreetMap aerodrome); where on the airport the arrests happened is not reported. The alleged April 2025 incident happened elsewhere: a roadside stop on the N1 near Polokwane and the Polokwane N1 weighbridge. That place is not pinned.",
+        "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "19 Oct 2026 (Review Online, first report); corrected 20 Oct; bail reported 21 Oct",
+        "reported_at": "2026-10-19",
+        "search_aliases": [
+          "Polokwane",
+          "Polokwane International Airport",
+          "Gateway airport",
+          "airport police",
+          "SAPS",
+          "Anti-Corruption Unit",
+          "Immigration Act",
+          "defeating the ends of justice",
+          "undocumented foreign nationals",
+          "N1 weighbridge",
+          "Capricorn"
+        ],
+        "sources": [
+          {
+            "name": "Review Online (The Citizen), 19 Oct",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/"
+          },
+          {
+            "name": "Review Online (police statement), 20 Oct",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/"
+          },
+          {
+            "name": "Review Online (police statement), 21 Oct",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/"
+          }
+        ]
+      },
+      "collected_title": "5 Polokwane airport officers granted R1,000 bail each",
+      "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+      "pubdate_raw": "2026-10-21T08:56:01+00:00",
+      "source_outlet": "Review Online (The Citizen)"
+    },
+    "published_at": "2026-10-23T15:30:00Z",
+    "signal_id": "befc9ba6-05fd-5471-ac93-fc32257d498b",
+    "source": "Review Online (The Citizen)",
+    "stream": "PRIORITY",
+    "timestamp": "2026-10-19T17:00:00Z",
+    "title": "Polokwane International Airport: five airport police accused, arrested from 19 Oct, over 46 undocumented nationals who vanished in Apr 2025"
+  },
+  "payload_sha256": "sha256:b2781d12a9f308a7d78475cba59d8a27947386c8380d62586d2304e071dfba4f",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+      "retrieved_at": "2026-10-23T15:11:16Z",
+      "content_sha256": "sha256:d8030db9a6d008f8aaef5538e77b74f43892cbb910ccc68358af2491764a402f"
+    },
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+      "retrieved_at": "2026-10-23T15:11:16Z",
+      "content_sha256": "sha256:cf308b930aa90f023e23e2b79c74d0a3d7accc27a78f1b9dd3bdf053dbc32a31"
+    },
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+      "retrieved_at": "2026-10-23T15:11:17Z",
+      "content_sha256": "sha256:f81563f23f68f8f726365e974a3784ae2f1708b4ccb75836b3e8a16941a8dc20"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T17:05:00+02:00",
+  "recorded_at": "2026-10-23T17:19:15+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "polokwane-approval-2026-10-23",
+    "summary": "Owner: 'Cover the new' (Polokwane airport officer arrests, Priority Intelligence), then 'Yes' to publishing; voice call 23 Oct 2026 about 17:05 SAST. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

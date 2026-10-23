@@ -1,0 +1,210 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Limpopo",
+  "batch": "Limpopo (Polokwane location sweep) Priority Intelligence and Africa & World cases, 1-23 Oct 2026, hand-checked 23 Oct 2026; three pins approved by the owner on 23 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Priority Intelligence (two pins) and Africa & World (one health alert). Collection window: incidents and arrests 1-23 Oct 2026, Polokwane Local Municipality. Other candidates from the same sweep are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date; for an arrest the pin date is the arrest and older alleged conduct is given in words, not as the pin date. Priority Intelligence: no one is named; the accused are described as accused, charges are given as charged, allegations are attributed and the case status is stated; no sexual-offence cases. Health alerts: no patient is named and no cause is suggested beyond what the sources confirm. Estimated map points: the title says 'map point estimated' and the drawer location note starts 'ESTIMATED MAP POINT'. Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on 23 Oct 2026 (voice call; publication cleared with 'Yes'); one explicit version-1 approval record per pin in docs/approvals/pins (reference polokwane-approval-2026-10-23).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Polokwane International Airport officers: cover the new October arrests in Priority Intelligence without waiting for the court outcome, keeping the alleged 17 April 2025 conduct distinct from the 19 October 2026 arrests. Owner's words: \"Cover the new\"."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Capricorn TVET College official: approved for Priority Intelligence with an ESTIMATED Polokwane city-centre point and the official unnamed. Owner's word: \"Yes\"."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Seshego school stomach illness: approved as an Africa & World health alert with the ESTIMATED Seshego point, cause unconfirmed, no learner names or images. Owner's word: \"Included\"."
+    },
+    {
+      "at": "2026-10-23 (voice call, about 17:05 SAST)",
+      "decision": "Publication of the three approved cases cleared. Asked \"Want to publish the approved ones now?\", the owner answered \"Yes.\""
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Bus service stoppage: stay out. Repair-interruption question: deferred to a future deep dive. Community outage reports: follow up; not approved for publication."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Polokwane (Capricorn): Leeto la Polokwane bus service stoppage (8 Oct) and route fare dispute (15 Oct)",
+      "reason": "Service disputes, not an infrastructure failure. Owner decision on the voice call of 23 Oct 2026 (question 5): \"Stay out.\""
+    },
+    {
+      "place": "Polokwane (Capricorn): urgent or announced repair interruptions",
+      "reason": "The emergency-versus-announced-repairs question is deferred to a future deep dive (owner, 23 Oct 2026, question 4). No pin depending on it is in this update; no repair rule is adopted."
+    },
+    {
+      "place": "Seshego C, Extensions 40 and 44, and Mamadimo Park (Mankweng area): community outage reports",
+      "reason": "Community reports only (ESP app); no news report or dated municipal notice found. Being followed up with the municipality (owner, question 6). Not approved for publication."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "befc9ba6-05fd-5471-ac93-fc32257d498b",
+      "external_id": "checked:lp-polokwane-2026-10-23:A1",
+      "source": "Review Online (The Citizen)",
+      "title": "Polokwane International Airport: five airport police accused, arrested from 19 Oct, over 46 undocumented nationals who vanished in Apr 2025",
+      "content": "Police officers attached to Polokwane International Airport were arrested by the Limpopo Provincial Anti-Corruption Unit, assisted by the Polokwane Tactical Response Team, on the evening of Monday 19 October (Review Online, 19 and 20 October). Police first said five were arrested, then corrected this: three (two men and a woman aged 44 to 49) were arrested and two colleagues were still being sought (police statement via Review Online, 20 October). On Tuesday 20 October five SAPS members attached to the airport appeared in the Polokwane Magistrate's Court on charges of defeating the ends of justice and contravening section 49 of the Immigration Act, and were granted bail of R1,000 each; the case was postponed to 30 November for further investigation (Review Online, 21 October). The case is about an older incident. According to police, on 17 April 2025 a traffic officer stopped a minibus carrying 46 undocumented foreign nationals on the N1 near Polokwane; police allege that four male officers and one female officer from the airport arrived, said the station commander had arranged for the passengers to be taken to Polokwane police station, and that neither the officers nor the passengers could later be found there. These are allegations: no one has been convicted, and the accused are not named here. Case status: accused, on bail, next court date 30 November 2026. All three reports come from one outlet and rest on police statements. The pin marks the airport, where the arrests took place and where the officers work, not the April 2025 roadside stop.",
+      "lat": -23.84498,
+      "lng": 29.45322,
+      "stream": "PRIORITY",
+      "timestamp": "2026-10-19T17:00:00Z",
+      "published_at": "2026-10-23T15:30:00Z",
+      "metadata": {
+        "source_outlet": "Review Online (The Citizen)",
+        "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/",
+        "pubdate_raw": "2026-10-21T08:56:01+00:00",
+        "checked": {
+          "incident": "Arrests on the evening of Mon 19 Oct 2026 (three, per the corrected police statement; five accused had been arrested by 21 Oct); court appearance and bail on Tue 20 Oct 2026. The conduct alleged dates from Fri 17 Apr 2025, about 18 months earlier, and is not the pin date.",
+          "reported": "19 Oct 2026 (Review Online, first report); corrected 20 Oct; bail reported 21 Oct",
+          "location": "Polokwane International Airport, where the arrests were made and where the officers are stationed (Review Online). The pin is the airport's own map point (OpenStreetMap aerodrome); where on the airport the arrests happened is not reported. The alleged April 2025 incident happened elsewhere: a roadside stop on the N1 near Polokwane and the Polokwane N1 weighbridge. That place is not pinned.",
+          "sources": [
+            {
+              "name": "Review Online (The Citizen), 19 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/"
+            },
+            {
+              "name": "Review Online (police statement), 20 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/"
+            },
+            {
+              "name": "Review Online (police statement), 21 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/21/5-polokwane-airport-officers-granted-r1-000-bail-each/"
+            }
+          ],
+          "checked_at": "2026-10-23T15:30:00Z",
+          "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-19",
+          "incident_precision": "part_of_day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-19",
+          "search_aliases": [
+            "Polokwane",
+            "Polokwane International Airport",
+            "Gateway airport",
+            "airport police",
+            "SAPS",
+            "Anti-Corruption Unit",
+            "Immigration Act",
+            "defeating the ends of justice",
+            "undocumented foreign nationals",
+            "N1 weighbridge",
+            "Capricorn"
+          ],
+          "incident_part": "evening"
+        },
+        "collected_title": "5 Polokwane airport officers granted R1,000 bail each"
+      },
+      "fingerprint": "sha256:b2781d12a9f308a7d78475cba59d8a27947386c8380d62586d2304e071dfba4f"
+    },
+    {
+      "signal_id": "891844fa-852b-53f7-aad5-395f7bd4291f",
+      "external_id": "checked:lp-polokwane-2026-10-23:P1",
+      "source": "Limpopo Chronicle",
+      "title": "Polokwane (map point estimated): Capricorn TVET College official, 58, arrested in a police sting over an alleged R100,000 bribe, 16 Oct",
+      "content": "A 58-year-old official attached to Capricorn TVET College in Polokwane was arrested on Friday 16 October in a covert entrapment operation in Polokwane by the Provincial Anti-Corruption Unit, assisted by the Provincial Organised Crime Unit and the Capricorn Flying Squad (police, via Limpopo Chronicle, 16 October). Police allege he demanded a R100,000 bribe from a farmer from Senwabarwana in exchange for releasing R750,000 in project funding meant for land for the practical training of 33 students, and that he misrepresented himself as a Department of Agriculture official. During the operation the farmer handed over R40,000 in cash, which police seized. He faces charges of corruption and extortion and was expected in the Polokwane Magistrate's Court on Monday 19 October; the outcome of that appearance was not found. These are allegations: he has not been convicted and is not named here. Case status: accused, first appearance expected 19 October, outcome unknown. One public report, resting on police. The map point is estimated: the report says only 'Polokwane', so the pin is the Polokwane town point, not the place of the arrest or a college campus.",
+      "lat": -23.9045,
+      "lng": 29.4688,
+      "stream": "PRIORITY",
+      "timestamp": "2026-10-16T10:00:00Z",
+      "published_at": "2026-10-23T15:30:00Z",
+      "metadata": {
+        "source_outlet": "Limpopo Chronicle",
+        "link": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+        "pubdate_raw": "2026-10-16T18:29:22+00:00",
+        "checked": {
+          "incident": "Arrested on Fri 16 Oct 2026 in a police entrapment operation; time not given (police, via Limpopo Chronicle).",
+          "reported": "16 Oct 2026 (Limpopo Chronicle); earliest report found",
+          "location": "ESTIMATED MAP POINT. The report says the operation was 'in Polokwane' and does not say where, or which campus the official works at. The pin is the Polokwane town point from the place-name list, used as a reference only; it is not the arrest scene or a college campus. Town level (about 8 km).",
+          "sources": [
+            {
+              "name": "Limpopo Chronicle",
+              "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/"
+            }
+          ],
+          "checked_at": "2026-10-23T15:30:00Z",
+          "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-16",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-16",
+          "search_aliases": [
+            "Polokwane",
+            "Capricorn TVET College",
+            "Capricorn TVET",
+            "TVET",
+            "bribe",
+            "corruption",
+            "extortion",
+            "Senwabarwana",
+            "Anti-Corruption Unit",
+            "Capricorn Flying Squad",
+            "Department of Agriculture"
+          ]
+        },
+        "collected_title": "Capricorn TVET College official arrested for soliciting R100k bribe"
+      },
+      "fingerprint": "sha256:f315159d38383915db658b60d4dd35b912f7d7e840317ad7b365997d2c785f44"
+    },
+    {
+      "signal_id": "09124894-bed2-5f4e-bd80-e3f7b162ff59",
+      "external_id": "checked:lp-polokwane-2026-10-23:H1",
+      "source": "SABC News",
+      "title": "Seshego (map point estimated): 43 learners from one school taken to hospital with stomach illness, reported 16 Oct; cause not confirmed",
+      "content": "The Limpopo Department of Health says 43 learners from M.E. Makgato Secondary School in Seshego were taken to hospital with stomach complaints (SABC News, 16 October). Spokesperson Neil Shikwambana said they were taken to Seshego, Helen Franz, Botlokwa and WF Knobel hospitals and that 13 were still being treated at Seshego Hospital. Briefly News, 17 October, adds that they were Grade 12 and other senior learners with acute stomach cramps and diarrhoea, that the others had been assessed and discharged, and that no deaths had been reported as of Friday 16 October. The cause is not confirmed: Briefly News reports that health authorities opened an investigation and that no definitive cause had been confirmed. When the learners fell ill is not reported. No learners are named. This is a health alert, not a crime report. Both reports rest on the health department. The map point is estimated: the school is not on the map, so the pin is the Seshego suburb point.",
+      "lat": -23.8494,
+      "lng": 29.3894,
+      "stream": "GLOBAL",
+      "timestamp": "2026-10-16T10:00:00Z",
+      "published_at": "2026-10-23T15:30:00Z",
+      "metadata": {
+        "source_outlet": "SABC News",
+        "link": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/",
+        "pubdate_raw": "2026-10-16T17:54:59+02:00",
+        "checked": {
+          "incident": "Reported by the Limpopo Department of Health on Fri 16 Oct 2026 (SABC News); when the learners fell ill is not given. The pin date is the report date.",
+          "reported": "16 Oct 2026 (SABC News); 17 Oct 2026 (Briefly News)",
+          "location": "ESTIMATED MAP POINT. M.E. Makgato Secondary School, Seshego (health department, via SABC News). The school is not on OpenStreetMap, so the pin is the Seshego suburb point, used as a reference only, not the school. Suburb level (about 3 km).",
+          "sources": [
+            {
+              "name": "SABC News",
+              "url": "https://www.sabcnews.com/sabcnews/43-learners-hospitalised-with-stomach-complaints-in-limpopo/"
+            },
+            {
+              "name": "Briefly News",
+              "url": "https://briefly.co.za/people/256308-43-limpopo-learners-hospitalised-stomach-illness-outbreak-seshego-school/"
+            }
+          ],
+          "checked_at": "2026-10-23T15:30:00Z",
+          "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-16",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-16",
+          "search_aliases": [
+            "Seshego",
+            "Polokwane",
+            "Makgato",
+            "M.E. Makgato Secondary School",
+            "learners",
+            "stomach illness",
+            "diarrhoea",
+            "Seshego Hospital",
+            "Helen Franz Hospital",
+            "Botlokwa Hospital",
+            "WF Knobel Hospital",
+            "health alert"
+          ]
+        },
+        "collected_title": "43 learners hospitalised with stomach complaints in Limpopo"
+      },
+      "fingerprint": "sha256:2399a7608cc6efa62f02f51a0528e4cd21aa76a9370089b65184754d80599b4a"
+    }
+  ]
+}

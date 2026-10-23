@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T151915Z-dca50db7",
+  "signal_id": "891844fa-852b-53f7-aad5-395f7bd4291f",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-polokwane-sweep-2026-10-23.json",
+  "approved_payload": {
+    "content": "A 58-year-old official attached to Capricorn TVET College in Polokwane was arrested on Friday 16 October in a covert entrapment operation in Polokwane by the Provincial Anti-Corruption Unit, assisted by the Provincial Organised Crime Unit and the Capricorn Flying Squad (police, via Limpopo Chronicle, 16 October). Police allege he demanded a R100,000 bribe from a farmer from Senwabarwana in exchange for releasing R750,000 in project funding meant for land for the practical training of 33 students, and that he misrepresented himself as a Department of Agriculture official. During the operation the farmer handed over R40,000 in cash, which police seized. He faces charges of corruption and extortion and was expected in the Polokwane Magistrate's Court on Monday 19 October; the outcome of that appearance was not found. These are allegations: he has not been convicted and is not named here. Case status: accused, first appearance expected 19 October, outcome unknown. One public report, resting on police. The map point is estimated: the report says only 'Polokwane', so the pin is the Polokwane town point, not the place of the arrest or a college campus.",
+    "external_id": "checked:lp-polokwane-2026-10-23:P1",
+    "lat": -23.9045,
+    "lng": 29.4688,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T15:30:00Z",
+        "incident": "Arrested on Fri 16 Oct 2026 in a police entrapment operation; time not given (police, via Limpopo Chronicle).",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-16",
+        "location": "ESTIMATED MAP POINT. The report says the operation was 'in Polokwane' and does not say where, or which campus the official works at. The pin is the Polokwane town point from the place-name list, used as a reference only; it is not the arrest scene or a college campus. Town level (about 8 km).",
+        "method": "Found in the 23 Oct 2026 Polokwane location sweep (collector runs, Google News, web and X searches, incidents 1-23 Oct); source pages read again on 23 Oct about 15:20 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "16 Oct 2026 (Limpopo Chronicle); earliest report found",
+        "reported_at": "2026-10-16",
+        "search_aliases": [
+          "Polokwane",
+          "Capricorn TVET College",
+          "Capricorn TVET",
+          "TVET",
+          "bribe",
+          "corruption",
+          "extortion",
+          "Senwabarwana",
+          "Anti-Corruption Unit",
+          "Capricorn Flying Squad",
+          "Department of Agriculture"
+        ],
+        "sources": [
+          {
+            "name": "Limpopo Chronicle",
+            "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/"
+          }
+        ]
+      },
+      "collected_title": "Capricorn TVET College official arrested for soliciting R100k bribe",
+      "link": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+      "pubdate_raw": "2026-10-16T18:29:22+00:00",
+      "source_outlet": "Limpopo Chronicle"
+    },
+    "published_at": "2026-10-23T15:30:00Z",
+    "signal_id": "891844fa-852b-53f7-aad5-395f7bd4291f",
+    "source": "Limpopo Chronicle",
+    "stream": "PRIORITY",
+    "timestamp": "2026-10-16T10:00:00Z",
+    "title": "Polokwane (map point estimated): Capricorn TVET College official, 58, arrested in a police sting over an alleged R100,000 bribe, 16 Oct"
+  },
+  "payload_sha256": "sha256:f315159d38383915db658b60d4dd35b912f7d7e840317ad7b365997d2c785f44",
+  "source_hashes": [
+    {
+      "url": "https://www.limpopochronicle.co.za/2026/10/16/capricorn-tvet-college-official-arrested-for-soliciting-r100k-bribe/",
+      "retrieved_at": "2026-10-23T15:11:16Z",
+      "content_sha256": "sha256:3e7c8580d52ec3dfe832abc15d3401c596adf502103afcfe47724d0d0bccc9ef"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T17:05:00+02:00",
+  "recorded_at": "2026-10-23T17:19:15+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "polokwane-approval-2026-10-23",
+    "summary": "Owner: 'Yes' (TVET official, Priority Intelligence, estimated point, unnamed), then 'Yes' to publishing; voice call 23 Oct 2026 about 17:05 SAST. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

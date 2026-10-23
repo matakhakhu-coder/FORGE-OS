@@ -931,6 +931,44 @@
       ],
       "independence": "single_report",
       "note": "One report (Limpopo Mirror, 8 Oct). No police statement of its own or later report was found by 23 Oct. The decomposition and the absence of injuries rest on a resident."
+    },
+    "befc9ba6-05fd-5471-ac93-fc32257d498b": {
+      "statement_from": "SAPS Limpopo (Deputy Provincial Commissioner Maj Gen Mashaba and Provincial Commissioner Lt Gen Jan Scheepers), reported by Review Online; the 20 and 21 Oct items are police press releases",
+      "spokesperson": [
+        "Maj Gen Mashaba",
+        "Lt Gen Jan Scheepers"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Review Online (The Citizen)"
+      ],
+      "independence": "same_statement",
+      "note": "Three items from one outlet, all resting on police. The first report (five arrested) was corrected by police the next day (three arrested, two sought). No independent account; the court outcome of 20 Oct is as reported in a police press release."
+    },
+    "891844fa-852b-53f7-aad5-395f7bd4291f": {
+      "statement_from": "SAPS Limpopo, reported by Limpopo Chronicle",
+      "spokesperson": [
+        "Lt Gen Jan Petrus Scheepers"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Limpopo Chronicle"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police. The college has not commented in the saved source. The court outcome of 19 Oct was not found."
+    },
+    "09124894-bed2-5f4e-bd80-e3f7b162ff59": {
+      "statement_from": "Limpopo Department of Health (spokesperson Neil Shikwambana), reported by SABC News and Briefly News",
+      "spokesperson": [
+        "Neil Shikwambana"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SABC News",
+        "Briefly News"
+      ],
+      "independence": "shared_wording",
+      "note": "Two outlets carrying the same health department account. The grade, symptoms, discharges, no deaths and the investigation come from Briefly News only. No school, parent or learner account."
     }
   }
 }
