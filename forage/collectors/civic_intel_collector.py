@@ -1055,8 +1055,22 @@ def _open_db(path: Path) -> sqlite3.Connection:
 
 # ── Main run loop ──────────────────────────────────────────────────────────
 
+def _source_hosts(source: dict) -> set:
+    from urllib.parse import urlparse
+    hosts = set()
+    for k in ("url", "scrape_url"):
+        if source.get(k):
+            hosts.add((urlparse(source[k]).hostname or "").lower())
+    for p in source.get("papers") or []:
+        if p.get("host"):
+            hosts.add(str(p["host"]).lower())
+    hosts.discard("")
+    return hosts
+
+
 def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = False,
-        province: Optional[str] = None) -> dict:
+        province: Optional[str] = None, exclude_hosts: Optional[dict] = None,
+        keep_signal=None) -> dict:
     """
     Iterate all SOURCES, fetch via appropriate strategy,
     deduplicate by external_id, insert new signals.
@@ -1066,6 +1080,12 @@ def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = 
       - Blocks near-identical signals (similarity >= 0.90)
       - Tags near-duplicates (similarity 0.70–0.89)
       - Loads title cache once per run — no per-signal DB queries
+
+    Batch 8 (town mode only; both default to off, so a plain run is
+    unchanged):
+      - exclude_hosts {host: why}: sources on these hosts are not fetched.
+      - keep_signal(sig, source) -> bool: a signal it rejects is not saved
+        (counted as off_area in the summary).
     """
     if not HAS_FEEDPARSER:
         print("[civic_intel] feedparser required — pip install feedparser --break-system-packages")
@@ -1095,6 +1115,20 @@ def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = 
     sources = ([] if local_only else list(SOURCES))
     if town or local_only:
         sources += local_sources(town, province=province)
+    excluded_sources = []
+    if exclude_hosts:
+        kept_sources = []
+        for source in sources:
+            hit = sorted(h for h in _source_hosts(source) if h in exclude_hosts)
+            if hit:
+                excluded_sources.append({"source_key": source["source_key"], "host": hit[0],
+                                         "why": exclude_hosts[hit[0]]})
+                print(f"[civic_intel] not reading {source['source_key']} ({hit[0]}): "
+                      f"publisher '{exclude_hosts[hit[0]]}' is switched off in data/town_sources.json")
+                continue
+            kept_sources.append(source)
+        sources = kept_sources
+    total_off_area = 0
 
     for source in sources:
         key   = source["source_key"]
@@ -1113,6 +1147,9 @@ def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = 
                 continue
             if window.mode != "none" and not window.contains(sig["timestamp"]):
                 stale_s += 1
+                continue
+            if keep_signal is not None and not keep_signal(sig, source):
+                total_off_area += 1
                 continue
             # Batch 6 step 3: read the article of a shortlisted signal (off
             # unless --read-articles / FORGE_ARTICLE_READER=1). Skipped for a
@@ -1257,6 +1294,10 @@ def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = 
         "run_status":      run_status,
         "timestamp":       datetime.now(timezone.utc).isoformat(),
     }
+    if exclude_hosts is not None:
+        summary["excluded_sources"] = excluded_sources
+    if keep_signal is not None:
+        summary["off_area"] = total_off_area
 
     dedup_line = ""
     if total_blocked > 0 or total_near_dup > 0:

@@ -383,11 +383,26 @@ def _rx(p: Optional[str]):
     return re.compile(p, re.I) if p else None
 
 
-def case_rows(case: dict, rows: list[dict]) -> list[dict]:
+def _row_links(r: dict) -> set:
+    m = r.get("metadata") or {}
+    out = {m.get("link"), m.get("url"), *(m.get("links") or [])}
+    return {str(u).rstrip("/") for u in out if u}
+
+
+def case_rows(case: dict, rows: list[dict], by_link: bool = False) -> list[dict]:
+    """Rows that are this case. ``by_link`` (Batch 8, live town-mode runs
+    only) also counts a row whose saved link is the case's own article, for
+    local-paper leads whose headline doesn't name the case (Neltox), and the
+    record such a row was merged into. Replay
+    scoring leaves it off, so older scorecards are unchanged."""
     m1, m2, mq = _rx(case["match"]), _rx(case.get("match_also")), _rx(case.get("query_match"))
+    case_link = str(case.get("url") or "").rstrip("/")
     hits = []
     for r in rows:
         if r["town"] != case["sweep"]:
+            continue
+        if by_link and case_link and case["kind"] == "catch" and case_link in _row_links(r):
+            hits.append(r)
             continue
         if case.get("title_only"):
             text = r.get("title") or ""
@@ -400,6 +415,11 @@ def case_rows(case: dict, rows: list[dict]) -> list[dict]:
         if mq and not mq.search((r.get("metadata") or {}).get("query", "")):
             continue
         hits.append(r)
+    if by_link:
+        # a hit that was merged into another record brings that record with it
+        ids = {r.get("signal_id") for r in hits}
+        want = {(r.get("metadata") or {}).get("supports_signal_id") for r in hits} - ids - {None}
+        hits += [r for r in rows if r.get("signal_id") in want]
     return hits
 
 
@@ -719,6 +739,149 @@ def to_markdown(card: dict) -> str:
         lines += ["", f"Replay fidelity: {f['same_stream']} of {f['rows']} rows got the same stream as saved, "
                       f"{f['same_place']} the same place; {f['replay_errors']} replay errors."]
     return "\n".join(lines) + "\n"
+
+
+# ── Batch 8: live town-mode runs ────────────────────────────────────────────────────
+#
+# Town mode (forage/collectors/town_mode.py) runs the collectors into a
+# database and then scores what that run saved against the bench cases of
+# the town's sweep: no replay, the saved rows as they are.
+
+TOWN_TO_SWEEP = {"musina": "musina", "messina": "musina", "polokwane": "polokwane",
+                 "newcastle": "newcastle", "louis trichardt": "lt_thohoyandou",
+                 "makhado": "lt_thohoyandou", "thohoyandou": "lt_thohoyandou"}
+
+LIVE_RUN_LABEL = {"google_news_monitor": "kw"}   # everything else is Civic Intelligence
+
+
+def sweep_for_town(town: str) -> Optional[str]:
+    return TOWN_TO_SWEEP.get(" ".join((town or "").lower().split()))
+
+
+def live_rows(db: Path, sweep: str, since_ids: Optional[set] = None,
+              base_db: Optional[Path] = None) -> list[dict]:
+    """Rows a live run saved: every signal not in ``since_ids`` (ids present
+    before the run) or not in ``base_db``. Read-only."""
+    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    q = "SELECT signal_id, source, external_id, title, content, timestamp, stream, metadata_json FROM signals"
+    if base_db is not None:
+        con.execute("ATTACH ? AS a", (f"file:{base_db}?mode=ro",))
+        q += " WHERE signal_id NOT IN (SELECT signal_id FROM a.signals)"
+    rows = []
+    for sid, src, ext, title, content, ts, stream, mj in con.execute(q):
+        if since_ids is not None and sid in since_ids:
+            continue
+        meta = json.loads(mj or "{}")
+        row = {"town": sweep, "run": LIVE_RUN_LABEL.get(src, "civic"), "source": src, "signal_id": sid,
+               "external_id": ext, "title": title, "content": content, "timestamp": ts,
+               "stream": stream, "metadata": meta}
+        row["outcome"] = {**recorded_outcome(row), "story_role": meta.get("story_role")}
+        rows.append(row)
+    con.close()
+    return rows
+
+
+def summarise(results: list[dict]) -> dict:
+    catch = [r for r in results if r["kind"] == "catch"]
+    keep = [r for r in results if r["kind"] == "keep_out"]
+    return {
+        "catch_cases": len(catch),
+        "caught": sum(r["caught"] for r in catch),
+        "right_stream_all": sum(r["right_stream"] == "all" for r in catch),
+        "right_place_any": sum(r["right_place"] in ("all", "some") for r in catch),
+        "one_record_when_caught": sum(r["merged"] is True for r in catch if r["caught"]),
+        "right_date_any": sum(r["right_date"] in ("all", "some") for r in catch),
+        "catch_pass": sum(r["pass"] for r in catch),
+        "keep_out_cases": len(keep),
+        "keep_out_pass": sum(r["pass"] and r.get("status") == "pass" for r in keep),
+        "keep_out_not_tested": sum(r.get("status") == "not_tested" for r in keep),
+    }
+
+
+def area_noise(rows: list[dict], sweep: str) -> dict:
+    """How much of a run is about the town: saved rows, rows naming the
+    sweep area, and rows naming it that look foreign (Messina, Sicily)."""
+    cfg = TOWNS[sweep]
+    area = re.compile(cfg["area"], re.I)
+    foreign = re.compile(cfg["foreign"], re.I) if cfg["foreign"] else None
+    out = {}
+    for run in sorted({r["run"] for r in rows}) + ["all"]:
+        rs = [r for r in rows if run == "all" or r["run"] == run]
+        named = [r for r in rs if area.search(f"{r.get('title') or ''} {r.get('content') or ''}")]
+        fgn = [r for r in named if foreign and (foreign.search(f"{r.get('title') or ''} {r.get('content') or ''}")
+                                                 or foreign.search((r.get("metadata") or {}).get("source_outlet", "")))]
+        out[run] = {"saved": len(rs), "naming_area": len(named),
+                    "not_naming_area": len(rs) - len(named),
+                    "naming_area_foreign_guess": len(fgn) if foreign else None,
+                    "share_naming_area": round(len(named) / len(rs), 3) if rs else None}
+    return out
+
+
+def score_live(rows: list[dict], sweep: str, cases: Optional[dict] = None) -> dict:
+    """Score a live run's saved rows against one sweep's bench cases."""
+    cases = cases or load_cases()
+    mine = [c for c in cases["cases"] if c["sweep"] == sweep]
+    results = [score_case(c, case_rows(c, rows, by_link=True), "outcome") for c in mine]
+    return {"sweep": sweep, "code_commit": _git_head(), "summary": summarise(results),
+            "cases": results, "noise": area_noise(rows, sweep)}
+
+
+def score_reference(sweep: str, runs: Optional[set] = None, recorded: bool = True,
+                    cases: Optional[dict] = None) -> dict:
+    """The 23 Oct sweep's own result for one sweep's cases, from the replay
+    fixture: what it saved (recorded) or today's code replayed over it.
+    ``runs`` limits it to some runs ("kw" = the keyword run)."""
+    cases = cases or load_cases()
+    meta, rows = load_replay()
+    rows = [r for r in rows if r["town"] == sweep and (runs is None or r["run"] in runs)]
+    if recorded:
+        rows = [{**r, "recorded": recorded_outcome(r)} for r in rows]
+        key = "recorded"
+    else:
+        # Live town-mode runs read no article (the reader is off by default),
+        # so the replay reference reads none either.
+        global ARTICLES
+        prev, ARTICLES = ARTICLES, False
+        try:
+            rows = story_merge_rows(replay(rows))
+        finally:
+            ARTICLES = prev
+        key = "outcome"
+    mine = [c for c in cases["cases"] if c["sweep"] == sweep]
+    results = [score_case(c, case_rows(c, rows), key) for c in mine]
+    totals = meta.get("run_totals") or {}
+    saved = sum(v for k, v in totals.items() if k.startswith(f"{sweep}/")
+                and (runs is None or k.split("/", 1)[1] in runs))
+    return {"sweep": sweep, "runs": sorted(runs) if runs else "all", "mode": key,
+            "summary": summarise(results), "cases": results, "saved_rows": saved,
+            "rows_naming_area": sum(1 for r in rows if re.search(TOWNS[sweep]["area"],
+                                    f"{r.get('title') or ''} {r.get('content') or ''}", re.I))}
+
+
+def case_level(r: dict) -> int:
+    """An ordering for 'at least as well': 0 missed, 1 caught, 2 caught with
+    a right place or right stream, 3 both, 4 full pass. Keep-out: pass 4,
+    not tested 4, fail 0."""
+    if r["kind"] == "keep_out":
+        return 4 if r["pass"] else 0
+    if r["pass"]:
+        return 4
+    if not r["caught"]:
+        return 0
+    stream = r["right_stream"] == "all"
+    place = r["right_place"] in ("all", "some")
+    return 1 + int(stream) + int(place)
+
+
+def compare(live: dict, reference: dict) -> list[dict]:
+    ref = {r["id"]: r for r in reference["cases"]}
+    out = []
+    for r in live["cases"]:
+        b = ref.get(r["id"])
+        lv, bv = case_level(r), (case_level(b) if b else 0)
+        out.append({"id": r["id"], "town_mode": lv, "reference": bv,
+                    "verdict": "better" if lv > bv else ("same" if lv == bv else "worse")})
+    return out
 
 
 # ── fixture extraction (one-off, from the sweep folders) ────────────────────

@@ -106,6 +106,21 @@ def sources_for_town(town: str, config: Optional[dict] = None,
     return out
 
 
+def blocked_hosts(config: Optional[dict] = None) -> dict:
+    """Batch 8: {host: publisher key} for every switched-off publisher that
+    lists its hosts. Town mode leaves out any Civic Intelligence feed on
+    these hosts, so a town run makes no request to a publisher whose terms
+    bar automated monitoring."""
+    cfg = config if config is not None else load_config()
+    out = {}
+    for key, pub in (cfg.get("publishers") or {}).items():
+        if pub.get("enabled", True):
+            continue
+        for host in pub.get("hosts") or []:
+            out[host.lower()] = key
+    return out
+
+
 def all_readable_papers(config: Optional[dict] = None) -> list:
     cfg = config if config is not None else load_config()
     out = []

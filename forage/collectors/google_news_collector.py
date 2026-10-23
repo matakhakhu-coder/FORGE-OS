@@ -527,7 +527,22 @@ def persist_signals(signals: list[dict], dry_run: bool = False) -> int:
 INFRA_TERMS = ("cable theft", "water outage", "power outage")
 INFRA_PROVINCE_TERMS = ("cable theft", "substation vandalism", "transformer theft",
                         "Eskom outage", "water crisis", "sewage spill", "bridge collapse",
-                        "pothole road", "infrastructure vandalism", "copper cable arrested")
+                        "pothole road", "infrastructure vandalism", "copper cable arrested",
+                        # Batch 8: words the four town sweeps relied on
+                        "borehole", "without water", "sewage")
+
+
+_WHEN = re.compile(r"\bwhen:\d+[hdmy]\b", re.I)
+
+
+def recent(query: str, days: int) -> str:
+    """Batch 8: add Google News' recent-only limit (when:Nd) unless the
+    query already has one. Without it a search mostly returns months-old
+    coverage that the run window then drops."""
+    q = (query or "").strip()
+    if not q or _WHEN.search(q):
+        return q
+    return f"{q} when:{max(1, int(days))}d"
 
 
 # District seats and service hubs the manual Limpopo method searched. Other
@@ -564,12 +579,16 @@ def blocked_outlet(item: dict) -> bool:
     return _infra.foreign_outlet(item.get("title", ""), item.get("source_name", ""))
 
 
-def keep_for_town(item: dict, query: str | None = None) -> bool:
+def keep_for_town(item: dict, query: str | None = None, area_town: dict | None = None) -> bool:
     """Batch 4: a town keyword search drops stories that are about somewhere
     else. "Musina protest" also returns Durban and Tunisia protests;
     "Newcastle murder" returns Newcastle NSW. Stories that name no place are
-    kept, and a query with no recognisable town keeps everything."""
-    town = _infra.query_town(query if query is not None else item.get("query", ""))
+    kept, and a query with no recognisable town keeps everything.
+
+    Batch 8: in town mode a query with no recognisable town ("Beitbridge
+    border", "Tshamutumbu") is checked against the run's own town instead
+    of keeping everything."""
+    town = _infra.query_town(query if query is not None else item.get("query", "")) or area_town
     if not town:
         return True
     text = f"{item.get('title', '')} {_strip_html(item.get('description', ''))}"
@@ -581,7 +600,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
                   dry_run: bool = False,
                   infra_province: str | None = None,
                   pi: bool = False, pi_province: str | None = None,
-                  start_date: str | None = None) -> dict:
+                  start_date: str | None = None,
+                  area_town: dict | None = None) -> dict:
     """
     Main collection function.
     Returns a summary dict for pipeline telemetry.
@@ -589,6 +609,11 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     start_date ("1 October" or YYYY-MM-DD, SAST) replaces the count-back
     window with a fixed start (Batch 6 step 2, G12). FORGE_WINDOW_START sets
     it too. Unset, the run behaves exactly as before.
+
+    Batch 8: keyword and infrastructure searches get the recent-only limit
+    (when:Nd) the PI preset already used. area_town (a gazetteer place, set
+    by town mode) is the town the area check falls back to. Actor mode, the
+    scheduled default, is unchanged.
     """
     start_time = time.time()
     window = _rw.RunWindow.build(days=days, start=start_date)
@@ -608,15 +633,15 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         # mostly return months-old coverage, which the window then drops.
         pi_list = [f"{q} when:{days}d" for q in _pi.pi_queries(pi_province)]
         pi_query_set = set(pi_list)
-        queries = ((keywords or []) + pi_list)[:max_queries]
+        queries = ([recent(q, days) for q in (keywords or [])] + pi_list)[:max_queries]
         print(f"[gnews] Priority Intelligence preset{' for ' + pi_province if pi_province else ''}: "
               f"{len(queries)} queries")
     elif infra_province:
-        queries = (keywords or []) + infra_queries(infra_province)
+        queries = [recent(q, days) for q in (keywords or []) + infra_queries(infra_province)]
         queries = queries[:max_queries]
         print(f"[gnews] Infrastructure preset for {infra_province}: {len(queries)} queries")
     elif keywords:
-        queries = keywords[:max_queries]
+        queries = [recent(q, days) for q in keywords][:max_queries]
         print(f"[gnews] Using {len(queries)} CLI keyword(s): {queries}")
     else:
         queries = _load_actor_queries(max_queries)
@@ -669,7 +694,7 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
                 if blocked_outlet(item):
                     foreign_dropped += 1
                     continue
-                if town_run and not keep_for_town(item, query):
+                if town_run and not keep_for_town(item, query, area_town):
                     off_town += 1
                     continue
                 if infra_province and not _infra.province_mentioned(

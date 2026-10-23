@@ -11,12 +11,15 @@
     "pixelfish": {
       "name": "Pixelfish Marketing Solutions (Newcastillian)",
       "enabled": false,
-      "blocked": "robots.txt notice bans automated collection without express written permission. Requested 23 Oct 2026, no reply. No reader is built for it."
+      "blocked": "robots.txt notice bans automated collection without express written permission. Requested 23 Oct 2026, no reply. No reader is built for it.",
+      "hosts": ["newcastillian.com", "www.newcastillian.com"]
     },
     "caxton": {
       "name": "Caxton (Northern Natal News, Review Online, The Citizen)",
       "enabled": false,
-      "blocked": "Terms clause 2.7.1 bans automated monitoring without prior written authority. The request was dropped by the owner on 23 Oct 2026. No reader is built for it."
+      "blocked": "Terms clause 2.7.1 bans automated monitoring without prior written authority. The request was dropped by the owner on 23 Oct 2026. No reader is built for it.",
+      "hosts": ["citizen.co.za", "www.citizen.co.za"],
+      "town_mode": "Batch 8: town mode leaves out every Civic Intelligence feed on these hosts (The Citizen, Review Online, Letaba Herald), so a town run makes no request to Caxton. Plain and scheduled runs are unchanged."
     }
   },
   "papers": {
