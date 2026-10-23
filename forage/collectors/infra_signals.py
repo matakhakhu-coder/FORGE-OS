@@ -310,7 +310,9 @@ def sa_sign_for(text: str, p: dict, key: str = "") -> bool:
     soft = bool(_pi._SA.search(text) or _pi._SA_PLACES.search(text)
                 or _pi._SA_OUTLET.search(outlet_of(text) or "") or _SA_LOCAL_OUTLET.search(text)
             or _SA_SOFT_LOCAL.search(text))
-    foreign = bool(_NAMESAKE_FOREIGN.search(text) or _pi._FOREIGN.search(text))
+    # Only the countries the look-alike names come from. pi_signals' wider
+    # foreign list would count "Nigerian national" in an Ermelo raid story.
+    foreign = bool(_NAMESAKE_FOREIGN.search(text))
     return soft and not foreign
 
 

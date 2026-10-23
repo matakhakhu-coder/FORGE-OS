@@ -134,3 +134,10 @@ def test_beitbridge_zimbabwe_side_not_placed(with_beitbridge):
 def test_beitbridge_sa_side_placed(with_beitbridge):
     loc = infra.locate("SANDF soldiers intercept stolen cars at Beitbridge border post")
     assert loc and loc["place"] == "Beitbridge"
+
+
+def test_foreign_national_in_sa_story_does_not_block_namesake():
+    # Ermelo (Mpumalanga) shares a name with a Dutch town; a Nigerian suspect
+    # is not a sign the story is Dutch.
+    loc = infra.locate("Hawks raid Ermelo brothel, arrest Nigerian national with 'expired asylum documents'")
+    assert loc and loc["place"] == "Ermelo"
