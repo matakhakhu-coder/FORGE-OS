@@ -144,6 +144,14 @@ DISTRICT_WORDS = {
     "vhembe": "Limpopo", "mopani": "Limpopo", "capricorn": "Limpopo", "waterberg": "Limpopo",
     "sekhukhune": "Limpopo", "limpopo": "Limpopo", "ehlanzeni": "Mpumalanga", "nkangala": "Mpumalanga",
     "gert sibande": "Mpumalanga", "mpumalanga": "Mpumalanga",
+    # KwaZulu-Natal (Batch 3, 23 Oct 2026): the province and its district
+    # municipalities, so KZN copy can count small places as in-province and
+    # the KZN infrastructure run's province filter recognises KZN stories.
+    "kwazulu-natal": "KwaZulu-Natal", "kwazulu natal": "KwaZulu-Natal", "kzn": "KwaZulu-Natal",
+    "amajuba": "KwaZulu-Natal", "umzinyathi": "KwaZulu-Natal", "uthukela": "KwaZulu-Natal",
+    "umgungundlovu": "KwaZulu-Natal", "harry gwala": "KwaZulu-Natal", "ilembe": "KwaZulu-Natal",
+    "king cetshwayo": "KwaZulu-Natal", "umkhanyakude": "KwaZulu-Natal", "zululand": "KwaZulu-Natal",
+    "ethekwini": "KwaZulu-Natal", "ugu district": "KwaZulu-Natal",
 }
 
 # Extra Limpopo names the benchmark needed that GeoNames lacks. Points are the
@@ -180,6 +188,23 @@ def _places() -> dict:
                 idx.setdefault(_fold(nm), []).append({"name": p["name"], "lat": p["lat"], "lng": p["lng"],
                     "population": 0, "province": p.get("province", ""), "feature_code": p.get("kind", ""),
                     "district": "", "municipality": p.get("municipality", ""), "source": p.get("source", "topup")})
+    except Exception:
+        pass
+    # Collector-only top-up (Batch 3): sections and villages the town sweeps
+    # named. Not read by tools/publish.py. See the file's 'about'.
+    try:
+        t = json.loads((GAZ_DIR / "collector_places_topup.json").read_text())
+        for p in t.get("places", []):
+            for nm in [p["name"]] + list(p.get("aliases", [])):
+                idx.setdefault(_fold(nm), []).append({"name": p["name"], "lat": p["lat"], "lng": p["lng"],
+                    "population": 0, "province": p.get("province", ""), "feature_code": p.get("kind", ""),
+                    "district": "", "municipality": p.get("municipality", ""),
+                    "source": p.get("source", "collector top-up"),
+                    "context": [_fold(c) for c in p.get("context", [])],
+                    "context_required": bool(p.get("context_required")),
+                    "parent": p.get("parent", ""), "estimated": bool(p.get("estimated")),
+                    "uncertainty_km": p.get("uncertainty_km"), "point_basis": p.get("point_basis", ""),
+                    "precinct": p.get("precinct", ""), "precinct_basis": p.get("precinct_basis", "")})
     except Exception:
         pass
     for nm, lat, lng, prov, src in EXTRA_PLACES:
@@ -225,22 +250,40 @@ def locate(text: str, province: Optional[str] = None) -> Optional[dict]:
         if key in _AMBIGUOUS or len(key) < 4:
             continue
         for p in idx.get(key, []):
-            in_prov = p["province"] in named_provs
+            # Collector top-up entries (Batch 3) carry context words: the
+            # parent town or district. Named context counts as in-province
+            # and makes the section beat its parent town ("Matswale, Musina").
+            ctx = p.get("context") or []
+            ctx_hit = bool(ctx) and any(re.search(r"\b" + re.escape(c) + r"\b", folded_text) for c in ctx)
+            if p.get("context_required") and not ctx_hit:
+                continue
+            in_prov = p["province"] in named_provs or ctx_hit
             pop = p.get("population") or 0
             big = pop >= 5000 or str(p.get("feature_code", "")).startswith(("PPLA", "PPLC"))
             if not in_prov and (named_provs or not big):
                 continue
-            score = (2 if in_prov else 0) + len(key.split()) + min(pop, 500000) / 500000
+            score = (2 if in_prov else 0) + len(key.split()) + min(pop, 500000) / 500000 + (1 if ctx_hit else 0)
             if best is None or score > best[0]:
                 best = (score, p, cand)
     if not best:
         return None
     _, p, cand = best
-    return {"place": p["name"], "matched_text": cand, "province": p["province"],
-            "district": p.get("district") or "", "municipality": p.get("municipality") or "",
-            "lat": p["lat"], "lng": p["lng"], "gazetteer": p.get("source", ""),
-            "precision": "town_centroid_estimate",
-            "note": "Candidate from the story text; not a confirmed event point. Lat/lng are the place centroid."}
+    out = {"place": p["name"], "matched_text": cand, "province": p["province"],
+           "district": p.get("district") or "", "municipality": p.get("municipality") or "",
+           "lat": p["lat"], "lng": p["lng"], "gazetteer": p.get("source", ""),
+           "precision": "town_centroid_estimate",
+           "note": "Candidate from the story text; not a confirmed event point. Lat/lng are the place centroid."}
+    if p.get("parent"):
+        out["within"] = p["parent"]
+    if p.get("precinct"):
+        out["precinct"] = p["precinct"]
+        out["precinct_basis"] = p.get("precinct_basis") or "collector top-up"
+    if p.get("estimated"):
+        out["point_estimated"] = True
+        out["uncertainty_km"] = p.get("uncertainty_km")
+        out["note"] = ("Candidate from the story text; not a confirmed event point. The point is an estimate: "
+                       + (p.get("point_basis") or "nearest sourced point"))
+    return out
 
 
 def province_mentioned(text: str, province: str) -> bool:

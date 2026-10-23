@@ -149,7 +149,11 @@ def test_metadata_records_basis_and_no_analysis():
                          "location_candidate"}
     _, _, court = _route("Zama zama kingpin appears in court in Klerksdorp")
     assert court["pi_basis"] == "court step reported"
-    assert court["location_candidate"]["place"] == "Klerksdorp"
+    # Batch 3 (23 Oct 2026): a place named only as the court is flagged for
+    # review, not used to place the signal (place_signals.estimate).
+    assert "location_candidate" not in court
+    assert court["place_review"] == "arrest_or_court_place"
+    assert court["arrest_place_candidate"]["place"] == "Klerksdorp"
 
 
 def test_civic_collector_routes_pi_and_keeps_infra():

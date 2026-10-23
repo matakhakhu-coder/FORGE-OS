@@ -51,11 +51,13 @@ from typing import Optional
 
 try:
     from forage.collectors import infra_signals as _infra
+    from forage.collectors import place_signals as _place
 except ImportError:  # pragma: no cover - script use
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     from forage.collectors import infra_signals as _infra
+    from forage.collectors import place_signals as _place
 
 STREAM = "PRIORITY"
 MODES = ("standalone", "escalate")
@@ -362,9 +364,13 @@ def route(stream: str, title: str, summary: str = "", province: Optional[str] = 
     overlap = "INFRASTRUCTURE" if (infra_event or stream == "INFRASTRUCTURE") else (
         "CRIME_INTEL" if killing else None)
     if not (infra_meta or {}).get("location_candidate"):
-        loc = _infra.locate(text, province=province)
+        # Batch 3: a place named only as where an arrest or court step
+        # happened is flagged for review, not used (place_signals).
+        loc, review = _place.estimate(text, province=province)
         if loc:
             meta["location_candidate"] = loc
+        if review:
+            meta.update(review)
     if overlap is None:
         meta["pi_route"] = "standalone"
         return STREAM, True, meta
