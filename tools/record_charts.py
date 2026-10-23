@@ -37,6 +37,13 @@ per record with its short ID, the step that added it, and the same incident
 day/kind, added day, stream and province the charts above use, worked out by
 the same helpers. The axes (days and bar order) are today's, so they stay
 fixed while scrubbing. No titles, places, quotes or sources.
+
+Stream switches (interactive charts Batch 5): the charts share the map's
+stream filter, so the table also names the map's four streams in the
+Streams panel order (key and label), and each chart page says where its
+switches sit (STREAM_FILTER): a row of switches above the chart, or, on
+Streams, the bars themselves. Tap to see the records (Batch 4) takes the
+titles from the map's own pin data, matched by short ID, never from here.
 """
 from __future__ import annotations
 
@@ -48,6 +55,10 @@ SAST = timezone(timedelta(hours=2))
 # The renderers map.html has. A page whose kind is not here is refused.
 RENDERERS = ("line", "columns", "bars")
 
+# Where a chart page's stream switches sit: "chips" is the row of switches
+# above the chart, "bars" means tapping a bar turns its stream on or off.
+STREAM_FILTERS = ("chips", "bars")
+
 # The fixed chart pages, in swipe order (after the Network page).
 CHART_PAGES: tuple[dict, ...] = (
     {
@@ -55,6 +66,7 @@ CHART_PAGES: tuple[dict, ...] = (
         "tab": "Incident dates",
         "title": "Records by incident date",
         "kind": "line",
+        "stream_filter": "chips",
         "caption": ("The date it happened, or the date a body was found. Never the report date: "
                     "where a report gives only that, the record is counted as date not stated. "
                     "An arrest, charge or court step in an older case is counted apart, not on the "
@@ -65,6 +77,7 @@ CHART_PAGES: tuple[dict, ...] = (
         "tab": "Added",
         "title": "Records added to the map by day",
         "kind": "columns",
+        "stream_filter": "chips",
         "caption": ("When each pin went on the map, in South African time. This shows how the map "
                     "grew, not when things happened."),
     },
@@ -73,6 +86,7 @@ CHART_PAGES: tuple[dict, ...] = (
         "tab": "Streams",
         "title": "Records by stream",
         "kind": "bars",
+        "stream_filter": "bars",
         "caption": "The map stream each pin is filed under.",
     },
     {
@@ -80,6 +94,7 @@ CHART_PAGES: tuple[dict, ...] = (
         "tab": "Provinces",
         "title": "Records by province",
         "kind": "bars",
+        "stream_filter": "chips",
         "caption": ("Where FORGE has checked so far, not where most incidents happen. "
                     "Some provinces have had more dedicated checking passes than others."),
     },
@@ -98,6 +113,10 @@ def _check_registry() -> None:
     for p in CHART_PAGES:
         if p["kind"] not in RENDERERS:
             raise ValueError(f"chart page {p['id']!r}: no renderer for kind {p['kind']!r}")
+        if p.get("stream_filter") not in STREAM_FILTERS:
+            raise ValueError(f"chart page {p['id']!r}: stream_filter must be one of {STREAM_FILTERS}")
+        if p["stream_filter"] == "bars" and p["id"] != "stream":
+            raise ValueError(f"chart page {p['id']!r}: only the Streams bars can be stream switches")
 
 
 _check_registry()
@@ -329,9 +348,11 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
             last_month = (d.year, d.month)
         last_day = st["day"]
     inc = pages.get("incident", {})
+    from tools.records_export import STREAM_LABELS   # the map's four streams, in panel order
     return {
         "total": len(records),
         "columns": list(TABLE_COLUMNS),
+        "streams": [{"key": k, "label": v} for k, v in STREAM_LABELS.items()],
         "steps": steps,
         "marks": marks,
         "rows": rows,
@@ -350,12 +371,17 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
     }
 
 
-def counts_from_table(table: dict, step: int) -> dict:
+def counts_from_table(table: dict, step: int, streams_on: set[str] | None = None) -> dict:
     """Recount the charts from the table at one step (what the page script
-    does). Used by the tests to prove the table reproduces chart_counts."""
+    does). Used by the tests to prove the table reproduces chart_counts.
+    streams_on: the map stream keys switched on (None: all of them); records
+    in a stream switched off are left out of every chart, as on the page."""
     col = {c: i for i, c in enumerate(table["columns"])}
     ax = table["axes"]
     live = [r for r in table["rows"] if r[col["step"]] <= step]
+    if streams_on is not None:
+        on_labels = {s["label"] for s in table.get("streams", []) if s["key"] in streams_on}
+        live = [r for r in live if r[col["stream"]] in on_labels]
     inc = {d: {"occurred": 0, "found": 0} for d in ax["incident_days"]}
     undated = later = 0
     for r in live:
@@ -384,4 +410,31 @@ def counts_from_table(table: dict, step: int) -> dict:
     for f in ("stream", "province"):
         c = Counter(r[col[f]] for r in live)
         out[f] = [c.get(lab, 0) for lab in ax[f]]
+    return out
+
+
+def ids_from_table(table: dict, step: int, chart: str, key=None,
+                   streams_on: set[str] | None = None) -> list[str]:
+    """The short IDs behind one bar, column, line day or count at one step
+    (what the page's "tap to see the records" list shows). chart is a page
+    id; key is the day (ISO), the bar label, or for the incident line
+    "undated" / "later_step", and for Added None means "date added not
+    recorded". Used by the tests to prove each list matches the count tapped."""
+    col = {c: i for i, c in enumerate(table["columns"])}
+    on_labels = None
+    if streams_on is not None:
+        on_labels = {s["label"] for s in table.get("streams", []) if s["key"] in streams_on}
+    out = []
+    for r in table["rows"]:
+        if r[col["step"]] > step or (on_labels is not None and r[col["stream"]] not in on_labels):
+            continue
+        if chart == "incident":
+            hit = (r[col["kind"]] == key) if key in ("undated", "later_step") else \
+                  (r[col["kind"]] in ("occurred", "found") and r[col["inc"]] == key)
+        elif chart == "added":
+            hit = r[col["added"]] == key
+        else:
+            hit = r[col[chart]] == key
+        if hit:
+            out.append(r[col["id"]])
     return out

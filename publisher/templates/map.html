@@ -804,7 +804,7 @@
      columns fit, and the page could not be swiped from the chart.) */
   .gp-cols-scroll { overflow-x: auto; padding-bottom: 4px; }
   .gp-cols { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 6px; height: 200px; min-width: min-content; }
-  .gp-col { flex: 1 0 36px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .gp-col { flex: 1 0 44px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
   .gp-col__plot { flex: 1; width: 100%; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; padding-top: 16px; box-sizing: border-box; }
   .gp-col__n { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-primary); }
   .gp-col__bar { width: 70%; min-height: 1px; background: var(--accent); border-radius: 2px 2px 0 0; }
@@ -845,6 +845,55 @@
   .gp-time__tick--day { height: 7px; background: var(--text-secondary); }
   .gp-time__day { position: absolute; top: 8px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-secondary); white-space: nowrap; }
   .gp-time__day:first-child { transform: none; }
+  /* Tap to see the records (interactive charts Batch 4) and the stream
+     switches (Batch 5), all added by static/js/record-charts.js; printed
+     hidden, so without the script the charts look as they always have.
+     Every tap target is at least 44px tall and wide, except the line's day
+     columns, which share the chart's width (a tap picks the nearest day;
+     the list's previous / next buttons step a day at a time). */
+  #panel-graph .gp-streams[hidden], #panel-graph .gp-list[hidden], #panel-graph .gp-streams-note[hidden] { display: none !important; }
+  .gp-hit { font: inherit; color: inherit; background: none; border: 0; margin: 0; padding: 0; text-align: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .gp-hit:focus-visible, .gp-line:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gp-hit.is-picked .gp-bar__fill, .gp-hit.is-picked .gp-col__bar { background: var(--accent-bright); }
+  .gp-hit.is-picked .gp-bar__lab, .gp-hit.is-picked .gp-col__lab { color: var(--accent-bright); }
+  .gp-col .gp-col__btn { flex: 1; width: 100%; min-width: 44px; min-height: 44px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .gp-bar--live { display: block; }
+  .gp-bars.gp-bars--live { gap: 0; }
+  .gp-bar__btn { display: grid; grid-template-columns: minmax(90px, 34%) 1fr 2.5em; align-items: center; gap: 8px; width: 100%; min-height: 44px; }
+  .gp-bar--switch { display: grid; grid-template-columns: 1fr 44px; align-items: center; gap: 4px; }
+  .gp-bar--switch .gp-bar__btn { grid-template-columns: minmax(90px, 38%) 1fr; }
+  .gp-bar__count { min-width: 44px; min-height: 44px; text-align: right; }
+  .gp-bar__count .gp-bar__n { text-decoration: underline; text-decoration-color: var(--border-subtle); text-underline-offset: 3px; }
+  .gp-bar--off .gp-bar__lab { color: var(--text-secondary); text-decoration: line-through; }
+  .gp-bar__state { font-family: var(--font-mono); font-size: 0.56rem; color: var(--text-secondary); margin-left: 4px; }
+  .gp-line { cursor: pointer; }
+  .gp-line__hit { fill: transparent; }
+  .gp-line__sel { fill: var(--accent); opacity: 0.16; }
+  .gp-chart__summary .gp-hit { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-decoration-color: var(--border-subtle); text-underline-offset: 3px; }
+  .gp-hit.is-picked { color: var(--accent-bright); }
+  .gp-streams { display: flex; flex-wrap: wrap; gap: 6px; margin: var(--sp-2) 0 0; max-width: 640px; }
+  .gp-stream { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 1px solid var(--border-subtle); border-radius: 22px; font-size: 0.7rem; color: var(--text-primary); background: var(--bg-elevated); }
+  .gp-stream__dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .gp-stream[aria-pressed="false"] { color: var(--text-secondary); background: none; text-decoration: line-through; }
+  .gp-stream[aria-pressed="false"] .gp-stream__dot { background: transparent !important; box-shadow: inset 0 0 0 1px var(--text-secondary); }
+  .gp-dot--CRIME_INTEL { background: var(--crime); }
+  .gp-dot--INFRASTRUCTURE { background: var(--infra); }
+  .gp-dot--PRIORITY { background: var(--priority); }
+  .gp-dot--GLOBAL { background: var(--global); }
+  .gp-streams-note { margin: var(--sp-2) 0 0; font-family: var(--font-mono); font-size: 0.62rem; line-height: 1.4; color: var(--accent-bright); }
+  .gp-list { margin: var(--sp-3) 0 0; max-width: 640px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-elevated); }
+  .gp-list__head { display: flex; align-items: center; gap: 2px; border-bottom: 1px solid var(--border-subtle); }
+  .gp-list__title { flex: 1; margin: 0; padding: 0 8px; font-size: 0.76rem; font-weight: 600; color: var(--text-primary); }
+  .gp-list__btn { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); }
+  .gp-list__btn:disabled { opacity: 0.3; cursor: default; }
+  .gp-list__note { margin: 6px 8px 0; font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+  .gp-list__items { list-style: none; margin: 0; padding: 4px 0; }
+  .gp-list__item { padding: 6px 8px; border-top: 1px solid var(--border-subtle); }
+  .gp-list__item:first-child { border-top: 0; }
+  .gp-list__t { display: block; font-size: 0.74rem; line-height: 1.35; color: var(--text-primary); }
+  .gp-list__meta { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-secondary); }
+  .gp-list__show { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.7rem; color: var(--accent-bright); }
+  .gp-list__empty { margin: 0; padding: 10px 8px; font-size: 0.72rem; color: var(--text-secondary); }
   #ig-loading {
     position: absolute; inset: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1494,6 +1543,15 @@
           {%- endfor %}
         </div>
       </div>
+      {%- if p.stream_filter == 'chips' %}
+      <div class="gp-streams" data-gp-streams role="group" aria-label="Streams on the charts and the map" hidden>
+        {%- for s in chart_table.streams %}
+        <button type="button" class="gp-hit gp-stream" data-gp-stream="{{ s.key }}" aria-pressed="true"><i class="gp-stream__dot gp-dot--{{ s.key }}" aria-hidden="true"></i>{{ s.label }}</button>
+        {%- endfor %}
+      </div>
+      {%- endif %}
+      <div class="gp-list" data-gp-list role="region" aria-live="polite" aria-label="Records counted there" hidden></div>
+      <p class="gp-streams-note" data-gp-streams-note hidden></p>
       {%- endif %}
       <p class="gp-chart__caption">{{ p.caption }}</p>
      </section>
@@ -3077,6 +3135,13 @@
 
   /* ── Site search: a signal result opens its drawer without a reload ────── */
   // Returns true when the signal is a pin on this map and its drawer opened.
+  // The Graph panel's record lists (record-charts.js) take each record's
+  // title from the pins this page already carries, matched by short ID.
+  window.forgeSignalInfo = function (sid) {
+    var idx = idxForSignal(sid);
+    if (idx === null || !RAW[idx]) return null;
+    return { title: RAW[idx].title || '' };
+  };
   window.forgeOpenSignal = function (sid, trigger) {
     var idx = idxForSignal(sid);
     if (idx === null) return false;
@@ -3111,13 +3176,30 @@
   })();
 
   /* ── Stream filter toggles ──────────────────────────────────────────────── */
+  // One stream state for the map and the Graph panel's charts (interactive
+  // charts Batch 5), so the two never disagree: the Streams panel switches
+  // and the chart switches both call setStreamVisible, which redraws the
+  // pins and tells the charts (a 'forge-streams' event on document).
+  function setStreamVisible(stream, visible) {
+    if (!(stream in streamVisible)) return;
+    visible = !!visible;
+    streamVisible[stream] = visible;
+    document.querySelectorAll('.stream-toggle[data-stream-toggle="' + stream + '"]').forEach(function (t) {
+      t.classList.toggle('on', visible);
+    });
+    refreshPins();
+    var ev;
+    try { ev = new CustomEvent('forge-streams', { detail: { stream: stream, visible: visible } }); }
+    catch (e) { ev = document.createEvent('CustomEvent'); ev.initCustomEvent('forge-streams', false, false, { stream: stream, visible: visible }); }
+    document.dispatchEvent(ev);
+  }
+  window.ZADStreams = {
+    visible: function () { var o = {}; for (var k in streamVisible) o[k] = streamVisible[k] !== false; return o; },
+    set: setStreamVisible
+  };
   document.querySelectorAll('.stream-toggle').forEach(function (toggle) {
     toggle.addEventListener('click', function () {
-      toggle.classList.toggle('on');
-      var stream = toggle.dataset.streamToggle;
-      var visible = toggle.classList.contains('on');
-      streamVisible[stream] = visible;
-      refreshPins();
+      setStreamVisible(toggle.dataset.streamToggle, !toggle.classList.contains('on'));
     });
   });
 

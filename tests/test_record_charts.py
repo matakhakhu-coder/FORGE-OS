@@ -442,3 +442,109 @@ def test_line_summary_text_matches_the_printed_summary(built):
                    " later step in an older case (not on the line)"):
         assert phrase.strip() in printed
         assert phrase.strip() in js
+
+
+# ── Tap to see the records (Batch 4) and stream switches (Batch 5) ─────────────
+
+from tools.records_export import STREAM_LABELS  # noqa: E402
+
+_SL = list(STREAM_LABELS.values())
+
+
+def _mixed(n=48):
+    return [_rec(f"m{i:07d}", incident_start=f"2026-10-{1 + i % 9:02d}",
+                 incident_event="found" if i % 4 == 0 else "occurred",
+                 incident_date_basis=("report" if i % 7 == 0 else "later_step" if i % 11 == 0 else "incident"),
+                 published_at=f"2026-10-{18 + i % 4}T{8 + i % 3:02d}:00Z" if i % 13 else "",
+                 stream=_SL[i % 4], province=("Limpopo", "Gauteng", "Western Cape")[i % 3])
+            for i in range(n)]
+
+
+def test_timeline_table_names_the_four_map_streams_in_panel_order():
+    t = rc.timeline_table(_mixed())
+    assert t["streams"] == [{"key": k, "label": v} for k, v in STREAM_LABELS.items()]
+    assert len(t["streams"]) == 4
+
+
+def test_every_chart_page_says_where_its_stream_switches_sit():
+    assert {p["id"]: p["stream_filter"] for p in rc.CHART_PAGES} == {
+        "incident": "chips", "added": "chips", "stream": "bars", "province": "chips"}
+
+
+@pytest.mark.parametrize("bad", [{}, {"stream_filter": "slider"}, {"stream_filter": "bars"}])
+def test_stream_filter_registry_is_checked(monkeypatch, bad):
+    pages = [dict(p) for p in rc.CHART_PAGES]
+    pages[0].pop("stream_filter")
+    pages[0].update(bad)
+    monkeypatch.setattr(rc, "CHART_PAGES", tuple(pages))
+    with pytest.raises(ValueError, match="stream_filter|Streams bars"):
+        rc._check_registry()
+
+
+@pytest.mark.parametrize("on", [{"CRIME_INTEL"}, {"CRIME_INTEL", "GLOBAL"}, set(), set(STREAM_LABELS)])
+def test_stream_filter_counts_only_the_streams_switched_on(on):
+    recs = _mixed()
+    t = rc.timeline_table(recs)
+    labels = {STREAM_LABELS[k] for k in on}
+    for k, st in enumerate(t["steps"]):
+        got = rc.counts_from_table(t, k, on)
+        cut = [r for r in recs if r["stream"] in labels
+               and (r["published_at"] == "" and k == len(t["steps"]) - 1 or
+                    r["published_at"] and rc._published_instant(r["published_at"]).isoformat(timespec="minutes") <= (st["at"] or "9"))]
+        assert got["total"] == len(cut)
+        want = rc.chart_counts(cut)
+        assert got["incident"]["days"] == [
+            next((d["count"] for d in _page(want, "incident")["data"]["days"] if d["date"] == day), 0)
+            for day in t["axes"]["incident_days"]]
+        assert sum(got["stream"]) == sum(got["province"]) == got["total"]
+        for i, lab in enumerate(t["axes"]["stream"]):
+            if lab not in labels:
+                assert got["stream"][i] == 0
+
+
+@pytest.mark.parametrize("on", [None, {"CRIME_INTEL"}, {"INFRASTRUCTURE", "PRIORITY"}])
+def test_each_tap_list_holds_exactly_the_records_counted_there(on):
+    t = rc.timeline_table(_mixed())
+    ax = t["axes"]
+    for k in range(len(t["steps"])):
+        c = rc.counts_from_table(t, k, on)
+        for i, d in enumerate(ax["incident_days"]):
+            assert len(rc.ids_from_table(t, k, "incident", d, on)) == c["incident"]["days"][i]
+        for key in ("undated", "later_step"):
+            assert len(rc.ids_from_table(t, k, "incident", key, on)) == c["incident"][key]
+        for i, d in enumerate(ax["added_days"]):
+            assert len(rc.ids_from_table(t, k, "added", d, on)) == c["added"]["days"][i]
+        assert len(rc.ids_from_table(t, k, "added", None, on)) == c["added"]["undated"]
+        for pid in ("stream", "province"):
+            for i, lab in enumerate(ax[pid]):
+                assert len(rc.ids_from_table(t, k, pid, lab, on)) == c[pid][i]
+
+
+def test_build_prints_stream_switches_and_list_slots_hidden(built):
+    html = (built / "index.html").read_text()
+    for pid in ("incident", "added", "stream", "province"):
+        sec = _section(html, pid)
+        assert re.search(r'<div class="gp-list" data-gp-list[^>]*hidden', sec), pid
+        assert re.search(r'<p class="gp-streams-note" data-gp-streams-note hidden', sec), pid
+        if pid == "stream":
+            assert "data-gp-streams" not in sec.replace("data-gp-streams-note", "")
+            continue
+        chips = re.search(r'<div class="gp-streams" data-gp-streams[^>]*hidden>(.*?)</div>', sec, re.S)
+        assert chips, pid
+        assert re.findall(r'data-gp-stream="([A-Z_]+)"', chips.group(1)) == list(STREAM_LABELS)
+        assert chips.group(1).count('aria-pressed="true"') == 4
+        # switches sit under the slider, so the chart and slider stay where they were
+        assert sec.index("data-gp-time") < sec.index("data-gp-streams") < sec.index("gp-chart__caption")
+
+
+def test_map_and_charts_share_one_stream_state():
+    tpl = (ROOT / "publisher" / "templates" / "map.html").read_text(encoding="utf-8")
+    assert "window.ZADStreams" in tpl and "'forge-streams'" in tpl
+    assert "setStreamVisible(toggle.dataset.streamToggle" in tpl
+    assert "window.forgeSignalInfo" in tpl
+    js = JS.read_text(encoding="utf-8")
+    assert "ZADStreams.set(" in js and "'forge-streams'" in js
+    assert "forgeSignalInfo" in js and "forgeOpenSignal" in js
+    assert "Show on map" in js and "Showing " in js
+    assert "incidents" not in js.lower()
+    assert not re.search(r"https?://(?!www\.w3\.org/2000/svg)", js)   # no CDN; the SVG namespace is not a fetch
