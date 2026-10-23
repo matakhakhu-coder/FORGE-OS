@@ -1413,7 +1413,7 @@
       <p class="gp-chart__empty">No approved records yet.</p>
       {% elif p.kind == 'line' %}
       {%- set g = d.line %}
-      <p class="gp-chart__summary">{{ d.occurred }} occurred &middot; {{ d.found }} found (date a body was found){% if d.undated %} &middot; {{ d.undated }} date not given{% endif %}</p>
+      <p class="gp-chart__summary">{{ d.occurred }} occurred &middot; {{ d.found }} found (date a body was found){% if d.undated %} &middot; {{ d.undated }} date not stated (not on the line){% endif %}</p>
       {% if g.points %}
       <figure class="gp-line">
         <svg viewBox="0 0 {{ g.w }} {{ g.h }}" role="img" aria-label="{{ p.title }}: {% for pt in g.points %}{{ pt.label }} {{ pt.count }}{{ ', ' if not loop.last }}{% endfor %}">
@@ -1432,7 +1432,7 @@
       </figure>
       {% endif %}
       {% elif p.kind == 'columns' %}
-      {% if d.undated %}<p class="gp-chart__summary">{{ d.undated }} record{{ '' if d.undated == 1 else 's' }}: date not given</p>{% endif %}
+      {% if d.undated %}<p class="gp-chart__summary">{{ d.undated }} record{{ '' if d.undated == 1 else 's' }}: date added not recorded</p>{% endif %}
       <div class="gp-cols-scroll">
         <ol class="gp-cols" aria-label="{{ p.title }}">
           {%- for x in d.days %}

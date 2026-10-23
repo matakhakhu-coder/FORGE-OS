@@ -81,6 +81,24 @@ def test_missing_dates_are_counted_not_dropped_or_guessed():
         assert rc.chart_total(p) == 3, p["id"]
 
 
+def test_report_dated_pins_are_not_put_on_the_incident_line():
+    sid = next(iter(rc.REPORT_DATED))
+    recs = [_rec("a", incident_start="2026-10-02"), _rec(sid, incident_start="2026-10-09")]
+    charts = rc.chart_counts(recs)
+    inc = _page(charts, "incident")["data"]
+    assert [d["date"] for d in inc["days"]] == ["2026-10-02"]
+    assert inc["undated"] == 1
+    # it still counts everywhere else
+    assert sum(d["count"] for d in _page(charts, "added")["data"]["days"]) == 2
+
+
+def test_report_dated_list_matches_the_committed_records():
+    payload = json.loads((ROOT / "dist" / "records.json").read_text())
+    by_id = {r["signal_id"]: r for r in payload["records"]}
+    for sid in rc.REPORT_DATED:
+        assert sid in by_id, sid
+
+
 def test_added_by_day_is_published_at_in_sa_time():
     recs = [_rec("a", published_at="2026-10-20T22:30Z"), _rec("b", published_at="2026-10-20T10:00Z")]
     added = _page(rc.chart_counts(recs), "added")["data"]
@@ -150,6 +168,8 @@ def test_build_charts_match_records_json(built):
     assert sec.count('<circle class="gp-line__pt"') == len(inc["days"])
     assert f'{inc["occurred"]} occurred' in sec
     assert inc["occurred"] + inc["found"] + inc["undated"] == ALL_PINS
+    assert inc["undated"] == len(rc.REPORT_DATED & {r["signal_id"] for r in payload["records"]})
+    assert f'{inc["undated"]} date not stated' in sec
 
 
 def test_build_charts_hold_no_record_text(built):
