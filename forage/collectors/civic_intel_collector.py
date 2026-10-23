@@ -61,11 +61,13 @@ try:
     from forage.collectors import infra_signals as _infra
     from forage.collectors import pi_signals as _pi
     from forage.collectors import crime_signals as _crime
+    from forage.collectors import place_signals as _place
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
     from forage.collectors import pi_signals as _pi
     from forage.collectors import crime_signals as _crime
+    from forage.collectors import place_signals as _place
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -770,6 +772,12 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
             "place": source["area_fallback"], "province": source.get("province", ""),
             "lat": None, "lng": None, "precision": "issuing_municipality_area",
             "note": "The notice names no town the gazetteer knows; area of the issuing municipality."}
+    # Batch 3 (23 Oct 2026): Crime & Security and Africa & World get the same
+    # place estimate as Infrastructure and PI; every placed signal gets a
+    # suggested precinct. Existing candidates are not moved.
+    _placed = _place.add_place(stream, dict(infra_meta or {}), title, content, province=source.get("province"))
+    if _placed:
+        infra_meta = _placed
 
     return {
         "signal_id":       str(uuid.uuid4()),

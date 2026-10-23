@@ -86,6 +86,7 @@ if str(BASE_DIR) not in sys.path:
 from forage.collectors import infra_signals as _infra  # noqa: E402
 from forage.collectors import pi_signals as _pi  # noqa: E402
 from forage.collectors import crime_signals as _crime  # noqa: E402
+from forage.collectors import place_signals as _place  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -393,6 +394,11 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
             metadata["stream_reason"] = "pi: " + pi_meta["pi_reason"]
     if item.get("date_unparsed"):
         metadata["date_unparsed"] = True
+    # Batch 3 (23 Oct 2026): Crime & Security and Africa & World get the same
+    # place estimate as Infrastructure and PI; every placed signal gets a
+    # suggested precinct. Existing candidates are not moved.
+    _place.add_place(stream, metadata, _strip_html(title_raw), _strip_html(description_raw),
+                     province=province)
 
     return {
         "signal_id": str(uuid.uuid4()),

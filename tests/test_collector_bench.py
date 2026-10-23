@@ -132,9 +132,12 @@ def test_committed_baseline_matches_the_recorded_scores(recorded_card):
     assert base["mode"] == "replay"
     assert base["fidelity"]["same_stream"] == base["fidelity"]["rows"]
     assert base["fidelity"]["same_place"] == base["fidelity"]["rows"]
-    assert base["summary"] == recorded_card["summary"]
+    # Fields added to the scorecard later (Batch 3: precincts and arrest/court
+    # flags, reported but not scored) are absent from the Batch 1 file, so
+    # compare the fields the committed baseline has.
+    assert base["summary"] == {k: recorded_card["summary"][k] for k in base["summary"]}
     for b, r in zip(base["cases"], recorded_card["cases"]):
-        assert b == r, b["id"]
+        assert b == {k: r[k] for k in b}, b["id"]
 
 
 # ── scorer rules on made-up rows ──

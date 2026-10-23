@@ -185,6 +185,7 @@ def _outcome(stream: str, timestamp: str, meta: dict) -> dict:
         "place": lc.get("place"),
         "province": lc.get("province"),
         "precinct": meta.get("precinct") or lc.get("precinct"),
+        "place_review": meta.get("place_review"),
         "pi_kind": meta.get("pi_kind"),
         "court_step": bool(meta.get("court_step") or meta.get("older_conduct") or meta.get("pi_kind") == "court"),
         "event_key": meta.get("event_key") or meta.get("merge_key"),
@@ -347,6 +348,8 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
         "dates": sorted({o["date"] for o in outs if o["date"]}),
         "titles": sorted({(h.get("title") or "")[:140] for h in hits})[:12],
         "replay_errors": sum(1 for o in outs if o.get("replay_error")),
+        "precincts": dict(sorted(Counter(o.get("precinct") or "none" for o in outs).items())),
+        "place_review": sum(1 for o in outs if o.get("place_review")),
         # Only present when the collector drops rows (Batch 4), so cards
         # scored before Batch 4 stay comparable.
         **({"dropped_by_collector": dropped} if dropped else {}),
@@ -366,7 +369,10 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
             res["right_date"] = "n/a" if records else "none"
         if case.get("court_step_expected"):
             res["court_step_flagged"] = _share([o["court_step"] for o in outs])
-        res["precinct_scored"] = False  # collectors output no precinct yet
+        # Batch 3: collectors now suggest a precinct. Reported, not scored:
+        # the cases hold no expected precinct, and the pass rule is unchanged
+        # so scorecards stay comparable across batches.
+        res["precinct_scored"] = False
         res["pass"] = bool(
             records and res["right_stream"] == "all" and res["right_place"] in ("all", "some")
             and (res["merged"] in (True, None)) and (not case.get("court_step_expected")
@@ -485,6 +491,8 @@ def score(recorded: bool = False, cases: Optional[dict] = None,
         "keep_out_cases": len(keep),
         "keep_out_pass": sum(r["pass"] and r.get("status") == "pass" for r in keep),
         "keep_out_not_tested": sum(r.get("status") == "not_tested" for r in keep),
+        "catch_with_precinct": sum(any(k != "none" for k in r["precincts"]) for r in catch),
+        "place_review_records": sum(r["place_review"] for r in results),
     }
     return {
         "bench": "FORGE collector regression bench (Batch 1)",
@@ -510,13 +518,19 @@ def to_markdown(card: dict) -> str:
         f"a right place {s['right_place_any']}; one record {s['one_record_when_caught']}; a right date {s['right_date_any']}; "
         f"full pass {s['catch_pass']}.",
         f"- Keep-out cases: {s['keep_out_pass']} of {s['keep_out_cases']} pass ({s['keep_out_not_tested']} not testable on this data).",
+        f"- Not scored: catch cases with a suggested precinct on any record {s.get('catch_with_precinct', 0)}; "
+        f"records flagged as an arrest or court place {s.get('place_review_records', 0)}.",
         "",
-        "| Case | Kind | Records | Streams | Places | Stream | Place | One record | Date | Pass |",
-        "|---|---|---|---|---|---|---|---|---|---|",
+        "| Case | Kind | Records | Streams | Places | Precincts (not scored) | Stream | Place | One record | Date | Pass |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in card["cases"]:
         streams = ", ".join(f"{k} {v}" for k, v in r["streams"].items()) or "-"
         places = ", ".join(f"{k} {v}" for k, v in r["places"].items()) or "-"
+        precs = ", ".join(f"{k} {v}" for k, v in (r.get("precincts") or {}).items()) or "-"
+        if r.get("place_review"):
+            precs += f"; arrest/court place flagged {r['place_review']}"
+        places = f"{places} | {precs}"
         if r["kind"] == "catch":
             row = [r["id"], "catch", r["records"], streams, places, r["right_stream"], r["right_place"],
                    {True: "yes", False: "no", None: "-"}[r["merged"]], r["right_date"], "yes" if r["pass"] else "no"]

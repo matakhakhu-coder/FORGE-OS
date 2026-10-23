@@ -146,6 +146,21 @@ DISTRICT_WORDS = {
     "gert sibande": "Mpumalanga", "mpumalanga": "Mpumalanga",
 }
 
+# KwaZulu-Natal (Batch 3, 23 Oct 2026): the province and its district
+# municipalities, so KZN copy can count small places as in-province. Used
+# only by the Crime & Security place estimate (locate(collector_topup=True));
+# Infrastructure, PI and the KZN infrastructure run's province filter still
+# use DISTRICT_WORDS alone, pending the owner's decision on the rest of
+# Batch 3.
+COLLECTOR_DISTRICT_WORDS = {
+    **DISTRICT_WORDS,
+    "kwazulu-natal": "KwaZulu-Natal", "kwazulu natal": "KwaZulu-Natal", "kzn": "KwaZulu-Natal",
+    "amajuba": "KwaZulu-Natal", "umzinyathi": "KwaZulu-Natal", "uthukela": "KwaZulu-Natal",
+    "umgungundlovu": "KwaZulu-Natal", "harry gwala": "KwaZulu-Natal", "ilembe": "KwaZulu-Natal",
+    "king cetshwayo": "KwaZulu-Natal", "umkhanyakude": "KwaZulu-Natal", "zululand": "KwaZulu-Natal",
+    "ethekwini": "KwaZulu-Natal", "ugu district": "KwaZulu-Natal",
+}
+
 # Extra Limpopo names the benchmark needed that GeoNames lacks. Points are the
 # nearest GeoNames place and are marked as such; precision stays 'area'.
 EXTRA_PLACES = [
@@ -185,6 +200,31 @@ def _places() -> dict:
     for nm, lat, lng, prov, src in EXTRA_PLACES:
         idx.setdefault(_fold(nm), []).append({"name": nm, "lat": lat, "lng": lng, "population": 0,
             "province": prov, "feature_code": "PPL", "district": "", "municipality": "", "source": src})
+    return idx
+
+
+@lru_cache(maxsize=1)
+def _places_collector() -> dict:
+    """The gazetteer plus the collector-only top-up (Batch 3): sections and
+    villages the town sweeps named. Read only by the Crime & Security place
+    estimate (locate(collector_topup=True)); not by tools/publish.py, and
+    not by Infrastructure or PI placement. See the file's 'about'."""
+    idx = {k: list(v) for k, v in _places().items()}
+    try:
+        t = json.loads((GAZ_DIR / "collector_places_topup.json").read_text())
+        for p in t.get("places", []):
+            for nm in [p["name"]] + list(p.get("aliases", [])):
+                idx.setdefault(_fold(nm), []).append({"name": p["name"], "lat": p["lat"], "lng": p["lng"],
+                    "population": 0, "province": p.get("province", ""), "feature_code": p.get("kind", ""),
+                    "district": "", "municipality": p.get("municipality", ""),
+                    "source": p.get("source", "collector top-up"),
+                    "context": [_fold(c) for c in p.get("context", [])],
+                    "context_required": bool(p.get("context_required")),
+                    "parent": p.get("parent", ""), "estimated": bool(p.get("estimated")),
+                    "uncertainty_km": p.get("uncertainty_km"), "point_basis": p.get("point_basis", ""),
+                    "precinct": p.get("precinct", ""), "precinct_basis": p.get("precinct_basis", "")})
+    except Exception:
+        pass
     return idx
 
 
@@ -409,21 +449,25 @@ def _candidates(text: str) -> list[str]:
 
 
 
-def locate(text: str, province: Optional[str] = None) -> Optional[dict]:
+def locate(text: str, province: Optional[str] = None, collector_topup: bool = False) -> Optional[dict]:
     """Best candidate place named in ``text``, or None.
 
     With ``province`` (a feed known to cover one province), places in that
     province win and small villages count. Without it, only places in a
     province the text names, or towns with population >= 5000, count, so
     national copy does not land on a same-named hamlet.
+
+    ``collector_topup`` (Batch 3, Crime & Security only) adds the collector
+    top-up places and the KwaZulu-Natal district words.
     """
     if not text:
         return None
-    idx = _places()
+    idx = _places_collector() if collector_topup else _places()
     if not idx:
         return None
     folded_text = _fold(text)
-    named_provs = {p for w, p in DISTRICT_WORDS.items() if re.search(r"\b" + w + r"\b", folded_text)}
+    words = COLLECTOR_DISTRICT_WORDS if collector_topup else DISTRICT_WORDS
+    named_provs = {p for w, p in words.items() if re.search(r"\b" + w + r"\b", folded_text)}
     if province:
         named_provs.add(province)
     best = None
@@ -434,24 +478,42 @@ def locate(text: str, province: Optional[str] = None) -> Optional[dict]:
         if _border_far_side(text, key):
             continue  # Batch 4: the far side of a border town
         for p in idx.get(key, []):
-            in_prov = p["province"] in named_provs
+            # Collector top-up entries (Batch 3) carry context words: the
+            # parent town or district. Named context counts as in-province
+            # and makes the section beat its parent town ("Matswale, Musina").
+            ctx = p.get("context") or []
+            ctx_hit = bool(ctx) and any(re.search(r"\b" + re.escape(c) + r"\b", folded_text) for c in ctx)
+            if p.get("context_required") and not ctx_hit:
+                continue
+            in_prov = p["province"] in named_provs or ctx_hit
             pop = p.get("population") or 0
             big = pop >= 5000 or str(p.get("feature_code", "")).startswith(("PPLA", "PPLC"))
             if not in_prov and (named_provs or not big):
                 continue
             if key in NAMESAKES and not sa_sign_for(text, p, key):
                 continue  # Batch 4: Newcastle NSW is not Newcastle KZN
-            score = (2 if in_prov else 0) + len(key.split()) + min(pop, 500000) / 500000
+            score = (2 if in_prov else 0) + len(key.split()) + min(pop, 500000) / 500000 + (1 if ctx_hit else 0)
             if best is None or score > best[0]:
                 best = (score, p, cand)
     if not best:
         return None
     _, p, cand = best
-    return {"place": p["name"], "matched_text": cand, "province": p["province"],
-            "district": p.get("district") or "", "municipality": p.get("municipality") or "",
-            "lat": p["lat"], "lng": p["lng"], "gazetteer": p.get("source", ""),
-            "precision": "town_centroid_estimate",
-            "note": "Candidate from the story text; not a confirmed event point. Lat/lng are the place centroid."}
+    out = {"place": p["name"], "matched_text": cand, "province": p["province"],
+           "district": p.get("district") or "", "municipality": p.get("municipality") or "",
+           "lat": p["lat"], "lng": p["lng"], "gazetteer": p.get("source", ""),
+           "precision": "town_centroid_estimate",
+           "note": "Candidate from the story text; not a confirmed event point. Lat/lng are the place centroid."}
+    if p.get("parent"):
+        out["within"] = p["parent"]
+    if p.get("precinct"):
+        out["precinct"] = p["precinct"]
+        out["precinct_basis"] = p.get("precinct_basis") or "collector top-up"
+    if p.get("estimated"):
+        out["point_estimated"] = True
+        out["uncertainty_km"] = p.get("uncertainty_km")
+        out["note"] = ("Candidate from the story text; not a confirmed event point. The point is an estimate: "
+                       + (p.get("point_basis") or "nearest sourced point"))
+    return out
 
 
 def province_mentioned(text: str, province: str) -> bool:
