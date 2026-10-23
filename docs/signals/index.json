@@ -73,6 +73,11 @@
       "file": "limpopo-polokwane-sweep-2026-10-23.json",
       "province": "Limpopo",
       "signals": 3
+    },
+    {
+      "file": "limpopo-musina-sweep-2026-10-23.json",
+      "province": "Limpopo",
+      "signals": 4
     }
   ]
 }

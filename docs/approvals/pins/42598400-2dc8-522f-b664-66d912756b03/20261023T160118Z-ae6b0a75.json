@@ -1,0 +1,74 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T160118Z-ae6b0a75",
+  "signal_id": "42598400-2dc8-522f-b664-66d912756b03",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-musina-sweep-2026-10-23.json",
+  "approved_payload": {
+    "content": "An unidentified man was found shot dead in the bushes in the Neltox area, in the Tshamutumbu policing area near the Zimbabwe border, at about 10:30 on Sunday 11 October; Tshamutumbu police are investigating (Vhembe SAPS spokesperson Capt Vuledzani Dathi, via Limpopo Mirror). According to police, SANDF members on patrol tried to stop a white Toyota Fortuner; the occupants drove off at high speed, then jumped out when they realised the soldiers were pursuing them and allegedly opened fire on the soldiers, who returned fire. One of them was later found in the bushes with bullet wounds and declared dead. Soldiers are a party to this shooting, and the only account of it is the one police relay; no independent account and no finding on who fired first or who fired the fatal shot has been reported. The man has not been identified. One public report: Limpopo Mirror, 15 October. The map point is estimated: Neltox could not be placed on a map, so the pin is the Tshamutumbu police station point, a reference only.",
+    "external_id": "checked:lp-musina-2026-10-23:K2",
+    "lat": -22.38491,
+    "lng": 30.54586,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T16:05:00Z",
+        "incident": "Sun 11 Oct 2026; the man was found shot dead at about 10:30 (police, via Limpopo Mirror). The time of the exchange of fire itself is not given.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-11T10:30:00+02:00",
+        "location": "ESTIMATED MAP POINT. In the bushes in the Neltox area, Tshamutumbu policing area, near the Zimbabwe border (police, via Limpopo Mirror). Neltox was not found on a map (OpenStreetMap Overpass and Nominatim searches returned no Neltox feature). The pin is the Tshamutumbu SAPS station point (in-repo gazetteer, station points v1.2.5, 2021), used only as a reference; uncertainty is the farthest point of the Tshamutumbu precinct outline from the station, 34.5 km, rounded up to 35 km. Not the scene. Its own precinct, so not merged into Musina.",
+        "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "15 Oct 2026 (Limpopo Mirror)",
+        "reported_at": "2026-10-15",
+        "search_aliases": [
+          "Neltox",
+          "Tshamutumbu",
+          "Musina",
+          "Vhembe",
+          "SANDF",
+          "soldiers",
+          "border patrol",
+          "Toyota Fortuner",
+          "Limpopo River border"
+        ],
+        "sources": [
+          {
+            "name": "Limpopo Mirror, 15 Oct",
+            "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence"
+          }
+        ]
+      },
+      "collected_title": "Residents back army crackdown, but demand border fence",
+      "link": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+      "pubdate_raw": "2026-10-15T08:28:00+00:00",
+      "source_outlet": "Limpopo Mirror"
+    },
+    "published_at": "2026-10-23T16:05:00Z",
+    "signal_id": "42598400-2dc8-522f-b664-66d912756b03",
+    "source": "Limpopo Mirror",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-11T08:30:00Z",
+    "title": "Neltox, Tshamutumbu police area (map point estimated): man shot dead after exchange of fire with SANDF patrol; police investigating, 11 Oct"
+  },
+  "payload_sha256": "sha256:b134ff0912a55b82586339866b65d84551f26ab4fdd9e5c5993c213d0f1a4015",
+  "source_hashes": [
+    {
+      "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+      "retrieved_at": "2026-10-23T15:54:18Z",
+      "content_sha256": "sha256:57fcad15393c3042be2353c74923dc05258106d369a50a6c030c2ad33f9f1843"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T17:50:00+02:00",
+  "recorded_at": "2026-10-23T18:01:18+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "musina-approval-2026-10-23",
+    "summary": "Owner: 'the killings I approved, and then the two priority intelligence cases' (voice call 23 Oct 2026, about 17:50 SAST). Neltox killing, own precinct. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

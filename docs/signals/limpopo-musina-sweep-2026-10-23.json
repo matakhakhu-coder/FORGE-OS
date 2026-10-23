@@ -1,0 +1,248 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Limpopo",
+  "batch": "Limpopo (Musina location sweep) Crime & Security killings and Priority Intelligence cases, 1-23 Oct 2026, hand-checked 23 Oct 2026; four pins approved by the owner on 23 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Crime & Security (two killings: Musina and Tshamutumbu precincts) and Priority Intelligence (two pins: Musina and the Beitbridge border post). Collection window: incidents, arrests and charges 1-23 Oct 2026, Musina Local Municipality and the Tshamutumbu policing area. Other candidates from the same sweep are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date; for an arrest the pin date is the arrest and older alleged conduct is given in words, not as the pin date. Priority Intelligence: no one is named; the accused are described as accused, charges are given as charged, allegations (including any claimed syndicate or network) are attributed and the case status is stated; no sexual-offence cases. Killings: private individuals (victims and suspects) are not named; where a party to the shooting (police or soldiers) gives the only account, the pin says so and that account is attributed, not adopted. One police precinct per area: the Neltox pin is in the Tshamutumbu precinct and is not merged into Musina. Being near another pin is not a link. Estimated map points: the title says 'map point estimated' and the drawer location note starts 'ESTIMATED MAP POINT'. Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on the voice call of 23 Oct 2026, about 17:50 SAST (all four Musina drafts approved and publication cleared); one explicit version-1 approval record per pin in docs/approvals/pins (reference musina-approval-2026-10-23).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Neltox SANDF shooting: queue for the next Limpopo pass, with wording that says soldiers were involved without presuming wrongdoing (owner backed extending the \"police involved\" idea to soldiers)."
+    },
+    {
+      "at": "2026-10-23 (voice call, about 17:50 SAST)",
+      "decision": "All four Musina drafts approved and cleared for publication. Owner's words: \"I said it found two killings. So the killings I approved, and then the two priority intelligence cases.\" This settles sweep decisions 1 and 2 (both killings, Neltox as its own Tshamutumbu-precinct pin) and approves the cigarette seizure and the Beitbridge case for Priority Intelligence."
+    },
+    {
+      "at": "2026-10-23 (publication)",
+      "decision": "Cigarette seizure: the owner's approval is taken as this case clearing the Priority Intelligence bar; the syndicate stays a police allegation in the text. No general network-threshold rule is adopted."
+    },
+    {
+      "at": "2026-10-23 (publication)",
+      "decision": "Beitbridge case: published unnamed, as for the other Priority Intelligence accused, because the owner did not choose to name him. The source links carry his name in their addresses; naming him in the pin would need a separate owner decision."
+    },
+    {
+      "at": "2026-10-23 (publication)",
+      "decision": "Reusable mode (sweep decision 5) is not decided by this batch."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Musina: SANDF border recoveries (vehicles and cigarettes), reported 21-23 Oct",
+      "reason": "Recoveries with no arrest or named network in the sources read; held in the Musina sweep note, not approved."
+    },
+    {
+      "place": "Musina repatriation centre (Weekend Argus, 20 Oct)",
+      "reason": "Articles could not be opened; no dated incident. Held."
+    },
+    {
+      "place": "Beitbridge: R10.4 million cigarette haul sentencing (Nova News, 15 Oct)",
+      "reason": "A sentencing ends an older case; article could not be opened. Held unless the interception falls in the window."
+    },
+    {
+      "place": "Campbell, Musina: no network coverage protest (15 Oct)",
+      "reason": "Long-standing coverage gap, not a service failure. Left out."
+    },
+    {
+      "place": "Zimbabwean side of Beitbridge (arrests, clean-up, smuggling)",
+      "reason": "Happened in Zimbabwe, outside the map. Left out."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "b66b55ca-30bf-5b11-b40d-bcfd6627ffa6",
+      "external_id": "checked:lp-musina-2026-10-23:K1",
+      "source": "Limpopo Mirror",
+      "title": "Matswale Phase 12, Musina (map point estimated): liquor store owner, 37, shot dead in his store; no arrest, 16 Oct",
+      "content": "Police say a 37-year-old businessman was shot dead inside his liquor store at Matswale Phase 12, Musina, at about 20:00 on Friday 16 October. His wife, who was at the scene, told police he was preparing to close when an unknown man came in, handed him a R200 note and asked to buy liquor, then allegedly opened fire while he fetched it from the fridge. He had more than 20 gunshot wounds to the upper body and was declared dead at the scene; about 23 spent cartridges were found (police spokesperson Capt Vuledzani Dathi, via Limpopo Mirror). Musina police opened a murder case. Police say the motive and the suspect's identity are unknown; no arrest has been reported. The victim is not named here. One public report, resting on police: Limpopo Mirror, 22 October. The map point is estimated: Matswale Phase 12 could not be placed on a map, so the pin is a Musina township reference point, not the store.",
+      "lat": -22.33856,
+      "lng": 30.01645,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-16T18:00:00Z",
+      "published_at": "2026-10-23T16:05:00Z",
+      "metadata": {
+        "source_outlet": "Limpopo Mirror",
+        "link": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+        "pubdate_raw": "2026-10-22T07:29:00+00:00",
+        "checked": {
+          "incident": "Fri 16 Oct 2026, about 20:00 (police, via Limpopo Mirror)",
+          "reported": "22 Oct 2026 (Limpopo Mirror)",
+          "location": "ESTIMATED MAP POINT. Inside his liquor store at Matswale Phase 12, Musina (police, via Limpopo Mirror); no street or address given. Matswale Phase 12 was not found on a map (OpenStreetMap Overpass and Nominatim searches returned no Matswale feature). The pin is the Musina-Nancefield township point from the in-repo gazetteer (GeoNames), used only as a reference inside the Musina police precinct; it is not confirmed that Phase 12 lies in Nancefield. Uncertainty about 5 km. Not the store.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store"
+            }
+          ],
+          "checked_at": "2026-10-23T16:05:00Z",
+          "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-16T20:00:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-22",
+          "search_aliases": [
+            "Musina",
+            "Messina",
+            "Matswale",
+            "Matswale Phase 12",
+            "Nancefield",
+            "Vhembe",
+            "liquor store",
+            "murder"
+          ]
+        },
+        "collected_title": "Musina businessman shot more than 20 times in store"
+      },
+      "fingerprint": "sha256:221aca98f17dada8373a18bf6910e12d3220e6e9f31d2725d245460a75eb2473"
+    },
+    {
+      "signal_id": "42598400-2dc8-522f-b664-66d912756b03",
+      "external_id": "checked:lp-musina-2026-10-23:K2",
+      "source": "Limpopo Mirror",
+      "title": "Neltox, Tshamutumbu police area (map point estimated): man shot dead after exchange of fire with SANDF patrol; police investigating, 11 Oct",
+      "content": "An unidentified man was found shot dead in the bushes in the Neltox area, in the Tshamutumbu policing area near the Zimbabwe border, at about 10:30 on Sunday 11 October; Tshamutumbu police are investigating (Vhembe SAPS spokesperson Capt Vuledzani Dathi, via Limpopo Mirror). According to police, SANDF members on patrol tried to stop a white Toyota Fortuner; the occupants drove off at high speed, then jumped out when they realised the soldiers were pursuing them and allegedly opened fire on the soldiers, who returned fire. One of them was later found in the bushes with bullet wounds and declared dead. Soldiers are a party to this shooting, and the only account of it is the one police relay; no independent account and no finding on who fired first or who fired the fatal shot has been reported. The man has not been identified. One public report: Limpopo Mirror, 15 October. The map point is estimated: Neltox could not be placed on a map, so the pin is the Tshamutumbu police station point, a reference only.",
+      "lat": -22.38491,
+      "lng": 30.54586,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-11T08:30:00Z",
+      "published_at": "2026-10-23T16:05:00Z",
+      "metadata": {
+        "source_outlet": "Limpopo Mirror",
+        "link": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+        "pubdate_raw": "2026-10-15T08:28:00+00:00",
+        "checked": {
+          "incident": "Sun 11 Oct 2026; the man was found shot dead at about 10:30 (police, via Limpopo Mirror). The time of the exchange of fire itself is not given.",
+          "reported": "15 Oct 2026 (Limpopo Mirror)",
+          "location": "ESTIMATED MAP POINT. In the bushes in the Neltox area, Tshamutumbu policing area, near the Zimbabwe border (police, via Limpopo Mirror). Neltox was not found on a map (OpenStreetMap Overpass and Nominatim searches returned no Neltox feature). The pin is the Tshamutumbu SAPS station point (in-repo gazetteer, station points v1.2.5, 2021), used only as a reference; uncertainty is the farthest point of the Tshamutumbu precinct outline from the station, 34.5 km, rounded up to 35 km. Not the scene. Its own precinct, so not merged into Musina.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence"
+            }
+          ],
+          "checked_at": "2026-10-23T16:05:00Z",
+          "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-11T10:30:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-15",
+          "search_aliases": [
+            "Neltox",
+            "Tshamutumbu",
+            "Musina",
+            "Vhembe",
+            "SANDF",
+            "soldiers",
+            "border patrol",
+            "Toyota Fortuner",
+            "Limpopo River border"
+          ]
+        },
+        "collected_title": "Residents back army crackdown, but demand border fence"
+      },
+      "fingerprint": "sha256:b134ff0912a55b82586339866b65d84551f26ab4fdd9e5c5993c213d0f1a4015"
+    },
+    {
+      "signal_id": "f57ecd7b-1268-5ced-a789-b9d01a5a064d",
+      "external_id": "checked:lp-musina-2026-10-23:P1",
+      "source": "Limpopo Mirror",
+      "title": "Musina (map point estimated): one arrested over R1.5m in illicit cigarettes; police allege a syndicate, leader at large, 19 Oct",
+      "content": "A man was arrested on Monday 19 October during an intelligence-led police operation at premises in Musina suspected of being used to store large quantities of illicit cigarettes (Limpopo police spokesperson Col Malesela Ledwaba, via Limpopo Mirror, 21 October). Police say they recovered 55 boxes and 46 cartons of Remington Gold cigarettes valued at about R1.5 million, and seized two vehicles worth about R600,000 together. He faces charges of possession and transportation of illicit cigarettes and was expected to appear in the Musina Magistrate's Court on 21 October; the outcome of that appearance is not reported in the saved source. Police describe the target as an alleged illicit cigarette syndicate and say the suspected syndicate leader and four others fled and are being traced. The syndicate is a police allegation; no court has found one, no one has been convicted, and the accused is not named here. Case status: charged; court outcome not reported. One report, resting on a police statement. The map point is estimated: the premises are not identified, so the pin is the Musina police station point, a reference within the town.",
+      "lat": -22.34331,
+      "lng": 30.04396,
+      "stream": "PRIORITY",
+      "timestamp": "2026-10-19T10:00:00Z",
+      "published_at": "2026-10-23T16:05:00Z",
+      "metadata": {
+        "source_outlet": "Limpopo Mirror",
+        "link": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+        "pubdate_raw": "2026-10-21T06:04:39.075+00:00",
+        "checked": {
+          "incident": "Arrest and seizure on Mon 19 Oct 2026; time not given (police, via Limpopo Mirror). Court appearance expected Wed 21 Oct.",
+          "reported": "21 Oct 2026 (Limpopo Mirror)",
+          "location": "ESTIMATED MAP POINT. Premises in Musina suspected of being used to store illicit cigarettes (police, via Limpopo Mirror); the premises and street are not identified. The pin is the Musina SAPS station point (in-repo gazetteer), used only as a reference within the town and kept off the Musina town point used by the township low-water pin. Uncertainty about 5 km. Not the premises.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure"
+            }
+          ],
+          "checked_at": "2026-10-23T16:05:00Z",
+          "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-19",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-21",
+          "search_aliases": [
+            "Musina",
+            "Messina",
+            "illicit cigarettes",
+            "Remington Gold",
+            "cigarette syndicate",
+            "Musina Magistrate's Court",
+            "Provincial Organised Crime",
+            "Vhembe"
+          ]
+        },
+        "collected_title": "Suspect to appear in court following R1.5 million illicit cigarette seizure"
+      },
+      "fingerprint": "sha256:95d6bb918e2f2d13209f7388c2c994ae07d135286e84883ba7af057999ba0e86"
+    },
+    {
+      "signal_id": "931b443f-6722-507f-be64-a47bb4ef899f",
+      "external_id": "checked:lp-musina-2026-10-23:P2",
+      "source": "Limpopo Mirror",
+      "title": "Beitbridge border post (approx.): North West businessman charged 21 Oct as co-accused over two Absa-financed cars intercepted in Jul",
+      "content": "A North West businessman was charged on 21 October and first appeared in the Musina Magistrate's Court on 22 October, added as a co-accused in a case over two vehicles intercepted at the Beitbridge border post on 22 July (Limpopo Mirror and Review Online, 22 October). According to police and the NPA, police at the border post intercepted two vehicles, still financed by Absa, that were allegedly being taken from Mahikeng to Malawi; lawful bank authorisation to move them across the border was allegedly not obtained and fraudulent bank documents were allegedly arranged instead. Two people were arrested in July and remain in custody, due in the Musina Regional Court on 27 October; the vehicles were handed back to Absa. The NPA alleges the businessman acted in collusion with his employees. The reported charges differ: Limpopo Mirror lists attempted theft and fraud, Review Online attempted theft and money laundering. These are allegations: no one has been convicted, and the accused are not named here. Case status: charged and appeared in court; the reports do not give a consistent next date for his case, so none is stated here. Two outlets, both resting on police and NPA statements. The pin marks the South African border control at Beitbridge, where the July interception happened; the October charge and court appearance were not at this point, and the July date is the alleged conduct, not the pin date.",
+      "lat": -22.22888,
+      "lng": 29.98565,
+      "stream": "PRIORITY",
+      "timestamp": "2026-10-21T10:00:00Z",
+      "published_at": "2026-10-23T16:05:00Z",
+      "metadata": {
+        "source_outlet": "Limpopo Mirror",
+        "link": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+        "pubdate_raw": "2026-10-22T12:30:58.721+00:00",
+        "checked": {
+          "incident": "Charged Wed 21 Oct 2026; first court appearance Thu 22 Oct 2026 (Limpopo Mirror). The interception alleged dates from 22 Jul 2026, three months earlier, and is not the pin date.",
+          "reported": "22 Oct 2026 (Review Online and Limpopo Mirror)",
+          "location": "South African border control at the Beitbridge port of entry, outside Musina, where police intercepted the two vehicles on 22 July (Limpopo Mirror; Review Online). The pin is the OpenStreetMap border-control point on the South African side, inside the Musina police precinct outline; where on the post the vehicles were stopped is not reported. The October charge and the court appearance (Musina Magistrate's Court) were not at this point.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed"
+            },
+            {
+              "name": "Review Online (The Citizen), 22 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/"
+            }
+          ],
+          "checked_at": "2026-10-23T16:05:00Z",
+          "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-21",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-22",
+          "search_aliases": [
+            "Beitbridge",
+            "Beitbridge border post",
+            "Musina",
+            "Absa",
+            "Mahikeng",
+            "Malawi",
+            "vehicle smuggling",
+            "fraudulent bank documents",
+            "Musina Magistrate's Court",
+            "NPA"
+          ]
+        },
+        "collected_title": "Suliman Carrim's theft and fraud case postponed"
+      },
+      "fingerprint": "sha256:310bc47ae9aa442c4a042a2716fcf3be8f8959487f5c8e862b2510f745cb79b6"
+    }
+  ]
+}

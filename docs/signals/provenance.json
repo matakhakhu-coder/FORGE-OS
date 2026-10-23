@@ -969,6 +969,62 @@
       ],
       "independence": "shared_wording",
       "note": "Two outlets carrying the same health department account. The grade, symptoms, discharges, no deaths and the investigation come from Briefly News only. No school, parent or learner account."
+    },
+    "b66b55ca-30bf-5b11-b40d-bcfd6627ffa6": {
+      "statement_from": "Vhembe SAPS (Capt Vuledzani Dathi), quoted by Limpopo Mirror",
+      "spokesperson": [
+        "Capt Vuledzani Dathi"
+      ],
+      "other_voices": [
+        "The victim's brother, family spokesperson (not a witness)"
+      ],
+      "outlets": [
+        "Limpopo Mirror"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police; the account of the shooting is the victim's wife's, as given to police. The family spoke about the victim, not about what happened. Nothing independent of police."
+    },
+    "42598400-2dc8-522f-b664-66d912756b03": {
+      "statement_from": "Vhembe SAPS (Capt Vuledzani Dathi), quoted by Limpopo Mirror",
+      "spokesperson": [
+        "Capt Vuledzani Dathi"
+      ],
+      "other_voices": [
+        "Philemon Munyai, chairperson of the Niani/Vhembe Business Forum Against Crime (on community safety; not a witness)"
+      ],
+      "outlets": [
+        "Limpopo Mirror"
+      ],
+      "independence": "single_report",
+      "note": "One public report. How the exchange of fire happened rests only on the police account of what SANDF soldiers did; soldiers are a party to this death, so that account is not an independent finding. No IPID, military police or inquest finding is reported. The drawer's automatic party line covers police only, so the soldiers' part is stated in the text."
+    },
+    "f57ecd7b-1268-5ced-a789-b9d01a5a064d": {
+      "statement_from": "SAPS Limpopo (Col Malesela Ledwaba, provincial spokesperson), quoted by Limpopo Mirror",
+      "spokesperson": [
+        "Col Malesela Ledwaba"
+      ],
+      "other_voices": [
+        "Lt Gen Jan Scheepers, Limpopo police commissioner (statement)"
+      ],
+      "outlets": [
+        "Limpopo Mirror"
+      ],
+      "independence": "single_report",
+      "note": "One report read in full, resting on the police statement. Other outlets carried the same story on 21 Oct but were not read for this pin. The syndicate, its leader and the four others at large are police claims; no court finding."
+    },
+    "931b443f-6722-507f-be64-a47bb4ef899f": {
+      "statement_from": "SAPS (Brig Athlenda Mathe) and NPA Limpopo (Mashudu Malabi-Dzhangi), reported by Limpopo Mirror and Review Online",
+      "spokesperson": [
+        "Brig Athlenda Mathe",
+        "Mashudu Malabi-Dzhangi"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Limpopo Mirror",
+        "Review Online (The Citizen)"
+      ],
+      "independence": "shared_wording",
+      "note": "Two outlets on the same day, both resting on police and NPA statements; not independent of each other. They differ on the charges (fraud versus money laundering). The Mirror's postponement date, 'next Thursday, 30 November', cannot be right as written (30 November 2026 is a Monday) and is left out."
     }
   }
 }

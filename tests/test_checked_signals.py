@@ -37,8 +37,11 @@ LPD_IDS = {"c10e0702-2833-5c8d-87f6-3be64471c858", "4ce322ea-9266-55c2-a78c-eb36
 PI_PINS = 2           # Priority Intelligence (Polokwane sweep): airport officers, Capricorn TVET official; approved 23 Oct 2026, outside the pattern test
 GLOBAL_PINS = 1       # Africa & World (Polokwane sweep): Seshego school stomach illness health alert; approved 23 Oct 2026, outside the pattern test
 LPS_IDS = {"befc9ba6-05fd-5471-ac93-fc32257d498b", "891844fa-852b-53f7-aad5-395f7bd4291f", "09124894-bed2-5f4e-bd80-e3f7b162ff59"}
+LPM_KILL_PINS = 2     # Crime & Security (Musina sweep): Matswale Phase 12 and Neltox (SANDF) killings; approved 23 Oct 2026, outside the pattern test
+LPM_PI_PINS = 2       # Priority Intelligence (Musina sweep): Musina cigarette seizure, Beitbridge vehicle case; approved 23 Oct 2026, outside the pattern test
+LPM_IDS = {"b66b55ca-30bf-5b11-b40d-bcfd6627ffa6", "42598400-2dc8-522f-b664-66d912756b03", "f57ecd7b-1268-5ced-a789-b9d01a5a064d", "931b443f-6722-507f-be64-a47bb4ef899f"}
 INFRA_PINS = LPI_PINS + KZI_PINS
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -122,10 +125,11 @@ def test_index_loads_all_pins_in_order():
         "limpopo-infrastructure-2026-10-23.json",
         "kwazulu-natal-infrastructure-2026-10-23.json",
         "limpopo-unresolved-deaths-2026-10-23.json",
-        "limpopo-polokwane-sweep-2026-10-23.json"]
+        "limpopo-polokwane-sweep-2026-10-23.json",
+        "limpopo-musina-sweep-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -159,7 +163,7 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"
-          and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS]
+          and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS and s["signal_id"] not in LPM_IDS]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
@@ -690,3 +694,36 @@ def test_polokwane_sweep_pins_follow_the_priority_intelligence_and_health_alert_
     assert "R100,000" in tvet["title"] and "alleged" in tvet["title"]
     assert "cause not confirmed" in health["title"] and "The cause is not confirmed" in health["content"]
     assert "Bus" not in " ".join(s["title"] for s in pins.values())
+
+
+def test_musina_sweep_pins_follow_the_killing_and_priority_intelligence_rules():
+    # Owner, voice call 23 Oct 2026 (about 17:50 SAST): "I said it found two killings. So the killings I approved,
+    # and then the two priority intelligence cases."
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    data = json.loads((SIGNALS_DIR / "limpopo-musina-sweep-2026-10-23.json").read_text(encoding="utf-8"))
+    pins = {s["signal_id"]: s for s in data["signals"]}
+    assert set(pins) == LPM_IDS and not (set(pins) & wc_ids)
+    assert data["retractions"] == []
+    assert sum(s["stream"] == "CRIME_INTEL" for s in pins.values()) == LPM_KILL_PINS
+    assert sum(s["stream"] == "PRIORITY" for s in pins.values()) == LPM_PI_PINS
+    for sid, s in pins.items():
+        assert prov[sid] == "Limpopo" and not s["metadata"].get("links")
+        assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95
+        assert "Carrim" not in s["title"] + s["content"] and "Tshimbaro" not in s["title"] + s["content"]
+    matswale, neltox, cig, bb = pins["b66b55ca-30bf-5b11-b40d-bcfd6627ffa6"], pins["42598400-2dc8-522f-b664-66d912756b03"], pins["f57ecd7b-1268-5ced-a789-b9d01a5a064d"], pins["931b443f-6722-507f-be64-a47bb4ef899f"]
+    for s in (matswale, neltox, cig):
+        assert "map point estimated" in s["title"]
+        assert s["metadata"]["checked"]["location"].startswith("ESTIMATED MAP POINT")
+    # Neltox: soldiers are a party; the police account is attributed, and it is its own precinct pin.
+    assert "SANDF" in neltox["title"] and "Soldiers are a party" in neltox["content"]
+    assert "Tshamutumbu" in neltox["title"]
+    for s in (cig, bb):
+        assert "not named here" in s["content"] and "convicted" in s["content"] and "Case status:" in s["content"]
+    assert "police allegation" in cig["content"] and "allege" in cig["title"]
+    # Beitbridge: the October charge is the pin date; the July interception is given in words only, and the
+    # inconsistent postponement date is left out.
+    assert bb["metadata"]["checked"]["incident_start"] == "2026-10-21"
+    assert "22 July" in bb["content"] and "30 November" not in bb["content"]

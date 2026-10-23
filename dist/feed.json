@@ -1,8 +1,64 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "23 Oct 2026 15:19 UTC",
+  "generated_at": "23 Oct 2026 16:01 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Beitbridge border post (approx.): North West businessman charged 21 Oct as co-accused over two Absa-financed cars intercepted in Jul",
+      "stream": "PRIORITY",
+      "stream_label": "Priority Intelligence",
+      "published_at": "2026-10-23T16:05:00Z",
+      "summary": "A North West businessman was charged on 21 October and first appeared in the Musina Magistrate's Court on 22 October, added as a co-accused in a case over two vehicles intercepted at the Beitbridge border post on 22 July...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.22888,
+        "lng": 29.98565
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Musina (map point estimated): one arrested over R1.5m in illicit cigarettes; police allege a syndicate, leader at large, 19 Oct",
+      "stream": "PRIORITY",
+      "stream_label": "Priority Intelligence",
+      "published_at": "2026-10-23T16:05:00Z",
+      "summary": "A man was arrested on Monday 19 October during an intelligence-led police operation at premises in Musina suspected of being used to store large quantities of illicit cigarettes (Limpopo police spokesperson Col Malesela ...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.34331,
+        "lng": 30.04396
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Matswale Phase 12, Musina (map point estimated): liquor store owner, 37, shot dead in his store; no arrest, 16 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T16:05:00Z",
+      "summary": "Police say a 37-year-old businessman was shot dead inside his liquor store at Matswale Phase 12, Musina, at about 20:00 on Friday 16 October. His wife, who was at the scene, told police he was preparing to close when an ...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.33856,
+        "lng": 30.01645
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Neltox, Tshamutumbu police area (map point estimated): man shot dead after exchange of fire with SANDF patrol; police investigating, 11 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T16:05:00Z",
+      "summary": "An unidentified man was found shot dead in the bushes in the Neltox area, in the Tshamutumbu policing area near the Zimbabwe border, at about 10:30 on Sunday 11 October; Tshamutumbu police are investigating (Vhembe SAPS ...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.38491,
+        "lng": 30.54586
+      }
+    },
     {
       "kind": "signal",
       "title": "Polokwane International Airport: five airport police accused, arrested from 19 Oct, over 46 undocumented nationals who vanished in Apr 2025",
@@ -645,62 +701,6 @@
       "geo": {
         "lat": -34.1077,
         "lng": 18.8578
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Hanover Park (Suria Walk, approx.): man, 37, shot dead, 15 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 37-year-old man was shot dead in Suria Walk, Hanover Park, at about 06:05 on Thursday 15 October; police say the motive is believed to be gang-related (Daily Voice). The article's text misprints the year as 2006; its d...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9907,
-        "lng": 18.5354
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Khayelitsha (Trekker Rd, area only, approx.): man, 25, shot dead, 13 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Khayelitsha police are investigating a murder after a 25-year-old man was shot dead by gunmen in Trekker Road, near an Engen garage, at about 17:00 on Tuesday 13 October (Daily Voice, quoting police spokesperson Ndakhe G...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.04059,
-        "lng": 18.66742
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Langa, Zone 5 (Teenage Vuso St, approx.): 2 men, 20 and 25, shot dead in parked car, 12 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Two men aged 20 and 25 were shot dead and a third wounded while sitting in a parked vehicle on Teenage Vuso Street, Zone 5, Langa, on Monday evening 12 October; police registered two counts of murder and one of attempted...",
-      "source": "VOICE OF THE CAPE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9469,
-        "lng": 18.5318
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Great Brak River (Green Haven, approx.): man, 52, stabbed dead at home, 11 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Police say a 52-year-old man was stabbed in the chest with a knife during an argument with his wife at their house in Green Haven, Wolwedans, Great Brak River, just before 16:00 on Sunday 11 October, and was declared dea...",
-      "source": "MOSSEL BAY ADVERTISER",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.03778,
-        "lng": 22.20917
       }
     }
   ]

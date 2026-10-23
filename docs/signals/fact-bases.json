@@ -6737,6 +6737,484 @@
           "conflicts": []
         }
       ]
+    },
+    "b66b55ca-30bf-5b11-b40d-bcfd6627ffa6": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 37, the owner of a liquor store, shot dead.",
+          "basis": "Police account only",
+          "detail": "Not named here. Declared dead at the scene by police and EMS.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "was shot dead at his business in Matswale Phase 12 on Friday, 16 October, at about 20:00. He sustained more than 20 gunshot wounds to the upper body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Friday 16 October 2026, about 20:00.",
+          "basis": "Police account only",
+          "detail": "Reported on 22 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "on Friday, 16 October, at about 20:00"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Inside his liquor store at Matswale Phase 12, Musina.",
+          "basis": "Police account only",
+          "detail": "No street is given; the map point is estimated.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "officers on night-shift duty had received a report of a shooting at Matswale Phase 12."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "An unknown man came in as he was closing, handed over a R200 note to buy liquor and allegedly opened fire while he fetched it; about 23 spent cartridges were found.",
+          "basis": "Police account only",
+          "detail": "The sequence is his wife's account, given to police.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "he had been preparing to close the business when an unknown man entered and handed him a R200 note, saying he wanted to buy liquor."
+            },
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "the suspect allegedly opened fire."
+            },
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "Approximately 23 spent cartridges were found at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "Musina police opened a murder case; the motive and the suspect are unknown.",
+          "basis": "Police account only",
+          "detail": "Police appealed for information.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "Dathi said Musina police had opened a murder case."
+            },
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "The motive for the killing and the identity of the suspect are currently unknown"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "No arrest reported; the killer is at large.",
+          "basis": "One report",
+          "detail": "As of 22 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct",
+              "url": "https://www.limpopomirror.co.za/article/musina-businessman-shot-more-than-20-times-in-store",
+              "archive": null,
+              "quote": "Detectives are appealing for information as the killer remains at large."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "42598400-2dc8-522f-b664-66d912756b03": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, unidentified, found shot dead in the bushes with bullet wounds.",
+          "basis": "Police account only",
+          "detail": "Police describe him as one of the suspects; that is their account.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "which left one unidentified man dead."
+            },
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "One of the suspects was later found lying in the bushes with bullet wounds and was declared dead"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 11 October 2026; found at about 10:30.",
+          "basis": "Police account only",
+          "detail": "The time of the exchange of fire is not given. Reported on 15 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "a shootout between suspected criminals and soldiers in the Neltox area on Sunday, 11 October"
+            },
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "an unidentified man was found shot dead in the bushes at about 10:30."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Bushes in the Neltox area, Tshamutumbu policing area, a border area.",
+          "basis": "Police account only",
+          "detail": "Neltox is not on a map; the pin is the Tshamutumbu station point.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "Communities in border villages under the Tshamutumbu policing area"
+            },
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "in the Neltox area on Sunday, 11 October"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Soldiers tried to stop a white Toyota Fortuner; the occupants fled, jumped out and allegedly fired at the soldiers, who returned fire.",
+          "basis": "Police account only",
+          "detail": "This is the police account; who fired first and who fired the fatal shot have not been independently established.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "the SANDF members were patrolling the said area when they noticed a suspected white Toyota Fortuner. When they tried to stop it, the suspects drove off at high speed"
+            },
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "allegedly opened fire on the members, who returned fire."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Who was involved",
+          "claim": "SANDF soldiers on patrol. Soldiers are a party to the shooting.",
+          "basis": "Police account only",
+          "detail": "Police relay the account; no independent account is reported. No wrongdoing by anyone is presumed.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "Information at our disposal reveals that the SANDF members were patrolling the said area"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "Tshamutumbu police are investigating; the man has not been identified.",
+          "basis": "Police account only",
+          "detail": "No arrest or inquiry finding is reported.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "Tshamutumbu police were investigating the incident"
+            },
+            {
+              "name": "Limpopo Mirror, 15 Oct",
+              "url": "https://www.limpopomirror.co.za/article/residents-back-army-crackdown-but-demand-border-fence",
+              "archive": null,
+              "quote": "The deceased has not yet been identified, and police investigations are continuing."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "f57ecd7b-1268-5ced-a789-b9d01a5a064d": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Who is accused",
+          "claim": "One man, arrested on 19 October; not named here.",
+          "basis": "Police account only",
+          "detail": "The other five people police say fled are not identified.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "the suspect was arrested on Monday, 19 October"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrest",
+          "claim": "Arrested during an operation at premises police suspected of storing illicit cigarettes, by provincial organised crime units and Musina detectives.",
+          "basis": "Police account only",
+          "detail": "Police call it intelligence-led.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "during an operation at premises suspected of being used to store large quantities of illicit cigarettes."
+            },
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "The operation was conducted by a multidisciplinary team comprising members of the Provincial Organised Crime Investigation: Threat-Based Unit, Musina Detectives and the Provincial Organised Crime Investigation: Narcotics Unit."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What was seized",
+          "claim": "55 boxes and 46 cartons of Remington Gold cigarettes, valued at about R1.5 million, and two vehicles worth about R600,000 together.",
+          "basis": "Police account only",
+          "detail": "Values are police estimates.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "police recovered 55 boxes and 46 cartons of Remington Gold cigarettes valued at approximately R1.5 million. Two motor vehicles, with a combined estimated value of R600,000, were also seized"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Charges",
+          "claim": "Possession and transportation of illicit cigarettes.",
+          "basis": "Police account only",
+          "detail": "As charged; not a finding.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "The suspect faces charges of possession and transportation of illicit cigarettes."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Alleged network",
+          "claim": "Police say the operation targeted an alleged illicit cigarette syndicate, and that the suspected syndicate leader and four others fled.",
+          "basis": "Police account only",
+          "detail": "The syndicate is a police allegation. No court has found it, and no one else has been arrested as of 21 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "an intelligence-led operation targeting an alleged illicit cigarette syndicate in Musina."
+            },
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "The suspected syndicate leader and four other suspects fled the scene and remain at large."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case status",
+          "claim": "Charged; expected in the Musina Magistrate's Court on 21 October. The outcome is not reported in the saved source. No conviction.",
+          "basis": "One report",
+          "detail": "Police say investigations continue to trace the others.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 21 Oct",
+              "url": "https://www.limpopomirror.co.za/article/suspect-to-appear-in-court-following-r15-million-illicit-cigarette-seizure",
+              "archive": null,
+              "quote": "is expected to appear in the Musina Magistrate’s Court on Wednesday, 21 October"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "931b443f-6722-507f-be64-a47bb4ef899f": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Who is accused",
+          "claim": "A North West businessman, added as a co-accused; two others were arrested in July.",
+          "basis": "Police and NPA account",
+          "detail": "Not named here.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "was added as a co-accused in a case stemming from an incident on 22 July this year"
+            },
+            {
+              "name": "Review Online (The Citizen), 22 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+              "archive": null,
+              "quote": "North West businessman"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Charge date and court",
+          "claim": "Charged on 21 October; first appearance in the Musina Magistrate's Court on 22 October.",
+          "basis": "Police and court report",
+          "detail": "Review Online says he was appearing on 22 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "was charged on 21 October. He made his first appearance in the Musina Magistrate’s Court on 22 October."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Charges",
+          "claim": "Attempted theft, with fraud (Limpopo Mirror) or money laundering (Review Online).",
+          "basis": "Police and court report",
+          "detail": "As charged; not a finding. The two outlets list different second charges.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "facing charges including attempted theft and fraud"
+            },
+            {
+              "name": "Review Online (The Citizen), 22 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+              "archive": null,
+              "quote": "on charges of attempted theft and money laundering"
+            }
+          ],
+          "conflicts": [
+            "Limpopo Mirror: attempted theft and fraud. Review Online: attempted theft and money laundering."
+          ]
+        },
+        {
+          "label": "What is alleged",
+          "claim": "On 22 July police at Beitbridge intercepted two Absa-financed vehicles allegedly bound from Mahikeng for Malawi; bank authorisation was allegedly not obtained and fraudulent bank documents were allegedly arranged. The NPA alleges collusion with his employees.",
+          "basis": "Police and NPA account",
+          "detail": "Allegations, not findings. The July date is the alleged conduct, three months before the charge; it is not the pin date.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "police officers stationed at the Beitbridge border post outside Musina intercepted two motor vehicles allegedly destined for Malawi"
+            },
+            {
+              "name": "Review Online (The Citizen), 22 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+              "archive": null,
+              "quote": "Preliminary investigations found that lawful bank authorisation to move the vehicles across the border was not obtained, and fraudulent bank documents were allegedly arranged instead."
+            },
+            {
+              "name": "Review Online (The Citizen), 22 Oct",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+              "archive": null,
+              "quote": "acting in collusion with his employees, attempted to steal two vehicles belonging to Absa by taking them out of the country using fraudulent documentation"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Others in the case",
+          "claim": "Two people arrested in July remain in custody and are due in the Musina Regional Court on 27 October; the vehicles were handed back to Absa.",
+          "basis": "Police and court report",
+          "detail": "The July arrests are outside the collection window and are not pinned separately.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "The two original suspects remain in custody and are expected to appear in the Musina Regional Court on 27 October."
+            },
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "The two vehicles, which were still financed by Absa Bank, were handed over to the bank."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Case status",
+          "claim": "Charged and appeared in court on 22 October; no conviction. His next court date is not stated here.",
+          "basis": "Police and court report",
+          "detail": "The only next date reported for his case is inconsistent, so it is left out.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror, 22 Oct (case)",
+              "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+              "archive": null,
+              "quote": "He made his first appearance in the Musina Magistrate’s Court on 22 October."
+            }
+          ],
+          "conflicts": [
+            "Limpopo Mirror, citing SABC: postponed to 'next Thursday, 30 November'. 30 November 2026 is a Monday, and 'next Thursday' from 22 October would be 29 October, so no date is stated."
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,84 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T160118Z-5e10e995",
+  "signal_id": "931b443f-6722-507f-be64-a47bb4ef899f",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-musina-sweep-2026-10-23.json",
+  "approved_payload": {
+    "content": "A North West businessman was charged on 21 October and first appeared in the Musina Magistrate's Court on 22 October, added as a co-accused in a case over two vehicles intercepted at the Beitbridge border post on 22 July (Limpopo Mirror and Review Online, 22 October). According to police and the NPA, police at the border post intercepted two vehicles, still financed by Absa, that were allegedly being taken from Mahikeng to Malawi; lawful bank authorisation to move them across the border was allegedly not obtained and fraudulent bank documents were allegedly arranged instead. Two people were arrested in July and remain in custody, due in the Musina Regional Court on 27 October; the vehicles were handed back to Absa. The NPA alleges the businessman acted in collusion with his employees. The reported charges differ: Limpopo Mirror lists attempted theft and fraud, Review Online attempted theft and money laundering. These are allegations: no one has been convicted, and the accused are not named here. Case status: charged and appeared in court; the reports do not give a consistent next date for his case, so none is stated here. Two outlets, both resting on police and NPA statements. The pin marks the South African border control at Beitbridge, where the July interception happened; the October charge and court appearance were not at this point, and the July date is the alleged conduct, not the pin date.",
+    "external_id": "checked:lp-musina-2026-10-23:P2",
+    "lat": -22.22888,
+    "lng": 29.98565,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T16:05:00Z",
+        "incident": "Charged Wed 21 Oct 2026; first court appearance Thu 22 Oct 2026 (Limpopo Mirror). The interception alleged dates from 22 Jul 2026, three months earlier, and is not the pin date.",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-21",
+        "location": "South African border control at the Beitbridge port of entry, outside Musina, where police intercepted the two vehicles on 22 July (Limpopo Mirror; Review Online). The pin is the OpenStreetMap border-control point on the South African side, inside the Musina police precinct outline; where on the post the vehicles were stopped is not reported. The October charge and the court appearance (Musina Magistrate's Court) were not at this point.",
+        "method": "Found in the 23 Oct 2026 Musina location sweep (collector runs, Google News, web searches and the Limpopo Mirror's own article data, incidents 1-23 Oct); source pages read again on 23 Oct about 16:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "22 Oct 2026 (Review Online and Limpopo Mirror)",
+        "reported_at": "2026-10-22",
+        "search_aliases": [
+          "Beitbridge",
+          "Beitbridge border post",
+          "Musina",
+          "Absa",
+          "Mahikeng",
+          "Malawi",
+          "vehicle smuggling",
+          "fraudulent bank documents",
+          "Musina Magistrate's Court",
+          "NPA"
+        ],
+        "sources": [
+          {
+            "name": "Limpopo Mirror, 22 Oct (case)",
+            "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed"
+          },
+          {
+            "name": "Review Online (The Citizen), 22 Oct",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/"
+          }
+        ]
+      },
+      "collected_title": "Suliman Carrim's theft and fraud case postponed",
+      "link": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+      "pubdate_raw": "2026-10-22T12:30:58.721+00:00",
+      "source_outlet": "Limpopo Mirror"
+    },
+    "published_at": "2026-10-23T16:05:00Z",
+    "signal_id": "931b443f-6722-507f-be64-a47bb4ef899f",
+    "source": "Limpopo Mirror",
+    "stream": "PRIORITY",
+    "timestamp": "2026-10-21T10:00:00Z",
+    "title": "Beitbridge border post (approx.): North West businessman charged 21 Oct as co-accused over two Absa-financed cars intercepted in Jul"
+  },
+  "payload_sha256": "sha256:310bc47ae9aa442c4a042a2716fcf3be8f8959487f5c8e862b2510f745cb79b6",
+  "source_hashes": [
+    {
+      "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+      "retrieved_at": "2026-10-23T15:54:19Z",
+      "content_sha256": "sha256:a073a93ca73ab5ad7d3cb686dc3c8436137a2aee32d724f367257dabc54da4be"
+    },
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+      "retrieved_at": "2026-10-23T15:54:01Z",
+      "content_sha256": "sha256:d381c9362df2775d24cec4d2219067acce5bb71a6c3266abe7e9197980cc71ef"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T17:50:00+02:00",
+  "recorded_at": "2026-10-23T18:01:18+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "musina-approval-2026-10-23",
+    "summary": "Owner: 'the killings I approved, and then the two priority intelligence cases' (voice call 23 Oct 2026, about 17:50 SAST). Beitbridge case, PI, unnamed. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

@@ -60,7 +60,13 @@ POLOKWANE_SWEEP = {
     '891844fa-852b-53f7-aad5-395f7bd4291f',  # Capricorn TVET College official (Priority Intelligence)
     '09124894-bed2-5f4e-bd80-e3f7b162ff59',  # Seshego school stomach illness (Africa & World health alert)
 }  # approved 23 Oct 2026, voice call
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA | LIMPOPO_DEATHS | POLOKWANE_SWEEP
+MUSINA_SWEEP = {
+    'b66b55ca-30bf-5b11-b40d-bcfd6627ffa6',  # Matswale Phase 12, Musina killing (Crime & Security)
+    '42598400-2dc8-522f-b664-66d912756b03',  # Neltox killing in a reported exchange of fire with SANDF soldiers (Crime & Security)
+    'f57ecd7b-1268-5ced-a789-b9d01a5a064d',  # Musina illicit cigarette seizure (Priority Intelligence)
+    '931b443f-6722-507f-be64-a47bb4ef899f',  # Beitbridge vehicle-interception case (Priority Intelligence)
+}  # approved 23 Oct 2026, voice call
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA | LIMPOPO_DEATHS | POLOKWANE_SWEEP | MUSINA_SWEEP
 
 
 def load(path):
@@ -79,14 +85,17 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 68                                      # 36 audited + 32 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 403   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths + 18 Polokwane sweep
+    assert len(exported) == 72                                      # 36 audited + 36 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 427   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths + 18 Polokwane sweep + 24 Musina sweep
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
     assert sum(len(exported[s]['facts']) for s in KZN_INFRA) == 6
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in KZN_INFRA)
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_DEATHS) == 12
     assert sum(len(exported[s]['facts']) for s in POLOKWANE_SWEEP) == 18   # six each
+    assert sum(len(exported[s]['facts']) for s in MUSINA_SWEEP) == 24   # six each
+    assert exported['42598400-2dc8-522f-b664-66d912756b03']['police_party'] is False   # soldiers, not police, are the party; said in the text
+    assert all(any(f['label'] == 'Case status' for f in exported[s]['facts']) for s in ('f57ecd7b-1268-5ced-a789-b9d01a5a064d', '931b443f-6722-507f-be64-a47bb4ef899f'))
     assert exported['befc9ba6-05fd-5471-ac93-fc32257d498b']['police_party'] is True   # airport officers are SAPS members
     assert all(any(f['label'] == 'Case status' for f in exported[s]['facts']) for s in POLOKWANE_SWEEP if s != '09124894-bed2-5f4e-bd80-e3f7b162ff59')
     assert all(any(f['label'] == 'Cause of death' and f['claim'].startswith('Not reported') for f in exported[s]['facts']) for s in LIMPOPO_DEATHS)
