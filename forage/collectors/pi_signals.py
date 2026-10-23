@@ -259,49 +259,118 @@ def is_sa(text: str, province: Optional[str] = None, sa_source: bool = False) ->
     return bool(loc)
 
 
-def classify(title: str, summary: str = "", province: Optional[str] = None,
-             sa_source: bool = False) -> dict:
-    """Read one story against the PI rules.
+# Reader comments that can survive in text handed in from elsewhere. The
+# article reader already drops comment sections from the page (G11); this is
+# a second guard on plain text, cutting at the first comment-section marker.
+_COMMENT_TAIL = re.compile(
+    r"(?:^|\n|\.\s)\s*(?:\d+\s+)?(?:comments?|responses?|replies)\s*(?:\(\d+\)|:)?\s*(?:\n|$)"
+    r"|leave a (?:reply|comment)|post a comment|add a comment|join the (?:conversation|discussion)"
+    r"|comments are (?:closed|moderated)|\bdisqus\b|you must be logged in to post a comment",
+    re.I)
 
-    Returns {'is_pi', 'category', 'owners', 'kind', 'role', 'matched',
-    'reason'}. role is 'signal' (an event or official step), 'context'
-    (policy talk, opinion, no event) or None when the story is not PI.
+# How much article text the PI rules read. Long enough for any news story;
+# stops a whole page of related links from ever counting.
+ARTICLE_CHARS = 8000
+
+
+def article_text_for_pi(article) -> str:
+    """The article text the PI rules may read, or "" when there is none.
+
+    Takes plain text, an article_reader.ArticleReading or its dict. A
+    reading counts only when its status is 'read'; a blocked, feed-date-only
+    or unread story gives "" and the rules fall back to headline and
+    summary. Comment sections are cut off (G11).
     """
-    title = title or ""
-    summary = summary or ""
-    text = f"{title}. {summary}"
-    out = {"is_pi": False, "category": None, "owners": [], "kind": None, "role": None,
-           "matched": [], "reason": ""}
-    if _NOISE.search(title):
-        out["reason"] = "entertainment or sport sense of the words"
-        return out
+    if not article:
+        return ""
+    if isinstance(article, str):
+        text = article
+    else:
+        r = article if isinstance(article, dict) else getattr(article, "__dict__", {})
+        if r.get("status") != "read":
+            return ""
+        text = r.get("body_text") or ""
+    m = _COMMENT_TAIL.search(text)
+    if m:
+        text = text[:m.start()]
+    return re.sub(r"\s+", " ", text).strip()[:ARTICLE_CHARS]
 
-    owners = _owners(text)
-    cats = []
+
+def _categories(text: str, owners: list[str]) -> tuple[list[str], list[str]]:
+    """PI categories in text, with the words that matched."""
+    cats, matched = [], []
     for cat, pat in CATEGORY_PATTERNS:
         m = pat.search(text)
         if m:
             cats.append(cat)
-            out["matched"].append(m.group(0).strip()[:60])
+            matched.append(m.group(0).strip()[:60])
     if not cats and owners and _FRAUD.search(text):
         cats.append("corruption_capture")
-        out["matched"].append(_FRAUD.search(text).group(0))
+        matched.append(_FRAUD.search(text).group(0))
     if not cats:
         for o in owners:
             if o in OWNER_DEFAULT_CATEGORY:
                 cats.append(OWNER_DEFAULT_CATEGORY[o])
                 break
-    if not cats:
-        out["reason"] = "no PI category or owning agency"
+    return cats, matched
+
+
+def classify(title: str, summary: str = "", province: Optional[str] = None,
+             sa_source: bool = False, article_text=None) -> dict:
+    """Read one story against the PI rules.
+
+    Returns {'is_pi', 'category', 'owners', 'kind', 'role', 'matched',
+    'reason', 'text_basis'}. role is 'signal' (an event or official step),
+    'context' (policy talk, opinion, no event) or None when the story is not
+    PI.
+
+    article_text (Batch 6 step 2, G2/G11): the story's own text from the
+    article reader, plain text or an ArticleReading. When there is some,
+    categories and agencies are read in it as well as the headline and
+    summary; reader comments are never read. The kind of step is read in
+    the headline, then the summary, then the article's opening. The context
+    rule still reads the headline only, and the foreign-headline rule is
+    unchanged. Without article text everything works as before.
+    """
+    title = title or ""
+    summary = summary or ""
+    body = article_text_for_pi(article_text)
+    hs_text = f"{title}. {summary}"
+    text = f"{hs_text} {body}" if body else hs_text
+    out = {"is_pi": False, "category": None, "owners": [], "kind": None, "role": None,
+           "matched": [], "reason": "", "text_basis": "article" if body else "headline_summary",
+           "matched_in_article": []}
+    if _NOISE.search(title):
+        out["reason"] = "entertainment or sport sense of the words"
         return out
-    if not is_sa(text, province, sa_source):
+
+    owners = _owners(text)
+    cats, matched = _categories(text, owners)
+    out["matched"] = matched
+    if not cats:
+        out["reason"] = "no PI category or owning agency" + (" (article text read)" if body else "")
+        return out
+    if body:
+        hs_cats, _ = _categories(hs_text, _owners(hs_text))
+        out["matched_in_article"] = [c for c in cats if c not in hs_cats]
+    sa = is_sa(hs_text, province, sa_source)
+    if not sa and body:
+        # The article can only add a strong South African marker; it never
+        # overrides a foreign place in the headline.
+        sa = (not _FOREIGN.search(title)) and bool(
+            _SA.search(body) or _SA_PLACES.search(body)
+            or re.search(r"\bR ?\d[\d.,]* ?(million|billion|m|bn|k)\b", body))
+    if not sa:
         out["reason"] = "not about South Africa"
         return out
 
-    # Title categories outrank summary-only ones.
+    # Title categories outrank summary-only ones, which outrank article-only ones.
     title_cats = [c for c, p in CATEGORY_PATTERNS if c in cats and p.search(title)]
-    category = (title_cats or cats)[0]
+    summary_cats = [c for c, p in CATEGORY_PATTERNS if c in cats and p.search(hs_text)]
+    category = (title_cats or summary_cats or cats)[0]
     kind = _kind(title, summary)
+    if kind is None and body:
+        kind = _kind(title, body[:600])
     out.update(is_pi=True, category=category, owners=owners, kind=kind)
     question = title.rstrip(" -|").split(" - ")[0].rstrip().endswith("?")
     title_kind = _kind(title, "")
@@ -329,7 +398,7 @@ def basis(c: dict) -> str:
 
 def route(stream: str, title: str, summary: str = "", province: Optional[str] = None,
           infra_meta: Optional[dict] = None, pi_mode: Optional[str] = None,
-          sa_source: bool = False) -> tuple[str, bool, dict]:
+          sa_source: bool = False, article_text=None) -> tuple[str, bool, dict]:
     """Apply PI on top of a collector's own routing.
 
     ``stream`` is what the collector decided without PI. Returns
@@ -338,7 +407,7 @@ def route(stream: str, title: str, summary: str = "", province: Optional[str] = 
     the story is not PI. sa_source=True when the source itself is a South
     African outlet (the direct RSS feeds), so no place marker is needed.
     """
-    c = classify(title, summary, province=province, sa_source=sa_source)
+    c = classify(title, summary, province=province, sa_source=sa_source, article_text=article_text)
     if not c["is_pi"]:
         return stream, False, {}
     m = mode(pi_mode)
@@ -352,11 +421,19 @@ def route(stream: str, title: str, summary: str = "", province: Optional[str] = 
         "pi_reason": c["reason"],
         "pi_mode": m,
     }
+    if c["text_basis"] == "article":
+        # Only said when the article was read, so older records stay as they were.
+        meta["pi_text_basis"] = "article"
+        if c["matched_in_article"]:
+            meta["pi_matched_in_article"] = c["matched_in_article"]
     if c["role"] == "context":
         meta["pi_route"] = "context"
         return stream, False, meta
 
     infra_event = bool(infra_meta) and infra_meta.get("infra_role") not in (None, "context")
+    # Killing overlap and place stay on headline and summary: a death named
+    # somewhere in an article's background is not this story's killing, and
+    # places are Batch 3's rules (the Carrim court-place rule is on hold).
     text = f"{title}. {summary}"
     killing = bool(_DEATH.search(text))
     overlap = "INFRASTRUCTURE" if (infra_event or stream == "INFRASTRUCTURE") else (

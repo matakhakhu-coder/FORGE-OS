@@ -88,6 +88,7 @@ from forage.collectors import pi_signals as _pi  # noqa: E402
 from forage.collectors import crime_signals as _crime  # noqa: E402
 from forage.collectors import place_signals as _place  # noqa: E402
 from forage.collectors import story_merge as _story  # noqa: E402
+from forage.collectors import run_window as _rw  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -259,13 +260,16 @@ def _parse_pubdate(raw: str) -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _parse_rss_items(xml_bytes: bytes, query: str, days: int) -> list[dict]:
+def _parse_rss_items(xml_bytes: bytes, query: str, days: int,
+                     cutoff: datetime | None = None) -> list[dict]:
     """
     Parse Google News RSS XML into a list of raw item dicts.
-    Filters items to those published within the last N days.
+    Filters items to those published within the last N days, or from
+    ``cutoff`` (UTC) when a fixed window start is given (Batch 6 step 2).
     """
     items = []
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    if cutoff is None:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
 
     try:
         root = ET.fromstring(xml_bytes)
@@ -561,15 +565,26 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
                   keywords: list[str] | None = None,
                   dry_run: bool = False,
                   infra_province: str | None = None,
-                  pi: bool = False, pi_province: str | None = None) -> dict:
+                  pi: bool = False, pi_province: str | None = None,
+                  start_date: str | None = None) -> dict:
     """
     Main collection function.
     Returns a summary dict for pipeline telemetry.
+
+    start_date ("1 October" or YYYY-MM-DD, SAST) replaces the count-back
+    window with a fixed start (Batch 6 step 2, G12). FORGE_WINDOW_START sets
+    it too. Unset, the run behaves exactly as before.
     """
     start_time = time.time()
+    window = _rw.RunWindow.build(days=days, start=start_date)
+    cutoff = None
+    if window.start:
+        days = window.query_days(default=days)
+        cutoff = window.cutoff()
     print(f"[gnews] Generalized News Monitor starting")
     print(f"[gnews] DB: {DB_PATH}")
     print(f"[gnews] Days: {days} | Max queries: {max_queries} | Dry run: {dry_run}")
+    print(f"[gnews] Publication window: {window.describe()}")
 
     # Resolve query list
     pi_query_set: set = set()
@@ -619,7 +634,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
                 time.sleep(REQUEST_DELAY)
             continue
 
-        items = _parse_rss_items(xml_bytes, query, days)
+        items = (_parse_rss_items(xml_bytes, query, days, cutoff=cutoff) if cutoff
+                 else _parse_rss_items(xml_bytes, query, days))
         print(f"[gnews]   Found {len(items)} articles")
         total_articles += len(items)
 
@@ -725,6 +741,10 @@ if __name__ == "__main__":
     parser.add_argument("--pi-province", type=str, default=None,
                         help="Priority Intelligence preset plus province-named searches")
 
+    parser.add_argument("--from", dest="window_start", default=None,
+                        help="Fixed window start, SAST (YYYY-MM-DD or '1 October'); "
+                             "replaces --days when given")
+
     args = parser.parse_args()
 
     kw_list = None
@@ -739,4 +759,5 @@ if __name__ == "__main__":
         infra_province=args.infra_province,
         pi=args.pi,
         pi_province=args.pi_province,
+        start_date=args.window_start,
     )

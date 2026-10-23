@@ -63,6 +63,7 @@ try:
     from forage.collectors import crime_signals as _crime
     from forage.collectors import place_signals as _place
     from forage.collectors import story_merge as _story
+    from forage.collectors import run_window as _rw
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
@@ -70,6 +71,7 @@ except ImportError:  # run as a script from the collectors directory
     from forage.collectors import crime_signals as _crime
     from forage.collectors import place_signals as _place
     from forage.collectors import story_merge as _story
+    from forage.collectors import run_window as _rw
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -560,6 +562,14 @@ def fetch_rss_direct(source: dict) -> list:
 # 2026 baseline kept GroundUp and Oxpeckers items back to 2017). Override
 # with --days or FORGE_CIVIC_WINDOW_DAYS; 0 disables the window.
 WINDOW_DAYS = int(os.environ.get("FORGE_CIVIC_WINDOW_DAYS", "30") or 0)
+# Batch 6 step 2 (G12): a fixed start date ("1 October" or YYYY-MM-DD, SAST)
+# instead of counting back from the run start. Set with --from or
+# FORGE_WINDOW_START; when set it replaces WINDOW_DAYS. Unset by default.
+WINDOW_START: Optional[str] = os.environ.get("FORGE_WINDOW_START") or None
+
+
+def run_window() -> "_rw.RunWindow":
+    return _rw.RunWindow.build(days=WINDOW_DAYS, start=WINDOW_START, use_env=False)
 
 
 def _entry_ts(entry: dict) -> Optional[str]:
@@ -575,7 +585,8 @@ def _entry_ts(entry: dict) -> Optional[str]:
 
 def _older_than_window(entry: dict) -> bool:
     ts = _entry_ts(entry)
-    return bool(ts and WINDOW_DAYS and not _infra.in_window(ts, WINDOW_DAYS))
+    w = run_window()
+    return bool(ts and w.mode != "none" and not w.contains(ts))
 
 
 def fetch_google_news(source: dict) -> list:
@@ -983,6 +994,8 @@ def run(db_path: Path = DB_PATH) -> dict:
     _ensure_dedup_index(conn)
     title_cache = _load_title_cache(conn, window_hours=24)
     print(f"[civic_intel] Dedup cache: {len(title_cache)} titles from last 24h")
+    window = run_window()
+    print(f"[civic_intel] Publication window: {window.describe()}")
 
     total_new      = 0
     total_skipped  = 0
@@ -1005,7 +1018,7 @@ def run(db_path: Path = DB_PATH) -> dict:
             sig = entry_to_signal(entry, source)
             if sig is None:
                 continue
-            if WINDOW_DAYS and not _infra.in_window(sig["timestamp"], WINDOW_DAYS):
+            if window.mode != "none" and not window.contains(sig["timestamp"]):
                 stale_s += 1
                 continue
 
@@ -1160,9 +1173,15 @@ if __name__ == "__main__":
     _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
     _parser.add_argument("--days", type=int, default=None,
                          help=f"Publication window in days (default {WINDOW_DAYS}; 0 = no window)")
+    _parser.add_argument("--from", dest="window_start", default=None,
+                         help="Fixed window start, SAST (YYYY-MM-DD or '1 October'); "
+                              "replaces --days when given")
     _args = _parser.parse_args()
     if _args.days is not None:
         WINDOW_DAYS = _args.days
+    if _args.window_start:
+        _rw.parse_start(_args.window_start)  # fail fast on a bad date
+        WINDOW_START = _args.window_start
     db = _forge_db_arg(_args.db) if _args.db else DB_PATH
     if _args.dry_run:
         print("[civic_intel] DRY RUN — would connect to:", db)
