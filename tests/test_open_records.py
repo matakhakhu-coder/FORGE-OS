@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tests.test_checked_signals import (  # noqa: E402
-    ALL_PINS, _copy_signals, _edit_batch, _fresh_db, _markers, _publish_to, _restamp,
+    ALL_PINS, LPI_PINS, _copy_signals, _edit_batch, _fresh_db, _markers, _publish_to, _restamp,
 )
 from tools import records_export as rx  # noqa: E402
 
@@ -333,3 +333,62 @@ def test_tier_code_is_gone():
     import revenue.config as rc
     assert not hasattr(rc, "TIERS")
     assert "paystack_public_key" not in rc.get_template_context()
+
+
+# ── Stream column (23 Oct 2026) ──────────────────────────────────────────────
+
+def test_stream_names_match_the_maps_streams_panel():
+    import tools.publish as pub
+    assert rx.STREAM_LABELS == pub.STREAM_LABELS
+
+
+def test_every_record_and_row_carries_its_map_stream(tmp_path, monkeypatch):
+    conn, db_file = _imported(tmp_path, monkeypatch)
+    conn.close()
+    dist = _publish_to(tmp_path, monkeypatch, db_file)
+    recs = json.loads((dist / "records.json").read_text())["records"]
+    by_id = {r["signal_id"]: r for r in recs}
+
+    # Records: the same stream the map files each pin under.
+    markers = {m["signal_id"]: m for m in _markers(dist)}
+    for sid, r in by_id.items():
+        assert r["stream"] == rx.STREAM_LABELS[markers[sid]["stream"]]
+    infra = {sid for sid, r in by_id.items() if r["stream"] == "Infrastructure"}
+    assert len(infra) == LPI_PINS
+    assert sum(r["stream"] == "Crime & Security" for r in recs) == ALL_PINS - LPI_PINS
+    rows = list(csv.DictReader(io.StringIO((dist / "records.csv").read_text(encoding="utf-8-sig"))))
+    cols = list(rows[0])
+    assert cols[cols.index("province") + 1] == "stream"
+    assert {r["signal_id"]: r["stream"] for r in rows} == {s: r["stream"] for s, r in by_id.items()}
+
+    # Page: a Stream column, one tab per stream with its count, infrastructure rows marked.
+    html = (dist / "records.html").read_text()
+    assert '<th scope="col">Stream</th>' in html
+    assert html.count('<td data-label="Stream">') == ALL_PINS
+    tabs = re.findall(r'<button type="button" class="rec-stream-tab" data-stream="([^"]*)"[^>]*>.*?'
+                      r'<span class="rec-stream-tab__n">(\d+)</span>', html, re.S)
+    assert tabs == [("", str(ALL_PINS)), ("Crime &amp; Security", str(ALL_PINS - LPI_PINS)),
+                    ("Infrastructure", str(LPI_PINS))]
+    trs = re.findall(r'<tr data-id="([^"]+)" data-stream="([^"]+)" class="rec-row rec-row--([a-z-]+)">', html)
+    assert len(trs) == ALL_PINS
+    assert {i for i, _, slug in trs if slug == "infrastructure"} == infra
+    assert {slug for _, _, slug in trs} == {"crime-security", "infrastructure"}
+    assert '<option value="Infrastructure">Infrastructure</option>' in html
+
+
+def test_the_stream_filter_shows_one_stream_at_a_time():
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not installed")
+    js = (ROOT / "publisher" / "static" / "js" / "records.js").read_text()
+    script = js + """
+    var recs = [
+      {signal_id: 'a', title: 'Killing', stream: 'Crime & Security', province: 'Limpopo', incident_start: '2026-10-03'},
+      {signal_id: 'b', title: 'Substation', stream: 'Infrastructure', province: 'Limpopo', incident_start: '2026-10-11'}];
+    var M = module.exports.matches;
+    var pick = function (f) { return recs.filter(function (r) { return M(r, f); }).map(function (r) { return r.signal_id; }).join(','); };
+    console.log(JSON.stringify([pick({}), pick({stream: 'Infrastructure'}), pick({stream: 'Crime & Security'}),
+                                pick({q: 'infrastructure'})]));
+    """
+    out = subprocess.run([node, "-e", script], capture_output=True, text=True, check=True, timeout=30).stdout
+    assert json.loads(out) == ["a,b", "b", "a", "b"]

@@ -335,19 +335,28 @@ def describe_area(members: list[dict], r_km: float, places: list, precincts: lis
 
     # Name: the nearest notable place (population >= 10 000 within half the
     # radius) to each pin, most pins first; else the precincts holding pins.
+    # In the same-precinct provinces an area is one precinct's pins, so the
+    # notable place must lie inside that precinct: Seshego (no population in
+    # the gazetteer) was named after Polokwane city, 9 km away in the next
+    # precinct, and showed up as a second "Polokwane" (23 Oct 2026).
+    split = province in PRECINCT_SPLIT_PROVINCES
     anchors: dict[str, int] = {}
     for p in members:
         near = [x for x in plc if x["population"] >= 10000
                 and haversine_km(p["lat"], p["lng"], *_latlng(x, places)) <= r_km / 2]
+        if split and p.get("precinct"):
+            rings = _precinct_rings(p["precinct"], precincts)
+            near = [x for x in near if rings and point_in_rings(*_latlng(x, places), rings)]
         if near:
             pick = min(near, key=lambda x: haversine_km(p["lat"], p["lng"], *_latlng(x, places)))["name"]
         else:
             holding = [pr["name"] for pr in prec_out if p["signal_id"] in pr["holds_pins"]]
             pick = holding[0] if holding else (p["place_names"][-1] if p["place_names"] else "Unnamed")
         anchors[pick] = anchors.get(pick, 0) + 1
-    # Suburbs of a city of 500 000+ in the area are named as that city.
+    # Suburbs of a city of 500 000+ in the area are named as that city
+    # (not in the same-precinct provinces, where the area is one precinct).
     big = {x["municipality"]: x["name"] for x in reversed(plc) if x["population"] >= 500000}
-    if big:
+    if big and not split:
         merged: dict[str, int] = {}
         muni_of = {x["name"]: x["municipality"] for x in plc}
         for k, n in anchors.items():
@@ -377,6 +386,37 @@ def describe_area(members: list[dict], r_km: float, places: list, precincts: lis
     }
     area["queries"] = build_queries(area, members)
     return area
+
+
+def _precinct_rings(name: str, precincts: list) -> list:
+    """Outline rings of the named precinct ([] if it has none)."""
+    for pr in precincts:
+        if pr["name"] == name:
+            return pr.get("rings") or []
+    return []
+
+
+def label_duplicates(areas: list[dict]) -> None:
+    """No two areas may carry the same label. When they do (two areas named
+    after the same place), each one is labelled with the precincts that hold
+    its pins as well, e.g. "Polokwane, Seshego precinct (Limpopo)"; any that
+    still clash get a number."""
+    def clash():
+        names: dict[str, list[dict]] = {}
+        for a in areas:
+            names.setdefault(a["name"], []).append(a)
+        return [g for g in names.values() if len(g) > 1]
+
+    for group in clash():
+        for a in group:
+            base = a["name"][: -len(f" ({a['province']})")] if a["name"].endswith(f" ({a['province']})") else a["name"]
+            holders = [pr["name"] for pr in a["precincts"] if pr["holds_pins"]]
+            if holders:
+                tag = ", ".join(holders[:2]) + (" precinct" if len(holders[:2]) == 1 else " precincts")
+                a["name"] = f"{base}, {tag} ({a['province']})"
+    for group in clash():
+        for n, a in enumerate(sorted(group, key=lambda a: a["key"])[1:], start=2):
+            a["name"] = a["name"][: -len(f" ({a['province']})")] + f" #{n} ({a['province']})"
 
 
 def holding_precinct(pin: dict, precincts: list) -> str:
@@ -454,6 +494,7 @@ def compute_areas(pins: list[dict], r_km: float | None = None,
         seen[a["key"]] = n + 1
         if n:
             a["key"] = f"{a['key']}-{n + 1}"
+    label_duplicates(areas)
     areas.sort(key=lambda a: (not a["pattern_test"], a["province"], -len(a["pins"]), a["key"]))
     pin_ids = sorted(p["signal_id"] for p in pins)
     return {

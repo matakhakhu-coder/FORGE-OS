@@ -69,6 +69,54 @@ def test_areas_name_the_precincts_and_places_inside_the_radius(tiny_gaz):
     assert len(alpha["queries"]) <= ca.MAX_QUERIES_PER_AREA
 
 
+@pytest.fixture
+def township_gaz(tmp_path):
+    """A city (Bigtown, 250 000 people) and, 9 km away in its own precinct, a
+    township the gazetteer gives no population (Smalltown) - the Polokwane /
+    Seshego case of 23 Oct 2026. Both in one municipality."""
+    places = {"fields": ["name", "lat", "lng", "feature_code", "population",
+                         "province", "district", "municipality"],
+              "rows": [["Bigtown", -24.0, 29.5, "PPLA", 250000, "Limpopo", "D1", "Bigtown"],
+                       ["Smalltown", -24.0, 29.41, "PPL", 0, "Limpopo", "D1", "Bigtown"]]}
+    sq = lambda lat, lng, d: [[lng - d, lat - d], [lng + d, lat - d], [lng + d, lat + d],
+                              [lng - d, lat + d], [lng - d, lat - d]]
+    prec = {"precincts": [{"name": "Bigtown", "station": [29.5, -24.0], "rings": [sq(-24.0, 29.5, 0.04)]},
+                          {"name": "Smalltown", "station": [29.41, -24.0], "rings": [sq(-24.0, 29.41, 0.04)]}]}
+    pp, pr = tmp_path / "places.json", tmp_path / "prec.json"
+    pp.write_text(json.dumps(places))
+    pr.write_text(json.dumps(prec))
+    return pp, pr
+
+
+def test_a_township_in_its_own_precinct_is_named_after_itself(township_gaz):
+    town = _pin("t", -24.0, 29.5, "Limpopo", "Bigtown (approx.): water outage")
+    ship = _pin("s", -24.0, 29.405, "Limpopo", "Smalltown Clinic, Smalltown (approx.): substation stripped")
+    res = _compute([town, ship], township_gaz)
+    by_pin = {a["pins"][0]["signal_id"]: a for a in res["areas"]}
+    assert by_pin["s"]["name"] == "Smalltown (Limpopo)" and by_pin["s"]["key"] == "limpopo--smalltown"
+    assert by_pin["t"]["name"] == "Bigtown (Limpopo)" and by_pin["t"]["key"] == "limpopo--bigtown"
+    # Outside the same-precinct provinces the old rule stands: one area, named after the city.
+    nw = _compute([{**town, "province": "North West"}, {**ship, "province": "North West"}], township_gaz)
+    assert [a["name"] for a in nw["areas"]] == ["Bigtown (North West)"]
+
+
+def test_two_areas_never_share_a_label():
+    def area(key, name, holder):
+        return {"key": key, "name": f"{name} (Limpopo)", "province": "Limpopo",
+                "precincts": [{"name": holder, "holds_pins": ["x"]}, {"name": "Other", "holds_pins": []}]}
+    areas = [area("limpopo--polokwane", "Polokwane", "Polokwane"),
+             area("limpopo--polokwane-2", "Polokwane", "Seshego"),
+             area("limpopo--giyani", "Giyani", "Giyani")]
+    ca.label_duplicates(areas)
+    assert [a["name"] for a in areas] == ["Polokwane, Polokwane precinct (Limpopo)",
+                                          "Polokwane, Seshego precinct (Limpopo)", "Giyani (Limpopo)"]
+    # Same name and same precinct (two far-apart pin groups): numbered.
+    twins = [area("a", "Musina", "Musina"), area("b", "Musina", "Musina")]
+    ca.label_duplicates(twins)
+    assert [a["name"] for a in twins] == ["Musina, Musina precinct (Limpopo)",
+                                          "Musina, Musina precinct #2 (Limpopo)"]
+
+
 def test_overlapping_circles_merge_and_distant_ones_do_not():
     # About 50 km apart: circles of 30 km overlap (50 < 60), circles of 20 km do not.
     a, b = _pin("a", -26.0, 26.0, "North West"), _pin("b", -26.0, 26.5, "North West")
@@ -139,8 +187,9 @@ def test_current_pins_make_their_areas_and_skip_held_places():
                     "mpumalanga--siyabuswa", "mpumalanga--calcutta", "mpumalanga--masoyi",
                     "mpumalanga--ermelo", "mpumalanga--amersfoort",
                     # Limpopo infrastructure pins (23 Oct 2026) bring in their precincts too; the
-                    # Polokwane outage pin shares the Polokwane area, Seshego gets its own.
-                    "limpopo--musina", "limpopo--tzaneen", "limpopo--polokwane-2"}
+                    # Polokwane outage pin shares the Polokwane area, Seshego gets its own,
+                    # named Seshego (it was a second "Polokwane", key polokwane-2, until 23 Oct).
+                    "limpopo--musina", "limpopo--tzaneen", "limpopo--seshego"}
     assert sum(len(a["pins"]) for a in res["areas"]) == 62
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
@@ -160,12 +209,12 @@ def test_current_pins_make_their_areas_and_skip_held_places():
     assert len(lp["limpopo--lebowakgomo"]["pins"]) == 2           # Mamaolo + Sekurung, same precinct
     assert len(lp["limpopo--polokwane"]["pins"]) == 2             # Peter Mokaba killing + PS3 leaks outage, same precinct
     assert all(len(a["pins"]) == 1 for k, a in lp.items() if k not in ("limpopo--lebowakgomo", "limpopo--polokwane"))
-    for k, a in lp.items():
-        holders = [pr["name"] for pr in a["precincts"] if pr["holds_pins"]]
-        if k == "limpopo--polokwane-2":                            # Seshego substation: area named after the nearest town
-            assert holders == ["Seshego"]
-        else:
-            assert holders == [a["name"].split(" (")[0]]
+    for a in lp.values():
+        assert [pr["name"] for pr in a["precincts"] if pr["holds_pins"]] == [a["name"].split(" (")[0]]
+    assert lp["limpopo--seshego"]["name"] == "Seshego (Limpopo)"
+    # No two areas share a label or a key anywhere.
+    names = [a["name"] for a in res["areas"]]
+    assert len(names) == len(set(names)) and not any(k.endswith("-2") for k in keys)
     # Owner decision, 22 Oct 2026: Giyani and Malamulele stay apart ("Apart"), recorded in the batch.
     assert "limpopo--giyani" in lp and "limpopo--malamulele" in lp
     batch = json.loads((ROOT / "docs" / "signals" / "limpopo-killings-2026-10-22.json").read_text())

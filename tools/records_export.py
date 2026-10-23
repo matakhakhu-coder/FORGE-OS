@@ -38,6 +38,7 @@ RECORD_FIELDS: tuple[str, ...] = (
     "short_id",
     "title",
     "province",
+    "stream",
     "incident_start",
     "incident_precision",
     "incident_event",
@@ -71,6 +72,7 @@ FIELD_HELP: dict[str, str] = {
     "short_id": "First 8 characters of the ID, as used in map links.",
     "title": "The pin's title on the map.",
     "province": "Province of the batch the pin was published in.",
+    "stream": "The map stream the pin is filed under, as named in the map's Streams panel: Crime & Security, Infrastructure, Priority Intelligence or Africa & World.",
     "incident_start": "When the incident happened or began, as best the reports allow (ISO 8601).",
     "incident_precision": "How exact incident_start is: time, approx_time, part_of_day or day.",
     "incident_event": "occurred = when it happened; found = when a body was found.",
@@ -108,6 +110,15 @@ CAVEATS: tuple[str, ...] = (
     "Reports can be wrong or change after publication. Check the source links "
     "before relying on any row.",
 )
+
+# Stream names as the map's Streams panel shows them. Must match
+# STREAM_LABELS in tools/publish.py (a test holds them together).
+STREAM_LABELS = {
+    "CRIME_INTEL": "Crime & Security",
+    "INFRASTRUCTURE": "Infrastructure",
+    "PRIORITY": "Priority Intelligence",
+    "GLOBAL": "Africa & World",
+}
 
 INDEPENDENCE_LABELS = {
     "single_report": "One report only",
@@ -253,6 +264,8 @@ def build_records(conn: sqlite3.Connection,
             continue
         if not isinstance(prov, dict) or prov.get("independence") not in INDEPENDENCE_LABELS:
             continue
+        if pin.get("stream") not in STREAM_LABELS:
+            continue
         try:
             lat, lng = round(float(pin["lat"]), 5), round(float(pin["lng"]), 5)
         except (KeyError, TypeError, ValueError):
@@ -285,6 +298,7 @@ def build_records(conn: sqlite3.Connection,
             "short_id": sid[:8],
             "title": title,
             "province": _clean(item["province"]),
+            "stream": STREAM_LABELS[pin["stream"]],
             "incident_start": _clean(checked.get("incident_start")),
             "incident_precision": _clean(checked.get("incident_precision")),
             "incident_event": _clean(checked.get("incident_event")),

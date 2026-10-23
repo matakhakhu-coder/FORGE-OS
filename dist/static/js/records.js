@@ -35,9 +35,10 @@
     return '\ufeff' + lines.join('\r\n') + '\r\n';
   }
 
-  /* Does one record pass the filters? f: {q, province, from, to, precision, independence, basis} */
+  /* Does one record pass the filters? f: {q, stream, province, from, to, precision, independence, basis} */
   function matches(r, f) {
     var day = String(r.incident_start || '').slice(0, 10);
+    if (f.stream && r.stream !== f.stream) return false;
     if (f.province && r.province !== f.province) return false;
     if (f.precision && r.map_precision !== f.precision) return false;
     if (f.independence && r.reporting_independence !== f.independence) return false;
@@ -45,7 +46,7 @@
     if (f.from && day < f.from) return false;
     if (f.to && day > f.to) return false;
     if (f.q) {
-      var hay = [r.title, r.province, r.location_described, r.incident_described,
+      var hay = [r.title, r.stream, r.province, r.location_described, r.incident_described,
                  r.outlets, r.statement_from, r.short_id].join(' ').toLowerCase();
       var words = String(f.q).toLowerCase().split(/\s+/).filter(Boolean);
       for (var i = 0; i < words.length; i++) if (hay.indexOf(words[i]) === -1) return false;
@@ -78,10 +79,12 @@
     var dlBtn = document.getElementById('rec-download-filtered');
     var shown = data.records.slice();
     var box = document.getElementById('rec-filter-box');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('#rec-streams [data-stream]'));
+    var streamSel = form.elements.stream;
 
     function read() {
       var v = function (n) { var el = form.elements[n]; return el ? String(el.value || '').trim() : ''; };
-      return { q: v('q'), province: v('province'), from: v('from'), to: v('to'),
+      return { q: v('q'), stream: v('stream'), province: v('province'), from: v('from'), to: v('to'),
                precision: v('precision'), independence: v('independence'), basis: v('basis'),
                sort: v('sort') || 'incident_desc' };
     }
@@ -101,8 +104,11 @@
         body.appendChild(tr);
       });
       countEl.textContent = 'Showing ' + shown.length + ' of ' + data.records.length + ' records';
-      var active = ['q', 'province', 'from', 'to', 'precision', 'independence', 'basis']
+      var active = ['q', 'stream', 'province', 'from', 'to', 'precision', 'independence', 'basis']
         .filter(function (k) { return f[k]; }).length;
+      tabs.forEach(function (t) {
+        t.setAttribute('aria-pressed', String(t.getAttribute('data-stream') === f.stream));
+      });
       var sum = box && box.querySelector('summary');
       if (sum) sum.firstChild.nodeValue = active ? 'Filter and sort (' + active + ' on)' : 'Filter and sort';
       emptyEl.hidden = shown.length !== 0;
@@ -116,6 +122,23 @@
     form.addEventListener('change', apply);
     form.addEventListener('submit', function (e) { e.preventDefault(); apply(); });
     form.addEventListener('reset', function () { setTimeout(apply, 0); });
+
+    // Stream tabs: one stream at a time, kept in step with the Stream filter.
+    // records.html?stream=Infrastructure opens on that stream.
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        if (streamSel) streamSel.value = t.getAttribute('data-stream');
+        apply();
+      });
+    });
+    try {
+      var want = new URLSearchParams(root.location.search).get('stream');
+      if (want && streamSel) {
+        for (var i = 0; i < streamSel.options.length; i++) {
+          if (streamSel.options[i].value.toLowerCase() === want.toLowerCase()) streamSel.value = streamSel.options[i].value;
+        }
+      }
+    } catch (e) { /* old browsers: start on all streams */ }
 
     dlBtn.addEventListener('click', function () {
       var csv = toCsv(fields, shown);
