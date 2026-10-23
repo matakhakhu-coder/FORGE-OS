@@ -1452,6 +1452,12 @@
      {%- endfor %}
      </div>
     </div>
+    {#- The slider's data (tools/record_charts.timeline_table): publish steps
+        and one compact row per record, no titles, places or sources.
+        static/js/record-charts.js only filters and draws it. #}
+    {%- if charts.total %}
+    <script type="application/json" id="gp-chart-data">{{ chart_table | tojson }}</script>
+    {%- endif %}
   </div>
 
   {# ── Entities panel ─────────────────────────────────────────────────────── #}

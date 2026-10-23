@@ -235,3 +235,127 @@ def test_publish_refuses_charts_that_disagree_with_records(tmp_path, monkeypatch
     monkeypatch.setattr(mod, "chart_total", lambda page: -1)
     with pytest.raises(SystemExit):
         _publish_to(tmp_path, monkeypatch, db_file)
+
+
+# ── Timeline table for the slider (interactive charts Batch 1) ──────────────────
+
+def test_timeline_one_step_per_publish_in_sa_time_order():
+    recs = [_rec("a" * 8 + "1", published_at="2026-10-20T22:30Z"),     # 21 Oct 00:30 SAST
+            _rec("b" * 8 + "1", published_at="2026-10-20T10:00Z"),
+            _rec("c" * 8 + "1", published_at="2026-10-20T10:00Z")]
+    t = rc.timeline_table(recs)
+    assert [s["at"] for s in t["steps"]] == ["2026-10-20T12:00+02:00", "2026-10-21T00:30+02:00"]
+    assert [s["label"] for s in t["steps"]] == ["20 Oct, 12:00 PM", "21 Oct, 12:30 AM"]
+    assert [s["total"] for s in t["steps"]] == [2, 3]
+    assert t["marks"] == [{"step": 0, "label": "20 Oct"}, {"step": 1, "label": "21 Oct"}]
+
+
+def test_timeline_record_without_publish_time_joins_the_last_step():
+    recs = [_rec("a1"), _rec("b1", published_at="")]
+    t = rc.timeline_table(recs)
+    assert t["steps"][-1]["label"] == "date added not recorded"
+    assert t["steps"][-1]["total"] == 2 and len(t["rows"]) == 2
+
+
+def test_timeline_table_reproduces_the_charts_at_every_step():
+    recs = [_rec(f"s{i:07d}", incident_start=f"2026-10-{1 + i % 9:02d}",
+                 incident_event="found" if i % 4 == 0 else "occurred",
+                 incident_date_basis=("report" if i % 7 == 0 else "later_step" if i % 11 == 0 else "incident"),
+                 published_at=f"2026-10-{18 + i % 4}T{8 + i % 3:02d}:00Z",
+                 stream=("A", "B", "")[i % 3], province=("Limpopo", "Gauteng")[i % 2])
+            for i in range(40)]
+    t = rc.timeline_table(recs)
+    by_step = {}
+    for k, st in enumerate(t["steps"]):
+        cut = [r for r in recs if rc._published_instant(r["published_at"]).isoformat(timespec="minutes") <= st["at"]]
+        by_step[k] = cut
+        got = rc.counts_from_table(t, k)
+        assert got["total"] == st["total"] == len(cut)
+        want = rc.chart_counts(cut)
+        inc, wi = got["incident"], _page(want, "incident")["data"]
+        assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (
+            wi["occurred"], wi["found"], wi["undated"], wi["later_step"])
+        wd = {d["date"]: d["count"] for d in wi["days"]}
+        assert inc["days"] == [wd.get(d, 0) for d in t["axes"]["incident_days"]]
+        for f in ("stream", "province"):
+            wr = {x["label"]: x["count"] for x in _page(want, f)["data"]["rows"]}
+            assert got[f] == [wr.get(lab, 0) for lab in t["axes"][f]]
+            assert sum(got[f]) == len(cut)
+        assert sum(inc["days"]) + inc["undated"] + inc["later_step"] == len(cut)
+        assert sum(got["added"]["days"]) + got["added"]["undated"] == len(cut)
+
+
+def _chart_table(html):
+    m = re.search(r'<script type="application/json" id="gp-chart-data">(.*?)</script>', html, re.S)
+    assert m, "chart table missing from the page"
+    return json.loads(m.group(1))
+
+
+def test_build_carries_the_timeline_table(built):
+    html = (built / "index.html").read_text()
+    payload = json.loads((built / "records.json").read_text())
+    recs = payload["records"]
+    t = _chart_table(html)
+    col = {c: i for i, c in enumerate(t["columns"])}
+    # one row per approved record, no duplicates
+    ids = [r[col["id"]] for r in t["rows"]]
+    assert len(ids) == len(set(ids)) == ALL_PINS == payload["count"]
+    assert set(ids) == {r["short_id"] for r in recs}
+    # steps: one per publish, in time order, in South African time
+    ats = [s["at"] for s in t["steps"]]
+    assert ats == sorted(ats) and len(ats) == len(set(ats))
+    assert all(a.endswith("+02:00") for a in ats)
+    assert len(t["steps"]) == len({r["published_at"] for r in recs})
+    totals = [s["total"] for s in t["steps"]]
+    assert totals == sorted(totals) and totals[-1] == ALL_PINS
+    # the last step reproduces today's four charts exactly
+    now = rc.counts_from_table(t, len(t["steps"]) - 1)
+    want = rc.chart_counts(recs)
+    wi = _page(want, "incident")["data"]
+    assert now["incident"]["days"] == [d["count"] for d in wi["days"]]
+    assert (now["incident"]["occurred"], now["incident"]["found"],
+            now["incident"]["undated"], now["incident"]["later_step"]) == (wi["occurred"], wi["found"],
+                                                                         wi["undated"], wi["later_step"])
+    assert now["added"]["days"] == [d["count"] for d in _page(want, "added")["data"]["days"]]
+    for f in ("stream", "province"):
+        assert now[f] == [x["count"] for x in _page(want, f)["data"]["rows"]]
+    # the printed charts are those counts too (no visible change)
+    sec = _section(html, "stream")
+    assert [int(n) for n in re.findall(r'<span class="gp-bar__n">(\d+)</span>', sec)] == now["stream"]
+
+
+def test_build_today_is_45_occurred_20_found_5_undated_2_later_steps(built):
+    t = _chart_table((built / "index.html").read_text())
+    inc = rc.counts_from_table(t, len(t["steps"]) - 1)["incident"]
+    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (45, 20, 5, 2)
+    assert len(t["steps"]) == 17
+
+
+def test_build_timeline_table_holds_no_record_text(built):
+    html = (built / "index.html").read_text()
+    raw = re.search(r'id="gp-chart-data">(.*?)</script>', html, re.S).group(1)
+    t = json.loads(raw)
+    assert t["columns"] == ["id", "step", "inc", "kind", "added", "stream", "province"]
+    for r in json.loads((built / "records.json").read_text())["records"]:
+        for text in (r["title"], r["location_described"], r["incident_described"], r["statement_from"],
+                     r["outlets"], r["signal_id"]):
+            if text and len(str(text)) > 3:
+                assert str(text) not in raw, text
+        for url in filter(None, (r["source_urls"] or "").split(" | ")):
+            assert url not in raw
+    assert "http" not in raw
+
+
+def test_publish_refuses_a_timeline_that_disagrees_with_records(tmp_path, monkeypatch):
+    import tools.record_charts as mod
+    conn, db_file = _imported(tmp_path, monkeypatch)
+    conn.close()
+    real = mod.timeline_table
+
+    def short(records, charts=None):
+        t = real(records, charts)
+        t["rows"] = t["rows"][:-1]
+        return t
+    monkeypatch.setattr(mod, "timeline_table", short)
+    with pytest.raises(SystemExit, match="timeline"):
+        _publish_to(tmp_path, monkeypatch, db_file)

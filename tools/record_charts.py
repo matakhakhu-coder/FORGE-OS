@@ -29,6 +29,14 @@ Which records go on the incident line comes from incident_date_basis
   * missing or anything else: "date not stated" (never plotted unclassified).
 A record with no readable date is counted under "date not stated" too. No
 record is ever dropped: every chart adds up to the Records page total.
+
+Timeline (the slider under the chart pages): timeline_table() writes a
+compact table the page script (publisher/static/js/record-charts.js) only
+filters and draws. One step per publish (one distinct published_at); one row
+per record with its short ID, the step that added it, and the same incident
+day/kind, added day, stream and province the charts above use, worked out by
+the same helpers. The axes (days and bar order) are today's, so they stay
+fixed while scrubbing. No titles, places, quotes or sources.
 """
 from __future__ import annotations
 
@@ -129,19 +137,34 @@ def _fill_days(counts: dict[date, dict]) -> list[date]:
     return [first + timedelta(days=i) for i in range((last - first).days + 1)]
 
 
+def incident_class(r: dict) -> tuple[date | None, str]:
+    """(day on the incident line or None, kind): kind is occurred, found,
+    undated ("date not stated") or later_step. The one rule for the line,
+    shared by the charts and the timeline table."""
+    basis = r.get("incident_date_basis")
+    if basis == "later_step":
+        return None, "later_step"
+    d = sa_date(r.get("incident_start")) if basis == "incident" else None
+    if d is None:
+        return None, "undated"
+    return d, ("found" if r.get("incident_event") == "found" else "occurred")
+
+
+def category_label(r: dict, field: str) -> str:
+    return (r.get(field) or "").strip() or "Not given"
+
+
 def _incident_series(records: list[dict]) -> dict:
     per_day: dict[date, Counter] = {}
     undated = later_step = 0
     for r in records:
-        basis = r.get("incident_date_basis")
-        if basis == "later_step":
+        d, kind = incident_class(r)
+        if kind == "later_step":
             later_step += 1
             continue
-        d = sa_date(r.get("incident_start")) if basis == "incident" else None
         if d is None:
             undated += 1
             continue
-        kind = "found" if r.get("incident_event") == "found" else "occurred"
         per_day.setdefault(d, Counter())[kind] += 1
     days = []
     for d in _fill_days(per_day):
@@ -202,7 +225,7 @@ def _added_series(records: list[dict]) -> dict:
 
 
 def _category_series(records: list[dict], field: str) -> dict:
-    c = Counter((r.get(field) or "").strip() or "Not given" for r in records)
+    c = Counter(category_label(r, field) for r in records)
     rows = [{"label": k, "count": v} for k, v in sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))]
     return {"rows": rows, "max": max([x["count"] for x in rows] or [0])}
 
@@ -233,3 +256,128 @@ def chart_total(page: dict) -> int:
     if "rows" in d:
         return sum(x["count"] for x in d["rows"])
     return sum(x["count"] for x in d["days"]) + d["undated"] + d.get("later_step", 0)
+
+
+# ── Timeline table for the slider (Batch 1 of the interactive charts) ─────────
+
+TABLE_COLUMNS = ("id", "step", "inc", "kind", "added", "stream", "province")
+
+
+def _published_instant(value) -> datetime | None:
+    text = str(value or "").strip()
+    if len(text) <= 10:
+        return None
+    try:
+        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return (dt if dt.tzinfo else dt.replace(tzinfo=SAST)).astimezone(SAST)
+
+
+def _step_label(dt: datetime) -> str:
+    h = dt.hour % 12 or 12
+    return f"{dt.day} {dt.strftime('%b')}, {h}:{dt.minute:02d} {'AM' if dt.hour < 12 else 'PM'}"
+
+
+def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
+    """The publish steps and one compact row per record, for the page script.
+
+    steps: one per distinct published_at, oldest first, in South African
+    time, each with the cumulative record total on the map by then. A record
+    with no readable published_at cannot be placed in time, so it joins the
+    last step ("on the map now"); no record is ever dropped.
+    axes: today's days and bar order (from chart_counts), fixed while
+    scrubbing."""
+    if charts is None:
+        charts = chart_counts(records)
+    pages = {p["id"]: p["data"] for p in charts["pages"]}
+    instants = sorted({i for i in (_published_instant(r.get("published_at")) for r in records) if i})
+    unplaced = any(_published_instant(r.get("published_at")) is None for r in records)
+    steps = [{"at": i.isoformat(timespec="minutes"), "label": _step_label(i), "day": i.date().isoformat()}
+             for i in instants]
+    if unplaced or (records and not steps):
+        steps.append({"at": None, "label": "date added not recorded", "day": None})
+    index = {i: k for k, i in enumerate(instants)}
+
+    rows = []
+    for r in sorted(records, key=lambda r: (str(r.get("published_at") or "~"), r.get("signal_id") or "")):
+        inst = _published_instant(r.get("published_at"))
+        d, kind = incident_class(r)
+        added = sa_date(r.get("published_at"))
+        rows.append([
+            (r.get("short_id") or str(r.get("signal_id") or "")[:8]),
+            index[inst] if inst is not None else len(steps) - 1,
+            d.isoformat() if d else None,
+            kind,
+            added.isoformat() if added else None,
+            category_label(r, "stream"),
+            category_label(r, "province"),
+        ])
+    per_step = Counter(row[1] for row in rows)
+    running = 0
+    for k, st in enumerate(steps):
+        running += per_step.get(k, 0)
+        st["total"] = running
+    marks, last_day = [], object()
+    for k, st in enumerate(steps):
+        if st["day"] and st["day"] != last_day:
+            d = date.fromisoformat(st["day"])
+            marks.append({"step": k, "label": _day_label(d)})
+        last_day = st["day"]
+    inc = pages.get("incident", {})
+    return {
+        "total": len(records),
+        "columns": list(TABLE_COLUMNS),
+        "steps": steps,
+        "marks": marks,
+        "rows": rows,
+        "axes": {
+            "incident_days": [x["date"] for x in inc.get("days", [])],
+            "incident_max": inc.get("max", 0),
+            "added_days": [x["date"] for x in pages.get("added", {}).get("days", [])],
+            "added_max": pages.get("added", {}).get("max", 0),
+            "stream": [x["label"] for x in pages.get("stream", {}).get("rows", [])],
+            "stream_max": pages.get("stream", {}).get("max", 0),
+            "province": [x["label"] for x in pages.get("province", {}).get("rows", [])],
+            "province_max": pages.get("province", {}).get("max", 0),
+        },
+        "line": {k: inc.get("line", {}).get(k) for k in ("w", "h", "x0", "x1")} | {
+            "top": LINE_PAD_TOP, "bottom": LINE_H - LINE_PAD_BOTTOM},
+    }
+
+
+def counts_from_table(table: dict, step: int) -> dict:
+    """Recount the charts from the table at one step (what the page script
+    does). Used by the tests to prove the table reproduces chart_counts."""
+    col = {c: i for i, c in enumerate(table["columns"])}
+    ax = table["axes"]
+    live = [r for r in table["rows"] if r[col["step"]] <= step]
+    inc = {d: {"occurred": 0, "found": 0} for d in ax["incident_days"]}
+    undated = later = 0
+    for r in live:
+        k = r[col["kind"]]
+        if k == "later_step":
+            later += 1
+        elif k == "undated":
+            undated += 1
+        else:
+            inc[r[col["inc"]]][k] += 1
+    added = {d: 0 for d in ax["added_days"]}
+    added_undated = 0
+    for r in live:
+        if r[col["added"]] is None:
+            added_undated += 1
+        else:
+            added[r[col["added"]]] += 1
+    out = {
+        "total": len(live),
+        "incident": {"days": [inc[d]["occurred"] + inc[d]["found"] for d in ax["incident_days"]],
+                     "occurred": sum(v["occurred"] for v in inc.values()),
+                     "found": sum(v["found"] for v in inc.values()),
+                     "undated": undated, "later_step": later},
+        "added": {"days": [added[d] for d in ax["added_days"]], "undated": added_undated},
+    }
+    for f in ("stream", "province"):
+        c = Counter(r[col[f]] for r in live)
+        out[f] = [c.get(lab, 0) for lab in ax[f]]
+    return out

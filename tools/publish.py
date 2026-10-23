@@ -1255,7 +1255,7 @@ def _build_dist(
     from tools.records_export import (
         CAVEATS, FIELD_HELP, RECORD_FIELDS, build_records, data_version, write_records,
     )
-    from tools.record_charts import chart_counts, chart_total
+    from tools.record_charts import chart_counts, chart_total, timeline_table
     rec_version = data_version(ROOT)
     records = build_records(conn, index_path=CHECKED_INDEX, version=rec_version)
     charts = chart_counts(records)
@@ -1263,6 +1263,13 @@ def _build_dist(
         if chart_total(page) != len(records):
             raise SystemExit(f"[publish] chart '{page['id']}' counts {chart_total(page)} "
                              f"records, the Records page has {len(records)}")
+    # The slider's table (one row per record, one step per publish): it must
+    # hold every record, and its last step must be the Records page total.
+    chart_table = timeline_table(records, charts)
+    last_total = chart_table["steps"][-1]["total"] if chart_table["steps"] else 0
+    if len(chart_table["rows"]) != len(records) or last_total != len(records):
+        raise SystemExit(f"[publish] chart timeline holds {len(chart_table['rows'])} rows and ends at "
+                         f"{last_total} records, the Records page has {len(records)}")
 
     # Single render — index.html is the map shell; every other screen (Wire
     # archive, Streams, Cases, Graph, Entities, Watchlist) is an overlay panel
@@ -1282,6 +1289,7 @@ def _build_dist(
             stream_labels=STREAM_LABELS,
             stream_counts=stream_counts,
             charts=charts,
+            chart_table=chart_table,
             chart_caveat=CAVEATS[0],
             generated_at=now_str,
             **rev,
