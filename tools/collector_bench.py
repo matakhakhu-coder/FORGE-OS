@@ -190,6 +190,11 @@ def _outcome(stream: str, timestamp: str, meta: dict) -> dict:
         "court_step": bool(meta.get("court_step") or meta.get("older_conduct") or meta.get("pi_kind") == "court"),
         "event_key": meta.get("event_key") or meta.get("merge_key"),
         "stream_reason": meta.get("stream_reason"),
+        # Batch 5: what the story check reads
+        "lat": lc.get("lat"),
+        "lng": lc.get("lng"),
+        "infra_event_type": meta.get("infra_event_type"),
+        "infra_kind": meta.get("infra_kind"),
     }
 
 
