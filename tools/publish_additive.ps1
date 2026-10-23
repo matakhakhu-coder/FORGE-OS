@@ -7,14 +7,22 @@
 # Both are restored together, so the charts stay frozen, still matching the frozen
 # records. They only change in a normal publish (tools/publish.py --deploy).
 #
+# New files are listed with git ls-files and the repo's own .gitignore files, not
+# git status: a machine-wide git ignore that lists dist/ hides them from git status
+# (the same thing that made plain `git add dist/` fail in tools/publish.py --deploy).
+#
 # Run from anywhere:  powershell -File tools\publish_additive.ps1
 
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path $PSScriptRoot -Parent)   # tools\ -> repo root
 
-if (git status --short dist) {
+function Get-NewDistFiles { git ls-files --others --exclude-per-directory=.gitignore -- dist }
+
+$changed = git status --short --untracked-files=no dist
+$new = Get-NewDistFiles
+if ($changed -or $new) {
     Write-Host "dist/ has uncommitted changes. Commit or restore them first, then re-run."
-    git status --short dist
+    $changed; $new
     exit 1
 }
 
@@ -26,8 +34,8 @@ Write-Host "--- restoring the frozen front end ---"
 git restore dist
 Write-Host "Map, records and Graph charts are back to the committed versions (charts not refreshed)."
 
-Write-Host "--- new files left under dist/ (review, then git add only the ones you want) ---"
-git status --short dist
+Write-Host "--- new files left under dist/ (review, then git add -f only the ones you want) ---"
+Get-NewDistFiles
 Write-Host ""
 Write-Host "Expect the article page and the case page. Entity pages named after unrelated people"
 Write-Host "are build leftovers: do not add them."

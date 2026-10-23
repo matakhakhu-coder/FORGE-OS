@@ -18,10 +18,17 @@ Dates used:
     (incident_event = "found"). It is never the report date.
   * added to the map: published_at (UTC in the pin files), converted to
     South African time before the date is taken.
-A record with no readable date is counted under "date not stated" and never
-dropped. So are the pins in REPORT_DATED: their incident_start holds the
-date of the report or notice because the source never says when the
-incident began, and the pin file says so only in its prose.
+Which records go on the incident line comes from incident_date_basis
+(docs/signals/incident-dates.json, via tools/records_export.py):
+  * incident: on the line, on the day of incident_start;
+  * report: incident_start is the report or notice date because the source
+    never says when it happened, so it counts as "date not stated";
+  * later_step: incident_start is an arrest, charge or court date in an older
+    case, so it is counted apart ("later step in an older case") and never
+    put on the day of that later step;
+  * missing or anything else: "date not stated" (never plotted unclassified).
+A record with no readable date is counted under "date not stated" too. No
+record is ever dropped: every chart adds up to the Records page total.
 """
 from __future__ import annotations
 
@@ -42,7 +49,8 @@ CHART_PAGES: tuple[dict, ...] = (
         "kind": "line",
         "caption": ("The date it happened, or the date a body was found. Never the report date: "
                     "where a report gives only that, the record is counted as date not stated. "
-                    "Days with no records show as zero."),
+                    "An arrest, charge or court step in an older case is counted apart, not on the "
+                    "day of that step. Days with no records show as zero."),
     },
     {
         "id": "added",
@@ -70,19 +78,6 @@ CHART_PAGES: tuple[dict, ...] = (
 )
 
 UNDATED = "date not stated"
-
-# Pins whose incident_start is the report or notice date, because the
-# source does not say when the incident started (each pin's
-# incident_described says so). The pin files have no field for this, so
-# they are listed here; a new pin like them needs adding by hand until the
-# pin format records it. Checked against the 72 open records at 964e97b.
-REPORT_DATED = frozenset({
-    "736aae9c-e6de-5bb2-acb1-4fb32bb23c99",   # "The pin date is the report date"
-    "09124894-bed2-5f4e-bd80-e3f7b162ff59",   # "The pin date is the report date"
-    "b5342d21-a1b8-5abf-8bd6-954123f57973",   # start given only as "about" in a resident's account; date is the notice
-    "34ab4d0c-f76b-5775-9f43-faf729c21de4",   # "start of the breakdown not stated"
-    "b2ec397b-458f-55c5-9882-65064085e1be",   # "the day the pump station was stopped is not stated"
-})
 
 # Line chart drawing box (SVG viewBox units).
 LINE_W, LINE_H, LINE_PAD_X, LINE_PAD_TOP, LINE_PAD_BOTTOM = 320, 190, 24, 14, 26
@@ -136,9 +131,13 @@ def _fill_days(counts: dict[date, dict]) -> list[date]:
 
 def _incident_series(records: list[dict]) -> dict:
     per_day: dict[date, Counter] = {}
-    undated = 0
+    undated = later_step = 0
     for r in records:
-        d = None if r.get("signal_id") in REPORT_DATED else sa_date(r.get("incident_start"))
+        basis = r.get("incident_date_basis")
+        if basis == "later_step":
+            later_step += 1
+            continue
+        d = sa_date(r.get("incident_start")) if basis == "incident" else None
         if d is None:
             undated += 1
             continue
@@ -152,7 +151,8 @@ def _incident_series(records: list[dict]) -> dict:
                      "count": c["occurred"] + c["found"]})
     occurred = sum(x["occurred"] for x in days)
     found = sum(x["found"] for x in days)
-    out = {"days": days, "undated": undated, "occurred": occurred, "found": found,
+    out = {"days": days, "undated": undated, "later_step": later_step,
+           "occurred": occurred, "found": found,
            "max": max([x["count"] for x in days] or [0])}
     out["line"] = _line_geometry(days, out["max"])
     return out
@@ -232,4 +232,4 @@ def chart_total(page: dict) -> int:
     d = page["data"]
     if "rows" in d:
         return sum(x["count"] for x in d["rows"])
-    return sum(x["count"] for x in d["days"]) + d["undated"]
+    return sum(x["count"] for x in d["days"]) + d["undated"] + d.get("later_step", 0)

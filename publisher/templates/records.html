@@ -211,7 +211,9 @@
           <td data-label="Stream"><span class="rec-stream rec-stream--{{ stream_slug(r.stream) }}"><span class="rec-dot rec-dot--{{ stream_slug(r.stream) }}" aria-hidden="true"></span>{{ r.stream }}</span></td>
           <td data-label="When">
             {{ r.incident_described or r.incident_start[:10] }}
-            {% if r.incident_event == 'found' %}<span class="rec-tag">time body was found</span>{% endif %}
+            {% if r.incident_date_basis == 'report' %}<span class="rec-tag">report date: when it happened is not stated</span>
+            {% elif r.incident_date_basis == 'later_step' %}<span class="rec-tag">later step in an older case</span>
+            {% elif r.incident_event == 'found' %}<span class="rec-tag">time body was found</span>{% endif %}
             {% if r.reported_at %}<span class="rec-sub">Earliest report found: {{ r.reported_at[:10] }}</span>{% endif %}
           </td>
           <td data-label="Map point">

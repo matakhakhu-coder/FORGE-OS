@@ -1459,10 +1459,63 @@ def _run(args: list[str], cwd: str, **kwargs) -> subprocess.CompletedProcess:
     return subprocess.run(args, cwd=cwd, check=True, **kwargs)
 
 
+DEPLOY_PATHS = ("dist", "vercel.json")
+DEPLOY_BRANCH = "main"
+
+
+class DeployRefused(Exception):
+    """The working copy is not in a state where a publish commit is safe."""
+
+
+def _git_out(args: list[str], cwd: str) -> str:
+    return subprocess.run(["git", *args], cwd=cwd, check=True,
+                          capture_output=True, text=True).stdout
+
+
+def _in_deploy_paths(path: str) -> bool:
+    return path == "vercel.json" or path.startswith("dist/")
+
+
+def _deploy_preflight(cwd: str, fetch: bool = True) -> None:
+    """Refuse before staging anything when a publish commit could carry
+    someone else's work or be rejected by the remote."""
+    branch = _git_out(["rev-parse", "--abbrev-ref", "HEAD"], cwd).strip()
+    if branch != DEPLOY_BRANCH:
+        raise DeployRefused(f"on branch {branch!r}; publish only from {DEPLOY_BRANCH} "
+                            f"(Vercel deploys {DEPLOY_BRANCH})")
+    staged = [p for p in _git_out(["diff", "--cached", "--name-only"], cwd).splitlines() if p]
+    other = [p for p in staged if not _in_deploy_paths(p)]
+    if other:
+        raise DeployRefused("other changes are already staged and would ride in the publish "
+                            "commit: " + ", ".join(other[:10]))
+    if fetch:
+        subprocess.run(["git", "fetch", "--quiet", "origin", DEPLOY_BRANCH], cwd=cwd, check=True)
+        behind = subprocess.run(["git", "merge-base", "--is-ancestor", f"origin/{DEPLOY_BRANCH}", "HEAD"],
+                                cwd=cwd).returncode
+        if behind != 0:
+            raise DeployRefused(f"origin/{DEPLOY_BRANCH} has commits this copy does not; "
+                                f"run git pull, then publish again")
+
+
+def _stage_deploy_files(cwd: str) -> list[str]:
+    """Stage the built site: every change to tracked files under dist/ and
+    vercel.json, plus new files there. New files are judged by the repo's own
+    .gitignore files only, not by a machine-wide ignore list: a global
+    ignore that lists dist/ is what made plain `git add dist/` fail."""
+    _run(["git", "add", "--update", "--", *DEPLOY_PATHS], cwd=cwd)
+    new = [p for p in _git_out(["ls-files", "-z", "--others",
+                                "--exclude-per-directory=.gitignore", "--", *DEPLOY_PATHS],
+                               cwd).split("\0") if p]
+    for i in range(0, len(new), 200):
+        _run(["git", "add", "--force", "--", *new[i:i + 200]], cwd=cwd)
+    return new
+
+
 def _git_deploy(now_str: str) -> None:
     """
-    Stages dist/ on the current branch (main), commits, and pushes.
+    Stages dist/ and vercel.json on main, commits only those, and pushes.
     Vercel watches main and auto-deploys when it sees dist/ change.
+    Refuses (exit 4) off main, behind origin/main, or with other staged work.
     """
     cwd = str(ROOT)
     import os as _os
@@ -1474,7 +1527,14 @@ def _git_deploy(now_str: str) -> None:
         print("[deploy] blocked: set FORGE_ALLOW_PUBLISH=1 to allow git push")
         return
 
-    _run(["git", "add", "dist/", "vercel.json"], cwd=cwd)
+    try:
+        _deploy_preflight(cwd)
+    except DeployRefused as exc:
+        print(f"[deploy] REFUSED: {exc}. dist/ is built but nothing was committed or pushed.")
+        raise SystemExit(4)
+    new_files = _stage_deploy_files(cwd)
+    if new_files:
+        print(f"[deploy] {len(new_files)} new file(s) under dist/ staged")
 
     has_changes = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
@@ -1487,7 +1547,7 @@ def _git_deploy(now_str: str) -> None:
 
     ts = now_str.replace(" UTC", "")
     _run(["git", "commit", "-m", f"publish: {ts}"], cwd=cwd)
-    _run(["git", "push", "origin", "HEAD"], cwd=cwd)
+    _run(["git", "push", "origin", f"HEAD:{DEPLOY_BRANCH}"], cwd=cwd)
     print("[deploy] Pushed to origin/main")
 
     if not VERCEL_DEPLOY_HOOK:
@@ -1693,8 +1753,18 @@ def _checked_guard_before(conn):
         print(f"[publish] Fix: add each one with a level ({', '.join(PRECISION_LEVELS)}) "
               f"and uncertainty_m, from the pin's location note")
         raise CheckedGuardError(2)
+    from tools import incident_dates as _idates
+    date_problems = _idates.problems(cs.active, CHECKED_INDEX.parent / "incident-dates.json")
+    if date_problems:
+        print(f"[publish] REFUSED: {len(date_problems)} checked pin(s) have no valid entry in "
+              f"docs/signals/incident-dates.json:")
+        for p in date_problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] Fix: say what each pin's incident_start stands for "
+              f"({', '.join(_idates.BASES)}); see tools/incident_dates.py")
+        raise CheckedGuardError(2)
     print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted, "
-          f"all with source provenance and precision")
+          f"all with source provenance, precision and an incident-date basis")
     return cs
 
 

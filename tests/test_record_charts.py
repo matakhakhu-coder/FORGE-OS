@@ -23,7 +23,7 @@ from tools import record_charts as rc  # noqa: E402
 
 def _rec(sid, **over):
     r = {"signal_id": sid, "incident_start": "2026-10-05", "incident_event": "occurred",
-         "published_at": "2026-10-20T10:00Z", "stream": "Violent crime", "province": "Limpopo"}
+         "incident_date_basis": "incident", "published_at": "2026-10-20T10:00Z", "stream": "Violent crime", "province": "Limpopo"}
     r.update(over)
     return r
 
@@ -82,21 +82,34 @@ def test_missing_dates_are_counted_not_dropped_or_guessed():
 
 
 def test_report_dated_pins_are_not_put_on_the_incident_line():
-    sid = next(iter(rc.REPORT_DATED))
-    recs = [_rec("a", incident_start="2026-10-02"), _rec(sid, incident_start="2026-10-09")]
+    recs = [_rec("a", incident_start="2026-10-02"),
+            _rec("r", incident_start="2026-10-09", incident_date_basis="report")]
     charts = rc.chart_counts(recs)
     inc = _page(charts, "incident")["data"]
     assert [d["date"] for d in inc["days"]] == ["2026-10-02"]
-    assert inc["undated"] == 1
+    assert (inc["undated"], inc["later_step"]) == (1, 0)
     # it still counts everywhere else
     assert sum(d["count"] for d in _page(charts, "added")["data"]["days"]) == 2
 
 
-def test_report_dated_list_matches_the_committed_records():
-    payload = json.loads((ROOT / "dist" / "records.json").read_text())
-    by_id = {r["signal_id"]: r for r in payload["records"]}
-    for sid in rc.REPORT_DATED:
-        assert sid in by_id, sid
+def test_later_step_is_counted_apart_never_on_the_day_of_the_step():
+    # a charge laid on 21 Oct in a case from July: not an incident on 21 Oct
+    recs = [_rec("a", incident_start="2026-10-02"),
+            _rec("c", incident_start="2026-10-21", incident_date_basis="later_step")]
+    charts = rc.chart_counts(recs)
+    inc = _page(charts, "incident")["data"]
+    assert [d["date"] for d in inc["days"]] == ["2026-10-02"]
+    assert (inc["undated"], inc["later_step"], inc["occurred"]) == (0, 1, 1)
+    for p in charts["pages"]:
+        assert rc.chart_total(p) == 2, p["id"]
+
+
+@pytest.mark.parametrize("basis", [None, "", "guess"])
+def test_unclassified_date_is_never_plotted(basis):
+    r = _rec("u", incident_start="2026-10-09")
+    r["incident_date_basis"] = basis
+    inc = _page(rc.chart_counts([r]), "incident")["data"]
+    assert inc["days"] == [] and inc["undated"] == 1
 
 
 def test_added_by_day_is_published_at_in_sa_time():
@@ -167,9 +180,12 @@ def test_build_charts_match_records_json(built):
     inc = _page(expected, "incident")["data"]
     assert sec.count('<circle class="gp-line__pt"') == len(inc["days"])
     assert f'{inc["occurred"]} occurred' in sec
-    assert inc["occurred"] + inc["found"] + inc["undated"] == ALL_PINS
-    assert inc["undated"] == len(rc.REPORT_DATED & {r["signal_id"] for r in payload["records"]})
+    assert inc["occurred"] + inc["found"] + inc["undated"] + inc["later_step"] == ALL_PINS
+    bases = [r["incident_date_basis"] for r in payload["records"]]
+    assert inc["undated"] == bases.count("report")
+    assert inc["later_step"] == bases.count("later_step")
     assert f'{inc["undated"]} date not stated' in sec
+    assert f'{inc["later_step"]} later step in an older case' in sec
 
 
 def test_build_charts_hold_no_record_text(built):

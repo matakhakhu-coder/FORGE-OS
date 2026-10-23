@@ -11,7 +11,8 @@ only when all of these hold:
     file match the pin as it is now;
   * the database row for it is a published, reviewed, hand-checked signal
     (so a pin that never reached the map is never listed); and
-  * it has a valid precision entry and a source-provenance entry.
+  * it has a valid precision entry, a source-provenance entry and a valid
+    incident-date entry (docs/signals/incident-dates.json).
 
 Every value comes from an explicit allowlist (RECORD_FIELDS). Nothing is
 read from private/, from the database's raw or unreviewed rows, from
@@ -42,6 +43,7 @@ RECORD_FIELDS: tuple[str, ...] = (
     "incident_start",
     "incident_precision",
     "incident_event",
+    "incident_date_basis",
     "incident_described",
     "reported_at",
     "location_described",
@@ -76,6 +78,10 @@ FIELD_HELP: dict[str, str] = {
     "incident_start": "When the incident happened or began, as best the reports allow (ISO 8601).",
     "incident_precision": "How exact incident_start is: time, approx_time, part_of_day or day.",
     "incident_event": "occurred = when it happened; found = when a body was found.",
+    "incident_date_basis": ("What incident_start stands for. incident = when it happened or began (or was found); "
+                            "report = the sources never say when it happened, so it is the report or notice date; "
+                            "later_step = an arrest, charge or court date in an older case, whose earlier date "
+                            "is in incident_described."),
     "incident_described": "The incident time in words, with who gave it.",
     "reported_at": "Date of the earliest report found (not proven to be the first).",
     "location_described": "Where the reports place it, and what the map point marks.",
@@ -242,6 +248,8 @@ def build_records(conn: sqlite3.Connection,
     precision = _read_json(signals_dir / "pin-precision.json").get("pins") or {}
     provenance = _read_json(signals_dir / "provenance.json").get("pins") or {}
     fact_bases = _read_json(signals_dir / "fact-bases.json").get("pins") or {}
+    from tools import incident_dates as idates
+    date_entries = _read_json(signals_dir / "incident-dates.json").get("pins") or {}
 
     tips = approved_tips(index_path, approvals_dir)
     on_map = _published_ids(conn)
@@ -265,6 +273,9 @@ def build_records(conn: sqlite3.Connection,
         if not isinstance(prov, dict) or prov.get("independence") not in INDEPENDENCE_LABELS:
             continue
         if pin.get("stream") not in STREAM_LABELS:
+            continue
+        date_basis = idates.basis_for(date_entries.get(sid), checked.get("incident_start"))
+        if date_basis is None:
             continue
         try:
             lat, lng = round(float(pin["lat"]), 5), round(float(pin["lng"]), 5)
@@ -302,6 +313,7 @@ def build_records(conn: sqlite3.Connection,
             "incident_start": _clean(checked.get("incident_start")),
             "incident_precision": _clean(checked.get("incident_precision")),
             "incident_event": _clean(checked.get("incident_event")),
+            "incident_date_basis": date_basis,
             "incident_described": _clean(checked.get("incident")),
             "reported_at": _clean(checked.get("reported_at")),
             "location_described": _clean(checked.get("location")),

@@ -1,0 +1,257 @@
+{
+  "schema": "forge.incident_dates",
+  "version": 1,
+  "about": "What each pin's incident_start stands for. Kept apart from the hand-checked pin files so those files, their fingerprints and the owner approvals stay untouched. Every active pin needs an entry here or tools/publish.py stops. See tools/incident_dates.py for the format.",
+  "bases": {
+    "incident": "incident_start is when it happened or began; with incident_event 'found', when a body or a fault was found.",
+    "report": "The sources never say when it happened, so incident_start is the report or notice date. The incident date is unknown and charts count it as date not stated.",
+    "later_step": "incident_start is a later step (arrest, charge, court appearance or finding) in an older case. The incident itself is on earlier_incident.date, quoted in evidence. Charts do not put it on the day of the later step."
+  },
+  "updated": "2026-10-24",
+  "classified": "24 Oct 2026, from each pin's incident text and its fact base; the earlier dates are the sources' own words, re-read on 24 Oct (Limpopo Mirror for Beitbridge).",
+  "pins": {
+    "7bce2be1-912e-48e2-9fd4-c79d1611c16f": {
+      "basis": "incident"
+    },
+    "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c": {
+      "basis": "incident"
+    },
+    "1a328ebb-28da-4b22-a7d6-f986d7852155": {
+      "basis": "incident"
+    },
+    "c2601d28-ecde-4cd0-b9e3-0c19230dafac": {
+      "basis": "incident"
+    },
+    "1b6fba13-ef88-48d7-8c17-16b4e7ba6650": {
+      "basis": "incident"
+    },
+    "0f037fc3-9de9-4e2b-aa1f-00feda269a58": {
+      "basis": "incident"
+    },
+    "fdb570fb-11a4-4430-8966-b973f1ae3ede": {
+      "basis": "incident"
+    },
+    "2a87ec3f-8763-416c-99cf-6c060faab5a1": {
+      "basis": "incident"
+    },
+    "21b2a9b0-66c3-4045-924d-963eaa85b4a1": {
+      "basis": "incident"
+    },
+    "582ea2d7-5473-4f40-af91-a7343d865d0b": {
+      "basis": "incident"
+    },
+    "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b": {
+      "basis": "incident"
+    },
+    "821f2edc-df43-41d1-ad4a-c18b8380809e": {
+      "basis": "incident"
+    },
+    "0c5e795f-330b-4302-97c2-812543262e8b": {
+      "basis": "incident"
+    },
+    "2a848e46-0a84-4d05-8efc-85e54c8aa636": {
+      "basis": "incident"
+    },
+    "530a09b2-015a-4ac3-996e-0183e8599dfa": {
+      "basis": "incident"
+    },
+    "03459a76-618b-4f7b-a538-c70eb89d5f99": {
+      "basis": "incident"
+    },
+    "2fdd9a56-11a3-4877-891a-bd46f152c44b": {
+      "basis": "incident"
+    },
+    "d09da7da-5705-46e3-8d10-5fef0db6c639": {
+      "basis": "incident"
+    },
+    "7acad00a-2081-462b-939c-be61b9d9b539": {
+      "basis": "incident"
+    },
+    "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d": {
+      "basis": "incident"
+    },
+    "218c685c-2720-486e-8fc9-9af1dd3c2d5a": {
+      "basis": "incident"
+    },
+    "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2": {
+      "basis": "incident"
+    },
+    "0d2ac747-e939-48fd-a116-3d99c1a95758": {
+      "basis": "incident"
+    },
+    "19a71c43-7584-4483-8cb1-9c71f12a9cb8": {
+      "basis": "incident"
+    },
+    "c64476ff-5b23-4307-944c-20c2a1a99835": {
+      "basis": "incident"
+    },
+    "318c89be-efbe-4c0d-a175-f423dcda6cc5": {
+      "basis": "incident"
+    },
+    "64b7adb5-4fc2-4184-b932-5ea0082259d7": {
+      "basis": "incident"
+    },
+    "efbf9e6d-2d5d-4591-8d0e-11294babd050": {
+      "basis": "incident"
+    },
+    "578b93c8-a253-535c-b26f-eba38181683b": {
+      "basis": "incident"
+    },
+    "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940": {
+      "basis": "incident"
+    },
+    "32b05eda-7499-59d2-b15c-4270972a7e49": {
+      "basis": "incident"
+    },
+    "a86ff098-691e-5407-83f0-8496db67b418": {
+      "basis": "incident"
+    },
+    "ba7824e3-f2de-56c4-914f-587aeba1639c": {
+      "basis": "incident"
+    },
+    "417613e8-bc4b-5e22-a9ce-49531d161f70": {
+      "basis": "incident"
+    },
+    "a3d91502-d7c3-5257-99ac-0c99e948b038": {
+      "basis": "incident"
+    },
+    "335b265d-2edd-54e2-969e-31e38733ff3a": {
+      "basis": "incident"
+    },
+    "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {
+      "basis": "incident"
+    },
+    "b842a3b5-eda7-5b97-bfe1-0448fe0272a5": {
+      "basis": "incident"
+    },
+    "048440e0-0be5-53d8-934a-1ba6233a0dfa": {
+      "basis": "incident"
+    },
+    "adf99019-941e-5dd0-9851-635da0a1e146": {
+      "basis": "incident"
+    },
+    "06219161-76ad-5b50-91d0-e58235427edf": {
+      "basis": "incident"
+    },
+    "49773d55-5704-5fcb-ac36-1f7eda5de54b": {
+      "basis": "incident"
+    },
+    "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {
+      "basis": "incident"
+    },
+    "0c9f233c-6c38-5da4-a660-c6776f575667": {
+      "basis": "incident"
+    },
+    "e0fa3712-df77-531e-a040-437dee019c3c": {
+      "basis": "incident"
+    },
+    "f217ddf4-4573-5fe1-995d-64f8da89a86d": {
+      "basis": "incident"
+    },
+    "0caff1cd-7cbe-51b2-aab4-ea3528b56f88": {
+      "basis": "incident"
+    },
+    "1f7dbda3-e019-52ae-8832-8cae6ab01b47": {
+      "basis": "incident"
+    },
+    "c889d991-c9d9-541d-9976-934dc46c385c": {
+      "basis": "incident"
+    },
+    "fb9450c3-dd3b-5402-8c4f-5e26f433d317": {
+      "basis": "incident"
+    },
+    "c99779f1-095f-5d2d-88c3-19f74e8c39d6": {
+      "basis": "incident"
+    },
+    "eaf77245-e677-5ccb-955d-764253f566d2": {
+      "basis": "incident"
+    },
+    "cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7": {
+      "basis": "incident"
+    },
+    "3fd7a79d-11b5-5499-a2c9-71ea8925984e": {
+      "basis": "incident"
+    },
+    "9188e545-8113-50c9-ac7e-98ac9a03f457": {
+      "basis": "incident"
+    },
+    "0710d74d-c67c-5899-95db-54e2f4fab60d": {
+      "basis": "incident"
+    },
+    "3679ce0d-0799-50c5-9fdf-76e85d662b52": {
+      "basis": "incident"
+    },
+    "a98cb800-3be8-586b-9997-84c9041cc35b": {
+      "basis": "incident"
+    },
+    "638ae62e-cbf5-53c3-95aa-4d36af9c2419": {
+      "basis": "incident"
+    },
+    "736aae9c-e6de-5bb2-acb1-4fb32bb23c99": {
+      "basis": "report",
+      "why": "Burst date not stated; the pin date is the Letaba Herald report date (19 Oct)."
+    },
+    "b2ec397b-458f-55c5-9882-65064085e1be": {
+      "basis": "report",
+      "why": "The day the pump station was stopped is not stated; the pin date is the municipal notice (8 Oct)."
+    },
+    "34ab4d0c-f76b-5775-9f43-faf729c21de4": {
+      "basis": "report",
+      "why": "Start of the breakdown not stated; the pin date is the Vhembe District Municipality notice (10 Oct)."
+    },
+    "b5342d21-a1b8-5abf-8bd6-954123f57973": {
+      "basis": "report",
+      "why": "Only a resident's 'about 11 Oct' for the start; the pin date is the municipal statement of 17 Oct."
+    },
+    "c10e0702-2833-5c8d-87f6-3be64471c858": {
+      "basis": "incident"
+    },
+    "4ce322ea-9266-55c2-a78c-eb366be96aa4": {
+      "basis": "incident"
+    },
+    "befc9ba6-05fd-5471-ac93-fc32257d498b": {
+      "basis": "later_step",
+      "step": "arrest",
+      "earlier_incident": {
+        "date": "2025-04-17",
+        "precision": "day"
+      },
+      "evidence": {
+        "source": "Review Online (police statement), 20 Oct",
+        "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/20/2-more-polokwane-airport-cops-still-being-sought-after-arrests/",
+        "quote": "the investigation stems from an incident on April 17, 2025, when a traffic officer stopped a 22-seater minibus on the N1 near Polokwane."
+      },
+      "why": "The pin date (19 Oct) is when the airport police officers were arrested; the 46 people went missing after the minibus stop on 17 Apr 2025."
+    },
+    "891844fa-852b-53f7-aad5-395f7bd4291f": {
+      "basis": "incident"
+    },
+    "09124894-bed2-5f4e-bd80-e3f7b162ff59": {
+      "basis": "report",
+      "why": "When the learners fell ill is not given; the pin date is the Department of Health report date (16 Oct)."
+    },
+    "b66b55ca-30bf-5b11-b40d-bcfd6627ffa6": {
+      "basis": "incident"
+    },
+    "42598400-2dc8-522f-b664-66d912756b03": {
+      "basis": "incident"
+    },
+    "f57ecd7b-1268-5ced-a789-b9d01a5a064d": {
+      "basis": "incident"
+    },
+    "931b443f-6722-507f-be64-a47bb4ef899f": {
+      "basis": "later_step",
+      "step": "charge",
+      "earlier_incident": {
+        "date": "2026-07-22",
+        "precision": "day"
+      },
+      "evidence": {
+        "source": "Limpopo Mirror, 22 Oct (case)",
+        "url": "https://www.limpopomirror.co.za/article/suliman-carrims-theft-and-fraud-case-postponed",
+        "quote": "was added as a co-accused in a case stemming from an incident on 22 July this year"
+      },
+      "why": "The pin date (21 Oct) is when the businessman was charged; the vehicles were intercepted at Beitbridge on 22 Jul 2026."
+    }
+  }
+}
