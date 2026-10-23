@@ -191,6 +191,210 @@ def _places() -> dict:
 _CAP_RUN = re.compile(r"\b([A-Z][\w'’\-]+(?:[ \-](?:[A-Z][\w'’\-]+|la|le|ga|ha|wa|of))*)")
 
 
+# ── Batch 4: look-alike names and foreign stories ───────────────────────────
+# South African places that share a name with a well-known foreign place.
+# Google News returns Newcastle (Australia, England), Belfast (Northern
+# Ireland), Charlestown (NSW, Rhode Island) and so on for these searches. A
+# namesake only counts as the South African place when the story itself shows
+# it is South African (sa_sign_for). Found by checking the gazetteer for SA
+# places named after foreign ones; the first four were seen in the 23 Oct
+# sweeps.
+NAMESAKES = {
+    "newcastle", "belfast", "charlestown", "dundee", "ladysmith", "richmond", "middelburg",
+    "wellington", "aberdeen", "bethlehem", "bedford", "heidelberg", "frankfort", "utrecht",
+    "ermelo", "balfour", "stanford", "darling", "queenstown", "devon", "adelaide", "napier",
+    "greytown", "howick", "margate", "ramsgate", "hamburg", "london", "windsor", "cambridge",
+    "berlin", "amsterdam", "kingston", "york", "perth", "hamilton", "stockton", "salem",
+    "sydney", "boston", "jamestown", "springfield", "clarens", "westville",
+}
+
+# Signs that a namesake story is foreign. Kept to place and institution words
+# that do not occur in South African copy about these towns.
+_NAMESAKE_FOREIGN = re.compile(
+    r"(\b(nsw|new south wales|australia\w*|queensland|tasmania|victoria police|hunter (region|valley|new england)|"
+    r"lake macquarie|maitland|wallsend|knights|nrl|nbl|a-league|tyne\w*|northumb\w*|gateshead|sunderland|"
+    r"premier league|newcastle united|magpies|toon|england|english|uk|britain|british|scotland|scottish|"
+    r"wales|welsh|ireland|irish|ulster|stormont|psni|garda\w*|sinn f[eé]in|loyalist\w*|uda|ira|nhs|"
+    r"council tax|ontario|canada|canadian|usa|u\.s\.|united states|rhode island|new zealand|county|"
+    r"germany|german|netherlands|dutch)\b|[£$€])", re.I)
+
+# Signs that cannot come from a foreign story about a namesake town.
+_SA_HARD = re.compile(
+    r"\b(south africa\w*|mzansi|kwazulu|kzn|natal|gauteng|limpopo|mpumalanga|free state|eastern cape|"
+    r"western cape|northern cape|north west province|saps|sandf|eskom|amajuba|umzinyathi|uthukela|"
+    r"nkangala|gert sibande|ehlanzeni)\b", re.I)
+# Softer SA words: also used abroad (Ontario has municipalities), so a foreign
+# sign outweighs them.
+_SA_SOFT_LOCAL = re.compile(r"\b(municipality|municipal|metro police|rti|ward councillor)\b", re.I)
+_RAND = re.compile(r"\bR ?\d[\d.,]* ?(million|billion|m|bn|k)\b|\bR ?\d{1,3}(?:[ ,]\d{3})+\b", re.I)
+
+# Local South African outlets the national outlet list in pi_signals lacks.
+_SA_LOCAL_OUTLET = re.compile(
+    r"\b(Newcastillian|Northern Natal|LNN|Central News South Africa|thenational\.co\.za|Ladysmith Gazette|"
+    r"Vryheid Herald|Highway Mail|Zululand Observer|South Coast Herald|Ridge Times|Middelburg Observer|"
+    r"Bethlehem Express|Express News)\b", re.I)
+
+# Outlets that cover one foreign city. A story from one of them is never South
+# African, whatever place names it carries. Google News puts the outlet after
+# the last " - " in the title and in source_name.
+FOREIGN_LOCAL_OUTLETS = re.compile(
+    r"^(Newcastle Herald|Newcastle Weekly|Newcastle Star|NBN News|ABC (News )?\(?Australia\)?|ABC iview|"
+    r"Chronicle Live|ChronicleLive|The Northern Echo|Northern Echo|Belfast Telegraph|Belfast Live|"
+    r"The Irish News|Irish News|BelfastLive|Transport for NSW|Nine\.com\.au|SMH\.com\.au|"
+    r"The Sydney Morning Herald|The Nightly|WAtoday|Durham Radio News|Durham Post|City of Newcastle|"
+    r"Newcastle City Council|The Mag|The Newcastle Pacer|(Greatest )?Hits Radio.*|The Chronicle Journal)$",
+    re.I)
+
+# Border towns whose name covers both sides of the border. A story about the
+# far side is not placed in South Africa. Beitbridge is not in the gazetteer
+# today, so this guard is dormant until a border place is added.
+BORDER_TWINS = {
+    "beitbridge": (
+        re.compile(r"\b(zimbabwe\w*|zrp|zimra|masvingo|matabeleland|dulivhadzimu|beitbridge (town|municipality|rural|district hospital)|"
+                   r"beitbridge, zimbabwe)\b", re.I),
+        re.compile(r"\b(musina|limpopo|saps|sandf|sars|border management authority|bma|n1|south african side)\b", re.I),
+    ),
+}
+
+
+def outlet_of(text: str, source_name: str = "") -> str:
+    """The outlet name: source_name, else the Google News title suffix."""
+    if source_name:
+        return source_name.strip()
+    if " - " in (text or ""):
+        return text.split(". ", 1)[0].rsplit(" - ", 1)[-1].strip()
+    return ""
+
+
+def foreign_outlet(text: str = "", source_name: str = "") -> bool:
+    """True when the outlet covers one foreign city (Newcastle Herald...)."""
+    out = outlet_of(text, source_name)
+    return bool(out and FOREIGN_LOCAL_OUTLETS.match(out))
+
+
+def _km(a: dict, b: dict) -> float:
+    from math import asin, cos, radians, sin, sqrt
+    la1, lo1, la2, lo2 = map(radians, (a["lat"], a["lng"], b["lat"], b["lng"]))
+    h = sin((la2 - la1) / 2) ** 2 + cos(la1) * cos(la2) * sin((lo2 - lo1) / 2) ** 2
+    return 6371 * 2 * asin(sqrt(h))
+
+
+def _near_sa_place(text: str, p: dict, skip: str, km: float = 60) -> bool:
+    """True when the text names another gazetteer place near ``p`` (a
+    suburb or neighbouring town), other than look-alike names."""
+    idx = _places()
+    for cand in _candidates(text):
+        key = _fold(cand).strip("'’-")
+        if key == skip or key in NAMESAKES or key in _AMBIGUOUS or len(key) < 4:
+            continue
+        for q in idx.get(key, []):
+            if q is not p and _km(p, q) <= km:
+                return True
+    return False
+
+
+def sa_sign_for(text: str, p: dict, key: str = "") -> bool:
+    """True when a story naming the look-alike place ``p`` shows it is about
+    the South African one: the province or another SA marker, rands, a
+    neighbouring SA place, or a South African outlet, and no foreign sign
+    outweighs a soft marker."""
+    if not text:
+        return False
+    if foreign_outlet(text):
+        return False
+    hard = bool(_SA_HARD.search(text) or _RAND.search(text)
+                or _near_sa_place(text, p, key or _fold(p.get("name", ""))))
+    if hard:
+        return True
+    from forage.collectors import pi_signals as _pi  # lazy: pi_signals imports this module
+    soft = bool(_pi._SA.search(text) or _pi._SA_PLACES.search(text)
+                or _pi._SA_OUTLET.search(outlet_of(text) or "") or _SA_LOCAL_OUTLET.search(text)
+            or _SA_SOFT_LOCAL.search(text))
+    foreign = bool(_NAMESAKE_FOREIGN.search(text) or _pi._FOREIGN.search(text))
+    return soft and not foreign
+
+
+def _border_far_side(text: str, key: str) -> bool:
+    twin = BORDER_TWINS.get(key)
+    if not twin:
+        return False
+    far, near = twin
+    return bool(far.search(text) and not near.search(text))
+
+
+def _gaz_place_for(key: str) -> Optional[dict]:
+    """The biggest gazetteer place with this folded name."""
+    ps = _places().get(key) or []
+    return max(ps, key=lambda p: p.get("population") or 0) if ps else None
+
+
+def query_town(query: str) -> Optional[dict]:
+    """The town a town keyword search is about ("Musina protest" -> Musina).
+    The user named the town, so look-alike names are taken as the SA place."""
+    for cand in _candidates(query or ""):
+        key = _fold(cand).strip("'’-")
+        if key in _AMBIGUOUS or len(key) < 4:
+            continue
+        p = _gaz_place_for(key)
+        if p:
+            return {**p, "key": key}
+    return None
+
+
+def _names_key(text: str, key: str) -> bool:
+    return bool(re.search(r"\b" + re.escape(key) + r"\b", _fold(text or "")))
+
+
+def names_town(text: str, town: dict, km: float = 35) -> bool:
+    """True when the text names the town or a gazetteer place within ``km``
+    of it. A look-alike town name also needs a South African sign."""
+    key = town["key"]
+    if _names_key(text, key) and (key not in NAMESAKES or sa_sign_for(text, town, key)):
+        return True
+    idx = _places()
+    for cand in _candidates(text or ""):
+        k = _fold(cand).strip("'’-")
+        if k == key or k in _AMBIGUOUS or len(k) < 4 or k in NAMESAKES:
+            continue
+        if any(_km(town, q) <= km for q in idx.get(k, [])):
+            return True
+    return False
+
+
+# Countries far from the border. Border-town stories name Zimbabwe,
+# Mozambique, Botswana or Malawi routinely (Carrim's Malawi-bound cars at
+# Beitbridge), so neighbours are not here.
+_FAR_FOREIGN = re.compile(
+    r"\b(tunisia\w*|morocc\w*|egypt\w*|algeria\w*|libya\w*|united states|usa|america\w*|uk|britain|british|"
+    r"england|london|mexic\w*|colombia\w*|brazil\w*|india\w*|pakistan\w*|china|chinese|russia\w*|"
+    r"ukrain\w*|israel\w*|gaza|iran\w*|europe\w*|nigeria\w*|kenya\w*|ghana\w*|australia\w*|"
+    r"canada|canadian|philippines|italy|france|french|germany|spain|ireland|irish|afghan\w*|syria\w*)\b", re.I)
+
+
+def town_search_off_target(text: str, town: dict, km: float = 35, far_km: float = 80) -> Optional[str]:
+    """Why a town keyword search result is about somewhere else, or None.
+
+    Batch 4. A story is dropped only when it points elsewhere: it names the
+    look-alike town with no South African sign (Newcastle NSW), it names a
+    South African place more than ``far_km`` from the town and nothing near
+    it (Durban for "Musina protest"; Levubu, 40 km from Makhado, stays), or its headline names a far-off country and nothing
+    South African (Tunisia). A story that names no place is kept: Google News
+    headlines often omit the town (the Phiphidi and Schuinshoogte cases)."""
+    if names_town(text, town, km):
+        return None
+    key = town["key"]
+    if key in NAMESAKES and _names_key(text, key):
+        return "names a foreign place of the same name"
+    loc = locate(text)
+    if loc and _km(town, loc) > far_km:
+        return f"about {loc['place']}"
+    from forage.collectors import pi_signals as _pi  # lazy: pi_signals imports this module
+    title = (text or "").split(". ", 1)[0]
+    strong = bool(_pi._SA.search(text) or _pi._SA_PLACES.search(text) or _RAND.search(text))
+    if _FAR_FOREIGN.search(title) and not strong:
+        return "about another country"
+    return None
+
 def _candidates(text: str) -> list[str]:
     """Capitalised word runs and every 1-3 word sub-run of them."""
     out = []
@@ -200,6 +404,7 @@ def _candidates(text: str) -> list[str]:
             for i in range(0, len(words) - n + 1):
                 out.append(" ".join(words[i:i + n]))
     return out
+
 
 
 def locate(text: str, province: Optional[str] = None) -> Optional[dict]:
@@ -224,12 +429,16 @@ def locate(text: str, province: Optional[str] = None) -> Optional[dict]:
         key = _fold(cand).strip("'’-")
         if key in _AMBIGUOUS or len(key) < 4:
             continue
+        if _border_far_side(text, key):
+            continue  # Batch 4: the far side of a border town
         for p in idx.get(key, []):
             in_prov = p["province"] in named_provs
             pop = p.get("population") or 0
             big = pop >= 5000 or str(p.get("feature_code", "")).startswith(("PPLA", "PPLC"))
             if not in_prov and (named_provs or not big):
                 continue
+            if key in NAMESAKES and not sa_sign_for(text, p, key):
+                continue  # Batch 4: Newcastle NSW is not Newcastle KZN
             score = (2 if in_prov else 0) + len(key.split()) + min(pop, 500000) / 500000
             if best is None or score > best[0]:
                 best = (score, p, cand)

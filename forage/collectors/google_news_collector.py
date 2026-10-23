@@ -528,6 +528,24 @@ def infra_queries(province: str, max_towns: int = 20) -> list[str]:
     return q
 
 
+def blocked_outlet(item: dict) -> bool:
+    """Batch 4: outlets that cover one foreign city (Newcastle Herald,
+    Belfast Telegraph...) are dropped before a signal is built."""
+    return _infra.foreign_outlet(item.get("title", ""), item.get("source_name", ""))
+
+
+def keep_for_town(item: dict, query: str | None = None) -> bool:
+    """Batch 4: a town keyword search drops stories that are about somewhere
+    else. "Musina protest" also returns Durban and Tunisia protests;
+    "Newcastle murder" returns Newcastle NSW. Stories that name no place are
+    kept, and a query with no recognisable town keeps everything."""
+    town = _infra.query_town(query if query is not None else item.get("query", ""))
+    if not town:
+        return True
+    text = f"{item.get('title', '')} {_strip_html(item.get('description', ''))}"
+    return _infra.town_search_off_target(text, town) is None
+
+
 def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERIES,
                   keywords: list[str] | None = None,
                   dry_run: bool = False,
@@ -574,6 +592,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     all_signals: list[dict] = []
     total_articles = 0
     off_province = 0
+    foreign_dropped = 0
+    off_town = 0
     seen_ids: set[str] = set()
 
     for i, query in enumerate(queries):
@@ -598,10 +618,17 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         # query had a crime word. PI routing still sends a PI story that is
         # also a killing home to CRIME_INTEL as an escalation candidate.
         is_crime = False if query in pi_query_set else _is_crime_context(query)
+        town_run = bool(keywords) and not infra_province and not pi_query_set
 
         # Build signals from items
         for item in items:
             try:
+                if blocked_outlet(item):
+                    foreign_dropped += 1
+                    continue
+                if town_run and not keep_for_town(item, query):
+                    off_town += 1
+                    continue
                 if infra_province and not _infra.province_mentioned(
                         f"{item['title']} {_strip_html(item.get('description', ''))}", infra_province):
                     off_province += 1
@@ -622,6 +649,10 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     print(f"[gnews] Signals built: {len(all_signals)}")
     if infra_province:
         print(f"[gnews] Dropped {off_province} stories that name no place in {infra_province}")
+    if foreign_dropped:
+        print(f"[gnews] Dropped {foreign_dropped} stories from foreign local outlets")
+    if off_town:
+        print(f"[gnews] Dropped {off_town} town-search stories that name neither the town nor a place near it")
 
     # Stream distribution
     stream_counts: dict[str, int] = {}

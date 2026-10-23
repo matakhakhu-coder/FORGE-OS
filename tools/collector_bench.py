@@ -192,6 +192,11 @@ def _outcome(stream: str, timestamp: str, meta: dict) -> dict:
     }
 
 
+def _dropped(reason: str) -> dict:
+    """A story today's collector would not save. It is not a record."""
+    return {**_outcome("", "", {}), "stream": None, "dropped": reason}
+
+
 def recorded_outcome(row: dict) -> dict:
     """What the collector saved on 23 October."""
     return _outcome(row["stream"], row.get("timestamp") or "", row.get("metadata") or {})
@@ -221,6 +226,12 @@ def _replay_gnews(row: dict) -> dict:
         "pubdate": m.get("pubdate_raw", ""),
         "pubdate_parsed": row.get("timestamp") or "",
     }
+    # Batch 4: the collector drops some stories before building a signal.
+    # getattr keeps the bench runnable on code from before Batch 4.
+    if getattr(gnews, "blocked_outlet", None) and gnews.blocked_outlet(item):
+        return _dropped("foreign local outlet")
+    if run == "kw" and getattr(gnews, "keep_for_town", None) and not gnews.keep_for_town(item, query):
+        return _dropped("town search: about somewhere else")
     sig = gnews.build_signal(item, is_crime, province=province)
     return _outcome(sig["stream"], sig["timestamp"], json.loads(sig["metadata_json"] or "{}"))
 
@@ -320,6 +331,8 @@ def _share(flags: list[bool]) -> str:
 
 
 def score_case(case: dict, hits: list[dict], key: str) -> dict:
+    dropped = sum(1 for h in hits if h[key].get("dropped"))
+    hits = [h for h in hits if not h[key].get("dropped")]
     outs = [h[key] for h in hits]
     records = len(outs)
     res = {
@@ -334,6 +347,9 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
         "dates": sorted({o["date"] for o in outs if o["date"]}),
         "titles": sorted({(h.get("title") or "")[:140] for h in hits})[:12],
         "replay_errors": sum(1 for o in outs if o.get("replay_error")),
+        # Only present when the collector drops rows (Batch 4), so cards
+        # scored before Batch 4 stay comparable.
+        **({"dropped_by_collector": dropped} if dropped else {}),
     }
     area = re.compile(TOWNS[case["sweep"]]["area"], re.I)
     res["records_naming_area"] = sum(
@@ -401,7 +417,11 @@ def noise(rows: list[dict], key: str, meta: dict) -> dict:
                 "rows_naming_area": len(named),
                 "naming_area_in_window": len(inwin),
                 "naming_area_foreign_guess": len(fgn) if foreign else None,
-                "naming_area_streams": dict(sorted(Counter(r[key]["stream"] for r in named).items())),
+                "naming_area_dropped": sum(1 for r in named if r[key].get("dropped")),
+                "naming_area_foreign_kept": (sum(1 for r in fgn if not r[key].get("dropped"))
+                                             if foreign else None),
+                "naming_area_streams": dict(sorted(Counter(r[key]["stream"] for r in named
+                                                           if not r[key].get("dropped")).items())),
                 "naming_area_placed": sum(1 for r in named if r[key]["place"]),
             }
         out[town] = per_run
@@ -504,6 +524,10 @@ def to_markdown(card: dict) -> str:
             row = [r["id"], f"keep out ({r['rule']})", r["records"], streams, places, "-", "-",
                    {True: "yes", False: "no", None: "-"}.get(r.get("merged"), "-"), "-", r["status"]]
         lines.append("| " + " | ".join(str(x) for x in row) + " |")
+    dropped = [(r["id"], r.get("dropped_by_collector")) for r in card["cases"] if r.get("dropped_by_collector")]
+    if dropped:
+        lines += ["", "Saved rows today's collector would drop before saving (not counted as records): "
+                  + ", ".join(f"{i} {n}" for i, n in dropped) + "."]
     f = card.get("fidelity")
     if f:
         lines += ["", f"Replay fidelity: {f['same_stream']} of {f['rows']} rows got the same stream as saved, "

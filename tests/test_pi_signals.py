@@ -232,8 +232,12 @@ def test_death_toll_makes_a_killing_overlap():
 def test_foreign_headline_beats_sa_outlet_and_gazetteer():
     assert not pi.classify("Taiwan probes organised crime links to China - Daily Maverick")["is_pi"]
     assert not pi.classify("Plans for plaque to Belfast councillor shot dead by the UDA in 1981 on hold")["is_pi"]
-    # Belfast in Mpumalanga is still South African
-    assert pi.classify("Belfast man arrested for extortion of local shop owners")["is_pi"]
+    # Belfast in Mpumalanga is still South African when the story says so.
+    # Batch 4: a bare look-alike name with no South African sign no longer
+    # passes the SA check (it used to, which let Belfast NI and Newcastle NSW in).
+    assert pi.classify("Belfast man arrested for extortion of local shop owners, Mpumalanga police say")["is_pi"]
+    assert pi.classify("Belfast man arrested for extortion of R50 000 from local shop owners")["is_pi"]
+    assert not pi.classify("Belfast man arrested for extortion of local shop owners")["is_pi"]
 
 
 def test_accused_of_killing_is_a_killing_overlap():
