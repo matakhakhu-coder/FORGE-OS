@@ -13,6 +13,18 @@
  * - Numbers never animate: counts and summaries show the step's whole number.
  * - prefers-reduced-motion: values jump with no movement.
  * - Draws at most once per screen refresh, and only while something moves.
+ *
+ * Tap to see the records (Batch 4): a bar, a day column, a day on the line
+ * (the whole day column is the target) or the summary's "date not stated" /
+ * "later step" counts open a short list under the chart of the records
+ * counted there at the slider's position. Titles come from the map's own pin
+ * data (window.forgeSignalInfo, matched by short ID); "Show on map" opens the
+ * map's event drawer (window.forgeOpenSignal). The table never holds titles.
+ *
+ * Stream switches (Batch 5): one stream state shared with the map's Streams
+ * panel (window.ZADStreams; a 'forge-streams' event when it changes), so the
+ * map and the charts never disagree. A row of switches sits above the line,
+ * Added and Provinces charts; on Streams, tapping a bar turns it on or off.
  */
 (function () {
   'use strict';
@@ -35,6 +47,24 @@
     return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
   function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function dayLabel(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] : String(iso);
+  }
+
+  /* ── Streams: shared with the map (Batch 5) ── */
+  var STREAMS = T.streams || [];
+  var KEY_OF = {};                         // stream label -> map stream key
+  STREAMS.forEach(function (s) { KEY_OF[s.label] = s.key; });
+  var VIS = {};
+  function readVisible() {
+    var v = (window.ZADStreams && window.ZADStreams.visible) ? window.ZADStreams.visible() : null;
+    STREAMS.forEach(function (s) { VIS[s.key] = v ? v[s.key] !== false : (VIS[s.key] !== false); });
+  }
+  readVisible();
+  function rowOn(r) { var k = KEY_OF[r[COL.stream]]; return !k || VIS[k] !== false; }
+  function streamsOn() { return STREAMS.filter(function (s) { return VIS[s.key] !== false; }); }
 
   /* ── Counting: filter the rows to one step (mirrors counts_from_table) ── */
   function counts(step) {
@@ -44,7 +74,7 @@
     var out = { total: 0, occurred: 0, found: 0, undated: 0, later_step: 0, added_undated: 0 };
     for (var i = 0; i < T.rows.length; i++) {
       var r = T.rows[i];
-      if (r[COL.step] > step) continue;
+      if (r[COL.step] > step || !rowOn(r)) continue;
       out.total++;
       var k = r[COL.kind];
       if (k === 'later_step') out.later_step++;
@@ -105,16 +135,72 @@
     if (!page) return;
     var items = page.querySelectorAll('.gp-bar');
     if (items.length !== values.length) return;
-    var tw = [], nums = [];
+    var tw = [], nums = [], rows = [];
+    var isSwitch = pid === 'stream' && STREAMS.length;
+    var ol = page.querySelector('.gp-bars');
+    if (ol) ol.classList.add('gp-bars--live');
     Array.prototype.forEach.call(items, function (li, i) {
       var fill = li.querySelector('.gp-bar__fill');
       nums.push(li.querySelector('.gp-bar__n'));
       tw.push(tween(values[i], function (v) { fill.style.width = (max ? v / max * 100 : 0).toFixed(2) + '%'; }));
+      rows.push(enhanceBar(li, pid, AX[pid][i], isSwitch));
     });
     renderers.push(function (c) {
       var vals = c[pid];
-      for (var i = 0; i < tw.length; i++) { tw[i].to = vals[i]; nums[i].textContent = vals[i]; }
+      for (var i = 0; i < tw.length; i++) {
+        tw[i].to = vals[i]; nums[i].textContent = vals[i];
+        var r = rows[i];
+        if (r.sw) {
+          var on = VIS[r.key] !== false;
+          r.li.classList.toggle('gp-bar--off', !on);
+          r.state.textContent = on ? '' : 'off';
+          r.sw.setAttribute('aria-checked', on ? 'true' : 'false');
+          r.sw.setAttribute('aria-label', r.label + ': ' + (on ? plural(vals[i], 'record') + ', on' : 'off') + ' (charts and map)');
+          r.count.setAttribute('aria-label', 'List the ' + plural(vals[i], 'record') + ' in ' + r.label);
+        } else {
+          r.btn.setAttribute('aria-label', r.label + ': ' + plural(vals[i], 'record') + '. List them');
+        }
+      }
     });
+  }
+
+  // Bars become buttons (Batch 4): the label, bar and count move, unchanged,
+  // into a button that opens the list. On Streams (Batch 5) the label and bar
+  // are a switch for that stream and the count is the list button.
+  function enhanceBar(li, pid, label, isSwitch) {
+    var lab = li.querySelector('.gp-bar__lab'), track = li.querySelector('.gp-bar__track'),
+        n = li.querySelector('.gp-bar__n');
+    var out = { li: li, label: label };
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'gp-hit gp-bar__btn';
+    btn.appendChild(lab); btn.appendChild(track);
+    li.innerHTML = '';
+    if (isSwitch) {
+      out.key = KEY_OF[label];
+      li.className = 'gp-bar gp-bar--switch';
+      btn.setAttribute('role', 'switch');
+      out.state = document.createElement('span');
+      out.state.className = 'gp-bar__state';
+      lab.appendChild(out.state);
+      var count = document.createElement('button');
+      count.type = 'button';
+      count.className = 'gp-hit gp-bar__count';
+      count.appendChild(n);
+      li.appendChild(btn); li.appendChild(count);
+      out.sw = btn; out.count = count;
+      if (out.key) btn.addEventListener('click', function () { setStream(out.key, VIS[out.key] === false); });
+      else btn.disabled = true;
+      count.addEventListener('click', function () { openList(pid, label, count); });
+    } else {
+      li.className = 'gp-bar gp-bar--live';
+      btn.appendChild(n);
+      li.appendChild(btn);
+      out.btn = btn;
+      btn.addEventListener('click', function () { openList(pid, label, btn); });
+    }
+    pickTargets.push({ pid: pid, key: label, el: out.count || btn });
+    return out;
   }
 
   /* ── Columns (Added by day): grow up from the base ── */
@@ -123,18 +209,49 @@
     if (!page) return;
     var items = page.querySelectorAll('.gp-col');
     if (items.length !== NOW.added.length) return;
-    var max = AX.added_max, tw = [], nums = [];
+    var max = AX.added_max, tw = [], nums = [], btns = [];
     Array.prototype.forEach.call(items, function (li, i) {
       var bar = li.querySelector('.gp-col__bar');
       nums.push(li.querySelector('.gp-col__n'));
       tw.push(tween(NOW.added[i], function (v) { bar.style.height = (max ? v / max * 100 : 0).toFixed(2) + '%'; }));
+      // the column becomes a button (Batch 4); its parts move in unchanged
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'gp-hit gp-col__btn';
+      while (li.firstChild) btn.appendChild(li.firstChild);
+      li.appendChild(btn);
+      btns.push(btn);
+      var day = AX.added_days[i];
+      btn.addEventListener('click', function () { openList('added', day, btn); });
+      pickTargets.push({ pid: 'added', key: day, el: btn });
     });
+    // "date added not recorded" is its own list; printed only when there are any
     var undatedEl = page.querySelector('.gp-chart__summary');
+    if (!undatedEl) {
+      undatedEl = document.createElement('p');
+      undatedEl.className = 'gp-chart__summary';
+      undatedEl.hidden = true;
+      var scroll = page.querySelector('.gp-cols-scroll');
+      if (scroll) scroll.parentNode.insertBefore(undatedEl, scroll); else undatedEl = null;
+    }
+    var undatedBtn = null;
+    if (undatedEl) {
+      undatedEl.textContent = '';
+      undatedBtn = document.createElement('button');
+      undatedBtn.type = 'button';
+      undatedBtn.className = 'gp-hit';
+      undatedEl.appendChild(undatedBtn);
+      undatedBtn.addEventListener('click', function () { openList('added', null, undatedBtn); });
+      pickTargets.push({ pid: 'added', key: null, el: undatedBtn });
+    }
     renderers.push(function (c) {
-      for (var i = 0; i < tw.length; i++) { tw[i].to = c.added[i]; nums[i].textContent = c.added[i]; }
+      for (var i = 0; i < tw.length; i++) {
+        tw[i].to = c.added[i]; nums[i].textContent = c.added[i];
+        btns[i].setAttribute('aria-label', 'Added ' + dayLabel(AX.added_days[i]) + ': ' + plural(c.added[i], 'record') + '. List them');
+      }
       if (undatedEl) {
         undatedEl.hidden = !c.added_undated;
-        undatedEl.textContent = plural(c.added_undated, 'record') + ': date added not recorded';
+        undatedBtn.textContent = plural(c.added_undated, 'record') + ': date added not recorded';
       }
     });
   }
@@ -203,16 +320,88 @@
     else svg.insertBefore(path, circles[0]);
     afterFrame.push(function () { path.setAttribute('d', monotonePath(xs, ys)); });
 
+    /* Tap a day (Batch 4): the whole day column is the target, from halfway
+       to the day before to halfway to the day after, the chart's full height.
+       A highlight band marks the day whose records are listed. */
+    var NS = 'http://www.w3.org/2000/svg';
+    var vb = (svg.getAttribute('viewBox') || '0 0 320 200').split(/\s+/).map(Number);
+    var band = document.createElementNS(NS, 'rect');
+    band.setAttribute('class', 'gp-line__sel');
+    band.setAttribute('y', top); band.setAttribute('height', Math.max(0, bottom - top));
+    band.style.display = 'none';
+    svg.insertBefore(band, svg.firstChild);
+    var hits = document.createElementNS(NS, 'g');
+    hits.setAttribute('class', 'gp-line__hits');
+    var edges = xs.map(function (x, i) {
+      var a = i ? (xs[i - 1] + x) / 2 : Math.max(vb[0], x - (xs[1] - x || 10) / 2);
+      var b = i < xs.length - 1 ? (x + xs[i + 1]) / 2 : Math.min(vb[0] + vb[2], x + (x - xs[i - 1] || 10) / 2);
+      return [a, b];
+    });
+    edges.forEach(function (e, i) {
+      var r = document.createElementNS(NS, 'rect');
+      r.setAttribute('class', 'gp-line__hit');
+      r.setAttribute('x', e[0].toFixed(2)); r.setAttribute('width', (e[1] - e[0]).toFixed(2));
+      r.setAttribute('y', vb[1]); r.setAttribute('height', vb[3]);
+      r.setAttribute('data-day', AX.incident_days[i]);
+      r.addEventListener('click', function () { openList('incident', AX.incident_days[i], fig); });
+      hits.appendChild(r);
+    });
+    svg.appendChild(hits);
+    var fig = svg.parentNode;
+    fig.tabIndex = 0;
+    fig.setAttribute('aria-label', 'Records by day. Enter lists a day\u2019s records; the left and right arrow keys change the day.');
+    fig.addEventListener('keydown', function (e) {
+      var days = AX.incident_days, st = lists.incident, at = (st && days.indexOf(st.key));
+      if (at === undefined || at === null || at < 0) at = -1;
+      var to = null;
+      if (e.key === 'ArrowRight') to = at < 0 ? 0 : Math.min(days.length - 1, at + 1);
+      else if (e.key === 'ArrowLeft') to = at < 0 ? days.length - 1 : Math.max(0, at - 1);
+      else if (e.key === 'Home') to = 0;
+      else if (e.key === 'End') to = days.length - 1;
+      else if (e.key === 'Enter' || e.key === ' ') {
+        if (at < 0) { var c = counts(current), best = 0; c.incident.forEach(function (v, i) { if (v > c.incident[best]) best = i; }); to = best; }
+        else to = at;
+      } else if (e.key === 'Escape' && st) { closeList('incident'); e.preventDefault(); return; }
+      if (to === null) return;
+      e.preventDefault(); e.stopPropagation();
+      openList('incident', days[to], fig);
+    });
+    LINE_PICK = function (key) {
+      var i = AX.incident_days.indexOf(key);
+      if (i < 0) { band.style.display = 'none'; return; }
+      band.setAttribute('x', edges[i][0].toFixed(2)); band.setAttribute('width', (edges[i][1] - edges[i][0]).toFixed(2));
+      band.style.display = '';
+    };
+
+    // The summary's "date not stated" and "later step" counts open their own
+    // lists. Its text reads exactly as the printed summary does.
+    var sumBtns = {};
+    function sumButton(key) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'gp-hit';
+      b.addEventListener('click', function () { openList('incident', key, b); });
+      pickTargets.push({ pid: 'incident', key: key, el: b });
+      return b;
+    }
+    if (summary) { sumBtns.undated = sumButton('undated'); sumBtns.later_step = sumButton('later_step'); }
+
     renderers.push(function (c) {
       for (var i = 0; i < tw.length; i++) {
         tw[i].to = c.incident[i];
         if (titles[i]) titles[i].textContent = labels[i] + ': ' + plural(c.incident[i], 'record');
       }
       if (summary) {
-        var txt = c.occurred + ' occurred \u00b7 ' + c.found + ' found (date a body was found)';
-        if (c.undated) txt += ' \u00b7 ' + c.undated + ' date not stated (not on the line)';
-        if (c.later_step) txt += ' \u00b7 ' + c.later_step + ' later step in an older case (not on the line)';
-        summary.textContent = txt;
+        summary.textContent = c.occurred + ' occurred \u00b7 ' + c.found + ' found (date a body was found)';
+        if (c.undated) {
+          summary.appendChild(document.createTextNode(' \u00b7 '));
+          sumBtns.undated.textContent = c.undated + ' date not stated (not on the line)';
+          summary.appendChild(sumBtns.undated);
+        }
+        if (c.later_step) {
+          summary.appendChild(document.createTextNode(' \u00b7 '));
+          sumBtns.later_step.textContent = c.later_step + ' later step in an older case (not on the line)';
+          summary.appendChild(sumBtns.later_step);
+        }
       }
     });
     // screen readers: the chart's label follows the slider once it stops
@@ -225,6 +414,161 @@
       monotonePath: monotonePath
     };
   }
+
+  /* ── Tap to see the records (Batch 4) ──
+     One list per chart page, under the chart (after the slider). It shows the
+     records counted at the slider's position in the streams switched on, and
+     follows the slider and the switches while it is open. Mirrors
+     tools/record_charts.ids_from_table. */
+  var lists = {};           // page id -> { key, trigger }
+  var pickTargets = [];     // { pid, key, el }: highlighted while their list is open
+  var LINE_PICK = null;
+
+  function rowMatches(r, pid, key) {
+    if (pid === 'incident') {
+      return (key === 'undated' || key === 'later_step') ? r[COL.kind] === key
+        : ((r[COL.kind] === 'occurred' || r[COL.kind] === 'found') && r[COL.inc] === key);
+    }
+    if (pid === 'added') return r[COL.added] === key;
+    return r[COL[pid]] === key;
+  }
+  function rowsFor(pid, key, step) {
+    var out = [];
+    for (var i = 0; i < T.rows.length; i++) {
+      var r = T.rows[i];
+      if (r[COL.step] <= step && rowOn(r) && rowMatches(r, pid, key)) out.push(r);
+    }
+    out.sort(function (a, b) {
+      var x = a[COL.inc] || '', y = b[COL.inc] || '';
+      return x < y ? -1 : x > y ? 1 : (a[COL.id] < b[COL.id] ? -1 : 1);
+    });
+    return out;
+  }
+  function listHeading(pid, key) {
+    if (pid === 'incident') {
+      if (key === 'undated') return 'Date not stated';
+      if (key === 'later_step') return 'Later step in an older case';
+      return dayLabel(key);
+    }
+    if (pid === 'added') return key === null ? 'Date added not recorded' : 'Added ' + dayLabel(key);
+    return key;
+  }
+  function kindText(r) {
+    var k = r[COL.kind];
+    if (k === 'occurred') return 'Happened ' + dayLabel(r[COL.inc]);
+    if (k === 'found') return 'Found ' + dayLabel(r[COL.inc]);
+    if (k === 'later_step') return 'Later step in an older case';
+    return 'Date not stated';
+  }
+  function dayKeys(pid, key) {
+    if (pid === 'incident' && key !== 'undated' && key !== 'later_step') return AX.incident_days;
+    if (pid === 'added' && key !== null) return AX.added_days;
+    return null;
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function renderList(pid) {
+    var st = lists[pid];
+    var page = document.getElementById('gp-page-' + pid);
+    var box = page && page.querySelector('[data-gp-list]');
+    if (!box) return;
+    pickTargets.forEach(function (p) {
+      if (p.pid === pid) p.el.classList.toggle('is-picked', !!st && p.key === st.key);
+    });
+    if (pid === 'incident' && LINE_PICK) LINE_PICK(st ? st.key : null);
+    if (!st) { box.hidden = true; box.innerHTML = ''; return; }
+    var rows = rowsFor(pid, st.key, current);
+    var head = listHeading(pid, st.key);
+    box.innerHTML = '';
+    box.setAttribute('aria-label', head);
+    var bar = el('div', 'gp-list__head');
+    var days = dayKeys(pid, st.key), at = days ? days.indexOf(st.key) : -1;
+    function stepBtn(sym, label, to) {
+      var b = el('button', 'gp-hit gp-list__btn', sym);
+      b.type = 'button';
+      b.setAttribute('aria-label', label);
+      if (to < 0 || to >= days.length) b.disabled = true;
+      else b.addEventListener('click', function () { openList(pid, days[to], st.trigger, { keepFocus: b, dir: sym }); });
+      return b;
+    }
+    if (days) bar.appendChild(stepBtn('\u2039', 'Previous day', at - 1));
+    var h = el('h4', 'gp-list__title', head + ': ' + plural(rows.length, 'record'));
+    bar.appendChild(h);
+    if (days) bar.appendChild(stepBtn('\u203a', 'Next day', at + 1));
+    var x = el('button', 'gp-hit gp-list__btn gp-list__close', '\u2715');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Close the list');
+    x.addEventListener('click', function () { closeList(pid, true); });
+    bar.appendChild(x);
+    box.appendChild(bar);
+    var stp = T.steps[current], on = streamsOn().length;
+    var note = (stp.at ? 'On the map as of ' + stp.label + (current === LAST ? ' (now)' : '') : 'On the map now');
+    if (STREAMS.length && on < STREAMS.length) note += ' \u00b7 ' + on + ' of ' + STREAMS.length + ' streams';
+    box.appendChild(el('p', 'gp-list__note', note));
+    if (!rows.length) {
+      box.appendChild(el('p', 'gp-list__empty', 'No records here at this point.'));
+    } else {
+      var ul = el('ul', 'gp-list__items');
+      rows.forEach(function (r) {
+        var id = r[COL.id];
+        var info = window.forgeSignalInfo ? window.forgeSignalInfo(id) : null;
+        var li = el('li', 'gp-list__item');
+        li.setAttribute('data-id', id);
+        li.appendChild(el('span', 'gp-list__t', (info && info.title) || ('Record ' + id)));
+        li.appendChild(el('span', 'gp-list__meta', [kindText(r), r[COL.province], r[COL.stream]].join(' \u00b7 ')));
+        var a = el('a', 'gp-list__show', 'Show on map');
+        a.href = '?signal=' + encodeURIComponent(id);
+        a.addEventListener('click', function (e) {
+          if (window.forgeOpenSignal && window.forgeOpenSignal(id, a)) e.preventDefault();
+        });
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    box.hidden = false;
+  }
+
+  function openList(pid, key, trigger, opts) {
+    lists[pid] = { key: key, trigger: trigger };
+    renderList(pid);
+    if (opts && opts.keepFocus) {
+      // keep focus on the same previous / next button after the redraw
+      var page = document.getElementById('gp-page-' + pid);
+      var bs = page.querySelectorAll('.gp-list__head .gp-list__btn');
+      var b = opts.dir === '\u2039' ? bs[0] : bs[1];
+      if (b && !b.disabled) b.focus(); else { var x = page.querySelector('.gp-list__close'); if (x) x.focus(); }
+    }
+    revealList(pid);
+  }
+  function closeList(pid, refocus) {
+    var st = lists[pid];
+    delete lists[pid];
+    renderList(pid);
+    if (refocus && st && st.trigger && document.body.contains(st.trigger)) {
+      try { st.trigger.focus({ preventScroll: true }); } catch (e) { st.trigger.focus(); }
+    }
+  }
+  // Scroll the chart page (not the page track) so the list's top is in view.
+  function revealList(pid) {
+    var page = document.getElementById('gp-page-' + pid);
+    var box = page && page.querySelector('[data-gp-list]');
+    if (!box || box.hidden) return;
+    var pr = page.getBoundingClientRect(), br = box.getBoundingClientRect();
+    if (br.bottom > pr.bottom) page.scrollTop += Math.min(br.bottom - pr.bottom + 8, br.top - pr.top - 8);
+  }
+  panel.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var box = e.target.closest ? e.target.closest('[data-gp-list]') : null;
+    if (!box) return;
+    var page = box.closest('[data-chart]');
+    if (page && lists[page.getAttribute('data-chart')]) { e.preventDefault(); closeList(page.getAttribute('data-chart'), true); }
+  });
 
   setupLine();
   setupColumns();
@@ -239,7 +583,10 @@
   function stepText(s, c) {
     var st = T.steps[s];
     var when = st.at ? 'Map as of ' + st.label + (s === LAST ? ' (now)' : '') : 'Map now, ' + st.label;
-    return when + ' \u00b7 ' + c.total + ' of ' + plural(T.total, 'record');
+    var txt = when + ' \u00b7 ' + c.total + ' of ' + plural(T.total, 'record');
+    var on = streamsOn().length;
+    if (STREAMS.length && on < STREAMS.length) txt += ' (' + on + ' of ' + STREAMS.length + ' streams)';
+    return txt;
   }
 
   function setStep(s, opts) {
@@ -255,6 +602,7 @@
     var changed = s !== current;
     current = s;
     for (var i = 0; i < renderers.length; i++) renderers[i](c);
+    for (var pid in lists) renderList(pid);
     if (changed || (opts && opts.force)) startMotion();
     clearTimeout(announceTimer);
     announceTimer = setTimeout(function () {
@@ -275,6 +623,43 @@
     box.hidden = false;
   });
 
+  /* ── Stream switches (Batch 5) ──
+     The chips and the Streams bars call the map's own setter, so the map's
+     pins and Streams panel change too; the map tells us back with a
+     'forge-streams' event and every chart recounts. */
+  var chipGroups = Array.prototype.slice.call(panel.querySelectorAll('[data-gp-streams]'));
+  var notes = Array.prototype.slice.call(panel.querySelectorAll('[data-gp-streams-note]'));
+  function setStream(key, on) {
+    if (window.ZADStreams && window.ZADStreams.set) window.ZADStreams.set(key, on);
+    else { VIS[key] = !!on; streamsChanged(); }
+  }
+  function streamsChanged() {
+    readVisible();
+    var on = streamsOn();
+    chipGroups.forEach(function (g) {
+      Array.prototype.forEach.call(g.querySelectorAll('[data-gp-stream]'), function (b) {
+        b.setAttribute('aria-pressed', VIS[b.getAttribute('data-gp-stream')] !== false ? 'true' : 'false');
+      });
+    });
+    var text = on.length < STREAMS.length
+      ? 'Showing ' + on.length + ' of ' + STREAMS.length + ' streams' +
+        (on.length ? ' (' + on.map(function (s) { return s.label; }).join(', ') + ')' : '') + ', on the map too.'
+      : '';
+    notes.forEach(function (n) { n.textContent = text; n.hidden = !text; });
+    setStep(current, { force: true, settled: true });
+  }
+  if (STREAMS.length) {
+    chipGroups.forEach(function (g) {
+      Array.prototype.forEach.call(g.querySelectorAll('[data-gp-stream]'), function (b) {
+        var key = b.getAttribute('data-gp-stream');
+        b.addEventListener('click', function () { setStream(key, VIS[key] === false); });
+      });
+      g.hidden = false;
+    });
+    document.addEventListener('forge-streams', streamsChanged);
+    streamsChanged();
+  }
+
   window.ZADRecordCharts = {
     table: T,
     counts: counts,
@@ -282,6 +667,11 @@
     step: function () { return current; },
     steps: T.steps.length,
     animating: function () { return !!raf; },
-    line: LINE
+    line: LINE,
+    openList: function (pid, key) { openList(pid, key, null); },
+    closeList: closeList,
+    ids: function (pid, key) { return rowsFor(pid, key, current).map(function (r) { return r[COL.id]; }); },
+    streams: function () { return streamsOn().map(function (s) { return s.key; }); },
+    setStream: setStream
   };
 })();
