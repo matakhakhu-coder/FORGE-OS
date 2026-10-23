@@ -33,6 +33,18 @@ How two records are judged the same story (``same_story``):
   same place within 3 days, or 21 days for an arrest, a restoration or a
   report of an ongoing outage. A town search's story that names no place is
   treated as that town's for this rule only (not as a place estimate).
+* **A name is not a story.** Two headlines that share only a name (at most
+  two specific words, no road number or rand amount, no place) are one story
+  only when they are dated the same day, and such a match never joins two
+  stories together. A person in the news for two cases (Carrim's Madlanga
+  Commission arrest and his Absa vehicle case) stays two stories.
+* **A killing is never demoted.** A killing (``crime_kind`` killing, or the
+  crime classifier reads one in the headline) is never the same story as a
+  report with no violence or death in its words (Padayachee's murder is not
+  part of Feroz Khan's commission testimony), never joins a story holding
+  such a report, and is always the main record of its own story. It can only
+  support another report of the same killing when that one is also a killing
+  and was chosen main first.
 
 A record joins at most one story, the one it matches best; two stories are
 never joined because one later record matches both. This leans towards
@@ -304,6 +316,7 @@ class StoryRecord:
     infra_type: Optional[str] = None
     infra_kind: Optional[str] = None
     town_hint: Optional[str] = None   # the town a town search was for, when the story names no place
+    crime_kind: Optional[str] = None  # the crime classifier's kind from the collector, when it ran
     order: int = 0
     tokens: list = field(default_factory=list)
     # filled in by StoryIndex
@@ -320,6 +333,48 @@ class StoryRecord:
     @property
     def merge_place(self) -> Optional[str]:
         return self.place or self.town_hint
+
+
+# ── killings ────────────────────────────────────────────────────────────────
+
+def is_killing(rec: StoryRecord) -> bool:
+    """A report of a killing: the collector's crime classifier said so, or the
+    classifier reads one in the headline. A road crash is not a killing."""
+    if rec.crime_kind:
+        return rec.crime_kind == "killing"
+    return _classify_kind(rec.title or "") == "killing"
+
+
+@lru_cache(maxsize=8192)
+def _classify_kind(title: str) -> Optional[str]:
+    from forage.collectors import crime_signals as _crime
+    return _crime.classify(title).get("kind")
+
+
+@lru_cache(maxsize=8192)
+def _violent_words(title: str) -> bool:
+    from forage.collectors import crime_signals as _crime
+    t = title or ""
+    return bool(_crime._KILLING.search(t) or _crime._DEATH.search(t) or _crime._VIOLENCE.search(t)
+                or _crime._BODY_FOUND.search(t) or _crime._ATTEMPTED.search(t))
+
+
+def has_violence(rec: StoryRecord) -> bool:
+    """The headline speaks of a death, a killing or an attack at all."""
+    return is_killing(rec) or _violent_words(rec.title or "")
+
+
+def killing_conflict(a: StoryRecord, b: StoryRecord) -> bool:
+    """One is a killing and the other says nothing of violence or death: a
+    commission hearing, a raid, a bail bid. They are never one story, so the
+    killing can never become supporting evidence of the other."""
+    return (is_killing(a) and not has_violence(b)) or (is_killing(b) and not has_violence(a))
+
+
+def fits_story(rec: StoryRecord, members: Iterable[StoryRecord]) -> bool:
+    """``rec`` can join a story only when it has no killing conflict with any
+    of its records (a story never holds a killing and a non-violent report)."""
+    return not any(killing_conflict(rec, m) for m in members)
 
 
 def _text_places(tokens: list) -> list:
@@ -443,6 +498,8 @@ def same_story(a: StoryRecord, b: StoryRecord, wts: Weights) -> tuple[float, str
     la, lb = _norm_link(a.link), _norm_link(b.link)
     if la and la == lb:
         return 1.0, "same link"
+    if killing_conflict(a, b):
+        return 0.0, "a killing and a report with no violence"
     if not places_compatible(a, b):
         return 0.0, "places conflict"
     if a.infra_type and b.infra_type and a.infra_type != b.infra_type:
@@ -470,6 +527,16 @@ def same_story(a: StoryRecord, b: StoryRecord, wts: Weights) -> tuple[float, str
     anchor = [w for w in specific if ANCHOR.fullmatch(w)]
     if text_places_conflict(a.tokens, b.tokens):
         return 0.0, "headlines name places far apart"
+    name_only = bool(specific) and len(specific) <= 2 and not anchor \
+        and not any(word_class(w) == "place" for w in shared)
+    if name_only and gap > 0:
+        # "Suliman Carrim's bail bid postponed" and "Suliman Carrim's
+        # vehicle-theft case postponed": the same man, two cases.
+        return 0.0, "only a name shared, on different days"
+    if name_only:
+        if score >= SCORE_MIN:
+            return score, "headline (name only): " + ", ".join(specific)
+        return 0.0, f"only a name shared, score {score:.2f}"
     if not specific:
         places = [w for w in shared if word_class(w) == "place"]
         # Same named place, same kind of event, within two days.
@@ -490,8 +557,10 @@ def same_story(a: StoryRecord, b: StoryRecord, wts: Weights) -> tuple[float, str
 
 def choose_main(members: list[StoryRecord]) -> StoryRecord:
     """The record whose stream has the strongest evidence; then the more
-    specific stream; then one with a place; then the earliest report."""
-    return sorted(members, key=lambda r: (-r.strength, STREAM_ORDER.get(r.stream or "GLOBAL", 9),
+    specific stream; then one with a place; then the earliest report.
+    A killing always comes first: it is never demoted to supporting evidence."""
+    return sorted(members, key=lambda r: (0 if is_killing(r) else 1, -r.strength,
+                                          STREAM_ORDER.get(r.stream or "GLOBAL", 9),
                                           0 if r.place else 1, r.date or date.max, r.order))[0]
 
 
@@ -526,6 +595,12 @@ class Match:
     def short(self) -> bool:
         return not self.why.startswith("headline (rare names)")
 
+    @property
+    def bridges(self) -> bool:
+        """Strong enough to join two stories: not a long-window match and
+        not a match on a name alone."""
+        return self.short and not self.why.startswith("headline (name only)")
+
 
 def match_stories(rec: StoryRecord, stories: dict, wts: Weights,
                   only: Optional[set] = None) -> list[Match]:
@@ -535,6 +610,8 @@ def match_stories(rec: StoryRecord, stories: dict, wts: Weights,
     out = []
     for sid, members in stories.items():
         if only is not None and sid not in only:
+            continue
+        if not fits_story(rec, members):
             continue
         best = None
         for m in members:
@@ -555,9 +632,9 @@ def plan_join(rec: StoryRecord, matches: list[Match]) -> tuple[Optional[Match], 
     if not matches:
         return None, []
     first = matches[0]
-    if is_thin(rec) or not first.short:
+    if is_thin(rec) or not first.bridges:
         return first, []
-    return first, [m for m in matches[1:] if m.short and m.score >= SCORE_MIN and not m.thin_member]
+    return first, [m for m in matches[1:] if m.bridges and m.score >= SCORE_MIN and not m.thin_member]
 
 
 class StoryIndex:
@@ -606,7 +683,11 @@ class StoryIndex:
             sid = join.story
             self.stories[sid].append(rec)
             self.links[rec.rid] = (round(join.score, 3), join.why, join.member)
+            kept = list(self.stories[sid])
             for m in fold:
+                if not all(fits_story(r, kept) for r in self.stories[m.story]):
+                    continue   # never fold a killing in with a non-violent report
+                kept.extend(self.stories[m.story])
                 for r in self.stories.pop(m.story):
                     r.story = sid
                     self.stories[sid].append(r)
@@ -755,6 +836,7 @@ def record_from_row(rid: str, title: str, timestamp: str, stream: str, meta: dic
         stream_reason=meta.get("stream_reason") or "", place=lc.get("place"), province=lc.get("province"),
         lat=lc.get("lat"), lng=lc.get("lng"), link=meta.get("link") or meta.get("url"),
         infra_type=meta.get("infra_event_type"), infra_kind=meta.get("infra_kind"),
+        crime_kind=meta.get("crime_kind"),
         town_hint=(meta.get("story_town_hint") if not lc.get("place") else None) or (town_hint if not lc.get("place") else None))
 
 
@@ -788,10 +870,14 @@ def link_story(conn, signal_id: str, title: str, stream: str, timestamp: str, me
             m = {}
         cands.append((record_from_row(sid, t, ts, st, m), m))
     wts = Weights([c.tokens for c, _ in cands] + [rec.tokens])
+    def _members(c, m):
+        mid = (m.get("supports_signal_id") if m.get("story_role") == "supporting_evidence" else None) or c.rid
+        return [x for x, xm in cands if x.rid == mid or xm.get("supports_signal_id") == mid]
+
     best = (0.0, None, "", None)
     for c, m in cands:
         s, why = same_story(rec, c, wts)
-        if s > best[0]:
+        if s > best[0] and fits_story(rec, _members(c, m)):
             best = (s, c, why, m)
     meta.update(check_pins(rec, wts))
     if best[1] is None:
