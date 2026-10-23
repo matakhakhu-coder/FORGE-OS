@@ -60,6 +60,10 @@ LIMPOPO_INFRA_PINS = {
     "b2ec397b-458f-55c5-9882-65064085e1be",   # C Polokwane Pump Station 3 leaks
     "34ab4d0c-f76b-5775-9f43-faf729c21de4",   # D Musina boreholes
 }
+LIMPOPO_DEATHS_PINS = {
+    "c10e0702-2833-5c8d-87f6-3be64471c858",   # Madombidzha, cause unknown (inquest)
+    "4ce322ea-9266-55c2-a78c-eb366be96aa4",   # Mashawana mountain, cause unknown
+}
 KZN_INFRA_PINS = {
     "b5342d21-a1b8-5abf-8bd6-954123f57973",   # I2 Upper Signal Hill, Newcastle water outage
 }
@@ -218,8 +222,9 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 5 Mpumalanga version-1 explicit approvals (voice call, 23 Oct 2026, about 11:12 SAST)
     # + 4 Limpopo infrastructure version-1 explicit approvals (in-app review, 23 Oct 2026, about 14:00 SAST)
     # + 1 KwaZulu-Natal infrastructure version-1 explicit approval (voice call, 23 Oct 2026, about 16:35 SAST)
-    assert report.records == len(_real_record_files()) == 73
-    assert report.pins_checked == 63
+    # + 2 Limpopo unresolved-death version-1 explicit approvals (voice call, 23 Oct 2026, about 16:53 SAST)
+    assert report.records == len(_real_record_files()) == 75
+    assert report.pins_checked == 65
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -264,7 +269,7 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
                         "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
-                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
+                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
     assert set(first) == active
     for sid in LIMPOPO_PINS:
         rec = first[sid]
@@ -292,6 +297,17 @@ def test_real_legacy_records_match_the_owner_confirmation():
         assert rec["batch_file"] == batch == "limpopo-infrastructure-2026-10-23.json"
         assert rec["approval_reference"]["id"] == "limpopo-infrastructure-approval-2026-10-23"
         assert "'approve'" in rec["approval_reference"]["summary"]
+        assert not ap.is_draft(rec) and sid not in later
+        assert rec["payload_sha256"] == ap.payload_sha256(pin)
+        assert rec["approved_payload"] == ap.approved_payload(pin)
+    for sid in LIMPOPO_DEATHS_PINS:
+        rec = first[sid]
+        pin, batch = by_id[sid]
+        assert rec["basis"] == "explicit" and rec["action"] == "approve" and rec["supersedes"] is None
+        assert rec["batch_file"] == batch == "limpopo-unresolved-deaths-2026-10-23.json"
+        assert rec["approval_reference"]["id"] == "vhembe-unresolved-deaths-approval-2026-10-23"
+        assert "cause unknown" in rec["approval_reference"]["summary"]
+        assert rec["scope"] == "data-only" and rec["approved_at"] == "2026-10-23T16:53:00+02:00"
         assert not ap.is_draft(rec) and sid not in later
         assert rec["payload_sha256"] == ap.payload_sha256(pin)
         assert rec["approved_payload"] == ap.approved_payload(pin)
@@ -340,9 +356,9 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     report = ap.verify(check_git=False)
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
-    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS
+    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS
     assert len(published) == 45
-    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active
+    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \
         [f.line() for f in report.violations]

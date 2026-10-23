@@ -40,7 +40,8 @@ def _fresh_db(tmp_path, monkeypatch):
 def test_every_checked_pin_has_a_machine_readable_incident_time():
     for s in cs.load_index().active:
         key = cs.incident_sort_key(s["metadata"]["checked"])
-        assert key.endswith("Z") and key.startswith("2026-10-"), s["signal_id"]
+        # Day-precision keys start at local midnight: 1 Oct SAST is 2026-09-30T22:00Z.
+        assert key.endswith("Z") and "2026-09-30T22:00:00Z" <= key < "2026-11-01", s["signal_id"]
 
 
 def test_incident_window_by_precision():

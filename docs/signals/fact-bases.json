@@ -6184,6 +6184,207 @@
           ]
         }
       ]
+    },
+    "c10e0702-2833-5c8d-87f6-3be64471c858": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 53, dead; not named here.",
+          "basis": "One report",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "the partially decomposed body of a 53-year-old man was found in a shack at his home on 1 October"
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found on 1 October 2026; last seen alive on 26 September; time of death unknown.",
+          "basis": "Family account (via one report)",
+          "detail": "He may have died before 1 October.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "was discovered by a friend who had gone to check on him after not seeing him since 26 September"
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "In a shack at his home in Madombidzha village; no address given.",
+          "basis": "One report",
+          "detail": "The pin is the Madombidzha village point.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "Family members and residents of Madombidzha are seeking answers"
+            }
+          ]
+        },
+        {
+          "label": "Cause of death",
+          "claim": "Not reported. Police have not called it a murder.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The family suspects foul play and believes he was killed elsewhere; that is the family's belief, not a police finding.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror (family)",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "the family suspects foul play"
+            }
+          ],
+          "conflicts": [
+            "The family suspects foul play; police opened an inquest, not a murder case."
+          ]
+        },
+        {
+          "label": "Police case",
+          "claim": "Tshilwavhusiku police opened an inquest docket. No murder case or arrest reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror (police)",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "Tshilwavhusiku police had opened an inquest docket following the discovery of the body"
+            },
+            {
+              "name": "Review Online (The Citizen) (police)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/family-seeks-answers-after-body-found-in-madombidzha-shack/",
+              "archive": null,
+              "quote": "confirmed that the Tshilwavhusiku police had opened an inquest following the discovery"
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "claim": "Open. No cause of death or post-mortem result reported by 19 October; the family was waiting for DNA tests before the burial.",
+          "basis": "Family account (via one report)",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror (family)",
+              "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+              "archive": null,
+              "quote": "they are waiting for a private doctor to conduct DNA tests"
+            }
+          ]
+        }
+      ]
+    },
+    "4ce322ea-9266-55c2-a78c-eb366be96aa4": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men, unidentified.",
+          "basis": "One report",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "The discovery of the bodies of two unidentified men on Mashawana mountain on Sunday afternoon"
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found at about 13:30 on Sunday 4 October 2026; when they died is not known.",
+          "basis": "One report",
+          "detail": "A resident said the bodies were badly decomposed.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "The bodies were discovered by a cattle herder at about 13:30 on Sunday, 4 October"
+            },
+            {
+              "name": "Limpopo Mirror (resident)",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "the bodies were already in an advanced state of decomposition"
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "A remote mountainous part of Mashawana mountain, near Dzwerani; the exact spot is not mapped.",
+          "basis": "One report",
+          "detail": "The pin is the Dzwerani village point.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "The men were found lying next to each other in a remote mountainous area, with pots, cups, bedding and other utensils nearby"
+            }
+          ]
+        },
+        {
+          "label": "Cause of death",
+          "claim": "Not reported. A resident said the bodies showed no injuries; no post-mortem result has been reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The absence of injuries is a resident's account, not a finding.",
+          "sources": [
+            {
+              "name": "Limpopo Mirror (resident)",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "The bodies did not show any injuries and we are left with so many questions"
+            },
+            {
+              "name": "Limpopo Mirror (resident)",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "we believe a postmortem will clear this up"
+            }
+          ]
+        },
+        {
+          "label": "Police case",
+          "claim": "Thohoyandou police are investigating. Whether an inquest or a murder case was opened is not reported.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror (police)",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "Vhembe police spokesperson Captain Vuledzani Dathi confirmed that Thohoyandou police are investigating"
+            }
+          ]
+        },
+        {
+          "label": "Identity",
+          "claim": "Not identified.",
+          "basis": "One report",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Limpopo Mirror",
+              "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+              "archive": null,
+              "quote": "Their identities have not yet been confirmed"
+            }
+          ]
+        }
+      ]
     }
   }
 }

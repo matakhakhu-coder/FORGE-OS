@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T151118Z-96ca2983",
+  "signal_id": "4ce322ea-9266-55c2-a78c-eb366be96aa4",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-unresolved-deaths-2026-10-23.json",
+  "approved_payload": {
+    "content": "Cause of death unknown. Police are investigating; the report does not say whether an inquest or a murder case was opened. A cattle herder found the bodies of two unidentified men lying next to each other in a remote part of Mashawana mountain at about 13:30 on Sunday 4 October, with pots, cups, bedding and other utensils nearby (Limpopo Mirror, 8 October). A resident said the bodies were badly decomposed and showed no injuries; that is a resident's account, not a post-mortem finding. Vhembe police spokesperson Captain Vuledzani Dathi confirmed that Thohoyandou police are investigating. The men have not been identified, and residents' guesses about who they were are not repeated here. One report. The pin is approximate: the mountain is not on the map, so the pin is the Dzwerani village point, one of the two communities the report names. This pin is checked in every three-day collection run and will be updated if police confirm a cause of death, identify the men or open a case.",
+    "external_id": "checked:lp-vhembe-deaths-2026-10-23:W",
+    "lat": -23.06546,
+    "lng": 30.43309,
+    "metadata": {
+      "checked": {
+        "cause_of_death": "unknown",
+        "checked_at": "2026-10-23T15:10:00Z",
+        "follow_up": "Checked in every three-day collection run for police confirmation or other material developments; amended with sources as evidence changes.",
+        "incident": "Found at about 13:30 on Sun 4 Oct 2026 by a cattle herder; when the men died is not known (Limpopo Mirror). Cause of death unknown; Thohoyandou police are investigating (police, via Limpopo Mirror).",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-04T13:30+02:00",
+        "location": "A remote mountainous part of Mashawana mountain; the report names the communities of Mashawana and Dzwerani, Thulamela municipality, and Thohoyandou police are investigating. The mountain is not in the gazetteer or OpenStreetMap, so the pin is the Dzwerani village point from GeoNames. That point falls just inside the Vuwani precinct outline, about 3.3 km from the Thohoyandou precinct edge, so the scene is probably a few kilometres from the pin. Approximate, village level (about 6 km).",
+        "method": "Found in the 23 Oct 2026 Louis Trichardt, Polokwane and Thohoyandou targeted sweep (Limpopo Mirror article data, Review Online, news and web searches, incidents 1-23 Oct); sources read again on 23 Oct and claims, dates and place checked by hand; every quote matched word for word against the saved text. No later report or police update found by 23 Oct. Approved by the owner on 23 Oct 2026 as cause unknown; standalone (no case, entity or map line).",
+        "reported": "8 Oct 2026 (Limpopo Mirror); earliest report found",
+        "reported_at": "2026-10-08",
+        "search_aliases": [
+          "Mashawana",
+          "Dzwerani",
+          "Mirenzheni",
+          "Thohoyandou",
+          "Thulamela",
+          "Vhembe",
+          "two bodies",
+          "unidentified men",
+          "cause unknown"
+        ],
+        "sources": [
+          {
+            "name": "Limpopo Mirror",
+            "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain"
+          }
+        ]
+      },
+      "collected_title": "Chilling mystery of two bodies on Mashawana mountain",
+      "link": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+      "pubdate_raw": "2026-10-08T08:24:04+00:00",
+      "source_outlet": "Limpopo Mirror"
+    },
+    "published_at": "2026-10-23T15:10:00Z",
+    "signal_id": "4ce322ea-9266-55c2-a78c-eb366be96aa4",
+    "source": "Limpopo Mirror",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T11:30:00Z",
+    "title": "Mashawana mountain, Thohoyandou police area (approx.): two unidentified men found dead; cause unknown, police investigating, 4 Oct"
+  },
+  "payload_sha256": "sha256:3d052d49b78ceb4326cb6d6dcb5074c234f1f3b8285b071b5656d2dd80161093",
+  "source_hashes": [
+    {
+      "url": "https://www.limpopomirror.co.za/article/chilling-mystery-of-two-bodies-on-mashawana-mountain",
+      "retrieved_at": "2026-10-23T14:40:10Z",
+      "content_sha256": "sha256:01e9e156e60c0e3effcbf89fcb10b75eac38f0b96369128d6a76a1e9d044a549"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T16:53:00+02:00",
+  "recorded_at": "2026-10-23T17:11:18+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "vhembe-unresolved-deaths-approval-2026-10-23",
+    "summary": "Owner approved both by voice, 23 Oct 2026 ~16:53 SAST: publish as cause unknown, recheck in each three-day run, amend as the story moves. Madombidzha and Mashawana, Limpopo. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

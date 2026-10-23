@@ -32,8 +32,10 @@ LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, 
 MP_PINS = 5           # Mpumalanga: incidents 2-20 Oct 2026, approved 23 Oct 2026, outside the pattern test
 LPI_PINS = 4          # Limpopo infrastructure (Infrastructure stream): approved 23 Oct 2026, outside the pattern test
 KZI_PINS = 1          # KwaZulu-Natal infrastructure (Newcastle, Upper Signal Hill water outage): approved 23 Oct 2026, outside the pattern test
+LPD_PINS = 2          # Limpopo unresolved deaths (Madombidzha, Mashawana; Crime & Security, cause unknown): approved 23 Oct 2026, outside the pattern test
+LPD_IDS = {"c10e0702-2833-5c8d-87f6-3be64471c858", "4ce322ea-9266-55c2-a78c-eb366be96aa4"}
 INFRA_PINS = LPI_PINS + KZI_PINS
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -115,10 +117,11 @@ def test_index_loads_all_pins_in_order():
         "limpopo-killings-2026-10-22.json",
         "mpumalanga-killings-2026-10-23.json",
         "limpopo-infrastructure-2026-10-23.json",
-        "kwazulu-natal-infrastructure-2026-10-23.json"]
+        "kwazulu-natal-infrastructure-2026-10-23.json",
+        "limpopo-unresolved-deaths-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -151,7 +154,8 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     cs = load_index()
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
-    lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"]
+    lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"
+          and s["signal_id"] not in LPD_IDS]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
@@ -617,3 +621,34 @@ def test_old_seed_command_is_a_shortcut(tmp_path, monkeypatch, capsys):
     stray.write_text(batch.read_text())
     monkeypatch.setattr(sys, "argv", ["seed", str(stray), "--db", str(db_file)])
     assert seed_mod.main() == 2
+
+
+def test_limpopo_unresolved_deaths_say_cause_unknown_and_stay_out_of_the_pattern_test():
+    # Owner decision, voice call 23 Oct 2026: publish both as cause unknown, check them in every
+    # three-day run and amend as the story moves. Neither is a confirmed killing.
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    data = json.loads((SIGNALS_DIR / "limpopo-unresolved-deaths-2026-10-23.json").read_text(encoding="utf-8"))
+    pins = {s["signal_id"]: s for s in data["signals"]}
+    assert set(pins) == LPD_IDS and len(pins) == LPD_PINS and not (set(pins) & wc_ids)
+    assert "Sprint 5" in data["scope"] and "not as confirmed killings" in data["scope"]
+    assert "three-day collection run" in data["rules"] and data["held_back"] == []
+    for sid, s in pins.items():
+        assert prov[sid] == "Limpopo" and s["stream"] == "CRIME_INTEL"
+        assert "approx." in s["title"] and "cause unknown" in s["title"]
+        assert "murder" not in s["title"].lower() and "killed" not in s["title"].lower()
+        assert s["content"].startswith("Cause of death unknown.")
+        assert "three-day collection run" in s["content"]
+        assert s["metadata"]["checked"]["cause_of_death"] == "unknown"
+        assert s["metadata"]["checked"]["incident_event"] == "found"
+        assert not s["metadata"].get("links")
+    m = [s for s in pins.values() if s["title"].startswith("Madombidzha")][0]
+    w = [s for s in pins.values() if s["title"].startswith("Mashawana")][0]
+    assert "inquest opened" in m["title"] and "not a murder case" in m["content"]
+    # The Mashawana report gives no case type, so the pin must not claim an inquest.
+    assert "police investigating" in w["title"] and "inquest" not in w["title"]
+    assert "does not say whether an inquest or a murder case was opened" in w["content"]
+    assert "supersedes its held_back entry" in " ".join(d["decision"] for d in data["owner_decisions"])
+

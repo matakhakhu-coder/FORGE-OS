@@ -900,6 +900,37 @@
       ],
       "independence": "single_report",
       "note": "One public report, carrying the municipal statement and one resident's account. The six-day figure and the missing part rest on the resident; the cause rests on the municipality."
+    },
+    "c10e0702-2833-5c8d-87f6-3be64471c858": {
+      "statement_from": "Vhembe police spokesperson (inquest docket), quoted by Limpopo Mirror",
+      "spokesperson": [
+        "Capt Vuledzani Dathi"
+      ],
+      "other_voices": [
+        "The man's aunt (family)",
+        "Mushoni Mukwevho, local traditional council"
+      ],
+      "outlets": [
+        "Limpopo Mirror",
+        "Review Online"
+      ],
+      "independence": "shared_wording",
+      "note": "Review Online (19 Oct) repeats the Limpopo Mirror report (8 Oct) with the same quotes, so this is one account. No police statement of its own was found by 23 Oct."
+    },
+    "4ce322ea-9266-55c2-a78c-eb366be96aa4": {
+      "statement_from": "Vhembe police spokesperson, quoted by Limpopo Mirror",
+      "spokesperson": [
+        "Capt Vuledzani Dathi"
+      ],
+      "other_voices": [
+        "Mashawana resident (Vhafamadi)",
+        "Mpho Dimbanyika, Dzwerani Mirenzheni community leader"
+      ],
+      "outlets": [
+        "Limpopo Mirror"
+      ],
+      "independence": "single_report",
+      "note": "One report (Limpopo Mirror, 8 Oct). No police statement of its own or later report was found by 23 Oct. The decomposition and the absence of injuries rest on a resident."
     }
   }
 }

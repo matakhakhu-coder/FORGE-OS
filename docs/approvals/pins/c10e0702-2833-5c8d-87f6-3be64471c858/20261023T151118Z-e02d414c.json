@@ -1,0 +1,85 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T151118Z-e02d414c",
+  "signal_id": "c10e0702-2833-5c8d-87f6-3be64471c858",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-unresolved-deaths-2026-10-23.json",
+  "approved_payload": {
+    "content": "Cause of death unknown. Police opened an inquest, not a murder case. A 53-year-old man who lived alone was found dead, his body partly decomposed, in a shack at his home in Madombidzha village, about 13 km south-west of Louis Trichardt, on 1 October. A friend who went to check on him found him; he had last been seen alive on 26 September (his aunt, via Limpopo Mirror, 8 October). Vhembe police spokesperson Captain Vuledzani Dathi said Tshilwavhusiku police opened an inquest docket. The family suspects foul play and believes he may have been killed elsewhere and his body left in the shack; that is the family's belief, not a police finding. No cause of death, post-mortem result, murder case or arrest has been reported. When he died is not known, and it may have been before 1 October. The man is not named here. One account, repeated: Review Online (19 October) carries the same reporting. The pin is approximate (village level). This pin is checked in every three-day collection run and will be updated if police confirm a cause of death or open a case.",
+    "external_id": "checked:lp-vhembe-deaths-2026-10-23:M",
+    "lat": -23.12417,
+    "lng": 29.81486,
+    "metadata": {
+      "checked": {
+        "cause_of_death": "unknown",
+        "checked_at": "2026-10-23T15:10:00Z",
+        "follow_up": "Checked in every three-day collection run for police confirmation or other material developments; amended with sources as evidence changes.",
+        "incident": "Found Thu 1 Oct 2026 by a friend; last seen alive Sat 26 Sep 2026; time of death unknown (family, via Limpopo Mirror). Cause of death unknown; Tshilwavhusiku police opened an inquest docket (police, via Limpopo Mirror).",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-01",
+        "location": "In a shack at his home in Madombidzha village, Makhado municipality; no address given (Limpopo Mirror). The pin is the Madombidzha village point from GeoNames, inside the Tshilwavhusiku police precinct outline and outside the Louis Trichardt (Makhado) precinct, about 13 km south-west of Makhado police station. Approximate, village level (about 3 km).",
+        "method": "Found in the 23 Oct 2026 Louis Trichardt, Polokwane and Thohoyandou targeted sweep (Limpopo Mirror article data, Review Online, news and web searches, incidents 1-23 Oct); sources read again on 23 Oct and claims, dates and place checked by hand; every quote matched word for word against the saved text. No later report or police update found by 23 Oct. Approved by the owner on 23 Oct 2026 as cause unknown; standalone (no case, entity or map line).",
+        "reported": "8 Oct 2026 (Limpopo Mirror); Review Online, 19 Oct, carries the same report",
+        "reported_at": "2026-10-08",
+        "search_aliases": [
+          "Madombidzha",
+          "Tshilwavhusiku",
+          "Louis Trichardt",
+          "Makhado",
+          "Vhembe",
+          "inquest",
+          "decomposed body",
+          "shack",
+          "cause unknown"
+        ],
+        "sources": [
+          {
+            "name": "Limpopo Mirror",
+            "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found"
+          },
+          {
+            "name": "Review Online (The Citizen)",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/family-seeks-answers-after-body-found-in-madombidzha-shack/"
+          }
+        ]
+      },
+      "collected_title": "Family seeks answers after decomposed body found",
+      "link": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+      "pubdate_raw": "2026-10-08T07:57:23+00:00",
+      "source_outlet": "Limpopo Mirror"
+    },
+    "published_at": "2026-10-23T15:10:00Z",
+    "signal_id": "c10e0702-2833-5c8d-87f6-3be64471c858",
+    "source": "Limpopo Mirror",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-01T10:00:00Z",
+    "title": "Madombidzha village, Tshilwavhusiku police area (approx.): man, 53, found dead in his shack; cause unknown, inquest opened, 1 Oct"
+  },
+  "payload_sha256": "sha256:e315e3b98746a61b1bbbfbb1f8014381d51ee84219162c452901e9e684c55824",
+  "source_hashes": [
+    {
+      "url": "https://www.limpopomirror.co.za/article/family-seeks-answers-after-decomposed-body-found",
+      "retrieved_at": "2026-10-23T14:40:10Z",
+      "content_sha256": "sha256:9f51025ad36ba42b577f3e608b6e6f3fdbc52e0565e917f7bed6ba2e5bcc24a5"
+    },
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/family-seeks-answers-after-body-found-in-madombidzha-shack/",
+      "retrieved_at": "2026-10-23T14:58:54Z",
+      "content_sha256": "sha256:427b9d6886ca90802357bcc33822fd31ed19e710c7a4b197aca065ea647b7c44"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T16:53:00+02:00",
+  "recorded_at": "2026-10-23T17:11:18+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "vhembe-unresolved-deaths-approval-2026-10-23",
+    "summary": "Owner approved both by voice, 23 Oct 2026 ~16:53 SAST: publish as cause unknown, recheck in each three-day run, amend as the story moves. Madombidzha and Mashawana, Limpopo. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

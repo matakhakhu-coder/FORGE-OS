@@ -51,7 +51,11 @@ LIMPOPO_INFRA = {
 KZN_INFRA = {
     'b5342d21-a1b8-5abf-8bd6-954123f57973',
 }  # Upper Signal Hill, Newcastle water outage (approved 23 Oct 2026, voice call)
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA
+LIMPOPO_DEATHS = {
+    'c10e0702-2833-5c8d-87f6-3be64471c858',  # Madombidzha, cause unknown (inquest)
+    '4ce322ea-9266-55c2-a78c-eb366be96aa4',  # Mashawana mountain, cause unknown
+}  # approved 23 Oct 2026, voice call
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA | LIMPOPO_DEATHS
 
 
 def load(path):
@@ -70,12 +74,14 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 63                                      # 36 audited + 27 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 373   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure
+    assert len(exported) == 65                                      # 36 audited + 29 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 385   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
     assert sum(len(exported[s]['facts']) for s in KZN_INFRA) == 6
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in KZN_INFRA)
+    assert sum(len(exported[s]['facts']) for s in LIMPOPO_DEATHS) == 12
+    assert all(any(f['label'] == 'Cause of death' and f['claim'].startswith('Not reported') for f in exported[s]['facts']) for s in LIMPOPO_DEATHS)
     assert sum(len(exported[s]['facts']) for s in MPUMALANGA) == 30  # six each
     assert all(exported[s]['status'] == 'audited' for s in MPUMALANGA)
     assert exported['0710d74d-c67c-5899-95db-54e2f4fab60d']['police_party'] is True   # Masoyi

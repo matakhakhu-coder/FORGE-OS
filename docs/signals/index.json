@@ -63,6 +63,11 @@
       "file": "kwazulu-natal-infrastructure-2026-10-23.json",
       "province": "KwaZulu-Natal",
       "signals": 1
+    },
+    {
+      "file": "limpopo-unresolved-deaths-2026-10-23.json",
+      "province": "Limpopo",
+      "signals": 2
     }
   ]
 }

@@ -1,8 +1,36 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "23 Oct 2026 14:44 UTC",
+  "generated_at": "23 Oct 2026 15:12 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Mashawana mountain, Thohoyandou police area (approx.): two unidentified men found dead; cause unknown, police investigating, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T15:10:00Z",
+      "summary": "Cause of death unknown. Police are investigating; the report does not say whether an inquest or a murder case was opened. A cattle herder found the bodies of two unidentified men lying next to each other in a remote part...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.06546,
+        "lng": 30.43309
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Madombidzha village, Tshilwavhusiku police area (approx.): man, 53, found dead in his shack; cause unknown, inquest opened, 1 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T15:10:00Z",
+      "summary": "Cause of death unknown. Police opened an inquest, not a murder case. A 53-year-old man who lived alone was found dead, his body partly decomposed, in a shack at his home in Madombidzha village, about 13 km south-west of ...",
+      "source": "LIMPOPO MIRROR",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.12417,
+        "lng": 29.81486
+      }
+    },
     {
       "kind": "signal",
       "title": "Upper Signal Hill, Newcastle (approx.): faulty Milky Way pump, eight streets without water from about 11 Oct (resident), confirmed 17 Oct",
@@ -673,34 +701,6 @@
       "geo": {
         "lat": -34.02757,
         "lng": 18.36167
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "St Montague Village, Lavender Hill area (St Bernard St, approx.): man, 31, shot dead, 7 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 31-year-old man was shot dead in St Bernard Street, St Montague Village, on Wednesday 7 October; Steenberg police responded at about 11:45 and detectives are investigating a murder case (Southern Mail, quoting police s...",
-      "source": "SOUTHERN MAIL",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.07098,
-        "lng": 18.49354
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Bonteheuwel (Jakkalsvlei Ave, approx.): man, 43, shot dead, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 43-year-old man was shot multiple times in Jakkalsvlei Avenue, Bonteheuwel, at about 23:06 on Tuesday 6 October and declared dead at the scene; police opened a murder case and made no arrests (Daily Voice, quoting poli...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.94476,
-        "lng": 18.54334
       }
     }
   ]
