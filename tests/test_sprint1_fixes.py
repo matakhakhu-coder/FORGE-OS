@@ -45,8 +45,13 @@ class TestNoDefaultCoordinates(unittest.TestCase):
 
     def test_all_fourteen_sources_still_present(self):
         # Guard against the coordinate-removal edit accidentally dropping
-        # a whole source entry.
-        self.assertEqual(len(SOURCES), 14)
+        # a whole source entry. The 23 Oct 2026 infrastructure rebuild added
+        # five provincial sources; the original fourteen must all remain.
+        provincial = {"review_online", "letaba_herald", "limpopo_chronicle",
+                      "vhembe_dm", "polokwane_municipality"}
+        original = [s for s in SOURCES if s["source_key"] not in provincial]
+        self.assertEqual(len(original), 14)
+        self.assertEqual(len(SOURCES), 19)
 
 
 class TestActorTypeThreading(unittest.TestCase):

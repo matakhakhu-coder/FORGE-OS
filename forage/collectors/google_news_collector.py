@@ -80,6 +80,11 @@ SOURCE_ID = __manifest__["id"]
 _FORGE_DB_ENV = os.environ.get("FORGE_DB")
 DB_PATH = Path(_FORGE_DB_ENV) if _FORGE_DB_ENV else BASE_DIR / "database.db"
 
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
+from forage.collectors import infra_signals as _infra  # noqa: E402
+
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
     from core.pipeline.ingest import sanitize_text
@@ -294,7 +299,11 @@ def _parse_rss_items(xml_bytes: bytes, query: str, days: int) -> list[dict]:
                 if item_dt < cutoff:
                     continue
             except ValueError:
-                pass  # If we can't parse the date, include the item anyway
+                # If we can't parse the date, include the item anyway, flagged
+                parsed_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                date_unparsed = True
+            else:
+                date_unparsed = False
 
             items.append({
                 "title": title,
@@ -304,6 +313,7 @@ def _parse_rss_items(xml_bytes: bytes, query: str, days: int) -> list[dict]:
                 "description": description,
                 "source_name": source_name,
                 "query": query,
+                "date_unparsed": date_unparsed,
             })
         except Exception:
             continue
@@ -321,8 +331,14 @@ def _build_external_id(title: str, pubdate: str) -> str:
     return "gnews:" + hashlib.sha256(raw).hexdigest()[:16]
 
 
-def build_signal(item: dict, is_crime: bool) -> dict:
-    """Convert a parsed RSS item into a FORGE signal dict."""
+def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dict:
+    """Convert a parsed RSS item into a FORGE signal dict.
+
+    Infrastructure events (23 Oct 2026): a story infra_signals.classify()
+    reads as an infrastructure event goes to INFRASTRUCTURE whatever the
+    query was, with its event type, kind and a location candidate in
+    metadata. Lat/lng stay empty; the candidate is for review.
+    """
     title_raw = item["title"]
     description_raw = item.get("description", "")
     source_name = item.get("source_name", "")
@@ -330,6 +346,10 @@ def build_signal(item: dict, is_crime: bool) -> dict:
 
     # Stream routing
     stream = "CRIME_INTEL" if is_crime else "GLOBAL"
+    is_infra, infra_meta = _infra.infra_metadata(
+        _strip_html(title_raw), _strip_html(description_raw), province=province)
+    if is_infra and infra_meta.get("infra_role") != "context":
+        stream = "INFRASTRUCTURE"
 
     # Clean content
     title_clean = sanitize_text(_strip_html(title_raw))[:300]
@@ -348,6 +368,10 @@ def build_signal(item: dict, is_crime: bool) -> dict:
         "stream_reason": "crime_context_match" if is_crime else "general_media",
         "pubdate_raw": item.get("pubdate", ""),
     }
+    if infra_meta:
+        metadata.update(infra_meta)
+    if item.get("date_unparsed"):
+        metadata["date_unparsed"] = True
 
     return {
         "signal_id": str(uuid.uuid4()),
@@ -363,7 +387,8 @@ def build_signal(item: dict, is_crime: bool) -> dict:
         "stream": stream,
         "relevance_score": 1.5,
         "source_type": "live",
-        "is_priority": 1 if is_crime else 0,
+        "is_priority": 1 if (is_crime or (stream == "INFRASTRUCTURE"
+                                          and infra_meta.get("location_candidate"))) else 0,
         "gravity_score": 0.30,
     }
 
@@ -401,6 +426,10 @@ def persist_signals(signals: list[dict], dry_run: bool = False) -> int:
     try:
         for sig in signals:
             try:
+                if sig["stream"] == "INFRASTRUCTURE":
+                    m = json.loads(sig["metadata_json"] or "{}")
+                    m = _infra.link_supporting(conn, m, sig["timestamp"])
+                    sig["metadata_json"] = json.dumps(m, ensure_ascii=False)
                 conn.execute(INSERT_SQL, (
                     sig["signal_id"],
                     sig["source"],
@@ -438,9 +467,49 @@ def persist_signals(signals: list[dict], dry_run: bool = False) -> int:
 # Main Entry Point
 # ══════════════════════════════════════════════════════════════════════════════
 
+# ── Infrastructure preset (23 Oct 2026) ──────────────────────────────────────
+# The manual method that found the Limpopo infrastructure incidents ran
+# town x keyword Google News queries for the province's towns; the baseline
+# default (actor names from the DB) produced 0 queries on the authoritative
+# copy, and hand-typed province-level keywords found 6 of 11.
+INFRA_TERMS = ("cable theft", "water outage", "power outage")
+INFRA_PROVINCE_TERMS = ("cable theft", "substation vandalism", "transformer theft",
+                        "Eskom outage", "water crisis", "sewage spill", "bridge collapse",
+                        "pothole road", "infrastructure vandalism", "copper cable arrested")
+
+
+# District seats and service hubs the manual Limpopo method searched. Other
+# provinces fall back to the gazetteer's administrative seats and big towns.
+INFRA_HUBS = {
+    "Limpopo": ["Polokwane", "Seshego", "Mankweng", "Lebowakgomo", "Tzaneen", "Phalaborwa",
+                "Giyani", "Thohoyandou", "Malamulele", "Louis Trichardt", "Musina", "Mokopane",
+                "Modimolle", "Bela-Bela", "Lephalale", "Thabazimbi", "Burgersfort", "Jane Furse",
+                "Groblersdal", "Marble Hall"],
+}
+
+
+def infra_queries(province: str, max_towns: int = 20) -> list[str]:
+    """Town x keyword queries for a province."""
+    towns = list(INFRA_HUBS.get(province, []))[:max_towns]
+    if not towns:
+        ranked = {}
+        for rows in _infra._places().values():
+            for p in rows:
+                fc = str(p.get("feature_code", ""))
+                if p["province"] == province and (fc.startswith(("PPLA", "PPLC"))
+                                                  or (p.get("population") or 0) >= 10000):
+                    ranked[p["name"]] = max(ranked.get(p["name"], 0), int(p.get("population") or 0))
+        towns = sorted(ranked, key=lambda n: -ranked[n])[:max_towns]
+    q = [f"{province} {t}" for t in INFRA_PROVINCE_TERMS]
+    for t in towns:
+        q += [f"{t} {term}" for term in INFRA_TERMS]
+    return q
+
+
 def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERIES,
                   keywords: list[str] | None = None,
-                  dry_run: bool = False) -> dict:
+                  dry_run: bool = False,
+                  infra_province: str | None = None) -> dict:
     """
     Main collection function.
     Returns a summary dict for pipeline telemetry.
@@ -451,7 +520,11 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     print(f"[gnews] Days: {days} | Max queries: {max_queries} | Dry run: {dry_run}")
 
     # Resolve query list
-    if keywords:
+    if infra_province:
+        queries = (keywords or []) + infra_queries(infra_province)
+        queries = queries[:max_queries]
+        print(f"[gnews] Infrastructure preset for {infra_province}: {len(queries)} queries")
+    elif keywords:
         queries = keywords[:max_queries]
         print(f"[gnews] Using {len(queries)} CLI keyword(s): {queries}")
     else:
@@ -459,7 +532,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         print(f"[gnews] Loaded {len(queries)} actor queries from database")
 
     if not queries:
-        print("[gnews] No queries to process — exiting")
+        print("[gnews] No queries to process — exiting. Actor mode needs actors in "
+              "the DB; pass --keywords or --infra-province to search anyway.")
         duration = time.time() - start_time
         log_run(DB_PATH, SOURCE_ID, "success", 0, 0, duration)
         return {"status": "done", "fetched": 0, "inserted": 0, "duration_s": duration}
@@ -467,6 +541,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     # Collect from Google News RSS
     all_signals: list[dict] = []
     total_articles = 0
+    off_province = 0
+    seen_ids: set[str] = set()
 
     for i, query in enumerate(queries):
         print(f"[gnews] [{i+1}/{len(queries)}] Searching for: {query}")
@@ -490,7 +566,14 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         # Build signals from items
         for item in items:
             try:
-                sig = build_signal(item, is_crime)
+                if infra_province and not _infra.province_mentioned(
+                        f"{item['title']} {_strip_html(item.get('description', ''))}", infra_province):
+                    off_province += 1
+                    continue
+                sig = build_signal(item, is_crime, province=infra_province)
+                if sig["external_id"] in seen_ids:
+                    continue  # the same story from two queries
+                seen_ids.add(sig["external_id"])
                 all_signals.append(sig)
             except Exception as e:
                 print(f"[gnews]   Signal build error: {e}")
@@ -501,6 +584,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
 
     print(f"[gnews] Total articles found: {total_articles}")
     print(f"[gnews] Signals built: {len(all_signals)}")
+    if infra_province:
+        print(f"[gnews] Dropped {off_province} stories that name no place in {infra_province}")
 
     # Stream distribution
     stream_counts: dict[str, int] = {}
@@ -527,6 +612,7 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         "inserted": inserted,
         "duration_s": duration,
         "stream_counts": stream_counts,
+        "off_province": off_province,
     }
 
 
@@ -551,6 +637,9 @@ if __name__ == "__main__":
                         help="Comma-separated keywords to search (overrides actor DB query)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Fetch and parse without writing to database")
+    parser.add_argument("--infra-province", type=str, default=None,
+                        help="Infrastructure preset: town x keyword queries for this province "
+                             "(e.g. Limpopo); drops stories that name no place in it")
 
     args = parser.parse_args()
 
@@ -563,4 +652,5 @@ if __name__ == "__main__":
         max_queries=args.max_queries,
         keywords=kw_list,
         dry_run=args.dry_run,
+        infra_province=args.infra_province,
     )

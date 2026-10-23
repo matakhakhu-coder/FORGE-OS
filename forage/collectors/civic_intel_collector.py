@@ -45,6 +45,8 @@ __manifest__ = {
 
 import hashlib
 import json
+import os
+import time
 import re
 import sqlite3
 import sys
@@ -52,6 +54,12 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
+
+try:
+    from forage.collectors import infra_signals as _infra
+except ImportError:  # run as a script from the collectors directory
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from forage.collectors import infra_signals as _infra
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -177,7 +185,8 @@ SOURCES = [
         "label":               "GroundUp (Google News)",
         "fetch_mode":          "google_news",
         "url":                 "https://news.google.com/rss/search?q=site:groundup.org.za&hl=en-ZA&gl=ZA&ceid=ZA:en",
-        "stream":              "INFRASTRUCTURE",
+        # Was INFRASTRUCTURE for every GroundUp story (assaults, court cases).
+        "stream":              "GLOBAL",
         "base_relevance":      1.3,
         "is_priority_default": 0,
     },
@@ -213,7 +222,10 @@ SOURCES = [
         "label":               "Eskom (Google News)",
         "fetch_mode":          "google_news",
         "url":                 "https://news.google.com/rss/search?q=Eskom+loadshedding+OR+%22load+shedding%22+OR+%22power+outage%22+south+africa&hl=en-ZA&gl=ZA&ceid=ZA:en",
-        "stream":              "INFRASTRUCTURE",
+        # 23 Oct 2026 benchmark: a blanket INFRASTRUCTURE default put Eskom
+        # corporate and tariff news in the stream. Stories now reach
+        # INFRASTRUCTURE only when infra_signals.classify() finds an event.
+        "stream":              "GLOBAL",
         "base_relevance":      1.3,
         "is_priority_default": 0,
     },
@@ -222,7 +234,7 @@ SOURCES = [
         "label":               "Municipal Infrastructure (Google News)",
         "fetch_mode":          "google_news",
         "url":                 "https://news.google.com/rss/search?q=south+africa+municipality+%22water+outage%22+OR+%22sewage%22+OR+%22road+collapse%22+OR+%22infrastructure%22&hl=en-ZA&gl=ZA&ceid=ZA:en",
-        "stream":              "INFRASTRUCTURE",
+        "stream":              "GLOBAL",
         "base_relevance":      1.3,
         "is_priority_default": 0,
     },
@@ -273,6 +285,74 @@ SOURCES = [
         "url":                 "https://www.citizen.co.za/news/feed/",
         "stream":              "GLOBAL",
         "base_relevance":      1.3,
+        "is_priority_default": 0,
+    },
+
+    # ── Provincial local outlets and municipal notices (added 23 Oct 2026) ─
+    # The manual standard search found 10 of 11 Limpopo infrastructure
+    # incidents in these feeds and in municipal notices; the national feeds
+    # above found 1. "province" lets infra_signals.locate() prefer places in
+    # that province; "pages" reads older feed pages (WordPress ?paged=N) so
+    # a run reaches back across the window; "area_fallback" is the area a
+    # district municipality's own notice covers when no town is named.
+    # Zoutpansberger and Limpopo Mirror have no readable feed (JS sites);
+    # citizen.co.za/bosvelder/feed/ and /mokopane-bulletin/feed/ redirect to
+    # an unrelated article page, so those two titles are not wired in.
+    {
+        "source_key":          "review_online",
+        "label":               "Review Online (Polokwane)",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.citizen.co.za/review-online/feed/",
+        "stream":              "GLOBAL",
+        "province":            "Limpopo",
+        "pages":               10,
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+    },
+    {
+        "source_key":          "letaba_herald",
+        "label":               "Letaba Herald (Tzaneen)",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.citizen.co.za/letaba-herald/feed/",
+        "stream":              "GLOBAL",
+        "province":            "Limpopo",
+        "pages":               10,
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+    },
+    {
+        "source_key":          "limpopo_chronicle",
+        "label":               "Limpopo Chronicle",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.limpopochronicle.co.za/feed/",
+        "stream":              "GLOBAL",
+        "province":            "Limpopo",
+        "pages":               10,
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+    },
+    {
+        "source_key":          "vhembe_dm",
+        "label":               "Vhembe District Municipality notices",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.vhembe.gov.za/feed/",
+        "stream":              "GLOBAL",
+        "province":            "Limpopo",
+        "pages":               3,
+        "area_fallback":       "Vhembe District",
+        "base_relevance":      1.5,
+        "is_priority_default": 0,
+    },
+    {
+        "source_key":          "polokwane_municipality",
+        "label":               "Polokwane Municipality notices",
+        "fetch_mode":          "rss_direct",
+        "url":                 "https://www.polokwane.gov.za/feed/",
+        "stream":              "GLOBAL",
+        "province":            "Limpopo",
+        "pages":               3,
+        "area_fallback":       "Polokwane",
+        "base_relevance":      1.5,
         "is_priority_default": 0,
     },
 ]
@@ -345,13 +425,52 @@ def fetch_rss_direct(source: dict) -> list:
     try:
         feed = feedparser.parse(raw)
         if feed.entries:
-            return feed.entries
+            entries = list(feed.entries)
+            for page in range(2, int(source.get("pages", 1)) + 1):
+                if not entries or not _older_than_window(entries[-1]):
+                    more = _raw_get(f"{source['url']}?paged={page}")
+                    if more is None:  # one retry: busy local sites time out
+                        time.sleep(2)
+                        more = _raw_get(f"{source['url']}?paged={page}")
+                    if more is None:
+                        print(f"  [WARN] {source['label']}: page {page} unreachable; "
+                              f"older items in the window are missing")
+                        break
+                    got = feedparser.parse(more).entries
+                    if not got:
+                        break
+                    entries.extend(got)
+                else:
+                    break
+            return entries
         if feed.bozo:
             print(f"  [warn] feed bozo: {feed.bozo_exception}")
         return []
     except Exception as exc:
         print(f"  [error] feedparser: {exc}")
         return []
+
+
+# Publication window: items older than this are not collected (the 23 Oct
+# 2026 baseline kept GroundUp and Oxpeckers items back to 2017). Override
+# with --days or FORGE_CIVIC_WINDOW_DAYS; 0 disables the window.
+WINDOW_DAYS = int(os.environ.get("FORGE_CIVIC_WINDOW_DAYS", "30") or 0)
+
+
+def _entry_ts(entry: dict) -> Optional[str]:
+    if entry.get("published_parsed"):
+        try:
+            return _infra.iso_utc(datetime(*entry["published_parsed"][:6], tzinfo=timezone.utc))
+        except Exception:
+            return None
+    if entry.get("published"):
+        return entry.get("published")
+    return None
+
+
+def _older_than_window(entry: dict) -> bool:
+    ts = _entry_ts(entry)
+    return bool(ts and WINDOW_DAYS and not _infra.in_window(ts, WINDOW_DAYS))
 
 
 def fetch_google_news(source: dict) -> list:
@@ -474,16 +593,18 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
     content = re.sub(r"\s+", " ", content)[:2000]
 
     # Timestamp
+    # ISO UTC with Z, the signals table's dominant format (the baseline wrote
+    # 'YYYY-MM-DD HH:MM:SS' here and ISO in google_news_collector).
     published = None
     if entry.get("published_parsed"):
         try:
-            published = datetime(
+            published = _infra.iso_utc(datetime(
                 *entry["published_parsed"][:6], tzinfo=timezone.utc
-            ).strftime("%Y-%m-%d %H:%M:%S")
+            ))
         except Exception:
             pass
     if not published:
-        published = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        published = _infra.iso_utc(datetime.now(timezone.utc))
 
     # Stable external ID
     link     = entry.get("link") or entry.get("id") or title
@@ -498,6 +619,28 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         source["base_relevance"],
         source["is_priority_default"],
     )
+
+    # Infrastructure events win over the keyword rules: cable theft with an
+    # arrest is an infrastructure event (the arrest is evidence), not crime.
+    is_infra, infra_meta = _infra.infra_metadata(title, content, province=source.get("province"))
+    if is_infra and infra_meta.get("infra_role") != "context":
+        stream = "INFRASTRUCTURE"
+        priority = 1 if infra_meta.get("infra_kind") in ("incident", "arrest") and infra_meta.get("location_candidate") else priority
+    elif is_infra:
+        # projects, policy and procurement stories about infrastructure are
+        # context: keep the rule-based stream, but never INFRASTRUCTURE by
+        # default alone
+        if stream == "INFRASTRUCTURE":
+            stream = "GLOBAL"
+    elif stream == "INFRASTRUCTURE":
+        # a keyword rule (e.g. bare "municipality" or "Eskom") is not an event
+        stream = "GLOBAL"
+        infra_meta = {"stream_reason": "infra keyword without an event; not routed to INFRASTRUCTURE"}
+    if is_infra and "location_candidate" not in infra_meta and source.get("area_fallback"):
+        infra_meta["location_candidate"] = {
+            "place": source["area_fallback"], "province": source.get("province", ""),
+            "lat": None, "lng": None, "precision": "issuing_municipality_area",
+            "note": "The notice names no town the gazetteer knows; area of the issuing municipality."}
 
     return {
         "signal_id":       str(uuid.uuid4()),
@@ -518,6 +661,7 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         "relevance_score": relevance,
         "is_priority":     priority,
         "url":             link if link != title else None,
+        "infra_meta":      infra_meta,
     }
 
 
@@ -716,11 +860,14 @@ def run(db_path: Path = DB_PATH) -> dict:
         print(f"[{label}] [{mode}] {url_display}")
 
         entries = fetch_source(source)
-        new_s = skipped_s = blocked_s = near_dup_s = 0
+        new_s = skipped_s = blocked_s = near_dup_s = stale_s = 0
 
         for entry in entries:
             sig = entry_to_signal(entry, source)
             if sig is None:
+                continue
+            if WINDOW_DAYS and not _infra.in_window(sig["timestamp"], WINDOW_DAYS):
+                stale_s += 1
                 continue
 
             # ── Tier 0: external_id exact dedup (existing behaviour) ──────
@@ -749,6 +896,10 @@ def run(db_path: Path = DB_PATH) -> dict:
             meta = {}
             if sig.get("url"):
                 meta["url"] = sig["url"]
+            if sig.get("infra_meta"):
+                meta.update(sig["infra_meta"])
+                if sig["stream"] == "INFRASTRUCTURE":
+                    meta = _infra.link_supporting(conn, meta, sig["timestamp"])
             if action == "near_dup":
                 meta["near_duplicate"] = True
                 meta["near_dup_sim"]   = round(sim, 3)
@@ -759,7 +910,7 @@ def run(db_path: Path = DB_PATH) -> dict:
                     f"sim={sim:.2f} → inserting with tag"
                 )
 
-            meta_json = json.dumps(meta) if meta else None
+            meta_json = json.dumps(meta, ensure_ascii=False) if meta else None
 
             try:
                 conn.execute("""
@@ -794,6 +945,8 @@ def run(db_path: Path = DB_PATH) -> dict:
             "skipped":  skipped_s,
             "blocked":  blocked_s,
             "near_dup": near_dup_s,
+            "stale":    stale_s,
+            "fetched":  len(entries),
             "mode":     mode,
         }
         total_new      += new_s
@@ -815,7 +968,7 @@ def run(db_path: Path = DB_PATH) -> dict:
     # ── Summary + partial_success status ──────────────────────────────────
     sources_ok = sum(
         1 for v in per_source.values()
-        if (v["new"] + v["skipped"]) > 0
+        if (v["new"] + v["skipped"] + v.get("stale", 0) + v.get("blocked", 0)) > 0
     )
     if total_errors > 0 and sources_ok == 0:
         run_status = "error"
@@ -862,7 +1015,11 @@ if __name__ == "__main__":
     _parser = _ap.ArgumentParser(description="FORGE Civic Intelligence Collector (SA)")
     _parser.add_argument("--db", type=Path, default=None, help="Path to database.db")
     _parser.add_argument("--dry-run", action="store_true", help="Fetch and display without DB writes")
+    _parser.add_argument("--days", type=int, default=None,
+                         help=f"Publication window in days (default {WINDOW_DAYS}; 0 = no window)")
     _args = _parser.parse_args()
+    if _args.days is not None:
+        WINDOW_DAYS = _args.days
     db = _forge_db_arg(_args.db) if _args.db else DB_PATH
     if _args.dry_run:
         print("[civic_intel] DRY RUN — would connect to:", db)
