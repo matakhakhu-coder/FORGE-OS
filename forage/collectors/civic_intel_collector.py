@@ -60,10 +60,12 @@ from typing import Optional
 try:
     from forage.collectors import infra_signals as _infra
     from forage.collectors import pi_signals as _pi
+    from forage.collectors import crime_signals as _crime
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
     from forage.collectors import pi_signals as _pi
+    from forage.collectors import crime_signals as _crime
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -739,6 +741,18 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         # a keyword rule (e.g. bare "municipality" or "Eskom") is not an event
         stream = "GLOBAL"
         infra_meta = {"stream_reason": "infra keyword without an event; not routed to INFRASTRUCTURE"}
+    # Crime & Security (Batch 2, 23 Oct 2026): killings, attempted murders and
+    # unresolved deaths go by the story's words, whatever the source's default
+    # stream or the keyword rules said. Road crashes, drownings and accidents
+    # a keyword rule put in CRIME_INTEL move out.
+    stream, crime_hit, crime_meta = _crime.route(stream, title, content, province=source.get("province"),
+                                                 sa_source=source.get("fetch_mode") != "google_news")
+    if crime_hit:
+        priority = 1
+    if crime_meta:
+        infra_meta = {**(infra_meta or {}), **crime_meta}
+        if crime_meta.get("crime_route") in ("moved_in", "kept", "moved_out"):
+            infra_meta["stream_reason"] = "crime: " + crime_meta["crime_reason"]
     # Priority Intelligence (23 Oct 2026): organised, political and
     # state-level stories go to PRIORITY. Overlaps with a killing or an
     # infrastructure event follow FORGE_PI_MODE (see pi_signals).

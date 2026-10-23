@@ -85,6 +85,7 @@ if str(BASE_DIR) not in sys.path:
 
 from forage.collectors import infra_signals as _infra  # noqa: E402
 from forage.collectors import pi_signals as _pi  # noqa: E402
+from forage.collectors import crime_signals as _crime  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -351,6 +352,12 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
         _strip_html(title_raw), _strip_html(description_raw), province=province)
     if is_infra and infra_meta.get("infra_role") != "context":
         stream = "INFRASTRUCTURE"
+    # Crime & Security (Batch 2, 23 Oct 2026): killings, attempted murders and
+    # unresolved deaths go by the story's words, not the query. Road crashes,
+    # drownings and accidents the query put in CRIME_INTEL move out.
+    stream, crime_hit, crime_meta = _crime.route(
+        stream, _strip_html(title_raw), _strip_html(description_raw), province=province)
+    crime_moved_out = crime_meta.get("crime_route") == "moved_out"
     # Priority Intelligence (23 Oct 2026): the story's own words decide,
     # not the query. Overlaps follow FORGE_PI_MODE (see pi_signals).
     stream, pi_hit, pi_meta = _pi.route(
@@ -376,6 +383,10 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
     }
     if infra_meta:
         metadata.update(infra_meta)
+    if crime_meta:
+        metadata.update(crime_meta)
+        if crime_meta.get("crime_route") in ("moved_in", "kept", "moved_out"):
+            metadata["stream_reason"] = "crime: " + crime_meta["crime_reason"]
     if pi_meta:
         metadata.update(pi_meta)
         if stream == _pi.STREAM:
@@ -397,7 +408,8 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
         "stream": stream,
         "relevance_score": 1.5,
         "source_type": "live",
-        "is_priority": 1 if (is_crime or pi_hit or (stream == "INFRASTRUCTURE"
+        "is_priority": 1 if ((is_crime and not crime_moved_out) or crime_hit or pi_hit
+                             or (stream == "INFRASTRUCTURE"
                                                     and infra_meta.get("location_candidate"))) else 0,
         "gravity_score": 0.30,
     }
