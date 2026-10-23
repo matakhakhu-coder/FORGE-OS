@@ -27,7 +27,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-# ── Stream keyword lists (must match rss_collector.py exactly) ────────────────
+# ── Stream keyword lists (must match rss_collector.py exactly; both then apply pi_signals) ────────────────
 
 CRIME_KEYWORDS = [
     "arrest", "murder", "robbery", "drug bust", "trafficking",
@@ -53,7 +53,7 @@ PRIORITY_ARTICLE_KEYWORDS = [
 ]
 
 
-def classify_stream(title: str, content: str) -> str:
+def _keyword_stream(title: str, content: str) -> str:
     combined = (title + " " + (content or "")).lower()
     for kw in CRIME_KEYWORDS:
         if kw in combined:
@@ -65,6 +65,23 @@ def classify_stream(title: str, content: str) -> str:
         if kw in combined:
             return "PRIORITY"
     return "GLOBAL"
+
+
+def classify_stream(title: str, content: str) -> str:
+    """Keyword stream, then the Priority Intelligence rules (23 Oct 2026).
+
+    A story pi_signals reads as organised, political or state-level crime
+    goes to PRIORITY; one that is also a killing or an infrastructure event
+    follows FORGE_PI_MODE. The older PRIORITY keyword path above still runs.
+    """
+    base = _keyword_stream(title, content)
+    try:
+        from forage.collectors import pi_signals as _pi
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from forage.collectors import pi_signals as _pi
+    stream, _hit, _meta = _pi.route(base, title, content or "")
+    return stream
 
 
 def resolve_db(override: str | None = None) -> Path:

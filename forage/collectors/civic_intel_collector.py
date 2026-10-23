@@ -18,7 +18,9 @@ Raw bytes from requests are passed directly into feedparser.parse() or
 BeautifulSoup — feedparser never makes its own HTTP calls.
 
 Stream classification:
-  CRIME_INTEL     — investigative journalism, SAPS, Hawks, NPA, corruption
+  PRIORITY        — organised, political and state-level crime the Hawks,
+                    Crime Intelligence, NICOC or SSA would own (pi_signals)
+  CRIME_INTEL     — street crime, SAPS, courts, investigative journalism
   INFRASTRUCTURE  — Eskom, water, municipal, civic decay
 
 All civic intel signals start at relevance_score=1.5.
@@ -57,9 +59,11 @@ from typing import Optional
 
 try:
     from forage.collectors import infra_signals as _infra
+    from forage.collectors import pi_signals as _pi
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
+    from forage.collectors import pi_signals as _pi
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -266,6 +270,101 @@ SOURCES = [
         "stream":              "CRIME_INTEL",
         "base_relevance":      1.5,
         "is_priority_default": 1,
+    },
+
+    # ── Priority Intelligence searches (added 23 Oct 2026) ─────────────────
+    # Base stream GLOBAL: pi_signals.route() decides PRIORITY from the story
+    # text, so a search hit alone never lands in PI. when:30d makes Google
+    # News return recent stories; without it most hits were months old.
+    {
+        "source_key":          "pi_siu",
+        "label":               "SIU investigations (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22Special+Investigating+Unit%22+proclamation+OR+investigation+OR+tribunal+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_idac",
+        "label":               "NPA Investigating Directorate (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22Investigating+Directorate%22+OR+IDAC+NPA+corruption+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_extortion",
+        "label":               "Extortion and construction mafias (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22construction+mafia%22+OR+%22extortion+syndicate%22+OR+%22extortion+racket%22+South+Africa+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_political_violence",
+        "label":               "Political killings (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=councillor+OR+whistleblower+OR+%22taxi+boss%22+%22shot+dead%22+OR+assassinated+OR+%22political+killings%22+South+Africa+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_sabotage",
+        "label":               "Sabotage of Eskom and Transnet (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=sabotage+South+Africa+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_illegal_mining",
+        "label":               "Illegal mining syndicates (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22illegal+mining%22+syndicate+OR+%22zama+zama%22+OR+%22Vala+Umgodi%22+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_cit",
+        "label":               "Cash-in-transit gangs (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22cash-in-transit%22+heist+OR+gang+OR+suspects+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_trafficking",
+        "label":               "Cross-border syndicates (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=syndicate+drugs+OR+trafficking+OR+smuggling+OR+firearms+arrested+South+Africa+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
+    },
+    {
+        "source_key":          "pi_crime_intelligence",
+        "label":               "SAPS Crime Intelligence (Google News)",
+        "fetch_mode":          "google_news",
+        "url":                 "https://news.google.com/rss/search?q=%22Crime+Intelligence%22+SAPS+when:30d&hl=en-ZA&gl=ZA&ceid=ZA:en",
+        "stream":              "GLOBAL",
+        "base_relevance":      1.4,
+        "is_priority_default": 0,
+        "pi_source":           True,
     },
 
     # ── Stable 1.2.1: ACLED replacement — SA security & conflict coverage ─
@@ -619,6 +718,10 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         source["base_relevance"],
         source["is_priority_default"],
     )
+    # PI searches pull in foreign and unrelated crime news; the keyword rules
+    # must not file it under CRIME_INTEL. Only PI routing (below) moves these.
+    if source.get("pi_source"):
+        stream, priority = source["stream"], source["is_priority_default"]
 
     # Infrastructure events win over the keyword rules: cable theft with an
     # arrest is an infrastructure event (the arrest is evidence), not crime.
@@ -636,6 +739,18 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
         # a keyword rule (e.g. bare "municipality" or "Eskom") is not an event
         stream = "GLOBAL"
         infra_meta = {"stream_reason": "infra keyword without an event; not routed to INFRASTRUCTURE"}
+    # Priority Intelligence (23 Oct 2026): organised, political and
+    # state-level stories go to PRIORITY. Overlaps with a killing or an
+    # infrastructure event follow FORGE_PI_MODE (see pi_signals).
+    stream, pi_hit, pi_meta = _pi.route(stream, title, content, province=source.get("province"),
+                                        infra_meta=infra_meta if is_infra else None,
+                                        sa_source=source.get("fetch_mode") != "google_news")
+    if pi_hit:
+        priority = 1
+    if pi_meta:
+        infra_meta = {**(infra_meta or {}), **pi_meta}
+        if stream == _pi.STREAM:
+            infra_meta["stream_reason"] = "pi: " + pi_meta["pi_reason"]
     if is_infra and "location_candidate" not in infra_meta and source.get("area_fallback"):
         infra_meta["location_candidate"] = {
             "place": source["area_fallback"], "province": source.get("province", ""),

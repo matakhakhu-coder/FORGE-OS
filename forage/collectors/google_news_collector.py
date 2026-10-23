@@ -84,6 +84,7 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from forage.collectors import infra_signals as _infra  # noqa: E402
+from forage.collectors import pi_signals as _pi  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -350,6 +351,11 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
         _strip_html(title_raw), _strip_html(description_raw), province=province)
     if is_infra and infra_meta.get("infra_role") != "context":
         stream = "INFRASTRUCTURE"
+    # Priority Intelligence (23 Oct 2026): the story's own words decide,
+    # not the query. Overlaps follow FORGE_PI_MODE (see pi_signals).
+    stream, pi_hit, pi_meta = _pi.route(
+        stream, _strip_html(title_raw), _strip_html(description_raw), province=province,
+        infra_meta=infra_meta if is_infra else None)
 
     # Clean content
     title_clean = sanitize_text(_strip_html(title_raw))[:300]
@@ -370,6 +376,10 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
     }
     if infra_meta:
         metadata.update(infra_meta)
+    if pi_meta:
+        metadata.update(pi_meta)
+        if stream == _pi.STREAM:
+            metadata["stream_reason"] = "pi: " + pi_meta["pi_reason"]
     if item.get("date_unparsed"):
         metadata["date_unparsed"] = True
 
@@ -387,8 +397,8 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
         "stream": stream,
         "relevance_score": 1.5,
         "source_type": "live",
-        "is_priority": 1 if (is_crime or (stream == "INFRASTRUCTURE"
-                                          and infra_meta.get("location_candidate"))) else 0,
+        "is_priority": 1 if (is_crime or pi_hit or (stream == "INFRASTRUCTURE"
+                                                    and infra_meta.get("location_candidate"))) else 0,
         "gravity_score": 0.30,
     }
 
@@ -509,7 +519,8 @@ def infra_queries(province: str, max_towns: int = 20) -> list[str]:
 def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERIES,
                   keywords: list[str] | None = None,
                   dry_run: bool = False,
-                  infra_province: str | None = None) -> dict:
+                  infra_province: str | None = None,
+                  pi: bool = False, pi_province: str | None = None) -> dict:
     """
     Main collection function.
     Returns a summary dict for pipeline telemetry.
@@ -520,7 +531,16 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     print(f"[gnews] Days: {days} | Max queries: {max_queries} | Dry run: {dry_run}")
 
     # Resolve query list
-    if infra_province:
+    pi_query_set: set = set()
+    if pi or pi_province:
+        # when:Nd asks Google News for recent stories; PI searches without it
+        # mostly return months-old coverage, which the window then drops.
+        pi_list = [f"{q} when:{days}d" for q in _pi.pi_queries(pi_province)]
+        pi_query_set = set(pi_list)
+        queries = ((keywords or []) + pi_list)[:max_queries]
+        print(f"[gnews] Priority Intelligence preset{' for ' + pi_province if pi_province else ''}: "
+              f"{len(queries)} queries")
+    elif infra_province:
         queries = (keywords or []) + infra_queries(infra_province)
         queries = queries[:max_queries]
         print(f"[gnews] Infrastructure preset for {infra_province}: {len(queries)} queries")
@@ -561,7 +581,11 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         total_articles += len(items)
 
         # Determine crime context for the entire query
-        is_crime = _is_crime_context(query)
+        # PI preset searches return many foreign and unrelated stories; they
+        # must not land in the killings queue (CRIME_INTEL) just because the
+        # query had a crime word. PI routing still sends a PI story that is
+        # also a killing home to CRIME_INTEL as an escalation candidate.
+        is_crime = False if query in pi_query_set else _is_crime_context(query)
 
         # Build signals from items
         for item in items:
@@ -641,6 +665,12 @@ if __name__ == "__main__":
                         help="Infrastructure preset: town x keyword queries for this province "
                              "(e.g. Limpopo); drops stories that name no place in it")
 
+    parser.add_argument("--pi", action="store_true",
+                        help="Priority Intelligence preset: national organised, political and "
+                             "state-level crime searches (raise --max-queries to run them all)")
+    parser.add_argument("--pi-province", type=str, default=None,
+                        help="Priority Intelligence preset plus province-named searches")
+
     args = parser.parse_args()
 
     kw_list = None
@@ -653,4 +683,6 @@ if __name__ == "__main__":
         keywords=kw_list,
         dry_run=args.dry_run,
         infra_province=args.infra_province,
+        pi=args.pi,
+        pi_province=args.pi_province,
     )

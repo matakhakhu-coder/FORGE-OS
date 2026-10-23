@@ -149,7 +149,7 @@ PRIORITY_ARTICLE_KEYWORDS = [
 ]
 
 
-def classify_stream(title: str, content: str) -> str:
+def _keyword_stream(title: str, content: str) -> str:
     """
     Classify a signal into a curated stream via keyword matching.
     Evaluation order: CRIME_INTEL -> INFRASTRUCTURE -> PRIORITY -> GLOBAL
@@ -165,6 +165,23 @@ def classify_stream(title: str, content: str) -> str:
         if kw in combined:
             return "PRIORITY"
     return "GLOBAL"
+
+
+def classify_stream(title: str, content: str) -> str:
+    """Keyword stream, then the Priority Intelligence rules (23 Oct 2026).
+
+    A story pi_signals reads as organised, political or state-level crime
+    goes to PRIORITY; one that is also a killing or an infrastructure event
+    follows FORGE_PI_MODE. The older PRIORITY keyword path above still runs.
+    """
+    base = _keyword_stream(title, content)
+    try:
+        from forage.collectors import pi_signals as _pi
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from forage.collectors import pi_signals as _pi
+    stream, _hit, _meta = _pi.route(base, title, content or "")
+    return stream
 
 
 # ── XML namespace map ─────────────────────────────────────────────────────────
