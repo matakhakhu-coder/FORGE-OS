@@ -36,6 +36,10 @@ Thumbs.db
 # ZA-DIVERGENT publisher worktree temp dir
 .za-pub-worktree/
 
+# Article reader cache (Batch 6): local only, expires, never committed
+data/cache/article_reader/
+data/bench/article_fixtures_local/
+
 # ACLED OAuth token cache (contains live refresh token)
 forage/collectors/.acled_token_cache.json
 

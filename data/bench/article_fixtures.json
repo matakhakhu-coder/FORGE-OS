@@ -1,0 +1,385 @@
+{
+  "built": "2026-10-23T19:06:58+00:00",
+  "note": "Batch 6 step 1. Reader outcome per link for the bench cases Batch 6 targets. No article text is committed; saved pages for fetched links are in data/bench/article_fixtures_local/ (git-ignored).",
+  "cases": {
+    "lt_nrcs_feed_date": {
+      "headline": "NRCS seizes nearly R1 million in non-compliant goods in Louis Trichardt",
+      "bench_incident_date": "2026-09-15",
+      "links": [
+        {
+          "link": "https://www.limpopomirror.co.za/article/nrcs-seizes-nearly-r1m-in-non-compliant-goods-in-louis-trichardt",
+          "headline": "NRCS seizes nearly R1 million in non-compliant goods in Louis Trichardt",
+          "status": "blocked",
+          "reason": "lead_only: Batch 7 finding: headline, link and date only; no article text, no database key",
+          "resolution": "direct",
+          "article_url": "https://www.limpopomirror.co.za/article/nrcs-seizes-nearly-r1m-in-non-compliant-goods-in-louis-trichardt",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "louis-trichardt-thohoyandou-sweep-2026-10-23.md",
+        "outlet": "Limpopo Mirror / Zoutpansberger",
+        "feed_date": "2026-10-08",
+        "incident_date": "2026-09-15",
+        "summary": "Regulator inspection seized non-compliant goods worth about R976,000; Google News dated it 8 Oct, the article puts the inspection on 15 Sep."
+      }
+    },
+    "nc_p1_counterfeit": {
+      "headline": "Over R1 Million in Suspected Counterfeit Goods Seized in Newcastle CBD",
+      "bench_incident_date": null,
+      "links": [
+        {
+          "link": "https://newcastillian.com/2026/10/21/newcastle-counterfeit-goods-seizure-r1-million/",
+          "headline": "Over R1 Million in Suspected Counterfeit Goods Seized in Newcastle CBD",
+          "status": "blocked",
+          "reason": "needs_permission: robots.txt notice bans automated collection without express written permission; terms say caching needs written approval",
+          "resolution": "direct",
+          "article_url": "https://newcastillian.com/2026/10/21/newcastle-counterfeit-goods-seizure-r1-million/",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPNkdpN1EzUFBXYmV5NHFNWGhfTFVpZGZKcUhzUS1qLWRhTVg4Y1NlSDJaY095dC1LY1dXSDg3a2NnMXFhTnpnSm5waENudTNEd2QzdE80dzY2X2x2RnNQQjk2YVp4N0Y3eS1CT1NjN01BZHpCc0RiMHlYM1RlOW1yOFJ1T3VyVGZoNm5mTQ?oc=5",
+          "headline": "Over R1 Million in Suspected Counterfeit Goods Seized in Newcastle CBD - Newcastillian News",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-21",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "newcastle-sweep-2026-10-23.md",
+        "outlet": "Newcastillian News",
+        "published": "2026-10-21",
+        "incident_date": null,
+        "summary": "Police units seized about R1.05 million in suspected counterfeit and illicit goods from shops under search warrants; no arrests or charges reported; operation date not given. A reader comment on the page used the word 'fraudulent'."
+      }
+    },
+    "nc_p2_quad_bike": {
+      "headline": "Ithemba Security strikes suspected quad bike syndicate",
+      "bench_incident_date": "2026-09-30",
+      "links": [
+        {
+          "link": "https://www.citizen.co.za/northern-natal-news/news-headlines/2026/10/05/ithemba-security-strikes-suspected-quad-bike-syndicate/",
+          "headline": "Ithemba Security strikes suspected quad bike syndicate",
+          "status": "blocked",
+          "reason": "needs_permission: Caxton terms clause 2.7.1 bans automated monitoring or copying without prior written authority (covers Review Online and Northern Natal News)",
+          "resolution": "direct",
+          "article_url": "https://www.citizen.co.za/northern-natal-news/news-headlines/2026/10/05/ithemba-security-strikes-suspected-quad-bike-syndicate/",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNZWtiWUM0bVNXMlJhSm1mT25zbkkySEVCUmkyUmE2ZnMwOFRqWFdiaTI3U01DUXJ3aGxyeHg2dVJabXpqQW1pOV91ZkVaYWhGYUFBUE9qaTV0bFpPbEgyWXllcldua0hwNDQ5QU4xUGhzQ1FJblBpM0swMGpLbzF6bGNPaVFvUzBTU1JpeDZmQ0trZ1dJaG83UEJTSmZTTkpVTDVxY3BrQlBQSXl4cWVWNzJVemVEWks0THE3Rm9YNklqMW16VUE?oc=5",
+          "headline": "Suspected quad bike thieves nabbed in Schuinshoogte - The Citizen",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-05",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "newcastle-sweep-2026-10-23.md",
+        "outlet": "Newcastle Advertiser (Caxton)",
+        "published": "2026-10-05",
+        "incident_date": "2026-09-30",
+        "summary": "Two suspected syndicate members arrested while allegedly stripping a stolen quad bike in an open field in Schuinshoogte; private security company source."
+      }
+    },
+    "plk_88_firearms": {
+      "headline": "Police probe firearm syndicate after 88 guns disappear",
+      "bench_incident_date": "2026-09-27",
+      "links": [
+        {
+          "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/01/police-probe-firearm-syndicate-after-88-guns-disappear/",
+          "headline": "Police probe firearm syndicate after 88 guns disappear",
+          "status": "blocked",
+          "reason": "needs_permission: Caxton terms clause 2.7.1 bans automated monitoring or copying without prior written authority (covers Review Online and Northern Natal News)",
+          "resolution": "direct",
+          "article_url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/01/police-probe-firearm-syndicate-after-88-guns-disappear/",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOUzBIYnNkWDVZSEVoUlRpdXdYaWE2OWgyVG1xRkl1V1FsRUJOeEJWMFpfS0JCOGU3Q2FwS3lWUFl6ZE95dTdWNGhBS1VCMUtmckdUSHZ1cllFajRCMENSV0ZrRHpDZG9DN2V1TUw0aWhGZzQ3WXhUM2pEOG4zWERsQlR6QWNTUmJtVFFlWkV5RUNRT0Z1dmZqUjljX2o4b3NYelRVZzMzQVNRQ1QxS25uTlNqY1Q4ZFAyak1KTVFsWWg2NVRpU1dCNEI5Sjg?oc=5",
+          "headline": "Police probe firearm syndicate after 88 guns disappear - The Citizen",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-01",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "polokwane-sweep-2026-10-23.md",
+        "outlet": "Review Online (Caxton)",
+        "published": "2026-10-01",
+        "incident_date": "2026-09-27",
+        "conduct_date": "2026-05/2026-07",
+        "summary": "A former police volunteer allegedly posed as a firearm inspector between May and July; arrested about 27 Sep and charged with theft; one suspect so far."
+      }
+    },
+    "plk_airport_officers": {
+      "headline": "5 cops arrested at Polokwane airport",
+      "bench_incident_date": "2026-10-19",
+      "links": [
+        {
+          "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+          "headline": "5 cops arrested at Polokwane airport",
+          "status": "blocked",
+          "reason": "needs_permission: Caxton terms clause 2.7.1 bans automated monitoring or copying without prior written authority (covers Review Online and Northern Natal News)",
+          "resolution": "direct",
+          "article_url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/19/5-cops-arrested-at-polokwane-airport/",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMimgJBVV95cUxNbGV2ZENWSHFfYU53Z2Zza3QyNnozeUFYcjc4VkV5SXRtNDlkRTBIZ2FGOHJVTHVOSU1RQ1UxdjZZbFl3bUZmWTlxNXZNRDBBLUZXb0lrdHItLXNLZ2xWck01VTJyNU5KUXN1N0xXdFNweDhaUzVmRFREYi15UEpWZ0ZXY0hhakhNS2xDOEJBQzhLWjZJNjhGUDNLRU1yNXU5RnFOOFVOOVY1dmpwUHFibWlLQ1RMMmMxaXlWTTVBTk1RYVFBVnNlRkoxcllJbktGWlV2dFNLWmJlcXNoUkQyYzVLRjkxZnI1aG8zaEFiU3VybllMS3A5c05PZlctZFo0ajE0Y1djUV9QVkZUc2Z4aEwtNVdaYmk4QkE?oc=5",
+          "headline": "South African Police Service in Limpopo commended for the arrest of three police officers attached to Polokwane International Airport - Arrive Alive",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-20",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPSDF4TGdHQlh0OTAxOGVsUVM1eUttOXVKMHVpdmFSTzQ5NXozOFEzclo0TjVTUGV0MW1MbmxINlhzMlRMdzJkTHdxLUhhYktFWGE3aEJVQjdlTzM0WmpTUTNHVS01QjhLSzJkMkdZbU5OWjczeU5JbTd5ckpVUkZoR0dPN0VKWXJMbXdqazBCWDFUMzVnUExOMmdnLWNJMDNyaGdJNGNn?oc=5",
+          "headline": "Five police officers arrested at the Polokwane International Airport - SABC News",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-19",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "polokwane-sweep-2026-10-23.md",
+        "outlet": "Review Online (Caxton)",
+        "published": "2026-10-19",
+        "incident_date": "2026-10-19",
+        "conduct_date": "2025-04-17",
+        "summary": "Arrests on the evening of 19 Oct over 46 undocumented nationals who never reached the police station on 17 Apr 2025; bail on 20 Oct; back in court 30 Nov."
+      }
+    },
+    "nc_oosthuizen_court": {
+      "headline": "Oosthuizen court story (court step on an older case)",
+      "bench_incident_date": null,
+      "links": [
+        {
+          "link": "https://tabloidmedia.co.za/henrico-oosthuizen-murder-case-postponed-to-march-2027/",
+          "headline": "Oosthuizen court story (court step on an older case)",
+          "status": "read",
+          "reason": "saved locally as 73f3a71211af6eec.html",
+          "resolution": "direct",
+          "article_url": "https://tabloidmedia.co.za/henrico-oosthuizen-murder-case-postponed-to-march-2027/",
+          "feed_date": null,
+          "published": "2026-10-06T11:55:58+02:00",
+          "published_source": "json-ld datePublished",
+          "incident_date": "2025-12",
+          "incident_basis": "month only: \"in December 2025\"",
+          "date_mentions": [
+            {
+              "phrase": "4 March 2027",
+              "date": "2027-03-04",
+              "precision": "day",
+              "kind": "future",
+              "cue": "event"
+            },
+            {
+              "phrase": "4 March 2027",
+              "date": "2027-03-04",
+              "precision": "day",
+              "kind": "future",
+              "cue": "court"
+            },
+            {
+              "phrase": "in December 2025",
+              "date": "2025-12",
+              "precision": "month",
+              "kind": "past",
+              "cue": "event"
+            }
+          ],
+          "body_chars": 2931,
+          "body_sha256": "5c82f399e5a4520c0fc5a22c4ecafd5bcb9a082dc8d9c62b126cf9cb4741058b"
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQSFBQbldDM0tCNDAyUWJ1cmhRaUd3Z0ItaFJSZ2NfcWhLdDNXMWZib0xGem1fQjl1TGxMandZOG4zWlVPQmJmVDh6QXFBSnJjaTZpaHZwSC0wZXdOeVNqamZsZDZxNEIwWWZrN3hiZVFFc1IyejV4ZFhpN2cwaERMQTgtMHAyaVhSemc?oc=5",
+          "headline": "Henrico Oosthuizen murder case postponed to March 2027 - Tabloid Newspapers",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-06",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": null
+    },
+    "nc_mlambo_court": {
+      "headline": "Mlambo court story (court step on an older case)",
+      "bench_incident_date": null,
+      "links": [
+        {
+          "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPWDQ0VFRQZUc3cVhGbVR4Rjd4bzg4OVFoVnp0UGY5enJ5M2FmOEpfb21oTU0tTFRTOFh3cUZmMjZXTHZpc0ZZekpaZ1d5bkx5WWhHVkhrdVhPNW55U2FJY2tOZjFRTUJMVWtCbU50ZndsSUlyMHFoQzVZaVFSYXB5a0poeGxmeWh4OUhsbkJwQnA3dkhCMkxNbkJHSUpxVngxTXpzb3U5OGpibW80WUJFSVBoeFN2ZG1SNU9LYkxNamFjYWM?oc=5",
+          "headline": "Mlambo trial ends as judge seeks clarity from police - The Citizen",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-23",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "newcastle-sweep-2026-10-23.md",
+        "outlet": "The Citizen (Caxton)",
+        "published": "2026-10-23",
+        "incident_date": null,
+        "conduct_date": "2023",
+        "summary": "Court step in the Madadeni High Court on a 2023 case."
+      }
+    },
+    "musina_carrim": {
+      "headline": "Sulliman Carrim in Musina court over attempted theft of Absa vehicles",
+      "bench_incident_date": "2026-10-21",
+      "links": [
+        {
+          "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+          "headline": "Sulliman Carrim in Musina court over attempted theft of Absa vehicles",
+          "status": "blocked",
+          "reason": "needs_permission: Caxton terms clause 2.7.1 bans automated monitoring or copying without prior written authority (covers Review Online and Northern Natal News)",
+          "resolution": "direct",
+          "article_url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/22/sulliman-carrim-in-musina-court-over-attempted-theft-of-absa-vehicles/",
+          "feed_date": null,
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPS3lOWDFoRGRDWUo3bEQxWnY5NGdoc205Wk1rV1lKODVVdWRZM0dwRlhJWUY3cEphZWpXTGpFSGhTYUtqMHc2WHBhQlFRZ2NPNW1IZHN5eloyN2JmNmM0SlMtQ0paSUE3TTBIZFFEdGI2QUpNNzBmc0hvRjcwQkp6SG95RWlvaTItUy1WYlNxcDVZNllTeWNuTU1vN19mQVBVS0JlNTRKMDN2a0RlN0NRZVdYTm1Lc28?oc=5",
+          "headline": "Carrim ‘car theft’ charges: SAPS confirm fresh case against businessman - Sowetan",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-21",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        },
+        {
+          "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOV2pOWmUzWkNIcEY3M09JMGxuaU5jM19hd2lwXzdmc3ZSUHZHVGdxaHJxd3hVb1pDRzB2VkNyN2xkaFA1LXUxVHlBWk5VWF82MTdJSXV1ano0cy1BNGNMMC1GTmh3Y3hjaURDSDJwOG1sdHNjREw2ZDdYTjgweE13NnJyU2pJSGhfUEhBczhzVVczM21welBwNlZUbHNKZDdGYllhd2hyYw?oc=5",
+          "headline": "Suliman Carrim faces additional charges of theft and money laundering - Algoa FM",
+          "status": "feed_date_only",
+          "reason": "Google News link is an opaque redirect that only resolves in a browser; not guessed",
+          "resolution": "feed_date_only",
+          "article_url": null,
+          "feed_date": "2026-10-22",
+          "published": null,
+          "published_source": "",
+          "incident_date": null,
+          "incident_basis": "",
+          "date_mentions": [],
+          "body_chars": 0,
+          "body_sha256": null
+        }
+      ],
+      "manual_facts": {
+        "source_note": "musina-sweep-2026-10-23.md",
+        "outlet": "Review Online / Limpopo Mirror",
+        "published": "2026-10-22",
+        "incident_date": "2026-10-21",
+        "summary": "Court appearances in Musina over the attempted theft of Absa vehicles intercepted near Beitbridge."
+      }
+    }
+  }
+}

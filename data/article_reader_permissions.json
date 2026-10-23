@@ -1,0 +1,4 @@
+{
+  "_note": "Written permissions for automated article reading (Batch 6). An outlet listed in forage/collectors/article_reader.py OUTLET_POLICIES as needs_permission is only fetched once an entry here names who granted it, the date, the scope and where the written evidence is kept. None has been granted as of 23 Oct 2026; the three draft permission emails from the Batch 7 check have not been sent.",
+  "permissions": {}
+}
