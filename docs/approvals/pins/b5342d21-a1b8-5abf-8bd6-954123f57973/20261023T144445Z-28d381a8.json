@@ -1,0 +1,77 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T144445Z-28d381a8",
+  "signal_id": "b5342d21-a1b8-5abf-8bd6-954123f57973",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kwazulu-natal-infrastructure-2026-10-23.json",
+  "approved_payload": {
+    "content": "Residents of Upper Signal Hill in Newcastle (Amajuba District) were without water because of a faulty pump at the Milky Way pump station, Newcastle Municipality said in a statement on 17 October; its technical team was doing emergency repairs and water tankers were to be sent to the affected streets: Capricorn, Star Crescent, Pisces, Meteor, Lunar, Gemini, Sun and Libra (Newcastle Advertiser, 17 October). A resident said they had been without water for six days, so since about 11 October, and that the part needed to fix the pump was out of stock. The start date rests on the resident's account; the municipality's statement gives no start date, so the pin date is 17 October, the day the fault was confirmed. When supply was restored is not in the saved report. One report. The pin is approximate: the Signal Hill suburb point, not the pump station or the streets.",
+    "external_id": "checked:kzn-infra-2026-10-23:I2",
+    "lat": -27.71278,
+    "lng": 29.94861,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T14:45:00Z",
+        "incident": "Without water since about Sun 11 Oct 2026 according to a resident (six days by 17 Oct); the municipality confirmed the faulty pump in a statement on Sat 17 Oct 2026 and gave no start date (Newcastle Advertiser). The pin date is 17 Oct.",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-17",
+        "location": "Upper Signal Hill, Newcastle: Capricorn, Star Crescent, Pisces, Meteor, Lunar, Gemini, Sun and Libra streets; the Milky Way pump station (Newcastle Advertiser). The pin is the Signal Hill suburb point from OpenStreetMap, inside the Newcastle police precinct. The affected streets and the pump station are not on the map, so they are not pinned; approximate, suburb level (about 1.5 km).",
+        "method": "Found in the 23 Oct 2026 Newcastle location sweep (Newcastle Advertiser and Newcastillian feeds, Google News, web and X searches, incidents 1-23 Oct); source page read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 14:38 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "17 Oct 2026 (Newcastle Advertiser, with the municipal statement of the same day); earliest report found",
+        "reported_at": "2026-10-17",
+        "search_aliases": [
+          "Newcastle",
+          "Signal Hill",
+          "Upper Signal Hill",
+          "Milky Way pump station",
+          "Capricorn Street",
+          "Star Crescent",
+          "Pisces Street",
+          "Gemini Street",
+          "Amajuba",
+          "water outage",
+          "faulty pump",
+          "tankers"
+        ],
+        "sources": [
+          {
+            "name": "Newcastle Advertiser (The Citizen)",
+            "url": "https://www.citizen.co.za/northern-natal-news/news-headlines/local-municipal-news/2026/10/17/signal-hill-grapples-with-no-water/"
+          }
+        ]
+      },
+      "collected_title": "Signal Hill grapples with no water",
+      "link": "https://www.citizen.co.za/northern-natal-news/news-headlines/local-municipal-news/2026/10/17/signal-hill-grapples-with-no-water/",
+      "pubdate_raw": "2026-10-17T10:34:30+00:00",
+      "source_outlet": "Newcastle Advertiser (The Citizen)"
+    },
+    "published_at": "2026-10-23T14:45:00Z",
+    "signal_id": "b5342d21-a1b8-5abf-8bd6-954123f57973",
+    "source": "Newcastle Advertiser (The Citizen)",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-10-16T22:00:00Z",
+    "title": "Upper Signal Hill, Newcastle (approx.): faulty Milky Way pump, eight streets without water from about 11 Oct (resident), confirmed 17 Oct"
+  },
+  "payload_sha256": "sha256:1c7c45c69a4be38ae0154013cb2273bd8fc69d6927b0ce7f79dbc049dc4ca75f",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/northern-natal-news/news-headlines/local-municipal-news/2026/10/17/signal-hill-grapples-with-no-water/",
+      "retrieved_at": "2026-10-23T14:37:56Z",
+      "content_sha256": "sha256:c68749d083a1419fec86ffa2119a7c7a8fd1af10898077264846a28ac55d79c9"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T16:35:00+02:00",
+  "recorded_at": "2026-10-23T16:44:45+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "newcastle-approval-2026-10-23",
+    "summary": "Owner said 'Yes, approve' on the voice call, 23 Oct 2026 about 16:35 SAST, to the Upper Signal Hill water outage pin (Newcastle, KwaZulu-Natal, Infrastructure). Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

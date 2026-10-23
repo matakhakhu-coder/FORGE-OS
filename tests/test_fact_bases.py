@@ -48,7 +48,10 @@ LIMPOPO_INFRA = {
     'b2ec397b-458f-55c5-9882-65064085e1be',
     '34ab4d0c-f76b-5775-9f43-faf729c21de4',
 }  # Seshego substation, Tzaneen burst main, Polokwane PS3 leaks, Musina boreholes (approved 23 Oct 2026)
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA
+KZN_INFRA = {
+    'b5342d21-a1b8-5abf-8bd6-954123f57973',
+}  # Upper Signal Hill, Newcastle water outage (approved 23 Oct 2026, voice call)
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA | KZN_INFRA
 
 
 def load(path):
@@ -67,10 +70,12 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 62                                      # 36 audited + 26 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 367   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure
+    assert len(exported) == 63                                      # 36 audited + 27 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 373   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
+    assert sum(len(exported[s]['facts']) for s in KZN_INFRA) == 6
+    assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in KZN_INFRA)
     assert sum(len(exported[s]['facts']) for s in MPUMALANGA) == 30  # six each
     assert all(exported[s]['status'] == 'audited' for s in MPUMALANGA)
     assert exported['0710d74d-c67c-5899-95db-54e2f4fab60d']['police_party'] is True   # Masoyi

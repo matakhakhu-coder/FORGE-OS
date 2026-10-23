@@ -58,6 +58,11 @@
       "file": "limpopo-infrastructure-2026-10-23.json",
       "province": "Limpopo",
       "signals": 4
+    },
+    {
+      "file": "kwazulu-natal-infrastructure-2026-10-23.json",
+      "province": "KwaZulu-Natal",
+      "signals": 1
     }
   ]
 }

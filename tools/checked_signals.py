@@ -127,6 +127,7 @@ PROVINCE_BOUNDS = {
     "Eastern Cape": {"lat": (-34.30, -30.00), "lng": (22.50, 30.30)},
     "Limpopo": {"lat": (-25.50, -22.10), "lng": (26.30, 31.95)},
     "Mpumalanga": {"lat": (-27.85, -24.40), "lng": (28.15, 32.10)},
+    "KwaZulu-Natal": {"lat": (-31.20, -26.70), "lng": (28.80, 33.00)},
 }
 
 # The Sprint 5 pattern test (private/sprint5/predictions.md) is about Western

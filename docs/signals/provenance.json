@@ -888,6 +888,18 @@
       ],
       "independence": "partly_independent",
       "note": "The cause rests on the municipal notice; GroundUp cites the same notice for it. GroundUp's own visit on 15 Oct independently shows taps dry and tankers in Campbell. The municipality had not answered GroundUp's questions."
+    },
+    "b5342d21-a1b8-5abf-8bd6-954123f57973": {
+      "statement_from": "Newcastle Municipality statement of 17 Oct 2026, reported by the Newcastle Advertiser",
+      "spokesperson": [],
+      "other_voices": [
+        "Resident Marilze Greyvenstein (Newcastle Advertiser)"
+      ],
+      "outlets": [
+        "Newcastle Advertiser"
+      ],
+      "independence": "single_report",
+      "note": "One public report, carrying the municipal statement and one resident's account. The six-day figure and the missing part rest on the resident; the cause rests on the municipality."
     }
   }
 }

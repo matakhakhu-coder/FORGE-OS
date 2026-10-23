@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import copy
 import json
+from datetime import timedelta
 import shutil
 import sqlite3
 import sys
@@ -30,7 +31,9 @@ EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct
 LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, outside the pattern test
 MP_PINS = 5           # Mpumalanga: incidents 2-20 Oct 2026, approved 23 Oct 2026, outside the pattern test
 LPI_PINS = 4          # Limpopo infrastructure (Infrastructure stream): approved 23 Oct 2026, outside the pattern test
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS
+KZI_PINS = 1          # KwaZulu-Natal infrastructure (Newcastle, Upper Signal Hill water outage): approved 23 Oct 2026, outside the pattern test
+INFRA_PINS = LPI_PINS + KZI_PINS
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -111,10 +114,11 @@ def test_index_loads_all_pins_in_order():
         "western-cape-murders-2026-10-22-sprint5.json",
         "limpopo-killings-2026-10-22.json",
         "mpumalanga-killings-2026-10-23.json",
-        "limpopo-infrastructure-2026-10-23.json"]
+        "limpopo-infrastructure-2026-10-23.json",
+        "kwazulu-natal-infrastructure-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -178,6 +182,33 @@ def test_limpopo_infrastructure_pins_are_infrastructure_and_outside_the_pattern_
     held = " ".join(h["place"] for h in data["held_back"])
     for place in ("Groblersdal", "Phalaborwa", "Mankweng", "Mhinga", "Stasie Road", "Phugwane"):
         assert place in held and place not in " ".join(s["title"] for s in pins)
+
+
+def test_kwazulu_natal_infrastructure_pin_is_infrastructure_outside_the_pattern_test_and_keeps_its_held_cases_out():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces, incident_window
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    data = json.loads((SIGNALS_DIR / "kwazulu-natal-infrastructure-2026-10-23.json").read_text(encoding="utf-8"))
+    pins = data["signals"]
+    assert len(pins) == KZI_PINS and not ({s["signal_id"] for s in pins} & wc_ids)
+    assert "Sprint 5" in data["scope"] and "Planned outages are not pins" in data["rules"]
+    (s,) = pins
+    assert prov[s["signal_id"]] == "KwaZulu-Natal" and s["stream"] == "INFRASTRUCTURE"
+    assert (s["lat"], s["lng"]) == (-27.71278, 29.94861)          # Signal Hill suburb point, not the pump station
+    assert "approx." in s["title"] and "(resident)" in s["title"] and not s["metadata"].get("links")
+    chk = s["metadata"]["checked"]
+    # The ~11 Oct start is a resident's account: it stays in words, the pin date is the confirmed 17 Oct.
+    assert (chk["incident_start"], chk["incident_precision"], chk["incident_event"]) == ("2026-10-17", "day", "found")
+    assert "according to a resident" in chk["incident"] and "no start date" in chk["incident"]
+    assert "approximate, suburb level" in chk["location"]
+    w = incident_window(chk)
+    assert w[1] - w[0] == timedelta(days=1)
+    held = " ".join(h["place"] + " " + h["reason"] for h in data["held_back"])
+    for place in ("Newcastle West", "Impala, Victoria", "counterfeit goods", "quad bike"):
+        assert place in held and place not in s["title"]
+    assert "proposal only" in " ".join(d["decision"] for d in data["owner_decisions"])
 
 
 def test_mpumalanga_pins_stay_out_of_the_pattern_test_and_mark_estimates():

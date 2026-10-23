@@ -1,0 +1,99 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "KwaZulu-Natal",
+  "batch": "KwaZulu-Natal (Newcastle) infrastructure incidents, 1-23 Oct 2026, hand-checked 23 Oct 2026; one pin approved by the owner on 23 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Infrastructure stream. Collection window: incidents 1-23 Oct 2026, Newcastle Local Municipality including Madadeni and Osizweni. Other candidates from the same sweep are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date; where the source gives no start date of its own, the pin date is the report or statement date and incident_event is 'found', and a start date from a resident is given in words, attributed, not as the pin date. Pin = the place the source gives; 'approx.' in the title when only a street, area or town is known. An outage pin stands for the affected area when the failure point cannot be mapped, and the location note says so. Being near another pin is not a link. No one is named as a suspect. Planned outages are not pins (owner decisions of 23 Oct 2026). Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on 23 Oct 2026 (voice call, 'Yes, approve'); one explicit version-1 approval record per pin in docs/approvals/pins (reference newcastle-approval-2026-10-23).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-23 (voice call, about 16:35 SAST)",
+      "decision": "Approved for publication as prepared, under the Infrastructure stream: the Upper Signal Hill water outage (faulty Milky Way pump), with the suburb-level map point and the start date kept as the resident's account. Owner's words: \"Yes, approve.\""
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "KwaZulu-Natal joins Limpopo and Mpumalanga on the one-precinct-per-area rule, so Madadeni and Osizweni pins cannot merge into the Newcastle area. Owner's word: \"Yes\"."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Newcastle West ongoing water outage: exclude. Planned urgent-repair power cut of 22 Oct: exclude. Counterfeit goods seizure: hold pending evidence of a network. Quad bike syndicate arrest of 30 Sep: exclude."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "An infrastructure inclusion policy (an actual failure versus routine maintenance, not a headline versus a notice) was discussed and saved as a proposal only. It is not an adopted rule and is not applied by any collector."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Newcastle West: Ncandu Park, Amajuba Park, Barry Hertzog Park, Sunny Ridge, Pioneer Park, Amiel Park and lower Hutten Heights (Amajuba)",
+      "reason": "Main pump failure and daily water cuts, an outage that began around 13 Sep, before the 1 Oct window, and was still going on 22 Oct; owner decision on the voice call of 23 Oct 2026: exclude."
+    },
+    {
+      "place": "Impala, Victoria, Mackilliacan, Ophir and Paddock roads, Newcastle (Amajuba)",
+      "reason": "Planned four-hour power cut on 22 Oct \"to undertake urgent repairs\"; a notice that describes no failure. Owner decision on 23 Oct 2026: leave it out (\"Leave it. Leave it out.\")."
+    },
+    {
+      "place": "Newcastle CBD (Amajuba): counterfeit goods seizure, about R1.05 million (Priority Intelligence candidate)",
+      "reason": "Seizure only, no arrests or charges reported and no network shown; owner decision on 23 Oct 2026: hold until there is evidence of a network (for example arrests or a named syndicate)."
+    },
+    {
+      "place": "Schuinshoogte, Newcastle (Amajuba): suspected quad bike syndicate arrest (Priority Intelligence candidate)",
+      "reason": "Arrest on 30 Sep, before the window, reported only by a private security firm; owner decision on 23 Oct 2026: exclude."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "b5342d21-a1b8-5abf-8bd6-954123f57973",
+      "external_id": "checked:kzn-infra-2026-10-23:I2",
+      "source": "Newcastle Advertiser (The Citizen)",
+      "title": "Upper Signal Hill, Newcastle (approx.): faulty Milky Way pump, eight streets without water from about 11 Oct (resident), confirmed 17 Oct",
+      "content": "Residents of Upper Signal Hill in Newcastle (Amajuba District) were without water because of a faulty pump at the Milky Way pump station, Newcastle Municipality said in a statement on 17 October; its technical team was doing emergency repairs and water tankers were to be sent to the affected streets: Capricorn, Star Crescent, Pisces, Meteor, Lunar, Gemini, Sun and Libra (Newcastle Advertiser, 17 October). A resident said they had been without water for six days, so since about 11 October, and that the part needed to fix the pump was out of stock. The start date rests on the resident's account; the municipality's statement gives no start date, so the pin date is 17 October, the day the fault was confirmed. When supply was restored is not in the saved report. One report. The pin is approximate: the Signal Hill suburb point, not the pump station or the streets.",
+      "lat": -27.71278,
+      "lng": 29.94861,
+      "stream": "INFRASTRUCTURE",
+      "timestamp": "2026-10-16T22:00:00Z",
+      "published_at": "2026-10-23T14:45:00Z",
+      "metadata": {
+        "source_outlet": "Newcastle Advertiser (The Citizen)",
+        "link": "https://www.citizen.co.za/northern-natal-news/news-headlines/local-municipal-news/2026/10/17/signal-hill-grapples-with-no-water/",
+        "pubdate_raw": "2026-10-17T10:34:30+00:00",
+        "checked": {
+          "incident": "Without water since about Sun 11 Oct 2026 according to a resident (six days by 17 Oct); the municipality confirmed the faulty pump in a statement on Sat 17 Oct 2026 and gave no start date (Newcastle Advertiser). The pin date is 17 Oct.",
+          "reported": "17 Oct 2026 (Newcastle Advertiser, with the municipal statement of the same day); earliest report found",
+          "location": "Upper Signal Hill, Newcastle: Capricorn, Star Crescent, Pisces, Meteor, Lunar, Gemini, Sun and Libra streets; the Milky Way pump station (Newcastle Advertiser). The pin is the Signal Hill suburb point from OpenStreetMap, inside the Newcastle police precinct. The affected streets and the pump station are not on the map, so they are not pinned; approximate, suburb level (about 1.5 km).",
+          "sources": [
+            {
+              "name": "Newcastle Advertiser (The Citizen)",
+              "url": "https://www.citizen.co.za/northern-natal-news/news-headlines/local-municipal-news/2026/10/17/signal-hill-grapples-with-no-water/"
+            }
+          ],
+          "checked_at": "2026-10-23T14:45:00Z",
+          "method": "Found in the 23 Oct 2026 Newcastle location sweep (Newcastle Advertiser and Newcastillian feeds, Google News, web and X searches, incidents 1-23 Oct); source page read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 14:38 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-17",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-17",
+          "search_aliases": [
+            "Newcastle",
+            "Signal Hill",
+            "Upper Signal Hill",
+            "Milky Way pump station",
+            "Capricorn Street",
+            "Star Crescent",
+            "Pisces Street",
+            "Gemini Street",
+            "Amajuba",
+            "water outage",
+            "faulty pump",
+            "tankers"
+          ]
+        },
+        "collected_title": "Signal Hill grapples with no water"
+      },
+      "fingerprint": "sha256:1c7c45c69a4be38ae0154013cb2273bd8fc69d6927b0ce7f79dbc049dc4ca75f"
+    }
+  ]
+}

@@ -85,7 +85,10 @@ SWEEP_PATTERN_TEST_AREAS = False
 # Mecklenburg (Sekhukhune) under Lebowakgomo.
 # Mpumalanga added 23 Oct 2026 for the same reason (rural trusts and villages
 # 40 km apart, e.g. Lillydale Trust under Calcutta and Masoyi).
-PRECINCT_SPLIT_PROVINCES = {"Limpopo", "Mpumalanga"}
+# KwaZulu-Natal added 23 Oct 2026 (owner decision, voice call, Newcastle sweep):
+# Madadeni (about 9 km) and Osizweni (about 20 km) have their own precincts and
+# would otherwise chain into the Newcastle area at 2 x 30 km.
+PRECINCT_SPLIT_PROVINCES = {"Limpopo", "Mpumalanga", "KwaZulu-Natal"}
 
 GAZ_DIR = ROOT / "data" / "gazetteer"
 PLACES_PATH = GAZ_DIR / "za_places.json"

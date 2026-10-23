@@ -1,8 +1,22 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "23 Oct 2026 12:37 UTC",
+  "generated_at": "23 Oct 2026 14:44 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Upper Signal Hill, Newcastle (approx.): faulty Milky Way pump, eight streets without water from about 11 Oct (resident), confirmed 17 Oct",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-10-23T14:45:00Z",
+      "summary": "Residents of Upper Signal Hill in Newcastle (Amajuba District) were without water because of a faulty pump at the Milky Way pump station, Newcastle Municipality said in a statement on 17 October; its technical team was d...",
+      "source": "NEWCASTLE ADVERTISER (THE CITIZEN)",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -27.71278,
+        "lng": 29.94861
+      }
+    },
     {
       "kind": "signal",
       "title": "Adshade Street bridge over the R71, Tzaneen (approx.): burst asbestos water main, repair waiting on a pipe from Cape Town, reported 19 Oct",
@@ -687,20 +701,6 @@
       "geo": {
         "lat": -33.94476,
         "lng": 18.54334
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Lavender Hill (Depsiton Cres, approx.): 2 men shot dead, woman wounded, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Two men were shot dead and a woman wounded in Muir Court, Depsiton Crescent, Lavender Hill, shortly after 08:00 on Tuesday 6 October; the men were declared dead at the scene and the suspects fled (Southern Mail, quoting ...",
-      "source": "SOUTHERN MAIL",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.07326,
-        "lng": 18.4877
       }
     }
   ]

@@ -305,4 +305,4 @@ def test_areas_written_before_the_change_read_as_killing_searches():
 def test_published_pins_carry_their_stream():
     pins = ca.published_pins()
     assert pins and all(p["stream"] in ("CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY", "GLOBAL") for p in pins)
-    assert sum(p["stream"] == "INFRASTRUCTURE" for p in pins) == 4
+    assert sum(p["stream"] == "INFRASTRUCTURE" for p in pins) == 5   # 4 Limpopo + 1 KwaZulu-Natal (Newcastle)
