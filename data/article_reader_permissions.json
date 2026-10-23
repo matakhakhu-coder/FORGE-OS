@@ -1,4 +1,9 @@
 {
-  "_note": "Written permissions for automated article reading (Batch 6). An outlet listed in forage/collectors/article_reader.py OUTLET_POLICIES as needs_permission is only fetched once an entry here names who granted it, the date, the scope and where the written evidence is kept. None has been granted as of 23 Oct 2026; the three draft permission emails from the Batch 7 check have not been sent.",
+  "_note": "Written permissions for automated article reading (Batch 6). An outlet listed in forage/collectors/article_reader.py OUTLET_POLICIES as needs_permission is only fetched once an entry here names who granted it, the date, the scope and where the written evidence is kept. None has been granted as of 23 Oct 2026.",
+  "_requests": {
+    "zoutnet.co.za": "Limpopo Mirror and Zoutpansberger (Zout News): request emailed 23 Oct 2026 to anton@zoutnet.co.za, copied to andries@zoutnet.co.za. No reply yet: not permitted. Headline, link and date only until a written yes is recorded under permissions.",
+    "newcastillian.com": "Newcastillian: request sent 23 Oct 2026. No reply yet: not permitted.",
+    "citizen.co.za": "Caxton (Review Online, Northern Natal News, The Citizen): request dropped by the owner on 23 Oct 2026. Not requested, not permitted: Caxton articles stay unread."
+  },
   "permissions": {}
 }

@@ -64,6 +64,7 @@ try:
     from forage.collectors import place_signals as _place
     from forage.collectors import story_merge as _story
     from forage.collectors import run_window as _rw
+    from forage.collectors import article_step as _art
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
@@ -72,6 +73,7 @@ except ImportError:  # run as a script from the collectors directory
     from forage.collectors import place_signals as _place
     from forage.collectors import story_merge as _story
     from forage.collectors import run_window as _rw
+    from forage.collectors import article_step as _art
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -689,10 +691,15 @@ def fetch_source(source: dict) -> list:
 
 # ── Signal builder ─────────────────────────────────────────────────────────
 
-def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
+def entry_to_signal(entry: dict, source: dict, reading: Optional[dict] = None,
+                    fixture: Optional[dict] = None, window_start=None) -> Optional[dict]:
     """
     Convert a feedparser entry (or scrape dict) to a FORGE signal dict.
     Returns None if no usable title.
+
+    Batch 6 step 3: ``reading`` is the article reader's result (a dict);
+    when it was read, the PI rules also read the article text. Every signal
+    gets the court-step check (metadata only). ``fixture`` is for the bench.
     """
     title = (entry.get("title") or "").strip()
     if not title:
@@ -773,7 +780,8 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
     # infrastructure event follow FORGE_PI_MODE (see pi_signals).
     stream, pi_hit, pi_meta = _pi.route(stream, title, content, province=source.get("province"),
                                         infra_meta=infra_meta if is_infra else None,
-                                        sa_source=source.get("fetch_mode") != "google_news")
+                                        sa_source=source.get("fetch_mode") != "google_news",
+                                        article_text=reading)
     if pi_hit:
         priority = 1
     if pi_meta:
@@ -791,6 +799,9 @@ def entry_to_signal(entry: dict, source: dict) -> Optional[dict]:
     _placed = _place.add_place(stream, dict(infra_meta or {}), title, content, province=source.get("province"))
     if _placed:
         infra_meta = _placed
+    # Batch 6 step 3: article dates and the court-step check (metadata only).
+    infra_meta = _art.annotate(dict(infra_meta or {}), title, content, reading,
+                               feed_date=published[:10], fixture=fixture, window_start=window_start)
 
     return {
         "signal_id":       str(uuid.uuid4()),
@@ -1015,12 +1026,25 @@ def run(db_path: Path = DB_PATH) -> dict:
         new_s = skipped_s = blocked_s = near_dup_s = stale_s = 0
 
         for entry in entries:
-            sig = entry_to_signal(entry, source)
+            sig = entry_to_signal(entry, source, window_start=window.start)
             if sig is None:
                 continue
             if window.mode != "none" and not window.contains(sig["timestamp"]):
                 stale_s += 1
                 continue
+            # Batch 6 step 3: read the article of a shortlisted signal (off
+            # unless --read-articles / FORGE_ARTICLE_READER=1). Skipped for a
+            # link already saved, so a rerun doesn't fetch again.
+            if _art.reader_enabled() and sig.get("url") and not conn.execute(
+                    "SELECT 1 FROM signals WHERE external_id=?", (sig["external_id"],)).fetchone():
+                reading = _art.read(sig["url"], sig["timestamp"][:10], sig["stream"], sig.get("infra_meta") or {})
+                if reading is not None:
+                    sig2 = entry_to_signal(entry, source, reading=reading, window_start=window.start)
+                    if sig2 is not None:
+                        sig = sig2
+                    if _art.before_window(sig.get("infra_meta") or {}, window):
+                        stale_s += 1
+                        continue
 
             # ── Tier 0: external_id exact dedup (existing behaviour) ──────
             if conn.execute(
@@ -1066,6 +1090,8 @@ def run(db_path: Path = DB_PATH) -> dict:
             # one telling the same story (any stream, either collector).
             meta = _story.safe_link_story(conn, sig["signal_id"], sig["title"], sig["stream"],
                                           sig["timestamp"], meta)
+            # Batch 6 step 3: one story, one court-step flag.
+            meta = _art.share_story_step(conn, sig["signal_id"], sig["timestamp"], meta)
             meta_json = json.dumps(meta, ensure_ascii=False) if meta else None
 
             try:
@@ -1176,7 +1202,12 @@ if __name__ == "__main__":
     _parser.add_argument("--from", dest="window_start", default=None,
                          help="Fixed window start, SAST (YYYY-MM-DD or '1 October'); "
                               "replaces --days when given")
+    _parser.add_argument("--read-articles", action="store_true",
+                         help="Batch 6: read the article of each shortlisted signal "
+                              "(off by default; outlet permissions apply)")
     _args = _parser.parse_args()
+    if _args.read_articles:
+        _art.READ_ARTICLES = True
     if _args.days is not None:
         WINDOW_DAYS = _args.days
     if _args.window_start:

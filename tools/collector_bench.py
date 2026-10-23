@@ -188,6 +188,16 @@ def _outcome(stream: str, timestamp: str, meta: dict) -> dict:
         "place_review": meta.get("place_review"),
         "pi_kind": meta.get("pi_kind"),
         "court_step": bool(meta.get("court_step") or meta.get("older_conduct") or meta.get("pi_kind") == "court"),
+        # Batch 6: what the court-step check and the article reader said
+        "step_kind": meta.get("step_kind"),
+        "step_flag": bool(meta.get("court_step")),
+        "older_conduct": bool(meta.get("older_conduct")),
+        "conduct_date": meta.get("conduct_date"),
+        "step_date": meta.get("step_date"),
+        "step_basis": meta.get("step_basis"),
+        "new_event": meta.get("new_event"),
+        "article_status": meta.get("article_status"),
+        "incident_date": meta.get("incident_date"),
         "event_key": meta.get("event_key") or meta.get("merge_key"),
         "stream_reason": meta.get("stream_reason"),
         # Batch 5: what the story check reads
@@ -240,8 +250,48 @@ def _replay_gnews(row: dict) -> dict:
         return _dropped("foreign local outlet")
     if run == "kw" and getattr(gnews, "keep_for_town", None) and not gnews.keep_for_town(item, query):
         return _dropped("town search: about somewhere else")
-    sig = gnews.build_signal(item, is_crime, province=province)
+    fx = _hand_checked_for(row)
+    try:
+        sig = gnews.build_signal(item, is_crime, province=province, fixture=fx)
+    except TypeError:  # code from before Batch 6 step 3
+        sig = gnews.build_signal(item, is_crime, province=province)
+        return _outcome(sig["stream"], sig["timestamp"], json.loads(sig["metadata_json"] or "{}"))
+    # Batch 6 step 3: read the article of a shortlisted signal, offline.
+    from forage.collectors import article_step as _art
+    reading = _art.read(item["link"], (item["pubdate_parsed"] or "")[:10] or None, sig["stream"],
+                        json.loads(sig["metadata_json"] or "{}"))
+    if reading is not None:
+        sig = gnews.build_signal(item, is_crime, province=province, reading=reading, fixture=fx)
     return _outcome(sig["stream"], sig["timestamp"], json.loads(sig["metadata_json"] or "{}"))
+
+
+# Batch 6: hand-checked conduct dates from the sweep notes, by row id. Empty
+# unless the bench is run with --hand-checked; the main score never uses them.
+_HAND_CHECKED: dict = {}
+
+
+def _row_id(row: dict) -> str:
+    return f"{row.get('town')}|{row.get('run')}|{row.get('title')}|{row.get('timestamp')}"
+
+
+def _hand_checked_for(row: dict) -> Optional[dict]:
+    return _HAND_CHECKED.get(_row_id(row))
+
+
+def load_hand_checked(cases: dict, rows: list[dict]) -> dict:
+    """Map each case row to its sweep note's hand-checked conduct date."""
+    path = REPO / "data" / "bench" / "article_fixtures.json"
+    if not path.exists():
+        return {}
+    fx = json.loads(path.read_text(encoding="utf-8")).get("cases", {})
+    out = {}
+    for c in cases["cases"]:
+        mf = (fx.get(c["id"]) or {}).get("manual_facts") or {}
+        if not mf.get("conduct_date"):
+            continue
+        for r in case_rows(c, rows):
+            out[_row_id(r)] = {"conduct_date": mf["conduct_date"]}
+    return out
 
 
 _CIVIC_SOURCES: dict = {}
@@ -263,9 +313,22 @@ def _replay_civic(row: dict) -> dict:
         "link": m.get("url") or "",
         "published_parsed": d.utctimetuple() if d else None,
     }
-    sig = civic.entry_to_signal(entry, source)
+    fx = _hand_checked_for(row)
+    try:
+        sig = civic.entry_to_signal(entry, source, fixture=fx)
+    except TypeError:  # code from before Batch 6 step 3
+        sig = civic.entry_to_signal(entry, source)
+        fx = None
+        if sig is None:
+            return {**recorded_outcome(row), "replay_error": "collector returned no signal"}
+        return _outcome(sig["stream"], sig["timestamp"], sig.get("infra_meta") or {})
     if sig is None:
         return {**recorded_outcome(row), "replay_error": "collector returned no signal"}
+    from forage.collectors import article_step as _art
+    reading = _art.read(sig.get("url") or "", sig["timestamp"][:10], sig["stream"], sig.get("infra_meta") or {})
+    if reading is not None:
+        sig2 = civic.entry_to_signal(entry, source, reading=reading, fixture=fx)
+        sig = sig2 or sig
     return _outcome(sig["stream"], sig["timestamp"], sig.get("infra_meta") or {})
 
 
@@ -276,10 +339,32 @@ def replay_outcome(row: dict) -> dict:
     return _replay_gnews(row)
 
 
+@contextlib.contextmanager
+def offline_reader(on: bool = True):
+    """Batch 6: turn the article reader on with the offline fixture reader."""
+    try:
+        from forage.collectors import article_step as _art
+    except ImportError:  # code from before Batch 6 step 3
+        yield
+        return
+    prev_flag, prev_reader = _art.READ_ARTICLES, _art._READER
+    _art.READ_ARTICLES = bool(on)
+    _art.set_reader(_art.FixtureReader() if on else None)
+    try:
+        yield
+    finally:
+        _art.READ_ARTICLES = prev_flag
+        _art.set_reader(prev_reader)
+
+
+HAND_CHECKED = False  # --hand-checked: feed the sweep notes' conduct dates (an upper bound)
+ARTICLES = True  # the bench reads articles from fixtures unless --no-articles
+
+
 def replay(rows: Iterable[dict]) -> list[dict]:
     """Attach ``outcome`` (today's code) and ``recorded`` (23 Oct) to each row."""
     out = []
-    with no_network():
+    with no_network(), offline_reader(ARTICLES):
         for r in rows:
             rec = recorded_outcome(r)
             try:
@@ -494,7 +579,41 @@ def story_merge_rows(rows: list[dict]) -> list[dict]:
         if i in roles:
             r = {**r, "outcome": {**r["outcome"], **roles[i]}}
         out.append(r)
-    return out
+    return share_story_steps(out)
+
+
+def share_story_steps(rows: list[dict]) -> list[dict]:
+    """Batch 6 step 3: pass the court-step flag across each story, as the
+    collectors' share_story_step does in the database."""
+    try:
+        from forage.collectors import court_step as cs
+    except ImportError:
+        return rows
+    groups: dict = {}
+    for i, r in enumerate(rows):
+        k = r["outcome"].get("story_key")
+        if k:
+            groups.setdefault((r.get("town"), k), []).append(i)
+    keys = ("court_step", "step_kind", "older_conduct", "conduct_date", "step_date", "step_basis", "new_event")
+    for idx in groups.values():
+        if len(idx) < 2:
+            continue
+        res = []
+        for i in idx:
+            o = rows[i]["outcome"]
+            res.append({**{k: o.get(k) for k in keys if k != "court_step"},
+                        "court_step": bool(o.get("step_flag")),
+                        "older_conduct": bool(o.get("older_conduct")), "step_basis": o.get("step_basis") or ""})
+        shared = cs.story_flags(res)
+        for i, before, after in zip(idx, res, shared):
+            if after["court_step"] and not before["court_step"]:
+                o = dict(rows[i]["outcome"])
+                o.update({k: after.get(k) for k in keys if after.get(k) is not None})
+                o["court_step"] = True
+                o["step_flag"] = True
+                o["court_step_shared"] = True
+                rows[i] = {**rows[i], "outcome": o}
+    return rows
 
 
 def _git_head() -> Optional[str]:
@@ -515,6 +634,9 @@ def score(recorded: bool = False, cases: Optional[dict] = None,
     replayed rows and returns the rows that survive."""
     cases = cases or load_cases()
     meta, rows = load_replay(replay_path)
+    _HAND_CHECKED.clear()
+    if HAND_CHECKED and not recorded:
+        _HAND_CHECKED.update(load_hand_checked(cases, rows))
     rows = replay(rows)
     key = "recorded" if recorded else "outcome"
     if merge and not recorded:
@@ -544,7 +666,9 @@ def score(recorded: bool = False, cases: Optional[dict] = None,
         "mode": "recorded" if recorded else "replay",
         "code_commit": _git_head(),
         "fixture": {k: meta.get(k) for k in ("built", "source_commit", "rows", "run_totals")},
-        "env": {k: os.environ.get(k) for k in ("FORGE_PI_MODE",)},
+        "env": {k: os.environ.get(k) for k in ("FORGE_PI_MODE", "FORGE_COURT_STEP")},
+        "articles": "offline fixtures" if ARTICLES and not recorded else "off",
+        "hand_checked_dates": bool(HAND_CHECKED and not recorded),
         "summary": summary,
         "cases": results,
         "noise": noise(rows, key, meta),
@@ -656,6 +780,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     sc.add_argument("--out", help="write the scorecard JSON here")
     sc.add_argument("--md", help="write a markdown table here")
     sc.add_argument("--no-story", action="store_true", help="score without the Batch 5 story check")
+    sc.add_argument("--no-articles", action="store_true", help="score without the Batch 6 article reader")
+    sc.add_argument("--hand-checked", action="store_true",
+                    help="also feed the sweep notes' hand-checked conduct dates (an upper bound, not the score)")
     ex = sub.add_parser("extract")
     ex.add_argument("--sweep-root", required=True)
     ex.add_argument("--authority", required=True)
@@ -665,6 +792,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         meta = extract(Path(a.sweep_root), Path(a.authority), Path(a.out))
         print(json.dumps(meta, indent=1))
         return 0
+    global ARTICLES, HAND_CHECKED
+    ARTICLES = not a.no_articles
+    HAND_CHECKED = a.hand_checked
     t0 = time.time()
     card = score(recorded=a.recorded, merge=None if a.no_story else story_merge_rows)
     if a.out:

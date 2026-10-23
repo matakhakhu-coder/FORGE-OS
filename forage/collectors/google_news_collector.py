@@ -89,6 +89,7 @@ from forage.collectors import crime_signals as _crime  # noqa: E402
 from forage.collectors import place_signals as _place  # noqa: E402
 from forage.collectors import story_merge as _story  # noqa: E402
 from forage.collectors import run_window as _rw  # noqa: E402
+from forage.collectors import article_step as _art  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -339,8 +340,16 @@ def _build_external_id(title: str, pubdate: str) -> str:
     return "gnews:" + hashlib.sha256(raw).hexdigest()[:16]
 
 
-def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dict:
+def build_signal(item: dict, is_crime: bool, province: str | None = None,
+                 reading: dict | None = None, fixture: dict | None = None,
+                 window_start=None) -> dict:
     """Convert a parsed RSS item into a FORGE signal dict.
+
+    Batch 6 step 3: ``reading`` is the article reader's result for this
+    item (a dict). When its status is 'read', the PI rules also read the
+    article text and the metadata carries the article's dates. Every signal
+    gets the court-step check (metadata only). ``fixture`` (hand-checked
+    dates) is for the bench only.
 
     Infrastructure events (23 Oct 2026): a story infra_signals.classify()
     reads as an infrastructure event goes to INFRASTRUCTURE whatever the
@@ -368,7 +377,7 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
     # not the query. Overlaps follow FORGE_PI_MODE (see pi_signals).
     stream, pi_hit, pi_meta = _pi.route(
         stream, _strip_html(title_raw), _strip_html(description_raw), province=province,
-        infra_meta=infra_meta if is_infra else None)
+        infra_meta=infra_meta if is_infra else None, article_text=reading)
 
     # Clean content
     title_clean = sanitize_text(_strip_html(title_raw))[:300]
@@ -404,6 +413,10 @@ def build_signal(item: dict, is_crime: bool, province: str | None = None) -> dic
     # suggested precinct. Existing candidates are not moved.
     _place.add_place(stream, metadata, _strip_html(title_raw), _strip_html(description_raw),
                      province=province)
+    # Batch 6 step 3: article dates and the court-step check (metadata only).
+    _art.annotate(metadata, _strip_html(title_raw), _strip_html(description_raw), reading,
+                  feed_date=(item.get("pubdate_parsed") or "")[:10] or None, fixture=fixture,
+                  window_start=window_start)
 
     return {
         "signal_id": str(uuid.uuid4()),
@@ -466,6 +479,8 @@ def persist_signals(signals: list[dict], dry_run: bool = False) -> int:
                 # Batch 5: one story, one record (any stream, either collector).
                 m = _story.safe_link_story(conn, sig["signal_id"], sig["title"], sig["stream"],
                                            sig["timestamp"], json.loads(sig["metadata_json"] or "{}"))
+                # Batch 6 step 3: one story, one court-step flag.
+                m = _art.share_story_step(conn, sig["signal_id"], sig["timestamp"], m)
                 sig["metadata_json"] = json.dumps(m, ensure_ascii=False)
                 conn.execute(INSERT_SQL, (
                     sig["signal_id"],
@@ -620,6 +635,7 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
     off_province = 0
     foreign_dropped = 0
     off_town = 0
+    articles_tried = articles_read = before_start = 0
     seen_ids: set[str] = set()
 
     for i, query in enumerate(queries):
@@ -660,7 +676,21 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
                         f"{item['title']} {_strip_html(item.get('description', ''))}", infra_province):
                     off_province += 1
                     continue
-                sig = build_signal(item, is_crime, province=infra_province)
+                sig = build_signal(item, is_crime, province=infra_province,
+                                   window_start=window.start)
+                # Batch 6 step 3: read the article of a shortlisted signal
+                # (off unless --read-articles / FORGE_ARTICLE_READER=1).
+                reading = _art.read(item.get("link", ""), (item.get("pubdate_parsed") or "")[:10] or None,
+                                    sig["stream"], json.loads(sig["metadata_json"] or "{}"))
+                if reading is not None:
+                    articles_tried += 1
+                    if reading.get("status") == "read":
+                        articles_read += 1
+                    sig = build_signal(item, is_crime, province=infra_province, reading=reading,
+                                       window_start=window.start)
+                    if _art.before_window(json.loads(sig["metadata_json"] or "{}"), window):
+                        before_start += 1
+                        continue
                 if sig["external_id"] in seen_ids:
                     continue  # the same story from two queries
                 seen_ids.add(sig["external_id"])
@@ -680,6 +710,9 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         print(f"[gnews] Dropped {foreign_dropped} stories from foreign local outlets")
     if off_town:
         print(f"[gnews] Dropped {off_town} town-search stories that name neither the town nor a place near it")
+    if _art.reader_enabled():
+        print(f"[gnews] Article reader: tried {articles_tried}, read {articles_read}, "
+              f"dropped {before_start} whose incident date is before the run start")
 
     # Stream distribution
     stream_counts: dict[str, int] = {}
@@ -707,6 +740,8 @@ def run_collector(days: int = DEFAULT_DAYS, max_queries: int = DEFAULT_MAX_QUERI
         "duration_s": duration,
         "stream_counts": stream_counts,
         "off_province": off_province,
+        "articles_tried": articles_tried,
+        "articles_read": articles_read,
     }
 
 
@@ -744,8 +779,13 @@ if __name__ == "__main__":
     parser.add_argument("--from", dest="window_start", default=None,
                         help="Fixed window start, SAST (YYYY-MM-DD or '1 October'); "
                              "replaces --days when given")
+    parser.add_argument("--read-articles", action="store_true",
+                        help="Batch 6: read the article of each shortlisted signal "
+                             "(off by default; outlet permissions apply)")
 
     args = parser.parse_args()
+    if args.read_articles:
+        _art.READ_ARTICLES = True
 
     kw_list = None
     if args.keywords:

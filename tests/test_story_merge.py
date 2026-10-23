@@ -240,8 +240,12 @@ def test_collectors_call_the_story_check():
         assert "_story.safe_link_story(" in src, name
 
 
-def test_bench_without_story_check_matches_batch4_scorecard():
+def test_bench_without_story_check_matches_batch4_scorecard(monkeypatch):
+    # Batch 6 step 3 adds the court-step check and the article reader; with
+    # both off, the bench without the story check is Batch 4's again.
     from tools import collector_bench as cb
+    monkeypatch.setenv("FORGE_COURT_STEP", "0")
+    monkeypatch.setattr(cb, "ARTICLES", False)
     ref = json.loads((ROOT / "docs" / "bench" / "collector_bench_batch4_cs_2026-10-23.json").read_text())
     card = cb.score()
     assert card["summary"] == ref["summary"]
