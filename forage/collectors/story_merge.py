@@ -870,12 +870,18 @@ def link_story(conn, signal_id: str, title: str, stream: str, timestamp: str, me
             m = {}
         cands.append((record_from_row(sid, t, ts, st, m), m))
     wts = Weights([c.tokens for c, _ in cands] + [rec.tokens])
+    # Only records sharing a specific word, the link or the failure type can
+    # match (the same candidate rule as StoryIndex); this keeps a run of a
+    # thousand saves from scoring every pair.
+    rkeys = set(StoryIndex._keys(rec))
+    scored = [(c, m) for c, m in cands if rkeys & set(StoryIndex._keys(c))]
+
     def _members(c, m):
         mid = (m.get("supports_signal_id") if m.get("story_role") == "supporting_evidence" else None) or c.rid
         return [x for x, xm in cands if x.rid == mid or xm.get("supports_signal_id") == mid]
 
     best = (0.0, None, "", None)
-    for c, m in cands:
+    for c, m in scored:
         s, why = same_story(rec, c, wts)
         if s > best[0] and fits_story(rec, _members(c, m)):
             best = (s, c, why, m)
@@ -904,3 +910,45 @@ def link_story(conn, signal_id: str, title: str, stream: str, timestamp: str, me
         meta["story_role"] = "supporting_evidence"
         meta["supports_signal_id"] = main_id
     return meta
+
+
+def safe_link_story(conn, signal_id: str, title: str, stream: str, timestamp: str, meta: dict,
+                    town_hint: Optional[str] = None) -> dict:
+    """What the collectors call. A failure in the story check never stops a
+    signal being saved: the record is saved as it was, marked unchecked.
+    FORGE_STORY_MERGE=0 turns the check off."""
+    import os
+    if os.environ.get("FORGE_STORY_MERGE", "1") == "0":
+        return meta
+    try:
+        return link_story(conn, signal_id, title, stream, timestamp or "", meta, town_hint)
+    except Exception as exc:  # never block a save on the story check
+        out = dict(meta)
+        out["story_check_error"] = f"{type(exc).__name__}: {exc}"[:200]
+        return out
+
+
+def bench_roles(rows: list[dict], key: str = "outcome", base: Optional[tuple] = None) -> dict:
+    """Bench hook: run the story check over replayed rows in saved order,
+    one index per town sweep, and return row index -> role dict. Dropped
+    rows are skipped (they are not records)."""
+    by_town: dict[str, list[int]] = {}
+    for i, r in enumerate(rows):
+        if r[key].get("dropped"):
+            continue
+        by_town.setdefault(r["town"], []).append(i)
+    out = {}
+    for town, idxs in by_town.items():
+        idx = StoryIndex(base=base)
+        for i in idxs:
+            r = rows[i]
+            o = r[key]
+            idx.add(StoryRecord(
+                rid=str(i), title=r.get("title") or "", date=_date(o.get("date")),
+                stream=o.get("stream") or "GLOBAL", stream_reason=o.get("stream_reason") or "",
+                place=o.get("place"), province=o.get("province"), lat=o.get("lat"), lng=o.get("lng"),
+                link=o.get("link"), infra_type=o.get("infra_event_type"), infra_kind=o.get("infra_kind"),
+                crime_kind=o.get("crime_kind")))
+        for rid, d in idx.roles().items():
+            out[int(rid)] = d
+    return out

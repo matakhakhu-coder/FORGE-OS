@@ -62,12 +62,14 @@ try:
     from forage.collectors import pi_signals as _pi
     from forage.collectors import crime_signals as _crime
     from forage.collectors import place_signals as _place
+    from forage.collectors import story_merge as _story
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
     from forage.collectors import pi_signals as _pi
     from forage.collectors import crime_signals as _crime
     from forage.collectors import place_signals as _place
+    from forage.collectors import story_merge as _story
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -1047,6 +1049,10 @@ def run(db_path: Path = DB_PATH) -> dict:
                     f"sim={sim:.2f} → inserting with tag"
                 )
 
+            # Batch 5: one story, one record. Links this record to an earlier
+            # one telling the same story (any stream, either collector).
+            meta = _story.safe_link_story(conn, sig["signal_id"], sig["title"], sig["stream"],
+                                          sig["timestamp"], meta)
             meta_json = json.dumps(meta, ensure_ascii=False) if meta else None
 
             try:

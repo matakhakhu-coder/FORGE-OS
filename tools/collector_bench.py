@@ -195,6 +195,8 @@ def _outcome(stream: str, timestamp: str, meta: dict) -> dict:
         "lng": lc.get("lng"),
         "infra_event_type": meta.get("infra_event_type"),
         "infra_kind": meta.get("infra_kind"),
+        "crime_kind": meta.get("crime_kind"),
+        "link": meta.get("link") or meta.get("url"),
     }
 
 
@@ -339,7 +341,16 @@ def _share(flags: list[bool]) -> str:
 def score_case(case: dict, hits: list[dict], key: str) -> dict:
     dropped = sum(1 for h in hits if h[key].get("dropped"))
     hits = [h for h in hits if not h[key].get("dropped")]
+    # Batch 5: a supporting record is saved but is not a separate record of
+    # the story. Records, streams and one-record are read from main records;
+    # places and keep-out rules still read every saved row (a place on a
+    # supporting record is still on the map's evidence). Without the story
+    # check every row is a main record, so older cards score the same.
+    saved = hits
+    supporting = sum(1 for h in hits if h[key].get("story_role") == "supporting_evidence")
+    hits = [h for h in hits if h[key].get("story_role") != "supporting_evidence"]
     outs = [h[key] for h in hits]
+    saved_outs = [h[key] for h in saved]
     records = len(outs)
     res = {
         "id": case["id"],
@@ -353,11 +364,16 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
         "dates": sorted({o["date"] for o in outs if o["date"]}),
         "titles": sorted({(h.get("title") or "")[:140] for h in hits})[:12],
         "replay_errors": sum(1 for o in outs if o.get("replay_error")),
-        "precincts": dict(sorted(Counter(o.get("precinct") or "none" for o in outs).items())),
-        "place_review": sum(1 for o in outs if o.get("place_review")),
+        "precincts": dict(sorted(Counter(o.get("precinct") or "none" for o in saved_outs).items())),
+        "place_review": sum(1 for o in saved_outs if o.get("place_review")),
         # Only present when the collector drops rows (Batch 4), so cards
         # scored before Batch 4 stay comparable.
         **({"dropped_by_collector": dropped} if dropped else {}),
+        **({"supporting_records": supporting,
+            "saved_rows": len(saved_outs),
+            "streams_all_rows": dict(sorted(Counter(o["stream"] for o in saved_outs).items())),
+            "places": dict(sorted(Counter(o["place"] or "none" for o in saved_outs).items()))}
+           if supporting else {}),
     }
     area = re.compile(TOWNS[case["sweep"]]["area"], re.I)
     res["records_naming_area"] = sum(
@@ -366,14 +382,16 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
     if case["kind"] == "catch":
         res["right_stream"] = _share([o["stream"] == case["expected_stream"] for o in outs])
         exp = {p.lower() for p in case.get("expected_place") or []}
-        res["right_place"] = _share([(o["place"] or "").lower() in exp for o in outs])
+        res["right_place"] = _share([(o["place"] or "").lower() in exp for o in saved_outs])
+        if supporting:
+            res["right_stream_all_rows"] = _share([o["stream"] == case["expected_stream"] for o in saved_outs])
         res["merged"] = (records == 1) if (case.get("one_record") and records) else (None if not records else True)
         if inc and records:
-            res["right_date"] = _share([_near(o["date"], inc) for o in outs])
+            res["right_date"] = _share([_near(o["date"], inc) for o in saved_outs])
         else:
             res["right_date"] = "n/a" if records else "none"
         if case.get("court_step_expected"):
-            res["court_step_flagged"] = _share([o["court_step"] for o in outs])
+            res["court_step_flagged"] = _share([o["court_step"] for o in saved_outs])
         # Batch 3: collectors now suggest a precinct. Reported, not scored:
         # the cases hold no expected precinct, and the pass rule is unchanged
         # so scorecards stay comparable across batches.
@@ -388,20 +406,20 @@ def score_case(case: dict, hits: list[dict], key: str) -> dict:
         res["rule"] = rule
         status = "pass"
         if rule == "absent":
-            ok = records == 0
+            ok = len(saved_outs) == 0
         elif rule == "not_placed_in_province":
-            ok = not any(o["province"] in forbidden for o in outs)
+            ok = not any(o["province"] in forbidden for o in saved_outs)
         elif rule == "not_placed_at":
-            ok = not any(o["place"] in forbidden for o in outs)
+            ok = not any(o["place"] in forbidden for o in saved_outs)
         elif rule == "not_stream":
-            ok = not any(o["stream"] in forbidden for o in outs)
+            ok = not any(o["stream"] in forbidden for o in saved_outs)
         elif rule == "court_step_flagged":
-            ok = all(o["court_step"] for o in outs)
+            ok = all(o["court_step"] for o in saved_outs)
         elif rule == "date_is_incident":
-            if not records:
+            if not saved_outs:
                 ok, status = True, "not_tested"
             else:
-                ok = all(_near(o["date"], inc) for o in outs)
+                ok = all(_near(o["date"], inc) for o in saved_outs)
         else:
             raise ValueError(f"unknown keep_out_rule {rule}")
         if case.get("one_record") and records:
@@ -460,6 +478,25 @@ def fidelity(rows: list[dict]) -> dict:
     }
 
 
+def story_merge_rows(rows: list[dict]) -> list[dict]:
+    """Batch 5 merge hook: mark each replayed row main or supporting with the
+    same story check the collectors now run. No row is removed."""
+    from forage.collectors import story_merge as sm
+
+    base = None
+    wc = REPO / "data" / "bench" / "story_word_counts.json"
+    if wc.exists():
+        d = json.loads(wc.read_text(encoding="utf-8"))
+        base = (d["rows"], d["df"])
+    roles = sm.bench_roles(rows, "outcome", base=base)
+    out = []
+    for i, r in enumerate(rows):
+        if i in roles:
+            r = {**r, "outcome": {**r["outcome"], **roles[i]}}
+        out.append(r)
+    return out
+
+
 def _git_head() -> Optional[str]:
     try:
         import subprocess
@@ -498,6 +535,9 @@ def score(recorded: bool = False, cases: Optional[dict] = None,
         "keep_out_not_tested": sum(r.get("status") == "not_tested" for r in keep),
         "catch_with_precinct": sum(any(k != "none" for k in r["precincts"]) for r in catch),
         "place_review_records": sum(r["place_review"] for r in results),
+        **({"story_check": True,
+            "supporting_records_in_cases": sum(r.get("supporting_records", 0) for r in results)}
+           if merge and not recorded else {}),
     }
     return {
         "bench": "FORGE collector regression bench (Batch 1)",
@@ -525,6 +565,9 @@ def to_markdown(card: dict) -> str:
         f"- Keep-out cases: {s['keep_out_pass']} of {s['keep_out_cases']} pass ({s['keep_out_not_tested']} not testable on this data).",
         f"- Not scored: catch cases with a suggested precinct on any record {s.get('catch_with_precinct', 0)}; "
         f"records flagged as an arrest or court place {s.get('place_review_records', 0)}.",
+        *([f"- Story check (Batch 5) on: {s['supporting_records_in_cases']} saved rows in the cases are supporting "
+            "records of another; records, streams and one record count main records only, places and keep-out "
+            "rules read every saved row."] if s.get("story_check") else []),
         "",
         "| Case | Kind | Records | Streams | Places | Precincts (not scored) | Stream | Place | One record | Date | Pass |",
         "|---|---|---|---|---|---|---|---|---|---|---|",
@@ -612,6 +655,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     sc.add_argument("--recorded", action="store_true", help="score what the sweeps saved, not a replay")
     sc.add_argument("--out", help="write the scorecard JSON here")
     sc.add_argument("--md", help="write a markdown table here")
+    sc.add_argument("--no-story", action="store_true", help="score without the Batch 5 story check")
     ex = sub.add_parser("extract")
     ex.add_argument("--sweep-root", required=True)
     ex.add_argument("--authority", required=True)
@@ -622,7 +666,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(json.dumps(meta, indent=1))
         return 0
     t0 = time.time()
-    card = score(recorded=a.recorded)
+    card = score(recorded=a.recorded, merge=None if a.no_story else story_merge_rows)
     if a.out:
         Path(a.out).write_text(json.dumps(card, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     if a.md:

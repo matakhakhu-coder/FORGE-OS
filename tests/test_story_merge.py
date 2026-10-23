@@ -214,3 +214,51 @@ def test_two_killings_same_town_same_day_different_words_stay_separate():
             lng=30.04)
     w = sm.Weights([], BASE)
     assert sm.same_story(a, b, w)[0] == 0.0
+
+
+# ── step 3: wiring ──────────────────────────────────────────────────────────
+
+def test_safe_link_story_never_blocks_a_save():
+    class Broken:
+        def execute(self, *a, **k):
+            raise RuntimeError("db gone")
+    # link_story swallows the SELECT error; a failing UPDATE path must not raise either
+    out = sm.safe_link_story(Broken(), "x1", "Suliman Carrim back in court", "GLOBAL",
+                             "2026-10-19T07:00:00", {"url": "u"})
+    assert out["url"] == "u"
+
+
+def test_safe_link_story_can_be_switched_off(monkeypatch):
+    monkeypatch.setenv("FORGE_STORY_MERGE", "0")
+    meta = {"url": "u"}
+    assert sm.safe_link_story(None, "x1", "t", "GLOBAL", "2026-10-19", meta) is meta
+
+
+def test_collectors_call_the_story_check():
+    for name in ("civic_intel_collector.py", "google_news_collector.py"):
+        src = (ROOT / "forage" / "collectors" / name).read_text(encoding="utf-8")
+        assert "_story.safe_link_story(" in src, name
+
+
+def test_bench_without_story_check_matches_batch4_scorecard():
+    from tools import collector_bench as cb
+    ref = json.loads((ROOT / "docs" / "bench" / "collector_bench_batch4_cs_2026-10-23.json").read_text())
+    card = cb.score()
+    assert card["summary"] == ref["summary"]
+
+
+def test_bench_story_check_makes_no_case_worse():
+    from tools import collector_bench as cb
+    ref = {c["id"]: c for c in json.loads(
+        (ROOT / "docs" / "bench" / "collector_bench_batch4_cs_2026-10-23.json").read_text())["cases"]}
+    card = cb.score(merge=cb.story_merge_rows)
+    for c in card["cases"]:
+        before = ref[c["id"]]
+        assert c["pass"] >= before["pass"], c["id"]
+        assert c["caught"] == before["caught"], c["id"]
+        if c["kind"] == "catch":
+            rank = {"none": 0, "n/a": 0, "some": 1, "all": 2}
+            assert rank[c["right_stream"]] >= rank[before["right_stream"]], c["id"]
+            assert rank[c["right_place"]] >= rank[before["right_place"]], c["id"]
+    cig = next(c for c in card["cases"] if c["id"] == "musina_cigarette_seizure")
+    assert cig["records"] == 1 and cig["pass"]

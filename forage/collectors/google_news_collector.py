@@ -87,6 +87,7 @@ from forage.collectors import infra_signals as _infra  # noqa: E402
 from forage.collectors import pi_signals as _pi  # noqa: E402
 from forage.collectors import crime_signals as _crime  # noqa: E402
 from forage.collectors import place_signals as _place  # noqa: E402
+from forage.collectors import story_merge as _story  # noqa: E402
 
 # ── Sanitizer (Stable 1.1 compliance) ────────────────────────────────────────
 try:
@@ -458,6 +459,10 @@ def persist_signals(signals: list[dict], dry_run: bool = False) -> int:
                     m = json.loads(sig["metadata_json"] or "{}")
                     m = _infra.link_supporting(conn, m, sig["timestamp"])
                     sig["metadata_json"] = json.dumps(m, ensure_ascii=False)
+                # Batch 5: one story, one record (any stream, either collector).
+                m = _story.safe_link_story(conn, sig["signal_id"], sig["title"], sig["stream"],
+                                           sig["timestamp"], json.loads(sig["metadata_json"] or "{}"))
+                sig["metadata_json"] = json.dumps(m, ensure_ascii=False)
                 conn.execute(INSERT_SQL, (
                     sig["signal_id"],
                     sig["source"],
