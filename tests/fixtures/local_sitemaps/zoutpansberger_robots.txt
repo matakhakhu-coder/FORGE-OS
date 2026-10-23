@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Block spider trap / legacy paths
+Disallow: /directory/
+Disallow: /directory
+Disallow: /photo/files/
+Disallow: /classifieds/
+Disallow: /media/uploads/
+
+# Block internal/admin pages
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /merchant
+Disallow: /merchant/*
+Disallow: /moderator
+Disallow: /moderator/*
+Disallow: /auth
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /orders/*
+Disallow: /account
+Disallow: /purchase-zouts
+Disallow: /purchase-success
+Disallow: /wishlist
+Disallow: /claim-token
+Disallow: /funtest
+Disallow: /funtest1
+Disallow: /search
+Disallow: /user
+
+Sitemap: https://www.zoutpansberger.co.za/sitemap-index.xml
+Sitemap: https://www.zoutpansberger.co.za/sitemap.xml
+Sitemap: https://www.zoutpansberger.co.za/sitemap-news.xml

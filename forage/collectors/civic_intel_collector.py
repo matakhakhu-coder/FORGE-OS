@@ -65,6 +65,8 @@ try:
     from forage.collectors import story_merge as _story
     from forage.collectors import run_window as _rw
     from forage.collectors import article_step as _art
+    from forage.collectors import town_sources as _towns
+    from forage.collectors import local_sitemaps as _ls
 except ImportError:  # run as a script from the collectors directory
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
     from forage.collectors import infra_signals as _infra
@@ -74,6 +76,8 @@ except ImportError:  # run as a script from the collectors directory
     from forage.collectors import story_merge as _story
     from forage.collectors import run_window as _rw
     from forage.collectors import article_step as _art
+    from forage.collectors import town_sources as _towns
+    from forage.collectors import local_sitemaps as _ls
 
 # ── Path setup ─────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -487,13 +491,24 @@ _KEYWORD_PATTERNS = [
 ]
 
 
+# Batch 7: the first rule treats any mention of Vhembe or Makhado as a
+# Crime & Security priority story. That suits national feeds, where those
+# names are rare, but every story in a Vhembe local paper names its own
+# district. For local papers only VBS keeps that rule; the crime rules decide.
+_AREA_RULE = _KEYWORD_PATTERNS[0][0]
+_LOCAL_PAPER_AREA_RULE = re.compile(r"\bVBS\b", re.IGNORECASE)
+
+
 def classify_signal(title: str, content: str, base_stream: str,
-                    base_relevance: float, base_priority: int) -> tuple:
+                    base_relevance: float, base_priority: int,
+                    local_paper: bool = False) -> tuple:
     text      = f"{title} {content}"
     stream    = base_stream
     relevance = base_relevance
     priority  = base_priority
     for pattern, stream_override, prio_boost, rel_boost in _KEYWORD_PATTERNS:
+        if local_paper and pattern is _AREA_RULE:
+            pattern = _LOCAL_PAPER_AREA_RULE
         if pattern.search(text):
             stream    = stream_override
             relevance = min(relevance + rel_boost, 1.5)
@@ -684,9 +699,56 @@ def fetch_source(source: dict) -> list:
         return fetch_google_news(source)
     elif mode == "html_scrape":
         return fetch_html_scrape(source)
+    elif mode == "sitemap":
+        return fetch_local_sitemaps(source)
     else:
         print(f"  [warn] unknown fetch_mode: {mode}")
         return []
+
+
+# ── Batch 7: local paper sitemaps (headline, link and date only) ─────────
+#
+# Not in SOURCES: a run reads local papers only when it names a town
+# (--town) or asks for local papers alone (--local-only), so scheduled runs
+# are unchanged. Which papers a town gets, and the per-publisher off switch,
+# live in data/town_sources.json; FORGE_LOCAL_SITEMAPS=0 turns them all off.
+
+def local_sources(town: Optional[str] = None, province: Optional[str] = None) -> list:
+    """Civic source dicts for a town's readable local papers (all readable
+    papers when town is None). One source per publisher and province, so a
+    story both Zout News papers carry becomes one lead."""
+    if town:
+        ts = _towns.sources_for_town(town, province=province)
+        for key, why in ts.blocked:
+            print(f"[civic_intel] {ts.town}: not reading {key}: {why}")
+        papers = ts.readable
+    else:
+        papers = _towns.all_readable_papers()
+    groups: dict = {}
+    for paper in papers:
+        groups.setdefault((paper.get("publisher"), paper.get("province")), []).append(paper)
+    out = []
+    for (publisher, prov), group in groups.items():
+        out.append({
+            "source_key":          f"{publisher}_sitemaps",
+            "label":               "Local papers (public sitemaps): " + ", ".join(p["name"] for p in group),
+            "fetch_mode":          "sitemap",
+            "papers":              group,
+            "stream":              "GLOBAL",
+            "province":            prov,
+            "base_relevance":      1.4,
+            "is_priority_default": 0,
+            "lead_only":           True,
+        })
+    return out
+
+
+def fetch_local_sitemaps(source: dict) -> list:
+    report = _ls.CollectReport()
+    entries = _ls.collect(source.get("papers") or [], window=run_window(), report=report)
+    print(f"  [local_sitemaps] {report.items_seen} article links, {report.out_of_window} outside the window, "
+          f"{report.leads} leads")
+    return entries
 
 
 # ── Signal builder ─────────────────────────────────────────────────────────
@@ -731,9 +793,12 @@ def entry_to_signal(entry: dict, source: dict, reading: Optional[dict] = None,
 
     # Stable external ID
     link     = entry.get("link") or entry.get("id") or title
+    # Batch 7: a sitemap lead keys on the article's link name, so the same
+    # story on both Zout News sites (or found again next run) is one record.
+    ext_key  = entry.get("_external_key") or link
     ext_id   = "{}:{}".format(
         source["source_key"],
-        hashlib.sha1(link.encode("utf-8", errors="replace")).hexdigest()[:16]
+        hashlib.sha1(ext_key.encode("utf-8", errors="replace")).hexdigest()[:16]
     )
 
     stream, relevance, priority = classify_signal(
@@ -741,6 +806,7 @@ def entry_to_signal(entry: dict, source: dict, reading: Optional[dict] = None,
         source["stream"],
         source["base_relevance"],
         source["is_priority_default"],
+        local_paper=(source.get("fetch_mode") == "sitemap"),
     )
     # PI searches pull in foreign and unrelated crime news; the keyword rules
     # must not file it under CRIME_INTEL. Only PI routing (below) moves these.
@@ -802,6 +868,14 @@ def entry_to_signal(entry: dict, source: dict, reading: Optional[dict] = None,
     # Batch 6 step 3: article dates and the court-step check (metadata only).
     infra_meta = _art.annotate(dict(infra_meta or {}), title, content, reading,
                                feed_date=published[:10], fixture=fixture, window_start=window_start)
+    # Batch 7: provenance on every sitemap lead. It is a lead, not a report:
+    # headline, link and date only, so a person opens the article to check.
+    if entry.get("_provenance"):
+        infra_meta = dict(infra_meta or {})
+        infra_meta["provenance"] = entry["_provenance"]
+        infra_meta["lead_only"] = True
+        if not infra_meta.get("location_candidate") and entry["_provenance"].get("coverage_area"):
+            infra_meta["lead_area"] = entry["_provenance"]["coverage_area"]
 
     return {
         "signal_id":       str(uuid.uuid4()),
@@ -981,7 +1055,8 @@ def _open_db(path: Path) -> sqlite3.Connection:
 
 # ── Main run loop ──────────────────────────────────────────────────────────
 
-def run(db_path: Path = DB_PATH) -> dict:
+def run(db_path: Path = DB_PATH, town: Optional[str] = None, local_only: bool = False,
+        province: Optional[str] = None) -> dict:
     """
     Iterate all SOURCES, fetch via appropriate strategy,
     deduplicate by external_id, insert new signals.
@@ -1015,11 +1090,18 @@ def run(db_path: Path = DB_PATH) -> dict:
     total_near_dup = 0
     per_source     = {}
 
-    for source in SOURCES:
+    # Batch 7: a named town adds its local papers; --local-only reads only
+    # local papers. Neither: SOURCES exactly as before.
+    sources = ([] if local_only else list(SOURCES))
+    if town or local_only:
+        sources += local_sources(town, province=province)
+
+    for source in sources:
         key   = source["source_key"]
         label = source["label"]
         mode  = source.get("fetch_mode", "rss_direct")
-        url_display = source.get("url") or source.get("scrape_url") or "?"
+        url_display = (source.get("url") or source.get("scrape_url")
+                       or ", ".join(p.get("host", "") for p in source.get("papers") or []) or "?")
         print(f"[{label}] [{mode}] {url_display}")
 
         entries = fetch_source(source)
@@ -1035,7 +1117,7 @@ def run(db_path: Path = DB_PATH) -> dict:
             # Batch 6 step 3: read the article of a shortlisted signal (off
             # unless --read-articles / FORGE_ARTICLE_READER=1). Skipped for a
             # link already saved, so a rerun doesn't fetch again.
-            if _art.reader_enabled() and sig.get("url") and not conn.execute(
+            if _art.reader_enabled() and mode != "sitemap" and sig.get("url") and not conn.execute(
                     "SELECT 1 FROM signals WHERE external_id=?", (sig["external_id"],)).fetchone():
                 reading = _art.read(sig["url"], sig["timestamp"][:10], sig["stream"], sig.get("infra_meta") or {})
                 if reading is not None:
@@ -1154,16 +1236,18 @@ def run(db_path: Path = DB_PATH) -> dict:
     )
     if total_errors > 0 and sources_ok == 0:
         run_status = "error"
-    elif sources_ok < len(SOURCES):
+    elif sources_ok < len(sources):
         run_status = "partial_success"
     else:
         run_status = "success"
 
     summary = {
         "collector":       "civic_intel",
-        "sources":         len(SOURCES),
+        "town":            town,
+        "local_only":      local_only,
+        "sources":         len(sources),
         "sources_ok":      sources_ok,
-        "sources_failed":  len(SOURCES) - sources_ok,
+        "sources_failed":  len(sources) - sources_ok,
         "total_new":       total_new,
         "total_skipped":   total_skipped,
         "total_blocked":   total_blocked,
@@ -1179,7 +1263,7 @@ def run(db_path: Path = DB_PATH) -> dict:
         dedup_line = f" · ⊘ {total_blocked} blocked · ≈ {total_near_dup} near-dup"
 
     print(f"\n[civic_intel] Done — {total_new} new{dedup_line} · "
-          f"{sources_ok}/{len(SOURCES)} sources active · status: {run_status}")
+          f"{sources_ok}/{len(sources)} sources active · status: {run_status}")
 
     log_run(
         db_path,
@@ -1205,6 +1289,12 @@ if __name__ == "__main__":
     _parser.add_argument("--read-articles", action="store_true",
                          help="Batch 6: read the article of each shortlisted signal "
                               "(off by default; outlet permissions apply)")
+    _parser.add_argument("--town", default=None,
+                         help="Batch 7: also read this town's local papers (data/town_sources.json)")
+    _parser.add_argument("--province", default=None,
+                         help="Province for a town not in data/town_sources.json")
+    _parser.add_argument("--local-only", action="store_true",
+                         help="Batch 7: read only local papers (the --town list, or all readable papers)")
     _args = _parser.parse_args()
     if _args.read_articles:
         _art.READ_ARTICLES = True
@@ -1218,7 +1308,8 @@ if __name__ == "__main__":
         print("[civic_intel] DRY RUN — would connect to:", db)
         print("[civic_intel] Dry run complete (no writes)")
     else:
-        print(json.dumps(run(db_path=db), indent=2))
+        print(json.dumps(run(db_path=db, town=_args.town, local_only=_args.local_only,
+                             province=_args.province), indent=2))
 
 # --- MEGA RUNNER ADAPTER ---
 import asyncio as _asyncio

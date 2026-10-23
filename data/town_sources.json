@@ -1,0 +1,73 @@
+{
+  "_note": "Batch 7 (23 Oct 2026): which local papers each town's run reads, and the switch for each publisher. Read by forage/collectors/town_sources.py. A publisher is only read when enabled is true here AND FORGE_LOCAL_SITEMAPS is not 0. To stop reading a publisher (for example if it objects), set its enabled to false. Nothing here grants permission for article text: the sitemap source keeps headline, link and date only.",
+  "publishers": {
+    "zoutnet": {
+      "name": "Zout News (Limpopo Mirror and Zoutpansberger)",
+      "enabled": true,
+      "basis": "Batch 7 terms check, 23 Oct 2026 (register entry B7-LM-ZB-sitemap): public sitemaps listed in each site's robots.txt; headline, link and date only; no article text; no database key; polite rate; credit and link in any pin; stop if the publisher objects.",
+      "permission": "Requested by email on 23 Oct 2026 (anton@zoutnet.co.za, cc andries@zoutnet.co.za). No reply yet. If Zout News objects, set enabled to false.",
+      "contact": "anton@zoutnet.co.za"
+    },
+    "pixelfish": {
+      "name": "Pixelfish Marketing Solutions (Newcastillian)",
+      "enabled": false,
+      "blocked": "robots.txt notice bans automated collection without express written permission. Requested 23 Oct 2026, no reply. No reader is built for it."
+    },
+    "caxton": {
+      "name": "Caxton (Northern Natal News, Review Online, The Citizen)",
+      "enabled": false,
+      "blocked": "Terms clause 2.7.1 bans automated monitoring without prior written authority. The request was dropped by the owner on 23 Oct 2026. No reader is built for it."
+    }
+  },
+  "papers": {
+    "limpopo_mirror": {
+      "name": "Limpopo Mirror",
+      "publisher": "zoutnet",
+      "host": "www.limpopomirror.co.za",
+      "province": "Limpopo",
+      "coverage_area": "Vhembe District (Makhado, Thulamela, Musina, Collins Chabane)",
+      "sitemaps": [
+        {"url": "https://www.limpopomirror.co.za/news-sitemap.xml", "kind": "news"},
+        {"url": "https://www.limpopomirror.co.za/sitemap.xml", "kind": "main"}
+      ]
+    },
+    "zoutpansberger": {
+      "name": "Zoutpansberger",
+      "publisher": "zoutnet",
+      "host": "www.zoutpansberger.co.za",
+      "province": "Limpopo",
+      "coverage_area": "Makhado (Louis Trichardt) and the Soutpansberg",
+      "sitemaps": [
+        {"url": "https://www.zoutpansberger.co.za/sitemap-news.xml", "kind": "news"},
+        {"url": "https://www.zoutpansberger.co.za/sitemap.xml", "kind": "main"}
+      ]
+    },
+    "newcastillian": {
+      "name": "Newcastillian",
+      "publisher": "pixelfish",
+      "host": "newcastillian.com",
+      "province": "KwaZulu-Natal",
+      "sitemaps": []
+    },
+    "northern_natal_news": {
+      "name": "Northern Natal News",
+      "publisher": "caxton",
+      "host": "www.citizen.co.za",
+      "province": "KwaZulu-Natal",
+      "sitemaps": []
+    }
+  },
+  "province_defaults": {
+    "Limpopo": ["limpopo_mirror", "zoutpansberger"],
+    "KwaZulu-Natal": ["newcastillian", "northern_natal_news"]
+  },
+  "towns": {
+    "Musina": {"province": "Limpopo", "papers": ["limpopo_mirror", "zoutpansberger"]},
+    "Louis Trichardt": {"province": "Limpopo", "papers": ["zoutpansberger", "limpopo_mirror"], "aliases": ["Makhado"]},
+    "Thohoyandou": {"province": "Limpopo", "papers": ["limpopo_mirror", "zoutpansberger"]},
+    "Polokwane": {"province": "Limpopo", "papers": ["limpopo_mirror", "zoutpansberger"], "note": "Neither paper is Polokwane's own; Polokwane's own paper (Review Online) is a Caxton title and is not read by this source."},
+    "Malamulele": {"province": "Limpopo", "papers": ["limpopo_mirror", "zoutpansberger"]},
+    "Elim": {"province": "Limpopo", "papers": ["zoutpansberger", "limpopo_mirror"]},
+    "Newcastle": {"province": "KwaZulu-Natal", "papers": ["newcastillian", "northern_natal_news"]}
+  }
+}
