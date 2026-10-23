@@ -247,7 +247,7 @@ def test_timeline_one_step_per_publish_in_sa_time_order():
     assert [s["at"] for s in t["steps"]] == ["2026-10-20T12:00+02:00", "2026-10-21T00:30+02:00"]
     assert [s["label"] for s in t["steps"]] == ["20 Oct, 12:00 PM", "21 Oct, 12:30 AM"]
     assert [s["total"] for s in t["steps"]] == [2, 3]
-    assert t["marks"] == [{"step": 0, "label": "20 Oct"}, {"step": 1, "label": "21 Oct"}]
+    assert t["marks"] == [{"step": 0, "label": "20 Oct"}, {"step": 1, "label": "21"}]
 
 
 def test_timeline_record_without_publish_time_joins_the_last_step():
@@ -359,3 +359,55 @@ def test_publish_refuses_a_timeline_that_disagrees_with_records(tmp_path, monkey
     monkeypatch.setattr(mod, "timeline_table", short)
     with pytest.raises(SystemExit, match="timeline"):
         _publish_to(tmp_path, monkeypatch, db_file)
+
+
+# ── Slider markup and script (interactive charts Batch 2) ──────────────────────
+
+JS = ROOT / "publisher" / "static" / "js" / "record-charts.js"
+
+
+def test_one_hidden_slider_per_chart_page(built):
+    html = (built / "index.html").read_text()
+    t = _chart_table(html)
+    for p in rc.CHART_PAGES:
+        sec = _section(html, p["id"])
+        assert sec.count("data-gp-time") == 1, p["id"]
+        # printed hidden: without the script the page is today's charts, no slider
+        assert re.search(r'<div class="gp-time" data-gp-time hidden>', sec)
+        m = re.search(r'<input class="gp-time__range" id="gp-time-%s" type="range" min="0" max="(\d+)" step="1" value="(\d+)"' % p["id"], sec)
+        assert m and int(m.group(1)) == int(m.group(2)) == len(t["steps"]) - 1   # opens at "now"
+        assert f"(now) · {ALL_PINS} of {ALL_PINS} records" in sec
+        # the slider sits between the chart and its caption
+        assert sec.index("data-gp-time") < sec.index("gp-chart__caption")
+    net = _section(html, "network")
+    assert "data-gp-time" not in net
+
+
+def test_chart_script_is_served_from_the_site_not_a_cdn(built):
+    html = (built / "index.html").read_text()
+    srcs = re.findall(r'<script[^>]*src="([^"]*record-charts[^"]*)"', html)
+    assert srcs == ["static/js/record-charts.js"]
+    assert (built / "static" / "js" / "record-charts.js").read_bytes() == JS.read_bytes()
+    js = JS.read_text()
+    assert not re.search(r"https?://", js), "the chart script loads nothing from outside"
+    assert "import " not in js and "require(" not in js
+    # Chart.js and D3 are not on the page for the charts
+    assert "chart.js" not in html.lower().replace("record-charts.js", "")
+    assert "d3.min.js" not in html
+
+
+def test_chart_script_follows_the_motion_rules():
+    js = JS.read_text()
+    assert "prefers-reduced-motion: reduce" in js
+    assert "requestAnimationFrame" in js
+    m = re.search(r"var DURATION = (\d+);", js)
+    assert m and 250 <= int(m.group(1)) <= 400          # about a third of a second
+    assert "plural(T.total, 'record')" in js            # labels say records, never incidents
+    assert "incidents" not in js.lower()
+    assert "Math.pow(1 - t, 3)" in js                   # ease-out, no overshoot term
+
+
+def test_empty_timeline_when_there_are_no_records():
+    charts = rc.chart_counts([])
+    t = rc.timeline_table([], charts)
+    assert t["steps"] == [] and t["rows"] == []

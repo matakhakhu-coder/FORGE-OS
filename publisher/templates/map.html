@@ -815,6 +815,36 @@
   .gp-bar__track { height: 12px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden; }
   .gp-bar__fill { display: block; height: 100%; min-width: 1px; background: var(--accent); }
   .gp-bar__n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-primary); text-align: right; }
+  /* Timeline slider under each chart page (static/js/record-charts.js).
+     Printed hidden: without the script the page shows today's charts and no
+     slider. One position shared by the four pages; it scrubs the map's
+     publication history, one stop per publish. A sideways drag on it moves
+     the slider, never the page (touch-action: pan-y on the 44px-tall
+     control only); swiping anywhere else on the page, its label and day
+     marks included, still flips it. */
+  #panel-graph .gp-time[hidden] { display: none !important; }
+  .gp-time { margin: var(--sp-3) 0 0; max-width: 480px; }
+  .gp-time__label { display: block; font-family: var(--font-mono); font-size: 0.62rem; line-height: 1.4; color: var(--text-primary); }
+  .gp-time__range {
+    display: block; width: 100%; height: 44px; margin: 0; padding: 0; background: transparent;
+    -webkit-appearance: none; appearance: none; touch-action: pan-y; cursor: pointer;
+  }
+  .gp-time__range::-webkit-slider-runnable-track { height: 4px; background: var(--bg-elevated); border-radius: 2px; }
+  .gp-time__range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg-void); box-shadow: 0 0 0 1px var(--accent-muted);
+  }
+  .gp-time__range::-moz-range-track { height: 4px; background: var(--bg-elevated); border-radius: 2px; }
+  .gp-time__range::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+    border: 2px solid var(--bg-void); box-shadow: 0 0 0 1px var(--accent-muted);
+  }
+  .gp-time__range:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gp-time__marks { position: relative; height: 20px; margin: -12px 11px 0; }
+  .gp-time__tick { position: absolute; top: 0; width: 1px; height: 4px; margin-left: -0.5px; background: var(--border-subtle); }
+  .gp-time__tick--day { height: 7px; background: var(--text-secondary); }
+  .gp-time__day { position: absolute; top: 8px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-secondary); white-space: nowrap; }
+  .gp-time__day:first-child { transform: none; }
   #ig-loading {
     position: absolute; inset: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1447,6 +1477,24 @@
         {%- endfor %}
       </ol>
       {% endif %}
+      {%- if charts.total and chart_table.steps %}
+      {%- set n_steps = chart_table.steps|length %}
+      {%- set last = chart_table.steps[-1] %}
+      {%- set now_text = 'Map as of ' ~ last.label ~ ' (now) · ' ~ last.total ~ ' of ' ~ charts.total ~ ' record' ~ ('' if charts.total == 1 else 's') %}
+      <div class="gp-time" data-gp-time hidden>
+        <label class="gp-time__label" for="gp-time-{{ p.id }}">{{ now_text }}</label>
+        <input class="gp-time__range" id="gp-time-{{ p.id }}" type="range" min="0" max="{{ n_steps - 1 }}" step="1" value="{{ n_steps - 1 }}" aria-valuetext="{{ now_text }}">
+        <div class="gp-time__marks" aria-hidden="true">
+          {%- for m in chart_table.marks %}
+          <span class="gp-time__day" style="left:{{ (m.step / (n_steps - 1) * 100) | round(2) if n_steps > 1 else 0 }}%">{{ m.label }}</span>
+          {%- endfor %}
+          {%- set mark_steps = chart_table.marks | map(attribute='step') | list %}
+          {%- for st in chart_table.steps %}
+          <i class="gp-time__tick{{ ' gp-time__tick--day' if loop.index0 in mark_steps }}" style="left:{{ (loop.index0 / (n_steps - 1) * 100) | round(2) if n_steps > 1 else 0 }}%"></i>
+          {%- endfor %}
+        </div>
+      </div>
+      {%- endif %}
       <p class="gp-chart__caption">{{ p.caption }}</p>
      </section>
      {%- endfor %}
@@ -1728,6 +1776,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {%- endif %}
 <script src="static/js/area-check.js"></script>
+<script src="static/js/record-charts.js" defer></script>
 <script>
 (function () {
   'use strict';

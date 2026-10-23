@@ -318,11 +318,15 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
     for k, st in enumerate(steps):
         running += per_step.get(k, 0)
         st["total"] = running
-    marks, last_day = [], object()
+    # Day marks under the slider: where each day starts. The month is named
+    # on the first mark and when it changes; the rest are the day number, so
+    # the marks fit side by side on a phone.
+    marks, last_day, last_month = [], object(), None
     for k, st in enumerate(steps):
         if st["day"] and st["day"] != last_day:
             d = date.fromisoformat(st["day"])
-            marks.append({"step": k, "label": _day_label(d)})
+            marks.append({"step": k, "label": _day_label(d) if (d.year, d.month) != last_month else str(d.day)})
+            last_month = (d.year, d.month)
         last_day = st["day"]
     inc = pages.get("incident", {})
     return {
