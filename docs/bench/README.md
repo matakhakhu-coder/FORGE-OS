@@ -18,6 +18,11 @@ python tools/collector_bench.py score --out after.json --md after.md
 
 Each later batch runs `score` before and after its change and reports the difference per case. A batch that adds a de-duplication step passes it to `score(merge=...)`.
 
+## Results by batch
+
+- **Batch 1 (9384d13), baseline:** 17 of 22 caught, right stream on every record 5, full pass 1; keep-out 0 of 10.
+- **Batch 2 (c877631), crime classifier:** `docs/bench/collector_bench_batch2_2026-10-23.json` and `.md`. 17 of 22 caught, right stream on every record 10, full pass 1; keep-out 1 of 10. Changed cases: UNIVEN, Madombidzha, Shandesh, Golf Club and Cricket Club now all Crime & Security (each still fails on place, merge or date); the R524 crash keep-out now passes (9 records, none in Crime). No case got worse. Noise: in the Newcastle keyword run, rows naming the area in Crime & Security went from 34 to 38. One is the Newcastle businessman stabbing; three are Australian Newcastle stories (Windale, the Stockton inquest, the vacant-land body), a look-alike place problem left for Batch 4.
+
 ## Limits
 
 - The replay only covers what the collectors fetched on 23 October. New sources or searches (Batches 7 and 8) need a live run on database copies, scored against the same cases.
