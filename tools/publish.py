@@ -1249,6 +1249,21 @@ def _build_dist(
         st = s.get("stream", "GLOBAL")
         stream_counts[st] = stream_counts.get(st, 0) + 1
 
+    # Open records (tools/records_export.py): built once, here, so the Graph
+    # panel's charts and records.html/.csv/.json below count the very same
+    # approved pins in the same build.
+    from tools.records_export import (
+        CAVEATS, FIELD_HELP, RECORD_FIELDS, build_records, data_version, write_records,
+    )
+    from tools.record_charts import chart_counts, chart_total
+    rec_version = data_version(ROOT)
+    records = build_records(conn, index_path=CHECKED_INDEX, version=rec_version)
+    charts = chart_counts(records)
+    for page in charts["pages"]:
+        if chart_total(page) != len(records):
+            raise SystemExit(f"[publish] chart '{page['id']}' counts {chart_total(page)} "
+                             f"records, the Records page has {len(records)}")
+
     # Single render — index.html is the map shell; every other screen (Wire
     # archive, Streams, Cases, Graph, Entities, Watchlist) is an overlay panel
     # on this one page, populated from the context below.
@@ -1266,6 +1281,8 @@ def _build_dist(
             entity_types=entity_types,
             stream_labels=STREAM_LABELS,
             stream_counts=stream_counts,
+            charts=charts,
+            chart_caveat=CAVEATS[0],
             generated_at=now_str,
             **rev,
         ),
@@ -1371,11 +1388,7 @@ def _build_dist(
     # records.html, records.csv, records.json — the open Records view.
     # Approved map pins only (tools/records_export.py), free to read and
     # download; there is no paid tier (22 Oct 2026).
-    from tools.records_export import (
-        CAVEATS, FIELD_HELP, RECORD_FIELDS, build_records, data_version, write_records,
-    )
-    rec_version = data_version(ROOT)
-    records = build_records(conn, index_path=CHECKED_INDEX, version=rec_version)
+    # `records` was built above, before the map render, for the charts.
     records_payload = write_records(DIST, records, rec_version)
     (DIST / "records.html").write_text(
         env.get_template("records.html").render(

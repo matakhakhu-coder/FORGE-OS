@@ -3,6 +3,10 @@
 # new report's pages only, so the frozen timeline, feeds, search index and photos stay
 # exactly as they are. Nothing is committed or pushed here.
 #
+# The Graph panel charts live inside index.html and count the pins in records.json.
+# Both are restored together, so the charts stay frozen, still matching the frozen
+# records. They only change in a normal publish (tools/publish.py --deploy).
+#
 # Run from anywhere:  powershell -File tools\publish_additive.ps1
 
 $ErrorActionPreference = "Stop"
@@ -20,6 +24,7 @@ if ($LASTEXITCODE -ne 0) { Write-Host "publish.py failed"; exit 1 }
 
 Write-Host "--- restoring the frozen front end ---"
 git restore dist
+Write-Host "Map, records and Graph charts are back to the committed versions (charts not refreshed)."
 
 Write-Host "--- new files left under dist/ (review, then git add only the ones you want) ---"
 git status --short dist
