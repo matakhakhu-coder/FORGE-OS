@@ -122,66 +122,33 @@ def _load_keywords() -> list[str]:
 
 PRIORITY_KEYWORDS = _load_keywords()
 
-# ── Phase 27: Signal Stream classification ───────────────────────────────────
-# Evaluated in order: CRIME_INTEL → INFRASTRUCTURE → PRIORITY → GLOBAL
+# ── Stream (owner decision, 23 Oct 2026) ─────────────────────────────────────
+# GDACS items are disaster alerts. They go to GLOBAL ("Africa & World"), never
+# PRIORITY: Priority Intelligence is organised, political and state-level
+# crime (pi_signals.py), and the old rule that sent any item using words like
+# "analysis", "exclusive" or "revealed" to PRIORITY is gone. The crime and
+# infrastructure keyword rules this collector used to share with
+# tools/backfill_streams.py are not applied either: a GDACS alert is a hazard
+# notice, not a news story about a crime or a municipal failure.
+# alert_routing.route_alert() flags alerts about South Africa itself
+# (alert_scope / stream_review in metadata_json) for an owner decision.
 
-CRIME_KEYWORDS = [
-    "arrest", "murder", "robbery", "drug bust", "trafficking",
-    "gang", "kidnapping", "smuggling", "police raid", "crime",
-    "shooting", "homicide", "carjacking", "heist", "extortion",
-    "organised crime", "organized crime", "syndicate", "narco",
-    "interpol", "fugitive", "warrant", "conviction", "sentenced",
-]
-
-INFRASTRUCTURE_KEYWORDS = [
-    "power outage", "load shedding", "loadshedding", "blackout",
-    "water outage", "water supply", "pipe burst", "sewage",
-    "road closure", "bridge failure", "transport disruption",
-    "telecom failure", "network outage", "internet outage",
-    "eskom", "infrastructure", "supply chain",
-    "port congestion", "fuel shortage", "gas leak",
-]
-
-PRIORITY_ARTICLE_KEYWORDS = [
-    "analysis", "investigation", "exclusive", "intelligence briefing",
-    "threat assessment", "special report", "revealed", "leaked",
-    "deep dive", "exposed", "classified",
-]
+try:
+    from forage.collectors import alert_routing as _alerts
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from forage.collectors import alert_routing as _alerts
 
 
-def _keyword_stream(title: str, content: str) -> str:
-    """
-    Classify a signal into a curated stream via keyword matching.
-    Evaluation order: CRIME_INTEL -> INFRASTRUCTURE -> PRIORITY -> GLOBAL
-    """
-    combined = (title + " " + (content or "")).lower()
-    for kw in CRIME_KEYWORDS:
-        if kw in combined:
-            return "CRIME_INTEL"
-    for kw in INFRASTRUCTURE_KEYWORDS:
-        if kw in combined:
-            return "INFRASTRUCTURE"
-    for kw in PRIORITY_ARTICLE_KEYWORDS:
-        if kw in combined:
-            return "PRIORITY"
-    return "GLOBAL"
+def classify_alert(title: str, content: str, meta: dict | None = None,
+                   lat=None, lng=None) -> tuple[str, dict]:
+    """(stream, metadata fields to merge) for one GDACS alert."""
+    return _alerts.route_alert(title, content or "", meta, lat, lng)
 
 
-def classify_stream(title: str, content: str) -> str:
-    """Keyword stream, then the Priority Intelligence rules (23 Oct 2026).
-
-    A story pi_signals reads as organised, political or state-level crime
-    goes to PRIORITY; one that is also a killing or an infrastructure event
-    follows FORGE_PI_MODE. The older PRIORITY keyword path above still runs.
-    """
-    base = _keyword_stream(title, content)
-    try:
-        from forage.collectors import pi_signals as _pi
-    except ImportError:
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-        from forage.collectors import pi_signals as _pi
-    stream, _hit, _meta = _pi.route(base, title, content or "")
-    return stream
+def classify_stream(title: str, content: str, meta: dict | None = None) -> str:
+    """Stream for one GDACS alert: always GLOBAL, never PRIORITY."""
+    return classify_alert(title, content, meta)[0]
 
 
 # ── XML namespace map ─────────────────────────────────────────────────────────
@@ -374,7 +341,8 @@ def item_to_signal(item: ET.Element) -> dict | None:
         meta      = _collect_metadata(item)
         priority  = _is_priority(title, content)
 
-        stream = classify_stream(title, content)
+        stream, alert_meta = classify_alert(title, content, meta, lat, lng)
+        meta.update(alert_meta)
 
         return {
             "signal_id":     str(uuid.uuid4()),

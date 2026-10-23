@@ -192,15 +192,16 @@ def test_gnews_pi_preset_queries():
     assert q[0] == "Limpopo Hawks" and len(q) == len(pi.PI_NATIONAL_TERMS) + len(pi.PI_PROVINCE_TERMS)
 
 
-def test_rss_and_backfill_agree_and_keep_the_old_priority_path():
+def test_backfill_applies_pi_and_gdacs_stays_global():
+    # 23 Oct 2026: GDACS alerts left PI (alert_routing.py) and the old
+    # "analysis"/"exclusive" PRIORITY path is gone from both modules.
+    assert backfill.classify_stream("Hawks arrest Tshwane official over R20 million tender fraud", "") == "PRIORITY"
+    assert backfill.classify_stream("Man arrested for robbery in Soweto", "") == "CRIME_INTEL"
+    assert backfill.classify_stream("Exclusive analysis of cyclone track", "") == "GLOBAL"
     for t in ("Hawks arrest Tshwane official over R20 million tender fraud",
               "Man arrested for robbery in Soweto", "Flood alert for Mozambique",
               "Exclusive analysis of cyclone track"):
-        assert rss.classify_stream(t, "") == backfill.classify_stream(t, "")
-    assert rss.classify_stream("Hawks arrest Tshwane official over R20 million tender fraud", "") == "PRIORITY"
-    assert rss.classify_stream("Man arrested for robbery in Soweto", "") == "CRIME_INTEL"
-    # the pre-existing PRIORITY keyword path still runs ("as well", not instead)
-    assert rss.classify_stream("Exclusive analysis of cyclone track", "") == "PRIORITY"
+        assert rss.classify_stream(t, "") == "GLOBAL"
 
 
 def test_pi_search_results_that_fail_pi_do_not_fill_the_killings_queue():

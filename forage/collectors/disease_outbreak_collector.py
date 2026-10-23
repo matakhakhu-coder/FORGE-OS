@@ -4,21 +4,28 @@ FORGE -- Disease Outbreak Collector  (Project Aegis / Stable 1.2)
 Multi-tier global disease surveillance sensor.
 
 Tier 1 -- WHO Disease Outbreak News (authoritative):
-  Fully implemented.  relevance_score=2.5  stream=PRIORITY  is_priority=1
+  Fully implemented.  relevance_score=2.5  stream=GLOBAL  is_priority=1
 
 Tier 2 -- CDC Health Alert Network (semi-authoritative):
   Structurally complete, parser stub ready for expansion.
-  relevance_score=1.8  stream=PRIORITY  is_priority=1
+  relevance_score=1.8  stream=GLOBAL  is_priority=1
 
 Tier 3 -- ProMED (early-warning noise layer):
   Structurally complete, parser stub ready for expansion.
-  relevance_score=1.2  stream=GLOBAL  (→ PRIORITY on velocity surge)
+  relevance_score=1.2  stream=GLOBAL  (bell on velocity surge)
+
+Stream (owner decision, 23 Oct 2026): every signal from this collector goes to
+GLOBAL ("Africa & World"), never PRIORITY. Priority Intelligence is organised,
+political and state-level crime (pi_signals.py); outbreak notices are not.
+alert_routing.route_alert() sets the stream at insert and flags alerts about
+South Africa itself for an owner decision (see alert_routing.py).
+is_priority (the Signal Monitor bell) is unchanged.
 
 Core mechanisms
 ───────────────
   Outbreak Fingerprint  sha256(pathogen_norm|region_code|iso_week)
   Patient Zero dedup    fingerprint check inside 72-hour window
-  Velocity Surge        ≥5 distinct Tier-3 posts in 24h → synthetic PRIORITY signal
+  Velocity Surge        ≥5 distinct Tier-3 posts in 24h → synthetic surge signal (GLOBAL, bell on)
   Gazetteer priming     ~100-entry dict geocodes regions at collection time
   Semantic priming      normalized title + structured metadata_json
   Refinery              sanitize_text() on every title + content before insert
@@ -77,6 +84,13 @@ DB_PATH   = Path(_FORGE_DB_ENV) if _FORGE_DB_ENV else BASE_DIR / "database.db"
 
 # Canonical source key -- MUST match manifest["id"] for auto-pin membrane query
 SOURCE_ID = "disease_outbreak_collector"
+
+# ── Stream for health alerts (23 Oct 2026): GLOBAL, never PRIORITY ───────────
+try:
+    from forage.collectors import alert_routing as _alerts
+except ImportError:
+    _sys.path.insert(0, str(BASE_DIR))
+    from forage.collectors import alert_routing as _alerts
 
 # ── Refinery (Stable 1.1) ─────────────────────────────────────────────────────
 try:
@@ -360,7 +374,7 @@ SOURCES = [
         "name":           "HealthMap Global Alert Map",
         "url":            "https://healthmap.org/getAlerts.php?lang=en&striphtml=1",
         "tier":           1,
-        "stream":         "PRIORITY",
+        "stream":         "GLOBAL",
         "relevance_score": 2.0,
         "is_priority":    1,
     },
@@ -373,7 +387,7 @@ SOURCES = [
         "name":           "PAHO Official News",
         "url":            "https://www.paho.org/en/rss.xml",
         "tier":           1,
-        "stream":         "PRIORITY",
+        "stream":         "GLOBAL",
         "relevance_score": 2.5,
         "is_priority":    1,
     },
@@ -385,7 +399,7 @@ SOURCES = [
         "name":           "ReliefWeb Health Sector",
         "url":            "https://reliefweb.int/updates/rss.xml?sector=Health",
         "tier":           2,
-        "stream":         "PRIORITY",
+        "stream":         "GLOBAL",
         "relevance_score": 1.8,
         "is_priority":    1,
     },
@@ -583,6 +597,23 @@ def _increment_duplicate_count(conn: sqlite3.Connection,
         pass
 
 
+def _apply_alert_stream(sig: dict) -> dict:
+    """Set the stream of a health alert (GLOBAL, never PRIORITY) and merge
+    alert_routing's scope fields into its metadata. Mutates and returns sig."""
+    try:
+        meta = json.loads(sig.get("metadata_json") or "{}")
+        if not isinstance(meta, dict):
+            meta = {}
+    except (json.JSONDecodeError, TypeError):
+        meta = {}
+    stream, extra = _alerts.route_alert(sig.get("title") or "", sig.get("content") or "",
+                                        meta, sig.get("lat"), sig.get("lng"))
+    meta.update(extra)
+    sig["stream"] = stream
+    sig["metadata_json"] = json.dumps(meta)
+    return sig
+
+
 def _insert_signal(conn: sqlite3.Connection, sig: dict,
                    velocity_map: dict,
                    increment_on_block: bool = False) -> str:
@@ -631,6 +662,8 @@ def _insert_signal(conn: sqlite3.Connection, sig: dict,
     # Track velocity regardless of outcome
     if outbreak_id:
         velocity_map[outbreak_id] = velocity_map.get(outbreak_id, 0) + 1
+
+    _apply_alert_stream(sig)
 
     # DB insert
     try:
@@ -698,7 +731,7 @@ def _emit_velocity_surge(conn: sqlite3.Connection, outbreak_id: str,
                          pathogen_norm: str, region_raw: str,
                          lat, lng, count: int) -> None:
     """
-    Emit a synthetic PRIORITY signal summarising a velocity surge.
+    Emit a synthetic surge signal (GLOBAL stream, bell on) summarising a velocity surge.
     Idempotent: checks for an existing surge signal this week before writing.
     """
     iso_week    = datetime.now(timezone.utc).strftime("%Y-W%W")
@@ -722,12 +755,12 @@ def _emit_velocity_surge(conn: sqlite3.Connection, outbreak_id: str,
         f"Project Aegis velocity alert: {count} independent disease reports "
         f"matching pathogen '{pathogen_norm}' from '{region_raw}' were detected "
         f"within the last {_VELOCITY_HOURS} hours. This threshold-crossing event "
-        f"has been automatically escalated to PRIORITY. "
+        f"has been automatically flagged for analyst attention. "
         f"Confidence: triangulated across multiple sources. "
         f"Recommended action: review pinned signals and activate Context Tunnel."
     )
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    meta = json.dumps({
+    meta_d = {
         "outbreak_id":     outbreak_id,
         "pathogen":        pathogen_norm,
         "region":          region_raw,
@@ -736,7 +769,10 @@ def _emit_velocity_surge(conn: sqlite3.Connection, outbreak_id: str,
         "velocity_count":  count,
         "velocity_trigger": True,
         "iso_week":        iso_week,
-    })
+    }
+    surge_stream, extra = _alerts.route_alert(title, content, meta_d, lat, lng)
+    meta_d.update(extra)
+    meta = json.dumps(meta_d)
     try:
         conn.execute(
             """
@@ -749,7 +785,7 @@ def _emit_velocity_surge(conn: sqlite3.Connection, outbreak_id: str,
             (
                 str(uuid.uuid4()), SOURCE_ID, surge_extid,
                 _sanitize(title)[:300], _sanitize(content),
-                lat, lng, now, "raw", "PRIORITY",
+                lat, lng, now, "raw", surge_stream,
                 2.0, 1, meta,
             ),
         )

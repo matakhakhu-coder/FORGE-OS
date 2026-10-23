@@ -99,13 +99,24 @@ SA_QUERIES: list[tuple[str, str, float]] = [
         'NOT student NOT campus',
         "GLOBAL", 1.0,
     ),
-    # High-priority intelligence
+    # Leads for Priority Intelligence. Until 23 Oct 2026 every result of this
+    # query was tagged PRIORITY because of the query words. Now the query only
+    # gathers candidates: it starts on GLOBAL, and _build_signal lets
+    # pi_signals decide from the article's own words, as every live collector
+    # does. (This collector is switched off; kept consistent for if it returns.)
     (
         '"South Africa" (investigation OR "leaked documents" OR "whistleblower" '
         'OR intelligence OR surveillance)',
-        "PRIORITY", 1.3,
+        "GLOBAL", 1.3,
     ),
 ]
+
+# Shared Priority Intelligence rules (forage/collectors/pi_signals.py).
+try:
+    from forage.collectors import pi_signals as _pi
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from forage.collectors import pi_signals as _pi
 
 # Number of articles per query (DOC API max: 250)
 MAX_ARTICLES_PER_QUERY = 75
@@ -324,6 +335,11 @@ def _build_signal(article: dict, stream: str, base_relevance: float) -> Optional
     # Content = snippet or title fallback
     content = snippet if snippet else title
 
+    # Stream: the query's stream is only a starting point. A query can no
+    # longer make a story PRIORITY; the PI rules read the story itself.
+    base_stream = "GLOBAL" if stream == "PRIORITY" else stream
+    stream, _pi_hit, pi_meta = _pi.route(base_stream, title, snippet)
+
     metadata = {
         "url":            url,
         "domain":         domain,
@@ -336,6 +352,7 @@ def _build_signal(article: dict, stream: str, base_relevance: float) -> Optional
         "sentiment":          sentiment,
         "source_credibility": SOURCE_CREDIBILITY,
     }
+    metadata.update(pi_meta)
 
     return {
         "signal_id":        signal_id,

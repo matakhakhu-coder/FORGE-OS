@@ -27,7 +27,12 @@ import sqlite3
 import sys
 from pathlib import Path
 
-# ── Stream keyword lists (must match rss_collector.py exactly; both then apply pi_signals) ────────────────
+# ── Stream keyword lists (news stories; pi_signals then decides PRIORITY) ────
+# Until 23 Oct 2026 these mirrored rss_collector.py, and a third list sent any
+# story using words like "analysis", "exclusive" or "revealed" to PRIORITY.
+# That list is gone: PRIORITY now comes only from pi_signals. Health and
+# disaster alerts (alert_routing.ALERT_SOURCES) are not reclassified at all:
+# they stay on GLOBAL, as their collectors now write them.
 
 CRIME_KEYWORDS = [
     "arrest", "murder", "robbery", "drug bust", "trafficking",
@@ -46,13 +51,6 @@ INFRASTRUCTURE_KEYWORDS = [
     "port congestion", "fuel shortage", "gas leak",
 ]
 
-PRIORITY_ARTICLE_KEYWORDS = [
-    "analysis", "investigation", "exclusive", "intelligence briefing",
-    "threat assessment", "special report", "revealed", "leaked",
-    "deep dive", "exposed", "classified",
-]
-
-
 def _keyword_stream(title: str, content: str) -> str:
     combined = (title + " " + (content or "")).lower()
     for kw in CRIME_KEYWORDS:
@@ -61,25 +59,29 @@ def _keyword_stream(title: str, content: str) -> str:
     for kw in INFRASTRUCTURE_KEYWORDS:
         if kw in combined:
             return "INFRASTRUCTURE"
-    for kw in PRIORITY_ARTICLE_KEYWORDS:
-        if kw in combined:
-            return "PRIORITY"
     return "GLOBAL"
 
 
-def classify_stream(title: str, content: str) -> str:
+def _modules():
+    try:
+        from forage.collectors import pi_signals as _pi, alert_routing as _alerts
+    except ImportError:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from forage.collectors import pi_signals as _pi, alert_routing as _alerts
+    return _pi, _alerts
+
+
+def classify_stream(title: str, content: str, source: str | None = None) -> str:
     """Keyword stream, then the Priority Intelligence rules (23 Oct 2026).
 
     A story pi_signals reads as organised, political or state-level crime
     goes to PRIORITY; one that is also a killing or an infrastructure event
-    follows FORGE_PI_MODE. The older PRIORITY keyword path above still runs.
+    follows FORGE_PI_MODE. Health and disaster alerts (by source) stay GLOBAL.
     """
+    _pi, _alerts = _modules()
+    if source and source in _alerts.ALERT_SOURCES:
+        return _alerts.ALERT_STREAM
     base = _keyword_stream(title, content)
-    try:
-        from forage.collectors import pi_signals as _pi
-    except ImportError:
-        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-        from forage.collectors import pi_signals as _pi
     stream, _hit, _meta = _pi.route(base, title, content or "")
     return stream
 
@@ -116,12 +118,12 @@ def run(db_path: Path, dry_run: bool = False, reclassify_all: bool = False) -> N
     # Load signals to reclassify
     if reclassify_all:
         rows = conn.execute(
-            "SELECT signal_id, title, content, stream FROM signals"
+            "SELECT signal_id, source, title, content, stream FROM signals"
         ).fetchall()
         print(f"Reclassifying ALL {len(rows)} signals...")
     else:
         rows = conn.execute(
-            "SELECT signal_id, title, content, stream FROM signals "
+            "SELECT signal_id, source, title, content, stream FROM signals "
             "WHERE stream = 'GLOBAL' OR stream IS NULL"
         ).fetchall()
         print(f"Found {len(rows)} signals with stream=GLOBAL to reclassify...")
@@ -135,7 +137,7 @@ def run(db_path: Path, dry_run: bool = False, reclassify_all: bool = False) -> N
     changes = []
 
     for row in rows:
-        new_stream = classify_stream(row["title"] or "", row["content"] or "")
+        new_stream = classify_stream(row["title"] or "", row["content"] or "", row["source"])
         counts[new_stream] = counts.get(new_stream, 0) + 1
         if new_stream != (row["stream"] or "GLOBAL"):
             changes.append((new_stream, row["signal_id"]))

@@ -23,12 +23,15 @@ No FORGE analysis is attached: metadata records which words matched and who
 said what kind of thing, never a theory. The owner's own pattern analysis
 stays private until a source backs it.
 
-Overlap with the other streams: the open design question
----------------------------------------------------------
+Overlap with the other streams: decided 23 Oct 2026, standalone
+---------------------------------------------------------------
 Some PI stories are also a killing (a councillor shot dead) or an
-infrastructure event (a substation stripped by a syndicate). Whether PI
-stands alone or escalates those from their home stream is the owner's call,
-not decided here. Both are built; FORGE_PI_MODE picks one:
+infrastructure event (a substation stripped by a syndicate). The owner chose
+standalone on 23 Oct 2026: those keep their home stream with the PI-candidate
+flag, and the killings and infrastructure counts do not change. Escalate is
+still built and FORGE_PI_MODE still switches it, but nothing should set it
+without a new owner decision. Showing one pin in two streams (a "linked" badge
+on the map) is a future publishing change, not built. FORGE_PI_MODE:
 
   standalone (default)  overlaps keep their home stream (CRIME_INTEL or
                         INFRASTRUCTURE) and carry pi_route=
@@ -56,6 +59,8 @@ except ImportError:  # pragma: no cover - script use
 
 STREAM = "PRIORITY"
 MODES = ("standalone", "escalate")
+# Owner decision, 23 Oct 2026.
+DEFAULT_MODE = "standalone"
 
 CATEGORIES = {
     "organised_network":  "Organised networks",
@@ -68,8 +73,8 @@ CATEGORIES = {
 
 
 def mode(value: Optional[str] = None) -> str:
-    m = (value or os.environ.get("FORGE_PI_MODE") or "standalone").strip().lower()
-    return m if m in MODES else "standalone"
+    m = (value or os.environ.get("FORGE_PI_MODE") or DEFAULT_MODE).strip().lower()
+    return m if m in MODES else DEFAULT_MODE
 
 
 def _rx(p: str, flags=re.I) -> re.Pattern:

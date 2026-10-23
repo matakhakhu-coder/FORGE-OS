@@ -72,7 +72,8 @@ COVERAGE_RADIUS_KM = 30.0
 # Time one area's searches may take in a sweep before it is stopped and logged
 # as timed_out (its count is then inconclusive, not zero).
 AREA_TIME_LIMIT_S = 900
-# Cap on news searches per area, so one big area cannot eat the run.
+# Cap on news searches per area and stream, so one big area cannot eat the
+# run. An area with pins in two streams can run up to twice this.
 MAX_QUERIES_PER_AREA = 45
 # Western Cape areas are collected by the locked Sprint 5 pass; leave False
 # unless the user asks for an extra Western Cape sweep (kept out of scoring).
@@ -101,6 +102,42 @@ QUERY_TERMS = {
     "af": "(moord OR doodgeskiet OR doodgesteek OR lyk)",
     "tn": "(polao OR bolailwe)",
 }
+
+# Search wording per stream (owner decision, 23 Oct 2026). Until then every
+# area searched the killing words above, whatever its pins were. Now each
+# stream searches its own words, and only in areas that already hold a pin
+# in that stream, to keep the number of searches down:
+#   CRIME_INTEL     killings: the words above, unchanged
+#   INFRASTRUCTURE  failures, theft and vandalism of services (the incident
+#                   types of the 23 Oct Limpopo benchmark)
+#   PRIORITY        Priority Intelligence, worded so court follow-ups (charged,
+#                   bail, court) come back as well as first reports
+# A language with no wording for a stream is skipped for that stream: no
+# Setswana words were written for infrastructure or PI, so North West and
+# Northern Cape areas search those in English and Afrikaans only.
+# A pin in a stream with no wording here (for example GLOBAL) adds no
+# searches; the area records it under streams_without_terms.
+QUERY_TERMS_BY_STREAM = {
+    "CRIME_INTEL": QUERY_TERMS,
+    "INFRASTRUCTURE": {
+        "en": '(substation OR "cable theft" OR "copper theft" OR vandalised OR "water outage" '
+              'OR "without water" OR "burst pipe" OR "power outage" OR "sewage spill" OR borehole)',
+        "af": '(substasie OR kabeldiefstal OR koperdiefstal OR "sonder water" OR kragonderbreking OR pypbreuk)',
+    },
+    "PRIORITY": {
+        "en": '(Hawks OR SIU OR NPA OR IDAC OR charged OR bail OR court OR syndicate OR fraud '
+              'OR corruption OR extortion)',
+        "af": "(Valke OR aangekla OR borgtog OR hof OR sindikaat OR bedrog OR korrupsie OR afpersing)",
+    },
+}
+# Stream used for a pin record that has no stream field (records from before
+# the stream column were all killings).
+DEFAULT_PIN_STREAM = "CRIME_INTEL"
+# Order in which an area's streams are searched and listed.
+STREAM_ORDER = ["CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"]
+# Map Streams panel names, for the report.
+STREAM_LABEL = {"CRIME_INTEL": "Crime & Security", "INFRASTRUCTURE": "Infrastructure",
+                "PRIORITY": "Priority Intelligence", "GLOBAL": "Africa & World"}
 PROVINCE_LANGS = {
     "North West": ["en", "af", "tn"],
     "Western Cape": ["en", "af"],
@@ -220,6 +257,7 @@ def published_pins(index_path: pathlib.Path = cs_mod.INDEX_PATH) -> list[dict]:
             "lat": float(s["lat"]), "lng": float(s["lng"]),
             "province": prov.get(s["signal_id"], ""),
             "place_names": pin_place_names(s["title"]),
+            "stream": str(s.get("stream") or DEFAULT_PIN_STREAM),
         })
     pins.sort(key=lambda p: p["signal_id"])
     return pins
@@ -384,7 +422,12 @@ def describe_area(members: list[dict], r_km: float, places: list, precincts: lis
         "precincts": prec_out,
         "places": plc,
     }
-    area["queries"] = build_queries(area, members)
+    by_stream = build_queries_by_stream(area, members)
+    area["streams"] = list(by_stream)
+    area["queries_by_stream"] = by_stream
+    area["streams_without_terms"] = sorted({_pin_stream(p) for p in members}
+                                           - set(QUERY_TERMS_BY_STREAM))
+    area["queries"] = [q for qs in by_stream.values() for q in qs]
     return area
 
 
@@ -442,10 +485,15 @@ def _latlng(place: dict, rows: list) -> tuple[float, float]:
     return cache[key]
 
 
-def search_names(area: dict, members: list[dict]) -> list[str]:
+def _pin_stream(p: dict) -> str:
+    return str(p.get("stream") or DEFAULT_PIN_STREAM)
+
+
+def search_names(area: dict, members: list[dict], stream: str | None = None) -> list[str]:
     """Names to search, most useful first: precincts that hold a pin, the
     pins' own place names, other precincts by station distance, then the
-    biggest places."""
+    biggest places. With a stream, only that stream's pins count as the
+    area's pins for the first two groups."""
     seen, out = set(), []
 
     def add(n):
@@ -454,10 +502,12 @@ def search_names(area: dict, members: list[dict]) -> list[str]:
             seen.add(k)
             out.append(n.strip())
 
+    own = [p for p in members if stream is None or _pin_stream(p) == stream]
+    own_ids = {p["signal_id"] for p in own}
     for pr in area["precincts"]:
-        if pr["holds_pins"]:
+        if pr["holds_pins"] and (stream is None or own_ids & set(pr["holds_pins"])):
             add(pr["name"])
-    for p in members:
+    for p in own:
         for n in p["place_names"]:
             add(n)
     for pr in area["precincts"]:
@@ -468,15 +518,39 @@ def search_names(area: dict, members: list[dict]) -> list[str]:
     return out
 
 
-def build_queries(area: dict, members: list[dict]) -> list[str]:
-    langs = PROVINCE_LANGS.get(area["province"], ["en"])
+def build_queries(area: dict, members: list[dict], stream: str = DEFAULT_PIN_STREAM) -> list[str]:
+    """One stream's searches for an area, capped at MAX_QUERIES_PER_AREA."""
+    terms = QUERY_TERMS_BY_STREAM.get(stream)
+    if not terms:
+        return []
+    langs = [l for l in PROVINCE_LANGS.get(area["province"], ["en"]) if l in terms]
     qs = []
-    for n in search_names(area, members):
+    for n in search_names(area, members, stream):
         for lang in langs:
-            qs.append(f'"{n}" {QUERY_TERMS[lang]}')
+            qs.append(f'"{n}" {terms[lang]}')
             if len(qs) >= MAX_QUERIES_PER_AREA:
                 return qs
     return qs
+
+
+def build_queries_by_stream(area: dict, members: list[dict]) -> dict[str, list[str]]:
+    """Searches per stream, only for the streams the area holds pins in."""
+    held = {_pin_stream(p) for p in members}
+    order = STREAM_ORDER + sorted(held - set(STREAM_ORDER))
+    out = {}
+    for st in order:
+        if st in held and st in QUERY_TERMS_BY_STREAM:
+            out[st] = build_queries(area, members, st)
+    return out
+
+
+def query_stream_map(area: dict) -> dict[str, str]:
+    """Search text -> the stream it was built for (areas written before
+    23 Oct 2026 have no queries_by_stream: all their searches were killings)."""
+    by = area.get("queries_by_stream")
+    if not by:
+        return {q: DEFAULT_PIN_STREAM for q in area.get("queries", [])}
+    return {q: st for st, qs in by.items() for q in qs}
 
 
 def compute_areas(pins: list[dict], r_km: float | None = None,
@@ -545,7 +619,10 @@ def render_markdown(result: dict, held: list[dict], new_keys: list[str]) -> str:
               + ", ".join(("*" if pr["holds_pins"] else "") + pr["name"] for pr in a["precincts"]),
               f"- Places ({len(a['places'])}, biggest first): "
               + ", ".join(p["name"] for p in a["places"][:60]) + (" ..." if len(a["places"]) > 60 else ""),
-              f"- Searches: {len(a['queries'])}", ""]
+              f"- Searches: {len(a['queries'])}"
+              + (" (" + ", ".join(f"{STREAM_LABEL.get(st, st)} {len(q)}"
+                                  for st, q in a.get("queries_by_stream", {}).items()) + ")"
+                 if a.get("queries_by_stream") else ""), ""]
         if set(a["provinces_touched"]) - {a["province"]}:
             L += [f"- Crosses into: {', '.join(sorted(set(a['provinces_touched']) - {a['province']}))}", ""]
     if held:
@@ -750,18 +827,22 @@ def sweep(areas_doc: dict, start: datetime, end: datetime, out_dir: pathlib.Path
             report["areas"].append(entry)
             continue
         res = sweep_area(area, start, end, out_dir, time_limit_s, fetch)
+        qstream = query_stream_map(area)
         items, by_link = [], {}
         for r in res["results"]:
+            st = qstream.get(r["query"], DEFAULT_PIN_STREAM)
             for it in r["items"]:
                 link = (it.get("link") or "").split("#")[0].rstrip("/")
                 tkey = title_key(it.get("title"))
                 prev = by_link.get(link) or (by_link.get(tkey) if tkey else None)
                 if prev:
                     prev["queries"].append(r["query"])
+                    if st not in prev["searched_for_streams"]:
+                        prev["searched_for_streams"].append(st)
                     if link != prev.get("link"):
                         prev.setdefault("other_links", []).append(it.get("link"))
                     continue
-                rec = {**it, "queries": [r["query"]], "feeds_scoring": False,
+                rec = {**it, "queries": [r["query"]], "searched_for_streams": [st], "feeds_scoring": False,
                        "already_known": known.get(link) or (known.get(tkey) if tkey else None)}
                 by_link[link] = rec
                 if tkey:
@@ -770,6 +851,8 @@ def sweep(areas_doc: dict, start: datetime, end: datetime, out_dir: pathlib.Path
         new = [i for i in items if not i["already_known"]]
         entry.update(status=res["status"], seconds=res["seconds"],
                      queries_planned=res["queries_planned"], queries_done=res["queries_done"],
+                     queries_planned_by_stream={k: len(v) for k, v in
+                                                (area.get("queries_by_stream") or {}).items()},
                      query_errors=res["query_errors"], items=items,
                      reading=count_reading(res["status"], len(new)))
         report["areas"].append(entry)

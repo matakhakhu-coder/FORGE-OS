@@ -106,8 +106,23 @@ EVENT_TYPE_MAP: dict[str, tuple[str, float, float]] = {
     "Explosions/Remote violence":   ("CRIME_INTEL",    0.80, -0.9),
     "Riots":                        ("CRIME_INTEL",    0.65, -0.7),
     "Protests":                     ("GLOBAL",         0.35, -0.3),
-    "Strategic developments":       ("PRIORITY",       0.45, -0.4),
+    # Until 23 Oct 2026 every "Strategic developments" event (arrests, deals,
+    # base changes, looting, in five countries) was tagged PRIORITY. Under the
+    # new PI definition the event type alone decides nothing: these start on
+    # GLOBAL, and _build_signal lets pi_signals read the notes of South
+    # African events. (Collector switched off; kept consistent.)
+    "Strategic developments":       ("GLOBAL",         0.45, -0.4),
 }
+
+# Priority Intelligence covers South Africa only. Events elsewhere never go
+# to PRIORITY, whatever their notes say.
+PI_COUNTRIES = {"South Africa"}
+
+try:
+    from forage.collectors import pi_signals as _pi
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from forage.collectors import pi_signals as _pi
 
 # ACLED sub-event types that should trigger is_priority=1
 PRIORITY_SUB_EVENTS = {
@@ -471,6 +486,12 @@ def _build_signal(event: dict) -> dict:
     # Content: notes field from ACLED (eyewitness/journalist sourced)
     content = notes or f"{sub_event} event recorded by ACLED. Source: {source} ({source_scale})."
 
+    # Priority Intelligence: South African events only, read from the notes.
+    pi_meta: dict = {}
+    if country in PI_COUNTRIES:
+        stream, _pi_hit, pi_meta = _pi.route(stream, title, content,
+                                             province=admin1 or None)
+
     # Full metadata for downstream processors and EntityResolver
     metadata = {
         "acled_id":      acled_id,
@@ -491,6 +512,7 @@ def _build_signal(event: dict) -> dict:
         "sentiment":          sentiment,
         "source_credibility": SOURCE_CREDIBILITY,
     }
+    metadata.update(pi_meta)
 
     return {
         "signal_id":        signal_id,
