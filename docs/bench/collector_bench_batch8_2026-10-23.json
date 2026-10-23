@@ -1,0 +1,1852 @@
+{
+ "bench": "FORGE collector regression bench (Batch 1)",
+ "mode": "replay",
+ "code_commit": "82746c9",
+ "fixture": {
+  "built": "2026-10-23T16:15:56Z",
+  "source_commit": "collector code at 524a8b4 for all four sweeps (23 Oct comparison check)",
+  "rows": 434,
+  "run_totals": {
+   "lt_thohoyandou/civic": 925,
+   "lt_thohoyandou/infra": 17,
+   "lt_thohoyandou/kw": 38,
+   "lt_thohoyandou/pi": 896,
+   "musina/civic": 924,
+   "musina/infra": 21,
+   "musina/kw": 330,
+   "musina/pi": 914,
+   "newcastle/civic": 929,
+   "newcastle/infra": 28,
+   "newcastle/kw": 413,
+   "newcastle/pi": 894,
+   "polokwane/civic": 925,
+   "polokwane/infra": 17,
+   "polokwane/kw": 155,
+   "polokwane/pi": 896
+  }
+ },
+ "env": {
+  "FORGE_PI_MODE": null,
+  "FORGE_COURT_STEP": null
+ },
+ "articles": "offline fixtures",
+ "hand_checked_dates": false,
+ "summary": {
+  "catch_cases": 22,
+  "caught": 17,
+  "right_stream_all": 12,
+  "right_place_any": 13,
+  "one_record_when_caught": 13,
+  "right_date_any": 7,
+  "catch_pass": 9,
+  "keep_out_cases": 10,
+  "keep_out_pass": 7,
+  "keep_out_not_tested": 1,
+  "catch_with_precinct": 9,
+  "place_review_records": 4,
+  "story_check": true,
+  "supporting_records_in_cases": 82
+ },
+ "cases": [
+  {
+   "id": "musina_matswale_murder",
+   "sweep": "musina",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Musina": 1
+   },
+   "dates": [
+    "2026-10-22"
+   ],
+   "titles": [
+    "Musina businessman shot more than 20 times in store - Limpopo Mirror"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Musina": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "merged": true,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "musina_neltox_sandf",
+   "sweep": "musina",
+   "kind": "catch",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "n/a",
+   "right_place": "n/a",
+   "merged": null,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "musina_carrim",
+   "sweep": "musina",
+   "kind": "catch",
+   "records": 9,
+   "caught": true,
+   "runs": {
+    "civic": 1,
+    "kw": 5,
+    "pi": 3
+   },
+   "streams": {
+    "CRIME_INTEL": 1,
+    "GLOBAL": 6,
+    "PRIORITY": 2
+   },
+   "places": {
+    "Musina": 2,
+    "none": 43
+   },
+   "dates": [
+    "2026-10-16",
+    "2026-10-19",
+    "2026-10-21",
+    "2026-10-22",
+    "2026-10-23"
+   ],
+   "titles": [
+    "'I'm dizzy' - businessman Suliman Carrim tells court - eNCA",
+    "Carrim expected back in court after spending weekend behind bars - SABC News",
+    "Carrim ‘car theft’ charges: SAPS confirm fresh case against businessman - Sowetan",
+    "Carrim’s Bail Bid Delayed as Two Court Cases Converge - Townpress Newspaper",
+    "RECORDED | Suliman Carrim back in court - TimesLIVE",
+    "RECORDED | Suliman Carrim in court for snubbing Madlanga inquiry - TimesLIVE",
+    "Suliman Carrim’s court woes deepen - The Citizen",
+    "Suliman Carrim’s fraud case postponed to next Friday - SABC News",
+    "Sulliman Carrim in Musina court over attempted theft of Absa vehicles"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 45
+   },
+   "place_review": 1,
+   "supporting_records": 36,
+   "saved_rows": 45,
+   "streams_all_rows": {
+    "CRIME_INTEL": 9,
+    "GLOBAL": 23,
+    "PRIORITY": 13
+   },
+   "records_naming_area": 1,
+   "right_stream": "some",
+   "right_place": "some",
+   "right_stream_all_rows": "some",
+   "merged": false,
+   "right_date": "some",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "musina_cigarette_seizure",
+   "sweep": "musina",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "PRIORITY": 1
+   },
+   "places": {
+    "Musina": 5,
+    "none": 3
+   },
+   "dates": [
+    "2026-10-21"
+   ],
+   "titles": [
+    "R1.5m illicit cigarette haul seized in Musina as alleged syndicate leader escapes - IOL"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Musina": 1,
+    "none": 7
+   },
+   "place_review": 0,
+   "supporting_records": 7,
+   "saved_rows": 8,
+   "streams_all_rows": {
+    "CRIME_INTEL": 2,
+    "GLOBAL": 2,
+    "PRIORITY": 4
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "some",
+   "right_stream_all_rows": "some",
+   "merged": true,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "musina_low_water_notice",
+   "sweep": "musina",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "INFRASTRUCTURE": 1
+   },
+   "places": {
+    "Musina": 1
+   },
+   "dates": [
+    "2026-10-11"
+   ],
+   "titles": [
+    "LOW WATER SUPPLY IN MUSINA TOWNSHIP AND SURROUNDING AREAS"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "merged": true,
+   "right_date": "all",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "lt_phiphidi_killing",
+   "sweep": "lt_thohoyandou",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Phiphidi": 1
+   },
+   "dates": [
+    "2026-10-02"
+   ],
+   "titles": [
+    "Mob justice claims another life in Phiphidi - Limpopo Mirror"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Thohoyandou": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "merged": true,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "lt_univen_shooting",
+   "sweep": "lt_thohoyandou",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-22"
+   ],
+   "titles": [
+    "UNIVEN students shaken after shooting, vehicle torched - Limpopo Mirror"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "none",
+   "merged": true,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "lt_madombidzha_death",
+   "sweep": "lt_thohoyandou",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Madombidzha": 1
+   },
+   "dates": [
+    "2026-10-19"
+   ],
+   "titles": [
+    "Family seeks answers after body found in Madombidzha shack"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Tshilwavhusiku": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "merged": true,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "lt_mashawana_bodies",
+   "sweep": "lt_thohoyandou",
+   "kind": "catch",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "n/a",
+   "right_place": "n/a",
+   "merged": null,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "lt_botlokwa_explosives",
+   "sweep": "lt_thohoyandou",
+   "kind": "catch",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "n/a",
+   "right_place": "n/a",
+   "merged": null,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "plk_shandesh_deaths",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Polokwane": 1,
+    "none": 1
+   },
+   "dates": [
+    "2026-10-16"
+   ],
+   "titles": [
+    "3 deaths linked to Shandesh show as police probe"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Polokwane": 1,
+    "none": 1
+   },
+   "place_review": 0,
+   "supporting_records": 1,
+   "saved_rows": 2,
+   "streams_all_rows": {
+    "CRIME_INTEL": 2
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "some",
+   "right_stream_all_rows": "all",
+   "merged": true,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "plk_golf_club_body",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Polokwane": 3
+   },
+   "dates": [
+    "2026-10-07"
+   ],
+   "titles": [
+    "Body of a Man found floating at Polokwane Golf Course"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Polokwane": 3
+   },
+   "place_review": 0,
+   "supporting_records": 2,
+   "saved_rows": 3,
+   "streams_all_rows": {
+    "CRIME_INTEL": 3
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "right_stream_all_rows": "all",
+   "merged": true,
+   "right_date": "all",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "plk_cricket_club_death",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Polokwane": 2
+   },
+   "dates": [
+    "2026-10-05"
+   ],
+   "titles": [
+    "Man killed, 2 injured after vehicle chase at Polokwane Cricket Club - LNN - Network News - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Polokwane": 2
+   },
+   "place_review": 0,
+   "supporting_records": 1,
+   "saved_rows": 2,
+   "streams_all_rows": {
+    "CRIME_INTEL": 2
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "all",
+   "right_stream_all_rows": "all",
+   "merged": true,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "plk_airport_officers",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 2,
+   "caught": true,
+   "runs": {
+    "civic": 2
+   },
+   "streams": {
+    "GLOBAL": 1,
+    "PRIORITY": 1
+   },
+   "places": {
+    "Polokwane": 7,
+    "none": 10
+   },
+   "dates": [
+    "2026-10-19",
+    "2026-10-21"
+   ],
+   "titles": [
+    "5 Polokwane airport officers granted R1 000 bail each",
+    "5 cops arrested at Polokwane airport"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Polokwane": 6,
+    "none": 11
+   },
+   "place_review": 3,
+   "supporting_records": 15,
+   "saved_rows": 17,
+   "streams_all_rows": {
+    "CRIME_INTEL": 9,
+    "GLOBAL": 7,
+    "PRIORITY": 1
+   },
+   "records_naming_area": 2,
+   "right_stream": "some",
+   "right_place": "some",
+   "right_stream_all_rows": "some",
+   "merged": false,
+   "right_date": "some",
+   "court_step_flagged": "all",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "plk_tvet_official",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "PRIORITY": 1
+   },
+   "places": {
+    "Polokwane": 1,
+    "none": 6
+   },
+   "dates": [
+    "2026-10-16"
+   ],
+   "titles": [
+    "Capricorn TVET College official arrested for soliciting R100k bribe"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 7
+   },
+   "place_review": 0,
+   "supporting_records": 6,
+   "saved_rows": 7,
+   "streams_all_rows": {
+    "PRIORITY": 7
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "some",
+   "right_stream_all_rows": "all",
+   "merged": true,
+   "right_date": "all",
+   "precinct_scored": false,
+   "pass": true
+  },
+  {
+   "id": "plk_seshego_school_illness",
+   "sweep": "polokwane",
+   "kind": "catch",
+   "records": 3,
+   "caught": true,
+   "runs": {
+    "kw": 3
+   },
+   "streams": {
+    "CRIME_INTEL": 1,
+    "GLOBAL": 2
+   },
+   "places": {
+    "none": 3
+   },
+   "dates": [
+    "2026-10-16",
+    "2026-10-17"
+   ],
+   "titles": [
+    "43 Learners Rushed to Hospital After Falling Ill at Limpopo Secondary School - Central News South Africa",
+    "43 Limpopo Learners Hospitalised After Stomach Illness Outbreak at Seshego School - Briefly News",
+    "43 learners hospitalised with stomach complaints in Limpopo - SABC News"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 3
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "some",
+   "right_place": "none",
+   "merged": false,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_newcastle_west_water",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 3,
+   "caught": true,
+   "runs": {
+    "kw": 3
+   },
+   "streams": {
+    "INFRASTRUCTURE": 3
+   },
+   "places": {
+    "Newcastle": 6,
+    "none": 2
+   },
+   "dates": [
+    "2026-10-04",
+    "2026-10-15",
+    "2026-10-19"
+   ],
+   "titles": [
+    "Newcastle Business Chamber demands action over water crisis - The Citizen",
+    "Residents demand transparency after 14-day water crisis - The Citizen",
+    "Ward 4 faces daily water cuts as reservoir levels remain low - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 8
+   },
+   "place_review": 0,
+   "supporting_records": 5,
+   "saved_rows": 8,
+   "streams_all_rows": {
+    "GLOBAL": 2,
+    "INFRASTRUCTURE": 6
+   },
+   "records_naming_area": 1,
+   "right_stream": "all",
+   "right_place": "some",
+   "right_stream_all_rows": "some",
+   "merged": false,
+   "right_date": "some",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_signal_hill",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "n/a",
+   "right_place": "n/a",
+   "merged": null,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_ncandu_park",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "n/a",
+   "right_place": "n/a",
+   "merged": null,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_power_cut",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "INFRASTRUCTURE": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-21"
+   ],
+   "titles": [
+    "Municipality announces power cut for tomorrow - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 0,
+   "right_stream": "all",
+   "right_place": "none",
+   "merged": true,
+   "right_date": "all",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_p1_counterfeit",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "Newcastle": 1
+   },
+   "dates": [
+    "2026-10-21"
+   ],
+   "titles": [
+    "Over R1 Million in Suspected Counterfeit Goods Seized in Newcastle CBD - Newcastillian News"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "Newcastle": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "none",
+   "right_place": "all",
+   "merged": true,
+   "right_date": "n/a",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_p2_quad_bike",
+   "sweep": "newcastle",
+   "kind": "catch",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-05"
+   ],
+   "titles": [
+    "Suspected quad bike thieves nabbed in Schuinshoogte - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 1,
+   "right_stream": "none",
+   "right_place": "none",
+   "merged": true,
+   "right_date": "none",
+   "precinct_scored": false,
+   "pass": false
+  },
+  {
+   "id": "nc_au_sydney_syndicate",
+   "sweep": "newcastle",
+   "kind": "keep_out",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "dropped_by_collector": 1,
+   "records_naming_area": 0,
+   "rule": "not_placed_in_province",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "nc_au_mater",
+   "sweep": "newcastle",
+   "kind": "keep_out",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "dropped_by_collector": 2,
+   "records_naming_area": 0,
+   "rule": "not_placed_in_province",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "nc_au_stockton",
+   "sweep": "newcastle",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "INFRASTRUCTURE": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-13"
+   ],
+   "titles": [
+    "'Large pothole' causes traffic delays near Stockton Bridge - inkl"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "dropped_by_collector": 1,
+   "records_naming_area": 0,
+   "rule": "not_placed_in_province",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "musina_protest_noise",
+   "sweep": "musina",
+   "kind": "keep_out",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "dropped_by_collector": 7,
+   "records_naming_area": 0,
+   "rule": "absent",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "lt_nrcs_feed_date",
+   "sweep": "lt_thohoyandou",
+   "kind": "keep_out",
+   "records": 0,
+   "caught": false,
+   "runs": {},
+   "streams": {},
+   "places": {},
+   "dates": [],
+   "titles": [],
+   "replay_errors": 0,
+   "precincts": {},
+   "place_review": 0,
+   "records_naming_area": 0,
+   "rule": "date_is_incident",
+   "pass": true,
+   "status": "not_tested"
+  },
+  {
+   "id": "lt_r524_crash",
+   "sweep": "lt_thohoyandou",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "civic": 1
+   },
+   "streams": {
+    "GLOBAL": 1
+   },
+   "places": {
+    "none": 9
+   },
+   "dates": [
+    "2026-10-06"
+   ],
+   "titles": [
+    "Five killed in head-on collision on R524 near Makhado"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 9
+   },
+   "place_review": 0,
+   "supporting_records": 8,
+   "saved_rows": 9,
+   "streams_all_rows": {
+    "GLOBAL": 9
+   },
+   "records_naming_area": 1,
+   "rule": "not_stream",
+   "merged": true,
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "plk_sekhukhune_officers",
+   "sweep": "polokwane",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "PRIORITY": 1
+   },
+   "places": {
+    "Polokwane": 2
+   },
+   "dates": [
+    "2026-10-07"
+   ],
+   "titles": [
+    "Three police officers arrested for alleged corruption in Polokwane - SABC News"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 2
+   },
+   "place_review": 0,
+   "supporting_records": 1,
+   "saved_rows": 2,
+   "streams_all_rows": {
+    "PRIORITY": 2
+   },
+   "records_naming_area": 1,
+   "rule": "not_placed_at",
+   "pass": false,
+   "status": "fail"
+  },
+  {
+   "id": "nc_oosthuizen_court",
+   "sweep": "newcastle",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-06"
+   ],
+   "titles": [
+    "Henrico Oosthuizen murder case postponed to March 2027 - Tabloid Newspapers"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 0,
+   "rule": "court_step_flagged",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "nc_mlambo_court",
+   "sweep": "newcastle",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "CRIME_INTEL": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-23"
+   ],
+   "titles": [
+    "Mlambo trial ends as judge seeks clarity from police - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 0,
+   "rule": "court_step_flagged",
+   "pass": true,
+   "status": "pass"
+  },
+  {
+   "id": "plk_88_firearms",
+   "sweep": "polokwane",
+   "kind": "keep_out",
+   "records": 1,
+   "caught": true,
+   "runs": {
+    "kw": 1
+   },
+   "streams": {
+    "PRIORITY": 1
+   },
+   "places": {
+    "none": 1
+   },
+   "dates": [
+    "2026-10-01"
+   ],
+   "titles": [
+    "Police probe firearm syndicate after 88 guns disappear - The Citizen"
+   ],
+   "replay_errors": 0,
+   "precincts": {
+    "none": 1
+   },
+   "place_review": 0,
+   "records_naming_area": 0,
+   "rule": "court_step_flagged",
+   "pass": false,
+   "status": "fail"
+  }
+ ],
+ "noise": {
+  "newcastle": {
+   "civic": {
+    "new_rows": 929,
+    "rows_naming_area": 0,
+    "naming_area_in_window": 0,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {},
+    "naming_area_placed": 0
+   },
+   "kw": {
+    "new_rows": 413,
+    "rows_naming_area": 172,
+    "naming_area_in_window": 171,
+    "naming_area_foreign_guess": 108,
+    "naming_area_dropped": 150,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "CRIME_INTEL": 3,
+     "GLOBAL": 15,
+     "INFRASTRUCTURE": 4
+    },
+    "naming_area_placed": 7
+   },
+   "infra": {
+    "new_rows": 28,
+    "rows_naming_area": 2,
+    "naming_area_in_window": 2,
+    "naming_area_foreign_guess": 1,
+    "naming_area_dropped": 1,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "GLOBAL": 1
+    },
+    "naming_area_placed": 1
+   },
+   "pi": {
+    "new_rows": 894,
+    "rows_naming_area": 1,
+    "naming_area_in_window": 1,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "GLOBAL": 1
+    },
+    "naming_area_placed": 0
+   }
+  },
+  "lt_thohoyandou": {
+   "civic": {
+    "new_rows": 925,
+    "rows_naming_area": 11,
+    "naming_area_in_window": 11,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "CRIME_INTEL": 3,
+     "GLOBAL": 7,
+     "INFRASTRUCTURE": 1
+    },
+    "naming_area_placed": 3
+   },
+   "kw": {
+    "new_rows": 38,
+    "rows_naming_area": 8,
+    "naming_area_in_window": 8,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "CRIME_INTEL": 3,
+     "GLOBAL": 5
+    },
+    "naming_area_placed": 2
+   },
+   "infra": {
+    "new_rows": 17,
+    "rows_naming_area": 0,
+    "naming_area_in_window": 0,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {},
+    "naming_area_placed": 0
+   },
+   "pi": {
+    "new_rows": 896,
+    "rows_naming_area": 0,
+    "naming_area_in_window": 0,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {},
+    "naming_area_placed": 0
+   }
+  },
+  "polokwane": {
+   "civic": {
+    "new_rows": 925,
+    "rows_naming_area": 66,
+    "naming_area_in_window": 66,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "CRIME_INTEL": 11,
+     "GLOBAL": 49,
+     "INFRASTRUCTURE": 4,
+     "PRIORITY": 2
+    },
+    "naming_area_placed": 13
+   },
+   "kw": {
+    "new_rows": 155,
+    "rows_naming_area": 55,
+    "naming_area_in_window": 55,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "CRIME_INTEL": 27,
+     "GLOBAL": 24,
+     "INFRASTRUCTURE": 2,
+     "PRIORITY": 2
+    },
+    "naming_area_placed": 17
+   },
+   "infra": {
+    "new_rows": 17,
+    "rows_naming_area": 4,
+    "naming_area_in_window": 4,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "GLOBAL": 2,
+     "INFRASTRUCTURE": 2
+    },
+    "naming_area_placed": 2
+   },
+   "pi": {
+    "new_rows": 896,
+    "rows_naming_area": 8,
+    "naming_area_in_window": 8,
+    "naming_area_foreign_guess": null,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": null,
+    "naming_area_streams": {
+     "CRIME_INTEL": 1,
+     "GLOBAL": 6,
+     "PRIORITY": 1
+    },
+    "naming_area_placed": 2
+   }
+  },
+  "musina": {
+   "civic": {
+    "new_rows": 924,
+    "rows_naming_area": 4,
+    "naming_area_in_window": 4,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "CRIME_INTEL": 1,
+     "GLOBAL": 1,
+     "INFRASTRUCTURE": 1,
+     "PRIORITY": 1
+    },
+    "naming_area_placed": 2
+   },
+   "kw": {
+    "new_rows": 330,
+    "rows_naming_area": 32,
+    "naming_area_in_window": 32,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "CRIME_INTEL": 4,
+     "GLOBAL": 24,
+     "PRIORITY": 4
+    },
+    "naming_area_placed": 6
+   },
+   "infra": {
+    "new_rows": 21,
+    "rows_naming_area": 0,
+    "naming_area_in_window": 0,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {},
+    "naming_area_placed": 0
+   },
+   "pi": {
+    "new_rows": 914,
+    "rows_naming_area": 6,
+    "naming_area_in_window": 6,
+    "naming_area_foreign_guess": 0,
+    "naming_area_dropped": 0,
+    "naming_area_foreign_kept": 0,
+    "naming_area_streams": {
+     "GLOBAL": 3,
+     "PRIORITY": 3
+    },
+    "naming_area_placed": 2
+   }
+  }
+ },
+ "fidelity": {
+  "rows": 434,
+  "same_stream": 249,
+  "same_place": 405,
+  "replay_errors": 0,
+  "differences": [
+   {
+    "town": "lt_thohoyandou",
+    "run": "civic",
+    "title": "Five killed in head-on collision on R524 near Makhado",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "civic",
+    "title": "Family seeks answers after body found in Madombidzha shack",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Madombidzha"
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "civic",
+    "title": "Vhembe runner takes on 520km challenge against GBV",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Thohoyandou"
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Mob justice claims another life in Phiphidi - Limpopo Mirror",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Phiphidi"
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Six killed in a head-on collision on the R524 Levubu Road in Limpopo’s Vhembe District - Arrive Alive",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Breaking: R524 Between Louis Trichardt and Thohoyandou Closed After Crash - Central News South Africa",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "6 lives lost: SAPS vehicle collides head-on with bakkie on R524 in Limpopo - Briefly News",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Thohoyandou businessman shot dead near N1 Carousel Plaza - Limpopo Mirror",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Thohoyandou"
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Police say 6 now dead after Saps vehicle crash on R524 - The Citizen",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Thohoyandou Deadly Collision: 3 Deceased Police Officers Named, Honoured - The Bulrushes",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "R524 road in Limpopo closed following multi-vehicle collision - SABC News",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Thohoyandou Deadly Collision: Two Police Officers Laid To Rest Over The Weekend - The Bulrushes",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "Three SAPS Members, Two Awaiting-Trial Prisoners And Civilian Killed In R524 Levubu Road Crash | SA Trucker - SA Trucker",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "GLOBAL",
+     null
+    ]
+   },
+   {
+    "town": "lt_thohoyandou",
+    "run": "kw",
+    "title": "UNIVEN students shaken after shooting, vehicle torched - Limpopo Mirror",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Scrapyard set alight amid protests over Durban refugee centre - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Police respond to sporadic looting in Durban CBD - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Musina businessman shot more than 20 times in store - Limpopo Mirror",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Musina"
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Some Durban protesters say unaware of withdrawn asylum directive - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Tunisians stage biggest protest in years against President Saied - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "R1.5m illicit cigarette haul seized in Musina as suspect faces court - https://novanews.co.za/",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     "CRIME_INTEL",
+     "Musina"
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Durban unrest: Violent protests continue amid army deployment calls - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Tunisian police clash with protesters on day of heightened tensions - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "musina",
+    "run": "kw",
+    "title": "Police on high alert after tip off on planned Durban marches - SABC News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "infra",
+    "title": "Northumbrian Water set for £4million Newcastle water pipe upgrade with traffic measures in place - Chronicle Live",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Man accused of killing pigeon by firing catapult at it in Newcastle - Chronicle Live",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Council demands tougher powers to permanently shut down rogue shops - Newcastle-under-Lyme Borough Council",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Murder arrest after death of woman in Newcastle-under-Lyme - BBC",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Newcastle councillors reject bid to fly Tibetan flag above City Hall - Newcastle Herald",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Baby, the fans still care about Wendy James and Transvision Vamp - Newcastle Herald",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Court refuses bail for brothers after alleged involvement in Mayfield mayhem - Newcastle Herald",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Council insists 'no collusion' over deal to sell Newcastle green corridor to housing developer - Chronicle Live",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Coventry 4-1 Newcastle: Frank Lampard's Sky Blues out of Premier League drop zone - BBC",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Green Party reinstates Newcastle councillor who was suspended amid antisemitism row - Chronicle Live",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Woman named in Newcastle-under-Lyme murder investigation | News - Greatest Hits Radio (Staffordshire & Cheshire) - Rayo",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Kings import shines as Sydney demolish Hawks in NBL - Newcastle Herald",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Newcastle City Council Axes Late Night Levy Amid Mounting Cost Pressures - CLH News",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "'He died gasping for air': hospital staff shortages blamed for 'terrifying' death - Newcastle Herald",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "P-plater charged after car allegedly ploughed into NRL fans in Newcastle, girl, 5, in a coma - Nine.com.au",
+    "recorded": [
+     "CRIME_INTEL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Man struck in the face with machete, police appeal for information - Newcastle Herald",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   },
+   {
+    "town": "newcastle",
+    "run": "kw",
+    "title": "Borough Council by-election result declared - Newcastle-under-Lyme Borough Council",
+    "recorded": [
+     "GLOBAL",
+     null
+    ],
+    "replay": [
+     null,
+     null
+    ]
+   }
+  ],
+  "differences_total": 203
+ }
+}

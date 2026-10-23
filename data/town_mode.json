@@ -1,7 +1,7 @@
 {
   "_note": "Batch 8 (G10): the search words and per-town extras for town mode (python -m forage.collectors.town_mode --town Musina). The words are the ones the four 23 Oct 2026 town sweeps typed by hand. Every search gets Google News' recent-only limit (when:Nd). 'extra_searches' are places and phrases the sweep notes named that the gazetteer can't supply (a border post, a special economic zone, the town's old name); 'area_words' are the words that count as 'about this town' for the Civic Intelligence filter and the run report, on top of gazetteer places within area_km. Nothing here changes a plain or scheduled collector run.",
   "words": {
-    "crime": ["murder", "shot dead", "stabbed", "body found", "police arrest", "court", "hijacking", "kidnapping"],
+    "crime": ["murder", "shot dead", "stabbed", "body found", "police arrest", "court", "hijacking", "kidnapping", "robbery"],
     "priority": ["smuggling", "Hawks", "corruption", "syndicate", "illegal mining", "undocumented"],
     "infrastructure": ["water", "without water", "borehole", "sewage", "electricity", "Eskom", "municipality"],
     "other": ["protest", "hospital", "truck"]
