@@ -746,6 +746,84 @@
 
   /* ── Graph panel (ported from graph.html, ig- prefixed) ─────────────────── */
   #ig-cy { flex: 1; background: var(--bg-void); position: relative; min-width: 0; }
+
+  /* Graph panel pages: Network, then fixed charts (gp- prefixed).
+     One page per panel width, side by side in a scroll-snap track: a swipe
+     on a phone (or a trackpad sideways scroll) moves one page; the tabs and
+     arrows do the same for mouse and keyboard. */
+  #panel-graph .gp-tool[hidden] { display: none !important; }
+  .gp-nav {
+    display: flex; align-items: center; gap: var(--sp-2);
+    padding: 6px var(--sp-3); border-bottom: 1px solid var(--border-dim); flex-shrink: 0;
+  }
+  .gp-tabs {
+    display: flex; gap: 4px; flex: 1; min-width: 0;
+    overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+  }
+  .gp-tabs::-webkit-scrollbar { display: none; }
+  .gp-tab {
+    flex: 0 0 auto; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text-secondary); background: transparent;
+    border: 1px solid var(--border-dim); border-radius: 999px; padding: 5px 10px; cursor: pointer;
+    white-space: nowrap;
+  }
+  .gp-tab[aria-selected="true"] { color: var(--accent-bright); border-color: var(--accent-muted); background: rgba(200,148,58,0.10); }
+  .gp-tab:focus-visible, .gp-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .gp-arrow {
+    flex: 0 0 auto; min-width: 32px; min-height: 32px; font-size: 1.1rem; line-height: 1;
+    color: var(--text-secondary); background: transparent; border: 1px solid var(--border-dim);
+    border-radius: var(--r-sm); cursor: pointer;
+  }
+  .gp-arrow:disabled { opacity: 0.35; cursor: default; }
+  .gp-pos { flex: 0 0 auto; font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-secondary); }
+  .gp-track {
+    display: flex; flex: 1; min-width: 0; width: 100%; height: 100%;
+    overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .gp-track::-webkit-scrollbar { display: none; }
+  .gp-page {
+    flex: 0 0 100%; width: 100%; min-width: 0; height: 100%;
+    scroll-snap-align: start; scroll-snap-stop: always; position: relative;
+  }
+  .gp-page--network { display: flex; overflow: hidden; }
+  /* The network canvas keeps its own pan and pinch: swiping on it moves the
+     graph, not the page. Use the tabs or arrows to leave it. */
+  .gp-page--network #ig-cy { touch-action: none; }
+  .gp-page--chart { overflow-y: auto; overscroll-behavior-y: contain; padding: var(--sp-3) var(--sp-4) var(--sp-4); box-sizing: border-box; }
+  .gp-empty { margin: auto; max-width: 420px; padding: var(--sp-4); font-size: 0.82rem; line-height: 1.5; color: var(--text-secondary); text-align: center; }
+  .gp-empty p { margin: 0 0 var(--sp-3); }
+  .gp-empty__title { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-primary); }
+  .gp-empty__next { min-height: 36px; padding: 6px 14px; font-size: 0.65rem; }
+  .gp-chart__title { margin: 0 0 var(--sp-2); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-primary); font-weight: 600; }
+  .gp-caveat { margin: 0 0 var(--sp-3); font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); border-left: 2px solid var(--accent-muted); padding-left: var(--sp-2); }
+  .gp-chart__summary { margin: 0 0 var(--sp-2); font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-secondary); }
+  .gp-chart__caption { margin: var(--sp-3) 0 0; font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); }
+  .gp-chart__empty { font-size: 0.8rem; color: var(--text-secondary); }
+  .gp-line { margin: 0; max-width: 480px; }
+  .gp-line svg { display: block; width: 100%; height: auto; }
+  .gp-line__grid { stroke: var(--border-subtle); stroke-width: 1; }
+  .gp-line__ylab, .gp-line__xlab { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 11px; }
+  .gp-line__path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+  .gp-line__pt { fill: var(--bg-void); stroke: var(--accent-bright); stroke-width: 1.5; }
+  /* Day columns: if there are more days than fit, they scroll sideways
+     inside the card; a swipe that starts there moves the columns, and the
+     next swipe at their end moves the page. (No overscroll-behavior here:
+     Chrome then holds every sideways swipe on the box, even when the
+     columns fit, and the page could not be swiped from the chart.) */
+  .gp-cols-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .gp-cols { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 6px; height: 200px; min-width: min-content; }
+  .gp-col { flex: 1 0 36px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .gp-col__plot { flex: 1; width: 100%; min-height: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; padding-top: 16px; box-sizing: border-box; }
+  .gp-col__n { font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-primary); }
+  .gp-col__bar { width: 70%; min-height: 1px; background: var(--accent); border-radius: 2px 2px 0 0; }
+  .gp-col__lab { font-family: var(--font-mono); font-size: 0.56rem; color: var(--text-secondary); white-space: nowrap; }
+  .gp-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+  .gp-bar { display: grid; grid-template-columns: minmax(90px, 34%) 1fr 2.5em; align-items: center; gap: 8px; }
+  .gp-bar__lab { font-size: 0.74rem; color: var(--text-primary); overflow-wrap: anywhere; }
+  .gp-bar__track { height: 12px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden; }
+  .gp-bar__fill { display: block; height: 100%; min-width: 1px; background: var(--accent); }
+  .gp-bar__n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-primary); text-align: right; }
   #ig-loading {
     position: absolute; inset: 0;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1172,7 +1250,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="23 Oct 2026 16:01 UTC" title="23 Oct 2026 16:01 UTC">23 Oct 2026 16:01 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="23 Oct 2026 22:26 UTC" title="23 Oct 2026 22:26 UTC">23 Oct 2026 22:26 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1324,48 +1402,133 @@
   </div>
 
   
-  <div class="md-panel md-panel--wide" id="panel-graph">
+  <div class="md-panel md-panel--wide" id="panel-graph" data-has-network="no">
     <div class="md-panel__header">
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
-      <span class="md-panel__count" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <div class="md-panel__actions">
-        <input id="ig-search" class="md-panel__search" type="text" placeholder="Search actor…">
-        <button class="md-panel__btn" id="ig-fit">Fit</button>
-        <button class="md-panel__btn" id="ig-reset">Reset</button>
+      <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>72 approved records &middot; as of 23 Oct 2026 22:26 UTC</span>
+      
+      <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
+    </div>
+    <div class="gp-nav">
+      <button class="gp-arrow" id="gp-prev" type="button" aria-label="Previous page" disabled>&#8249;</button>
+      <div class="gp-tabs" role="tablist" aria-label="Graph pages">
+        <button class="gp-tab" role="tab" type="button" id="gp-tab-network" aria-controls="gp-page-network" aria-selected="true" tabindex="0" data-gp-page="0">Network</button>
+        <button class="gp-tab" role="tab" type="button" id="gp-tab-incident" aria-controls="gp-page-incident" aria-selected="false" tabindex="-1" data-gp-page="1">Incident dates</button>
+        <button class="gp-tab" role="tab" type="button" id="gp-tab-added" aria-controls="gp-page-added" aria-selected="false" tabindex="-1" data-gp-page="2">Added</button>
+        <button class="gp-tab" role="tab" type="button" id="gp-tab-stream" aria-controls="gp-page-stream" aria-selected="false" tabindex="-1" data-gp-page="3">Streams</button>
+        <button class="gp-tab" role="tab" type="button" id="gp-tab-province" aria-controls="gp-page-province" aria-selected="false" tabindex="-1" data-gp-page="4">Provinces</button>
       </div>
-      <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
+      <span class="gp-pos" id="gp-pos" aria-live="polite">1 / 5</span>
+      <button class="gp-arrow" id="gp-next" type="button" aria-label="Next page">&#8250;</button>
     </div>
     <div class="md-panel__body md-panel__body--flush">
-      <div id="ig-cy"></div>
-      <div id="ig-loading">
-        <div class="ig-spinner"></div>
-        <span class="ig-loading__label">Building graph…</span>
+     <div class="gp-track" id="gp-track">
+     <section class="gp-page gp-page--network" id="gp-page-network" role="tabpanel" aria-labelledby="gp-tab-network" data-gp-tools="network">
+      
+      <div class="gp-empty">
+        <p class="gp-empty__title">No network to draw yet</p>
+        <p>The network shows people and organisations linked to published cases. No cases are published right now, so there is nothing to draw.</p>
+        <p>The charts on the next pages count the 72 approved records on the map.</p>
+        <button class="md-panel__btn gp-empty__next" type="button" data-gp-go="1">See the charts &rsaquo;</button>
       </div>
-      <div id="ig-legend">
-        <div class="ig-legend__title">Actor Type</div>
-        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#e0803a"></div><span class="ig-legend__lbl">Person</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#3a6ed4"></div><span class="ig-legend__lbl">Institution</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40a060"></div><span class="ig-legend__lbl">Government</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#c040a0"></div><span class="ig-legend__lbl">Political Party</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__dot" style="background:#40b0c0"></div><span class="ig-legend__lbl">Media</span></div>
-        <div class="ig-legend__title" style="margin-top:var(--sp-3);">Relationship</div>
-        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#f7768e"></div><span class="ig-legend__lbl">Investigates</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#7aa2f7"></div><span class="ig-legend__lbl">Leads / Commands</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#9ece6a"></div><span class="ig-legend__lbl">Contracted / Employed</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#e0803a"></div><span class="ig-legend__lbl">Funded / Accused</span></div>
-        <div class="ig-legend__row"><div class="ig-legend__line" style="background:#bb9af7;opacity:0.5;"></div><span class="ig-legend__lbl" style="opacity:0.6;">Auto-extracted</span></div>
+      
+     </section>
+     <section class="gp-page gp-page--chart" id="gp-page-incident" role="tabpanel" aria-labelledby="gp-tab-incident" data-gp-tools="charts" data-chart="incident" data-chart-kind="line" inert>
+      <h3 class="gp-chart__title">Records by incident date</h3>
+      <p class="gp-caveat">These are hand-checked news reports of incidents across the map&#39;s streams, not statistics. They are not complete and not representative of everything that happens in any area.</p>
+      
+      <p class="gp-chart__summary">47 occurred &middot; 20 found (date a body was found) &middot; 5 date not stated (not on the line)</p>
+      
+      <figure class="gp-line">
+        <svg viewBox="0 0 320 190" role="img" aria-label="Records by incident date: 1 Oct 2, 2 Oct 3, 3 Oct 2, 4 Oct 6, 5 Oct 1, 6 Oct 6, 7 Oct 3, 8 Oct 2, 9 Oct 2, 10 Oct 3, 11 Oct 5, 12 Oct 2, 13 Oct 5, 14 Oct 1, 15 Oct 1, 16 Oct 4, 17 Oct 6, 18 Oct 2, 19 Oct 5, 20 Oct 4, 21 Oct 2">
+          <line class="gp-line__grid" x1="24" x2="296" y1="164.0" y2="164.0"/>
+          <text class="gp-line__ylab" x="20" y="168.0" text-anchor="end">0</text>
+          <line class="gp-line__grid" x1="24" x2="296" y1="89.0" y2="89.0"/>
+          <text class="gp-line__ylab" x="20" y="93.0" text-anchor="end">3</text>
+          <line class="gp-line__grid" x1="24" x2="296" y1="14.0" y2="14.0"/>
+          <text class="gp-line__ylab" x="20" y="18.0" text-anchor="end">6</text>
+          <polyline class="gp-line__path" points="24.0,114.0 37.6,89.0 51.2,114.0 64.8,14.0 78.4,139.0 92.0,14.0 105.6,89.0 119.2,114.0 132.8,114.0 146.4,89.0 160.0,39.0 173.6,114.0 187.2,39.0 200.8,139.0 214.4,139.0 228.0,64.0 241.6,14.0 255.2,114.0 268.8,39.0 282.4,64.0 296.0,114.0"/>
+          <circle class="gp-line__pt" cx="24.0" cy="114.0" r="2.6"><title>1 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="37.6" cy="89.0" r="2.6"><title>2 Oct: 3 records</title></circle>
+          <circle class="gp-line__pt" cx="51.2" cy="114.0" r="2.6"><title>3 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="64.8" cy="14.0" r="2.6"><title>4 Oct: 6 records</title></circle>
+          <circle class="gp-line__pt" cx="78.4" cy="139.0" r="2.6"><title>5 Oct: 1 record</title></circle>
+          <circle class="gp-line__pt" cx="92.0" cy="14.0" r="2.6"><title>6 Oct: 6 records</title></circle>
+          <circle class="gp-line__pt" cx="105.6" cy="89.0" r="2.6"><title>7 Oct: 3 records</title></circle>
+          <circle class="gp-line__pt" cx="119.2" cy="114.0" r="2.6"><title>8 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="132.8" cy="114.0" r="2.6"><title>9 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="146.4" cy="89.0" r="2.6"><title>10 Oct: 3 records</title></circle>
+          <circle class="gp-line__pt" cx="160.0" cy="39.0" r="2.6"><title>11 Oct: 5 records</title></circle>
+          <circle class="gp-line__pt" cx="173.6" cy="114.0" r="2.6"><title>12 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="187.2" cy="39.0" r="2.6"><title>13 Oct: 5 records</title></circle>
+          <circle class="gp-line__pt" cx="200.8" cy="139.0" r="2.6"><title>14 Oct: 1 record</title></circle>
+          <circle class="gp-line__pt" cx="214.4" cy="139.0" r="2.6"><title>15 Oct: 1 record</title></circle>
+          <circle class="gp-line__pt" cx="228.0" cy="64.0" r="2.6"><title>16 Oct: 4 records</title></circle>
+          <circle class="gp-line__pt" cx="241.6" cy="14.0" r="2.6"><title>17 Oct: 6 records</title></circle>
+          <circle class="gp-line__pt" cx="255.2" cy="114.0" r="2.6"><title>18 Oct: 2 records</title></circle>
+          <circle class="gp-line__pt" cx="268.8" cy="39.0" r="2.6"><title>19 Oct: 5 records</title></circle>
+          <circle class="gp-line__pt" cx="282.4" cy="64.0" r="2.6"><title>20 Oct: 4 records</title></circle>
+          <circle class="gp-line__pt" cx="296.0" cy="114.0" r="2.6"><title>21 Oct: 2 records</title></circle>
+          <text class="gp-line__xlab" x="24.0" y="182" text-anchor="middle">1 Oct</text>
+          <text class="gp-line__xlab" x="92.0" y="182" text-anchor="middle">6 Oct</text>
+          <text class="gp-line__xlab" x="160.0" y="182" text-anchor="middle">11 Oct</text>
+          <text class="gp-line__xlab" x="228.0" y="182" text-anchor="middle">16 Oct</text>
+          <text class="gp-line__xlab" x="296.0" y="182" text-anchor="middle">21 Oct</text>
+        </svg>
+      </figure>
+      
+      
+      <p class="gp-chart__caption">The date it happened, or the date a body was found. Never the report date: where a report gives only that, the record is counted as date not stated. Days with no records show as zero.</p>
+     </section>
+     <section class="gp-page gp-page--chart" id="gp-page-added" role="tabpanel" aria-labelledby="gp-tab-added" data-gp-tools="charts" data-chart="added" data-chart-kind="columns" inert>
+      <h3 class="gp-chart__title">Records added to the map by day</h3>
+      <p class="gp-caveat">These are hand-checked news reports of incidents across the map&#39;s streams, not statistics. They are not complete and not representative of everything that happens in any area.</p>
+      
+      
+      <div class="gp-cols-scroll">
+        <ol class="gp-cols" aria-label="Records added to the map by day">
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">24</span><span class="gp-col__bar" style="height:100.0%"></span></span><span class="gp-col__lab">18 Oct</span></li>
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">13</span><span class="gp-col__bar" style="height:54.2%"></span></span><span class="gp-col__lab">19 Oct</span></li>
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">0</span><span class="gp-col__bar" style="height:0.0%"></span></span><span class="gp-col__lab">20 Oct</span></li>
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">3</span><span class="gp-col__bar" style="height:12.5%"></span></span><span class="gp-col__lab">21 Oct</span></li>
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">13</span><span class="gp-col__bar" style="height:54.2%"></span></span><span class="gp-col__lab">22 Oct</span></li>
+          <li class="gp-col"><span class="gp-col__plot"><span class="gp-col__n">19</span><span class="gp-col__bar" style="height:79.2%"></span></span><span class="gp-col__lab">23 Oct</span></li>
+        </ol>
       </div>
-      <div id="ig-panel">
-        <div class="ig-panel__header">
-          <span class="ig-panel__type" id="ig-panel-type">—</span>
-          <button id="ig-panel-close">&#10005;</button>
-        </div>
-        <div class="ig-panel__name" id="ig-panel-name">—</div>
-        <div class="ig-panel__meta" id="ig-panel-meta"></div>
-        <div class="ig-panel__rels-title">Relationships</div>
-        <div id="ig-panel-rels"></div>
-      </div>
+      
+      <p class="gp-chart__caption">When each pin went on the map, in South African time. This shows how the map grew, not when things happened.</p>
+     </section>
+     <section class="gp-page gp-page--chart" id="gp-page-stream" role="tabpanel" aria-labelledby="gp-tab-stream" data-gp-tools="charts" data-chart="stream" data-chart-kind="bars" inert>
+      <h3 class="gp-chart__title">Records by stream</h3>
+      <p class="gp-caveat">These are hand-checked news reports of incidents across the map&#39;s streams, not statistics. They are not complete and not representative of everything that happens in any area.</p>
+      
+      <ol class="gp-bars" aria-label="Records by stream">
+        <li class="gp-bar"><span class="gp-bar__lab">Crime &amp; Security</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:100.0%"></span></span><span class="gp-bar__n">62</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Infrastructure</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:8.1%"></span></span><span class="gp-bar__n">5</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Priority Intelligence</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:6.5%"></span></span><span class="gp-bar__n">4</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Africa &amp; World</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:1.6%"></span></span><span class="gp-bar__n">1</span></li>
+      </ol>
+      
+      <p class="gp-chart__caption">The map stream each pin is filed under.</p>
+     </section>
+     <section class="gp-page gp-page--chart" id="gp-page-province" role="tabpanel" aria-labelledby="gp-tab-province" data-gp-tools="charts" data-chart="province" data-chart-kind="bars" inert>
+      <h3 class="gp-chart__title">Records by province</h3>
+      <p class="gp-caveat">These are hand-checked news reports of incidents across the map&#39;s streams, not statistics. They are not complete and not representative of everything that happens in any area.</p>
+      
+      <ol class="gp-bars" aria-label="Records by province">
+        <li class="gp-bar"><span class="gp-bar__lab">Western Cape</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:100.0%"></span></span><span class="gp-bar__n">32</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Limpopo</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:65.6%"></span></span><span class="gp-bar__n">21</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Eastern Cape</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:28.1%"></span></span><span class="gp-bar__n">9</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">Mpumalanga</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:15.6%"></span></span><span class="gp-bar__n">5</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">North West</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:12.5%"></span></span><span class="gp-bar__n">4</span></li>
+        <li class="gp-bar"><span class="gp-bar__lab">KwaZulu-Natal</span><span class="gp-bar__track"><span class="gp-bar__fill" style="width:3.1%"></span></span><span class="gp-bar__n">1</span></li>
+      </ol>
+      
+      <p class="gp-chart__caption">Where FORGE has checked so far, not where most incidents happen. Some provinces have had more dedicated checking passes than others.</p>
+     </section>
+     </div>
     </div>
   </div>
 
@@ -1772,7 +1935,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 23 Oct 2026 16:01 UTC
+        Generated 23 Oct 2026 22:26 UTC
       </div>
     </div>
   </footer>
@@ -1780,7 +1943,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 23 Oct 2026 16:01 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 23 Oct 2026 22:26 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -1947,8 +2110,6 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="static/js/area-check.js"></script>
 <script>
@@ -2195,7 +2356,8 @@
     }
     if (PANEL_INIT_DONE[name]) return;
     PANEL_INIT_DONE[name] = true;
-    if (name === 'graph' && typeof initGraphPanel === 'function') {
+    if (name === 'graph' && typeof initGraphPanel === 'function' && typeof cytoscape !== 'undefined'
+        && document.getElementById('ig-cy')) {
       // Defer past a paint frame so #ig-cy has its real, laid-out
       // dimensions (post the .open class flip) before Cytoscape measures
       // its container — constructing against a still-collapsed container
@@ -2255,6 +2417,86 @@
       });
     });
   });
+
+  /* ── Graph panel pages: Network + fixed charts, swipe/tabs/arrows/keys ─── */
+  (function initGraphPages() {
+    var panel = document.getElementById('panel-graph');
+    var track = document.getElementById('gp-track');
+    if (!panel || !track) return;
+    var pages = Array.prototype.slice.call(track.querySelectorAll('.gp-page'));
+    var tabs = Array.prototype.slice.call(panel.querySelectorAll('.gp-tab'));
+    var prev = document.getElementById('gp-prev');
+    var next = document.getElementById('gp-next');
+    var pos = document.getElementById('gp-pos');
+    var current = 0;
+    var settleTimer = null;
+
+    function setActive(i, fromScroll) {
+      i = Math.max(0, Math.min(pages.length - 1, i));
+      current = i;
+      tabs.forEach(function (t, k) {
+        t.setAttribute('aria-selected', k === i ? 'true' : 'false');
+        t.tabIndex = k === i ? 0 : -1;
+      });
+      pages.forEach(function (p, k) {
+        if (k === i) p.removeAttribute('inert'); else p.setAttribute('inert', '');
+      });
+      // The header shows only the tools of the visible page.
+      var tools = pages[i].getAttribute('data-gp-tools');
+      panel.querySelectorAll('.gp-tool').forEach(function (el) {
+        el.hidden = el.getAttribute('data-gp-tool') !== tools;
+      });
+      prev.disabled = i === 0;
+      next.disabled = i === pages.length - 1;
+      pos.textContent = (i + 1) + ' / ' + pages.length;
+      if (tabs[i] && tabs[i].scrollIntoView && !fromScroll) {
+        tabs[i].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+
+    function go(i, focusTab) {
+      i = Math.max(0, Math.min(pages.length - 1, i));
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      track.scrollTo({ left: i * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+      setActive(i, false);
+      if (focusTab && tabs[i]) tabs[i].focus();
+    }
+    window.ZADGraphPages = { go: go, current: function () { return current; }, count: pages.length };
+
+    // A swipe (or sideways trackpad scroll) settles on a page: follow it.
+    track.addEventListener('scroll', function () {
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(function () {
+        var w = track.clientWidth || 1;
+        var i = Math.round(track.scrollLeft / w);
+        if (i !== current) setActive(i, true);
+      }, 80);
+    }, { passive: true });
+
+    tabs.forEach(function (t, k) {
+      t.addEventListener('click', function () { go(k, false); });
+      t.addEventListener('keydown', function (e) {
+        var k2 = null;
+        if (e.key === 'ArrowRight') k2 = k + 1;
+        else if (e.key === 'ArrowLeft') k2 = k - 1;
+        else if (e.key === 'Home') k2 = 0;
+        else if (e.key === 'End') k2 = pages.length - 1;
+        if (k2 === null) return;
+        e.preventDefault();
+        go(k2, true);
+      });
+    });
+    prev.addEventListener('click', function () { go(current - 1, false); });
+    next.addEventListener('click', function () { go(current + 1, false); });
+    panel.querySelectorAll('[data-gp-go]').forEach(function (b) {
+      b.addEventListener('click', function () { go(parseInt(b.getAttribute('data-gp-go'), 10), true); });
+    });
+    // Keep the visible page in place when the panel is resized or reopened.
+    window.addEventListener('resize', function () {
+      track.scrollLeft = current * track.clientWidth;
+    });
+    setActive(0, true);
+  })();
 
   /* ── Graph panel — lazy Cytoscape init (ported from graph.html) ─────────── */
   function initGraphPanel() {
