@@ -1,0 +1,273 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Mpumalanga",
+  "batch": "Mpumalanga killings, incidents 1-22 Oct 2026, hand-checked 23 Oct 2026; five pins approved by the owner on 23 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Collection window: incidents 1-22 Oct 2026. Five other Mpumalanga candidates from the same pass wait on owner decisions and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Pin = the place the source gives; 'approx.' in the title when only a street, suburb, area, village or town is known. Sources that reuse one report or one police statement are not independent corroboration. Being near another pin is not a link. Victims are named when the reports name them (owner decision of 23 Oct 2026); suspects are not named. A gunman who killed himself is not counted as a killing; his death is a note on the killing (owner decision of 23 Oct 2026). Estimated map points (pins D and E): where the place could not be put on a map, the pin is the SAPS station point of the police precinct for that area, used only as a reference; the title says 'map point estimated', the drawer location note starts 'ESTIMATED MAP POINT', and the precision is 'precinct' with an uncertainty equal to the farthest edge of that precinct from the station. Pin C: police are a party (police_party in fact-bases.json). Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on 23 Oct 2026 (voice call, 'Yes'); one explicit version-1 approval record per pin in docs/approvals/pins (reference mpumalanga-approval-2026-10-23).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-23 (voice call, about 11:12 SAST)",
+      "decision": "Approved for publication as prepared: Siyabuswa, Lillydale Trust, Masoyi, Thusi Village and Amersfoort, with approximate or estimated map points and the police-involved flag on Masoyi. Owner's word: \"Yes\"."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Where a place cannot be mapped, use a clearly labelled police-station estimate (said for Nhlazatshe, MNS, Coronation and Schoemanskloof; applied here to Thusi Village and the Amersfoort farm, the review note's station-estimate option)."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "Lillydale, Amersfoort and Nhlazatshe: the death count excludes the gunman who killed himself; his death is added as a note on the killing."
+    },
+    {
+      "at": "2026-10-23 (voice call)",
+      "decision": "If victims are named in the reports, their names go in the findings (Siyabuswa: William Malapane; Lillydale: Marvel Khosa and Ayanda Khosa). Suspects are not named."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Nhlazatshe, eLukwatini (Gert Sibande)",
+      "reason": "Waiting on owner decisions from the 23 Oct review (map point and count); not in this batch."
+    },
+    {
+      "place": "MNS, eMalahleni (Nkangala)",
+      "reason": "Waiting on owner decisions from the 23 Oct review; not in this batch."
+    },
+    {
+      "place": "Coronation, eMalahleni (Nkangala)",
+      "reason": "Waiting on owner decisions from the 23 Oct review; not in this batch."
+    },
+    {
+      "place": "Schoemanskloof (Ehlanzeni)",
+      "reason": "Waiting on owner decisions from the 23 Oct review (map point; whether it falls in the window); not in this batch."
+    },
+    {
+      "place": "eMalahleni tavern death (Nkangala)",
+      "reason": "Waiting on the owner's decision from the 23 Oct review; not in this batch."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "3fd7a79d-11b5-5499-a2c9-71ea8925984e",
+      "external_id": "checked:mp-2026-10-23:A",
+      "source": "Middelburg Observer (The Citizen)",
+      "title": "Siyabuswa (town only, approx.): William Malapane, 44, stabbed at home; wife arrested, 4 Oct",
+      "content": "Police say officers responding to a complaint at a couple's home in Siyabuswa found William Malapane, 44, with stab wounds to his upper body; he was declared dead at the scene at about 02:00. It is alleged the couple argued before his wife, 40, stabbed him with a sharp object (police spokesperson Colonel Mavela Masondo, via Middelburg Observer). She was arrested on 4 October, charged with murder and denied bail in the Mdutjana Magistrate's Court on 14 October. The victim is named as reported, by the owner's decision of 23 October; the suspect is not named here. One report, resting on police: Middelburg Observer, 19 October. The date is read from the arrest date; the report does not state the date of death. The pin is approximate (town level).",
+      "lat": -25.11319,
+      "lng": 29.04454,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T00:00:00Z",
+      "published_at": "2026-10-23T09:20:00Z",
+      "metadata": {
+        "source_outlet": "Middelburg Observer (The Citizen)",
+        "link": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+        "pubdate_raw": "2026-10-19 (date on the page; time not saved)",
+        "checked": {
+          "incident": "Declared dead at about 02:00; arrest on Sun 4 Oct 2026 (police, via Middelburg Observer). The date of death is not stated; it is read from the arrest date.",
+          "reported": "19 Oct 2026 (Middelburg Observer); earliest report found",
+          "location": "At the couple's home in Siyabuswa (police, via Middelburg Observer). No address or section given. The pin is the Siyabuswa town point from the place-name list, inside the Siyabuswa police precinct; approximate, town level (about 5 km).",
+          "sources": [
+            {
+              "name": "Middelburg Observer (The Citizen)",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/"
+            }
+          ],
+          "checked_at": "2026-10-23T09:20:00Z",
+          "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-04",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-19",
+          "search_aliases": [
+            "Siyabuswa",
+            "Mdutjana",
+            "Dr JS Moroka",
+            "Nkangala",
+            "William Malapane",
+            "Malapane"
+          ]
+        },
+        "collected_title": "Court remands Siyabuswa woman in custody over husband’s fatal stabbing"
+      },
+      "fingerprint": "sha256:82d887430d0d688bda830d1eef2b2e39ee1c7d9f73b30a8709f4ed4c1233536a"
+    },
+    {
+      "signal_id": "9188e545-8113-50c9-ac7e-98ac9a03f457",
+      "external_id": "checked:mp-2026-10-23:B",
+      "source": "Lowvelder (The Citizen)",
+      "title": "Lillydale Trust, Calcutta police area (approx.): Marvel and Ayanda Khosa, mother and daughter, shot dead; gunman then shot himself, 8 Oct",
+      "content": "Police say a family meeting to resolve domestic issues in Lillydale Trust ended in a shooting at about 16:00 on Thursday 8 October. A man allegedly took a licensed firearm from his vehicle and shot two women, Marvel Khosa and her daughter Ayanda Khosa, who were rushed to a nearby medical facility and declared dead there (police spokesperson Colonel Mavela Masondo, via Lowvelder). This pin counts those two killings. Note: the gunman then allegedly turned the gun on himself and was found dead at the scene; his death is recorded here as a note, not counted as a killing. Calcutta police opened two murder dockets and an inquest docket. The victims are named as reported, by the owner's decision of 23 October; the gunman is not named here. One report, resting on police: Lowvelder, 10 October. The pin is approximate (village level).",
+      "lat": -24.86638,
+      "lng": 31.36893,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-08T14:00:00Z",
+      "published_at": "2026-10-23T09:20:00Z",
+      "metadata": {
+        "source_outlet": "Lowvelder (The Citizen)",
+        "link": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+        "pubdate_raw": "2026-10-10 (date on the page; time not saved)",
+        "checked": {
+          "incident": "Thu 8 Oct 2026 at 16:00 (police, via Lowvelder)",
+          "reported": "10 Oct 2026 (Lowvelder)",
+          "location": "At a family meeting in Lillydale Trust, in the Calcutta police area (police, via Lowvelder). No address given. The pin is the Lillydale village point from the place-name list, inside the Calcutta police precinct; approximate, village level (about 4 km). The place-name list files that point under Limpopo; the place is in Bushbuckridge, Mpumalanga, and the pin falls inside the Mpumalanga Calcutta precinct.",
+          "sources": [
+            {
+              "name": "Lowvelder (The Citizen)",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/"
+            }
+          ],
+          "checked_at": "2026-10-23T09:20:00Z",
+          "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-08T16:00+02:00",
+          "incident_precision": "time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-10",
+          "search_aliases": [
+            "Lillydale",
+            "Lillydale Trust",
+            "Lilydale",
+            "Calcutta",
+            "Mkhuhlu",
+            "Bushbuckridge",
+            "Marvel Khosa",
+            "Ayanda Khosa",
+            "Khosa"
+          ]
+        },
+        "collected_title": "3 die in Lillydale Trust domestic shooting"
+      },
+      "fingerprint": "sha256:1e1680bf050551b6eabef5f66844e507ce1de5723010388c62c166825c3d61e7"
+    },
+    {
+      "signal_id": "0710d74d-c67c-5899-95db-54e2f4fab60d",
+      "external_id": "checked:mp-2026-10-23:C",
+      "source": "Lowvelder (The Citizen)",
+      "title": "Bhekiswayo Trust, Masoyi (area only, approx.): man, 30, dies after shoot-out with police; police are a party, 20 Oct",
+      "content": "Police say a 30-year-old Bhekiswayo Trust man attacked his 73-year-old father with a blunt object, damaged his father's safe and went to a local tavern with a firearm. Officers found he had locked himself inside his parental home; they went in through a window, he fired at an officer and wounded him, and police returned fire, hitting him in the lower body. He later died at a medical facility on or after Tuesday 20 October; his father survived (SAPS spokesperson Colonel Mavela Masondo, via Lowvelder; SAPS Mpumalanga statement of 21 October). Cases of attempted murder (the father and the officer), possession of an unlicensed firearm and an inquest were opened; SAPS and IPID are investigating. Police are a party to this death, and police are the only source: there is no independent account. He is not named in the reports. One report: Lowvelder, 22 October. The pin is approximate (area level).",
+      "lat": -25.16005,
+      "lng": 31.10905,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-20T10:00:00Z",
+      "published_at": "2026-10-23T09:20:00Z",
+      "metadata": {
+        "source_outlet": "Lowvelder (The Citizen)",
+        "link": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+        "pubdate_raw": "2026-10-22 (date on the page; time not saved)",
+        "checked": {
+          "incident": "Tue 20 Oct 2026; time not given. He died later at a medical facility; the date of death is not stated (police, via Lowvelder; SAPS Mpumalanga statement of 21 Oct)",
+          "reported": "22 Oct 2026 (Lowvelder); SAPS Mpumalanga media statement 21 Oct",
+          "location": "At his parental home in Masoyi; he lived at Bhekiswayo Trust (police, via Lowvelder). No address. Bhekiswayo Trust was not found in the place-name lookups; the pin is the Masoyi residential-area point on OpenStreetMap, inside the Masoyi police precinct; approximate, area level (about 6 km). It is not the home.",
+          "sources": [
+            {
+              "name": "Lowvelder (The Citizen)",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/"
+            }
+          ],
+          "checked_at": "2026-10-23T09:20:00Z",
+          "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-20",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-21",
+          "search_aliases": [
+            "Masoyi",
+            "Bhekiswayo",
+            "Bhekiswayo Trust",
+            "Mbombela",
+            "Ehlanzeni"
+          ]
+        },
+        "collected_title": "Fatal Masoyi standoff ends after suspect opens fire on SAPS"
+      },
+      "fingerprint": "sha256:32a1125f1395b07edaf0e00363fbc304866aee88ebf610a7c9951c390f351789"
+    },
+    {
+      "signal_id": "3679ce0d-0799-50c5-9fdf-76e85d662b52",
+      "external_id": "checked:mp-2026-10-23:D",
+      "source": "Highvelder News (The Citizen)",
+      "title": "Thusi Village, Ermelo police area (map point estimated): woman, 27, found dead after alleged assault; man, 31, charged with murder, 2 Oct",
+      "content": "Police say they received a complaint that a woman was being assaulted by her male friend in Thusi Village; officers found her unconscious on the ground and paramedics declared her dead at the scene. A 31-year-old man still in the area was arrested on 2 October and charged with murder (police spokesperson Colonel Mavela Masondo, via Highvelder News). He appeared in the Ermelo Magistrate's Court and the case was postponed to 12 October for plea. The family is waiting for post-mortem results to confirm the cause of death. She is not named in the report. One report, resting on police: Highvelder News, 5 October. MAP POINT ESTIMATED: Thusi Village could not be placed on a map, so the pin sits on the Ermelo police station, in the area that dealt with the case. It is not the scene; the village may be up to about 44 km away.",
+      "lat": -26.52267,
+      "lng": 29.98454,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-01T22:00:00Z",
+      "published_at": "2026-10-23T09:20:00Z",
+      "metadata": {
+        "source_outlet": "Highvelder News (The Citizen)",
+        "link": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+        "pubdate_raw": "2026-10-05 (date on the page; time not saved)",
+        "checked": {
+          "incident": "Arrest on Fri 2 Oct 2026; found dead the same call-out, time not given (police, via Highvelder News)",
+          "reported": "5 Oct 2026 (Highvelder News)",
+          "location": "ESTIMATED MAP POINT. Thusi Village, near Ermelo (police, via Highvelder News; Ermelo dateline and Ermelo Magistrate's Court). The village could not be placed on a map: the place-name lookups found no Thusi village, and a nearby colliery point mentioned in the review note could not be confirmed from the saved lookups. The pin is on the Ermelo police station (SAPS station point), used only as a reference; the report does not name the station. It is not the scene. The village may be anywhere in the Ermelo police area, up to about 44 km from the pin.",
+          "sources": [
+            {
+              "name": "Highvelder News (The Citizen)",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/"
+            }
+          ],
+          "checked_at": "2026-10-23T09:20:00Z",
+          "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-02",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-05",
+          "search_aliases": [
+            "Thusi",
+            "Thusi Village",
+            "Thusiville",
+            "Ermelo",
+            "Msukaligwa",
+            "Gert Sibande"
+          ]
+        },
+        "collected_title": "Suspect faces murder charge after Thusi Village woman’s death"
+      },
+      "fingerprint": "sha256:d7b4b28331eb5ec1a882c2d9064df48f54cd6d36b524742fbc7bb1b79ea3edd2"
+    },
+    {
+      "signal_id": "a98cb800-3be8-586b-9997-84c9041cc35b",
+      "external_id": "checked:mp-2026-10-23:E",
+      "source": "The Citizen",
+      "title": "Farm near Amersfoort (map point estimated): farm worker, about 50, shot dead in hostage incident; gunman then shot himself, 10 Oct",
+      "content": "Police say they were called to a hostage situation on a farm near Amersfoort at about 06:00 on Saturday 10 October and found three people who had escaped. A 55-year-old armed man allegedly held farm workers hostage, then shot one, aged about 50, dead and shot another, aged about 53, who survived and was airlifted to hospital (police spokesperson Brigadier Donald Mdhluli, via The Citizen). This pin counts that one killing. Note: while police negotiators were talking to him, the gunman reportedly shot himself and was certified dead at the scene; his death is recorded here as a note, not counted as a killing. A 9mm pistol was found. Cases of murder, attempted murder and kidnapping were opened. No one is named in the report. One report, resting on police: The Citizen, 10 October. MAP POINT ESTIMATED: the farm is not named, so the pin sits on the Amersfoort police station. It is not the scene; the farm may be up to about 43 km away.",
+      "lat": -27.00869,
+      "lng": 29.87218,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-10T04:00:00Z",
+      "published_at": "2026-10-23T09:20:00Z",
+      "metadata": {
+        "source_outlet": "The Citizen",
+        "link": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+        "pubdate_raw": "2026-10-10 (date on the page; time not saved)",
+        "checked": {
+          "incident": "Sat 10 Oct 2026; police called at about 06:00 (police, via The Citizen)",
+          "reported": "10 Oct 2026 (The Citizen)",
+          "location": "ESTIMATED MAP POINT. A farm near Amersfoort, Gert Sibande District (police, via The Citizen). The farm is not named. The pin is on the Amersfoort police station (SAPS station point), used only as a reference; the report does not name the station. It is not the scene. The farm may be anywhere in the Amersfoort police area, up to about 43 km from the pin.",
+          "sources": [
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/"
+            }
+          ],
+          "checked_at": "2026-10-23T09:20:00Z",
+          "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-10T06:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-10",
+          "search_aliases": [
+            "Amersfoort",
+            "Pixley Ka Seme",
+            "Gert Sibande",
+            "farm hostage"
+          ]
+        },
+        "collected_title": "Mpumalanga farm hostage: Gunman kills one, wounds another and shoots himself"
+      },
+      "fingerprint": "sha256:94b25e997aef69e45fa75947d7d578e384cda70d7d04d258c81dd6ed1f2769e9"
+    }
+  ]
+}

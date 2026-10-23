@@ -768,6 +768,75 @@
       ],
       "independence": "same_statement",
       "note": "Both rest on the police account. Limpopo Chronicle names no village. An IOL report seen in the collection pass was not saved in full and is not used. The suspect is a serving police officer and police are the only source: there is no independent account of the shooting."
+    },
+    "3fd7a79d-11b5-5499-a2c9-71ea8925984e": {
+      "statement_from": "SAPS Mpumalanga, quoted by Middelburg Observer",
+      "spokesperson": [
+        "Mavela Masondo"
+      ],
+      "other_voices": [
+        "Lt-Gen Apaphia Modise, Mpumalanga provincial commissioner (appeal)",
+        "The victim's family (funeral, background)"
+      ],
+      "outlets": [
+        "Middelburg Observer"
+      ],
+      "independence": "single_report",
+      "note": "One public report. The account of the killing rests on police; the family speaks only to who he was and the funeral. A link to the same story given in the 23 Oct review note was wrong (it returns not found); the working address is used here."
+    },
+    "9188e545-8113-50c9-ac7e-98ac9a03f457": {
+      "statement_from": "SAPS Mpumalanga, quoted by Lowvelder",
+      "spokesperson": [
+        "Mavela Masondo"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Lowvelder"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police. The headline counts three dead including the gunman; this pin counts the two women killed and notes the gunman's death (owner decision, 23 Oct 2026). A link to the same story given in the 23 Oct review note was wrong (it returns not found); the working address is used here."
+    },
+    "0710d74d-c67c-5899-95db-54e2f4fab60d": {
+      "statement_from": "SAPS Mpumalanga (media statement of 21 Oct), quoted by Lowvelder",
+      "spokesperson": [
+        "Mavela Masondo"
+      ],
+      "other_voices": [
+        "Lt-Gen Apaphia Modise, Mpumalanga provincial commissioner (statement)"
+      ],
+      "outlets": [
+        "Lowvelder"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on the police statement. The statement is on the SAPS newsroom, whose pages cannot be linked to directly, so it is not listed as a link. Police are a party to this death; IPID is investigating and has reported no finding. Nothing independent of police."
+    },
+    "3679ce0d-0799-50c5-9fdf-76e85d662b52": {
+      "statement_from": "SAPS Mpumalanga, quoted by Highvelder News",
+      "spokesperson": [
+        "Mavela Masondo"
+      ],
+      "other_voices": [
+        "The victim's family (post-mortem, support)"
+      ],
+      "outlets": [
+        "Highvelder News"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police. The family speaks only to the post-mortem and support."
+    },
+    "a98cb800-3be8-586b-9997-84c9041cc35b": {
+      "statement_from": "SAPS Mpumalanga, quoted by The Citizen",
+      "spokesperson": [
+        "Donald Mdhluli"
+      ],
+      "other_voices": [
+        "Lt-Gen Apaphia Modise, Mpumalanga provincial commissioner (comment)"
+      ],
+      "outlets": [
+        "The Citizen"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police. The headline counts the victim and the gunman; this pin counts the farm worker killed and notes the gunman's death (owner decision, 23 Oct 2026). An IOL report seen in the collection pass was not saved in full and is not used."
     }
   }
 }

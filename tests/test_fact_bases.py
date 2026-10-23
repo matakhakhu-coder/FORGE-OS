@@ -33,7 +33,16 @@ LIMPOPO = {
     'eaf77245-e677-5ccb-955d-764253f566d2',  # G Madonsi Boltman B
     'cd3f9959-d1de-58d2-8a7d-cf0cb3bad8e7',  # H Martinique village
 }
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO
+# Mpumalanga batch (mpumalanga-killings-2026-10-23.json): each fact matched word for word to the
+# saved source text on 23 Oct 2026, outside the frozen 36-pin Admiralty audit.
+MPUMALANGA = {
+    '3fd7a79d-11b5-5499-a2c9-71ea8925984e',  # A Siyabuswa
+    '9188e545-8113-50c9-ac7e-98ac9a03f457',  # B Lillydale Trust
+    '0710d74d-c67c-5899-95db-54e2f4fab60d',  # C Bhekiswayo Trust, Masoyi (police are a party)
+    '3679ce0d-0799-50c5-9fdf-76e85d662b52',  # D Thusi Village (estimated map point)
+    'a98cb800-3be8-586b-9997-84c9041cc35b',  # E Farm near Amersfoort (estimated map point)
+}
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA
 
 
 def load(path):
@@ -52,8 +61,11 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 53                                      # 36 audited + 17 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 313   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo
+    assert len(exported) == 58                                      # 36 audited + 22 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 343   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga
+    assert sum(len(exported[s]['facts']) for s in MPUMALANGA) == 30  # six each
+    assert all(exported[s]['status'] == 'audited' for s in MPUMALANGA)
+    assert exported['0710d74d-c67c-5899-95db-54e2f4fab60d']['police_party'] is True   # Masoyi
     assert sum(len(exported[s]['facts']) for s in LIMPOPO) == 43     # A, B, E six each; C, D, F, G, H five each
     assert all(exported[s]['status'] == 'audited' for s in LIMPOPO)
     assert SEPARATELY_AUDITED <= set(exported)

@@ -1,8 +1,78 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "22 Oct 2026 21:00 UTC",
+  "generated_at": "23 Oct 2026 09:21 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Bhekiswayo Trust, Masoyi (area only, approx.): man, 30, dies after shoot-out with police; police are a party, 20 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T09:20:00Z",
+      "summary": "Police say a 30-year-old Bhekiswayo Trust man attacked his 73-year-old father with a blunt object, damaged his father's safe and went to a local tavern with a firearm. Officers found he had locked himself inside his pare...",
+      "source": "LOWVELDER (THE CITIZEN)",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -25.16005,
+        "lng": 31.10905
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Farm near Amersfoort (map point estimated): farm worker, about 50, shot dead in hostage incident; gunman then shot himself, 10 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T09:20:00Z",
+      "summary": "Police say they were called to a hostage situation on a farm near Amersfoort at about 06:00 on Saturday 10 October and found three people who had escaped. A 55-year-old armed man allegedly held farm workers hostage, then...",
+      "source": "THE CITIZEN",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -27.00869,
+        "lng": 29.87218
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Lillydale Trust, Calcutta police area (approx.): Marvel and Ayanda Khosa, mother and daughter, shot dead; gunman then shot himself, 8 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T09:20:00Z",
+      "summary": "Police say a family meeting to resolve domestic issues in Lillydale Trust ended in a shooting at about 16:00 on Thursday 8 October. A man allegedly took a licensed firearm from his vehicle and shot two women, Marvel Khos...",
+      "source": "LOWVELDER (THE CITIZEN)",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -24.86638,
+        "lng": 31.36893
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Siyabuswa (town only, approx.): William Malapane, 44, stabbed at home; wife arrested, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T09:20:00Z",
+      "summary": "Police say officers responding to a complaint at a couple's home in Siyabuswa found William Malapane, 44, with stab wounds to his upper body; he was declared dead at the scene at about 02:00. It is alleged the couple arg...",
+      "source": "MIDDELBURG OBSERVER (THE CITIZEN)",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -25.11319,
+        "lng": 29.04454
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Thusi Village, Ermelo police area (map point estimated): woman, 27, found dead after alleged assault; man, 31, charged with murder, 2 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-23T09:20:00Z",
+      "summary": "Police say they received a complaint that a woman was being assaulted by her male friend in Thusi Village; officers found her unconscious on the ground and paramedics declared her dead at the scene. A 31-year-old man sti...",
+      "source": "HIGHVELDER NEWS (THE CITIZEN)",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -26.52267,
+        "lng": 29.98454
+      }
+    },
     {
       "kind": "signal",
       "title": "Martinique village, Villa Nora police area (approx.): woman, 35, shot dead; police sergeant suspect later found dead, 21 Oct",
@@ -631,76 +701,6 @@
       "geo": {
         "lat": -33.65278,
         "lng": 22.0875
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Voorbrug, Delft (Camdeboo St, approx.): 2 men shot dead, 3 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Delft police registered a double murder case after two men were shot dead in Camdeboo Street, Anceba Court, Voorbrug, at about 18:40 on Saturday 3 October; both were declared dead at the scene and the motive is unknown (...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9695,
-        "lng": 18.6417
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Hawston, Overstrand (Nasson St, approx.): man, 28, stabbed dead, 2 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "James Henn, 28, was stabbed in the neck during an alleged argument in Nasson Street, Hawston, at about 23:00 on Friday 2 October and was declared dead at the scene. Hermanus police registered a murder case and three susp...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.38815,
-        "lng": 19.13882
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Beacon Valley, Mitchells Plain (Trampoline St, approx.): man, 43, shot dead, 1 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Police say a 43-year-old man sitting in a white Hyundai truck was pulled out by two men and shot dead in front of a premises on Trampoline Street, Beacon Valley, at 11:10 on Thursday 1 October; the suspects took his fire...",
-      "source": "PLAINSMAN",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.04048,
-        "lng": 18.62456
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Epping, Cape Town (Fisher Ave, approx.): 2 men shot dead in taxi attack, 16 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:28:41Z",
-      "summary": "SAPS says two men, aged 45 and 46, were shot dead on Fisher Avenue, Epping, on Friday 16 October at about 06:00, when men from a Toyota Quantum opened fire on their car. Police believe the motive is taxi-related. Two sus...",
-      "source": "CAPE TIMES (IOL)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.93709,
-        "lng": 18.53663
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Farm near Worcester (approx.): man, 24, found shot dead, 14 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T17:28:41Z",
-      "summary": "Police say the body of a 24-year-old man with a gunshot wound to the head was found near a dam on a farm between Overhex, Worcester, and MaGwaleni, Zwelethemba, on the morning of Wednesday 14 October. Worcester police re...",
-      "source": "WORCESTER STANDARD",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.652,
-        "lng": 19.502
       }
     }
   ]

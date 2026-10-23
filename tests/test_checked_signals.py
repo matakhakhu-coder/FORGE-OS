@@ -5,7 +5,8 @@ same committed batches (24 Western Cape pins, then 4 North West pins, then 8 Eas
 then 1 Western Cape Sprint 5 pin: Cafda Village, Retreat, 18 Oct, then 1 Eastern Cape pin: Gqeberha,
 then 3 Western Cape Sprint 5 pins: Steenberg, 20 Oct, Strandfontein, 19 Oct, and Athlone, 19 Oct,
 then 4 Western Cape Sprint 5 pins: Tafelsig barber, Valhalla Park, St Montague Village and Firethorne,
-then 8 Limpopo pins: incidents 1-22 Oct 2026, outside the pattern test).
+then 8 Limpopo pins: incidents 1-22 Oct 2026, outside the pattern test,
+then 5 Mpumalanga pins: incidents 2-20 Oct 2026, approved 23 Oct 2026, outside the pattern test).
 """
 from __future__ import annotations
 
@@ -27,7 +28,8 @@ WC_PINS = 32          # Western Cape: the Sprint 5 pattern-test pins (24 + Retre
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
 EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct), outside the pattern test
 LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, outside the pattern test
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS
+MP_PINS = 5           # Mpumalanga: incidents 2-20 Oct 2026, approved 23 Oct 2026, outside the pattern test
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -106,10 +108,11 @@ def test_index_loads_all_pins_in_order():
         "eastern-cape-killings-2026-10-21.json",
         "western-cape-murders-2026-10-21-sprint5.json",
         "western-cape-murders-2026-10-22-sprint5.json",
-        "limpopo-killings-2026-10-22.json"]
+        "limpopo-killings-2026-10-22.json",
+        "mpumalanga-killings-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -152,6 +155,28 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     estimated = sorted(s["title"].split(",")[0] for s in lp if "map point estimated" in s["title"])
     assert estimated == ["Rostock village", "Sekurung village"]
     data = json.loads((SIGNALS_DIR / "limpopo-killings-2026-10-22.json").read_text(encoding="utf-8"))
+    assert "Sprint 5" in data["scope"]
+
+
+def test_mpumalanga_pins_stay_out_of_the_pattern_test_and_mark_estimates():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    mp = [s for s in cs.active if prov[s["signal_id"]] == "Mpumalanga"]
+    assert len(mp) == MP_PINS and not ({s["signal_id"] for s in mp} & wc_ids)
+    for s in mp:
+        assert -27.85 <= s["lat"] <= -24.4 and 28.15 <= s["lng"] <= 32.1   # really in Mpumalanga
+        assert "approx." in s["title"] or "map point estimated" in s["title"]
+        assert not s["metadata"].get("links")
+    # Thusi Village and the Amersfoort farm sit on their police station points, so their titles say so.
+    estimated = sorted(s["title"].split(",")[0].split(" (")[0] for s in mp if "map point estimated" in s["title"])
+    assert estimated == ["Farm near Amersfoort", "Thusi Village"]
+    for s in mp:
+        if "map point estimated" in s["title"]:
+            assert s["metadata"]["checked"]["location"].startswith("ESTIMATED MAP POINT")
+    data = json.loads((SIGNALS_DIR / "mpumalanga-killings-2026-10-23.json").read_text(encoding="utf-8"))
     assert "Sprint 5" in data["scope"]
 
 

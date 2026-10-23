@@ -5221,6 +5221,492 @@
           "conflicts": []
         }
       ]
+    },
+    "3fd7a79d-11b5-5499-a2c9-71ea8925984e": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man dead: William Malapane, 44.",
+          "basis": "Police account only",
+          "detail": "Named as reported, by the owner's decision of 23 Oct 2026. Age from the report.",
+          "sources": [
+            {
+              "name": "Middelburg Observer",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "He was declared dead on the scene at about 02:00."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Declared dead at about 02:00; the report gives 4 October 2026 as the arrest date.",
+          "basis": "Police account only",
+          "detail": "The report does not state the date of death. The pin date (4 Oct) is read from the arrest date, which the report ties to police finding him.",
+          "sources": [
+            {
+              "name": "Middelburg Observer",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "was arrested on October 4 after police found"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "The couple's home in Siyabuswa.",
+          "basis": "Police account only",
+          "detail": "No address or section. The pin is town level, not the home.",
+          "sources": [
+            {
+              "name": "Middelburg Observer",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "when they responded to a complaint at the couple’s home in Siyabuswa"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Stabbed in the upper body with a sharp object.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Middelburg Observer",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "with stab wounds to his upper body"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "An argument between the couple.",
+          "basis": "Police account only",
+          "detail": "Police allegation only.",
+          "sources": [
+            {
+              "name": "Mavela Masondo, SAPS spokesperson (via Middelburg Observer)",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "it is alleged that the couple had an argument before"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "His wife, 40, charged with murder; denied bail on 14 October; due back in court on 21 October.",
+          "basis": "Police account only",
+          "detail": "Court date and outcome as reported. Not named here. What happened on 21 October is not in the saved report.",
+          "sources": [
+            {
+              "name": "Middelburg Observer",
+              "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+              "archive": null,
+              "quote": "was denied bail when she appeared in the Mdutjana Magistrate’s Court in Siyabuswa on October 14."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "9188e545-8113-50c9-ac7e-98ac9a03f457": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two women killed: Marvel Khosa and her daughter, Ayanda Khosa. The gunman also died; his death is a note, not counted as a killing.",
+          "basis": "Police account only",
+          "detail": "Named as reported, by the owner's decision of 23 Oct 2026. Ages not confirmed in the report. The headline's \"3 die\" includes the gunman.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "The two women, identified as Marvel Khosa and her daughter, Ayanda Khosa, were later declared dead at the facility."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Thursday 8 October 2026 at 16:00.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "left three people dead in Lillydale Trust on Thursday, October 8, at 16:00."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Lillydale Trust, Calcutta police area.",
+          "basis": "Police account only",
+          "detail": "No address. The pin is village level.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "Police in Calcutta have opened two murder dockets and an inquest docket"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot with a licensed firearm the man allegedly took from his vehicle.",
+          "basis": "Police account only",
+          "detail": "Police recovered a licensed firearm at the scene.",
+          "sources": [
+            {
+              "name": "Mavela Masondo, SAPS spokesperson (via Lowvelder)",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "allegedly retrieved a licensed firearm from his vehicle and shot the two women"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "A family meeting to resolve domestic issues.",
+          "basis": "Police account only",
+          "detail": "Police allegation only.",
+          "sources": [
+            {
+              "name": "Mavela Masondo, SAPS spokesperson (via Lowvelder)",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "It is alleged that there was a family meeting to resolve domestic issues"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Two murder dockets and an inquest docket; the suspect is dead.",
+          "basis": "Police account only",
+          "detail": "The gunman allegedly turned the gun on himself and was found dead at the scene. No one else is reported as a suspect.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+              "archive": null,
+              "quote": "before allegedly turning the gun on himself"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "0710d74d-c67c-5899-95db-54e2f4fab60d": {
+      "status": "audited",
+      "police_party": true,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 30, dead after police returned fire. Not named in the reports.",
+          "basis": "Police account only",
+          "detail": "An officer was wounded and survived; the father survived.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "Both the injured police officer and the suspect were taken to medical facilities for treatment, where the suspect later died."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 20 October 2026; time not given. He died later; the date of death is not stated.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "opened fire on him in Masoyi on October 20."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "His parental home in Masoyi; he lived at Bhekiswayo Trust.",
+          "basis": "Police account only",
+          "detail": "No address. The pin is area level, not the home.",
+          "sources": [
+            {
+              "name": "Mavela Masondo, SAPS spokesperson (via Lowvelder)",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "police found that the suspect had returned to his parental home and had locked himself inside"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot in the lower body when police returned fire, after he allegedly fired at an officer.",
+          "basis": "Police account only",
+          "detail": "Police are a party; their account is the only one.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "SAPS returned fire, injuring the suspect on the lower body."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Police were called after he allegedly attacked his father, damaged his safe and went to a tavern with a firearm.",
+          "basis": "Police account only",
+          "detail": "Why police fired is their own account: the officer was shot first.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "had attacked his father (73) with a blunt object"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Attempted murder (father and officer), possession of an unlicensed firearm and an inquest; SAPS and IPID investigating.",
+          "basis": "Police account only",
+          "detail": "No IPID finding reported.",
+          "sources": [
+            {
+              "name": "Lowvelder",
+              "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+              "archive": null,
+              "quote": "and an inquest docket were opened for further investigation by both the SAPS and the Independent Police Investigative Directorate."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "3679ce0d-0799-50c5-9fdf-76e85d662b52": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A woman, 27, dead. Not named in the report.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "Paramedics declared her dead at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "The report ties the arrest to 2 October 2026; she was found the same call-out. Time not given.",
+          "basis": "Police account only",
+          "detail": "The sentence can be read as the date of the arrest or of the death; both fall on the same call-out.",
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "after a 31-year-old man was arrested in connection with her death on October 2."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "On the ground in Thusi Village, near Ermelo.",
+          "basis": "Police account only",
+          "detail": "No address. The village could not be mapped; the pin is an estimate.",
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "police found a woman unresponsive on the ground in Thusi Village."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "An alleged assault; the cause of death awaits post-mortem results.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "The family is awaiting the official post-mortem results to confirm the cause of death."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Not established. Police are investigating the circumstances and the motive.",
+          "basis": "Undetermined in the saved reports",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "Police are investigating the circumstances surrounding the incident and the motive."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "A man, 31, her male friend, charged with murder; postponed to 12 October for plea.",
+          "basis": "Police account only",
+          "detail": "Not named here. What happened on 12 October is not in the saved report.",
+          "sources": [
+            {
+              "name": "Highvelder News",
+              "url": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+              "archive": null,
+              "quote": "The matter was postponed to October 12 for a plea."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "a98cb800-3be8-586b-9997-84c9041cc35b": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, about 50, killed. One man, about 53, wounded and survived. The gunman, 55, also died; his death is a note, not counted as a killing.",
+          "basis": "Police account only",
+          "detail": "No one named. The gunman shot himself during negotiations, police say.",
+          "sources": [
+            {
+              "name": "Donald Mdhluli, SAPS spokesperson (via The Citizen)",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "It is alleged that the suspect fatally shot one victim, aged approximately 50, and shot another victim, aged approximately 53, leaving him for dead"
+            },
+            {
+              "name": "Donald Mdhluli (via The Citizen)",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "Whilst negotiations were underway with the suspect, he reportedly shot himself"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 10 October 2026; police called at about 06:00.",
+          "basis": "Police account only",
+          "detail": "The 06:00 is the hostage call, not an established time of the shooting.",
+          "sources": [
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "Police received a call about a hostage situation on the farm at about 6am"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A farm near Amersfoort, Gert Sibande District.",
+          "basis": "Police account only",
+          "detail": "The farm is not named. The pin is an estimate.",
+          "sources": [
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "during a hostage standoff on an Amersfoort farm in Mpumalanga on Saturday."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Method",
+          "claim": "Shot; a 9mm pistol was found at the scene.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "Officers found a 9mm pistol at the scene"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Reported motive",
+          "claim": "Not reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The report describes a hostage situation; no reason is given.",
+          "sources": [
+            {
+              "name": "The Citizen",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "had held them hostage"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder, attempted murder and kidnapping cases opened; the suspect is dead.",
+          "basis": "Police account only",
+          "detail": "Police had not released the gunman's name.",
+          "sources": [
+            {
+              "name": "Donald Mdhluli (via The Citizen)",
+              "url": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+              "archive": null,
+              "quote": "Cases of murder, attempted murder and kidnapping (in line with the hostage situation) have been opened for investigation"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,71 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T092107Z-c58b3d9b",
+  "signal_id": "3fd7a79d-11b5-5499-a2c9-71ea8925984e",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "mpumalanga-killings-2026-10-23.json",
+  "approved_payload": {
+    "content": "Police say officers responding to a complaint at a couple's home in Siyabuswa found William Malapane, 44, with stab wounds to his upper body; he was declared dead at the scene at about 02:00. It is alleged the couple argued before his wife, 40, stabbed him with a sharp object (police spokesperson Colonel Mavela Masondo, via Middelburg Observer). She was arrested on 4 October, charged with murder and denied bail in the Mdutjana Magistrate's Court on 14 October. The victim is named as reported, by the owner's decision of 23 October; the suspect is not named here. One report, resting on police: Middelburg Observer, 19 October. The date is read from the arrest date; the report does not state the date of death. The pin is approximate (town level).",
+    "external_id": "checked:mp-2026-10-23:A",
+    "lat": -25.11319,
+    "lng": 29.04454,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T09:20:00Z",
+        "incident": "Declared dead at about 02:00; arrest on Sun 4 Oct 2026 (police, via Middelburg Observer). The date of death is not stated; it is read from the arrest date.",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-04",
+        "location": "At the couple's home in Siyabuswa (police, via Middelburg Observer). No address or section given. The pin is the Siyabuswa town point from the place-name list, inside the Siyabuswa police precinct; approximate, town level (about 5 km).",
+        "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "19 Oct 2026 (Middelburg Observer); earliest report found",
+        "reported_at": "2026-10-19",
+        "search_aliases": [
+          "Siyabuswa",
+          "Mdutjana",
+          "Dr JS Moroka",
+          "Nkangala",
+          "William Malapane",
+          "Malapane"
+        ],
+        "sources": [
+          {
+            "name": "Middelburg Observer (The Citizen)",
+            "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/"
+          }
+        ]
+      },
+      "collected_title": "Court remands Siyabuswa woman in custody over husband’s fatal stabbing",
+      "link": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+      "pubdate_raw": "2026-10-19 (date on the page; time not saved)",
+      "source_outlet": "Middelburg Observer (The Citizen)"
+    },
+    "published_at": "2026-10-23T09:20:00Z",
+    "signal_id": "3fd7a79d-11b5-5499-a2c9-71ea8925984e",
+    "source": "Middelburg Observer (The Citizen)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T00:00:00Z",
+    "title": "Siyabuswa (town only, approx.): William Malapane, 44, stabbed at home; wife arrested, 4 Oct"
+  },
+  "payload_sha256": "sha256:82d887430d0d688bda830d1eef2b2e39ee1c7d9f73b30a8709f4ed4c1233536a",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+      "retrieved_at": "2026-10-23T08:59:17Z",
+      "content_sha256": "sha256:41ea629d0c57b2f7aaf01e346ef30396530d86a63d1bce06d9b1253a641c2813"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T11:13:00+02:00",
+  "recorded_at": "2026-10-23T11:21:07+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "mpumalanga-approval-2026-10-23",
+    "summary": "Owner said 'Yes' on the voice call, 23 Oct 2026 about 11:12 SAST, to five Mpumalanga pins: Siyabuswa, Lillydale Trust, Masoyi, Thusi Village, Amersfoort. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

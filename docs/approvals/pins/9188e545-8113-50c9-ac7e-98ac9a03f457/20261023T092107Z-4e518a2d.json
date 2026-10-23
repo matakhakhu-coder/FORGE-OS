@@ -1,0 +1,74 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T092107Z-4e518a2d",
+  "signal_id": "9188e545-8113-50c9-ac7e-98ac9a03f457",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "mpumalanga-killings-2026-10-23.json",
+  "approved_payload": {
+    "content": "Police say a family meeting to resolve domestic issues in Lillydale Trust ended in a shooting at about 16:00 on Thursday 8 October. A man allegedly took a licensed firearm from his vehicle and shot two women, Marvel Khosa and her daughter Ayanda Khosa, who were rushed to a nearby medical facility and declared dead there (police spokesperson Colonel Mavela Masondo, via Lowvelder). This pin counts those two killings. Note: the gunman then allegedly turned the gun on himself and was found dead at the scene; his death is recorded here as a note, not counted as a killing. Calcutta police opened two murder dockets and an inquest docket. The victims are named as reported, by the owner's decision of 23 October; the gunman is not named here. One report, resting on police: Lowvelder, 10 October. The pin is approximate (village level).",
+    "external_id": "checked:mp-2026-10-23:B",
+    "lat": -24.86638,
+    "lng": 31.36893,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T09:20:00Z",
+        "incident": "Thu 8 Oct 2026 at 16:00 (police, via Lowvelder)",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-10-08T16:00+02:00",
+        "location": "At a family meeting in Lillydale Trust, in the Calcutta police area (police, via Lowvelder). No address given. The pin is the Lillydale village point from the place-name list, inside the Calcutta police precinct; approximate, village level (about 4 km). The place-name list files that point under Limpopo; the place is in Bushbuckridge, Mpumalanga, and the pin falls inside the Mpumalanga Calcutta precinct.",
+        "method": "Found in the 23 Oct 2026 Mpumalanga collection pass (SAPS Mpumalanga statements and news search, incidents 1-22 Oct); source pages read and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 09:20 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "10 Oct 2026 (Lowvelder)",
+        "reported_at": "2026-10-10",
+        "search_aliases": [
+          "Lillydale",
+          "Lillydale Trust",
+          "Lilydale",
+          "Calcutta",
+          "Mkhuhlu",
+          "Bushbuckridge",
+          "Marvel Khosa",
+          "Ayanda Khosa",
+          "Khosa"
+        ],
+        "sources": [
+          {
+            "name": "Lowvelder (The Citizen)",
+            "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/"
+          }
+        ]
+      },
+      "collected_title": "3 die in Lillydale Trust domestic shooting",
+      "link": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+      "pubdate_raw": "2026-10-10 (date on the page; time not saved)",
+      "source_outlet": "Lowvelder (The Citizen)"
+    },
+    "published_at": "2026-10-23T09:20:00Z",
+    "signal_id": "9188e545-8113-50c9-ac7e-98ac9a03f457",
+    "source": "Lowvelder (The Citizen)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-08T14:00:00Z",
+    "title": "Lillydale Trust, Calcutta police area (approx.): Marvel and Ayanda Khosa, mother and daughter, shot dead; gunman then shot himself, 8 Oct"
+  },
+  "payload_sha256": "sha256:1e1680bf050551b6eabef5f66844e507ce1de5723010388c62c166825c3d61e7",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+      "retrieved_at": "2026-10-23T08:59:17Z",
+      "content_sha256": "sha256:93f27feb0a9d1019918392bf8b27349cc03addaeadd4be7d3a5c30c444ff5008"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T11:13:00+02:00",
+  "recorded_at": "2026-10-23T11:21:07+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "mpumalanga-approval-2026-10-23",
+    "summary": "Owner said 'Yes' on the voice call, 23 Oct 2026 about 11:12 SAST, to five Mpumalanga pins: Siyabuswa, Lillydale Trust, Masoyi, Thusi Village, Amersfoort. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

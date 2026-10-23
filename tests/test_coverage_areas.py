@@ -122,7 +122,7 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 53            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo
+    assert len(pins) == 58            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
@@ -134,8 +134,11 @@ def test_current_pins_make_their_areas_and_skip_held_places():
                     # Masemola and Mecklenburg into one area. Giyani and Malamulele are kept
                     # apart by the owner's decision of 22 Oct 2026.
                     "limpopo--lebowakgomo", "limpopo--polokwane", "limpopo--mecklenburg",
-                    "limpopo--masemola", "limpopo--giyani", "limpopo--malamulele", "limpopo--villa-nora"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 53
+                    "limpopo--masemola", "limpopo--giyani", "limpopo--malamulele", "limpopo--villa-nora",
+                    # Mpumalanga uses the same same-precinct rule (added 23 Oct 2026).
+                    "mpumalanga--siyabuswa", "mpumalanga--calcutta", "mpumalanga--masoyi",
+                    "mpumalanga--ermelo", "mpumalanga--amersfoort"}
+    assert sum(len(a["pins"]) for a in res["areas"]) == 58
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])
@@ -160,13 +163,19 @@ def test_current_pins_make_their_areas_and_skip_held_places():
     batch = json.loads((ROOT / "docs" / "signals" / "limpopo-killings-2026-10-22.json").read_text())
     assert any("Giyani" in d["decision"] and "Malamulele" in d["decision"] and "Apart" in d["decision"]
                for d in batch["owner_decisions"])
+    # Mpumalanga: outside the pattern test, one area per precinct, each holding only its own pin.
+    mp = {a["key"]: a for a in res["areas"] if a["province"] == "Mpumalanga"}
+    assert len(mp) == 5 and not any(a["pattern_test"] for a in mp.values())
+    assert all(len(a["pins"]) == 1 for a in mp.values())
+    for a in mp.values():
+        assert [pr["name"] for pr in a["precincts"] if pr["holds_pins"]] == [a["name"].split(" (")[0]]
 
 
 def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
     first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
-    assert len(first["areas"]) == 17 and len(first["new_since_last_run"]) == 17   # first run: all new
+    assert len(first["areas"]) == 22 and len(first["new_since_last_run"]) == 22   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -181,7 +190,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     # Computing again the same day (compute, then sweep) keeps the flag.
     again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
     assert again["new_since_last_run"] == second["new_since_last_run"]
-    assert len(second["areas"]) == 18
+    assert len(second["areas"]) == 23
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
     assert added[0]["province"] == "North West" and not added[0]["pattern_test"]
@@ -203,7 +212,7 @@ def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     assert ip["signal_id"] not in {p["signal_id"] for p in pins}
     keys = {a["key"] for a in ca.compute_areas(pins)["areas"]}
     assert "north-west--schweizer-reneke" not in keys
-    assert not any("brits" in k for k in keys) and len(keys) == 16   # 17 areas less Schweizer-Reneke
+    assert not any("brits" in k for k in keys) and len(keys) == 21   # 22 areas less Schweizer-Reneke
 
 
 # ── Western Cape scoring stays apart ───────────────────────────────────────────

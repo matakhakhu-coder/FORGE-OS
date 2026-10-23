@@ -1,8 +1,8 @@
 {
   "schema": "za-divergent.records",
   "version": 1,
-  "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4",
-  "count": 53,
+  "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d",
+  "count": 58,
   "caveats": [
     "These are hand-checked news reports of incidents across the map's streams, not statistics. They are not complete and not representative of everything that happens in any area.",
     "Most rows rest on a single report or on police statements repeated by several outlets; see reporting_independence.",
@@ -157,7 +157,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=cd3f9959",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "49773d55-5704-5fcb-ac36-1f7eda5de54b",
@@ -188,7 +188,7 @@
       "approved_at": "2026-10-22T12:42:00+02:00",
       "published_at": "2026-10-22T10:25:00Z",
       "map_link": "index.html?signal=49773d55",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "048440e0-0be5-53d8-934a-1ba6233a0dfa",
@@ -219,7 +219,7 @@
       "approved_at": "2026-10-21T15:00:00+02:00",
       "published_at": "2026-10-21T12:41:00Z",
       "map_link": "index.html?signal=048440e0",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",
@@ -250,7 +250,38 @@
       "approved_at": "2026-10-22T12:42:00+02:00",
       "published_at": "2026-10-22T10:25:00Z",
       "map_link": "index.html?signal=0caa5a74",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
+    },
+    {
+      "signal_id": "0710d74d-c67c-5899-95db-54e2f4fab60d",
+      "short_id": "0710d74d",
+      "title": "Bhekiswayo Trust, Masoyi (area only, approx.): man, 30, dies after shoot-out with police; police are a party, 20 Oct",
+      "province": "Mpumalanga",
+      "incident_start": "2026-10-20",
+      "incident_precision": "day",
+      "incident_event": "occurred",
+      "incident_described": "Tue 20 Oct 2026; time not given. He died later at a medical facility; the date of death is not stated (police, via Lowvelder; SAPS Mpumalanga statement of 21 Oct)",
+      "reported_at": "2026-10-21",
+      "location_described": "At his parental home in Masoyi; he lived at Bhekiswayo Trust (police, via Lowvelder). No address. Bhekiswayo Trust was not found in the place-name lookups; the pin is the Masoyi residential-area point on OpenStreetMap, inside the Masoyi police precinct; approximate, area level (about 6 km). It is not the home.",
+      "latitude": -25.16005,
+      "longitude": 31.10905,
+      "map_precision": "area",
+      "uncertainty_m": 6000,
+      "location_basis": "reported",
+      "reporting_independence": "One report only",
+      "statement_from": "SAPS Mpumalanga (media statement of 21 Oct), quoted by Lowvelder",
+      "outlets": "Lowvelder",
+      "source_urls": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/22/fatal-masoyi-standoff-ends-after-suspect-opens-fire-on-saps/",
+      "source_count": 1,
+      "archived_source_count": 0,
+      "fact_conflict_count": 0,
+      "fact_audit": "audited",
+      "approval_id": "20261023T092107Z-0bb84df9",
+      "pin_version": 1,
+      "approved_at": "2026-10-23T11:13:00+02:00",
+      "published_at": "2026-10-23T09:20:00Z",
+      "map_link": "index.html?signal=0710d74d",
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "adf99019-941e-5dd0-9851-635da0a1e146",
@@ -281,7 +312,7 @@
       "approved_at": "2026-10-21T18:10:00+02:00",
       "published_at": "2026-10-21T15:48:00Z",
       "map_link": "index.html?signal=adf99019",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "06219161-76ad-5b50-91d0-e58235427edf",
@@ -312,7 +343,7 @@
       "approved_at": "2026-10-22T12:42:00+02:00",
       "published_at": "2026-10-22T10:25:00Z",
       "map_link": "index.html?signal=06219161",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "b842a3b5-eda7-5b97-bfe1-0448fe0272a5",
@@ -343,7 +374,7 @@
       "approved_at": "2026-10-21T13:26:21+02:00",
       "published_at": "2026-10-21T11:16:00Z",
       "map_link": "index.html?signal=b842a3b5",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0c9f233c-6c38-5da4-a660-c6776f575667",
@@ -374,7 +405,7 @@
       "approved_at": "2026-10-22T12:42:00+02:00",
       "published_at": "2026-10-22T10:25:00Z",
       "map_link": "index.html?signal=0c9f233c",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "7aa4eea1-c1f4-55af-b761-d55ff2df3a51",
@@ -405,7 +436,7 @@
       "approved_at": "2026-10-22T12:42:00+02:00",
       "published_at": "2026-10-19T07:45:00Z",
       "map_link": "index.html?signal=7aa4eea1",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "e0fa3712-df77-531e-a040-437dee019c3c",
@@ -436,7 +467,7 @@
       "approved_at": "2026-10-22T13:48:00+02:00",
       "published_at": "2026-10-22T11:45:00Z",
       "map_link": "index.html?signal=e0fa3712",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "335b265d-2edd-54e2-969e-31e38733ff3a",
@@ -467,7 +498,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=335b265d",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "efbf9e6d-2d5d-4591-8d0e-11294babd050",
@@ -498,7 +529,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T00:50:00Z",
       "map_link": "index.html?signal=efbf9e6d",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "eaf77245-e677-5ccb-955d-764253f566d2",
@@ -529,7 +560,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=eaf77245",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "64b7adb5-4fc2-4184-b932-5ea0082259d7",
@@ -560,7 +591,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T00:50:00Z",
       "map_link": "index.html?signal=64b7adb5",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "19a71c43-7584-4483-8cb1-9c71f12a9cb8",
@@ -591,7 +622,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=19a71c43",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0d2ac747-e939-48fd-a116-3d99c1a95758",
@@ -622,7 +653,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=0d2ac747",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c",
@@ -653,7 +684,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T17:28:41Z",
       "map_link": "index.html?signal=dbf90d51",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0e974ffd-0958-4cbc-aab2-3ca7fcf3bca2",
@@ -684,7 +715,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=0e974ffd",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "7bce2be1-912e-48e2-9fd4-c79d1611c16f",
@@ -715,7 +746,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T17:28:41Z",
       "map_link": "index.html?signal=7bce2be1",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "c99779f1-095f-5d2d-88c3-19f74e8c39d6",
@@ -746,7 +777,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=c99779f1",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "a3d91502-d7c3-5257-99ac-0c99e948b038",
@@ -777,7 +808,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=a3d91502",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "a7c9880f-cc67-4f97-a5a3-99d5e0c57f2d",
@@ -808,7 +839,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=a7c9880f",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "fb9450c3-dd3b-5402-8c4f-5e26f433d317",
@@ -839,7 +870,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=fb9450c3",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "c889d991-c9d9-541d-9976-934dc46c385c",
@@ -870,7 +901,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=c889d991",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "417613e8-bc4b-5e22-a9ce-49531d161f70",
@@ -901,7 +932,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=417613e8",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "7acad00a-2081-462b-939c-be61b9d9b539",
@@ -932,7 +963,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=7acad00a",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "1f7dbda3-e019-52ae-8832-8cae6ab01b47",
@@ -963,7 +994,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=1f7dbda3",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "ba7824e3-f2de-56c4-914f-587aeba1639c",
@@ -994,7 +1025,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=ba7824e3",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "d09da7da-5705-46e3-8d10-5fef0db6c639",
@@ -1025,7 +1056,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=d09da7da",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "218c685c-2720-486e-8fc9-9af1dd3c2d5a",
@@ -1056,7 +1087,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=218c685c",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "1a328ebb-28da-4b22-a7d6-f986d7852155",
@@ -1087,7 +1118,38 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T17:28:41Z",
       "map_link": "index.html?signal=1a328ebb",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
+    },
+    {
+      "signal_id": "a98cb800-3be8-586b-9997-84c9041cc35b",
+      "short_id": "a98cb800",
+      "title": "Farm near Amersfoort (map point estimated): farm worker, about 50, shot dead in hostage incident; gunman then shot himself, 10 Oct",
+      "province": "Mpumalanga",
+      "incident_start": "2026-10-10T06:00+02:00",
+      "incident_precision": "approx_time",
+      "incident_event": "occurred",
+      "incident_described": "Sat 10 Oct 2026; police called at about 06:00 (police, via The Citizen)",
+      "reported_at": "2026-10-10",
+      "location_described": "ESTIMATED MAP POINT. A farm near Amersfoort, Gert Sibande District (police, via The Citizen). The farm is not named. The pin is on the Amersfoort police station (SAPS station point), used only as a reference; the report does not name the station. It is not the scene. The farm may be anywhere in the Amersfoort police area, up to about 43 km from the pin.",
+      "latitude": -27.00869,
+      "longitude": 29.87218,
+      "map_precision": "precinct",
+      "uncertainty_m": 43000,
+      "location_basis": "estimated",
+      "reporting_independence": "One report only",
+      "statement_from": "SAPS Mpumalanga, quoted by The Citizen",
+      "outlets": "The Citizen",
+      "source_urls": "https://www.citizen.co.za/news/mpumalanga-farm-hostage-gunman-kills-one-wounds-another-and-shoots-himself/",
+      "source_count": 1,
+      "archived_source_count": 0,
+      "fact_conflict_count": 0,
+      "fact_audit": "audited",
+      "approval_id": "20261023T092107Z-c26b6e05",
+      "pin_version": 1,
+      "approved_at": "2026-10-23T11:13:00+02:00",
+      "published_at": "2026-10-23T09:20:00Z",
+      "map_link": "index.html?signal=a98cb800",
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "c2601d28-ecde-4cd0-b9e3-0c19230dafac",
@@ -1118,7 +1180,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T17:28:41Z",
       "map_link": "index.html?signal=c2601d28",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "318c89be-efbe-4c0d-a175-f423dcda6cc5",
@@ -1149,7 +1211,38 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T00:50:00Z",
       "map_link": "index.html?signal=318c89be",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
+    },
+    {
+      "signal_id": "9188e545-8113-50c9-ac7e-98ac9a03f457",
+      "short_id": "9188e545",
+      "title": "Lillydale Trust, Calcutta police area (approx.): Marvel and Ayanda Khosa, mother and daughter, shot dead; gunman then shot himself, 8 Oct",
+      "province": "Mpumalanga",
+      "incident_start": "2026-10-08T16:00+02:00",
+      "incident_precision": "time",
+      "incident_event": "occurred",
+      "incident_described": "Thu 8 Oct 2026 at 16:00 (police, via Lowvelder)",
+      "reported_at": "2026-10-10",
+      "location_described": "At a family meeting in Lillydale Trust, in the Calcutta police area (police, via Lowvelder). No address given. The pin is the Lillydale village point from the place-name list, inside the Calcutta police precinct; approximate, village level (about 4 km). The place-name list files that point under Limpopo; the place is in Bushbuckridge, Mpumalanga, and the pin falls inside the Mpumalanga Calcutta precinct.",
+      "latitude": -24.86638,
+      "longitude": 31.36893,
+      "map_precision": "village",
+      "uncertainty_m": 4000,
+      "location_basis": "reported",
+      "reporting_independence": "One report only",
+      "statement_from": "SAPS Mpumalanga, quoted by Lowvelder",
+      "outlets": "Lowvelder",
+      "source_urls": "https://www.citizen.co.za/lowvelder/news-headlines/local-news/2026/10/10/3-die-in-lillydale-trust-domestic-shooting/",
+      "source_count": 1,
+      "archived_source_count": 0,
+      "fact_conflict_count": 0,
+      "fact_audit": "audited",
+      "approval_id": "20261023T092107Z-4e518a2d",
+      "pin_version": 1,
+      "approved_at": "2026-10-23T11:13:00+02:00",
+      "published_at": "2026-10-23T09:20:00Z",
+      "map_link": "index.html?signal=9188e545",
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "2fdd9a56-11a3-4877-891a-bd46f152c44b",
@@ -1180,7 +1273,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=2fdd9a56",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "a86ff098-691e-5407-83f0-8496db67b418",
@@ -1211,7 +1304,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=a86ff098",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "03459a76-618b-4f7b-a538-c70eb89d5f99",
@@ -1242,7 +1335,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=03459a76",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "530a09b2-015a-4ac3-996e-0183e8599dfa",
@@ -1273,7 +1366,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=530a09b2",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "2a848e46-0a84-4d05-8efc-85e54c8aa636",
@@ -1304,7 +1397,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=2a848e46",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "fd2a6fae-7fdf-58f7-aa95-e3f20fce9940",
@@ -1335,7 +1428,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=fd2a6fae",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "32b05eda-7499-59d2-b15c-4270972a7e49",
@@ -1366,7 +1459,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=32b05eda",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "821f2edc-df43-41d1-ad4a-c18b8380809e",
@@ -1397,7 +1490,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=821f2edc",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0c5e795f-330b-4302-97c2-812543262e8b",
@@ -1428,7 +1521,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=0c5e795f",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "332d8ab4-a352-4b39-a6cf-f3f371f0ca4b",
@@ -1459,7 +1552,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=332d8ab4",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "c64476ff-5b23-4307-944c-20c2a1a99835",
@@ -1490,7 +1583,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T00:50:00Z",
       "map_link": "index.html?signal=c64476ff",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "578b93c8-a253-535c-b26f-eba38181683b",
@@ -1521,7 +1614,38 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-19T02:05:00Z",
       "map_link": "index.html?signal=578b93c8",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
+    },
+    {
+      "signal_id": "3fd7a79d-11b5-5499-a2c9-71ea8925984e",
+      "short_id": "3fd7a79d",
+      "title": "Siyabuswa (town only, approx.): William Malapane, 44, stabbed at home; wife arrested, 4 Oct",
+      "province": "Mpumalanga",
+      "incident_start": "2026-10-04",
+      "incident_precision": "day",
+      "incident_event": "occurred",
+      "incident_described": "Declared dead at about 02:00; arrest on Sun 4 Oct 2026 (police, via Middelburg Observer). The date of death is not stated; it is read from the arrest date.",
+      "reported_at": "2026-10-19",
+      "location_described": "At the couple's home in Siyabuswa (police, via Middelburg Observer). No address or section given. The pin is the Siyabuswa town point from the place-name list, inside the Siyabuswa police precinct; approximate, town level (about 5 km).",
+      "latitude": -25.11319,
+      "longitude": 29.04454,
+      "map_precision": "town",
+      "uncertainty_m": 5000,
+      "location_basis": "reported",
+      "reporting_independence": "One report only",
+      "statement_from": "SAPS Mpumalanga, quoted by Middelburg Observer",
+      "outlets": "Middelburg Observer",
+      "source_urls": "https://www.citizen.co.za/middelburg-observer/news/2026/10/19/court-remands-siyabuswa-woman-in-custody-over-husbands-fatal-stabbing/",
+      "source_count": 1,
+      "archived_source_count": 0,
+      "fact_conflict_count": 0,
+      "fact_audit": "audited",
+      "approval_id": "20261023T092107Z-c58b3d9b",
+      "pin_version": 1,
+      "approved_at": "2026-10-23T11:13:00+02:00",
+      "published_at": "2026-10-23T09:20:00Z",
+      "map_link": "index.html?signal=3fd7a79d",
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
@@ -1552,7 +1676,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=0caff1cd",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "21b2a9b0-66c3-4045-924d-963eaa85b4a1",
@@ -1583,7 +1707,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=21b2a9b0",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "1b6fba13-ef88-48d7-8c17-16b4e7ba6650",
@@ -1614,7 +1738,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T17:28:41Z",
       "map_link": "index.html?signal=1b6fba13",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "2a87ec3f-8763-416c-99cf-6c060faab5a1",
@@ -1645,7 +1769,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=2a87ec3f",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "582ea2d7-5473-4f40-af91-a7343d865d0b",
@@ -1676,7 +1800,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=582ea2d7",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "fdb570fb-11a4-4430-8966-b973f1ae3ede",
@@ -1707,7 +1831,38 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=fdb570fb",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
+    },
+    {
+      "signal_id": "3679ce0d-0799-50c5-9fdf-76e85d662b52",
+      "short_id": "3679ce0d",
+      "title": "Thusi Village, Ermelo police area (map point estimated): woman, 27, found dead after alleged assault; man, 31, charged with murder, 2 Oct",
+      "province": "Mpumalanga",
+      "incident_start": "2026-10-02",
+      "incident_precision": "day",
+      "incident_event": "found",
+      "incident_described": "Arrest on Fri 2 Oct 2026; found dead the same call-out, time not given (police, via Highvelder News)",
+      "reported_at": "2026-10-05",
+      "location_described": "ESTIMATED MAP POINT. Thusi Village, near Ermelo (police, via Highvelder News; Ermelo dateline and Ermelo Magistrate's Court). The village could not be placed on a map: the place-name lookups found no Thusi village, and a nearby colliery point mentioned in the review note could not be confirmed from the saved lookups. The pin is on the Ermelo police station (SAPS station point), used only as a reference; the report does not name the station. It is not the scene. The village may be anywhere in the Ermelo police area, up to about 44 km from the pin.",
+      "latitude": -26.52267,
+      "longitude": 29.98454,
+      "map_precision": "precinct",
+      "uncertainty_m": 44000,
+      "location_basis": "estimated",
+      "reporting_independence": "One report only",
+      "statement_from": "SAPS Mpumalanga, quoted by Highvelder News",
+      "outlets": "Highvelder News",
+      "source_urls": "https://www.citizen.co.za/highvelder-news/news-headlines/local-crime-news/2026/10/05/suspect-faces-murder-charge-after-thusi-village-womans-death/",
+      "source_count": 1,
+      "archived_source_count": 0,
+      "fact_conflict_count": 0,
+      "fact_audit": "audited",
+      "approval_id": "20261023T092107Z-ce3018e4",
+      "pin_version": 1,
+      "approved_at": "2026-10-23T11:13:00+02:00",
+      "published_at": "2026-10-23T09:20:00Z",
+      "map_link": "index.html?signal=3679ce0d",
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "f217ddf4-4573-5fe1-995d-64f8da89a86d",
@@ -1738,7 +1893,7 @@
       "approved_at": "2026-10-22T22:57:00+02:00",
       "published_at": "2026-10-22T20:16:00Z",
       "map_link": "index.html?signal=f217ddf4",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     },
     {
       "signal_id": "0f037fc3-9de9-4e2b-aa1f-00feda269a58",
@@ -1769,7 +1924,7 @@
       "approved_at": "2026-10-21T03:40:00+02:00",
       "published_at": "2026-10-18T18:50:00Z",
       "map_link": "index.html?signal=0f037fc3",
-      "data_version": "68ffeea1d7a5dceea6dd0b5ff415a2548b975cb4"
+      "data_version": "36b71773b50b700b12ddbbfba380f0cd40f39d1d"
     }
   ]
 }

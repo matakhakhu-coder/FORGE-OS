@@ -82,7 +82,9 @@ SWEEP_PATTERN_TEST_AREAS = False
 # village and policing area, and at 2 x 30 km single linkage chains across
 # districts: on 22 Oct 2026 it put Polokwane (Capricorn), Masemola and
 # Mecklenburg (Sekhukhune) under Lebowakgomo.
-PRECINCT_SPLIT_PROVINCES = {"Limpopo"}
+# Mpumalanga added 23 Oct 2026 for the same reason (rural trusts and villages
+# 40 km apart, e.g. Lillydale Trust under Calcutta and Masoyi).
+PRECINCT_SPLIT_PROVINCES = {"Limpopo", "Mpumalanga"}
 
 GAZ_DIR = ROOT / "data" / "gazetteer"
 PLACES_PATH = GAZ_DIR / "za_places.json"
