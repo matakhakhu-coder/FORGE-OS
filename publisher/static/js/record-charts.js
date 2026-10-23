@@ -97,6 +97,7 @@
 
   var NOW = counts(LAST);
   var renderers = [];       // each: function (c) setting targets and whole numbers
+  var announcers = [];      // run when the slider stops (screen-reader labels)
 
   /* ── Bars (Streams, Provinces): grow along their length ── */
   function setupBars(pid, values, max) {
@@ -138,6 +139,94 @@
     });
   }
 
+  /* ── The incident line: reshapes like a wave (Batch 3) ──
+     Each day point eases up or down on today's fixed scale; the curve is
+     redrawn through the points on every frame. Monotone cubic (the same rule
+     as D3's curveMonotoneX): between two days it never goes below the lower
+     or above the higher of the two, so it can't dip under zero or invent a
+     peak. The page prints straight segments for the no-script fallback. */
+  function monotonePath(xs, ys) {
+    var n = xs.length, i;
+    if (!n) return '';
+    if (n === 1) return 'M' + xs[0] + ',' + ys[0];
+    var h = [], s = [], t = new Array(n);
+    for (i = 0; i < n - 1; i++) { h[i] = xs[i + 1] - xs[i]; s[i] = h[i] ? (ys[i + 1] - ys[i]) / h[i] : 0; }
+    function sign(v) { return v < 0 ? -1 : 1; }
+    for (i = 1; i < n - 1; i++) {
+      var p = (s[i - 1] * h[i] + s[i] * h[i - 1]) / (h[i - 1] + h[i]);
+      t[i] = (sign(s[i - 1]) + sign(s[i])) * Math.min(Math.abs(s[i - 1]), Math.abs(s[i]), 0.5 * Math.abs(p)) || 0;
+    }
+    if (n === 2) { t[0] = t[1] = s[0]; }
+    else {
+      t[0] = (3 * s[0] - t[1]) / 2;
+      t[n - 1] = (3 * s[n - 2] - t[n - 2]) / 2;
+      // keep the end tangents inside the monotone limit
+      if (sign(t[0]) !== sign(s[0]) || s[0] === 0) t[0] = 0; else if (Math.abs(t[0]) > 3 * Math.abs(s[0])) t[0] = 3 * s[0];
+      if (sign(t[n - 1]) !== sign(s[n - 2]) || s[n - 2] === 0) t[n - 1] = 0; else if (Math.abs(t[n - 1]) > 3 * Math.abs(s[n - 2])) t[n - 1] = 3 * s[n - 2];
+    }
+    var d = 'M' + xs[0].toFixed(2) + ',' + ys[0].toFixed(2);
+    for (i = 0; i < n - 1; i++) {
+      var dx = h[i] / 3;
+      d += 'C' + (xs[i] + dx).toFixed(2) + ',' + (ys[i] + dx * t[i]).toFixed(2) + ' ' +
+           (xs[i + 1] - dx).toFixed(2) + ',' + (ys[i + 1] - dx * t[i + 1]).toFixed(2) + ' ' +
+           xs[i + 1].toFixed(2) + ',' + ys[i + 1].toFixed(2);
+    }
+    return d;
+  }
+
+  var LINE = null;
+  function setupLine() {
+    var page = document.getElementById('gp-page-incident');
+    if (!page) return;
+    var svg = page.querySelector('.gp-line svg');
+    var summary = page.querySelector('.gp-chart__summary');
+    var title = (page.querySelector('.gp-chart__title') || {}).textContent || 'Records by incident date';
+    if (!svg) return;
+    var circles = svg.querySelectorAll('.gp-line__pt');
+    if (circles.length !== NOW.incident.length) return;
+    var top = T.line.top, bottom = T.line.bottom, max = Math.max(AX.incident_max, 1);
+    function yOf(v) { return top + (bottom - top) * (1 - v / max); }
+    var xs = [], labels = [], ys = [], tw = [], titles = [];
+    Array.prototype.forEach.call(circles, function (c, i) {
+      xs.push(parseFloat(c.getAttribute('cx')));
+      var tt = c.querySelector('title');
+      titles.push(tt);
+      labels.push(tt ? tt.textContent.split(':')[0] : AX.incident_days[i]);
+      ys.push(yOf(NOW.incident[i]));
+      tw.push(tween(NOW.incident[i], function (v) { ys[i] = yOf(v); c.setAttribute('cy', ys[i].toFixed(2)); }));
+    });
+    var poly = svg.querySelector('polyline.gp-line__path');
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'gp-line__path');
+    path.setAttribute('d', monotonePath(xs, ys));
+    if (poly) { poly.parentNode.insertBefore(path, poly); poly.parentNode.removeChild(poly); }
+    else svg.insertBefore(path, circles[0]);
+    afterFrame.push(function () { path.setAttribute('d', monotonePath(xs, ys)); });
+
+    renderers.push(function (c) {
+      for (var i = 0; i < tw.length; i++) {
+        tw[i].to = c.incident[i];
+        if (titles[i]) titles[i].textContent = labels[i] + ': ' + plural(c.incident[i], 'record');
+      }
+      if (summary) {
+        var txt = c.occurred + ' occurred \u00b7 ' + c.found + ' found (date a body was found)';
+        if (c.undated) txt += ' \u00b7 ' + c.undated + ' date not stated (not on the line)';
+        if (c.later_step) txt += ' \u00b7 ' + c.later_step + ' later step in an older case (not on the line)';
+        summary.textContent = txt;
+      }
+    });
+    // screen readers: the chart's label follows the slider once it stops
+    announcers.push(function (c) {
+      svg.setAttribute('aria-label', title + ': ' + labels.map(function (l, i) { return l + ' ' + c.incident[i]; }).join(', '));
+    });
+    LINE = {
+      path: path, xs: xs,
+      ys: function () { return ys.slice(); },
+      monotonePath: monotonePath
+    };
+  }
+
+  setupLine();
   setupColumns();
   setupBars('stream', NOW.stream, AX.stream_max);
   setupBars('province', NOW.province, AX.province_max);
@@ -146,7 +235,6 @@
   var sliders = Array.prototype.slice.call(panel.querySelectorAll('[data-gp-time]'));
   var current = LAST;
   var announceTimer = null;
-  var announcers = [];      // run when the slider stops (screen-reader labels)
 
   function stepText(s, c) {
     var st = T.steps[s];
@@ -194,11 +282,6 @@
     step: function () { return current; },
     steps: T.steps.length,
     animating: function () { return !!raf; },
-    _registerLine: function (render, announce, hook) {
-      if (render) renderers.push(render);
-      if (announce) announcers.push(announce);
-      if (hook) afterFrame.push(hook);
-    },
-    _tween: tween
+    line: LINE
   };
 })();

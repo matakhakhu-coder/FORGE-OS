@@ -173,6 +173,43 @@ SHOWN = """() => {
 }"""
 
 
+LINE_JS = """() => {
+  const L = ZADRecordCharts.line; if (!L) return null;
+  const svg = document.querySelector('#gp-page-incident .gp-line svg');
+  const path = L.path, xs = L.xs, ys = L.ys(), len = path.getTotalLength();
+  let worst = 0, below = 0;
+  for (let k = 0; k <= 800; k++) {
+    const pt = path.getPointAtLength(len * k / 800);
+    let i = 0; while (i < xs.length - 2 && pt.x > xs[i + 1]) i++;
+    const lo = Math.min(ys[i], ys[i + 1]), hi = Math.max(ys[i], ys[i + 1]);
+    worst = Math.max(worst, lo - pt.y, pt.y - hi);
+    below = Math.max(below, pt.y - %BOTTOM%);
+  }
+  return { cy: [...svg.querySelectorAll('.gp-line__pt')].map(c => +c.getAttribute('cy')),
+           r: [...svg.querySelectorAll('.gp-line__pt')].map(c => +c.getAttribute('r')),
+           polylines: svg.querySelectorAll('polyline').length, paths: svg.querySelectorAll('path.gp-line__path').length,
+           worst, below, aria: svg.getAttribute('aria-label'),
+           ylabs: [...svg.querySelectorAll('.gp-line__ylab')].map(t => t.textContent).join(','),
+           titles: [...svg.querySelectorAll('.gp-line__pt title')].map(t => t.textContent) };
+}""".replace('%BOTTOM%', str(table['line']['bottom']))
+INC_TOP = max(AX['incident_max'], 1)
+LABELS = [d['label'] for d in now_charts['pages'][0]['data']['days']]
+
+
+def line_y(v):
+    t, bt = table['line']['top'], table['line']['bottom']
+    return t + (bt - t) * (1 - v / INC_TOP)
+
+
+def summary_text(ex):
+    txt = f"{ex['occurred']} occurred \u00b7 {ex['found']} found (date a body was found)"
+    if ex['undated']:
+        txt += f" \u00b7 {ex['undated']} date not stated (not on the line)"
+    if ex['later_step']:
+        txt += f" \u00b7 {ex['later_step']} later step in an older case (not on the line)"
+    return txt
+
+
 def close(a, b, tol=0.06):
     return len(a) == len(b) and all(abs(x - y) <= tol for x, y in zip(a, b))
 
@@ -209,6 +246,12 @@ with sync_playwright() as p:
         check(f'{name}: slider control is at least 44px tall', pg.evaluate(
             "Math.min(...[...document.querySelectorAll('.gp-time__range')].map(e => e.offsetHeight))") >= 44)
 
+        ln0 = pg.evaluate(LINE_JS)
+        ylabs0 = ln0['ylabs'] if ln0 else None
+        if ln0:
+            check(f'{name}: line opens as today, drawn as a curve with day points',
+                  close(ln0['cy'], [line_y(v) for v in expected(LAST)['incident']], 0.06) and ln0['polylines'] == 0
+                  and ln0['paths'] == 1 and len(ln0['r']) == len(LABELS) and min(ln0['r']) >= 2.5, ln0['cy'][:3])
         # every slider position: whole numbers equal Python's step counts, and
         # once the motion settles the bars sit at those counts on fixed axes
         bad = []
@@ -226,6 +269,19 @@ with sync_playwright() as p:
             if not (close(sh['added_h'], pcts(ex['added'], AX['added_max'])) and close(sh['stream_w'], pcts(ex['stream'], AX['stream_max']))
                     and close(sh['province_w'], pcts(ex['province'], AX['province_max'])) and not sh['animating']):
                 bad.append(('bars', st))
+            if sh['has_line']:
+                ln = pg.evaluate(LINE_JS)
+                if not close(ln['cy'], [line_y(v) for v in ex['incident']], 0.02):
+                    bad.append(('line points', st))
+                if sh['summary'].strip() != summary_text(ex):
+                    bad.append(('summary', st, sh['summary']))
+                if ln['worst'] > 0.05 or ln['below'] > 0.05:
+                    bad.append(('curve overshoots', st, ln['worst'], ln['below']))
+                if ln['ylabs'] != ylabs0:
+                    bad.append(('scale moved', st))
+                want_aria = 'Records by incident date: ' + ', '.join(f'{l} {v}' for l, v in zip(LABELS, ex['incident']))
+                if ln['aria'] != want_aria or ln['titles'][0] != f"{LABELS[0]}: {ex['incident'][0]} record{'' if ex['incident'][0] == 1 else 's'}":
+                    bad.append(('screen-reader label', st, ln['aria'][:60]))
         check(f'{name}: every step matches Python (numbers, bars, shared position, label)', not bad, bad)
         if name == 'phone':
             pg.screenshot(path=OUT + f'{name}-slider-stream-first.png')
@@ -247,6 +303,28 @@ with sync_playwright() as p:
         check(f'{name}: retarget picks up mid-motion (no jump), no overshoot',
               jumps[0] < 0.35 * abs(a - z) and max(traj) <= a + 0.01 and abs(traj[-1] - a) < 0.06,
               (traj[:4], max(traj), traj[-1]))
+
+        if ln0:
+            pg.evaluate(f'ZADRecordCharts.setStep({LAST})'); pg.wait_for_timeout(500)
+            pg.evaluate('ZADRecordCharts.setStep(0)')
+            pg.wait_for_timeout(110)
+            lm = pg.evaluate(LINE_JS)
+            ia = [line_y(v) for v in expected(LAST)['incident']]
+            iz = [line_y(v) for v in expected(0)['incident']]
+            moving = [i for i in range(len(ia)) if abs(ia[i] - iz[i]) > 4]
+            check(f'{name}: line reshapes in motion (points part way, curve still inside its days)',
+                  moving and all(min(ia[i], iz[i]) + 0.5 < lm['cy'][i] < max(ia[i], iz[i]) - 0.5 for i in moving)
+                  and lm['worst'] <= 0.05 and lm['below'] <= 0.05, (moving[:3], lm['worst']))
+            check(f'{name}: summary changes at once, screen-reader label waits for the slider to stop',
+                  pg.evaluate(SHOWN)['summary'].strip() == summary_text(expected(0))
+                  and lm['aria'] != 'Records by incident date: ' + ', '.join(f'{l} {v}' for l, v in zip(LABELS, expected(0)['incident'])))
+            pg.wait_for_timeout(500)
+            check(f'{name}: screen-reader label updated after it stopped', pg.evaluate(LINE_JS)['aria'] ==
+                  'Records by incident date: ' + ', '.join(f'{l} {v}' for l, v in zip(LABELS, expected(0)['incident'])))
+            if name == 'phone':
+                pg.click('#gp-tab-incident'); pg.wait_for_timeout(700)
+                pg.screenshot(path=OUT + f'{name}-slider-incident-first.png')
+                pg.click('#gp-tab-stream'); pg.wait_for_timeout(700)
 
         # dragging the slider by finger never flips the page
         if name != 'desktop':
@@ -306,7 +384,8 @@ with sync_playwright() as p:
     ex = expected(0)
     check('reduced motion: bars jump straight to the step, no animation',
           not sh['animating'] and close(sh['stream_w'], pcts(ex['stream'], AX['stream_max']))
-          and close(sh['added_h'], pcts(ex['added'], AX['added_max'])), sh['stream_w'])
+          and close(sh['added_h'], pcts(ex['added'], AX['added_max']))
+          and close(pg.evaluate(LINE_JS)['cy'], [line_y(v) for v in ex['incident']], 0.02), sh['stream_w'])
     ctx.close()
 
     # no script: today's charts, no slider
@@ -318,6 +397,7 @@ with sync_playwright() as p:
     printed = [int(pg.locator('#gp-page-stream .gp-bar__n').nth(i).text_content())
                for i in range(pg.locator('#gp-page-stream .gp-bar__n').count())]
     check('no script: no slider, today\'s charts printed', shown_sliders == 0
+          and pg.locator('#gp-page-incident polyline.gp-line__path').count() == 1
           and printed == [x['count'] for x in now_charts['pages'][2]['data']['rows']], (shown_sliders, printed))
     ctx.close()
     b.close()

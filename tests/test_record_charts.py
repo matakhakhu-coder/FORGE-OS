@@ -389,7 +389,9 @@ def test_chart_script_is_served_from_the_site_not_a_cdn(built):
     assert srcs == ["static/js/record-charts.js"]
     assert (built / "static" / "js" / "record-charts.js").read_bytes() == JS.read_bytes()
     js = JS.read_text()
-    assert not re.search(r"https?://", js), "the chart script loads nothing from outside"
+    # the only URL is the SVG namespace name (an identifier, never fetched)
+    assert not re.search(r"https?://", js.replace("'http://www.w3.org/2000/svg'", "")), \
+        "the chart script loads nothing from outside"
     assert "import " not in js and "require(" not in js
     # Chart.js and D3 are not on the page for the charts
     assert "chart.js" not in html.lower().replace("record-charts.js", "")
@@ -411,3 +413,32 @@ def test_empty_timeline_when_there_are_no_records():
     charts = rc.chart_counts([])
     t = rc.timeline_table([], charts)
     assert t["steps"] == [] and t["rows"] == []
+
+
+# ── The incident line moves (interactive charts Batch 3) ────────────────────────
+
+def test_line_keeps_the_straight_fallback_and_the_script_draws_the_curve(built):
+    html = (built / "index.html").read_text()
+    sec = _section(html, "incident")
+    # without the script: today's line, straight segments, as before
+    assert sec.count('<polyline class="gp-line__path"') == 1
+    assert sec.count('class="gp-line__pt"') == 21
+    js = JS.read_text()
+    assert "function monotonePath" in js and "curveMonotoneX" in js
+    # fixed scale: the script uses today's highest day, never the step's
+    assert "Math.max(AX.incident_max, 1)" in js
+    t = _chart_table(html)
+    assert t["axes"]["incident_max"] == _page(rc.chart_counts(json.loads((built / "records.json").read_text())["records"]),
+                                             "incident")["data"]["max"]
+    assert t["line"]["top"] == rc.LINE_PAD_TOP and t["line"]["bottom"] == rc.LINE_H - rc.LINE_PAD_BOTTOM
+
+
+def test_line_summary_text_matches_the_printed_summary(built):
+    # the script rebuilds the summary in the same words the page prints
+    sec = _section((built / "index.html").read_text(), "incident")
+    printed = re.search(r'<p class="gp-chart__summary">(.*?)</p>', sec, re.S).group(1).replace("&middot;", "\u00b7")
+    js = JS.read_text()
+    for phrase in (" occurred ", " found (date a body was found)", " date not stated (not on the line)",
+                   " later step in an older case (not on the line)"):
+        assert phrase.strip() in printed
+        assert phrase.strip() in js
