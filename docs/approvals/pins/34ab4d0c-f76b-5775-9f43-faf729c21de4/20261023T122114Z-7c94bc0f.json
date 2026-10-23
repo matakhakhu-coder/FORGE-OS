@@ -1,0 +1,82 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T122114Z-7c94bc0f",
+  "signal_id": "34ab4d0c-f76b-5775-9f43-faf729c21de4",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-infrastructure-2026-10-23.json",
+  "approved_payload": {
+    "content": "Vhembe District Municipality said on 10 October that several boreholes along the Limpopo River were not working because of an electrical breakdown, cutting water production and leaving Musina Township and surrounding areas with low water supply; repairs had been requested. GroundUp visited Campbell township in Musina on 15 October and found residents queuing with empty containers for municipal water tankers; one resident said her tap had been dry for three months, and residents said supply had been unreliable for years. When the breakdown started is not stated, so the date is the notice date. Two sources: the municipal notice and GroundUp's own reporting, which cites the notice for the cause. The pin is approximate (town level).",
+    "external_id": "checked:lp-infra-2026-10-23:D",
+    "lat": -22.34881,
+    "lng": 30.04074,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T12:10:00Z",
+        "incident": "Boreholes down when the notice was issued on Sat 10 Oct 2026; start of the breakdown not stated (Vhembe District Municipality). Supply still unreliable when GroundUp visited on 15 Oct.",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-10",
+        "location": "Several boreholes along the Limpopo River; low supply in Musina Township and surrounding areas (Vhembe District Municipality). GroundUp reported from Campbell township, Musina. The pin is the Musina town point from the place-name list, inside the Musina police precinct; the boreholes are not pinned. Approximate, town level (about 5 km).",
+        "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "10 Oct 2026 (Vhembe District Municipality notice); GroundUp, 20 Oct 2026",
+        "reported_at": "2026-10-10",
+        "search_aliases": [
+          "Musina",
+          "Campbell",
+          "Musina Township",
+          "Limpopo River",
+          "boreholes",
+          "Vhembe",
+          "Gomolemo Tlou",
+          "Letti Thonga"
+        ],
+        "sources": [
+          {
+            "name": "Vhembe District Municipality",
+            "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/"
+          },
+          {
+            "name": "GroundUp",
+            "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/"
+          }
+        ]
+      },
+      "collected_title": "LOW WATER SUPPLY IN MUSINA TOWNSHIP AND SURROUNDING AREAS",
+      "link": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+      "pubdate_raw": "10 October 2026 (date on the notice page; the feed entry carries 11 Oct 08:30 UTC)",
+      "source_outlet": "Vhembe District Municipality"
+    },
+    "published_at": "2026-10-23T12:10:00Z",
+    "signal_id": "34ab4d0c-f76b-5775-9f43-faf729c21de4",
+    "source": "Vhembe District Municipality",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-10-09T22:00:00Z",
+    "title": "Musina township (approx.): low water supply after an electrical breakdown leaves several Limpopo River boreholes down, 10 Oct"
+  },
+  "payload_sha256": "sha256:505f9b7efe0078186da8d980cac70059a205bfc18e126d102f0667e9b01f72d5",
+  "source_hashes": [
+    {
+      "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+      "retrieved_at": "2026-10-23T12:02:12Z",
+      "content_sha256": "sha256:493d5ac8570693a8d4c6bd5912ad615c72b00281bf3078451ae58b87aebc9f6a"
+    },
+    {
+      "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/",
+      "retrieved_at": "2026-10-23T12:02:37Z",
+      "content_sha256": "sha256:09acc0baf8db10d4518064ff9a3204089e3d5c8612367bcadf87ab30dd0334f0"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T14:00:00+02:00",
+  "recorded_at": "2026-10-23T14:21:14+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-infrastructure-approval-2026-10-23",
+    "summary": "Owner chose 'approve' in the in-app review, 23 Oct 2026 ~14:00 SAST: Seshego substation, Tzaneen burst main, Polokwane PS3 leaks, Musina boreholes. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

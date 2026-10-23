@@ -42,7 +42,13 @@ MPUMALANGA = {
     '3679ce0d-0799-50c5-9fdf-76e85d662b52',  # D Thusi Village (estimated map point)
     'a98cb800-3be8-586b-9997-84c9041cc35b',  # E Farm near Amersfoort (estimated map point)
 }
-SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA
+LIMPOPO_INFRA = {
+    '638ae62e-cbf5-53c3-95aa-4d36af9c2419',
+    '736aae9c-e6de-5bb2-acb1-4fb32bb23c99',
+    'b2ec397b-458f-55c5-9882-65064085e1be',
+    '34ab4d0c-f76b-5775-9f43-faf729c21de4',
+}  # Seshego substation, Tzaneen burst main, Polokwane PS3 leaks, Musina boreholes (approved 23 Oct 2026)
+SEPARATELY_AUDITED = {CAFDA, GQEBERHA, STEENBERG, STRANDFONTEIN} | C5 | LIMPOPO | MPUMALANGA | LIMPOPO_INFRA
 
 
 def load(path):
@@ -61,8 +67,10 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 58                                      # 36 audited + 22 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 343   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga
+    assert len(exported) == 62                                      # 36 audited + 26 separately audited
+    assert sum(len(p['facts']) for p in exported.values()) == 367   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure
+    assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
+    assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
     assert sum(len(exported[s]['facts']) for s in MPUMALANGA) == 30  # six each
     assert all(exported[s]['status'] == 'audited' for s in MPUMALANGA)
     assert exported['0710d74d-c67c-5899-95db-54e2f4fab60d']['police_party'] is True   # Masoyi

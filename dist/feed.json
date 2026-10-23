@@ -1,8 +1,64 @@
 {
   "title": "ZA-DIVERGENT Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "23 Oct 2026 09:21 UTC",
+  "generated_at": "23 Oct 2026 12:21 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Adshade Street bridge over the R71, Tzaneen (approx.): burst asbestos water main, repair waiting on a pipe from Cape Town, reported 19 Oct",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-10-23T12:10:00Z",
+      "summary": "A water pipe burst along the original pipeline near the Adshade Street bridge over the R71 in Tzaneen, leaving residents with water supply problems (Letaba Herald, 19 October). Greater Tzaneen Municipality DA councillor ...",
+      "source": "LETABA HERALD (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.82898,
+        "lng": 30.15074
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Seshego Hospital substation, Seshego (approx.): switch stripped, cables damaged, about R500,000; police seek suspects, 11 Oct",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-10-23T12:10:00Z",
+      "summary": "Police say essential electrical infrastructure at the Seshego Hospital substation on Bookelo Street, Seshego (Capricorn District), was tampered with. The damage was found on Sunday 11 October when a municipal electrician...",
+      "source": "REVIEW ONLINE (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.857,
+        "lng": 29.39486
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Musina township (approx.): low water supply after an electrical breakdown leaves several Limpopo River boreholes down, 10 Oct",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-10-23T12:10:00Z",
+      "summary": "Vhembe District Municipality said on 10 October that several boreholes along the Limpopo River were not working because of an electrical breakdown, cutting water production and leaving Musina Township and surrounding are...",
+      "source": "VHEMBE DISTRICT MUNICIPALITY",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -22.34881,
+        "lng": 30.04074
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Polokwane (approx.): water outage while Pump Station 3 is stopped to repair two pipeline leaks, outside PS2 and at Ga-Maja, about 8 Oct",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-10-23T12:10:00Z",
+      "summary": "Polokwane Municipality told residents of a water outage after Lepelle Northern Water stopped Pump Station 3 for urgent repairs to two pipeline leaks, one just outside Pump Station 2 and one at Ga-Maja (municipal notice, ...",
+      "source": "REVIEW ONLINE (THE CITIZEN)",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.90449,
+        "lng": 29.46885
+      }
+    },
     {
       "kind": "signal",
       "title": "Bhekiswayo Trust, Masoyi (area only, approx.): man, 30, dies after shoot-out with police; police are a party, 20 Oct",
@@ -645,62 +701,6 @@
       "geo": {
         "lat": -34.07326,
         "lng": 18.4877
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Belgravia Rd, Athlone (near Heatherdale Primary, approx.): man, 31, shot dead, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 31-year-old man was shot dead in his vehicle on Belgravia Road, outside Heatherdale Primary School, on Tuesday morning 6 October after reportedly dropping his child at school. Police say he had multiple gunshot wounds,...",
-      "source": "CAPE TOWN ETC",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.97252,
-        "lng": 18.51552
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Site B, Khayelitsha (area only, approx.): 2 men, 36 and 39, shot dead, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Khayelitsha police registered two counts of murder after two men aged 36 and 39 were shot dead at about 04:30 on Tuesday 6 October in Masikhanye, Site B; no arrests were made (City Vision, quoting police spokesperson Wes...",
-      "source": "CITY VISION",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.02305,
-        "lng": 18.66632
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "N2 Gateway, Delft (Bagzane St, approx.): man, 20, found dead with neck injuries, 4 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "A 20-year-old man was found dead with injuries to his neck along Bagzane Street, N2 Gateway, Delft, on the morning of Sunday 4 October; police opened a murder case (police spokesperson Ndakhe Gwala, via Daily Voice and T...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.96394,
-        "lng": 18.63438
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Volmoed, Oudtshoorn (farm area, approx.): girl, 17, found dead, 3 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Police found a 17-year-old girl dead on a bed with head injuries at a house in Kliplokasie on Volmoed farm, outside Oudtshoorn, on Saturday night 3 October, and launched a murder investigation; a 26-year-old man was arre...",
-      "source": "CAPE ARGUS",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.65278,
-        "lng": 22.0875
       }
     }
   ]

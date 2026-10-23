@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T122114Z-c90003a3",
+  "signal_id": "b2ec397b-458f-55c5-9882-65064085e1be",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-infrastructure-2026-10-23.json",
+  "approved_payload": {
+    "content": "Polokwane Municipality told residents of a water outage after Lepelle Northern Water stopped Pump Station 3 for urgent repairs to two pipeline leaks, one just outside Pump Station 2 and one at Ga-Maja (municipal notice, published by Review Online on 8 October). The repairs were estimated at about eight hours. Affected areas listed include Ga-Chuene, Thokgweng, Polokwane City, Seshego, Nirvana, Bendor, Penina Park and Westenburg, several extensions, Peter Mokaba Stadium and the line to Krugersburg. The date the pump station was stopped is not stated, so the date is the report date. One report, resting on the municipality. The pin is approximate: the Polokwane town point stands for the affected area, not for either leak; Ga-Maja lies about 28 km south of the pin.",
+    "external_id": "checked:lp-infra-2026-10-23:C",
+    "lat": -23.90449,
+    "lng": 29.46885,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T12:10:00Z",
+        "incident": "About Thu 8 Oct 2026: the notice was published that morning; the day the pump station was stopped is not stated (Polokwane Municipality, via Review Online). Repairs estimated at about eight hours.",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-08",
+        "location": "Two leaks on the bulk line, one just outside Pump Station 2 and one at Ga-Maja; the outage covered parts of Polokwane (Polokwane Municipality, via Review Online). The pin is the Polokwane town point from the place-name list and stands for the affected area. Neither leak is pinned: Pump Station 2 could not be placed, and Ga-Maja is about 28 km south. Approximate, town level (about 15 km).",
+        "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "8 Oct 2026 (Review Online, municipal notice); earliest report found",
+        "reported_at": "2026-10-08",
+        "search_aliases": [
+          "Polokwane",
+          "Pump Station 3",
+          "PS3",
+          "PS2",
+          "Ga-Maja",
+          "Lepelle Northern Water",
+          "Seshego",
+          "Westenburg",
+          "Bendor",
+          "Ga-Chuene",
+          "Capricorn"
+        ],
+        "sources": [
+          {
+            "name": "Review Online (The Citizen)",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/"
+          }
+        ]
+      },
+      "collected_title": "Water outage for parts of Polokwane after pipeline leaks",
+      "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+      "pubdate_raw": "2026-10-08T10:28:17+02:00",
+      "source_outlet": "Review Online (The Citizen)"
+    },
+    "published_at": "2026-10-23T12:10:00Z",
+    "signal_id": "b2ec397b-458f-55c5-9882-65064085e1be",
+    "source": "Review Online (The Citizen)",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-10-07T22:00:00Z",
+    "title": "Polokwane (approx.): water outage while Pump Station 3 is stopped to repair two pipeline leaks, outside PS2 and at Ga-Maja, about 8 Oct"
+  },
+  "payload_sha256": "sha256:7cb01384b02243823481f80625a74e96182e47e3f0b78954877cc61740f33a3b",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+      "retrieved_at": "2026-10-23T11:47:37Z",
+      "content_sha256": "sha256:d9f6df20232527da3f6b22d9857d4cf2b66e9570a9325191669eb819f5f49e8a"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T14:00:00+02:00",
+  "recorded_at": "2026-10-23T14:21:14+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-infrastructure-approval-2026-10-23",
+    "summary": "Owner chose 'approve' in the in-app review, 23 Oct 2026 ~14:00 SAST: Seshego substation, Tzaneen burst main, Polokwane PS3 leaks, Musina boreholes. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

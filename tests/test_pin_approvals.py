@@ -54,6 +54,12 @@ MPUMALANGA_PINS = {
     "3679ce0d-0799-50c5-9fdf-76e85d662b52",   # D Thusi Village (estimated map point)
     "a98cb800-3be8-586b-9997-84c9041cc35b",   # E Farm near Amersfoort (estimated map point)
 }
+LIMPOPO_INFRA_PINS = {
+    "638ae62e-cbf5-53c3-95aa-4d36af9c2419",   # A Seshego Hospital substation
+    "736aae9c-e6de-5bb2-acb1-4fb32bb23c99",   # B Tzaneen burst water main
+    "b2ec397b-458f-55c5-9882-65064085e1be",   # C Polokwane Pump Station 3 leaks
+    "34ab4d0c-f76b-5775-9f43-faf729c21de4",   # D Musina boreholes
+}
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────────
@@ -207,8 +213,9 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # 45 version-1 + 2 later Cafda versions + 8 Limpopo version-1 placeholders + 8 Limpopo
     # version-2 supersedes carrying the owner's approval (chat, 22 Oct 2026, about 22:57 SAST)
     # + 5 Mpumalanga version-1 explicit approvals (voice call, 23 Oct 2026, about 11:12 SAST)
-    assert report.records == len(_real_record_files()) == 68
-    assert report.pins_checked == 58
+    # + 4 Limpopo infrastructure version-1 explicit approvals (in-app review, 23 Oct 2026, about 14:00 SAST)
+    assert report.records == len(_real_record_files()) == 72
+    assert report.pins_checked == 62
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -253,7 +260,7 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
                         "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
-                        } | LIMPOPO_PINS | MPUMALANGA_PINS        # Limpopo and Mpumalanga batches: new records, never legacy
+                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS   # Limpopo, Mpumalanga and Limpopo infrastructure batches: new records, never legacy
     assert set(first) == active
     for sid in LIMPOPO_PINS:
         rec = first[sid]
@@ -271,6 +278,16 @@ def test_real_legacy_records_match_the_owner_confirmation():
         assert rec["batch_file"] == batch == "mpumalanga-killings-2026-10-23.json"
         assert rec["approval_reference"]["id"] == "mpumalanga-approval-2026-10-23"
         assert "'Yes'" in rec["approval_reference"]["summary"]
+        assert not ap.is_draft(rec) and sid not in later
+        assert rec["payload_sha256"] == ap.payload_sha256(pin)
+        assert rec["approved_payload"] == ap.approved_payload(pin)
+    for sid in LIMPOPO_INFRA_PINS:
+        rec = first[sid]
+        pin, batch = by_id[sid]
+        assert rec["basis"] == "explicit" and rec["action"] == "approve" and rec["supersedes"] is None
+        assert rec["batch_file"] == batch == "limpopo-infrastructure-2026-10-23.json"
+        assert rec["approval_reference"]["id"] == "limpopo-infrastructure-approval-2026-10-23"
+        assert "'approve'" in rec["approval_reference"]["summary"]
         assert not ap.is_draft(rec) and sid not in later
         assert rec["payload_sha256"] == ap.payload_sha256(pin)
         assert rec["approved_payload"] == ap.approved_payload(pin)
@@ -308,9 +325,9 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     report = ap.verify(check_git=False)
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
-    published = active - LIMPOPO_PINS - MPUMALANGA_PINS
+    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS
     assert len(published) == 45
-    assert MPUMALANGA_PINS <= active
+    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \
         [f.line() for f in report.violations]

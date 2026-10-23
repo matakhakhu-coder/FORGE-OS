@@ -5707,6 +5707,372 @@
           "conflicts": []
         }
       ]
+    },
+    "638ae62e-cbf5-53c3-95aa-4d36af9c2419": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "Electrical infrastructure at the Seshego Hospital substation: a switch stripped and damaged, high-voltage cables and the distribution board damaged.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "An inspection revealed that a switch had been stripped and damaged, while high-voltage electrical cables and the distribution board had also been damaged."
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found on Sunday 11 October 2026, after a call-out at about 17:00.",
+          "basis": "Police account only",
+          "detail": "The time is when the electrician responded, not when the tampering happened; that is not stated.",
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "The incident was reported on Sunday, October 11, after a municipal electrician responded to a complaint about a power supply problem at the hospital at around 5:00 PM."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "The substation on Bookelo Street, Seshego Hospital.",
+          "basis": "Police account only",
+          "detail": "The pin is the hospital point; Bookelo Street could not be mapped.",
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "Upon arriving at the substation on Bookelo Street, the electrician found the doors open"
+            }
+          ]
+        },
+        {
+          "label": "Cause",
+          "claim": "Alleged tampering. A school bag with a side cutter, a knife and electrical wire was left inside.",
+          "basis": "Police account only",
+          "detail": "Police allegation; no one has been charged.",
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "a grey school bag containing a side cutter, a knife and 1.5mm electrical wire inside the premises."
+            }
+          ]
+        },
+        {
+          "label": "Impact",
+          "claim": "Damage estimated at R500,000; a power supply problem at the hospital.",
+          "basis": "Police account only",
+          "detail": "How long the hospital was affected is not reported.",
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "The cost of the damage is estimated at R500 000."
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "claim": "No arrests; police have launched a manhunt for unknown suspects.",
+          "basis": "Police account only",
+          "detail": "As of the 14 October report.",
+          "sources": [
+            {
+              "name": "Review Online (police statement)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+              "archive": null,
+              "quote": "No arrests have been made, and police investigations are underway to identify those responsible."
+            }
+          ]
+        }
+      ]
+    },
+    "736aae9c-e6de-5bb2-acb1-4fb32bb23c99": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "A burst asbestos water pipe on the original pipeline.",
+          "basis": "One account; independence not established",
+          "detail": "Being replaced with steel.",
+          "sources": [
+            {
+              "name": "Chrisma Bredenkamp, GTM councillor (via Letaba Herald)",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "The water pipe burst along the original pipeline, and they are fixing it. It will be replaced with steel instead of asbestos"
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Not stated. Reported on 19 October 2026, with repairs under way.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The pin date is the report date.",
+          "sources": [
+            {
+              "name": "Letaba Herald",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "Repair work is underway to replace the damaged asbestos pipe with a steel pipe."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Near the Adshade Street bridge over the R71, Tzaneen.",
+          "basis": "One account; independence not established",
+          "detail": "The pin is street level, not the exact spot.",
+          "sources": [
+            {
+              "name": "Letaba Herald",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "following a burst water pipe near the Adshade Street bridge over the R71 in Tzaneen."
+            }
+          ]
+        },
+        {
+          "label": "Cause",
+          "claim": "Not reported beyond the pipe bursting along the original (asbestos) pipeline.",
+          "basis": "Not reported in the saved sources",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Chrisma Bredenkamp, GTM councillor (via Letaba Herald)",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "the burst occurred along the original pipeline, prompting repairs to restore the damaged infrastructure."
+            }
+          ]
+        },
+        {
+          "label": "Impact",
+          "claim": "Residents raised concerns about water supply problems.",
+          "basis": "One account; independence not established",
+          "detail": "Which areas and how many households is not reported.",
+          "sources": [
+            {
+              "name": "Letaba Herald",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "Residents have raised concerns about water supply problems"
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "claim": "Not repaired when reported: the steel pipe has to come from Cape Town, and no completion date was confirmed.",
+          "basis": "One account; independence not established",
+          "detail": "The municipality had not responded to questions by publication.",
+          "sources": [
+            {
+              "name": "Letaba Herald",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+              "archive": null,
+              "quote": "The expected arrival date of the replacement pipe and the completion date of the repairs have not been confirmed."
+            }
+          ]
+        }
+      ]
+    },
+    "b2ec397b-458f-55c5-9882-65064085e1be": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "Two leaks on the bulk water pipeline; Pump Station 3 stopped for repairs.",
+          "basis": "Municipal account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "stopped Pump Station 3 (PS3) to facilitate urgent repairs to two pipeline leaks."
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "About 8 October 2026, the day the notice was published. Repairs estimated at about eight hours.",
+          "basis": "Municipal account only",
+          "detail": "The day the pump station was stopped is not stated.",
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "LNW estimates that the repair work will take approximately eight hours."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "One leak just outside Pump Station 2, another at Ga-Maja.",
+          "basis": "Municipal account only",
+          "detail": "The pin is the Polokwane town point for the affected area, not either leak.",
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "One leak is located just outside PS2 and another at Ga-Maja."
+            }
+          ]
+        },
+        {
+          "label": "Cause",
+          "claim": "Not reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The notice says only that there were two leaks.",
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "Polokwane Municipality has informed residents of a water outage"
+            }
+          ]
+        },
+        {
+          "label": "Impact",
+          "claim": "A water outage in parts of Polokwane, including Seshego, Westenburg, Bendor, Nirvana and Penina Park.",
+          "basis": "Municipal account only",
+          "detail": "Household numbers are not reported.",
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "Residents in the affected areas are urged to use water sparingly"
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "claim": "Supply to be restored once repairs are done and the system has stabilised.",
+          "basis": "Municipal account only",
+          "detail": "Whether and when it was restored is not in the saved report.",
+          "sources": [
+            {
+              "name": "Review Online (municipal notice)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+              "archive": null,
+              "quote": "Water supply will be restored once the repairs have been completed and the system has stabilised."
+            }
+          ]
+        }
+      ]
+    },
+    "34ab4d0c-f76b-5775-9f43-faf729c21de4": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "Several boreholes along the Limpopo River, not working.",
+          "basis": "Municipal account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "Vhembe District Municipality notice",
+              "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+              "archive": null,
+              "quote": "Several boreholes along the Limpopo River are currently non-functional"
+            }
+          ]
+        },
+        {
+          "label": "Date and time",
+          "claim": "Notice dated 10 October 2026; when the breakdown began is not stated.",
+          "basis": "Municipal account only",
+          "detail": "GroundUp also dates the notice to 10 October.",
+          "sources": [
+            {
+              "name": "GroundUp",
+              "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/",
+              "archive": null,
+              "quote": "In a notice on 10 October, the municipality warned of low water pressure in Musina because an electrical breakdown had affected boreholes on the Limpopo River."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Musina Township and surrounding areas; GroundUp reported from Campbell township.",
+          "basis": "Municipal account only",
+          "detail": "The pin is town level; the boreholes are not pinned.",
+          "sources": [
+            {
+              "name": "Vhembe District Municipality notice",
+              "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+              "archive": null,
+              "quote": "low water supply in Musina Township and surrounding areas."
+            }
+          ]
+        },
+        {
+          "label": "Cause",
+          "claim": "An electrical breakdown.",
+          "basis": "Municipal account only",
+          "detail": "GroundUp repeats the notice; it is not independent on the cause.",
+          "sources": [
+            {
+              "name": "Vhembe District Municipality notice",
+              "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+              "archive": null,
+              "quote": "due to an electrical breakdown resulting in reduced water production"
+            }
+          ]
+        },
+        {
+          "label": "Impact",
+          "claim": "Low water supply; on 15 October residents in Campbell were queuing for tankers, one with her tap dry for three months.",
+          "basis": "Independent origins identified",
+          "detail": "The three-month figure is one resident's account and covers more than this breakdown.",
+          "sources": [
+            {
+              "name": "GroundUp",
+              "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/",
+              "archive": null,
+              "quote": "residents had lined up empty containers in the street hoping that the Vhembe District Municipality (VDM) tanker would arrive."
+            },
+            {
+              "name": "GroundUp",
+              "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/",
+              "archive": null,
+              "quote": "Her tap had been dry for three months, she said."
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "claim": "Reported for urgent repair; supply to be restored once repairs are complete. Not confirmed restored in the saved sources.",
+          "basis": "Municipal account only",
+          "detail": "GroundUp's questions to the municipality on 15 October had not been answered.",
+          "sources": [
+            {
+              "name": "Vhembe District Municipality notice",
+              "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+              "archive": null,
+              "quote": "Water supply will be restored once repairs have been completed."
+            }
+          ]
+        }
+      ]
     }
   }
 }

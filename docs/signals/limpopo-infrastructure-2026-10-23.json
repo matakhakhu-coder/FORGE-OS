@@ -1,0 +1,241 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Limpopo",
+  "batch": "Limpopo infrastructure incidents, 1-23 Oct 2026, hand-checked 23 Oct 2026; four pins approved by the owner on 23 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Infrastructure stream. Collection window: incidents 1-23 Oct 2026. Other candidates from the same benchmark are held or skipped and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date; where the source does not say when the failure began, the pin date is the report or notice date and incident_event is 'found'. Pin = the place the source gives; 'approx.' in the title when only a street, area or town is known. An outage pin stands for the affected area when the failure point cannot be mapped, and the location note says so. Sources that reuse one notice or one police statement are not independent corroboration. Being near another pin is not a link. No one is named as a suspect. Planned outages are not pins (owner decision of 23 Oct 2026). Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on 23 Oct 2026 (in-app review, 'approve'); one explicit version-1 approval record per pin in docs/approvals/pins (reference limpopo-infrastructure-approval-2026-10-23).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-23 (in-app review, about 14:00 SAST)",
+      "decision": "Approved for publication as drafted, under the Infrastructure stream: Seshego Hospital substation, Tzaneen burst main, Polokwane Pump Station 3 leaks outage and Musina boreholes."
+    },
+    {
+      "at": "2026-10-23 (in-app review)",
+      "decision": "Groblersdal copper arrest: hold until a theft report turns up. Phalaborwa pump: hold (started before the window). Planned outages: skip. Mhinga, Gondeni and Malamulele notices: skip."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Masakaneng, Groblersdal (Sekhukhune)",
+      "reason": "Copper cable arrest on 1 Oct with no theft report found; owner decision 23 Oct 2026: hold until a theft report turns up."
+    },
+    {
+      "place": "Phalaborwa (Mopani)",
+      "reason": "6AB pump breakdown began in September, before the 1 Oct window; owner decision 23 Oct 2026: hold."
+    },
+    {
+      "place": "Polokwane and Mankweng (Capricorn)",
+      "reason": "Planned outage on 7 Oct to repair four Ebenezer pipeline leaks; owner decision 23 Oct 2026: skip planned outages."
+    },
+    {
+      "place": "Mhinga, Gondeni Ha-Mavhunga and Malamulele treatment works (Vhembe)",
+      "reason": "Small municipal restoration and interruption notices; owner decision 23 Oct 2026: skip all three."
+    },
+    {
+      "place": "Stasie Road bridge, Tzaneen (Mopani)",
+      "reason": "A road condition with no event date; held."
+    },
+    {
+      "place": "Phugwane, near Malamulele (Vhembe)",
+      "reason": "No running water for over a decade (EWN); not an October incident; held."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "638ae62e-cbf5-53c3-95aa-4d36af9c2419",
+      "external_id": "checked:lp-infra-2026-10-23:A",
+      "source": "Review Online (The Citizen)",
+      "title": "Seshego Hospital substation, Seshego (approx.): switch stripped, cables damaged, about R500,000; police seek suspects, 11 Oct",
+      "content": "Police say essential electrical infrastructure at the Seshego Hospital substation on Bookelo Street, Seshego (Capricorn District), was tampered with. The damage was found on Sunday 11 October when a municipal electrician responded at about 17:00 to a complaint about a power supply problem at the hospital. He found the substation doors open and a school bag with a side cutter, a knife and electrical wire inside. A switch had been stripped and damaged, and high-voltage cables and the distribution board were also damaged; the damage is estimated at R500,000. No arrests have been made; police have launched a manhunt for unknown suspects (police statement, published by Review Online on 14 October, with Limpopo Provincial Commissioner Lt-Gen Jan Scheepers quoted). When the tampering happened is not stated; the date is the day it was found. One report, resting on police. The pin is approximate: the hospital point, not the substation itself.",
+      "lat": -23.857,
+      "lng": 29.39486,
+      "stream": "INFRASTRUCTURE",
+      "timestamp": "2026-10-11T15:00:00Z",
+      "published_at": "2026-10-23T12:10:00Z",
+      "metadata": {
+        "source_outlet": "Review Online (The Citizen)",
+        "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/",
+        "pubdate_raw": "2026-10-14T10:22:25+02:00",
+        "checked": {
+          "incident": "Found on Sun 11 Oct 2026 at about 17:00, when a municipal electrician responded to a power complaint at the hospital (police, via Review Online). When the tampering happened is not stated.",
+          "reported": "14 Oct 2026 (Review Online, police statement); earliest report found",
+          "location": "At the Seshego Hospital substation on Bookelo Street, Seshego, Polokwane (police, via Review Online). The pin is the Seshego Hospital point from OpenStreetMap, inside the Seshego police precinct. Bookelo Street could not be found on the map, so the substation itself is not pinned; approximate, street level (about 500 m).",
+          "sources": [
+            {
+              "name": "Review Online (The Citizen)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/14/seshego-hospital-substation-tampering-causes-r500k-damage/"
+            }
+          ],
+          "checked_at": "2026-10-23T12:10:00Z",
+          "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-11T17:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-14",
+          "search_aliases": [
+            "Seshego",
+            "Seshego Hospital",
+            "Bookelo Street",
+            "Polokwane",
+            "Capricorn",
+            "substation",
+            "tampering",
+            "Maokeng Mazwi",
+            "Jan Scheepers"
+          ]
+        },
+        "collected_title": "Seshego Hospital substation tampering causes R500k damage"
+      },
+      "fingerprint": "sha256:731067e78d1a704001462dd470c2d95b3da237bb725cc9d6f7a7bc998e996759"
+    },
+    {
+      "signal_id": "736aae9c-e6de-5bb2-acb1-4fb32bb23c99",
+      "external_id": "checked:lp-infra-2026-10-23:B",
+      "source": "Letaba Herald (The Citizen)",
+      "title": "Adshade Street bridge over the R71, Tzaneen (approx.): burst asbestos water main, repair waiting on a pipe from Cape Town, reported 19 Oct",
+      "content": "A water pipe burst along the original pipeline near the Adshade Street bridge over the R71 in Tzaneen, leaving residents with water supply problems (Letaba Herald, 19 October). Greater Tzaneen Municipality DA councillor Chrisma Bredenkamp said the damaged asbestos pipe is being replaced with steel; the replacement pipe has to come from Cape Town. Workers could not reach the section through the tunnel under the bridge and had to open the area above the pipeline. When the pipe burst is not stated, so the date is the report date. The arrival date of the pipe and the completion date were not confirmed; the municipality's spokesperson had not replied by publication. One report. The pin is approximate (street level).",
+      "lat": -23.82898,
+      "lng": 30.15074,
+      "stream": "INFRASTRUCTURE",
+      "timestamp": "2026-10-18T22:00:00Z",
+      "published_at": "2026-10-23T12:10:00Z",
+      "metadata": {
+        "source_outlet": "Letaba Herald (The Citizen)",
+        "link": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+        "pubdate_raw": "2026-10-19T13:00:00+02:00",
+        "checked": {
+          "incident": "Burst date not stated; repairs were under way and incomplete when reported on Mon 19 Oct 2026 (Letaba Herald). The pin date is the report date.",
+          "reported": "19 Oct 2026 (Letaba Herald); earliest report found",
+          "location": "Near the Adshade Street bridge over the R71 in Tzaneen (Letaba Herald). The pin is the middle of Adshade Street from OpenStreetMap, inside the Tzaneen police precinct; the exact spot where the street crosses the R71 could not be read from the map. Approximate, street level (about 800 m).",
+          "sources": [
+            {
+              "name": "Letaba Herald (The Citizen)",
+              "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/"
+            }
+          ],
+          "checked_at": "2026-10-23T12:10:00Z",
+          "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-19",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-19",
+          "search_aliases": [
+            "Tzaneen",
+            "Adshade Street",
+            "R71",
+            "Greater Tzaneen",
+            "Mopani",
+            "burst pipe",
+            "water main",
+            "Chrisma Bredenkamp"
+          ]
+        },
+        "collected_title": "Tzaneen residents await repair of burst water pipe"
+      },
+      "fingerprint": "sha256:6afa042348434388585655fcd369a955cee91d7234e6a0d2beb28f6dea82e6e6"
+    },
+    {
+      "signal_id": "b2ec397b-458f-55c5-9882-65064085e1be",
+      "external_id": "checked:lp-infra-2026-10-23:C",
+      "source": "Review Online (The Citizen)",
+      "title": "Polokwane (approx.): water outage while Pump Station 3 is stopped to repair two pipeline leaks, outside PS2 and at Ga-Maja, about 8 Oct",
+      "content": "Polokwane Municipality told residents of a water outage after Lepelle Northern Water stopped Pump Station 3 for urgent repairs to two pipeline leaks, one just outside Pump Station 2 and one at Ga-Maja (municipal notice, published by Review Online on 8 October). The repairs were estimated at about eight hours. Affected areas listed include Ga-Chuene, Thokgweng, Polokwane City, Seshego, Nirvana, Bendor, Penina Park and Westenburg, several extensions, Peter Mokaba Stadium and the line to Krugersburg. The date the pump station was stopped is not stated, so the date is the report date. One report, resting on the municipality. The pin is approximate: the Polokwane town point stands for the affected area, not for either leak; Ga-Maja lies about 28 km south of the pin.",
+      "lat": -23.90449,
+      "lng": 29.46885,
+      "stream": "INFRASTRUCTURE",
+      "timestamp": "2026-10-07T22:00:00Z",
+      "published_at": "2026-10-23T12:10:00Z",
+      "metadata": {
+        "source_outlet": "Review Online (The Citizen)",
+        "link": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/",
+        "pubdate_raw": "2026-10-08T10:28:17+02:00",
+        "checked": {
+          "incident": "About Thu 8 Oct 2026: the notice was published that morning; the day the pump station was stopped is not stated (Polokwane Municipality, via Review Online). Repairs estimated at about eight hours.",
+          "reported": "8 Oct 2026 (Review Online, municipal notice); earliest report found",
+          "location": "Two leaks on the bulk line, one just outside Pump Station 2 and one at Ga-Maja; the outage covered parts of Polokwane (Polokwane Municipality, via Review Online). The pin is the Polokwane town point from the place-name list and stands for the affected area. Neither leak is pinned: Pump Station 2 could not be placed, and Ga-Maja is about 28 km south. Approximate, town level (about 15 km).",
+          "sources": [
+            {
+              "name": "Review Online (The Citizen)",
+              "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/10/08/water-outage-for-parts-of-polokwane-after-pipeline-leaks/"
+            }
+          ],
+          "checked_at": "2026-10-23T12:10:00Z",
+          "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-08",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-08",
+          "search_aliases": [
+            "Polokwane",
+            "Pump Station 3",
+            "PS3",
+            "PS2",
+            "Ga-Maja",
+            "Lepelle Northern Water",
+            "Seshego",
+            "Westenburg",
+            "Bendor",
+            "Ga-Chuene",
+            "Capricorn"
+          ]
+        },
+        "collected_title": "Water outage for parts of Polokwane after pipeline leaks"
+      },
+      "fingerprint": "sha256:7cb01384b02243823481f80625a74e96182e47e3f0b78954877cc61740f33a3b"
+    },
+    {
+      "signal_id": "34ab4d0c-f76b-5775-9f43-faf729c21de4",
+      "external_id": "checked:lp-infra-2026-10-23:D",
+      "source": "Vhembe District Municipality",
+      "title": "Musina township (approx.): low water supply after an electrical breakdown leaves several Limpopo River boreholes down, 10 Oct",
+      "content": "Vhembe District Municipality said on 10 October that several boreholes along the Limpopo River were not working because of an electrical breakdown, cutting water production and leaving Musina Township and surrounding areas with low water supply; repairs had been requested. GroundUp visited Campbell township in Musina on 15 October and found residents queuing with empty containers for municipal water tankers; one resident said her tap had been dry for three months, and residents said supply had been unreliable for years. When the breakdown started is not stated, so the date is the notice date. Two sources: the municipal notice and GroundUp's own reporting, which cites the notice for the cause. The pin is approximate (town level).",
+      "lat": -22.34881,
+      "lng": 30.04074,
+      "stream": "INFRASTRUCTURE",
+      "timestamp": "2026-10-09T22:00:00Z",
+      "published_at": "2026-10-23T12:10:00Z",
+      "metadata": {
+        "source_outlet": "Vhembe District Municipality",
+        "link": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/",
+        "pubdate_raw": "10 October 2026 (date on the notice page; the feed entry carries 11 Oct 08:30 UTC)",
+        "checked": {
+          "incident": "Boreholes down when the notice was issued on Sat 10 Oct 2026; start of the breakdown not stated (Vhembe District Municipality). Supply still unreliable when GroundUp visited on 15 Oct.",
+          "reported": "10 Oct 2026 (Vhembe District Municipality notice); GroundUp, 20 Oct 2026",
+          "location": "Several boreholes along the Limpopo River; low supply in Musina Township and surrounding areas (Vhembe District Municipality). GroundUp reported from Campbell township, Musina. The pin is the Musina town point from the place-name list, inside the Musina police precinct; the boreholes are not pinned. Approximate, town level (about 5 km).",
+          "sources": [
+            {
+              "name": "Vhembe District Municipality",
+              "url": "https://vhembe.gov.za/low-water-supply-in-musina-township-and-surrounding-areas/"
+            },
+            {
+              "name": "GroundUp",
+              "url": "https://groundup.org.za/article/no-water-no-vote-say-residents-of-limpopo-township/"
+            }
+          ],
+          "checked_at": "2026-10-23T12:10:00Z",
+          "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-10",
+          "incident_precision": "day",
+          "incident_event": "found",
+          "reported_at": "2026-10-10",
+          "search_aliases": [
+            "Musina",
+            "Campbell",
+            "Musina Township",
+            "Limpopo River",
+            "boreholes",
+            "Vhembe",
+            "Gomolemo Tlou",
+            "Letti Thonga"
+          ]
+        },
+        "collected_title": "LOW WATER SUPPLY IN MUSINA TOWNSHIP AND SURROUNDING AREAS"
+      },
+      "fingerprint": "sha256:505f9b7efe0078186da8d980cac70059a205bfc18e126d102f0667e9b01f72d5"
+    }
+  ]
+}

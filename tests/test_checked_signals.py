@@ -29,7 +29,8 @@ NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern t
 EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct), outside the pattern test
 LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, outside the pattern test
 MP_PINS = 5           # Mpumalanga: incidents 2-20 Oct 2026, approved 23 Oct 2026, outside the pattern test
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS
+LPI_PINS = 4          # Limpopo infrastructure (Infrastructure stream): approved 23 Oct 2026, outside the pattern test
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -109,10 +110,11 @@ def test_index_loads_all_pins_in_order():
         "western-cape-murders-2026-10-21-sprint5.json",
         "western-cape-murders-2026-10-22-sprint5.json",
         "limpopo-killings-2026-10-22.json",
-        "mpumalanga-killings-2026-10-23.json"]
+        "mpumalanga-killings-2026-10-23.json",
+        "limpopo-infrastructure-2026-10-23.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -145,7 +147,7 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     cs = load_index()
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
-    lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo"]
+    lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
@@ -156,6 +158,26 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     assert estimated == ["Rostock village", "Sekurung village"]
     data = json.loads((SIGNALS_DIR / "limpopo-killings-2026-10-22.json").read_text(encoding="utf-8"))
     assert "Sprint 5" in data["scope"]
+
+
+def test_limpopo_infrastructure_pins_are_infrastructure_and_outside_the_pattern_test():
+    from tools.checked_signals import load_index, pattern_test_pins, provinces
+
+    cs = load_index()
+    prov = provinces(cs)
+    wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
+    data = json.loads((SIGNALS_DIR / "limpopo-infrastructure-2026-10-23.json").read_text(encoding="utf-8"))
+    pins = data["signals"]
+    assert len(pins) == LPI_PINS and not ({s["signal_id"] for s in pins} & wc_ids)
+    assert "Sprint 5" in data["scope"] and "Planned outages are not pins" in data["rules"]
+    for s in pins:
+        assert prov[s["signal_id"]] == "Limpopo" and s["stream"] == "INFRASTRUCTURE"
+        assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95
+        assert "approx." in s["title"] and not s["metadata"].get("links")
+        assert s["metadata"]["checked"]["incident_event"] in ("found", "occurred")
+    held = " ".join(h["place"] for h in data["held_back"])
+    for place in ("Groblersdal", "Phalaborwa", "Mankweng", "Mhinga", "Stasie Road", "Phugwane"):
+        assert place in held and place not in " ".join(s["title"] for s in pins)
 
 
 def test_mpumalanga_pins_stay_out_of_the_pattern_test_and_mark_estimates():

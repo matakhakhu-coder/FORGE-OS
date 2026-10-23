@@ -1,0 +1,73 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261023T122114Z-ba2c1078",
+  "signal_id": "736aae9c-e6de-5bb2-acb1-4fb32bb23c99",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-infrastructure-2026-10-23.json",
+  "approved_payload": {
+    "content": "A water pipe burst along the original pipeline near the Adshade Street bridge over the R71 in Tzaneen, leaving residents with water supply problems (Letaba Herald, 19 October). Greater Tzaneen Municipality DA councillor Chrisma Bredenkamp said the damaged asbestos pipe is being replaced with steel; the replacement pipe has to come from Cape Town. Workers could not reach the section through the tunnel under the bridge and had to open the area above the pipeline. When the pipe burst is not stated, so the date is the report date. The arrival date of the pipe and the completion date were not confirmed; the municipality's spokesperson had not replied by publication. One report. The pin is approximate (street level).",
+    "external_id": "checked:lp-infra-2026-10-23:B",
+    "lat": -23.82898,
+    "lng": 30.15074,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-23T12:10:00Z",
+        "incident": "Burst date not stated; repairs were under way and incomplete when reported on Mon 19 Oct 2026 (Letaba Herald). The pin date is the report date.",
+        "incident_event": "found",
+        "incident_precision": "day",
+        "incident_start": "2026-10-19",
+        "location": "Near the Adshade Street bridge over the R71 in Tzaneen (Letaba Herald). The pin is the middle of Adshade Street from OpenStreetMap, inside the Tzaneen police precinct; the exact spot where the street crosses the R71 could not be read from the map. Approximate, street level (about 800 m).",
+        "method": "Found in the 23 Oct 2026 Limpopo infrastructure benchmark (Civic Intelligence and Google News collectors and a manual search, incidents 1-23 Oct); source pages read again and claims, dates and place checked by hand; every quote matched word for word against the saved text on 23 Oct about 12:10 UTC. Approved by the owner on 23 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "19 Oct 2026 (Letaba Herald); earliest report found",
+        "reported_at": "2026-10-19",
+        "search_aliases": [
+          "Tzaneen",
+          "Adshade Street",
+          "R71",
+          "Greater Tzaneen",
+          "Mopani",
+          "burst pipe",
+          "water main",
+          "Chrisma Bredenkamp"
+        ],
+        "sources": [
+          {
+            "name": "Letaba Herald (The Citizen)",
+            "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/"
+          }
+        ]
+      },
+      "collected_title": "Tzaneen residents await repair of burst water pipe",
+      "link": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+      "pubdate_raw": "2026-10-19T13:00:00+02:00",
+      "source_outlet": "Letaba Herald (The Citizen)"
+    },
+    "published_at": "2026-10-23T12:10:00Z",
+    "signal_id": "736aae9c-e6de-5bb2-acb1-4fb32bb23c99",
+    "source": "Letaba Herald (The Citizen)",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-10-18T22:00:00Z",
+    "title": "Adshade Street bridge over the R71, Tzaneen (approx.): burst asbestos water main, repair waiting on a pipe from Cape Town, reported 19 Oct"
+  },
+  "payload_sha256": "sha256:6afa042348434388585655fcd369a955cee91d7234e6a0d2beb28f6dea82e6e6",
+  "source_hashes": [
+    {
+      "url": "https://www.citizen.co.za/letaba-herald/news-headlines/local-news/2026/10/19/tzaneen-residents-await-repair-of-burst-water-pipe/",
+      "retrieved_at": "2026-10-23T11:46:47Z",
+      "content_sha256": "sha256:db7b5678f6bcc7dcc69f950a5a999200479c4f40cf1a6930d0e9629e250f01cf"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-23T14:00:00+02:00",
+  "recorded_at": "2026-10-23T14:21:14+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "limpopo-infrastructure-approval-2026-10-23",
+    "summary": "Owner chose 'approve' in the in-app review, 23 Oct 2026 ~14:00 SAST: Seshego substation, Tzaneen burst main, Polokwane PS3 leaks, Musina boreholes. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

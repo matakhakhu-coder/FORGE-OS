@@ -837,6 +837,57 @@
       ],
       "independence": "single_report",
       "note": "One public report, resting on police. The headline counts the victim and the gunman; this pin counts the farm worker killed and notes the gunman's death (owner decision, 23 Oct 2026). An IOL report seen in the collection pass was not saved in full and is not used."
+    },
+    "638ae62e-cbf5-53c3-95aa-4d36af9c2419": {
+      "statement_from": "SAPS Limpopo, published by Review Online as a press release",
+      "spokesperson": [
+        "Lt-Gen Jan Scheepers (Limpopo Provincial Commissioner)"
+      ],
+      "other_voices": [
+        "Captain Maokeng Mazwi, investigating officer (contact only)"
+      ],
+      "outlets": [
+        "Review Online"
+      ],
+      "independence": "single_report",
+      "note": "One public report: a police statement carried by Review Online. The collectors also found a national Citizen version of the same statement; it is not independent and is not used here."
+    },
+    "736aae9c-e6de-5bb2-acb1-4fb32bb23c99": {
+      "statement_from": "Greater Tzaneen Municipality DA councillor Chrisma Bredenkamp, quoted by Letaba Herald",
+      "spokesperson": [],
+      "other_voices": [
+        "Residents (concerns, via the councillor)"
+      ],
+      "outlets": [
+        "Letaba Herald"
+      ],
+      "independence": "single_report",
+      "note": "One public report. The account of the repair rests on one opposition councillor; the municipality did not respond before publication."
+    },
+    "b2ec397b-458f-55c5-9882-65064085e1be": {
+      "statement_from": "Polokwane Municipality notice, published by Review Online as a press release",
+      "spokesperson": [],
+      "other_voices": [
+        "Lepelle Northern Water (repair estimate, via the notice)"
+      ],
+      "outlets": [
+        "Review Online"
+      ],
+      "independence": "single_report",
+      "note": "One public report: the municipal notice carried by Review Online. A planned outage on 7 Oct for four Ebenezer leaks is a separate notice and is not part of this pin (owner decision: skip planned outages)."
+    },
+    "34ab4d0c-f76b-5775-9f43-faf729c21de4": {
+      "statement_from": "Vhembe District Municipality Communication Services (notice)",
+      "spokesperson": [],
+      "other_voices": [
+        "Campbell residents Gomolemo Tlou and Letti Thonga, community leader Elvis Mamathumntsha (GroundUp)"
+      ],
+      "outlets": [
+        "Vhembe District Municipality",
+        "GroundUp"
+      ],
+      "independence": "partly_independent",
+      "note": "The cause rests on the municipal notice; GroundUp cites the same notice for it. GroundUp's own visit on 15 Oct independently shows taps dry and tankers in Campbell. The municipality had not answered GroundUp's questions."
     }
   }
 }

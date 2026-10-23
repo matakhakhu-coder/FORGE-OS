@@ -122,7 +122,7 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 58            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga
+    assert len(pins) == 62            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga + 4 Limpopo infrastructure
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
@@ -137,8 +137,11 @@ def test_current_pins_make_their_areas_and_skip_held_places():
                     "limpopo--masemola", "limpopo--giyani", "limpopo--malamulele", "limpopo--villa-nora",
                     # Mpumalanga uses the same same-precinct rule (added 23 Oct 2026).
                     "mpumalanga--siyabuswa", "mpumalanga--calcutta", "mpumalanga--masoyi",
-                    "mpumalanga--ermelo", "mpumalanga--amersfoort"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 58
+                    "mpumalanga--ermelo", "mpumalanga--amersfoort",
+                    # Limpopo infrastructure pins (23 Oct 2026) bring in their precincts too; the
+                    # Polokwane outage pin shares the Polokwane area, Seshego gets its own.
+                    "limpopo--musina", "limpopo--tzaneen", "limpopo--polokwane-2"}
+    assert sum(len(a["pins"]) for a in res["areas"]) == 62
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])
@@ -153,11 +156,16 @@ def test_current_pins_make_their_areas_and_skip_held_places():
     # Limpopo: outside the pattern test, and each area holds only its own precinct's pins.
     lp = {a["key"]: a for a in res["areas"] if a["province"] == "Limpopo"}
     assert not any(a["pattern_test"] for a in lp.values())
-    assert sum(len(a["pins"]) for a in lp.values()) == 8
+    assert sum(len(a["pins"]) for a in lp.values()) == 12          # 8 killings + 4 infrastructure
     assert len(lp["limpopo--lebowakgomo"]["pins"]) == 2           # Mamaolo + Sekurung, same precinct
-    assert all(len(a["pins"]) == 1 for k, a in lp.items() if k != "limpopo--lebowakgomo")
-    for a in lp.values():
-        assert [pr["name"] for pr in a["precincts"] if pr["holds_pins"]] == [a["name"].split(" (")[0]]
+    assert len(lp["limpopo--polokwane"]["pins"]) == 2             # Peter Mokaba killing + PS3 leaks outage, same precinct
+    assert all(len(a["pins"]) == 1 for k, a in lp.items() if k not in ("limpopo--lebowakgomo", "limpopo--polokwane"))
+    for k, a in lp.items():
+        holders = [pr["name"] for pr in a["precincts"] if pr["holds_pins"]]
+        if k == "limpopo--polokwane-2":                            # Seshego substation: area named after the nearest town
+            assert holders == ["Seshego"]
+        else:
+            assert holders == [a["name"].split(" (")[0]]
     # Owner decision, 22 Oct 2026: Giyani and Malamulele stay apart ("Apart"), recorded in the batch.
     assert "limpopo--giyani" in lp and "limpopo--malamulele" in lp
     batch = json.loads((ROOT / "docs" / "signals" / "limpopo-killings-2026-10-22.json").read_text())
@@ -175,7 +183,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
     first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
-    assert len(first["areas"]) == 22 and len(first["new_since_last_run"]) == 22   # first run: all new
+    assert len(first["areas"]) == 25 and len(first["new_since_last_run"]) == 25   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -190,7 +198,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     # Computing again the same day (compute, then sweep) keeps the flag.
     again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
     assert again["new_since_last_run"] == second["new_since_last_run"]
-    assert len(second["areas"]) == 23
+    assert len(second["areas"]) == 26
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
     assert added[0]["province"] == "North West" and not added[0]["pattern_test"]
@@ -212,7 +220,7 @@ def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     assert ip["signal_id"] not in {p["signal_id"] for p in pins}
     keys = {a["key"] for a in ca.compute_areas(pins)["areas"]}
     assert "north-west--schweizer-reneke" not in keys
-    assert not any("brits" in k for k in keys) and len(keys) == 21   # 22 areas less Schweizer-Reneke
+    assert not any("brits" in k for k in keys) and len(keys) == 24   # 25 areas less Schweizer-Reneke
 
 
 # ── Western Cape scoring stays apart ───────────────────────────────────────────
