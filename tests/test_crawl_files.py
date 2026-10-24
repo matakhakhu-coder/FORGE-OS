@@ -17,6 +17,11 @@ from tools import publish  # noqa: E402
 DIST = REPO / "dist"
 HOME_TITLE = "FORGE Map, Open Source Intelligence"
 MADLANGA = "articles/madlanga-hawks-limpopo-municipal-fraud.html"
+NOINDEX_PAGES = {
+    MADLANGA,
+    "articles/limpopo-procurement-arrests-v2.html",
+    "cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2.html",
+}
 CANON_RE = re.compile(r'<link rel="canonical" href="([^"]+)">')
 
 
@@ -60,7 +65,7 @@ def test_every_dist_page_has_its_own_canonical_except_noindex():
     for p in pages:
         rel = p.relative_to(DIST).as_posix()
         found = CANON_RE.findall(_head(p))
-        if rel == MADLANGA:
+        if rel in NOINDEX_PAGES:
             assert found == [], rel
             continue
         assert found == [publish.canonical_url(rel)], rel
@@ -76,6 +81,8 @@ def test_sitemap_lists_indexable_pages_only():
     assert locs[0] == "https://forgemap.co.za/"
     assert all(u.startswith("https://forgemap.co.za/") for u in locs)
     assert not any("madlanga" in u for u in locs)
+    for rel in NOINDEX_PAGES:
+        assert publish.canonical_url(rel) not in locs, rel
     assert not any(u.endswith(".html") for u in locs)
     for page in ("about", "records", "contact", "privacy"):
         assert f"https://forgemap.co.za/{page}" in locs

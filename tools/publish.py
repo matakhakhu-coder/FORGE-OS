@@ -128,8 +128,16 @@ DIRECT_LINK_ONLY_CASES: frozenset[str] = frozenset({
 # dist/articles/<slug>.html is only re-rendered when the article is in the
 # database, so the committed file carries the same tag by hand
 # (tests/test_noindex_pages.py checks both).
+# The follow-up report "What the Records Support" and its case page (CASE-17)
+# were added on 24 Oct 2026 at the owner's request: neither is linked from the
+# map, About or Records pages, and both stay open by direct link (the follow-up
+# is linked from the Madlanga banner, the case page from the follow-up).
 NOINDEX_ARTICLES: frozenset[str] = frozenset({
     "madlanga-hawks-limpopo-municipal-fraud",
+    "limpopo-procurement-arrests-v2",
+})
+NOINDEX_CASES: frozenset[str] = frozenset({
+    "limpopo-municipal-procurement-arrests-april-2026-rerun-v2",
 })
 
 # Uncased people (18 Oct 2026). Processing (tools/mega_ingest.py ->
@@ -1389,13 +1397,16 @@ def _build_dist(
         case_signals = _fetch_case_signals(conn, case["case_id"], case["pattern"])
         case_actors  = _fetch_case_actors(conn, case["case_id"])
         out = DIST_CASES / f"{case['slug']}.html"
+        case_noindex = case["slug"] in NOINDEX_CASES
         out.write_text(
             case_tmpl.render(
                 case=case,
                 signals=case_signals,
                 actors=case_actors,
                 generated_at=now_str,
-                canonical_url=canonical_url(f"cases/{case['slug']}.html"),
+                robots_noindex=case_noindex,
+                # A noindex page gets no canonical link: the two would send mixed signals.
+                canonical_url=None if case_noindex else canonical_url(f"cases/{case['slug']}.html"),
                 **rev,
             ),
             encoding="utf-8",

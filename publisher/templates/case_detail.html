@@ -12,6 +12,7 @@
 {% block footer_privacy %}../privacy.html{% endblock %}
 
 {% block head_extra %}
+{% if robots_noindex %}<meta name="robots" content="noindex">{% endif %}
 <style>
 /* ── Screen layout ──────────────────────────────────────────────────────────── */
 .cd-shell {
