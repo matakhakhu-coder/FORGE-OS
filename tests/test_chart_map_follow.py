@@ -121,10 +121,12 @@ def test_build_carries_the_weeks(built):
     assert t["axes"]["added_weeks"] == rc.chart_weeks(t["axes"]["added_days"])
 
 
-def test_week_buttons_only_on_the_line_and_added_and_tap_sized():
+def test_week_buttons_only_on_the_line_added_and_heat_map_and_tap_sized():
     js = JS.read_text(encoding="utf-8")
-    assert js.count("weekBar('") == 2
+    # Batch 8: the heat map shares the incident line's weeks
+    assert js.count("weekBar('") == 3
     assert "weekBar('incident', AX.incident_weeks" in js and "weekBar('added', AX.added_weeks" in js
+    assert "weekBar('town', AX.incident_weeks" in js
     tpl = TPL.read_text(encoding="utf-8")
     css = tpl[tpl.index(".gp-weeks__btn {"):]
     css = css[:css.index("}")]

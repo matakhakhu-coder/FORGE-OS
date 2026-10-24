@@ -35,7 +35,7 @@ def _page(charts, pid):
 # ── Registry ────────────────────────────────────────────────────────────────────
 
 def test_pages_are_fixed_and_in_swipe_order():
-    assert [p["id"] for p in rc.CHART_PAGES] == ["incident", "added", "stream", "province"]
+    assert [p["id"] for p in rc.CHART_PAGES] == ["incident", "added", "stream", "province", "town"]
     # page 2 of the panel (first chart) is the incident-date line chart
     assert rc.CHART_PAGES[0]["kind"] == "line"
     assert all(p["kind"] in rc.RENDERERS for p in rc.CHART_PAGES)
@@ -164,7 +164,7 @@ def test_build_charts_match_records_json(built):
 
     # every chart page is in the panel, in order, after Network
     tabs = re.findall(r'id="gp-tab-([a-z]+)"', html)
-    assert tabs == ["network", "incident", "added", "stream", "province"]
+    assert tabs == ["network", "incident", "added", "stream", "province", "town"]
 
     # bars: the printed numbers are the counts from records.json
     for pid in ("stream", "province"):
@@ -335,7 +335,7 @@ def test_build_timeline_table_holds_no_record_text(built):
     html = (built / "index.html").read_text()
     raw = re.search(r'id="gp-chart-data">(.*?)</script>', html, re.S).group(1)
     t = json.loads(raw)
-    assert t["columns"] == ["id", "step", "inc", "kind", "added", "stream", "province"]
+    assert t["columns"] == ["id", "step", "inc", "kind", "added", "stream", "province", "town"]
     for r in json.loads((built / "records.json").read_text())["records"]:
         for text in (r["title"], r["location_described"], r["incident_described"], r["statement_from"],
                      r["outlets"], r["signal_id"]):
@@ -468,7 +468,7 @@ def test_timeline_table_names_the_four_map_streams_in_panel_order():
 
 def test_every_chart_page_says_where_its_stream_switches_sit():
     assert {p["id"]: p["stream_filter"] for p in rc.CHART_PAGES} == {
-        "incident": "chips", "added": "chips", "stream": "bars", "province": "chips"}
+        "incident": "chips", "added": "chips", "stream": "bars", "province": "chips", "town": "chips"}
 
 
 @pytest.mark.parametrize("bad", [{}, {"stream_filter": "slider"}, {"stream_filter": "bars"}])

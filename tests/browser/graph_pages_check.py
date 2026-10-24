@@ -242,7 +242,7 @@ with sync_playwright() as p:
         check(f'{name}: opens at now', s0['step'] == LAST and set(s0['values']) == {LAST}
               and all(l.endswith(f'(now) \u00b7 {len(records)} of {len(records)} records') for l in s0['labels']), s0['labels'][0])
         check(f'{name}: one visible slider per chart page', pg.evaluate(
-            "[...document.querySelectorAll('[data-gp-time]')].filter(e => !e.hidden).length") == 4)
+            "[...document.querySelectorAll('[data-gp-time]')].filter(e => !e.hidden).length") == len(rc.CHART_PAGES))
         check(f'{name}: slider control is at least 44px tall', pg.evaluate(
             "Math.min(...[...document.querySelectorAll('.gp-time__range')].map(e => e.offsetHeight))") >= 44)
 

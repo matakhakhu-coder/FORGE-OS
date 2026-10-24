@@ -42,7 +42,17 @@ Stream switches (interactive charts Batch 5): the charts share the map's
 stream filter, so the table also names the map's four streams in the
 Streams panel order (key and label), and each chart page says where its
 switches sit (STREAM_FILTER): a row of switches above the chart, or, on
-Streams, the bars themselves. Tap to see the records (Batch 4) takes the
+Streams, the bars themselves.
+
+Heat map (Batch 8): records by town and incident date, one row per town and
+one cell per day on the incident line's axis, plus a "date not stated" and a
+"later step" cell per town, by the same incident_date_basis rules as the
+line. Records have no town field: publish.py adds one for the charts only,
+from tools/record_towns.py (FORGE's coverage-area naming rule plus the
+hand-kept fixes in docs/signals/record-towns.json), and stops if a record has
+no town. The open data stays as it is.
+
+Tap to see the records (Batch 4) takes the
 titles from the map's own pin data, matched by short ID, never from here.
 """
 from __future__ import annotations
@@ -53,7 +63,7 @@ from datetime import date, datetime, timedelta, timezone
 SAST = timezone(timedelta(hours=2))
 
 # The renderers map.html has. A page whose kind is not here is refused.
-RENDERERS = ("line", "columns", "bars")
+RENDERERS = ("line", "columns", "bars", "heatmap")
 
 # Where a chart page's stream switches sit: "chips" is the row of switches
 # above the chart, "bars" means tapping a bar turns its stream on or off.

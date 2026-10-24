@@ -869,6 +869,33 @@
   .gp-line { cursor: pointer; }
   .gp-line__hit { fill: transparent; }
   .gp-line__sel { fill: var(--accent); opacity: 0.16; }
+  /* Heat map: records by town and incident date (interactive charts Batch 8).
+     Printed as a plain table (the no-script fallback); record-charts.js turns
+     each cell and town name into a button. On a phone the 23 day columns
+     share the width, so cells are narrower than 44px; a week (Batch 7
+     buttons) widens them, and the list's previous / next buttons step a day. */
+  .gp-heat-scroll { overflow-x: auto; max-width: 640px; }
+  .gp-heat { width: 100%; border-collapse: separate; border-spacing: 1px; table-layout: fixed; font-family: var(--font-mono); }
+  .gp-heat th, .gp-heat td { padding: 0; }
+  .gp-heat [hidden] { display: none; }
+  .gp-heat__corner { width: 92px; text-align: left; font-size: 0.56rem; font-weight: 400; color: var(--text-secondary); }
+  .gp-heat__day { font-size: 0.5rem; font-weight: 400; color: var(--text-secondary); text-align: center; overflow: hidden; white-space: nowrap; height: 18px; }
+  .gp-heat__day abbr { text-decoration: none; }
+  .gp-heat__day--x { color: var(--text-primary); }
+  .gp-heat__town { text-align: left; font-size: 0.6rem; font-weight: 400; color: var(--text-primary); line-height: 1.15; height: 26px; }
+  .gp-heat__name { overflow-wrap: anywhere; }
+  .gp-heat__total { color: var(--text-secondary); }
+  .gp-heat__cell { position: relative; height: 26px; background: var(--bg-elevated); border-radius: 2px; text-align: center; }
+  .gp-heat__cell--x { background: rgba(255,255,255,0.03); box-shadow: inset 0 0 0 1px var(--border-subtle); }
+  .gp-heat__fill { position: absolute; inset: 0; background: var(--accent); border-radius: 2px; pointer-events: none; }
+  .gp-heat__n { position: relative; font-size: 0.55rem; color: var(--text-primary); pointer-events: none; }
+  .gp-heat__btn { display: flex; align-items: center; justify-content: center; position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 2px; }
+  .gp-heat__townbtn { display: block; width: 100%; min-height: 26px; text-align: left; }
+  .gp-heat__btn:focus-visible, .gp-heat__townbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; z-index: 1; }
+  .gp-heat__btn.is-picked { box-shadow: inset 0 0 0 2px var(--accent-bright); }
+  .gp-heat__townbtn.is-picked .gp-heat__name { color: var(--accent-bright); text-decoration: underline; }
+  .gp-heat tr.is-row-picked .gp-heat__name { color: var(--accent-bright); }
+  .gp-heat__legend { margin: var(--sp-2) 0 0; font-size: 0.68rem; line-height: 1.45; color: var(--text-secondary); max-width: 640px; }
   /* Zoom into a week (interactive charts Batch 7) */
   .gp-weeks { margin: 0 0 var(--sp-2); }
   .gp-weeks__btns { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -1553,6 +1580,34 @@
           {%- endfor %}
         </ol>
       </div>
+      {% elif p.kind == 'heatmap' %}
+      {%- set dated = d.rows | sum(attribute='count') - d.undated - d.later_step %}
+      <p class="gp-chart__summary">{{ dated }} on a day{% if d.days %} ({{ d.days[0].label }} to {{ d.days[-1].label }}){% endif %}{% if d.undated %} &middot; {{ d.undated }} date not stated{% endif %}{% if d.later_step %} &middot; {{ d.later_step }} later step in an older case{% endif %} &middot; {{ d.rows|length }} town{{ '' if d.rows|length == 1 else 's' }}</p>
+      <div class="gp-heat-scroll">
+        <table class="gp-heat" aria-label="{{ p.title }}">
+          <thead>
+            <tr>
+              <th scope="col" class="gp-heat__corner">Town</th>
+              {%- for x in d.days %}
+              <th scope="col" class="gp-heat__day" data-day="{{ x.date }}" title="{{ x.label }}"><abbr title="{{ x.label }}">{{ x.label.split(' ')[0] }}</abbr></th>
+              {%- endfor %}
+              <th scope="col" class="gp-heat__day gp-heat__day--x" data-day="undated"><abbr title="Date not stated">?</abbr></th>
+              <th scope="col" class="gp-heat__day gp-heat__day--x" data-day="later_step"><abbr title="Later step in an older case">L</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for r in d.rows %}
+            <tr>
+              <th scope="row" class="gp-heat__town"><span class="gp-heat__name">{{ r.label }}</span> <span class="gp-heat__total">{{ r.count }}</span></th>
+              {%- for v in r.days + [r.undated, r.later_step] %}
+              <td class="gp-heat__cell{{ ' gp-heat__cell--x' if loop.index > r.days|length }}"><span class="gp-heat__fill" style="opacity:{{ ((0.18 + 0.82 * v / d.max) | round(3)) if (v and d.max) else 0 }}"></span><span class="gp-heat__n">{{ v if v else '' }}</span></td>
+              {%- endfor %}
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="gp-heat__legend">Days of {{ d.days[0].label.split(' ')[1] if d.days else 'the month' }} across the top. <b>?</b> date not stated, <b>L</b> later step in an older case: neither is put on a day. Darker cells hold more records.</p>
       {% elif p.kind == 'bars' %}
       <ol class="gp-bars" aria-label="{{ p.title }}">
         {%- for x in d.rows %}

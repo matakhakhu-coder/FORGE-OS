@@ -101,6 +101,24 @@ def with_towns(records: list[dict], towns: dict) -> list[dict]:
     return [dict(r, town=(towns.get(r.get("signal_id")) or {}).get("town", "")) for r in records]
 
 
+def towns_for_charts(records: list[dict], **kw) -> tuple[list[dict], list[str], list[str]]:
+    """(records with a town for the charts, problems, warnings): what
+    publish.py and the browser checks use. publish.py stops on any problem
+    (a record with no town) and prints the warnings."""
+    t = record_towns(records, **kw)
+    problems, warnings = t.pop("_problems"), t.pop("_warnings")
+    return with_towns(records, t), problems, warnings
+
+
+def check_towns(records: list[dict], problems: list[str]) -> None:
+    """The publish check: raises SystemExit if any record has no town."""
+    missing = [r.get("signal_id") for r in records if not str(r.get("town") or "").strip()]
+    if problems or missing:
+        lines = problems or [f"no town for {str(s)[:8]}" for s in missing]
+        raise SystemExit("[publish] heat map: " + str(len(lines)) + " record(s) have no town: "
+                         + "; ".join(lines[:10]))
+
+
 if __name__ == "__main__":  # list every town and override for review
     import sys
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dist" / "records.json"

@@ -205,8 +205,11 @@ with sync_playwright() as p:
         sizes = pg.evaluate("""() => [...document.querySelectorAll('#panel-graph .gp-page--chart .gp-hit, #panel-graph .gp-list__show')]
           .filter(e => e.getClientRects().length).map(e => { const r = e.getBoundingClientRect();
             return [e.className + '|' + e.textContent.slice(0, 20), Math.round(r.width), Math.round(r.height)]; })""")
-        small = [s for s in sizes if s[2] < 44 or (s[1] < 44 and 'gp-list__show' not in s[0])]
-        check(f'{name}: every chart button and link is at least 44px ({len(sizes)} measured)', not small, small[:5])
+        # Batch 8: the heat map's cells and town names are measured and reported
+        # by tests/browser/heatmap_check.py (they can't reach 44px on a phone)
+        small = [s for s in sizes if 'gp-heat__' not in s[0] and (s[2] < 44 or (s[1] < 44 and 'gp-list__show' not in s[0]))]
+        sizes = [s for s in sizes if 'gp-heat__' not in s[0]]
+        check(f'{name}: every chart button and link is at least 44px ({len(sizes)} measured, heat map grid apart)', not small, small[:5])
         pg.click('#gp-tab-incident'); pg.wait_for_timeout(500)
         hit = pg.evaluate("""() => [...document.querySelectorAll('#gp-page-incident .gp-line__hit')].map(r => { const b = r.getBoundingClientRect(); return [b.width, b.height]; })""")
         check(f'{name}: line day columns are the full chart height (>= 44px tall)',
@@ -287,8 +290,8 @@ with sync_playwright() as p:
               ok and crime_now == 62 and set(tot.values()) == {62}, (tot, crime_now))
         check(f'{name}: the map follows the chart switches (Streams panel and pins state)',
               sh['mapToggles'] == {k: k == 'CRIME_INTEL' for k in ALL} and sh['shared'] == {k: k == 'CRIME_INTEL' for k in ALL}, (sh['mapToggles'], sh['shared']))
-        check(f'{name}: caption says "Showing 1 of 4 streams" on all four pages, the slider label too',
-              all(n.startswith('Showing 1 of 4 streams (Crime & Security)') for n in sh['notes']) and len(sh['notes']) == 4
+        check(f'{name}: caption says "Showing 1 of 4 streams" on all {len(rc.CHART_PAGES)} chart pages, the slider label too',
+              all(n.startswith('Showing 1 of 4 streams (Crime & Security)') for n in sh['notes']) and len(sh['notes']) == len(rc.CHART_PAGES)
               and sh['label'].endswith(f'{crime_now} of {len(records)} records (1 of 4 streams)'), (sh['notes'], sh['label']))
         if name == 'phone':
             pg.screenshot(path=OUT + 'b45-phone-crime-only.png')
@@ -357,7 +360,7 @@ with sync_playwright() as p:
       lists: [...document.querySelectorAll('[data-gp-list]')].every(e => e.hidden && !e.children.length),
       buttons: document.querySelectorAll('#panel-graph .gp-page--chart button').length,
       bars: document.querySelectorAll('#gp-page-province .gp-bar__n').length})""")
-    check('no script: no switches, no lists, no chart buttons; the charts are printed', ns['chips'] and ns['lists'] and ns['buttons'] == 3 * len(table['streams']) and ns['bars'] == len(AX['province']), ns)
+    check('no script: no switches, no lists, no chart buttons; the charts are printed', ns['chips'] and ns['lists'] and ns['buttons'] == sum(p.get('stream_filter') == 'chips' for p in rc.CHART_PAGES) * len(table['streams']) and ns['bars'] == len(AX['province']), ns)
     ctx.close()
     b.close()
 

@@ -1258,14 +1258,22 @@ def _build_dist(
     from tools.record_charts import chart_counts, chart_total, timeline_table
     rec_version = data_version(ROOT)
     records = build_records(conn, index_path=CHECKED_INDEX, version=rec_version)
-    charts = chart_counts(records)
+    # The heat map's town (interactive charts Batch 8): added for the charts
+    # only, from the coverage-area naming rule and docs/signals/record-towns.json.
+    # The open data below keeps `records` as it is. Stops if a record has no town.
+    from tools.record_towns import check_towns, towns_for_charts
+    chart_records, town_problems, town_warnings = towns_for_charts(records)
+    for w in town_warnings:
+        print(f"[publish] town fixes: {w}")
+    check_towns(chart_records, town_problems)
+    charts = chart_counts(chart_records)
     for page in charts["pages"]:
         if chart_total(page) != len(records):
             raise SystemExit(f"[publish] chart '{page['id']}' counts {chart_total(page)} "
                              f"records, the Records page has {len(records)}")
     # The slider's table (one row per record, one step per publish): it must
     # hold every record, and its last step must be the Records page total.
-    chart_table = timeline_table(records, charts)
+    chart_table = timeline_table(chart_records, charts)
     last_total = chart_table["steps"][-1]["total"] if chart_table["steps"] else 0
     if len(chart_table["rows"]) != len(records) or last_total != len(records):
         raise SystemExit(f"[publish] chart timeline holds {len(chart_table['rows'])} rows and ends at "

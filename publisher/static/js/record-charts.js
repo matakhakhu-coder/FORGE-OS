@@ -25,6 +25,12 @@
  * panel (window.ZADStreams; a 'forge-streams' event when it changes), so the
  * map and the charts never disagree. A row of switches sits above the line,
  * Added and Provinces charts; on Streams, tapping a bar turns it on or off.
+ *
+ * Heat map (Batch 8): records by town and incident date. Each cell and town
+ * name becomes a button: tapping one lists its records (as the other charts
+ * do) and filters the map to that town and day (window.ZADMapTime.setCell,
+ * with the map's Clear button to undo). The cell filter sits on top of the
+ * slider's map filter and the stream switches; closing the list clears it.
  */
 (function () {
   'use strict';
@@ -67,8 +73,13 @@
   function streamsOn() { return STREAMS.filter(function (s) { return VIS[s.key] !== false; }); }
 
   /* ── Counting: filter the rows to one step (mirrors counts_from_table) ── */
+  var TOWNS = AX.town || [], TI = {}, DI = {};
+  TOWNS.forEach(function (t, i) { TI[t] = i; });
+  AX.incident_days.forEach(function (d, i) { DI[d] = i; });
   function counts(step) {
     var inc = {}, added = {}, stream = {}, province = {};
+    var tc = TOWNS.map(function () { return AX.incident_days.map(function () { return 0; }); });
+    var tu = TOWNS.map(function () { return 0; }), tl = TOWNS.map(function () { return 0; });
     AX.incident_days.forEach(function (d) { inc[d] = 0; });
     AX.added_days.forEach(function (d) { added[d] = 0; });
     var out = { total: 0, occurred: 0, found: 0, undated: 0, later_step: 0, added_undated: 0 };
@@ -84,11 +95,19 @@
       else added[r[COL.added]] = (added[r[COL.added]] || 0) + 1;
       stream[r[COL.stream]] = (stream[r[COL.stream]] || 0) + 1;
       province[r[COL.province]] = (province[r[COL.province]] || 0) + 1;
+      if (COL.town !== undefined && TI[r[COL.town]] !== undefined) {
+        var ti = TI[r[COL.town]];
+        if (k === 'later_step') tl[ti]++;
+        else if (k === 'undated') tu[ti]++;
+        else tc[ti][DI[r[COL.inc]]]++;
+      }
     }
     out.incident = AX.incident_days.map(function (d) { return inc[d]; });
     out.added = AX.added_days.map(function (d) { return added[d]; });
     out.stream = AX.stream.map(function (l) { return stream[l] || 0; });
     out.province = AX.province.map(function (l) { return province[l] || 0; });
+    out.town = { cells: tc, undated: tu, later_step: tl,
+                 rows: tc.map(function (row, i) { return row.reduce(function (a, b) { return a + b; }, 0) + tu[i] + tl[i]; }) };
     return out;
   }
 
@@ -540,6 +559,34 @@
   var lists = {};           // page id -> { key, trigger }
   var pickTargets = [];     // { pid, key, el }: highlighted while their list is open
   var LINE_PICK = null;
+  var HEAT_PICK = null;
+
+  /* ── The map follows a heat map cell (Batch 8) ──
+     While a cell (or a town name) is picked, the map keeps only the pins of
+     that town and day. The IDs sent are every record of the cell, before the
+     slider and the streams: the map applies its own slider filter, stream
+     switches and Area check on top, so what it shows is the list's records.
+     The note's text says how many records the list holds now. */
+  var cellKey = null;
+  function cellIds(key) {
+    var out = [];
+    for (var i = 0; i < T.rows.length; i++) if (rowMatches(T.rows[i], 'town', key)) out.push(T.rows[i][COL.id]);
+    return out;
+  }
+  function syncCell(st, rows) {
+    var M = window.ZADMapTime;
+    if (!M || !M.setCell) return;
+    if (!st) {
+      if (cellKey !== null) M.setCell(null);
+      cellKey = null;
+      return;
+    }
+    var text = 'Map: ' + listHeading('town', st.key) + ' \u00b7 ' + plural(rows.length, 'record');
+    var on = streamsOn().length;
+    if (STREAMS.length && on < STREAMS.length) text += ' (' + on + ' of ' + STREAMS.length + ' streams)';
+    M.setCell({ ids: st.key !== cellKey ? cellIds(st.key) : null, text: text });
+    cellKey = st.key;
+  }
 
   function rowMatches(r, pid, key) {
     if (pid === 'incident') {
@@ -547,7 +594,25 @@
         : ((r[COL.kind] === 'occurred' || r[COL.kind] === 'found') && r[COL.inc] === key);
     }
     if (pid === 'added') return r[COL.added] === key;
+    if (pid === 'town') {
+      // key "Town|2026-10-16", "Town|undated", "Town|later_step" or "Town|*"
+      var tk = townKey(key), k = r[COL.kind];
+      if (r[COL.town] !== tk.town) return false;
+      if (tk.day === '*') return true;
+      if (tk.day === 'undated' || tk.day === 'later_step') return k === tk.day;
+      return (k === 'occurred' || k === 'found') && r[COL.inc] === tk.day;
+    }
     return r[COL[pid]] === key;
+  }
+  function townKey(key) {
+    var s = String(key), i = s.lastIndexOf('|');
+    return { town: s.slice(0, i), day: s.slice(i + 1) };
+  }
+  function townDayText(day) {
+    if (day === '*') return 'every date';
+    if (day === 'undated') return 'date not stated';
+    if (day === 'later_step') return 'later step in an older case';
+    return dayLabel(day);
   }
   function rowsFor(pid, key, step) {
     var out = [];
@@ -568,6 +633,7 @@
       return dayLabel(key);
     }
     if (pid === 'added') return key === null ? 'Date added not recorded' : 'Added ' + dayLabel(key);
+    if (pid === 'town') { var tk = townKey(key); return tk.town + ', ' + townDayText(tk.day); }
     return key;
   }
   function kindText(r) {
@@ -581,9 +647,12 @@
     var days = null;
     if (pid === 'incident' && key !== 'undated' && key !== 'later_step') days = AX.incident_days;
     if (pid === 'added' && key !== null) days = AX.added_days;
+    if (pid === 'town' && DI[townKey(key).day] !== undefined) days = AX.incident_days;
     // inside a week (Batch 7), previous and next day stay in the week
     var W = WEEKS[pid];
     if (days && W && W.at >= 0) days = days.slice(W.weeks[W.at].from, W.weeks[W.at].to + 1);
+    // the heat map steps through the days of the same town
+    if (days && pid === 'town') { var tw0 = townKey(key).town; days = days.map(function (d) { return tw0 + '|' + d; }); }
     return days;
   }
   function el(tag, cls, text) {
@@ -602,8 +671,10 @@
       if (p.pid === pid) p.el.classList.toggle('is-picked', !!st && p.key === st.key);
     });
     if (pid === 'incident' && LINE_PICK) LINE_PICK(st ? st.key : null);
+    if (pid === 'town' && HEAT_PICK) HEAT_PICK(st ? st.key : null);
+    var rows = st ? rowsFor(pid, st.key, current) : [];
+    if (pid === 'town') syncCell(st, rows);
     if (!st) { box.hidden = true; box.innerHTML = ''; return; }
-    var rows = rowsFor(pid, st.key, current);
     var head = listHeading(pid, st.key);
     box.innerHTML = '';
     box.setAttribute('aria-label', head);
@@ -691,10 +762,147 @@
     if (page && lists[page.getAttribute('data-chart')]) { e.preventDefault(); closeList(page.getAttribute('data-chart'), true); }
   });
 
+  /* ── Heat map: records by town and incident date (Batch 8) ──
+     Rows are today's towns and columns the incident line's days, then
+     "date not stated" and "later step" (both fixed, so nothing moves around
+     while scrubbing). Each cell's shade eases to its new count on today's
+     fixed scale; the number shows the step's whole count (blank for zero).
+     Cells and town names are buttons with one tab stop: the arrow keys,
+     Home and End move between them, Enter opens the list. */
+  function setupHeat() {
+    var page = document.getElementById('gp-page-town');
+    if (!page || !TOWNS.length) return;
+    var table = page.querySelector('.gp-heat');
+    if (!table) return;
+    var trs = table.querySelectorAll('tbody tr');
+    var nd = AX.incident_days.length, ncol = nd + 2;
+    if (trs.length !== TOWNS.length) return;
+    var max = Math.max(AX.town_max || 0, 1);
+    var summary = page.querySelector('.gp-chart__summary');
+    var heads = table.querySelectorAll('thead th');          // corner, days, ?, L
+    var grid = [];            // grid[row] = [townBtn, cell buttons...]
+    var cellTw = [], nums = [], totals = [];
+    function shade(v) { return v > 0 ? (0.18 + 0.82 * Math.min(1, v / max)) : 0; }
+    function colKey(j) { return j < nd ? AX.incident_days[j] : (j === nd ? 'undated' : 'later_step'); }
+    Array.prototype.forEach.call(trs, function (tr, i) {
+      var town = TOWNS[i];
+      var th = tr.querySelector('th');
+      var tb = el('button', 'gp-hit gp-heat__townbtn');
+      tb.type = 'button';
+      while (th.firstChild) tb.appendChild(th.firstChild);
+      th.appendChild(tb);
+      totals.push(tb.querySelector('.gp-heat__total'));
+      tb.addEventListener('click', function () { openList('town', town + '|*', tb); });
+      pickTargets.push({ pid: 'town', key: town + '|*', el: tb });
+      var row = [tb], rtw = [], rn = [];
+      var tds = tr.querySelectorAll('td');
+      Array.prototype.forEach.call(tds, function (td, j) {
+        if (j >= ncol) return;
+        var fill = td.querySelector('.gp-heat__fill'), n = td.querySelector('.gp-heat__n');
+        var b = el('button', 'gp-hit gp-heat__btn');
+        b.type = 'button';
+        b.tabIndex = -1;
+        if (n) b.appendChild(n);
+        td.appendChild(b);
+        var key = town + '|' + colKey(j);
+        b.setAttribute('data-key', key);
+        b.addEventListener('click', function () { openList('town', key, b); });
+        pickTargets.push({ pid: 'town', key: key, el: b });
+        row.push(b); rn.push(n);
+        var init = j < nd ? NOW.town.cells[i][j] : (j === nd ? NOW.town.undated[i] : NOW.town.later_step[i]);
+        rtw.push(tween(init, function (v) { if (fill) fill.style.opacity = shade(v).toFixed(3); }));
+      });
+      tb.tabIndex = -1;
+      grid.push(row); cellTw.push(rtw); nums.push(rn);
+    });
+    if (grid[0]) grid[0][0].tabIndex = 0;
+
+    // keyboard: one tab stop, arrows move (hidden week columns are skipped)
+    var visCols = null;
+    function colVisible(c) { return c === 0 || !visCols || visCols[c - 1]; }
+    function focusCell(r, c) {
+      grid.forEach(function (row) { row.forEach(function (b) { b.tabIndex = -1; }); });
+      grid[r][c].tabIndex = 0;
+      grid[r][c].focus();
+    }
+    table.addEventListener('keydown', function (e) {
+      var t = e.target, r = -1, c = -1;
+      for (var i = 0; i < grid.length && r < 0; i++) { var j = grid[i].indexOf(t); if (j >= 0) { r = i; c = j; } }
+      if (r < 0) return;
+      var nr = r, nc = c, step;
+      if (e.key === 'ArrowDown') nr = Math.min(grid.length - 1, r + 1);
+      else if (e.key === 'ArrowUp') nr = Math.max(0, r - 1);
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        step = e.key === 'ArrowRight' ? 1 : -1;
+        nc = c + step;
+        while (nc > 0 && nc <= ncol && !colVisible(nc)) nc += step;
+        if (nc < 0 || nc > ncol) nc = c;
+      } else if (e.key === 'Home') nc = 0;
+      else if (e.key === 'End') { nc = ncol; while (nc > 0 && !colVisible(nc)) nc--; }
+      else if (e.key === 'Escape' && lists.town) { closeList('town', true); e.preventDefault(); return; }
+      else return;
+      e.preventDefault(); e.stopPropagation();
+      focusCell(nr, nc);
+    });
+
+    HEAT_PICK = function (key) {
+      Array.prototype.forEach.call(trs, function (tr, i) {
+        tr.classList.toggle('is-row-picked', !!key && townKey(key).town === TOWNS[i]);
+      });
+    };
+
+    // Week zoom (Batch 7 buttons): only that week's day columns show, so
+    // they widen; "?" and "L" stay.
+    var heatWeek = weekBar('town', AX.incident_weeks, page.querySelector('.gp-heat-scroll'), function (w) {
+      visCols = [];
+      for (var j = 0; j < ncol; j++) visCols.push(j >= nd || !w || (j >= w.from && j <= w.to));
+      Array.prototype.forEach.call(heads, function (h, k) { if (k > 0) h.hidden = !visCols[k - 1]; });
+      Array.prototype.forEach.call(trs, function (tr) {
+        Array.prototype.forEach.call(tr.querySelectorAll('td'), function (td, j) { if (j < ncol) td.hidden = !visCols[j]; });
+      });
+      var st = lists.town;
+      if (w && st) {
+        var di = DI[townKey(st.key).day];
+        if (di !== undefined && (di < w.from || di > w.to)) closeList('town');
+      }
+    });
+
+    renderers.push(function (c) {
+      var T8 = c.town, perDay = AX.incident_days.map(function () { return 0; }), und = 0, lat = 0;
+      for (var i = 0; i < grid.length; i++) {
+        var town = TOWNS[i];
+        totals[i].textContent = T8.rows[i];
+        grid[i][0].setAttribute('aria-label', town + ': ' + plural(T8.rows[i], 'record') + '. List them and show them on the map');
+        for (var j = 0; j < ncol; j++) {
+          var v = j < nd ? T8.cells[i][j] : (j === nd ? T8.undated[i] : T8.later_step[i]);
+          if (j < nd) perDay[j] += v;
+          cellTw[i][j].to = v;
+          if (nums[i][j]) nums[i][j].textContent = v ? String(v) : '';
+          grid[i][j + 1].setAttribute('aria-label', town + ', ' + townDayText(colKey(j)) + ': ' + plural(v, 'record'));
+        }
+        und += T8.undated[i]; lat += T8.later_step[i];
+      }
+      weekNote(heatWeek, perDay, 'on a day');
+      if (summary) {
+        var dated = perDay.reduce(function (a, b) { return a + b; }, 0);
+        var txt = dated + ' on a day (' + dayLabel(AX.incident_days[0]) + ' to ' + dayLabel(AX.incident_days[nd - 1]) + ')';
+        if (und) txt += ' \u00b7 ' + und + ' date not stated';
+        if (lat) txt += ' \u00b7 ' + lat + ' later step in an older case';
+        txt += ' \u00b7 ' + plural(TOWNS.length, 'town');
+        summary.textContent = txt;
+      }
+    });
+    announcers.push(function (c) {
+      table.setAttribute('aria-label', 'Records by town and incident date: ' +
+        TOWNS.map(function (t, i) { return t + ' ' + c.town.rows[i]; }).join(', '));
+    });
+  }
+
   setupLine();
   setupColumns();
   setupBars('stream', NOW.stream, AX.stream_max);
   setupBars('province', NOW.province, AX.province_max);
+  setupHeat();
 
   /* ── The shared slider ── */
   var sliders = Array.prototype.slice.call(panel.querySelectorAll('[data-gp-time]'));
@@ -828,6 +1036,9 @@
     streams: function () { return streamsOn().map(function (s) { return s.key; }); },
     setStream: setStream,
     idsAtStep: idsAtStep,
+    clearCell: function () { closeList('town'); },
+    cell: function () { return cellKey; },
+    cellIds: cellIds,
     pickWeek: function (pid, k) { if (WEEKS[pid]) WEEKS[pid].pick(k); },
     week: function (pid) { return WEEKS[pid] ? WEEKS[pid].at : null; }
   };
