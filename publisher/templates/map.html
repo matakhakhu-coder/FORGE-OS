@@ -2545,7 +2545,7 @@
       return allMarkerLayers.map(function (ml) {
         var m = RAW[ml.idx];
         var k = m._ageKey || '';
-        return { id: shortId(m), band: k.split('+')[0], updated: /\+u$/.test(k), extra: !!ml.extra };
+        return { id: shortId(m), band: k.split('+')[0], updated: /\+u(\+|$)/.test(k), isNew: /\+n$/.test(k), extra: !!ml.extra };
       });
     },
     show: function (sid) {

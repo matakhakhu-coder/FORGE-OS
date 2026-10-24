@@ -331,8 +331,8 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
 
             # ── Motion switch: off, still, remembered, back in step ─────────
             ctx, page, errs = _open(browser, size, base + "burst/", "2026-10-24", "12:00")
-            page.evaluate("([la, ln]) => ZADAge.view(la, ln, BURST_ZOOM)",
-                          list(BURST_CENTRE))
+            page.evaluate("([la, ln, z]) => ZADAge.view(la, ln, z)",
+                          [*BURST_CENTRE, BURST_ZOOM])
             page.wait_for_timeout(700)
             sw = page.locator("#ctrl-motion")
             box = sw.bounding_box()
@@ -424,7 +424,8 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
             # keyboard: Space turns it back on
             page.focus("#ctrl-motion")
             page.keyboard.press("Space")
-            page.wait_for_timeout(400)
+            page.evaluate("([la, ln, z]) => ZADAge.view(la, ln, z)", [*BURST_CENTRE, BURST_ZOOM])
+            page.wait_for_timeout(600)
             back = _phases(page)
             locked = [p for p in back if p["running"]]
             check("keyboard turns motion back on", page.evaluate("() => ZADPulse.motionOn()") is True and locked)
@@ -433,8 +434,8 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
 
             # phases locked to clock + id: check on a fresh burst load, twice
             ctx, page, errs = _open(browser, size, base + "burst/", "2026-10-24", "12:00")
-            page.evaluate("([la, ln]) => ZADAge.view(la, ln, BURST_ZOOM)",
-                          list(BURST_CENTRE))
+            page.evaluate("([la, ln, z]) => ZADAge.view(la, ln, z)",
+                          [*BURST_CENTRE, BURST_ZOOM])
             page.wait_for_timeout(500)
             want_phase = {r["title"]: r for r in page.evaluate(
                 "() => [...document.querySelectorAll('.leaflet-marker-icon')].filter(ic => ic.querySelector('.sig-pulse'))"
@@ -453,7 +454,7 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
             # zoom out and back: redrawn pins keep their place in the breath
             page.evaluate("([la, ln]) => ZADAge.view(la, ln, 12)", list(BURST_CENTRE))
             page.wait_for_timeout(400)
-            page.evaluate("([la, ln]) => ZADAge.view(la, ln, BURST_ZOOM)", list(BURST_CENTRE))
+            page.evaluate("([la, ln, z]) => ZADAge.view(la, ln, z)", [*BURST_CENTRE, BURST_ZOOM])
             page.wait_for_timeout(400)
             for p in _phases(page):
                 m = re.search(r"Burst test pin (\d+)", p["title"])
@@ -481,8 +482,8 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
 
             # ── device asks for reduced motion ──────────────────────────────
             ctx, page, errs = _open(browser, size, base + "burst/", "2026-10-24", "12:00", reduced_motion="reduce")
-            page.evaluate("([la, ln]) => ZADAge.view(la, ln, BURST_ZOOM)",
-                          list(BURST_CENTRE))
+            page.evaluate("([la, ln, z]) => ZADAge.view(la, ln, z)",
+                          [*BURST_CENTRE, BURST_ZOOM])
             page.wait_for_timeout(500)
             st = page.evaluate("() => { const b = document.getElementById('ctrl-motion');"
                                " return { c: b.getAttribute('aria-checked'), d: b.getAttribute('aria-disabled'), t: b.title }; }")
