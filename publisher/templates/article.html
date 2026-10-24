@@ -8,6 +8,7 @@
 {% block nav_records %}../records.html{% endblock %}
 {% block footer_records %}../records.html{% endblock %}
 {% block footer_about %}../about.html{% endblock %}
+{% block head_extra %}{% if article.robots_noindex %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
 
 {% block content %}
 <div class="article-shell">

@@ -111,6 +111,19 @@ DIRECT_LINK_ONLY_CASES: frozenset[str] = frozenset({
     "limpopo-municipal-procurement-arrests-april-2026-rerun-v2",
 })
 
+# Noindex pages (24 Oct 2026). Still open to anyone with the link, but they ask
+# search engines to leave them out of results with <meta name="robots"
+# content="noindex">. Do not block these in robots.txt instead: a crawler that
+# cannot fetch the page never sees the noindex and can still list the URL.
+# The Madlanga Pattern report is the case study marked "this report contains
+# errors"; it names a real person in connections the evidence never showed.
+# dist/articles/<slug>.html is only re-rendered when the article is in the
+# database, so the committed file carries the same tag by hand
+# (tests/test_noindex_pages.py checks both).
+NOINDEX_ARTICLES: frozenset[str] = frozenset({
+    "madlanga-hawks-limpopo-municipal-fraud",
+})
+
 # Uncased people (18 Oct 2026). Processing (tools/mega_ingest.py ->
 # core/pipeline/ingest.py) auto-creates person actors from name extraction,
 # e.g. a president mentioned in passing, at confidence 0.5. Graph and Entities
@@ -1311,6 +1324,7 @@ def _build_dist(
     tmpl = env.get_template("article.html")
     for art in pages_articles:
         art["case_study"] = CASE_STUDY_NOTES.get(art["slug"])
+        art["robots_noindex"] = art["slug"] in NOINDEX_ARTICLES
         out = DIST_ART / f"{art['slug']}.html"
         body_html = md_parser.render(art["body_markdown"])
         out.write_text(
