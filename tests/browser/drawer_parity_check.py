@@ -16,6 +16,10 @@ so any "days ago" wording matches.
         --before http://127.0.0.1:8764/ --after http://127.0.0.1:8765/
 
 Exit 0 when everything matches. Batch 11 reruns it against main.
+
+--ignore sd-dates,sd-updated leaves out drawer parts a batch added on
+purpose (Batch 7's dates line and Updated line), so the rest can still be
+compared with the build before it.
 """
 from __future__ import annotations
 
@@ -41,15 +45,19 @@ SEARCHES = ("Musina", "Polokwane", "Mitchells Plain", "Athlone", "Gqeberha", "Ca
 # What the drawer shows: each visible part by id, its text, and the links in it.
 # The Batch 3 loading line (#sd-detail-status) is left out; it is hidden once
 # the details are in.
-SNAPSHOT_JS = """() => {
+SNAPSHOT_JS = """(ignore) => {
   const d = document.getElementById('signal-drawer');
+  const hid = (ignore || []).map(id => document.getElementById(id)).filter(Boolean)
+    .map(el => { const v = el.style.display; el.style.display = 'none'; return [el, v]; });
   const shown = el => !el.closest('[hidden]');
   const parts = Array.from(d.querySelectorAll('[id^="sd-"]'))
     .filter(el => el.id !== 'sd-detail-status' && !el.closest('#sd-detail-status'))
+    .filter(el => !(ignore || []).some(id => el.id === id || el.closest('#' + id)))
     .map(el => [el.id, shown(el), shown(el) ? el.innerText.trim() : '']);
   const links = Array.from(d.querySelectorAll('a'))
-    .filter(a => shown(a))
+    .filter(a => shown(a) && !(ignore || []).some(id => a.closest('#' + id)))
     .map(a => [a.getAttribute('href') || '', a.innerText.trim()]);
+  hid.forEach(([el, v]) => { el.style.display = v; });
   return { parts, links };
 }"""
 
@@ -71,10 +79,10 @@ def _block_tiles(ctx) -> None:
               or "basemaps.cartocdn.com" in r.request.url else r.continue_())
 
 
-def _drawer(page, base: str, short: str) -> dict:
+def _drawer(page, base: str, short: str, ignore=()) -> dict:
     page.goto(base.rstrip("/") + "/?signal=" + short, wait_until="load")
     page.wait_for_function(READY_JS, timeout=20000)
-    return page.evaluate(SNAPSHOT_JS)
+    return page.evaluate(SNAPSHOT_JS, list(ignore))
 
 
 def _search(page, q: str) -> list[str]:
@@ -97,7 +105,8 @@ def _diff(a: dict, b: dict) -> str:
     return ""
 
 
-def run(before: str, after: str, sizes=("computer", "phone"), today: str = "2026-10-24") -> dict:
+def run(before: str, after: str, sizes=("computer", "phone"), today: str = "2026-10-24",
+        ignore=()) -> dict:
     from playwright.sync_api import sync_playwright
 
     before, after = before.rstrip("/") + "/", after.rstrip("/") + "/"
@@ -117,7 +126,7 @@ def run(before: str, after: str, sizes=("computer", "phone"), today: str = "2026
             for rec in records:
                 short = rec["signal_id"][:8]
                 try:
-                    a, b = _drawer(pb, before, short), _drawer(pa, after, short)
+                    a, b = _drawer(pb, before, short, ignore), _drawer(pa, after, short, ignore)
                 except Exception as exc:  # noqa: BLE001
                     rep["problems"].append({"size": size, "what": f"drawer {short}",
                                             "why": f"did not fill: {exc}"[:200]})
@@ -153,8 +162,10 @@ def main(argv=None) -> int:
     ap.add_argument("--after", required=True)
     ap.add_argument("--sizes", default="computer,phone")
     ap.add_argument("--today", default="2026-10-24")
+    ap.add_argument("--ignore", default="", help="comma-separated drawer part ids to leave out")
     args = ap.parse_args(argv)
-    rep = run(args.before, args.after, tuple(args.sizes.split(",")), args.today)
+    rep = run(args.before, args.after, tuple(args.sizes.split(",")), args.today,
+              tuple(i for i in args.ignore.split(",") if i))
     for pr in rep["problems"]:
         print(f"  DIFFERS [{pr['size']}] {pr['what']}: {pr['why']}")
     for size, s in rep["sizes"].items():

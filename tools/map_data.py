@@ -40,6 +40,7 @@ PIN_DIR = "pins"
 #   Area check:    precision, uncertainty_m, incident_at, incident_end,
 #                  incident_event, published_at
 #   clocks:        incident_start, incident_at, incident_end, published_at
+#   age ring and Updated mark (Batch 7): incident_start, last_material_update_at
 MAP_FIELDS: tuple[str, ...] = (
     "signal_id",
     "title",
@@ -60,6 +61,7 @@ MAP_FIELDS: tuple[str, ...] = (
     "uncertainty_m",
     "published_at",
     "published_fmt",
+    "last_material_update_at",
 )
 
 RAW_RE = re.compile(r"var RAW = (\[.*?\]);\s*$", re.M)

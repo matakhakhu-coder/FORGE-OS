@@ -120,6 +120,91 @@
     return dayOfInstant(n * DAY_MS - SAST_OFFSET_MS + 12 * 60 * 60 * 1000);
   }
 
+  /* ── Age ring, Updated mark and the dates line (Batch 7) ───────────────────
+     A pin's age shows as a still ring that steps down through four bands
+     across the live window (0 to 2 days, 3 to 7, 8 to 14, 15 to 29). Past
+     the window (an archived pin a lookup has drawn) there is no ring. Age
+     always counts from the incident day; an update never changes it.
+
+     The Updated mark shows from the South African day of an approved
+     material update (last_material_update_at) to 7 days after it: an update
+     on 24 October shows through 31 October and is gone on 1 November. */
+
+  var AGE_BANDS = [
+    { band: 0, from: 0, to: 2, label: '0 to 2 days' },
+    { band: 1, from: 3, to: 7, label: '3 to 7 days' },
+    { band: 2, from: 8, to: 14, label: '8 to 14 days' },
+    { band: 3, from: 15, to: 29, label: '15 to 29 days' }
+  ];
+  var UPDATED_DAYS = 7;
+  var SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct',
+                      'Nov', 'Dec'];
+
+  // The age band of a pin today: one of AGE_BANDS, or null (past the live
+  // window, or no readable date). A pin dated later than today counts as 0.
+  function ageBand(pin, now) {
+    var a = ageDays(pin, now);
+    if (a === null || a >= LIVE_DAYS) return null;
+    if (a < 0) a = 0;
+    for (var i = 0; i < AGE_BANDS.length; i++) {
+      if (a <= AGE_BANDS[i].to) return AGE_BANDS[i];
+    }
+    return null;
+  }
+
+  // The South African day of the pin's last approved material update, or null.
+  function updatedDay(pin) {
+    return pin ? localDay(pin.last_material_update_at) : null;
+  }
+
+  // Whole days since the last material update (0 = today), or null.
+  function updatedDaysAgo(pin, now) {
+    var d = updatedDay(pin);
+    if (!d) return null;
+    return dayNumber(today(now)) - dayNumber(d);
+  }
+
+  // The Updated mark shows on the update's day and the 7 days after it.
+  function showUpdated(pin, now) {
+    var n = updatedDaysAgo(pin, now);
+    return n !== null && n <= UPDATED_DAYS;
+  }
+
+  // '12 Oct', or '12 Oct 2025' when the year is not this year.
+  function shortDate(day, now) {
+    var m = DATE_ONLY.exec(String(day || ''));
+    if (!m) return '';
+    var s = (+m[3]) + ' ' + SHORT_MONTHS[+m[2] - 1];
+    return m[1] === today(now).slice(0, 4) ? s : s + ' ' + m[1];
+  }
+
+  // The day the incident happened: incident_start, then incident_at. Not
+  // published_at: a pin with no incident date never says "Happened".
+  function happenedDay(pin) {
+    if (!pin) return null;
+    return localDay(pin.incident_start) || localDay(pin.incident_at);
+  }
+
+  // "Happened 12 Oct, added 19 Oct, last updated 24 Oct" (parts it has).
+  function datesLine(pin, now) {
+    var parts = [];
+    var h = happenedDay(pin), a = pin ? localDay(pin.published_at) : null, u = updatedDay(pin);
+    if (h) parts.push('Happened ' + shortDate(h, now));
+    if (a) parts.push('added ' + shortDate(a, now));
+    if (u) parts.push('last updated ' + shortDate(u, now));
+    var s = parts.join(', ');
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+  }
+
+  // How old a pin is, in words: 'today', 'yesterday', '12 days ago', or ''.
+  function ageWords(pin, now) {
+    var a = ageDays(pin, now);
+    if (a === null) return '';
+    if (a <= 0) return 'today';
+    if (a === 1) return 'yesterday';
+    return a + ' days ago';
+  }
+
   function monthOf(pin) {
     var d = incidentDay(pin);
     return d ? d.slice(0, 7) : null;
@@ -289,6 +374,16 @@
     liveFrom: liveFrom,
     monthOf: monthOf,
     monthLabel: monthLabel,
+    AGE_BANDS: AGE_BANDS,
+    UPDATED_DAYS: UPDATED_DAYS,
+    ageBand: ageBand,
+    updatedDay: updatedDay,
+    updatedDaysAgo: updatedDaysAgo,
+    showUpdated: showUpdated,
+    shortDate: shortDate,
+    happenedDay: happenedDay,
+    datesLine: datesLine,
+    ageWords: ageWords,
     configure: configure,
     loadIndex: loadIndex,
     loadMonth: loadMonth,

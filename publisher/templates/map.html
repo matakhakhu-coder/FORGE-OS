@@ -435,8 +435,11 @@
   }
 
   /* No pulse: older signals — static */
+  /* Full strength since Batch 7: the ring now carries age, and at 0.7 the
+     crime red and infrastructure blue fell under 3:1 against the dark map
+     (tests/browser/age_marks_check.py measures it). */
   .sig-dot--static {
-    opacity: 0.7;
+    opacity: 1;
   }
 
   @keyframes sig-pulse-bright {
@@ -451,6 +454,43 @@
     0% { transform: scale(0.8); opacity: 0.6; }
     100% { transform: scale(2.2); opacity: 0; }
   }
+
+  /* ── Age ring and Updated mark (time-aware pins, Batch 7) ────────────────
+     Still, with no motion. The dot keeps its category colour; the ring says
+     how old the incident is and steps down through four bands across the
+     30-day live window, by width, dash and fade, so it never relies on
+     colour. The faintest band still has at least 3:1 contrast against the
+     map (tests/browser/age_marks_check.py measures it). The Updated mark is
+     a white diamond with a dark edge: a shape, not a colour. */
+  .sig-pin { position: relative; width: 14px; height: 14px; }
+  .sig-ring {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    border-color: #dfe8ef; box-sizing: border-box;
+  }
+  /* Whole-pixel widths: browsers round 1.5px down to 1px on most screens. */
+  .sig-ring--0 { inset: -6px; border-width: 3px; border-style: solid;  opacity: 1; }
+  .sig-ring--1 { inset: -5px; border-width: 2px; border-style: solid;  opacity: 0.85; }
+  .sig-ring--2 { inset: -4px; border-width: 1px; border-style: solid;  opacity: 0.7; }
+  .sig-ring--3 { inset: -4px; border-width: 1px; border-style: dashed; opacity: 0.6; }
+  .sig-upd {
+    position: absolute; top: -7px; right: -7px; width: 7px; height: 7px;
+    background: #ffffff; border: 1.5px solid #0b0f14; transform: rotate(45deg);
+    pointer-events: none;
+  }
+  /* The same marks, drawn in the map key and the drawer. */
+  .age-key { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border-dim); }
+  .age-key__title { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 var(--sp-2); }
+  .age-key__intro { font-size: 0.72rem; line-height: 1.45; color: var(--text-secondary); margin: 0 0 var(--sp-2); }
+  .age-key__list { list-style: none; margin: 0; padding: 0; }
+  .age-key__row { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-2); font-size: 0.74rem; color: var(--text-primary); }
+  .age-key__swatch { position: relative; flex-shrink: 0; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: #1b1e23; border-radius: 4px; }
+  .age-key__swatch .sig-pin { transform: scale(0.85); }
+  .age-key__swatch .sig-dot { background: #7a95aa; border-color: #7a95aa; cursor: default; }
+  .sd-dates { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
+  .sd-updated { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
+  .sd-updated[hidden], .sd-dates[hidden] { display: none; }
+  .sd-updated__mark { display: inline-block; width: 7px; height: 7px; margin: 0 6px 1px 2px; background: #ffffff; border: 1.5px solid #0b0f14; transform: rotate(45deg); vertical-align: middle; }
+  .sd-updated__new { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin-left: 4px; }
 
   /* ── MarkerCluster theme override ─────────────────────────────────────── */
   .marker-cluster {
@@ -1464,6 +1504,19 @@
         <div class="stream-toggle on" data-stream-toggle="{{ key }}"></div>
       </div>
       {% endfor %}
+      {# ── Map key: the age ring and the Updated mark (time-aware pins, Batch 7) ── #}
+      <section class="age-key" id="age-key" aria-labelledby="age-key-title">
+        <h3 class="age-key__title" id="age-key-title">How old a pin is</h3>
+        <p class="age-key__intro">The dot's colour is its category. The ring around it shows how long ago the incident happened, counted from the incident date in South African time. The live map shows the last 30 days.</p>
+        <ul class="age-key__list">
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--0"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Thick, solid ring: happened 0 to 2 days ago</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--1"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Medium ring: 3 to 7 days ago</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--2"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Thin, fainter ring: 8 to 14 days ago</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--3"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Thin, dashed ring: 15 to 29 days ago</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-dot sig-dot--static"></span></span></span><span>No ring: older than the 30-day live map. It shows only when you open it or a date lookup finds it, and says which month's archive it's from.</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--1"></span><span class="sig-dot sig-dot--static"></span><span class="sig-upd"></span></span></span><span>White diamond: updated in the last 7 days with a new development. An update never changes the ring, because age counts from the incident.</span></li>
+        </ul>
+      </section>
     </div>
   </div>
 
@@ -1861,6 +1914,8 @@
       <p class="sd-detail-status" id="sd-detail-status" role="status" aria-live="polite" hidden><span id="sd-detail-msg"></span><button type="button" class="ac-link" id="sd-detail-retry" hidden>Try again</button></p>
       <section class="sd-section" id="sd-when-wrap" hidden>
         <h3 class="sd-label">When</h3>
+        <p class="sd-dates" id="sd-dates" hidden></p>
+        <p class="sd-updated" id="sd-updated" hidden></p>
         <dl class="sd-facts" id="sd-when"></dl>
       </section>
       <section class="sd-section" id="sd-where-wrap" hidden>
@@ -2034,12 +2089,18 @@
       : '';
     var when = m.incident ? 'Incident: ' + m.incident
              : (m.published_fmt ? 'Reported ' + m.published_fmt : '');
+    // The ring and the Updated mark in words (Batch 7).
+    var ageBits = [];
+    var ago = FP.happenedDay(m) ? FP.ageWords(m) : '';
+    if (ago) ageBits.push('Happened ' + ago);
+    if (FP.showUpdated(m)) ageBits.push('Updated ' + FP.shortDate(FP.updatedDay(m)));
 
     return (
       '<div class="smap-popup">' +
         '<div class="smap-popup__stream" style="color:' + sColor + '">' + escHtml(m.stream_label || m.stream || '') + '</div>' +
         '<div class="smap-popup__title">' + escHtml(m.title || '') + '</div>' +
         (when ? '<div class="smap-popup__when">' + escHtml(when) + '</div>' : '') +
+        (ageBits.length ? '<div class="smap-popup__when smap-popup__age">' + escHtml(ageBits.join(' \u00b7 ')) + '</div>' : '') +
         gravityHtml +
         '<button type="button" class="smap-popup__view" data-view-event="' + Number(m._idx) + '">View event</button>' +
       '</div>'
@@ -2098,6 +2159,58 @@
   var cutCount = 0;       // markers not drawn by default: archived by date or fetched from a month
   function computeLive(m) { return FP.isLive(m); }
 
+  /* ── Age ring and Updated mark (Batch 7) ─────────────────────────────────
+     Worked out from today's South African date by ForgePins: the ring's band
+     from the incident date, the Updated mark from the last approved material
+     update (shown that day and the 7 days after). An update never changes
+     the ring. Both are redrawn when the day changes (applyLiveCut). */
+  function ageMarkHtml(m) {
+    var band = FP.ageBand(m);
+    var upd = FP.showUpdated(m);
+    return '<div class="sig-pin" data-age-band="' + (band ? band.band : 'none') + '"' +
+      (upd ? ' data-updated="1"' : '') + '>' +
+      (band ? '<span class="sig-ring sig-ring--' + band.band + '" aria-hidden="true"></span>' : '') +
+      (m._dotHtml || '') +
+      (upd ? '<span class="sig-upd" aria-hidden="true"></span>' : '') +
+      '</div>';
+  }
+  function pinIcon(m) {
+    m._ageKey = ageMarkKey(m);
+    return L.divIcon({
+      className: '',
+      html: ageMarkHtml(m),
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -10],
+    });
+  }
+  function ageMarkKey(m) {
+    var band = FP.ageBand(m);
+    return (band ? band.band : 'none') + (FP.showUpdated(m) ? '+u' : '');
+  }
+  // The pin's name for screen readers and the hover tip: title, how long ago
+  // it happened, and the update while its mark shows.
+  function pinTitle(m) {
+    var bits = [];
+    var age = FP.ageWords(m);
+    if (age && FP.happenedDay(m)) bits.push('happened ' + age);
+    if (FP.showUpdated(m)) bits.push('updated ' + FP.shortDate(FP.updatedDay(m)));
+    return (m.title || '') + (bits.length ? ' (' + bits.join(', ') + ')' : '');
+  }
+  // After the day changes: the "days ago" words in the hover tip and the
+  // preview, and the marks themselves when the band or Updated mark changed.
+  function refreshAgeMark(idx) {
+    var m = RAW[idx], mk = markerByIdx[idx];
+    if (!m || !mk) return;
+    mk.options.title = pinTitle(m);
+    var node = mk.getElement && mk.getElement();
+    if (node) node.setAttribute('title', mk.options.title);
+    if (mk.getPopup()) mk.setPopupContent(buildPopup(m));
+    if (m._ageKey === ageMarkKey(m)) return;
+    mk.setIcon(pinIcon(m));
+    if (drawerIdx === idx) markSelected(idx, true);
+  }
+
   function addPin(m, idx, opts) {
     opts = opts || {};
     if (m.lat == null || m.lng == null) return null;
@@ -2119,16 +2232,9 @@
       'border-color:' + color + ';' +
       'box-shadow:0 0 ' + (g >= 0.55 ? '8' : '4') + 'px ' + color + '60;' +
       '"></div>';
+    m._dotHtml = dotHtml;
 
-    var icon = L.divIcon({
-      className: '',
-      html: dotHtml,
-      iconSize: [14, 14],
-      iconAnchor: [7, 7],
-      popupAnchor: [0, -10],
-    });
-
-    var marker = L.marker([m.lat, m.lng], { icon: icon, title: m.title || '' });
+    var marker = L.marker([m.lat, m.lng], { icon: pinIcon(m), title: pinTitle(m) });
     marker.bindPopup(buildPopup(m), { maxWidth: 300 });
     // Pins open the preview themselves, so that while the drawer is open a
     // click swaps the drawer to that pin instead (see onPinActivate).
@@ -2252,6 +2358,7 @@
       if (!m) return;
       if (!ml.extra) m._live = computeLive(m);
       if (ml.extra || !m._live) cutCount++;
+      refreshAgeMark(ml.idx);
     });
     refreshPins();
     if (drawerIdx !== null) syncArchiveNote(RAW[drawerIdx]);
@@ -2277,6 +2384,43 @@
         .map(function (ml) { return shortId(RAW[ml.idx]); });
     },
     recheck: applyLiveCut
+  };
+
+  // window.ZADAge: for the browser checks (Batch 7). marks() is every marker's
+  // band and Updated state as drawn; show(sid) zooms until that pin's own
+  // marker is on screen and reports what its element shows.
+  window.ZADAge = {
+    view: function (lat, lng, z) { map.setView([lat, lng], z, { animate: false }); },
+    marks: function () {
+      return allMarkerLayers.map(function (ml) {
+        var m = RAW[ml.idx];
+        var k = m._ageKey || '';
+        return { id: shortId(m), band: k.split('+')[0], updated: /\+u$/.test(k), extra: !!ml.extra };
+      });
+    },
+    show: function (sid) {
+      var idx = idxByShort[String(sid || '').slice(0, 8).toLowerCase()];
+      var mk = idx == null ? null : markerByIdx[idx];
+      if (!mk || !clusterGroup.hasLayer(mk)) return Promise.resolve(null);
+      return new Promise(function (resolve) {
+        clusterGroup.zoomToShowLayer(mk, function () {
+          var node = mk.getElement && mk.getElement();
+          if (!node) { resolve(null); return; }
+          var pin = node.querySelector('.sig-pin');
+          var ring = node.querySelector('.sig-ring');
+          var cs = ring ? getComputedStyle(ring) : null;
+          var r = node.getBoundingClientRect();
+          resolve({
+            band: pin ? pin.getAttribute('data-age-band') : null,
+            updated: !!node.querySelector('.sig-upd'),
+            title: node.getAttribute('title') || '',
+            ring: cs ? { width: cs.borderTopWidth, style: cs.borderTopStyle,
+                         opacity: cs.opacity, color: cs.borderTopColor } : null,
+            x: r.left + r.width / 2, y: r.top + r.height / 2
+          });
+        });
+      });
+    }
   };
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -3137,6 +3281,31 @@
       facts.appendChild(el('dd', null, r[1]));
       anyFact = true;
     });
+    // Batch 7: "Happened 12 Oct, added 19 Oct, last updated 24 Oct", and the
+    // last material update's note, which stays after the map's mark goes.
+    var datesEl = document.getElementById('sd-dates');
+    var datesText = FP.datesLine(m);
+    datesEl.textContent = datesText;
+    datesEl.hidden = !datesText;
+    var updEl = document.getElementById('sd-updated');
+    updEl.textContent = '';
+    var updDay = FP.updatedDay(m);
+    if (updDay && m.update_note) {
+      if (FP.showUpdated(m)) updEl.appendChild(el('span', 'sd-updated__mark'));
+      updEl.appendChild(document.createTextNode('Updated ' + FP.shortDate(updDay) + ': ' + m.update_note));
+      if (FP.showUpdated(m)) updEl.appendChild(el('span', 'sd-updated__new', 'Updated this week'));
+      (m.update_sources || []).forEach(function (src, i) {
+        updEl.appendChild(document.createTextNode(i ? ', ' : ' Source: '));
+        var a = el('a', null, src.name || src.domain || 'Source');
+        a.href = src.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.addEventListener('click', function (e) { e.preventDefault(); openExtGate(src.url, a); });
+        updEl.appendChild(a);
+      });
+    }
+    updEl.hidden = !updEl.firstChild;
+    anyFact = anyFact || !!datesText || !updEl.hidden;
     section('sd-when-wrap', anyFact);
 
     // Until the details arrive: title, kicker and dates only, and a line

@@ -370,7 +370,8 @@ def _checked_fields(metadata_json: str | None) -> dict:
              "location_note": None, "source_links": [], "basis": None,
              "disagreements": [], "media": [], "incident_start": None,
              "incident_end": None, "incident_event": None,
-             "link_records": [], "search_aliases": []}
+             "link_records": [], "search_aliases": [],
+             "last_material_update_at": None, "update_note": None, "update_sources": []}
     if not metadata_json:
         return empty
     try:
@@ -421,7 +422,29 @@ def _checked_fields(metadata_json: str | None) -> dict:
         # Other names the reports use for the place (Sprint 5): searchable,
         # never shown as the pin's area.
         "search_aliases": [str(a).strip() for a in aliases if str(a).strip()],
+        # The last owner-approved material update (time-aware pins, Batch 2's
+        # clock): the map's Updated mark (7 days) and the drawer's permanent
+        # "Updated [date]: [note]" line (Batch 7). All three or none, as
+        # tools/checked_signals.py requires; only http(s) source links kept.
+        **_material_update(chk),
     }
+
+
+def _material_update(chk: dict) -> dict:
+    when = str(chk.get("last_material_update_at") or "").strip()
+    note = str(chk.get("update_note") or "").strip()
+    if not when or not note:
+        return {"last_material_update_at": None, "update_note": None, "update_sources": []}
+    links = []
+    for src in chk.get("update_sources") or []:
+        if not isinstance(src, dict):
+            continue
+        url = str(src.get("url") or "").strip()
+        if not url.lower().startswith(("https://", "http://")):
+            continue
+        links.append({"name": str(src.get("name") or "Source").strip(), "url": url,
+                      "domain": _source_domain(url)})
+    return {"last_material_update_at": when, "update_note": note, "update_sources": links}
 
 
 def _signal_search_target(s: dict) -> dict:
