@@ -878,6 +878,19 @@
   .gp-line { cursor: pointer; }
   .gp-line__hit { fill: transparent; }
   .gp-line__sel { fill: var(--accent); opacity: 0.16; }
+  /* Zoom into a week (interactive charts Batch 7) */
+  .gp-weeks { margin: 0 0 var(--sp-2); }
+  .gp-weeks__btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .gp-weeks__btn {
+    min-height: 44px; min-width: 44px; padding: 4px 10px; flex: 1 1 auto;
+    background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border-subtle); border-radius: var(--r-sm);
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .gp-weeks__btn[aria-pressed="true"] { color: var(--accent-bright); border-color: var(--accent); background: rgba(0,0,0,0.25); }
+  .gp-weeks__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gp-weeks__note { margin: 6px 0 0; font-size: 0.72rem; color: var(--text-secondary); }
+  .gp-weeks__note[hidden], .gp-col[hidden] { display: none; }
   .gp-chart__summary .gp-hit { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-decoration-color: var(--border-subtle); text-underline-offset: 3px; }
   .gp-hit.is-picked { color: var(--accent-bright); }
   .gp-streams { display: flex; flex-wrap: wrap; gap: 6px; margin: var(--sp-2) 0 0; max-width: 640px; }
@@ -1097,6 +1110,22 @@
     top: auto; bottom: 64px; left: 152px; transform: none;
     max-width: calc(100% - 152px - 400px - 2 * var(--sp-4));
   }
+  /* The map following the Graph panel (interactive charts Batches 6 and 8):
+     one note above the ticker while the slider is off "now" or a heat map
+     cell is picked, with the way back. */
+  .gp-mapnote {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 410; display: flex; align-items: center; gap: var(--sp-2);
+    max-width: calc(100% - 2 * var(--sp-4) - 300px);
+    background: rgba(8,13,18,0.94); border: 1px solid var(--accent-muted);
+    border-radius: var(--r-md); padding: 6px 6px 6px 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  }
+  .gp-mapnote[hidden], .gp-mapnote__btn[hidden], .gp-mapnote__line[hidden] { display: none; }
+  .gp-mapnote__text { display: flex; flex-direction: column; min-width: 0; }
+  .gp-mapnote__line { font-size: 0.74rem; line-height: 1.35; color: var(--text-primary); }
+  .gp-mapnote__btn { min-height: 44px; min-width: 44px; padding: 4px 10px; flex-shrink: 0; }
+  .md-shell.drawer-open .gp-mapnote { left: calc((100% - 400px) / 2); max-width: calc(100% - 400px - 2 * var(--sp-4)); }
   .ac-cross {
     position: absolute; left: 50%; top: 50%; z-index: 405; pointer-events: none;
     width: 44px; height: 44px; margin: -22px 0 0 -22px;
@@ -1178,6 +1207,11 @@
       flex-wrap: wrap; padding: 6px 8px;
     }
     .ac-bar__text { white-space: normal; flex-basis: 100%; font-size: 0.74rem; }
+    .gp-mapnote, .md-shell.drawer-open .gp-mapnote {
+      left: var(--sp-3); right: var(--sp-3); transform: none; bottom: 92px;
+      max-width: none; padding: 4px 4px 4px 10px;
+    }
+    .gp-mapnote__text { flex: 1; }
     .ac-placebar {
       left: var(--sp-3); right: var(--sp-3); top: auto; bottom: 112px; transform: none;
       max-width: none; flex-wrap: wrap;
@@ -1329,7 +1363,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="23 Oct 2026 23:56 UTC" title="23 Oct 2026 23:56 UTC">23 Oct 2026 23:56 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="24 Oct 2026 00:46 UTC" title="24 Oct 2026 00:46 UTC">24 Oct 2026 00:46 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1486,7 +1520,7 @@
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
       <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>72 approved records &middot; as of 23 Oct 2026 23:56 UTC</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>72 approved records &middot; as of 24 Oct 2026 00:46 UTC</span>
       
       <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
     </div>
@@ -1747,7 +1781,7 @@
      </section>
      </div>
     </div>
-    <script type="application/json" id="gp-chart-data">{"axes": {"added_days": ["2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23"], "added_max": 24, "incident_days": ["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-17", "2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21"], "incident_max": 6, "province": ["Western Cape", "Limpopo", "Eastern Cape", "Mpumalanga", "North West", "KwaZulu-Natal"], "province_max": 32, "stream": ["Crime \u0026 Security", "Infrastructure", "Priority Intelligence", "Africa \u0026 World"], "stream_max": 62}, "columns": ["id", "step", "inc", "kind", "added", "stream", "province"], "line": {"bottom": 164, "h": 190, "top": 14, "w": 320, "x0": 24, "x1": 296}, "marks": [{"label": "18 Oct", "step": 0}, {"label": "19", "step": 2}, {"label": "21", "step": 5}, {"label": "22", "step": 8}, {"label": "23", "step": 11}], "rows": [["1a328ebb", 0, "2026-10-10", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["1b6fba13", 0, "2026-10-04", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["7bce2be1", 0, "2026-10-14", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["c2601d28", 0, "2026-10-09", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["dbf90d51", 0, "2026-10-16", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["03459a76", 1, "2026-10-07", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0c5e795f", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0d2ac747", 1, "2026-10-16", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0e974ffd", 1, "2026-10-15", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0f037fc3", 1, "2026-10-01", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["19a71c43", 1, "2026-10-17", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["218c685c", 1, "2026-10-10", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["21b2a9b0", 1, "2026-10-04", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2a848e46", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2a87ec3f", 1, "2026-10-03", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2fdd9a56", 1, "2026-10-08", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["332d8ab4", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["530a09b2", 1, "2026-10-07", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["582ea2d7", 1, "2026-10-03", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["7acad00a", 1, "2026-10-12", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["821f2edc", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["a7c9880f", 1, "2026-10-13", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["d09da7da", 1, "2026-10-11", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["fdb570fb", 1, "2026-10-02", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["318c89be", 2, "2026-10-09", "found", "2026-10-19", "Crime \u0026 Security", "North West"], ["64b7adb5", 2, "2026-10-17", "found", "2026-10-19", "Crime \u0026 Security", "North West"], ["c64476ff", 2, "2026-10-05", "occurred", "2026-10-19", "Crime \u0026 Security", "North West"], ["efbf9e6d", 2, "2026-10-17", "occurred", "2026-10-19", "Crime \u0026 Security", "North West"], ["32b05eda", 3, "2026-10-06", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["335b265d", 3, "2026-10-17", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["417613e8", 3, "2026-10-12", "found", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["578b93c8", 3, "2026-10-04", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["a3d91502", 3, "2026-10-13", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["a86ff098", 3, "2026-10-07", "found", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["ba7824e3", 3, "2026-10-11", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["fd2a6fae", 3, "2026-10-06", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["7aa4eea1", 4, "2026-10-18", "occurred", "2026-10-19", "Crime \u0026 Security", "Western Cape"], ["b842a3b5", 5, "2026-10-19", "occurred", "2026-10-21", "Crime \u0026 Security", "Eastern Cape"], ["048440e0", 6, "2026-10-20", "occurred", "2026-10-21", "Crime \u0026 Security", "Western Cape"], ["adf99019", 7, "2026-10-19", "found", "2026-10-21", "Crime \u0026 Security", "Western Cape"], ["06219161", 8, "2026-10-19", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0c9f233c", 8, "2026-10-18", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0caa5a74", 8, "2026-10-20", "found", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["49773d55", 8, "2026-10-20", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["e0fa3712", 9, "2026-10-17", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0caff1cd", 10, "2026-10-04", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["1f7dbda3", 10, "2026-10-11", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["c889d991", 10, "2026-10-13", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["c99779f1", 10, "2026-10-13", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["cd3f9959", 10, "2026-10-21", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["eaf77245", 10, "2026-10-17", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["f217ddf4", 10, "2026-10-02", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["fb9450c3", 10, "2026-10-13", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["0710d74d", 11, "2026-10-20", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["3679ce0d", 11, "2026-10-02", "found", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["3fd7a79d", 11, "2026-10-04", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["9188e545", 11, "2026-10-08", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["a98cb800", 11, "2026-10-10", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["34ab4d0c", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["638ae62e", 12, "2026-10-11", "found", "2026-10-23", "Infrastructure", "Limpopo"], ["736aae9c", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["b2ec397b", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["b5342d21", 13, null, "undated", "2026-10-23", "Infrastructure", "KwaZulu-Natal"], ["4ce322ea", 14, "2026-10-04", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["c10e0702", 14, "2026-10-01", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["09124894", 15, null, "undated", "2026-10-23", "Africa \u0026 World", "Limpopo"], ["891844fa", 15, "2026-10-16", "occurred", "2026-10-23", "Priority Intelligence", "Limpopo"], ["befc9ba6", 15, null, "later_step", "2026-10-23", "Priority Intelligence", "Limpopo"], ["42598400", 16, "2026-10-11", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["931b443f", 16, null, "later_step", "2026-10-23", "Priority Intelligence", "Limpopo"], ["b66b55ca", 16, "2026-10-16", "occurred", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["f57ecd7b", 16, "2026-10-19", "occurred", "2026-10-23", "Priority Intelligence", "Limpopo"]], "steps": [{"at": "2026-10-18T19:28+02:00", "day": "2026-10-18", "label": "18 Oct, 7:28 PM", "total": 5}, {"at": "2026-10-18T20:50+02:00", "day": "2026-10-18", "label": "18 Oct, 8:50 PM", "total": 24}, {"at": "2026-10-19T02:50+02:00", "day": "2026-10-19", "label": "19 Oct, 2:50 AM", "total": 28}, {"at": "2026-10-19T04:05+02:00", "day": "2026-10-19", "label": "19 Oct, 4:05 AM", "total": 36}, {"at": "2026-10-19T09:45+02:00", "day": "2026-10-19", "label": "19 Oct, 9:45 AM", "total": 37}, {"at": "2026-10-21T13:16+02:00", "day": "2026-10-21", "label": "21 Oct, 1:16 PM", "total": 38}, {"at": "2026-10-21T14:41+02:00", "day": "2026-10-21", "label": "21 Oct, 2:41 PM", "total": 39}, {"at": "2026-10-21T17:48+02:00", "day": "2026-10-21", "label": "21 Oct, 5:48 PM", "total": 40}, {"at": "2026-10-22T12:25+02:00", "day": "2026-10-22", "label": "22 Oct, 12:25 PM", "total": 44}, {"at": "2026-10-22T13:45+02:00", "day": "2026-10-22", "label": "22 Oct, 1:45 PM", "total": 45}, {"at": "2026-10-22T22:16+02:00", "day": "2026-10-22", "label": "22 Oct, 10:16 PM", "total": 53}, {"at": "2026-10-23T11:20+02:00", "day": "2026-10-23", "label": "23 Oct, 11:20 AM", "total": 58}, {"at": "2026-10-23T14:10+02:00", "day": "2026-10-23", "label": "23 Oct, 2:10 PM", "total": 62}, {"at": "2026-10-23T16:45+02:00", "day": "2026-10-23", "label": "23 Oct, 4:45 PM", "total": 63}, {"at": "2026-10-23T17:10+02:00", "day": "2026-10-23", "label": "23 Oct, 5:10 PM", "total": 65}, {"at": "2026-10-23T17:30+02:00", "day": "2026-10-23", "label": "23 Oct, 5:30 PM", "total": 68}, {"at": "2026-10-23T18:05+02:00", "day": "2026-10-23", "label": "23 Oct, 6:05 PM", "total": 72}], "streams": [{"key": "CRIME_INTEL", "label": "Crime \u0026 Security"}, {"key": "INFRASTRUCTURE", "label": "Infrastructure"}, {"key": "PRIORITY", "label": "Priority Intelligence"}, {"key": "GLOBAL", "label": "Africa \u0026 World"}], "total": 72}</script>
+    <script type="application/json" id="gp-chart-data">{"axes": {"added_days": ["2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23"], "added_max": 24, "added_weeks": [], "incident_days": ["2026-10-01", "2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-17", "2026-10-18", "2026-10-19", "2026-10-20", "2026-10-21"], "incident_max": 6, "incident_weeks": [{"from": 0, "label": "1 to 7 Oct", "to": 6}, {"from": 7, "label": "8 to 14 Oct", "to": 13}, {"from": 14, "label": "15 to 21 Oct", "to": 20}], "province": ["Western Cape", "Limpopo", "Eastern Cape", "Mpumalanga", "North West", "KwaZulu-Natal"], "province_max": 32, "stream": ["Crime \u0026 Security", "Infrastructure", "Priority Intelligence", "Africa \u0026 World"], "stream_max": 62}, "columns": ["id", "step", "inc", "kind", "added", "stream", "province"], "line": {"bottom": 164, "h": 190, "top": 14, "w": 320, "x0": 24, "x1": 296}, "marks": [{"label": "18 Oct", "step": 0}, {"label": "19", "step": 2}, {"label": "21", "step": 5}, {"label": "22", "step": 8}, {"label": "23", "step": 11}], "rows": [["1a328ebb", 0, "2026-10-10", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["1b6fba13", 0, "2026-10-04", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["7bce2be1", 0, "2026-10-14", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["c2601d28", 0, "2026-10-09", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["dbf90d51", 0, "2026-10-16", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["03459a76", 1, "2026-10-07", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0c5e795f", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0d2ac747", 1, "2026-10-16", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0e974ffd", 1, "2026-10-15", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["0f037fc3", 1, "2026-10-01", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["19a71c43", 1, "2026-10-17", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["218c685c", 1, "2026-10-10", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["21b2a9b0", 1, "2026-10-04", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2a848e46", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2a87ec3f", 1, "2026-10-03", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["2fdd9a56", 1, "2026-10-08", "found", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["332d8ab4", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["530a09b2", 1, "2026-10-07", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["582ea2d7", 1, "2026-10-03", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["7acad00a", 1, "2026-10-12", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["821f2edc", 1, "2026-10-06", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["a7c9880f", 1, "2026-10-13", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["d09da7da", 1, "2026-10-11", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["fdb570fb", 1, "2026-10-02", "occurred", "2026-10-18", "Crime \u0026 Security", "Western Cape"], ["318c89be", 2, "2026-10-09", "found", "2026-10-19", "Crime \u0026 Security", "North West"], ["64b7adb5", 2, "2026-10-17", "found", "2026-10-19", "Crime \u0026 Security", "North West"], ["c64476ff", 2, "2026-10-05", "occurred", "2026-10-19", "Crime \u0026 Security", "North West"], ["efbf9e6d", 2, "2026-10-17", "occurred", "2026-10-19", "Crime \u0026 Security", "North West"], ["32b05eda", 3, "2026-10-06", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["335b265d", 3, "2026-10-17", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["417613e8", 3, "2026-10-12", "found", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["578b93c8", 3, "2026-10-04", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["a3d91502", 3, "2026-10-13", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["a86ff098", 3, "2026-10-07", "found", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["ba7824e3", 3, "2026-10-11", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["fd2a6fae", 3, "2026-10-06", "occurred", "2026-10-19", "Crime \u0026 Security", "Eastern Cape"], ["7aa4eea1", 4, "2026-10-18", "occurred", "2026-10-19", "Crime \u0026 Security", "Western Cape"], ["b842a3b5", 5, "2026-10-19", "occurred", "2026-10-21", "Crime \u0026 Security", "Eastern Cape"], ["048440e0", 6, "2026-10-20", "occurred", "2026-10-21", "Crime \u0026 Security", "Western Cape"], ["adf99019", 7, "2026-10-19", "found", "2026-10-21", "Crime \u0026 Security", "Western Cape"], ["06219161", 8, "2026-10-19", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0c9f233c", 8, "2026-10-18", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0caa5a74", 8, "2026-10-20", "found", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["49773d55", 8, "2026-10-20", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["e0fa3712", 9, "2026-10-17", "occurred", "2026-10-22", "Crime \u0026 Security", "Western Cape"], ["0caff1cd", 10, "2026-10-04", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["1f7dbda3", 10, "2026-10-11", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["c889d991", 10, "2026-10-13", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["c99779f1", 10, "2026-10-13", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["cd3f9959", 10, "2026-10-21", "occurred", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["eaf77245", 10, "2026-10-17", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["f217ddf4", 10, "2026-10-02", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["fb9450c3", 10, "2026-10-13", "found", "2026-10-22", "Crime \u0026 Security", "Limpopo"], ["0710d74d", 11, "2026-10-20", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["3679ce0d", 11, "2026-10-02", "found", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["3fd7a79d", 11, "2026-10-04", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["9188e545", 11, "2026-10-08", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["a98cb800", 11, "2026-10-10", "occurred", "2026-10-23", "Crime \u0026 Security", "Mpumalanga"], ["34ab4d0c", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["638ae62e", 12, "2026-10-11", "found", "2026-10-23", "Infrastructure", "Limpopo"], ["736aae9c", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["b2ec397b", 12, null, "undated", "2026-10-23", "Infrastructure", "Limpopo"], ["b5342d21", 13, null, "undated", "2026-10-23", "Infrastructure", "KwaZulu-Natal"], ["4ce322ea", 14, "2026-10-04", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["c10e0702", 14, "2026-10-01", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["09124894", 15, null, "undated", "2026-10-23", "Africa \u0026 World", "Limpopo"], ["891844fa", 15, "2026-10-16", "occurred", "2026-10-23", "Priority Intelligence", "Limpopo"], ["befc9ba6", 15, null, "later_step", "2026-10-23", "Priority Intelligence", "Limpopo"], ["42598400", 16, "2026-10-11", "found", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["931b443f", 16, null, "later_step", "2026-10-23", "Priority Intelligence", "Limpopo"], ["b66b55ca", 16, "2026-10-16", "occurred", "2026-10-23", "Crime \u0026 Security", "Limpopo"], ["f57ecd7b", 16, "2026-10-19", "occurred", "2026-10-23", "Priority Intelligence", "Limpopo"]], "steps": [{"at": "2026-10-18T19:28+02:00", "day": "2026-10-18", "label": "18 Oct, 7:28 PM", "total": 5}, {"at": "2026-10-18T20:50+02:00", "day": "2026-10-18", "label": "18 Oct, 8:50 PM", "total": 24}, {"at": "2026-10-19T02:50+02:00", "day": "2026-10-19", "label": "19 Oct, 2:50 AM", "total": 28}, {"at": "2026-10-19T04:05+02:00", "day": "2026-10-19", "label": "19 Oct, 4:05 AM", "total": 36}, {"at": "2026-10-19T09:45+02:00", "day": "2026-10-19", "label": "19 Oct, 9:45 AM", "total": 37}, {"at": "2026-10-21T13:16+02:00", "day": "2026-10-21", "label": "21 Oct, 1:16 PM", "total": 38}, {"at": "2026-10-21T14:41+02:00", "day": "2026-10-21", "label": "21 Oct, 2:41 PM", "total": 39}, {"at": "2026-10-21T17:48+02:00", "day": "2026-10-21", "label": "21 Oct, 5:48 PM", "total": 40}, {"at": "2026-10-22T12:25+02:00", "day": "2026-10-22", "label": "22 Oct, 12:25 PM", "total": 44}, {"at": "2026-10-22T13:45+02:00", "day": "2026-10-22", "label": "22 Oct, 1:45 PM", "total": 45}, {"at": "2026-10-22T22:16+02:00", "day": "2026-10-22", "label": "22 Oct, 10:16 PM", "total": 53}, {"at": "2026-10-23T11:20+02:00", "day": "2026-10-23", "label": "23 Oct, 11:20 AM", "total": 58}, {"at": "2026-10-23T14:10+02:00", "day": "2026-10-23", "label": "23 Oct, 2:10 PM", "total": 62}, {"at": "2026-10-23T16:45+02:00", "day": "2026-10-23", "label": "23 Oct, 4:45 PM", "total": 63}, {"at": "2026-10-23T17:10+02:00", "day": "2026-10-23", "label": "23 Oct, 5:10 PM", "total": 65}, {"at": "2026-10-23T17:30+02:00", "day": "2026-10-23", "label": "23 Oct, 5:30 PM", "total": 68}, {"at": "2026-10-23T18:05+02:00", "day": "2026-10-23", "label": "23 Oct, 6:05 PM", "total": 72}], "streams": [{"key": "CRIME_INTEL", "label": "Crime \u0026 Security"}, {"key": "INFRASTRUCTURE", "label": "Infrastructure"}, {"key": "PRIORITY", "label": "Priority Intelligence"}, {"key": "GLOBAL", "label": "Africa \u0026 World"}], "total": 72}</script>
   </div>
 
   
@@ -1858,6 +1892,15 @@
     <button type="button" class="ac-bar__btn" id="ac-bar-all">Show all</button>
   </div>
   <div class="ac-cross" id="ac-cross" aria-hidden="true" hidden></div>
+  
+  <div class="gp-mapnote" id="gp-mapnote" hidden>
+    <span class="gp-mapnote__text" role="status" aria-live="polite">
+      <span class="gp-mapnote__line" id="gp-mapnote-time" hidden></span>
+      <span class="gp-mapnote__line" id="gp-mapnote-cell" hidden></span>
+    </span>
+    <button type="button" class="ac-bar__btn gp-mapnote__btn" id="gp-mapnote-clear" hidden>Clear</button>
+    <button type="button" class="ac-bar__btn ac-bar__btn--main gp-mapnote__btn" id="gp-mapnote-now" hidden>Back to now</button>
+  </div>
   <div class="ac-placebar" id="ac-placebar" role="dialog" aria-label="Place the centre on the map" hidden>
     <span class="ac-placebar__text">Move the map until the cross is on the spot.</span>
     <button type="button" class="ac-bar__btn ac-bar__btn--main" id="ac-place-use">Use this spot</button>
@@ -2153,7 +2196,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 23 Oct 2026 23:56 UTC
+        Generated 24 Oct 2026 00:46 UTC
       </div>
     </div>
   </footer>
@@ -2161,7 +2204,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 23 Oct 2026 23:56 UTC</span>
+    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · 24 Oct 2026 00:46 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -2537,9 +2580,18 @@
   // open in the drawer always shows, even outside the circle.
   var pinFilter = null;
   var areaUI = null;
+  // The Graph panel's slider (Batch 6) and heat map (Batch 8): RAW idx -> true
+  // for the pins they keep, or null. Streams and Area check still apply on
+  // top; the drawer's pin always shows.
+  var timeIdx = null;
+  var cellIdx = null;
+  function mapFiltered() { return !!(pinFilter || timeIdx || cellIdx); }
   function pinShowState(ml) {
     if (streamVisible[ml.stream] === false) return 'out';
-    if (!pinFilter || ml.idx === drawerIdx) return 'in';
+    if (ml.idx === drawerIdx) return 'in';
+    if (timeIdx && !timeIdx[ml.idx]) return 'out';
+    if (cellIdx && !cellIdx[ml.idx]) return 'out';
+    if (!pinFilter) return 'in';
     return pinFilter(ml.idx);
   }
   function refreshPins() {
@@ -2556,7 +2608,7 @@
     if (rem.length) clusterGroup.removeLayers(rem);
     if (add.length) clusterGroup.addLayers(add);
     linkLayers.forEach(function (ln) {
-      var vis = !pinFilter || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
+      var vis = !mapFiltered() || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
       if (vis && !map.hasLayer(ln.layer)) ln.layer.addTo(map);
       else if (!vis && map.hasLayer(ln.layer)) map.removeLayer(ln.layer);
     });
@@ -3368,7 +3420,7 @@
     if (opts.trigger || !wasOpen) drawerTrigger = opts.trigger || null;
     fillDrawer(m);
     drawerIdx = idx;
-    if (pinFilter) refreshPins();   // the open pin shows even outside the Area check circle
+    if (mapFiltered()) refreshPins();   // the open pin shows even outside the Area check circle or the slider's step
     if (areaUI) areaUI.onDrawer();
     markSelected(idx, true);
 
@@ -3402,7 +3454,7 @@
     closeExtGate({ restoreFocus: false });
     markSelected(drawerIdx, false);
     drawerIdx = null;
-    if (pinFilter) refreshPins();
+    if (mapFiltered()) refreshPins();
     if (areaUI) areaUI.onDrawer();
     drawer.hidden = true;
     shellEl.classList.remove('drawer-open');
@@ -3698,6 +3750,69 @@
       setStreamVisible(toggle.dataset.streamToggle, !toggle.classList.contains('on'));
     });
   });
+
+  /* ── The map follows the Graph panel (interactive charts Batches 6 and 8) ── */
+  // record-charts.js owns the counting and calls these with the short IDs to
+  // keep: setTime once per publish step while the slider is off "now" (null
+  // at "now": the map is exactly as without the charts), setCell while a heat
+  // map cell is picked. The note above the ticker says why pins are missing
+  // and has the way back.
+  (function () {
+    var note = document.getElementById('gp-mapnote');
+    if (!note) return;
+    var timeLine = document.getElementById('gp-mapnote-time');
+    var cellLine = document.getElementById('gp-mapnote-cell');
+    var nowBtn = document.getElementById('gp-mapnote-now');
+    var clearBtn = document.getElementById('gp-mapnote-clear');
+    function idxSet(ids) {
+      var o = {};
+      (ids || []).forEach(function (id) { var i = idxForSignal(id); if (i !== null) o[i] = true; });
+      return o;
+    }
+    function show() {
+      timeLine.hidden = !timeIdx; nowBtn.hidden = !timeIdx;
+      cellLine.hidden = !cellIdx; clearBtn.hidden = !cellIdx;
+      note.hidden = !timeIdx && !cellIdx;
+    }
+    nowBtn.addEventListener('click', function () {
+      var C = window.ZADRecordCharts;
+      if (C) C.setStep(C.steps - 1, { settled: true });
+      else { timeIdx = null; refreshPins(); show(); }
+    });
+    clearBtn.addEventListener('click', function () {
+      var C = window.ZADRecordCharts;
+      if (C && C.clearCell) C.clearCell();
+      else { cellIdx = null; refreshPins(); show(); }
+    });
+    window.ZADMapTime = {
+      // o: null (now), or { ids: [...] | null (unchanged), text }
+      setTime: function (o) {
+        var redraw = false;
+        if (!o) { redraw = !!timeIdx; timeIdx = null; }
+        else {
+          if (o.ids) { timeIdx = idxSet(o.ids); redraw = true; }
+          timeLine.textContent = o.text || '';
+        }
+        if (redraw) refreshPins();
+        show();
+      },
+      setCell: function (o) {
+        var redraw = false;
+        if (!o) { redraw = !!cellIdx; cellIdx = null; }
+        else {
+          if (o.ids) { cellIdx = idxSet(o.ids); redraw = true; }
+          cellLine.textContent = o.text || '';
+        }
+        if (redraw) refreshPins();
+        show();
+      },
+      // for the browser checks: short IDs of the pins on the map now
+      shown: function () {
+        return allMarkerLayers.filter(function (ml) { return clusterGroup.hasLayer(ml.layer); })
+          .map(function (ml) { return shortId(RAW[ml.idx]); });
+      }
+    };
+  })();
 
   /* ── Area check (address radar, Sprints A and B) ────────────────────────── */
   if (window.ZADArea) {

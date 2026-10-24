@@ -204,6 +204,60 @@
   }
 
   /* ── Columns (Added by day): grow up from the base ── */
+  /* ── Zoom into a week (Batch 7) ──
+     Week buttons above the incident line and the Added columns: "All", then
+     the weeks Python cut from the day axis (tools/record_charts.chart_weeks).
+     A week only narrows what is drawn; the slider, the streams and every
+     count work the same inside it, and the week note says how the records
+     split between the week and the other days, so the totals add up. An axis
+     of a week or less gets no buttons. */
+  var WEEKS = {};           // page id -> { weeks, at (index or -1), pick }
+  function weekBar(pid, weeks, before, onPick) {
+    if (!weeks || weeks.length < 2 || !before) return null;
+    var wrap = el('div', 'gp-weeks');
+    var group = el('div', 'gp-weeks__btns');
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', 'Zoom into a week');
+    var note = el('p', 'gp-weeks__note');
+    note.hidden = true;
+    var btns = [];
+    var W = { weeks: weeks, at: -1, note: note };
+    [{ label: 'All' }].concat(weeks).forEach(function (w, k) {
+      var b = el('button', 'gp-weeks__btn', w.label);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', k ? 'false' : 'true');
+      b.setAttribute('data-week', String(k - 1));
+      if (k) b.setAttribute('aria-label', 'Zoom into ' + w.label);
+      b.addEventListener('click', function () { W.pick(k - 1); });
+      group.appendChild(b);
+      btns.push(b);
+    });
+    W.pick = function (k) {
+      k = Math.max(-1, Math.min(weeks.length - 1, +k));
+      W.at = k;
+      btns.forEach(function (b, j) { b.setAttribute('aria-pressed', j === k + 1 ? 'true' : 'false'); });
+      onPick(k < 0 ? null : weeks[k]);
+      setStep(current, { force: true, settled: true });
+    };
+    wrap.appendChild(group);
+    wrap.appendChild(note);
+    before.parentNode.insertBefore(wrap, before);
+    WEEKS[pid] = W;
+    return W;
+  }
+  // "15 to 21 Oct: 22 records on the line · 43 on other days"
+  function weekNote(W, perDay, what) {
+    if (!W) return;
+    if (W.at < 0) { W.note.hidden = true; return; }
+    var w = W.weeks[W.at], inside = 0, every = 0;
+    for (var i = 0; i < perDay.length; i++) {
+      every += perDay[i];
+      if (i >= w.from && i <= w.to) inside += perDay[i];
+    }
+    W.note.textContent = w.label + ': ' + plural(inside, 'record') + ' ' + what + ' \u00b7 ' + (every - inside) + ' on other days';
+    W.note.hidden = false;
+  }
+
   function setupColumns() {
     var page = document.getElementById('gp-page-added');
     if (!page) return;
@@ -244,7 +298,16 @@
       undatedBtn.addEventListener('click', function () { openList('added', null, undatedBtn); });
       pickTargets.push({ pid: 'added', key: null, el: undatedBtn });
     }
+    var colScroll = page.querySelector('.gp-cols-scroll');
+    var addedWeek = weekBar('added', AX.added_weeks, colScroll, function (w) {
+      Array.prototype.forEach.call(items, function (li, i) {
+        li.hidden = !!w && (i < w.from || i > w.to);
+      });
+      var st = lists.added;
+      if (w && st && st.key !== null && (AX.added_days.indexOf(st.key) < w.from || AX.added_days.indexOf(st.key) > w.to)) closeList('added');
+    });
     renderers.push(function (c) {
+      weekNote(addedWeek, c.added, 'added');
       for (var i = 0; i < tw.length; i++) {
         tw[i].to = c.added[i]; nums[i].textContent = c.added[i];
         btns[i].setAttribute('aria-label', 'Added ' + dayLabel(AX.added_days[i]) + ': ' + plural(c.added[i], 'record') + '. List them');
@@ -318,7 +381,10 @@
     path.setAttribute('d', monotonePath(xs, ys));
     if (poly) { poly.parentNode.insertBefore(path, poly); poly.parentNode.removeChild(poly); }
     else svg.insertBefore(path, circles[0]);
-    afterFrame.push(function () { path.setAttribute('d', monotonePath(xs, ys)); });
+    // the days drawn: all of them, or one week (Batch 7)
+    var view = [0, xs.length - 1];
+    function drawPath() { path.setAttribute('d', monotonePath(xs.slice(view[0], view[1] + 1), ys.slice(view[0], view[1] + 1))); }
+    afterFrame.push(drawPath);
 
     /* Tap a day (Batch 4): the whole day column is the target, from halfway
        to the day before to halfway to the day after, the chart's full height.
@@ -332,26 +398,75 @@
     svg.insertBefore(band, svg.firstChild);
     var hits = document.createElementNS(NS, 'g');
     hits.setAttribute('class', 'gp-line__hits');
-    var edges = xs.map(function (x, i) {
-      var a = i ? (xs[i - 1] + x) / 2 : Math.max(vb[0], x - (xs[1] - x || 10) / 2);
-      var b = i < xs.length - 1 ? (x + xs[i + 1]) / 2 : Math.min(vb[0] + vb[2], x + (x - xs[i - 1] || 10) / 2);
-      return [a, b];
-    });
-    edges.forEach(function (e, i) {
+    var edges = [], hitRects = [];
+    function placeHits() {
+      var a0 = view[0], b0 = view[1];
+      for (var i = 0; i < xs.length; i++) {
+        if (i < a0 || i > b0) { edges[i] = null; hitRects[i].style.display = 'none'; continue; }
+        var x = xs[i];
+        var a = i > a0 ? (xs[i - 1] + x) / 2 : Math.max(vb[0], x - ((i < b0 ? xs[i + 1] - x : 0) || 10) / 2);
+        var b = i < b0 ? (x + xs[i + 1]) / 2 : Math.min(vb[0] + vb[2], x + ((i > a0 ? x - xs[i - 1] : 0) || 10) / 2);
+        edges[i] = [a, b];
+        hitRects[i].setAttribute('x', a.toFixed(2)); hitRects[i].setAttribute('width', (b - a).toFixed(2));
+        hitRects[i].style.display = '';
+      }
+    }
+    xs.forEach(function (x, i) {
       var r = document.createElementNS(NS, 'rect');
       r.setAttribute('class', 'gp-line__hit');
-      r.setAttribute('x', e[0].toFixed(2)); r.setAttribute('width', (e[1] - e[0]).toFixed(2));
       r.setAttribute('y', vb[1]); r.setAttribute('height', vb[3]);
       r.setAttribute('data-day', AX.incident_days[i]);
       r.addEventListener('click', function () { openList('incident', AX.incident_days[i], fig); });
       hits.appendChild(r);
+      hitRects.push(r);
     });
+    placeHits();
     svg.appendChild(hits);
+
+    // Week zoom (Batch 7): the week's days spread across the chart's width,
+    // each day labelled under the line; the height keeps today's scale.
+    var xs0 = xs.slice();
+    var X0 = T.line.x0, X1 = T.line.x1;
+    var xlabs = svg.querySelectorAll('.gp-line__xlab');
+    var zoomLabs = document.createElementNS(NS, 'g');
+    zoomLabs.setAttribute('class', 'gp-line__zoomlabs');
+    svg.insertBefore(zoomLabs, hits);
+    var lineWeek = weekBar('incident', AX.incident_weeks, svg.parentNode, function (w) {
+      view = w ? [w.from, w.to] : [0, xs.length - 1];
+      var a = view[0], b = view[1], zoomed = !!w;
+      while (zoomLabs.firstChild) zoomLabs.removeChild(zoomLabs.firstChild);
+      for (var i = 0; i < xs.length; i++) {
+        var on = i >= a && i <= b;
+        circles[i].style.display = on ? '' : 'none';
+        if (!on) continue;
+        xs[i] = !zoomed ? xs0[i] : (b > a ? X0 + (X1 - X0) * (i - a) / (b - a) : (X0 + X1) / 2);
+        circles[i].setAttribute('cx', xs[i].toFixed(2));
+        if (zoomed) {
+          var t = document.createElementNS(NS, 'text');
+          t.setAttribute('class', 'gp-line__xlab');
+          t.setAttribute('x', xs[i].toFixed(2));
+          t.setAttribute('y', (T.line.h - 8).toFixed(0));
+          t.setAttribute('text-anchor', 'middle');
+          var d = AX.incident_days[i];
+          t.textContent = i === a ? dayLabel(d) : String(+d.slice(8, 10));
+          zoomLabs.appendChild(t);
+        }
+      }
+      Array.prototype.forEach.call(xlabs, function (t) { t.style.display = zoomed ? 'none' : ''; });
+      placeHits();
+      drawPath();
+      var st = lists.incident;
+      if (st && st.key !== 'undated' && st.key !== 'later_step') {
+        var k = AX.incident_days.indexOf(st.key);
+        if (k < a || k > b) closeList('incident');
+        else if (LINE_PICK) LINE_PICK(st.key);
+      }
+    });
     var fig = svg.parentNode;
     fig.tabIndex = 0;
     fig.setAttribute('aria-label', 'Records by day. Enter lists a day\u2019s records; the left and right arrow keys change the day.');
     fig.addEventListener('keydown', function (e) {
-      var days = AX.incident_days, st = lists.incident, at = (st && days.indexOf(st.key));
+      var days = AX.incident_days.slice(view[0], view[1] + 1), st = lists.incident, at = (st && days.indexOf(st.key));
       if (at === undefined || at === null || at < 0) at = -1;
       var to = null;
       if (e.key === 'ArrowRight') to = at < 0 ? 0 : Math.min(days.length - 1, at + 1);
@@ -359,7 +474,7 @@
       else if (e.key === 'Home') to = 0;
       else if (e.key === 'End') to = days.length - 1;
       else if (e.key === 'Enter' || e.key === ' ') {
-        if (at < 0) { var c = counts(current), best = 0; c.incident.forEach(function (v, i) { if (v > c.incident[best]) best = i; }); to = best; }
+        if (at < 0) { var c = counts(current).incident.slice(view[0], view[1] + 1), best = 0; c.forEach(function (v, i) { if (v > c[best]) best = i; }); to = best; }
         else to = at;
       } else if (e.key === 'Escape' && st) { closeList('incident'); e.preventDefault(); return; }
       if (to === null) return;
@@ -368,7 +483,7 @@
     });
     LINE_PICK = function (key) {
       var i = AX.incident_days.indexOf(key);
-      if (i < 0) { band.style.display = 'none'; return; }
+      if (i < 0 || !edges[i]) { band.style.display = 'none'; return; }
       band.setAttribute('x', edges[i][0].toFixed(2)); band.setAttribute('width', (edges[i][1] - edges[i][0]).toFixed(2));
       band.style.display = '';
     };
@@ -386,6 +501,7 @@
     if (summary) { sumBtns.undated = sumButton('undated'); sumBtns.later_step = sumButton('later_step'); }
 
     renderers.push(function (c) {
+      weekNote(lineWeek, c.incident, 'on the line');
       for (var i = 0; i < tw.length; i++) {
         tw[i].to = c.incident[i];
         if (titles[i]) titles[i].textContent = labels[i] + ': ' + plural(c.incident[i], 'record');
@@ -410,6 +526,7 @@
     });
     LINE = {
       path: path, xs: xs,
+      view: function () { return view.slice(); },
       ys: function () { return ys.slice(); },
       monotonePath: monotonePath
     };
@@ -461,9 +578,13 @@
     return 'Date not stated';
   }
   function dayKeys(pid, key) {
-    if (pid === 'incident' && key !== 'undated' && key !== 'later_step') return AX.incident_days;
-    if (pid === 'added' && key !== null) return AX.added_days;
-    return null;
+    var days = null;
+    if (pid === 'incident' && key !== 'undated' && key !== 'later_step') days = AX.incident_days;
+    if (pid === 'added' && key !== null) days = AX.added_days;
+    // inside a week (Batch 7), previous and next day stay in the week
+    var W = WEEKS[pid];
+    if (days && W && W.at >= 0) days = days.slice(W.weeks[W.at].from, W.weeks[W.at].to + 1);
+    return days;
   }
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -589,6 +710,38 @@
     return txt;
   }
 
+  /* ── The map follows the slider (Batch 6) ──
+     Off "now", the map keeps only the pins added by the slider's publish:
+     the same rows the charts count (step <= s), before streams, because the
+     map applies its own stream switches and Area check on top. It changes once
+     per publish step, never per animation frame. At "now" the map is left
+     exactly as it is without the charts. */
+  var mapStep = LAST;
+  function idsAtStep(s) {
+    var out = [];
+    for (var i = 0; i < T.rows.length; i++) {
+      var st = T.rows[i][COL.step];
+      if (st !== null && st <= s) out.push(T.rows[i][COL.id]);
+    }
+    return out;
+  }
+  function pushMap(s, c, changed) {
+    var M = window.ZADMapTime;
+    if (!M || !M.setTime) return;
+    if (s === LAST) {
+      if (mapStep !== LAST) M.setTime(null);
+      mapStep = LAST;
+      return;
+    }
+    var st = T.steps[s];
+    var text = 'Map as of ' + st.label + ' (pins added by then) \u00b7 ' +
+      c.total + ' of ' + plural(T.total, 'record');
+    var on = streamsOn().length;
+    if (STREAMS.length && on < STREAMS.length) text += ' (' + on + ' of ' + STREAMS.length + ' streams)';
+    M.setTime({ ids: s !== mapStep ? idsAtStep(s) : null, text: text });
+    mapStep = s;
+  }
+
   function setStep(s, opts) {
     s = Math.max(0, Math.min(LAST, Math.round(+s)));
     var c = counts(s);
@@ -604,6 +757,7 @@
     for (var i = 0; i < renderers.length; i++) renderers[i](c);
     for (var pid in lists) renderList(pid);
     if (changed || (opts && opts.force)) startMotion();
+    pushMap(s, c, changed);
     clearTimeout(announceTimer);
     announceTimer = setTimeout(function () {
       for (var k = 0; k < announcers.length; k++) announcers[k](c);
@@ -672,6 +826,9 @@
     closeList: closeList,
     ids: function (pid, key) { return rowsFor(pid, key, current).map(function (r) { return r[COL.id]; }); },
     streams: function () { return streamsOn().map(function (s) { return s.key; }); },
-    setStream: setStream
+    setStream: setStream,
+    idsAtStep: idsAtStep,
+    pickWeek: function (pid, k) { if (WEEKS[pid]) WEEKS[pid].pick(k); },
+    week: function (pid) { return WEEKS[pid] ? WEEKS[pid].at : null; }
   };
 })();
