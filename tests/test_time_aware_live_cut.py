@@ -14,7 +14,7 @@ The plan: docs in /home/sprite/forge-map-time-aware-build-batches-2026-10-24.md.
   the drawer.
 - The static nothing-missing check follows the loader: in a December build
   every pin reaches map, link, Watchlist and search through its month file,
-  and only Area check is a gap until Batch 6.
+  (Batch 6 closed the one gap Batch 5 left, Area check.)
 
 The browser checks (tests/browser/live_cut_check.py, and the nothing-missing
 check on a December build) run only when the browser checks are switched on
@@ -210,7 +210,8 @@ def test_template_draws_only_live_pins_by_default():
     html = TEMPLATE.read_text(encoding="utf-8")
     assert "m._live = computeLive(m);" in html
     assert "if (m._live && !opts.fromArchive) clusterGroup.addLayer(marker);" in html
-    assert "if (ml.extra) return 'out';" in html
+    # archived pins stay off unless a lookup names them (Batch 6)
+    assert "if (ml.extra && !mapFiltered()) return 'out';" in html
     assert "(timeIdx || cellIdx || (RAW[ml.idx] && RAW[ml.idx]._live)) ? 'in' : 'out'" in html
     assert "if (FP.today() !== liveDay) applyLiveCut();" in html
 
@@ -233,14 +234,14 @@ def test_no_page_text_promises_a_crime_rate_or_a_months_view():
 
 # ── The static nothing-missing check follows the loader ────────────────────────
 
-def test_december_build_reaches_every_pin_except_through_area_check(built_dec):
+def test_december_build_reaches_every_pin_every_way(built_dec):
+    # Batch 5 left Area check as the one gap; Batch 6 closes it (Area check
+    # loads the months its dates touch). tests/test_time_aware_area_archive.py
     data = nm.load_dist(built_dec)
     assert data["markers"] == [] and data["archive"]["live_months"] == ["2026-11", "2026-12"]
     rep = nm.check(data=data)
-    assert rep["routes"] == {"map": ALL_PINS, "link": ALL_PINS, "watchlist": ALL_PINS,
-                             "search": ALL_PINS, "area": 0}
-    assert {p["route"] for p in rep["problems"]} == {"area"}
-    assert all("Batch 6" in p["why"] for p in rep["problems"])
+    assert rep["routes"] == {r: ALL_PINS for r in nm.ROUTES}
+    assert rep["problems"] == []
 
 
 def test_an_archived_pin_missing_from_its_month_is_caught(built_dec):
@@ -313,9 +314,7 @@ def test_browser_live_cut(served):
 def test_browser_december_build_reaches_archived_pins(served):
     import nothing_missing_check
     out, base = served
-    rep = nothing_missing_check.run(base + "dec/", "2026-12-15", ("computer", "phone"),
-                                    routes=("map", "link", "watchlist", "search"))
+    rep = nothing_missing_check.run(base + "dec/", "2026-12-15", ("computer", "phone"))
     assert rep["problems"] == []
-    for size in ("computer", "phone"):
-        assert rep["sizes"][size] == {"map": ALL_PINS, "link": ALL_PINS, "watchlist": ALL_PINS,
-                                       "search": ALL_PINS}
+    for size in ("computer", "phone"):       # Area check too, from Batch 6
+        assert rep["sizes"][size] == {r: ALL_PINS for r in nm.ROUTES}

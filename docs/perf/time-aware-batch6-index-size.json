@@ -1,0 +1,45 @@
+{
+ "what": "archive/index.json size, Batch 5 (with the title list) vs Batch 6 (without); made-up pins copy real ones with new ids; written for 15 December 2026, all pins archived; tests/browser/archive_index_size.py",
+ "batch5": {
+  "real": {
+   "pins": 72,
+   "bytes": 10505,
+   "gzip_bytes": 4165
+  },
+  "made_up": [
+   {
+    "pins": 1000,
+    "bytes": 137279
+   },
+   {
+    "pins": 5000,
+    "bytes": 683080
+   },
+   {
+    "pins": 10000,
+    "bytes": 1364531
+   }
+  ]
+ },
+ "batch6": {
+  "real": {
+   "pins": 72,
+   "bytes": 2188,
+   "gzip_bytes": 873
+  },
+  "made_up": [
+   {
+    "pins": 1000,
+    "bytes": 21680
+   },
+   {
+    "pins": 5000,
+    "bytes": 105680
+   },
+   {
+    "pins": 10000,
+    "bytes": 210682
+   }
+  ]
+ }
+}

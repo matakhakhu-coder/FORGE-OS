@@ -33,7 +33,11 @@ such an archived pin:
              sends that short id to its month, and the month holds exactly
              one pin with it (ForgePins.findPin)
   watchlist  the saved ?signal= link comes back to it the same way
-  area       a gap until Batch 6: Area check reads only the page's live list
+  area       from Batch 6 Area check loads the months that All and Pick dates
+             touch (archive/index.json's months, then the month file), so
+             the pin needs its month listed in the index and, in its month
+             file, a readable incident date on its own incident day and a
+             usable uncertainty, as for a pin on the page
 
 This file reads a built dist/ only; it changes nothing. Later batches move pins
 into month files, and this check (with the browser version in
@@ -279,8 +283,29 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
             counts["search"] += 1
         else:
             bad(rec, "search", "no single titled search document pointing at its ?signal= link")
-        bad(rec, "area", f"archived in {month}: Area check reads only the page's live list "
-                         "until Batch 6 loads month files")
+        listed = month in (archive or {}).get("months", {})
+        if not listed:
+            bad(rec, "area", f"archive/index.json does not list {month}, so Area check never loads it")
+        elif _drawn(e):
+            check_area(rec, e)
+        else:
+            bad(rec, "area", "not drawn, so Area check never sees it")
+
+    def check_area(rec, m):
+        unc = m.get("uncertainty_m") or 0
+        days = area_days(m)
+        want = record_incident_day(rec)
+        if not _finite(unc) or unc < 0:
+            bad(rec, "area", f"uncertainty_m is not a usable distance: {unc!r}")
+        elif days is None:
+            bad(rec, "area", "incident_at is unreadable, so date choices count it as 'date not known'")
+        elif want is None:
+            bad(rec, "area", "records.json incident_start is unreadable")
+        elif not (days["start"] <= want <= days["end"]):
+            bad(rec, "area", f"Area check dates it {days['start']}..{days['end']}, "
+                              f"the record says {want}")
+        else:
+            counts["area"] += 1
 
     seen = set()
     for rec in records:
@@ -352,20 +377,7 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
         if not drawn:
             bad(rec, "area", "not drawn, so Area check never sees it")
         else:
-            unc = m.get("uncertainty_m") or 0
-            days = area_days(m)
-            want = record_incident_day(rec)
-            if not _finite(unc) or unc < 0:
-                bad(rec, "area", f"uncertainty_m is not a usable distance: {unc!r}")
-            elif days is None:
-                bad(rec, "area", "incident_at is unreadable, so date choices count it as 'date not known'")
-            elif want is None:
-                bad(rec, "area", "records.json incident_start is unreadable")
-            elif not (days["start"] <= want <= days["end"]):
-                bad(rec, "area", f"Area check dates it {days['start']}..{days['end']}, "
-                                  f"the record says {want}")
-            else:
-                counts["area"] += 1
+            check_area(rec, m)
 
     return {"records": len(records), "routes": counts, "problems": problems}
 

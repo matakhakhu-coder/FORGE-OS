@@ -1792,6 +1792,7 @@
           </div>
         </div>
         <p class="ac-summary" id="ac-summary" role="status" aria-live="polite" tabindex="-1"></p>
+        <p class="ac-help ac-archive" id="ac-archive" role="status" aria-live="polite" hidden><span id="ac-archive-text"></span> <button type="button" class="ac-link" id="ac-archive-retry" hidden>Try again</button></p>
         <ul class="ac-results" id="ac-results" aria-label="Reports in this area"></ul>
         <div class="ac-row ac-row--wrap">
           <button class="ac-btn" type="button" id="ac-toggle">Show all reports</button>
@@ -2072,6 +2073,8 @@
 
   var streamVisible = { CRIME_INTEL: true, INFRASTRUCTURE: true, PRIORITY: true, GLOBAL: true };
   var markerByIdx = {};   // RAW index -> its L.marker
+  var idxById = {};       // full signal id (lower case) -> RAW index with a marker
+  var idxByShort = {};    // first 8 characters -> the first such RAW index
   var drawerIdx = null;   // RAW index shown in the event drawer, or null
 
   var NOW_MS = Date.now();
@@ -2139,6 +2142,11 @@
     // Clustering re-creates a pin's element; keep the selected ring on it.
     marker.on('add', function () { if (drawerIdx === idx) markSelected(idx, true); });
     markerByIdx[idx] = marker;
+    var fullId = String(m.signal_id || '').toLowerCase();
+    if (fullId) {
+      if (!(fullId in idxById)) idxById[fullId] = idx;
+      if (!(fullId.slice(0, 8) in idxByShort)) idxByShort[fullId.slice(0, 8)] = idx;
+    }
     marker._forgeStream = m.stream;
     marker._forgeIdx = idx;
     if (m._live && !opts.fromArchive) clusterGroup.addLayer(marker);
@@ -2204,7 +2212,9 @@
   function pinShowState(ml) {
     if (streamVisible[ml.stream] === false) return 'out';
     if (ml.idx === drawerIdx) return 'in';
-    if (ml.extra) return 'out';          // fetched from a month file to open it
+    // Fetched from a month file: drawn only while its drawer is open, or
+    // when a lookup that chooses its own dates names it (Batch 6).
+    if (ml.extra && !mapFiltered()) return 'out';
     if (timeIdx && !timeIdx[ml.idx]) return 'out';
     if (cellIdx && !cellIdx[ml.idx]) return 'out';
     // Area check, the slider and a heat-map cell choose their own dates, so a
@@ -2740,10 +2750,8 @@
   function idxForSignal(param) {
     param = String(param || '').trim().toLowerCase();
     if (!/^[0-9a-f-]{8,36}$/.test(param)) return null;
-    for (var i = 0; i < RAW.length; i++) {
-      var id = String(RAW[i].signal_id || '').toLowerCase();
-      if ((id === param || id.slice(0, 8) === param) && markerByIdx[i]) return i;
-    }
+    if (param in idxById) return idxById[param];
+    if (param.length === 8 && param in idxByShort) return idxByShort[param];
     return null;
   }
 
@@ -2758,14 +2766,90 @@
   function pinFromArchive(param) {
     return FP.findPin(param).then(function (hit) {
       if (!hit) return null;
-      var have = idxForSignal(hit.pin.signal_id);
-      if (have !== null) return have;
+      addArchivedPins([hit.pin]);
+      return idxForSignal(hit.pin.signal_id);
+    });
+  }
+
+  /* ── Lookups that choose their own dates (time-aware pins, Batch 6) ─────
+     Area check (All and Pick dates), the chart slider's map-follow and a
+     heat-map cell can name pins older than the page's live months. They
+     load those months through ForgePins, and each pin joins RAW once, with
+     its own marker, drawn only while one of those lookups names it (or its
+     drawer is open). Area check hears about every pin added, whichever
+     route added it, so its count never misses one. */
+  function areaPin(idx) {
+    var m = RAW[idx] || {};
+    return { idx: idx, lat: m.lat, lng: m.lng, unc: m.uncertainty_m || 0,
+             precision: m.precision || null, incident_at: m.incident_at || null,
+             incident_end: m.incident_end || null, event: m.incident_event || null,
+             title: m.title || 'Report', published_at: m.published_at || null };
+  }
+  // pins: month-file entries. Returns the RAW indexes it added.
+  function addArchivedPins(pins) {
+    var added = [];
+    (pins || []).forEach(function (p) {
+      if (!p || !p.signal_id || idxForSignal(p.signal_id) !== null) return;
       var m = {};
-      for (var k in hit.pin) m[k] = hit.pin[k];
+      for (var k in p) m[k] = p[k];
       var idx = RAW.length;
       RAW.push(m);
-      return addPin(m, idx, { fromArchive: true }) ? idx : null;
+      if (addPin(m, idx, { fromArchive: true })) added.push(idx);
     });
+    if (added.length && areaUI && areaUI.addPins) areaUI.addPins(added.map(areaPin));
+    return added;
+  }
+  // How many pins of each month are on the page already.
+  function pageMonthCounts() {
+    var n = {};
+    RAW.forEach(function (m, i) {
+      if (!markerByIdx[i]) return;
+      var k = FP.monthOf(m);
+      if (k) n[k] = (n[k] || 0) + 1;
+    });
+    return n;
+  }
+  // need: 'all', or { from, to } South African days. Loads every archive
+  // month the dates touch that the page does not already hold in full.
+  function loadArchiveFor(need) {
+    return FP.loadIndex().then(function (doc) {
+      var from = need && need !== 'all' && need.from ? String(need.from).slice(0, 7) : null;
+      var to = need && need !== 'all' && need.to ? String(need.to).slice(0, 7) : null;
+      var have = pageMonthCounts();
+      var want = doc.months.filter(function (r) {
+        return (!from || r.month >= from) && (!to || r.month <= to) && (have[r.month] || 0) < r.count;
+      }).map(function (r) { return r.month; });
+      if (!want.length) return [];
+      return FP.loadMonths(want).then(function (pins) { return addArchivedPins(pins).map(areaPin); });
+    });
+  }
+  // ids: short or full ids. Loads the months of those not on the page.
+  function loadArchivedIds(ids) {
+    return FP.loadIndex().then(function (doc) {
+      var months = {};
+      (ids || []).forEach(function (id) {
+        var k = doc.pins[String(id || '').toLowerCase().slice(0, 8)];
+        if (k) months[k] = true;
+      });
+      var keys = Object.keys(months).sort();
+      if (!keys.length) return [];
+      return FP.loadMonths(keys).then(addArchivedPins);
+    });
+  }
+  // The first incident day the archive holds, or null.
+  function archiveFirstDay() {
+    return FP.loadIndex().then(function (doc) {
+      return doc.months.reduce(function (m, r) {
+        return r.first_incident && (!m || r.first_incident < m) ? r.first_incident : m;
+      }, null);
+    });
+  }
+  // "October 2026 archive" for a pin past the live window, else ''.
+  function archiveLabel(idx) {
+    var m = RAW[idx];
+    if (!m || FP.isLive(m)) return '';
+    var lab = FP.monthLabel(FP.monthOf(m));
+    return lab ? lab + ' archive' : '';
   }
   // Opens the pin's drawer and returns true; or returns false when the id
   // cannot be a pin (the caller then follows its link).
@@ -2793,6 +2877,15 @@
   var archiveMsg = document.getElementById('md-archive-msg');
   var archiveRetry = null;
   function hideArchiveMsg() { if (archiveMsg) archiveMsg.hidden = true; archiveRetry = null; }
+  // A lookup other than a link (the chart slider, a heat-map cell) could not
+  // load its archive month: say so, with Try again.
+  function showArchiveFailure(text, retry) {
+    if (!archiveMsg) return;
+    document.getElementById('md-archive-msg-text').textContent = text;
+    document.getElementById('md-archive-retry').hidden = false;
+    archiveRetry = retry;
+    archiveMsg.hidden = false;
+  }
   function showArchiveMsg(param, opts, why) {
     if (!archiveMsg) return;
     var failed = why !== 'missing';
@@ -3612,6 +3705,25 @@
       (ids || []).forEach(function (id) { var i = idxForSignal(id); if (i !== null) o[i] = true; });
       return o;
     }
+    // Batch 6: ids the page does not hold come from their archive month,
+    // then the step or cell is applied again (if it is still the one shown).
+    var fillToken = { time: 0, cell: 0 };
+    function fillMissing(kind, ids) {
+      var missing = (ids || []).filter(function (id) { return idxForSignal(id) === null; });
+      if (!missing.length) return;
+      var token = ++fillToken[kind];
+      loadArchivedIds(missing).then(function () {
+        if (token !== fillToken[kind]) return;
+        if (kind === 'time' && timeIdx) timeIdx = idxSet(ids);
+        else if (kind === 'cell' && cellIdx) cellIdx = idxSet(ids);
+        else return;
+        refreshPins();
+      }, function () {
+        if (token !== fillToken[kind]) return;
+        showArchiveFailure('Couldn\u2019t load older events from the archive, so some may be missing from the map.',
+                           function () { fillMissing(kind, ids); });
+      });
+    }
     function show() {
       timeLine.hidden = !timeIdx; nowBtn.hidden = !timeIdx;
       cellLine.hidden = !cellIdx; clearBtn.hidden = !cellIdx;
@@ -3631,9 +3743,9 @@
       // o: null (now), or { ids: [...] | null (unchanged), text }
       setTime: function (o) {
         var redraw = false;
-        if (!o) { redraw = !!timeIdx; timeIdx = null; }
+        if (!o) { redraw = !!timeIdx; timeIdx = null; fillToken.time++; }
         else {
-          if (o.ids) { timeIdx = idxSet(o.ids); redraw = true; }
+          if (o.ids) { timeIdx = idxSet(o.ids); redraw = true; fillMissing('time', o.ids); }
           timeLine.textContent = o.text || '';
         }
         if (redraw) refreshPins();
@@ -3641,9 +3753,9 @@
       },
       setCell: function (o) {
         var redraw = false;
-        if (!o) { redraw = !!cellIdx; cellIdx = null; }
+        if (!o) { redraw = !!cellIdx; cellIdx = null; fillToken.cell++; }
         else {
-          if (o.ids) { cellIdx = idxSet(o.ids); redraw = true; }
+          if (o.ids) { cellIdx = idxSet(o.ids); redraw = true; fillMissing('cell', o.ids); }
           cellLine.textContent = o.text || '';
         }
         if (redraw) refreshPins();
@@ -3661,13 +3773,10 @@
   if (window.ZADArea) {
     areaUI = window.ZADArea.mount({
       L: L, map: map,
-      pins: allMarkerLayers.map(function (ml) {
-        var m = RAW[ml.idx] || {};
-        return { idx: ml.idx, lat: ml.lat, lng: ml.lng, unc: m.uncertainty_m || 0,
-                 precision: m.precision || null, incident_at: m.incident_at || null,
-                 incident_end: m.incident_end || null, event: m.incident_event || null,
-                 title: m.title || 'Report', published_at: m.published_at || null };
-      }),
+      pins: allMarkerLayers.map(function (ml) { return areaPin(ml.idx); }),
+      loadArchive: loadArchiveFor,
+      archiveFirstDay: archiveFirstDay,
+      archiveLabel: archiveLabel,
       setPinFilter: function (fn) { pinFilter = fn; refreshPins(); },
       refreshPins: refreshPins,
       showSignal: function (idx) { showSignal(idx); },

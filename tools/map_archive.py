@@ -14,9 +14,12 @@ The build writes, under dist/archive/:
   feature's properties are the pin's map-list entry (tools/map_data.py
   MAP_FIELDS), the same shape as the page's `var RAW` list;
 - index.json, not hashed: the months (count, file, closed or not, first and
-  last incident day, coverage note), a short lookup from pin id (first 8
-  characters, as in ?signal= links) to month, and a search list of ids and
-  titles.
+  last incident day, coverage note) and a short lookup from pin id (first 8
+  characters, as in ?signal= links) to month. It carries no titles: site
+  search (search-index.json) already lists every pin and opens archived
+  ones, and the browser fetches this whole file before it opens any
+  archived pin, so a title list here only made that wait longer (dropped
+  in Batch 6).
 
 The live set the page carries (`var RAW`) is this month's and last month's
 pins, by the build day in South African time (and the month before as well
@@ -229,7 +232,7 @@ def write_archive(dist: pathlib.Path, markers: list[dict], today: date | None = 
         shutil.rmtree(out)
     out.mkdir(parents=True)
     this_month = month_key(today)
-    rows, lookup, search = [], {}, []
+    rows, lookup = [], {}
     for key in sorted(months):
         entries = months[key]
         note = coverage.get(key)
@@ -251,8 +254,6 @@ def write_archive(dist: pathlib.Path, markers: list[dict], today: date | None = 
         })
         for e in entries:
             lookup[map_data.short_id(e["signal_id"])] = key
-            search.append([map_data.short_id(e["signal_id"]), e.get("title") or ""])
-    search.sort()
     index = {
         "schema": SCHEMA,
         "built_for": today.isoformat(),
@@ -262,7 +263,6 @@ def write_archive(dist: pathlib.Path, markers: list[dict], today: date | None = 
         "count": sum(r["count"] for r in rows),
         "months": rows,
         "pins": dict(sorted(lookup.items())),
-        "search": search,
     }
     (out / INDEX_NAME).write_bytes(_dump(index))
     return live, index
@@ -302,8 +302,8 @@ def all_entries(dist: pathlib.Path) -> list[dict]:
 
 def problems(dist: pathlib.Path, expected_ids: set[str] | None = None) -> list[str]:
     """The live list and the month files agree: every map pin is in exactly
-    one month file, its own month; each file's name carries its hash; counts,
-    lookup and search list match; the live list is exactly the pins of the
+    one month file, its own month; each file's name carries its hash; counts
+    and lookup match, and the index carries no search list (Batch 6); the live list is exactly the pins of the
     index's live months; no leftover files. With expected_ids (the active
     checked pins), the months must hold exactly that set."""
     dist = pathlib.Path(dist)
@@ -381,9 +381,8 @@ def problems(dist: pathlib.Path, expected_ids: set[str] | None = None) -> list[s
         out.append(f"archive lookup lists {len(idx.get('pins', {}))} pins, the month files hold {len(home)}")
     if idx.get("count") != len(home):
         out.append(f"archive index count {idx.get('count')} but the month files hold {len(home)}")
-    search_ids = [s[0] for s in idx.get("search", []) if isinstance(s, list) and s]
-    if sorted(search_ids) != sorted(map_data.short_id(s) for s in home) or len(set(search_ids)) != len(search_ids):
-        out.append("archive search list does not hold each archived pin exactly once")
+    if "search" in idx:
+        out.append("archive index carries a search list; site search covers every pin, so the index must not")
     keep = set(idx.get("live_months") or [])
     live_ids = set()
     for e in live:

@@ -1319,8 +1319,8 @@ def _build_dist(
 
     # Time-aware pins, Batch 4: every pin gets a permanent home in its
     # incident month (South African time), written to a content-hashed
-    # GeoJSON file under dist/archive/ with an index of months, a pin-to-month
-    # lookup and a search list. The page's map list is the live set: this
+    # GeoJSON file under dist/archive/ with an index of months and a
+    # pin-to-month lookup (no titles: site search covers every pin). The page's map list is the live set: this
     # month's and last month's pins. The browser makes the exact 30-day cut
     # (Batch 5). Detail files are written for every pin, archived or live.
     from tools import map_archive

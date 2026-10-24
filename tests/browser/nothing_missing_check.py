@@ -7,8 +7,10 @@ records.json it drives the built map page the way a visitor would:
   link       BASE?signal=<short id> opens the drawer on this pin's title,
              and (from Batch 3) its details arrive: the drawer fetches
              pins/<short id>.json and reaches data-detail="ready"
-  area       on that same load, Area check (placed on the pin, 500 m, the
-             record's own incident day as a custom range) lists the pin
+  area       on a load of its own, with no ?signal= link (from Batch 6),
+             Area check placed on the pin (500 m, the record's own incident
+             day as a custom range) lists the pin. For an archived pin that
+             means Area check loaded its month by date: no link fetched it
   watchlist  starring the pin in its drawer puts it in the Watchlist, and the
              Watchlist entry opens the drawer on this pin again
   search     typing the pin's title into the site search lists it, and the
@@ -272,18 +274,12 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                         ok["search"] += 1
             page.close()
 
-            # link + area: one load per record
-            if "link" in routes or "area" in routes:
+            # link: one load per record
+            if "link" in routes:
                 for rec in records:
                     short = rec["signal_id"][:8]
-                    m = by_id.get(rec["signal_id"].lower())
-                    day = nm.record_incident_day(rec)
                     pg = ctx.new_page()
                     pg.on("pageerror", lambda e: errors.append(str(e)))
-                    if "area" in routes and m and m.get("lat") is not None and day:
-                        pg.add_init_script(
-                            "try { sessionStorage.setItem(%s, %s); } catch (e) {}"
-                            % (json.dumps(AREA_KEY), json.dumps(_area_state(m, day))))
                     pg.goto(f"{base}?signal={short}", wait_until="load")
                     if "link" in routes:
                         try:
@@ -297,15 +293,37 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                                 bad(size, rec, "link", f"?signal={short} opened {title[:60]!r}")
                         except Exception:  # noqa: BLE001
                             bad(size, rec, "link", f"?signal={short} opened no drawer")
-                    if "area" in routes:
+                    pg.close()
+
+            # area: one load per record, no link, so an archived pin must come
+            # from Area check loading its month by date (Batch 6)
+            if "area" in routes:
+                for rec in records:
+                    m = by_id.get(rec["signal_id"].lower())
+                    day = nm.record_incident_day(rec)
+                    if not (m and m.get("lat") is not None and day):
+                        bad(size, rec, "area", "no position or incident day to place Area check on")
+                        continue
+                    pg = ctx.new_page()
+                    pg.on("pageerror", lambda e: errors.append(str(e)))
+                    pg.add_init_script(
+                        "try { sessionStorage.setItem(%s, %s); } catch (e) {}"
+                        % (json.dumps(AREA_KEY), json.dumps(_area_state(m, day))))
+                    pg.goto(base, wait_until="load")
+                    try:
+                        pg.wait_for_function(
+                            "t => [...document.querySelectorAll('#ac-results .ac-res__title')]"
+                            ".some(e => e.textContent.trim() === t)", arg=rec["title"], timeout=15000)
+                        ok["area"] += 1
+                    except Exception:  # noqa: BLE001
                         titles = pg.evaluate(
                             "() => [...document.querySelectorAll('#ac-results .ac-res__title')]"
                             ".map(e => e.textContent.trim())")
-                        if rec["title"] in titles:
-                            ok["area"] += 1
-                        else:
-                            bad(size, rec, "area", f"Area check on the pin for {day} lists "
-                                                   f"{len(titles)} reports, not this one")
+                        status = pg.evaluate("() => { const a = document.getElementById('ac-archive');"
+                                             " return a && !a.hidden ? a.textContent.trim() : ''; }")
+                        bad(size, rec, "area", f"Area check on the pin for {day} lists "
+                                               f"{len(titles)} reports, not this one"
+                                               + (f" ({status})" if status else ""))
                     pg.close()
 
             if errors:

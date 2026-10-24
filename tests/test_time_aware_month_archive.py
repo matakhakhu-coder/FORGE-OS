@@ -2,7 +2,7 @@
 
 Every pin gets a permanent home in its incident month (South African time),
 in a content-hashed GeoJSON file under dist/archive/, with an index of months,
-a short pin-to-month lookup and a search list. The page's map list is the
+a short pin-to-month lookup (its search list was dropped in Batch 6). The page's map list is the
 live set: this month's and last month's pins. The 200-pin limit is gone.
 Nothing reads the month files in the browser yet (Batch 5's loader does).
 
@@ -154,7 +154,8 @@ def test_each_pin_lands_in_exactly_one_month(tmp_path):
     assert idx["live_months"] == ["2026-11", "2026-12"] and idx["count"] == 6
     assert [r["closed"] for r in idx["months"]] == [True, True, True, True, False]
     assert idx["pins"]["00000003"] == "2026-11"
-    assert sorted(s[0] for s in idx["search"]) == sorted(f"{n:08x}" for n in range(1, 7))
+    assert sorted(idx["pins"]) == sorted(f"{n:08x}" for n in range(1, 7))
+    assert "search" not in idx       # Batch 6: site search covers every pin
     assert ma.problems(tmp_path, expected_ids={p["signal_id"] for p in PINS}) == []
 
 
@@ -322,18 +323,16 @@ def test_month_file_is_the_same_whichever_day_it_is_built(built_oct, built_dec):
     assert (built_oct / a["months"][0]["file"]).read_bytes() == (built_dec / b["months"][0]["file"]).read_bytes()
 
 
-def test_a_december_build_alone_fails_the_nothing_missing_check(built_dec):
-    """Batch 5's loader reaches archived pins by map, link, search and
-    Watchlist, but Area check still reads only the page's live list until
-    Batch 6. The nothing-missing check says so, which is why Batches 4 to 9
-    only go live together."""
+def test_a_december_build_passes_the_nothing_missing_check(built_dec):
+    """Batch 4 alone failed this (October only in its month file); Batch 5's
+    loader reached archived pins by map, link, search and Watchlist, and
+    Batch 6's Area check loads month files too, so a December build now
+    passes every route. Batches 4 to 9 still go live together."""
     import subprocess
     r = subprocess.run([sys.executable, str(ROOT / "tools" / "nothing_missing.py"), "--dist", str(built_dec)],
                        capture_output=True, text=True, timeout=120)
-    assert r.returncode != 0 and "MISSING" in r.stdout
-    missing = [ln for ln in r.stdout.splitlines() if ln.strip().startswith("MISSING")]
-    assert len(missing) == ALL_PINS
-    assert all(" area: " in ln and "Batch 6" in ln for ln in missing), missing[:3]
+    assert r.returncode == 0, r.stdout[-2000:]
+    assert "MISSING" not in r.stdout and "PASS" in r.stdout
 
 
 def test_october_build_passes_the_nothing_missing_check(built_oct):
@@ -377,7 +376,7 @@ def test_retraction_shows_up_in_its_month_after_a_rebuild(tmp_path, monkeypatch)
     row = after["months"][0]
     assert row["month"] == "2026-10" and row["count"] == ALL_PINS - 1
     assert row["file"] != old_file and not (dist / old_file).exists()
-    assert EPPING[:8] not in after["pins"] and EPPING[:8] not in [s[0] for s in after["search"]]
+    assert EPPING[:8] not in after["pins"] and "search" not in after
     assert EPPING not in _month_ids(dist)
     assert not (dist / map_data.PIN_DIR / map_data.detail_name(EPPING)).exists()
     assert ma.problems(dist, expected_ids={s["signal_id"] for s in cs.active}) == []
