@@ -17,7 +17,7 @@ date set by forge_clock, and checks:
   wording    the map key in the Filter panel; the drawer of a pin with no
              update; the dec/ build, where an October pin opened from a link
              has no ring and the Batch 5 archive note
-  contrast   (computer only) every band's ring and the Updated mark against
+  contrast   on both sizes, every band's ring and the Updated mark against
              the map's own tiles, measured from screenshots with the pins
              hidden: the share of map pixels each clears 3:1 against
 
@@ -158,14 +158,18 @@ def _blend(fg, alpha, bg):
     return tuple(round(alpha * f + (1 - alpha) * b) for f, b in zip(fg, bg[:3]))
 
 
-def contrast_report(browser, base: str) -> dict:
+CLIPS = {"computer": {"x": 420, "y": 220, "width": 520, "height": 420},
+         "phone": {"x": 20, "y": 260, "width": 350, "height": 360}}
+
+
+def contrast_report(browser, base: str, size: str = "computer") -> dict:
     """Screens of the map's tiles alone (pins, controls and panels hidden) at
     three views; for each mark, the share of map pixels it clears 3:1
     against, and its ratio against the median map pixel."""
     from PIL import Image
     # The real clock here: with the date frozen, Leaflet's tile fade-in never
     # advances and the tiles stay transparent. Contrast needs no set date.
-    ctx = browser.new_context(**SIZES["computer"])
+    ctx = browser.new_context(**SIZES[size])
     page = ctx.new_page()
     page.goto(base + "oct/", wait_until="load")
     page.wait_for_function("() => window.ZADAge")
@@ -176,9 +180,8 @@ def contrast_report(browser, base: str) -> dict:
     streams = dict(re.findall(r"(\w+):\s*'#([0-9a-fA-F]{6})'", block))
     page.add_style_tag(content=".leaflet-marker-pane, .leaflet-shadow-pane, .leaflet-overlay-pane,"
                        " .leaflet-tooltip-pane, .leaflet-popup-pane { display: none !important; }")
-    # The middle of the map on a computer screen, clear of the header, the
-    # controls and the panels.
-    clip = {"x": 420, "y": 220, "width": 520, "height": 420}
+    # The middle of the map, clear of the header, the controls and the panels.
+    clip = CLIPS[size]
     views = [(-30.5, 25.0, 6), (-33.98, 18.6, 12), (-23.9, 29.45, 13)]
     pixels = []
     for lat, lng, z in views:
@@ -376,16 +379,16 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
             ctx.close()
             check("no page errors", not all_errors, f"({all_errors[:3]})")
 
-        if "computer" in sizes:
-            c = numbers["contrast"] = contrast_report(browser, base)
-            res = results.setdefault("contrast", {})
+        for size in sizes:
+            c = numbers.setdefault("contrast", {})[size] = contrast_report(browser, base, size)
+            res = results.setdefault("contrast " + size, {})
             for name, v in c["marks"].items():
                 if name.startswith("dot "):
                     continue        # category colours: reported, not Batch 7's to change
                 ok = v["vs_median"] >= 3.0 and v["share_at_3_to_1"] >= 0.95
                 res[f"{name} clears 3:1 against the map"] = ok
                 if not ok:
-                    problems.append(f"contrast: {name} {v}")
+                    problems.append(f"contrast {size}: {name} {v}")
         browser.close()
     return {"results": results, "problems": problems, "numbers": numbers}
 
