@@ -1,5 +1,5 @@
 /* ZA Divergent live Firebase web config. Client config only, no secrets. */
-export const LIVE_HOST = 'forge-os-alpha.vercel.app';
+export const LIVE_HOST = 'forgemap.co.za';
 
 export const firebaseConfig = {
   apiKey: 'AIzaSyDzAxx6vjkt9ZHQyoUjeRgJByXmt3WoK2A',
