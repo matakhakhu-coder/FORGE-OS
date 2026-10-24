@@ -11,7 +11,9 @@ An approval covers data only. It lets one exact pin payload into the authority. 
 | `README.md` | This file | Yes, by reviewed commit |
 | `policy.json` | Whether missing approvals refuse (`enforce`) | Yes, by reviewed commit |
 | `schema/pin-approval.v1.json` | The record format | No. A new format is a new file |
+| `schema/pin-approval.v2.json` | Version 2: version 1 plus `material` | No |
 | `_examples/example.json` | A sample record. The validator skips it | No |
+| `_examples/example-material-update.json` | A sample material update (version 2). Skipped too | No |
 | `<signal-id>/<approval-id>.json` | One record per approval | No. Append only |
 
 `approval-id` is the UTC time the record was made plus eight random hex digits: `YYYYMMDDTHHMMSSZ-<8 hex>`, for example `20261021T013000Z-3f9a0c1e`. One folder per pin also gets around Git's inability to keep an empty folder.
@@ -40,6 +42,16 @@ The schema file has the full rules. In short:
 
 Records are never edited, renamed or deleted. To correct one, add a supersede or revoke record.
 
+## Material updates (version 2)
+
+A version 2 record (`forge.pin_approval.v2`) has every version 1 field plus `material`, `true` or `false`. Version 1 records stay valid and count as `material: false`.
+
+- **`material: true`** is a supersede for a real new development. Its payload sets or changes the pin's `last_material_update_at`, `update_note` and `update_sources` in `metadata.checked`. The update must be newer than any earlier one and no later than the approval.
+- **`incident_start` and `published_at` never change on an update.** The age clock always counts from the incident.
+- **Everything else is `material: false`:** first approvals, corrections, wording fixes and revokes. They must leave the three update fields exactly as the previous version had them. A correction or retraction keeps its own wording and never shows as an update.
+- **No material update after a retraction.**
+- **A routine check needs no approval.** It writes only `last_checked_at`, in `docs/signals/pin-clocks.json`, and touches nothing in this ledger. `python tools/pin_clocks.py check-routine` refuses a routine write that changes anything else.
+
 ## Checking
 
 ```
@@ -52,7 +64,7 @@ The same check runs inside `tools/checked_signals.py import --write` (before any
 
 Findings come in three kinds:
 
-- **Violation:** something is wrong with records that exist. A malformed record, a broken chain, a pin whose data no longer matches its approved hash, a revoked pin still live, or a record or schema file changed, deleted or renamed compared with `origin/main` or anywhere in the history of `HEAD`. A violation always refuses.
+- **Violation:** something is wrong with records that exist. A malformed record, a broken chain, update fields changed without a material approval, an update that moves `incident_start` or `published_at`, a pin whose data no longer matches its approved hash, a revoked pin still live, or a record or schema file changed, deleted or renamed compared with `origin/main` or anywhere in the history of `HEAD`. A violation always refuses.
 - **Gap:** an active pin with no record, or a check that could not run (no git, no `origin/main`). A gap refuses only while enforcement is on.
 - **Warning:** reported only. For example, a record for a pin that is in no batch, or a retracted pin whose approval was never revoked.
 

@@ -1894,6 +1894,15 @@ def _checked_guard_before(conn):
         print("[publish] Fix: say what each pin's incident_start stands for "
               f"({', '.join(_idates.BASES)}); see tools/incident_dates.py")
         raise CheckedGuardError(2)
+    from tools import pin_clocks as _clocks
+    clock_problems = _clocks.problems(cs.signals, CHECKED_INDEX.parent / _clocks.CLOCKS_NAME)
+    if clock_problems:
+        print(f"[publish] REFUSED: {len(clock_problems)} problem(s) in docs/signals/{_clocks.CLOCKS_NAME}:")
+        for p in clock_problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] Fix: a routine check may record only last_checked_at for a pin in a batch; "
+              "see tools/pin_clocks.py")
+        raise CheckedGuardError(2)
     print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted, "
           f"all with source provenance, precision and an incident-date basis")
     return cs

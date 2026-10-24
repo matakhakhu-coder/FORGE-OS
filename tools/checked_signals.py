@@ -42,6 +42,16 @@ File format (version 2), one file per batch, listed in load order in the index:
         incident_part       morning | afternoon | evening | night (part_of_day only)
         incident_event      occurred | found (a body found, time of death unknown)
         reported_at         ISO 8601 date of the first report
+    and, only after an approved material update (time-aware pins, Batch 2),
+    all three together:
+        last_material_update_at  date-time with a UTC offset, after published_at
+        update_note              one line (at most 280 characters): what changed
+        update_sources           [{"name": "...", "url": "https://..."}, ...]
+    Only an owner approval with "material": true (pin-approval v2) may set or
+    change them, as a new pin version; tools/approvals.py enforces that.
+    incident_start and published_at never change on an update. A routine
+    check's time (last_checked_at) never goes in a pin: it lives in
+    docs/signals/pin-clocks.json (tools/pin_clocks.py).
 
 Retracting a pin: add it to its batch's "retractions" with a reason. The
 import withdraws it (published_at cleared, status 'dismissed' because the
@@ -216,6 +226,65 @@ def fingerprint(record: dict) -> str:
 
 # ── Validation ────────────────────────────────────────────────────────────────
 
+# Time-aware pins, Batch 2: the material-update fields in metadata.checked.
+UPDATE_FIELDS = ("last_material_update_at", "update_note", "update_sources")
+UPDATE_NOTE_MAX = 280
+# Kept out of pins: a routine check writes it to docs/signals/pin-clocks.json.
+ROUTINE_ONLY_FIELDS = ("last_checked_at",)
+
+
+def update_fields(chk) -> dict:
+    """The material-update fields present in a checked block ({} when none)."""
+    if not isinstance(chk, dict):
+        return {}
+    return {k: chk[k] for k in UPDATE_FIELDS if k in chk}
+
+
+def update_fields_problem(chk: dict, published_at=None, incident_start=None) -> str | None:
+    """Why a checked block's material-update fields are invalid, or None.
+
+    All three or none. last_material_update_at is a date-time with a UTC
+    offset, not before published_at and not before the incident day."""
+    for k in ROUTINE_ONLY_FIELDS:
+        if k in chk:
+            return (f"checked.{k} does not belong in a pin: a routine check records it in "
+                    f"docs/signals/pin-clocks.json")
+    got = update_fields(chk)
+    if not got:
+        return None
+    if set(got) != set(UPDATE_FIELDS):
+        return (f"a material update needs all of {list(UPDATE_FIELDS)} "
+                f"(missing {sorted(set(UPDATE_FIELDS) - set(got))})")
+    when = got["last_material_update_at"]
+    try:
+        dt = datetime.fromisoformat(when.strip().replace("Z", "+00:00")) \
+            if isinstance(when, str) and "T" in when else None
+    except ValueError:
+        dt = None
+    if dt is None or dt.tzinfo is None:
+        return "checked.last_material_update_at must be a date-time with a UTC offset"
+    if published_at:
+        try:
+            pub = datetime.fromisoformat(str(published_at).replace("Z", "+00:00"))
+        except ValueError:
+            pub = None
+        if pub is not None and pub.tzinfo is not None and dt < pub:
+            return "checked.last_material_update_at is before the pin was published"
+    if incident_start is not None and dt.astimezone(_SAST).date() < _day(incident_start):
+        return "checked.last_material_update_at is before incident_start"
+    note = got["update_note"]
+    if not isinstance(note, str) or not note.strip() or "\n" in note or len(note) > UPDATE_NOTE_MAX:
+        return f"checked.update_note must be one line of 1 to {UPDATE_NOTE_MAX} characters"
+    srcs = got["update_sources"]
+    if not isinstance(srcs, list) or not srcs:
+        return "checked.update_sources must list at least one source"
+    for x in srcs:
+        if not isinstance(x, dict) or set(x) != {"name", "url"} or not str(x.get("name") or "").strip() \
+                or not str(x.get("url") or "").lower().startswith(("https://", "http://")):
+            return 'each checked.update_sources entry must be {"name": "...", "url": "https://..."}'
+    return None
+
+
 def validate_signal(s: dict, province: str | None = None, require_v2: bool = True) -> None:
     """Raise CheckedSignalError unless the pin is safe to import."""
     if not isinstance(s, dict):
@@ -273,6 +342,9 @@ def validate_signal(s: dict, province: str | None = None, require_v2: bool = Tru
     reported = _parse_iso(chk.get("reported_at"), "checked.reported_at", sid)
     if _day(reported) < _day(start):
         raise CheckedSignalError(f"{sid}: reported_at is before incident_start")
+    why = update_fields_problem(chk, s.get("published_at"), start)
+    if why:
+        raise CheckedSignalError(f"{sid}: {why}")
     fp = s.get("fingerprint")
     if not fp:
         raise CheckedSignalError(f"{sid}: fingerprint is missing (run: checked_signals.py stamp)")

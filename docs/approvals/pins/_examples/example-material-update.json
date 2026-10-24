@@ -1,0 +1,59 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261003T080000Z-00000001",
+  "signal_id": "00000000-0000-4000-8000-000000000000",
+  "action": "supersede",
+  "pin_version": 2,
+  "supersedes": "20261001T000000Z-00000000",
+  "batch_file": "example-batch.json",
+  "approved_payload": {
+    "content": "Example pin used to show the approval record format. It is not in any batch.",
+    "external_id": "https://example.org/news/example-incident",
+    "lat": -23.0,
+    "lng": 29.9,
+    "metadata": {
+      "checked": {
+        "example": true,
+        "last_material_update_at": "2026-10-03T09:00:00+02:00",
+        "update_note": "Example only: police named a suspect in a follow-up statement.",
+        "update_sources": [
+          {
+            "name": "Example News",
+            "url": "https://example.org/news/example-incident-follow-up"
+          }
+        ]
+      }
+    },
+    "published_at": "2026-10-01T00:00:00Z",
+    "signal_id": "00000000-0000-4000-8000-000000000000",
+    "source": "example",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-01T00:00:00Z",
+    "title": "Example only: not a real incident"
+  },
+  "payload_sha256": "sha256:a19bceb2f252ae8411749e84bf7fbb361499922760104a18afe118631b0e0f0b",
+  "source_hashes": [
+    {
+      "url": "https://example.org/news/example-incident-follow-up",
+      "retrieved_at": "2026-10-03T07:30:00+00:00",
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": {
+    "metadata.checked.last_material_update_at": [
+      null,
+      "2026-10-03T09:00:00+02:00"
+    ]
+  },
+  "owner": "example-owner",
+  "approved_at": "2026-10-03T10:00:00+02:00",
+  "recorded_at": "2026-10-03T10:05:00+02:00",
+  "recorded_by": "example-agent",
+  "approval_reference": {
+    "id": "example-0002",
+    "summary": "Example only; this is not an approval. A material update (schema v2)."
+  },
+  "basis": "explicit",
+  "scope": "data-only",
+  "material": true
+}

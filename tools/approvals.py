@@ -17,7 +17,8 @@ approval-id is YYYYMMDDTHHMMSSZ-<8 lowercase hex>, in UTC.
 
 What verify checks
 ------------------
-Every record: the exact v1 field set, types, IDs that match the folder and
+Every record: the exact field set of its schema (v1, or v2 = v1 plus
+"material"), types, IDs that match the folder and
 file name, scope "data-only", and payload_sha256 equal to the canonical hash of
 approved_payload (the same hash as the pin's fingerprint in docs/signals:
 sorted keys, UTF-8, no spaces, over the fingerprinted fields).
@@ -26,6 +27,18 @@ Each pin's records form one chain: version 1 is an "approve" with no
 supersedes; every later record names the record before it and raises
 pin_version by one. "supersede" and "revoke" follow a live approval; a fresh
 "approve" may only follow a revoke. The current approval is the last record.
+
+Material updates (time-aware pins, Batch 2, schema v2): an approval with
+"material": true is a supersede that sets or changes the pin's
+last_material_update_at, update_note and update_sources (metadata.checked),
+and it may not change incident_start or published_at. Every other record (v1
+records, and v2 with "material": false: first approvals, corrections,
+wording fixes, revokes) must leave those three fields exactly as the
+previous approved version had them, so a correction or a retraction keeps
+its own wording and is never shown as an update. No material update may be
+approved after the pin was retracted. A routine check needs no approval at
+all: it writes only last_checked_at in docs/signals/pin-clocks.json
+(tools/pin_clocks.py).
 
 Against docs/signals: every active pin needs a current, unrevoked approval
 whose payload_sha256 and batch_file match the pin as it is now. A revoked pin
@@ -82,6 +95,8 @@ DEFAULT_BASE = "origin/main"
 ENFORCE_ENV = "FORGE_APPROVALS_ENFORCE"
 
 RECORD_SCHEMA = "forge.pin_approval.v1"
+RECORD_SCHEMA_V2 = "forge.pin_approval.v2"     # v1 plus "material" (Batch 2)
+RECORD_SCHEMAS = (RECORD_SCHEMA, RECORD_SCHEMA_V2)
 POLICY_SCHEMA = "forge.pin_approvals.policy"
 ACTIONS = ("approve", "supersede", "revoke")
 BASES = ("explicit", "legacy")
@@ -93,6 +108,18 @@ RECORD_FIELDS = (
     "diff_from_previous", "owner", "approved_at", "recorded_at", "recorded_by",
     "approval_reference", "basis", "scope",
 )
+RECORD_FIELDS_V2 = RECORD_FIELDS + ("material",)
+
+
+def record_fields(rec) -> tuple[str, ...]:
+    """The exact field set a record's schema calls for."""
+    return RECORD_FIELDS_V2 if isinstance(rec, dict) and rec.get("schema") == RECORD_SCHEMA_V2 \
+        else RECORD_FIELDS
+
+
+def is_material(rec) -> bool:
+    """True for an approved material update (v2 with "material": true). v1 records never are."""
+    return isinstance(rec, dict) and rec.get("schema") == RECORD_SCHEMA_V2 and rec.get("material") is True
 
 APPROVAL_ID_RE = re.compile(r"^(\d{8}T\d{6}Z)-[0-9a-f]{8}$")
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -224,8 +251,9 @@ def validate_record(rec, *, signal_id: str | None = None,
         return ["record is not a JSON object"]
     errs: list[str] = []
     keys = set(rec)
-    missing = [k for k in RECORD_FIELDS if k not in keys]
-    extra = sorted(keys - set(RECORD_FIELDS))
+    fields = record_fields(rec)
+    missing = [k for k in fields if k not in keys]
+    extra = sorted(keys - set(fields))
     if missing:
         errs.append("missing fields: " + ", ".join(missing))
     if extra:
@@ -233,8 +261,14 @@ def validate_record(rec, *, signal_id: str | None = None,
     if missing:
         return errs
 
-    if rec["schema"] != RECORD_SCHEMA:
-        errs.append(f"schema must be {RECORD_SCHEMA}")
+    if rec["schema"] not in RECORD_SCHEMAS:
+        errs.append(f"schema must be one of {', '.join(RECORD_SCHEMAS)}")
+    elif rec["schema"] == RECORD_SCHEMA_V2:
+        if not isinstance(rec["material"], bool):
+            errs.append("material must be true or false")
+        elif rec["material"] and rec["action"] != "supersede":
+            errs.append("material: true needs action supersede: a material update is a new "
+                        "version of a live pin (never a first approval or a revoke)")
     aid = rec["approval_id"]
     if not isinstance(aid, str) or _approval_time(aid) is None:
         errs.append("approval_id must be YYYYMMDDTHHMMSSZ-<8 hex> with a real UTC time")
@@ -433,7 +467,73 @@ def chain_tip(sid: str, records: list[dict], findings: list[Finding]) -> dict | 
             findings.append(Finding("violation", "chain-broken",
                                     f"{aid}: a live approval is changed with supersede, not approve", sid))
             ok = False
+    if ok:
+        for aid, code, msg in update_problems(ordered):
+            findings.append(Finding("violation", code, f"{aid}: {msg}", sid))
+            ok = False
     return ordered[-1] if ok else None
+
+
+def _checked(payload) -> dict:
+    meta = payload.get("metadata") if isinstance(payload, dict) else None
+    chk = meta.get("checked") if isinstance(meta, dict) else None
+    return chk if isinstance(chk, dict) else {}
+
+
+def update_problems(ordered: list[dict]) -> list[tuple[str, str, str]]:
+    """The material-update rules over one pin's chain, in version order.
+
+    Each record carrying data is compared with the last earlier record that
+    carried data (revokes carry none). Returns (approval_id, code, message)."""
+    out: list[tuple[str, str, str]] = []
+    prev = None
+    for rec in ordered:
+        body = rec.get("approved_payload")
+        if not isinstance(body, dict):
+            continue
+        aid = rec["approval_id"]
+        chk, pchk = _checked(body), _checked(prev["approved_payload"]) if prev else {}
+        new_u, old_u = cs_mod.update_fields(chk), cs_mod.update_fields(pchk)
+        if not is_material(rec):
+            if new_u != old_u:
+                out.append((aid, "unflagged-material-update",
+                            "changes last_material_update_at / update_note / update_sources "
+                            "without a material approval; a material update needs a pin-approval "
+                            "v2 supersede with material: true, and a correction or retraction "
+                            "keeps its own wording, not the update fields"))
+        else:
+            start = None
+            try:
+                start = cs_mod._parse_iso(chk.get("incident_start"), "incident_start", aid)
+            except cs_mod.CheckedSignalError:
+                pass
+            why = cs_mod.update_fields_problem(chk, body.get("published_at"), start)
+            if why is None and not new_u:
+                why = "a material update must set last_material_update_at, update_note and update_sources"
+            if why:
+                out.append((aid, "material-update-invalid", why))
+            elif new_u == old_u:
+                out.append((aid, "material-update-invalid",
+                            "material: true but the update fields are unchanged from the previous version"))
+            else:
+                when = _iso_tz(new_u["last_material_update_at"])
+                before = _iso_tz(old_u.get("last_material_update_at"))
+                if before is not None and when is not None and when <= before:
+                    out.append((aid, "material-update-invalid",
+                                "last_material_update_at must be later than the previous update"))
+                approved = _iso_tz(rec.get("approved_at"))
+                if approved is not None and when is not None and when > approved:
+                    out.append((aid, "material-update-invalid",
+                                "last_material_update_at is after the owner approved the update"))
+            if prev is not None:
+                for k, a, b in (("incident_start", chk.get("incident_start"), pchk.get("incident_start")),
+                                ("published_at", body.get("published_at"),
+                                 prev["approved_payload"].get("published_at"))):
+                    if a != b:
+                        out.append((aid, "update-changed-clock",
+                                    f"{k} may not change on an update ({b!r} -> {a!r})"))
+        prev = rec
+    return out
 
 
 # ── Append-only (git) ──────────────────────────────────────────────────────────────
@@ -576,6 +676,15 @@ def verify(index_path: pathlib.Path | None = None,
             elif sid in retracted and tip and tip["action"] != "revoke":
                 findings.append(Finding("warning", "retracted-approved",
                                         "pin is retracted but its approval is not revoked", sid))
+            if sid in retracted:
+                gone = _iso_tz(loaded.retracted[sid].get("retracted_at"))
+                for rec in records[sid]:
+                    when = _iso_tz(rec.get("approved_at"))
+                    if is_material(rec) and gone is not None and when is not None and when > gone:
+                        findings.append(Finding("violation", "retracted-update",
+                                                f"{rec['approval_id']}: a material update was approved "
+                                                f"after the pin was retracted; a retraction keeps its "
+                                                f"own wording", sid))
 
     if check_git:
         findings.extend(append_only_findings(pathlib.Path(repo_root), pathlib.Path(approvals_dir), base))

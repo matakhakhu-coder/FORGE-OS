@@ -1,0 +1,6 @@
+{
+  "schema": "forge.pin_clocks",
+  "version": 1,
+  "about": "When a routine (a town sweep, a parked-case review) last re-read each hand-checked pin's sources. Kept apart from the pin files so a routine check never changes a fingerprint or needs an owner approval. A routine may change only last_checked_at here; anything else is refused (tools/pin_clocks.py). A pin with no entry has not been re-checked since it was approved. Material updates are not recorded here: they need an owner approval with material set.",
+  "pins": {}
+}

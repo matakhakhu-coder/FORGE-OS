@@ -66,6 +66,12 @@ RECORD_FIELDS: tuple[str, ...] = (
     "published_at",
     "map_link",
     "data_version",
+    # Time-aware pins, Batch 2: the update clocks, appended so every earlier
+    # column keeps its position.
+    "last_checked_at",
+    "last_material_update_at",
+    "update_note",
+    "update_sources",
 )
 
 # Plain-language help for each column, shown on the page and in records.json.
@@ -104,6 +110,13 @@ FIELD_HELP: dict[str, str] = {
     "published_at": "When the pin went on the map.",
     "map_link": "The pin on the map (relative to the site).",
     "data_version": "Git commit of the pin and approval files this export was built from.",
+    "last_checked_at": ("When a routine check last re-read the pin's sources. A routine check changes nothing "
+                        "else and needs no approval. Blank = not re-checked since it was approved."),
+    "last_material_update_at": ("When an owner-approved material update (a real new development) was made. "
+                                "Blank = no material update. Wording fixes and corrections never set it, "
+                                "and an update never changes incident_start or published_at."),
+    "update_note": "One line on what the material update changed. Blank = no material update.",
+    "update_sources": "Source links for the material update, separated by ' | '. Blank = no material update.",
 }
 
 CAVEATS: tuple[str, ...] = (
@@ -250,6 +263,8 @@ def build_records(conn: sqlite3.Connection,
     fact_bases = _read_json(signals_dir / "fact-bases.json").get("pins") or {}
     from tools import incident_dates as idates
     date_entries = _read_json(signals_dir / "incident-dates.json").get("pins") or {}
+    from tools import pin_clocks
+    clocks = pin_clocks.load(signals_dir / pin_clocks.CLOCKS_NAME)
 
     tips = approved_tips(index_path, approvals_dir)
     on_map = _published_ids(conn)
@@ -336,6 +351,12 @@ def build_records(conn: sqlite3.Connection,
             "published_at": _clean(pin.get("published_at")),
             "map_link": f"index.html?signal={sid[:8]}",
             "data_version": version,
+            "last_checked_at": pin_clocks.last_checked_at(clocks.get(sid), pin),
+            "last_material_update_at": _clean(checked.get("last_material_update_at")),
+            "update_note": _clean(checked.get("update_note")),
+            "update_sources": LIST_SEP.join(
+                u for u in (_http(s.get("url")) if isinstance(s, dict) else None
+                            for s in (checked.get("update_sources") or [])) if u),
         }
         assert tuple(row) == RECORD_FIELDS
         rows.append(row)
