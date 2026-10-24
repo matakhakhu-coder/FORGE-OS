@@ -41,7 +41,7 @@ def test_home_title_in_template_and_dist():
     about = env.get_template("about.html").render(
         generated_at="now", canonical_url=publish.canonical_url("about.html"),
         **publish._get_revenue_context())
-    assert "<title>How It Works — " in about
+    assert f"<title>How It Works — {HOME_TITLE}</title>" in about
     assert '<link rel="canonical" href="https://forgemap.co.za/about">' in about
     assert f"<title>{HOME_TITLE}</title>" in _head(DIST / "index.html")
 
@@ -86,3 +86,19 @@ def test_robots_points_to_sitemap_and_blocks_nothing():
     assert text == publish.robots_txt()
     assert "Sitemap: https://forgemap.co.za/sitemap.xml" in text
     assert not re.search(r"^disallow:", text, re.I | re.M)
+
+
+def test_every_page_title_carries_forge_map_branding():
+    """Every page title is either the home title or '<page> — FORGE Map, Open Source Intelligence'."""
+    base = (publish.TMPL_DIR / "base.html").read_text(encoding="utf-8")
+    assert "South African Intelligence Bulletin" not in base
+    assert "— " + HOME_TITLE + "{% endblock %}</title>" in base
+    pages = sorted(DIST.rglob("*.html"))
+    assert pages
+    for p in pages:
+        m = re.search(r"<title>(.*?)</title>", _head(p))
+        assert m, p
+        title = m.group(1)
+        assert "South African Intelligence Bulletin" not in title, p
+        assert title == HOME_TITLE or title.endswith(" — " + HOME_TITLE), (p, title)
+        assert title.count("FORGE Map") == 1, (p, title)
