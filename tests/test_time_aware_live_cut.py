@@ -317,5 +317,5 @@ def test_browser_december_build_reaches_archived_pins(served):
                                     routes=("map", "link", "watchlist", "search"))
     assert rep["problems"] == []
     for size in ("computer", "phone"):
-        assert rep["routes"][size] == {"map": ALL_PINS, "link": ALL_PINS, "watchlist": ALL_PINS,
+        assert rep["sizes"][size] == {"map": ALL_PINS, "link": ALL_PINS, "watchlist": ALL_PINS,
                                        "search": ALL_PINS}

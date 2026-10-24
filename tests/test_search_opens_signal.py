@@ -101,8 +101,14 @@ def test_search_box_script_opens_drawer_and_resolves_links():
     mp = (ROOT / "publisher/templates/map.html").read_text(encoding="utf-8")
     hook = re.search(r"window\.forgeOpenSignal = function \(sid, trigger\) \{(.*?)\};", mp, re.S)
     assert hook, "map must expose window.forgeOpenSignal"
-    assert "idxForSignal(sid)" in hook.group(1) and "showSignal(idx" in hook.group(1)
-    assert "return false" in hook.group(1) and "return true" in hook.group(1)
+    # From Batch 5 (time-aware pins) the hook goes through openAnySignal, which
+    # opens a pin on the page or fetches an older one from its month file.
+    assert "return openAnySignal(sid" in hook.group(1)
+    route = re.search(r"function openAnySignal\(param, opts\) \{(.*?)\n  \}\n", mp, re.S)
+    assert route, "map must define openAnySignal"
+    body = route.group(1)
+    assert "idxForSignal(param)" in body and "showSignal(idx" in body
+    assert "return false" in body and "return true" in body
 
 
 def test_static_subpages_use_the_fixed_search_script():
