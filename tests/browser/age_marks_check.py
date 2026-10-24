@@ -274,7 +274,9 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
                     check("ring: no ring or mark animates", anim == 0, f"({anim} animate)")
                     tip = seen["1"]["title"] if seen.get("1") else ""
                     check("ring: the hover tip says how long ago it happened",
-                          re.search(r"\(happened \d+ days ago\)$", tip), f"({tip!r})")
+                          # From Batch 8 a pin new to the map adds ", new on the map, added [date]".
+                          re.search(r"\(happened \d+ days ago(, new on the map, added \d+ \w{3})?\)$", tip),
+                          f"({tip!r})")
                 all_errors += errs
                 ctx.close()
 
@@ -351,10 +353,12 @@ def run(base: str, dists: Path, sizes=("computer", "phone")) -> dict:
                        "No ring: older than the 30-day live map", "month's archive",
                        "White diamond: updated in the last 7 days", "An update never changes the ring"]
             check("wording: the map key names every band, the archive and the Updated mark",
-                  key and key["visible"] and key["rows"] == 6 and all(p in key["text"] for p in phrases),
+                  key and key["visible"] and key["rows"] == 8 and all(p in key["text"] for p in phrases),
                   f"(missing {[p for p in phrases if not key or p not in key['text']]})")
             check("wording: the key's rings are the map's rings",
                   key and [tuple(r) for r in key["rings"]] == [BAND_STYLE[b] for b in "0123"] + [BAND_STYLE["1"]]
+                  # Batch 8's halo row draws a band 0 ring under its still halo
+                  + [BAND_STYLE["0"]]
                   and key["diamonds"] == 1, f"({key and key['rings']})")
             plain = next(e for e in oct_page if not e.get("last_material_update_at") and e.get("incident_start"))
             page.goto(base + "oct/?signal=" + plain["signal_id"][:8], wait_until="load")
