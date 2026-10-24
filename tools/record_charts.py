@@ -98,6 +98,17 @@ CHART_PAGES: tuple[dict, ...] = (
         "caption": ("Where FORGE has checked so far, not where most incidents happen. "
                     "Some provinces have had more dedicated checking passes than others."),
     },
+    {
+        # Interactive charts Batch 8. Towns come from tools/record_towns.py.
+        "id": "town",
+        "tab": "Towns",
+        "title": "Records by town and incident date",
+        "kind": "heatmap",
+        "stream_filter": "chips",
+        "caption": ("Where FORGE has checked so far, not where most incidents happen. A blank cell "
+                    "means FORGE published nothing for that town and day, not that nothing happened. "
+                    "Towns follow FORGE's coverage-area naming rule, with a few hand-kept fixes."),
+    },
 )
 
 UNDATED = "date not stated"
@@ -171,6 +182,32 @@ def incident_class(r: dict) -> tuple[date | None, str]:
 
 def category_label(r: dict, field: str) -> str:
     return (r.get(field) or "").strip() or "Not given"
+
+
+def _town_series(records: list[dict], days: list[str]) -> dict:
+    """The heat map (Batch 8): one row per town, one cell per incident day on
+    the incident line's axis, plus the date-not-stated and later-step counts,
+    which follow the same incident_date_basis rules as the line. Towns are
+    ordered by records, then by name."""
+    idx = {d: i for i, d in enumerate(days)}
+    towns = Counter(category_label(r, "town") for r in records)
+    cells = {t: [0] * len(days) for t in towns}
+    und = Counter()
+    later = Counter()
+    for r in records:
+        t = category_label(r, "town")
+        d, kind = incident_class(r)
+        if kind == "later_step":
+            later[t] += 1
+        elif d is None:
+            und[t] += 1
+        else:
+            cells[t][idx[d.isoformat()]] += 1
+    rows = [{"label": t, "count": n, "days": cells[t], "undated": und[t], "later_step": later[t]}
+            for t, n in sorted(towns.items(), key=lambda kv: (-kv[1], kv[0].lower()))]
+    peak = max([v for x in rows for v in x["days"] + [x["undated"], x["later_step"]]] or [0])
+    return {"rows": rows, "days": [{"date": d, "label": _day_label(date.fromisoformat(d))} for d in days],
+            "max": peak, "undated": sum(und.values()), "later_step": sum(later.values())}
 
 
 def _incident_series(records: list[dict]) -> dict:
@@ -263,6 +300,7 @@ def chart_counts(records: list[dict]) -> dict:
         "stream": _category_series(records, "stream"),
         "province": _category_series(records, "province"),
     }
+    data["town"] = _town_series(records, [d["date"] for d in data["incident"]["days"]])
     pages = []
     for p in CHART_PAGES:
         pages.append({**p, "data": data[p["id"]]})
@@ -279,7 +317,7 @@ def chart_total(page: dict) -> int:
 
 # ── Timeline table for the slider (Batch 1 of the interactive charts) ─────────
 
-TABLE_COLUMNS = ("id", "step", "inc", "kind", "added", "stream", "province")
+TABLE_COLUMNS = ("id", "step", "inc", "kind", "added", "stream", "province", "town")
 
 
 def _published_instant(value) -> datetime | None:
@@ -378,6 +416,7 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
             added.isoformat() if added else None,
             category_label(r, "stream"),
             category_label(r, "province"),
+            category_label(r, "town"),
         ])
     per_step = Counter(row[1] for row in rows)
     running = 0
@@ -414,6 +453,8 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
             "stream_max": pages.get("stream", {}).get("max", 0),
             "province": [x["label"] for x in pages.get("province", {}).get("rows", [])],
             "province_max": pages.get("province", {}).get("max", 0),
+            "town": [x["label"] for x in pages.get("town", {}).get("rows", [])],
+            "town_max": pages.get("town", {}).get("max", 0),
         },
         "line": {k: inc.get("line", {}).get(k) for k in ("w", "h", "x0", "x1")} | {
             "top": LINE_PAD_TOP, "bottom": LINE_H - LINE_PAD_BOTTOM},
@@ -459,6 +500,22 @@ def counts_from_table(table: dict, step: int, streams_on: set[str] | None = None
     for f in ("stream", "province"):
         c = Counter(r[col[f]] for r in live)
         out[f] = [c.get(lab, 0) for lab in ax[f]]
+    if "town" in ax:
+        ti = {t: i for i, t in enumerate(ax["town"])}
+        di = {d: i for i, d in enumerate(ax["incident_days"])}
+        cells = [[0] * len(ax["incident_days"]) for _ in ax["town"]]
+        und = [0] * len(ax["town"])
+        later = [0] * len(ax["town"])
+        for r in live:
+            i, k = ti[r[col["town"]]], r[col["kind"]]
+            if k == "later_step":
+                later[i] += 1
+            elif k == "undated":
+                und[i] += 1
+            else:
+                cells[i][di[r[col["inc"]]]] += 1
+        out["town"] = {"cells": cells, "undated": und, "later_step": later,
+                       "rows": [sum(cells[i]) + und[i] + later[i] for i in range(len(ax["town"]))]}
     return out
 
 
@@ -482,6 +539,13 @@ def ids_from_table(table: dict, step: int, chart: str, key=None,
                   (r[col["kind"]] in ("occurred", "found") and r[col["inc"]] == key)
         elif chart == "added":
             hit = r[col["added"]] == key
+        elif chart == "town":
+            # key "Town|2026-10-16", "Town|undated", "Town|later_step" or "Town|*"
+            town, _, day = key.partition("|")
+            k = r[col["kind"]]
+            hit = r[col["town"]] == town and (
+                day == "*" or (k == day if day in ("undated", "later_step")
+                               else (k in ("occurred", "found") and r[col["inc"]] == day)))
         else:
             hit = r[col[chart]] == key
         if hit:

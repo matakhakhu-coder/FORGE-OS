@@ -1,0 +1,35 @@
+{
+  "_about": "Hand-kept town fixes for the Graph panel's heat map (interactive charts Batch 8). tools/record_towns.py works out each record's town from FORGE's coverage-area naming rule; an entry here replaces the rule's name for one record. rule_name is what the rule said when the fix was made (publish warns if that changes); why says what the source places it in. Not part of the pin files or approvals.",
+  "overrides": {
+    "befc9ba6-05fd-5471-ac93-fc32257d498b": {
+      "town": "Polokwane",
+      "rule_name": "Westenburg",
+      "why": "Polokwane International Airport. The rule fell back to the Westenburg police precinct, a Polokwane suburb."
+    },
+    "4ce322ea-9266-55c2-a78c-eb366be96aa4": {
+      "town": "Thohoyandou",
+      "rule_name": "Vuwani",
+      "why": "The report places Mashawana mountain in the Thohoyandou police area; the rule named the precinct polygon holding the approximate pin."
+    },
+    "efbf9e6d-2d5d-4591-8d0e-11294babd050": {
+      "town": "Mahikeng",
+      "rule_name": "Mmabatho",
+      "why": "The report names Modimola Village, Mahikeng. Mmabatho is the gazetteer's place next to Mahikeng."
+    },
+    "64b7adb5-4fc2-4184-b932-5ea0082259d7": {
+      "town": "Mahikeng",
+      "rule_name": "Mmabatho",
+      "why": "The report names Seweding Village, Mahikeng. Mmabatho is the gazetteer's place next to Mahikeng."
+    },
+    "d09da7da-5705-46e3-8d10-5fef0db6c639": {
+      "town": "Great Brak River",
+      "rule_name": "Groot-Brakrivier",
+      "why": "Same town; the pin title and the report use the English name."
+    },
+    "0d2ac747-e939-48fd-a116-3d99c1a95758": {
+      "town": "Cape Town",
+      "rule_name": "Somerset West",
+      "why": "Asanda Village, Strand is in the City of Cape Town, like the Khayelitsha, Delft and Wesbank pins the rule already names Cape Town. The rule only merges a suburb into the city when the city's centre point is within the coverage radius."
+    }
+  }
+}
