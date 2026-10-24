@@ -113,7 +113,9 @@
       <div class="site-footer__left mono">
         FORGE MAP ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
         <a href="{% block footer_about %}about.html{% endblock %}" style="color:var(--text-dim);">How It Works</a> ·
-        <a href="{% block footer_records %}records.html{% endblock %}" style="color:var(--text-dim);">Records</a>
+        <a href="{% block footer_records %}records.html{% endblock %}" style="color:var(--text-dim);">Records</a> ·
+        <a href="{% block footer_contact %}contact.html{% endblock %}" style="color:var(--text-dim);">Contact</a> ·
+        <a href="{% block footer_privacy %}privacy.html{% endblock %}" style="color:var(--text-dim);">Privacy</a>
       </div>
       {% if membership_url or membership_sim %}
       <a href="{{ membership_url or '#' }}" target="_blank" rel="noopener"

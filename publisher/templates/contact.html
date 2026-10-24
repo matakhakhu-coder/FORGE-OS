@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+
+{% block head_extra %}
+<meta name="description" content="Contact FORGE Map, report a mistake in a pin, or ask about your personal information.">
+{% include "_legal_styles.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="about-shell">
+
+  <div class="about-header">
+    <div class="about-header__eyebrow">Contact &middot; FORGE Map</div>
+    <h1 class="about-header__title">Contact</h1>
+    <p class="about-header__sub">
+      FORGE Map is an open map of incidents reported in South African news. It is run by
+      K2026598376 (South Africa) (Pty) Ltd, trading as Zone2Freelancers, registration
+      number 2026/598376/07.
+    </p>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Get in touch</h2>
+    <div class="about-body">
+      <p>The quickest way to reach us is by email: <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a>.</p>
+      <p>Information Officer: Matamela Ramovha (Information Regulator registration number 2026-063320).</p>
+    </div>
+  </div>
+
+  <div class="about-section" id="report-a-mistake">
+    <h2 class="about-section__title">Report a mistake in a pin</h2>
+    <div class="about-body">
+      <p>If a pin gets something wrong, please tell us. It helps to include:</p>
+      <ul>
+        <li>the pin&rsquo;s title or its link (use the Share button on the pin)</li>
+        <li>what you think is wrong: the date, the place, the facts or the sources</li>
+        <li>a link to a report or statement that shows the correct version, if you have one</li>
+      </ul>
+      <p>
+        The owner reads every correction request and decides what changes. When a pin is
+        corrected, the owner approves a new version, and the old version stays in the public
+        approval ledger. A pin can also be withdrawn.
+        <a href="{% block contact_about_href %}about.html{% endblock %}#trust-and-corrections">How It Works</a>
+        explains this under &ldquo;Trust and corrections&rdquo;.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">If you are named in a pin</h2>
+    <div class="about-body">
+      <p>
+        A pin records what news outlets and police reported about an incident, attributed to
+        whoever said it. It is not a finding about anyone. If you are named or can be
+        identified in a pin and believe it is wrong, out of date or unfair, email us with the
+        pin&rsquo;s link and what you would like reviewed. We will check it against the
+        sources and tell you what we decided.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Your personal information</h2>
+    <div class="about-body">
+      <p>
+        To ask what personal information FORGE Map holds about you, or to have it corrected or
+        deleted, see the <a href="privacy.html">Privacy</a> page or email
+        <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">What this address is not for</h2>
+    <div class="about-body">
+      <p>
+        FORGE Map is not an emergency or crime-reporting service. We cannot pass reports to the
+        police. If you or someone else is in danger, or you have information about a crime,
+        contact the South African Police Service directly.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

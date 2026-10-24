@@ -57,6 +57,8 @@ DIST_ENTITIES = DIST / "entities"
 # paid API feed). Removed 22 Oct 2026; a build deletes any leftover copy and
 # vercel.json redirects their addresses to the open Records page.
 RETIRED_DIST_FILES = ("subscribe.html", "thankyou.html", "pro-feed.json")
+# Static legal pages rendered on every build (24 Oct 2026).
+LEGAL_PAGES = ("contact.html", "privacy.html")
 
 VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
@@ -1414,6 +1416,13 @@ def _build_dist(
         env.get_template("about.html").render(generated_at=now_str, **rev),
         encoding="utf-8",
     )
+
+    # contact.html and privacy.html — operator, corrections and privacy notice
+    for page in LEGAL_PAGES:
+        (DIST / page).write_text(
+            env.get_template(page).render(generated_at=now_str, **rev),
+            encoding="utf-8",
+        )
 
     # records.html, records.csv, records.json — the open Records view.
     # Approved map pins only (tools/records_export.py), free to read and

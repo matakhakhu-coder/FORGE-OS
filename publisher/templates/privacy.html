@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Privacy{% endblock %}
+
+{% block head_extra %}
+<meta name="description" content="What FORGE Map collects, what stays in your browser, and how member chat handles your information.">
+{% include "_legal_styles.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="about-shell">
+
+  <div class="about-header">
+    <div class="about-header__eyebrow">Privacy &middot; FORGE Map</div>
+    <h1 class="about-header__title">Privacy</h1>
+    <p class="about-header__sub">
+      FORGE Map is a free public map. You don&rsquo;t need an account to use the map.
+      Optional member chat (Social) uses a Google sign-in and runs on Google Firebase, as
+      described below. FORGE Map is run by K2026598376 (South Africa) (Pty) Ltd, trading as
+      Zone2Freelancers, registration number 2026/598376/07. For questions about your
+      information, email <a href="mailto:rileynotbishop@gmail.com" style="color:var(--accent);">rileynotbishop@gmail.com</a>.
+    </p>
+    <p class="about-header__sub">Our Information Officer is Matamela Ramovha (Information Regulator registration number 2026-063320).</p>
+    <p class="about-header__meta">Last updated 24 October 2026</p>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">The short version</h2>
+    <div class="about-body">
+      <ul>
+        <li>FORGE Map&rsquo;s own code sets no cookies and runs no analytics, advertising or tracking scripts.</li>
+        <li>What you save on the site, such as your Watchlist and settings, stays in your own browser. It is never sent to us.</li>
+        <li>If you join Social, your Google sign-in goes through Firebase, and your display name, messages and any reports you make are stored there.</li>
+        <li>To show the site, your browser also fetches files from a few outside services: our host, fonts, map tiles and code libraries. Like any web server, they receive your IP address when it does. They are listed below.</li>
+        <li>A street address you type into Area check goes to Geoapify, not to us.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">What stays in your browser</h2>
+    <div class="about-body">
+      <p>
+        The site saves these in your browser&rsquo;s storage, on your device only. They
+        don&rsquo;t move between your devices, and clearing your browser&rsquo;s site data
+        removes them.
+      </p>
+      <ul>
+        <li><strong>Settings:</strong> theme, time zone and how times are shown.</li>
+        <li><strong>Watchlist:</strong> the pins and entities you starred.</li>
+        <li><strong>Opened sources:</strong> the source links you have opened, so the site can mark them as opened. It keeps the last 500.</li>
+        <li><strong>Area check place:</strong> the place, radius and dates you chose, with the point rounded to about 10 metres. It is kept only for your current browser session, unless you tick the box to remember it on this device. The Forget button clears it.</li>
+        <li><strong>Notes on reports:</strong> any notes you write on a report page.</li>
+        <li><strong>Social sign-in:</strong> if you sign in to Social, Firebase keeps you signed in on this browser until you sign out.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Services your browser connects to</h2>
+    <div class="about-body">
+      <p>
+        When you open a page, your browser asks these services for files. Each one receives
+        your IP address and standard browser details, such as the page that asked for the
+        file.
+      </p>
+      <ul>
+        <li><strong>Vercel</strong> hosts the site and serves every page. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Vercel privacy policy</a></li>
+        <li><strong>Google Fonts</strong> supplies the site&rsquo;s fonts, on every page. <a href="https://developers.google.com/fonts/faq/privacy" target="_blank" rel="noopener noreferrer">Google Fonts privacy FAQ</a></li>
+        <li><strong>jsDelivr</strong> supplies open-source code the site runs on, such as the map and search libraries. <a href="https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-net" target="_blank" rel="noopener noreferrer">jsDelivr privacy policy</a></li>
+        <li><strong>OpenStreetMap</strong> supplies the map tiles on the map page. <a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">OpenStreetMap Foundation privacy policy</a></li>
+        <li><strong>Google Firebase</strong> code is loaded from gstatic.com on the map page, where it runs Social. Until you sign in, it sends us nothing about you. <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">Privacy and security in Firebase</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Address search in Area check</h2>
+    <div class="about-body">
+      <p>
+        Searching for a place name runs on your device, and nothing is sent. If you type a
+        street address instead, the address and your IP address go to Geoapify, which looks up
+        the spot. FORGE Map never receives what you typed. Geoapify&rsquo;s privacy policy says
+        it keeps the details of each request, including the IP address, for access control and
+        usage counting.
+        <a href="https://www.geoapify.com/privacy-policy/" target="_blank" rel="noopener noreferrer">Geoapify privacy policy</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section" id="social">
+    <h2 class="about-section__title">Member sign-in and chat (Social)</h2>
+    <div class="about-body">
+      <p>
+        Social is a members-only chat. Membership is by invitation: anyone can sign in with
+        Google, but you can only chat once we have added you as a member. It runs on Google
+        Firebase.
+      </p>
+      <ul>
+        <li><strong>Signing in:</strong> you sign in with your Google account through Firebase Authentication, which keeps an account record for you, including your email address. Firebase says it keeps the IP addresses it logs for a few weeks, and other sign-in information until we delete your account. Firebase Authentication processes data in the United States.</li>
+        <li><strong>What we store:</strong> whether your membership is active or suspended; the display name you choose (up to 40 characters); your messages (up to 500 characters each) with the time they were sent; and the time and ID of your last message, which we use to make you wait 10 seconds between messages. These are stored in Firebase&rsquo;s Cloud Firestore database.</li>
+        <li><strong>Who sees what:</strong> other members see your messages, when they were sent, and &ldquo;Member&rdquo; followed by the last four characters of your account ID. Signed-in members can also read the display name you choose. Your Google email address is not shown in the chat.</li>
+        <li><strong>Reports:</strong> you can report another member&rsquo;s message. A report records your account ID, which message, the reason and the time. Only the site&rsquo;s owner, as moderator, can read reports. The moderator can delete any message.</li>
+        <li><strong>How long we keep it:</strong> there is no set period, and nothing is deleted automatically. You can delete your own messages at any time, and you can change your display name. Everything else stays until we delete it.</li>
+        <li><strong>Deleting your account:</strong> the site has no button for this. Email <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a> from the Google account you use for Social, and we will delete your sign-in account, membership, display name, activity record, remaining messages and the reports you made.</li>
+      </ul>
+      <p><a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">Privacy and security in Firebase</a></p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Links to other sites</h2>
+    <div class="about-body">
+      <p>
+        Pins link to the original news reports. A source link opens only after a notice that
+        you&rsquo;re leaving FORGE Map. The site also links to Ko-fi and to one sponsored site.
+        Once you leave FORGE Map, that site&rsquo;s own privacy policy applies.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">People named in pins</h2>
+    <div class="about-body">
+      <p>
+        Pins are built from news reports and police statements that are already public, and
+        some of them name people. A pin records what was reported, attributed to whoever said
+        it. It is not a finding about anyone. If you are named or can be identified in a pin,
+        you can ask us to check it, correct it or review it. Email
+        <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a> with the
+        pin&rsquo;s link. <a href="{% block privacy_about_href %}about.html{% endblock %}#trust-and-corrections">How It Works</a>
+        explains how corrections are made and recorded.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">If you email us</h2>
+    <div class="about-body">
+      <p>
+        If you email us, we receive your email address and whatever you write, and we use them
+        only to answer you and deal with your request. We delete correspondence 90 days after
+        the request is resolved, unless an unresolved dispute or legal obligation requires us
+        to keep it longer.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Your rights</h2>
+    <div class="about-body">
+      <p>
+        You can ask what personal information we hold about you, and ask us to correct or
+        delete it, by emailing <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a>.
+        If you&rsquo;re not satisfied with our answer, you can complain to the
+        <a href="https://inforegulator.org.za/" target="_blank" rel="noopener noreferrer">Information Regulator of South Africa</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Changes</h2>
+    <div class="about-body">
+      <p>If what the site collects changes, we will update this page and the date at the top first.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

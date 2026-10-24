@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — South African Intelligence Bulletin</title>
+  <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+  <link rel="apple-touch-icon" href="static/apple-touch-icon.png">
+  <link rel="stylesheet" href="static/css/site.css">
+  
+<meta name="description" content="Contact FORGE Map, report a mistake in a pin, or ask about your personal information.">
+<style>
+.about-shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+.about-header { margin-bottom: var(--sp-8); }
+.about-header__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+}
+.about-header__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--sp-3);
+}
+.about-header__sub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.about-header__meta {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-top: var(--sp-3);
+}
+.about-section { margin-bottom: var(--sp-8); }
+.about-section__title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-dim);
+}
+.about-body {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.about-body p { margin-bottom: var(--sp-4); }
+.about-body strong { color: var(--text-primary); }
+.about-body ul { margin: 0 0 var(--sp-4) var(--sp-5); padding: 0; }
+.about-body li { margin-bottom: var(--sp-2); }
+.about-body a { color: var(--accent); }
+</style>
+
+</head>
+<body>
+
+  
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        
+        <a href="index.html" class="site-logo" aria-label="FORGE Map home">
+          <svg class="site-logo__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <rect width="64" height="64" rx="8" fill="#0a1a0a"/>
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#1d9e45" stroke-width="2.5" opacity="0.4"/>
+            <circle cx="32" cy="32" r="20" fill="none" stroke="#1d9e45" stroke-width="2" opacity="0.6"/>
+            <circle cx="32" cy="32" r="12" fill="none" stroke="#1d9e45" stroke-width="1.8" opacity="0.8"/>
+            <g transform="rotate(-25, 32, 32)">
+              <rect x="22" y="14" width="7" height="36" rx="1.5" fill="#d4a520"/>
+              <path d="M22 14 L44 14 Q48 14 48 18 L48 21 L29 21 L29 18 L22 18 Z" fill="#d4a520"/>
+              <polygon points="29,30 43,33 29,36" fill="#d4a520"/>
+              <rect x="22" y="30.5" width="9" height="5" fill="#d4a520"/>
+              <rect x="18" y="47" width="18" height="4" rx="1.5" fill="#b8860b"/>
+            </g>
+          </svg><span class="site-logo__word" aria-hidden="true">ORGE Map</span>
+        </a>
+        <span class="site-tagline">Open-Source Intelligence · South Africa &amp; Region</span>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" aria-expanded="false"
+              onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');document.querySelector('.site-nav').classList.toggle('site-nav--open');">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav">
+        <a href="about.html" class="site-nav__link ">How It Works</a>
+        <a href="records.html" class="site-nav__link ">Records</a>
+      </nav>
+      <div class="site-header__meta">
+        <div class="site-search" style="position:relative;">
+          <input id="site-search" type="text" placeholder="Search..."
+                 style="background:var(--bg-elevated);border:1px solid var(--border-dim);border-radius:var(--r-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.65rem;padding:var(--sp-1) var(--sp-3);width:140px;outline:none;">
+          <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
+        <span class="site-ts mono" id="data-age" data-generated="24 Oct 2026 08:34 UTC" title="24 Oct 2026 08:34 UTC">24 Oct 2026 08:34 UTC</span>
+        <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
+      </div>
+    </div>
+  </header>
+
+  
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel" id="settings-panel">
+      <div class="settings-panel__header">
+        <span class="settings-panel__dot"></span>
+        <span class="settings-panel__title">Settings</span>
+        <button class="settings-panel__close" id="settings-close">&#10005;</button>
+      </div>
+
+      <div class="settings-panel__body">
+        <div class="settings-group">
+          <div class="settings-group__label">Theme</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-theme="dark">Dark</button>
+            <button class="settings-opt" data-theme="light">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Timezone</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-tz="utc">UTC</button>
+            <button class="settings-opt" data-tz="sast">SAST</button>
+            <button class="settings-opt" data-tz="local">Local</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group__label">Time Display</div>
+          <div class="settings-toggle-row">
+            <button class="settings-opt active" data-timemode="age">Data Age</button>
+            <button class="settings-opt" data-timemode="absolute">Timestamp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="class-banner">
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — FORGE MAP ARCHIVE
+  </div>
+
+  
+  <main class="site-main">
+    
+<div class="about-shell">
+
+  <div class="about-header">
+    <div class="about-header__eyebrow">Contact &middot; FORGE Map</div>
+    <h1 class="about-header__title">Contact</h1>
+    <p class="about-header__sub">
+      FORGE Map is an open map of incidents reported in South African news. It is run by
+      K2026598376 (South Africa) (Pty) Ltd, trading as Zone2Freelancers, registration
+      number 2026/598376/07.
+    </p>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Get in touch</h2>
+    <div class="about-body">
+      <p>The quickest way to reach us is by email: <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a>.</p>
+      <p>Information Officer: Matamela Ramovha (Information Regulator registration number 2026-063320).</p>
+    </div>
+  </div>
+
+  <div class="about-section" id="report-a-mistake">
+    <h2 class="about-section__title">Report a mistake in a pin</h2>
+    <div class="about-body">
+      <p>If a pin gets something wrong, please tell us. It helps to include:</p>
+      <ul>
+        <li>the pin&rsquo;s title or its link (use the Share button on the pin)</li>
+        <li>what you think is wrong: the date, the place, the facts or the sources</li>
+        <li>a link to a report or statement that shows the correct version, if you have one</li>
+      </ul>
+      <p>
+        The owner reads every correction request and decides what changes. When a pin is
+        corrected, the owner approves a new version, and the old version stays in the public
+        approval ledger. A pin can also be withdrawn.
+        <a href="about.html#trust-and-corrections">How It Works</a>
+        explains this under &ldquo;Trust and corrections&rdquo;.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">If you are named in a pin</h2>
+    <div class="about-body">
+      <p>
+        A pin records what news outlets and police reported about an incident, attributed to
+        whoever said it. It is not a finding about anyone. If you are named or can be
+        identified in a pin and believe it is wrong, out of date or unfair, email us with the
+        pin&rsquo;s link and what you would like reviewed. We will check it against the
+        sources and tell you what we decided.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Your personal information</h2>
+    <div class="about-body">
+      <p>
+        To ask what personal information FORGE Map holds about you, or to have it corrected or
+        deleted, see the <a href="privacy.html">Privacy</a> page or email
+        <a href="mailto:rileynotbishop@gmail.com">rileynotbishop@gmail.com</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">What this address is not for</h2>
+    <div class="about-body">
+      <p>
+        FORGE Map is not an emergency or crime-reporting service. We cannot pass reports to the
+        police. If you or someone else is in danger, or you have information about a crime,
+        contact the South African Police Service directly.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+  </main>
+
+  
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__left mono">
+        FORGE MAP ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        <a href="about.html" style="color:var(--text-dim);">How It Works</a> ·
+        <a href="records.html" style="color:var(--text-dim);">Records</a> ·
+        <a href="contact.html" style="color:var(--text-dim);">Contact</a> ·
+        <a href="privacy.html" style="color:var(--text-dim);">Privacy</a>
+      </div>
+      
+      <a href="https://ko-fi.com/zadivergent" target="_blank" rel="noopener"
+         class="membership-btn">
+        
+        Support Independent OSINT
+      </a>
+      
+      <div class="site-footer__right mono">
+        Generated 24 Oct 2026 08:34 UTC
+      </div>
+    </div>
+  </footer>
+
+  
+  <div class="print-footer" style="display:none;">
+    <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · 24 Oct 2026 08:34 UTC</span>
+  </div>
+
+  <script src="static/js/watchlist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/minisearch@7.1.1/dist/umd/index.min.js"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  (function () {
+    var input = document.getElementById('site-search');
+    var box = document.getElementById('search-results');
+    if (!input || !box) return;
+    var idx = null;
+    var indexUrl = 'search-index.json';
+    // Result urls are relative to the site root, where search-index.json sits,
+    // so resolve them against the index (pages in articles/ etc. load ../).
+    var siteRoot = new URL(indexUrl, window.location.href);
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    fetch(indexUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (docs) {
+        idx = new MiniSearch({ fields: ['title', 'aliases'], storeFields: ['title', 'kind', 'url', 'signal'] });
+        idx.addAll(docs);
+      })
+      .catch(function () {});
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (!q || !idx) { box.style.display = 'none'; return; }
+      var res = idx.search(q, { fuzzy: 0.2, prefix: true, boost: { title: 2 } }).slice(0, 8);
+      if (!res.length) { box.style.display = 'none'; return; }
+      box.innerHTML = res.map(function (r) {
+        var kind = r.kind === 'actor' ? 'Entity' : (r.kind === 'article' ? 'Analysis' : 'Signal');
+        var href = new URL(r.url, siteRoot).href;
+        var title = String(r.title || '');
+        return '<a href="' + esc(href) + '"' + (r.signal ? ' data-signal="' + esc(r.signal) + '"' : '') + ' style="display:block;padding:6px 10px;font-size:0.75rem;color:var(--text-primary);text-decoration:none;border-bottom:1px solid var(--border-subtle);">' +
+          '<span style="font-family:var(--font-mono);font-size:0.5rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;">' + kind + '</span><br>' +
+          esc(title.slice(0, 60)) + (title.length > 60 ? '...' : '') + '</a>';
+      }).join('');
+      box.style.display = 'block';
+    });
+    // On the map page a signal result opens its event drawer in place
+    // (the map sets window.forgeOpenSignal). Anywhere else, or if the pin
+    // isn't on this map, the link loads index.html?signal=..., which opens it.
+    box.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-signal]') : null;
+      if (!a || typeof window.forgeOpenSignal !== 'function') return;
+      if (e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (!window.forgeOpenSignal(a.getAttribute('data-signal'), input)) return;
+      e.preventDefault();
+      box.style.display = 'none';
+      input.blur();
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.site-search')) box.style.display = 'none';
+    });
+  })();
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    var PREFS_KEY = 'za_divergent_prefs';
+
+    function loadPrefs() {
+      try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
+    function savePrefs(p) { localStorage.setItem(PREFS_KEY, JSON.stringify(p)); }
+    var prefs = loadPrefs();
+
+    /* ── Settings panel toggle ──────────────────────────────────────────── */
+    var overlay = document.getElementById('settings-overlay');
+    var toggleBtn = document.getElementById('settings-toggle');
+    var closeBtn = document.getElementById('settings-close');
+    if (toggleBtn && overlay) {
+      toggleBtn.addEventListener('click', function () { overlay.classList.toggle('open'); });
+      closeBtn.addEventListener('click', function () { overlay.classList.remove('open'); });
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.classList.remove('open'); });
+    }
+
+    /* ── Theme ──────────────────────────────────────────────────────────── */
+    function applyTheme(t) {
+      document.body.classList.toggle('theme-light', t === 'light');
+      document.querySelectorAll('[data-theme]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.theme === t);
+      });
+      prefs.theme = t;
+      savePrefs(prefs);
+    }
+    if (prefs.theme) applyTheme(prefs.theme);
+    document.querySelectorAll('[data-theme]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTheme(b.dataset.theme); });
+    });
+
+    /* ── Timezone ───────────────────────────────────────────────────────── */
+    function applyTz(tz) {
+      document.querySelectorAll('[data-tz]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.tz === tz);
+      });
+      prefs.tz = tz;
+      savePrefs(prefs);
+    }
+    if (prefs.tz) applyTz(prefs.tz);
+    document.querySelectorAll('[data-tz]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTz(b.dataset.tz); });
+    });
+
+    /* ── Time display mode ──────────────────────────────────────────────── */
+    var dataAgeEl = document.getElementById('data-age');
+    var generatedAt = dataAgeEl ? dataAgeEl.dataset.generated : null;
+    var generatedMs = generatedAt ? Date.now() : 0;
+
+    if (generatedAt) {
+      var parts = generatedAt.match(/(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+)/);
+      if (parts) {
+        var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        generatedMs = Date.UTC(+parts[3], months[parts[2]] || 0, +parts[1], +parts[4], +parts[5]);
+      }
+    }
+
+    function formatAge() {
+      var diff = Math.max(0, Date.now() - generatedMs);
+      var mins = Math.floor(diff / 60000);
+      var hrs = Math.floor(mins / 60);
+      var days = Math.floor(hrs / 24);
+      if (days > 0) return 'DATA AGE: ' + days + 'D ' + (hrs % 24) + 'H';
+      if (hrs > 0) return 'DATA AGE: ' + hrs + 'H ' + (mins % 60) + 'M';
+      return 'DATA AGE: ' + mins + 'M';
+    }
+
+    function applyTimeMode(mode) {
+      document.querySelectorAll('[data-timemode]').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.timemode === mode);
+      });
+      prefs.timemode = mode;
+      savePrefs(prefs);
+      updateTimeDisplay();
+    }
+
+    function updateTimeDisplay() {
+      if (!dataAgeEl) return;
+      var mode = prefs.timemode || 'age';
+      if (mode === 'age' && generatedMs) {
+        dataAgeEl.textContent = formatAge();
+      } else {
+        dataAgeEl.textContent = generatedAt || '';
+      }
+    }
+
+    if (prefs.timemode) applyTimeMode(prefs.timemode);
+    else updateTimeDisplay();
+
+    document.querySelectorAll('[data-timemode]').forEach(function (b) {
+      b.addEventListener('click', function () { applyTimeMode(b.dataset.timemode); });
+    });
+
+    // Tick every 60 seconds
+    if (generatedMs) setInterval(updateTimeDisplay, 60000);
+
+  })();
+  </script>
+  
+</body>
+</html>
