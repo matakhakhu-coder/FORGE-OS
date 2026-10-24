@@ -146,7 +146,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'za-divergent-records-' + (data.data_version || 'data').slice(0, 7) + '-filtered.csv';
+      a.download = 'forge-map-records-' + (data.data_version || 'data').slice(0, 7) + '-filtered.csv';
       document.body.appendChild(a);
       a.click();
       setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
