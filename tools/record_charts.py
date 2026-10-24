@@ -298,6 +298,53 @@ def _step_label(dt: datetime) -> str:
     return f"{dt.day} {dt.strftime('%b')}, {h}:{dt.minute:02d} {'AM' if dt.hour < 12 else 'PM'}"
 
 
+def _week_label(a: date, b: date) -> str:
+    if a == b:
+        return _day_label(a)
+    if (a.year, a.month) == (b.year, b.month):
+        return f"{a.day} to {b.day} {b.strftime('%b')}"
+    return f"{_day_label(a)} to {_day_label(b)}"
+
+
+def chart_weeks(days: list[str]) -> list[dict]:
+    """The week buttons for a day axis (interactive charts Batch 7): runs of
+    seven days counted from the axis's first day, so 1 to 21 October gives
+    "1 to 7 Oct", "8 to 14 Oct" and "15 to 21 Oct"; the last week may be
+    short. An axis of seven days or fewer has nothing to zoom into, so it gets
+    no buttons (today the Added axis is 18 to 23 October). from/to are
+    indexes into the axis, both inclusive."""
+    if len(days) <= 7:
+        return []
+    out = []
+    for i in range(0, len(days), 7):
+        j = min(i + 6, len(days) - 1)
+        out.append({"label": _week_label(date.fromisoformat(days[i]), date.fromisoformat(days[j])),
+                    "from": i, "to": j})
+    return out
+
+
+def week_split(table: dict, step: int, chart: str, week: dict, streams_on=None) -> dict:
+    """What a week button shows at one slider step: the records on the
+    week's days and on the axis's other days, which together make the
+    chart's dated total (the summary's undated and later-step counts sit
+    outside every week). chart is "incident" or "added". Mirrors the page
+    script's week note; the tests use it to prove the totals add up."""
+    c = counts_from_table(table, step, streams_on)
+    days = table["axes"][f"{chart}_days"]
+    per = c[chart]["days"]
+    inside = sum(per[week["from"]:week["to"] + 1])
+    every = sum(per)
+    return {"days": days[week["from"]:week["to"] + 1], "in_week": inside, "other_days": every - inside}
+
+
+def ids_on_map(table: dict, step: int) -> list[str]:
+    """The short IDs the map keeps when the slider sits on one publish step
+    (interactive charts Batch 6): every record added by that publish. Streams
+    and Area check apply on top in the map itself."""
+    col = {c: i for i, c in enumerate(table["columns"])}
+    return [r[col["id"]] for r in table["rows"] if r[col["step"]] <= step]
+
+
 def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
     """The publish steps and one compact row per record, for the page script.
 
@@ -359,8 +406,10 @@ def timeline_table(records: list[dict], charts: dict | None = None) -> dict:
         "axes": {
             "incident_days": [x["date"] for x in inc.get("days", [])],
             "incident_max": inc.get("max", 0),
+            "incident_weeks": chart_weeks([x["date"] for x in inc.get("days", [])]),
             "added_days": [x["date"] for x in pages.get("added", {}).get("days", [])],
             "added_max": pages.get("added", {}).get("max", 0),
+            "added_weeks": chart_weeks([x["date"] for x in pages.get("added", {}).get("days", [])]),
             "stream": [x["label"] for x in pages.get("stream", {}).get("rows", [])],
             "stream_max": pages.get("stream", {}).get("max", 0),
             "province": [x["label"] for x in pages.get("province", {}).get("rows", [])],

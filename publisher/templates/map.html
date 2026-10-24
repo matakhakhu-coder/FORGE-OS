@@ -869,6 +869,19 @@
   .gp-line { cursor: pointer; }
   .gp-line__hit { fill: transparent; }
   .gp-line__sel { fill: var(--accent); opacity: 0.16; }
+  /* Zoom into a week (interactive charts Batch 7) */
+  .gp-weeks { margin: 0 0 var(--sp-2); }
+  .gp-weeks__btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .gp-weeks__btn {
+    min-height: 44px; min-width: 44px; padding: 4px 10px; flex: 1 1 auto;
+    background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border-subtle); border-radius: var(--r-sm);
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .gp-weeks__btn[aria-pressed="true"] { color: var(--accent-bright); border-color: var(--accent); background: rgba(0,0,0,0.25); }
+  .gp-weeks__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gp-weeks__note { margin: 6px 0 0; font-size: 0.72rem; color: var(--text-secondary); }
+  .gp-weeks__note[hidden], .gp-col[hidden] { display: none; }
   .gp-chart__summary .gp-hit { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-decoration-color: var(--border-subtle); text-underline-offset: 3px; }
   .gp-hit.is-picked { color: var(--accent-bright); }
   .gp-streams { display: flex; flex-wrap: wrap; gap: 6px; margin: var(--sp-2) 0 0; max-width: 640px; }
@@ -1088,6 +1101,22 @@
     top: auto; bottom: 64px; left: 152px; transform: none;
     max-width: calc(100% - 152px - 400px - 2 * var(--sp-4));
   }
+  /* The map following the Graph panel (interactive charts Batches 6 and 8):
+     one note above the ticker while the slider is off "now" or a heat map
+     cell is picked, with the way back. */
+  .gp-mapnote {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 410; display: flex; align-items: center; gap: var(--sp-2);
+    max-width: calc(100% - 2 * var(--sp-4) - 300px);
+    background: rgba(8,13,18,0.94); border: 1px solid var(--accent-muted);
+    border-radius: var(--r-md); padding: 6px 6px 6px 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  }
+  .gp-mapnote[hidden], .gp-mapnote__btn[hidden], .gp-mapnote__line[hidden] { display: none; }
+  .gp-mapnote__text { display: flex; flex-direction: column; min-width: 0; }
+  .gp-mapnote__line { font-size: 0.74rem; line-height: 1.35; color: var(--text-primary); }
+  .gp-mapnote__btn { min-height: 44px; min-width: 44px; padding: 4px 10px; flex-shrink: 0; }
+  .md-shell.drawer-open .gp-mapnote { left: calc((100% - 400px) / 2); max-width: calc(100% - 400px - 2 * var(--sp-4)); }
   .ac-cross {
     position: absolute; left: 50%; top: 50%; z-index: 405; pointer-events: none;
     width: 44px; height: 44px; margin: -22px 0 0 -22px;
@@ -1169,6 +1198,11 @@
       flex-wrap: wrap; padding: 6px 8px;
     }
     .ac-bar__text { white-space: normal; flex-basis: 100%; font-size: 0.74rem; }
+    .gp-mapnote, .md-shell.drawer-open .gp-mapnote {
+      left: var(--sp-3); right: var(--sp-3); transform: none; bottom: 92px;
+      max-width: none; padding: 4px 4px 4px 10px;
+    }
+    .gp-mapnote__text { flex: 1; }
     .ac-placebar {
       left: var(--sp-3); right: var(--sp-3); top: auto; bottom: 112px; transform: none;
       max-width: none; flex-wrap: wrap;
@@ -1702,6 +1736,15 @@
     <button type="button" class="ac-bar__btn" id="ac-bar-all">Show all</button>
   </div>
   <div class="ac-cross" id="ac-cross" aria-hidden="true" hidden></div>
+  {# The map following the Graph panel's slider or heat map (filled by script). #}
+  <div class="gp-mapnote" id="gp-mapnote" hidden>
+    <span class="gp-mapnote__text" role="status" aria-live="polite">
+      <span class="gp-mapnote__line" id="gp-mapnote-time" hidden></span>
+      <span class="gp-mapnote__line" id="gp-mapnote-cell" hidden></span>
+    </span>
+    <button type="button" class="ac-bar__btn gp-mapnote__btn" id="gp-mapnote-clear" hidden>Clear</button>
+    <button type="button" class="ac-bar__btn ac-bar__btn--main gp-mapnote__btn" id="gp-mapnote-now" hidden>Back to now</button>
+  </div>
   <div class="ac-placebar" id="ac-placebar" role="dialog" aria-label="Place the centre on the map" hidden>
     <span class="ac-placebar__text">Move the map until the cross is on the spot.</span>
     <button type="button" class="ac-bar__btn ac-bar__btn--main" id="ac-place-use">Use this spot</button>
@@ -2041,9 +2084,18 @@
   // open in the drawer always shows, even outside the circle.
   var pinFilter = null;
   var areaUI = null;
+  // The Graph panel's slider (Batch 6) and heat map (Batch 8): RAW idx -> true
+  // for the pins they keep, or null. Streams and Area check still apply on
+  // top; the drawer's pin always shows.
+  var timeIdx = null;
+  var cellIdx = null;
+  function mapFiltered() { return !!(pinFilter || timeIdx || cellIdx); }
   function pinShowState(ml) {
     if (streamVisible[ml.stream] === false) return 'out';
-    if (!pinFilter || ml.idx === drawerIdx) return 'in';
+    if (ml.idx === drawerIdx) return 'in';
+    if (timeIdx && !timeIdx[ml.idx]) return 'out';
+    if (cellIdx && !cellIdx[ml.idx]) return 'out';
+    if (!pinFilter) return 'in';
     return pinFilter(ml.idx);
   }
   function refreshPins() {
@@ -2060,7 +2112,7 @@
     if (rem.length) clusterGroup.removeLayers(rem);
     if (add.length) clusterGroup.addLayers(add);
     linkLayers.forEach(function (ln) {
-      var vis = !pinFilter || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
+      var vis = !mapFiltered() || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
       if (vis && !map.hasLayer(ln.layer)) ln.layer.addTo(map);
       else if (!vis && map.hasLayer(ln.layer)) map.removeLayer(ln.layer);
     });
@@ -2872,7 +2924,7 @@
     if (opts.trigger || !wasOpen) drawerTrigger = opts.trigger || null;
     fillDrawer(m);
     drawerIdx = idx;
-    if (pinFilter) refreshPins();   // the open pin shows even outside the Area check circle
+    if (mapFiltered()) refreshPins();   // the open pin shows even outside the Area check circle or the slider's step
     if (areaUI) areaUI.onDrawer();
     markSelected(idx, true);
 
@@ -2906,7 +2958,7 @@
     closeExtGate({ restoreFocus: false });
     markSelected(drawerIdx, false);
     drawerIdx = null;
-    if (pinFilter) refreshPins();
+    if (mapFiltered()) refreshPins();
     if (areaUI) areaUI.onDrawer();
     drawer.hidden = true;
     shellEl.classList.remove('drawer-open');
@@ -3202,6 +3254,69 @@
       setStreamVisible(toggle.dataset.streamToggle, !toggle.classList.contains('on'));
     });
   });
+
+  /* ── The map follows the Graph panel (interactive charts Batches 6 and 8) ── */
+  // record-charts.js owns the counting and calls these with the short IDs to
+  // keep: setTime once per publish step while the slider is off "now" (null
+  // at "now": the map is exactly as without the charts), setCell while a heat
+  // map cell is picked. The note above the ticker says why pins are missing
+  // and has the way back.
+  (function () {
+    var note = document.getElementById('gp-mapnote');
+    if (!note) return;
+    var timeLine = document.getElementById('gp-mapnote-time');
+    var cellLine = document.getElementById('gp-mapnote-cell');
+    var nowBtn = document.getElementById('gp-mapnote-now');
+    var clearBtn = document.getElementById('gp-mapnote-clear');
+    function idxSet(ids) {
+      var o = {};
+      (ids || []).forEach(function (id) { var i = idxForSignal(id); if (i !== null) o[i] = true; });
+      return o;
+    }
+    function show() {
+      timeLine.hidden = !timeIdx; nowBtn.hidden = !timeIdx;
+      cellLine.hidden = !cellIdx; clearBtn.hidden = !cellIdx;
+      note.hidden = !timeIdx && !cellIdx;
+    }
+    nowBtn.addEventListener('click', function () {
+      var C = window.ZADRecordCharts;
+      if (C) C.setStep(C.steps - 1, { settled: true });
+      else { timeIdx = null; refreshPins(); show(); }
+    });
+    clearBtn.addEventListener('click', function () {
+      var C = window.ZADRecordCharts;
+      if (C && C.clearCell) C.clearCell();
+      else { cellIdx = null; refreshPins(); show(); }
+    });
+    window.ZADMapTime = {
+      // o: null (now), or { ids: [...] | null (unchanged), text }
+      setTime: function (o) {
+        var redraw = false;
+        if (!o) { redraw = !!timeIdx; timeIdx = null; }
+        else {
+          if (o.ids) { timeIdx = idxSet(o.ids); redraw = true; }
+          timeLine.textContent = o.text || '';
+        }
+        if (redraw) refreshPins();
+        show();
+      },
+      setCell: function (o) {
+        var redraw = false;
+        if (!o) { redraw = !!cellIdx; cellIdx = null; }
+        else {
+          if (o.ids) { cellIdx = idxSet(o.ids); redraw = true; }
+          cellLine.textContent = o.text || '';
+        }
+        if (redraw) refreshPins();
+        show();
+      },
+      // for the browser checks: short IDs of the pins on the map now
+      shown: function () {
+        return allMarkerLayers.filter(function (ml) { return clusterGroup.hasLayer(ml.layer); })
+          .map(function (ml) { return shortId(RAW[ml.idx]); });
+      }
+    };
+  })();
 
   /* ── Area check (address radar, Sprints A and B) ────────────────────────── */
   if (window.ZADArea) {
