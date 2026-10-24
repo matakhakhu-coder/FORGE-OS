@@ -308,6 +308,38 @@ def _pan(page, key: str, timeout_s: float) -> dict:
     }
 
 
+IDLE_VIEW = (-33.98, 18.56, 14)     # the same spot, close enough that pins come apart
+IDLE_MS = 3000
+
+
+def _idle(page, cdp, timeout_s: float) -> dict:
+    """The cost of sitting still (Batch 8): with nothing touched for 3 s at
+    street level, how much main-thread work the page does (CDP TaskDuration,
+    under the profile's slowed processor), how smooth its frames are, and how
+    many pin animations are running. Without animation this is near zero."""
+    page.evaluate("""(c) => { const m = window.__forgeMap; if (m) m.setView([c[0], c[1]], c[2], { animate: false }); }""",
+                  list(IDLE_VIEW))
+    _wait_quiet(page, timeout_s)
+    page.wait_for_timeout(500)
+    cdp.send("Performance.enable")
+
+    def task_s():
+        return {m["name"]: m["value"] for m in cdp.send("Performance.getMetrics")["metrics"]}.get("TaskDuration", 0.0)
+    t0 = task_s()
+    gaps = page.evaluate("""ms => new Promise(res => { const g = []; let last = null; const t0 = performance.now();
+        function f(t) { if (last !== null) g.push(t - last); last = t;
+            if (t - t0 < ms) requestAnimationFrame(f); else res(g); } requestAnimationFrame(f); })""", IDLE_MS)
+    t1 = task_s()
+    anims = page.evaluate("""() => document.getAnimations().filter(a => a.playState === 'running' && a.effect
+        && a.effect.target && a.effect.target.closest && a.effect.target.closest('.leaflet-marker-icon')).length""")
+    icons = page.evaluate("() => document.querySelectorAll('.leaflet-marker-icon').length")
+    return {"idle_cpu_ms_per_s": round((t1 - t0) * 1000 / (IDLE_MS / 1000), 1),
+            "idle_frame_p95_ms": round(_pct(gaps, 0.95), 1) if gaps else None,
+            "idle_frame_max_ms": round(max(gaps), 1) if gaps else None,
+            "idle_long_frames": sum(1 for g in gaps if g > 50),
+            "idle_running_pin_animations": anims, "idle_marker_icons": icons}
+
+
 def measure_once(browser, url: str, profile: str, timeout_s: float = 240) -> dict:
     prof = PROFILES[profile]
     ctx = browser.new_context(**prof["context"])
@@ -355,6 +387,7 @@ def measure_once(browser, url: str, profile: str, timeout_s: float = 240) -> dic
             _wait_quiet(page, timeout_s)
             res["city_marker_icons"] = page.evaluate("() => document.querySelectorAll('.leaflet-marker-icon').length")
             res.update(_pan(page, "city_pan", timeout_s))
+            res.update(_idle(page, cdp, timeout_s))
     except Exception as e:  # noqa: BLE001
         res["failed"] = f"{e.__class__.__name__}: {str(e)[:200]}"
     res["page_errors"] = len(errors)
@@ -415,7 +448,8 @@ def run(dist: Path = DIST, sizes=DEFAULT_SIZES, runs: int = 3, profiles=("comput
                     if log:
                         log(f"[load-test] {label:>6} pins {prof:<8} "
                             f"{row['html_gzip_bytes']/1024:,.0f} KB gz  usable {row.get('usable_ms')} ms  "
-                            f"blocking {row.get('blocking_ms')} ms  pan p95 {row.get('pan_frame_p95_ms')}/{row.get('city_pan_frame_p95_ms')} ms"
+                            f"blocking {row.get('blocking_ms')} ms  pan p95 {row.get('pan_frame_p95_ms')}/{row.get('city_pan_frame_p95_ms')} ms  "
+                            f"idle {row.get('idle_cpu_ms_per_s')} ms/s, {row.get('idle_running_pin_animations')} anims"
                             + (f"  FAILED {row.get('failed')}" if row.get("failed") else ""))
             browser.close()
     finally:
@@ -442,6 +476,7 @@ def run(dist: Path = DIST, sizes=DEFAULT_SIZES, runs: int = 3, profiles=("comput
                              "network": v["network"]} for k, v in PROFILES.items() if k in profiles},
             "usable": "pins drawn and no long task for 500 ms; time from navigation start",
             "pan": "1.3 s drag across the map and back, then 1 s settle; once at the opening view, once over the Cape Flats at zoom 12",
+            "idle": "3 s untouched over the Cape Flats at zoom 14: main-thread ms per second (CDP TaskDuration, slowed processor included), frame gaps, running pin animations",
         },
         "results": results,
     }
