@@ -21,7 +21,14 @@ Mitchells Plain, 5 km.
              lists the reference titles
   slider     with Area check off, the chart slider's map-follow and a heat-map
              cell naming three archived pins draw them; clearing them
-             leaves the map empty again
+             leaves the map empty again; a slider step naming every October
+             record (from records.json) draws all of them
+  synth      synth/ (the December build plus made-up pins from 1 November to
+             15 December) on 15 December: for All, Pick 1 to 31 October,
+             Pick 20 October to 5 November and Last 30 days, Area check lists
+             exactly the pins a reference worked out here from the published
+             records (records.json plus the made-up pins: inside the circle
+             allowing for uncertainty, on the chosen days)
 
     python tests/browser/area_archive_check.py --base http://127.0.0.1:8853/   # serves oct/ and dec/
 """
@@ -43,6 +50,8 @@ from live_cut_check import SIZES  # noqa: E402
 AREA_KEY = "zad.areaCheck.v1"
 PLACE = {"lat": -34.0405, "lng": 18.6246, "label": "Beacon Valley", "radius": 5000}
 MONTH_FILE = "archive/2026-10"
+SYNTH_CHOICES = (("all", "", ""), ("custom", "2026-10-01", "2026-10-31"),
+                 ("custom", "2026-10-20", "2026-11-05"), ("30", "", ""))
 
 TITLES_JS = ("() => [...document.querySelectorAll('#ac-results .ac-res__title')]"
              ".map(e => e.textContent.trim())")
@@ -88,7 +97,38 @@ def _month_fetched(page) -> bool:
     return any(MONTH_FILE in f for f in page.evaluate("() => window.ForgePins._fetches()"))
 
 
-def run(base: str, sizes=("computer", "phone")) -> dict:
+def _reference(dist: Path, dates: str, frm: str, to: str) -> list[str]:
+    """Titles Area check should list, worked out from the published records:
+    records.json for the real pins, the month files for the made-up ones."""
+    from tools import map_archive as ma
+    from tools import nothing_missing as nm
+    from tools.coverage_areas import haversine_km
+    real = {r["signal_id"].lower(): r for r in json.loads((dist / "records.json").read_text(encoding="utf-8"))
+            ["records"]} if (dist / "records.json").exists() else {}
+    rng = None
+    if dates == "custom":
+        rng = (frm, to)
+    elif dates in ("7", "30"):
+        from datetime import date, timedelta
+        end = date(2026, 12, 15)
+        rng = ((end - timedelta(days=int(dates) - 1)).isoformat(), end.isoformat())
+    out = []
+    for e in ma.all_entries(dist):
+        rec = real.get(e["signal_id"].lower())
+        lat, lng = ((rec["latitude"], rec["longitude"]) if rec and rec.get("latitude") is not None
+                    else (e["lat"], e["lng"]))
+        d = haversine_km(PLACE["lat"], PLACE["lng"], lat, lng) * 1000
+        if d - (e.get("uncertainty_m") or 0) > PLACE["radius"]:
+            continue
+        if rng:
+            days = nm.area_days(e)
+            if days is None or not (days["start"] <= rng[1] and days["end"] >= rng[0]):
+                continue
+        out.append(e["title"])
+    return sorted(out)
+
+
+def run(base: str, sizes=("computer", "phone"), dists: Path | None = None) -> dict:
     from playwright.sync_api import sync_playwright
     base = base if base.endswith("/") else base + "/"
     oct_url, dec_url = base + "oct/", base + "dec/"
@@ -220,6 +260,39 @@ def run(base: str, sizes=("computer", "phone")) -> dict:
                 errs += e
                 ctx.close()
 
+                # every October record, from records.json, as one slider step
+                if dists is not None:
+                    oct_ids = sorted(r["signal_id"][:8] for r in json.loads(
+                        (Path(dists) / "dec" / "records.json").read_text(encoding="utf-8"))["records"]
+                        if str(r.get("incident_start") or "").startswith("2026-10"))
+                    ctx, page, e = _open(browser, size, dec_url, "2026-12-15")
+                    page.evaluate("ids => window.ZADMapTime.setTime({ ids: ids, text: 'October' })", oct_ids)
+                    try:
+                        page.wait_for_function("n => window.ZADMapTime.shown().length === n", arg=len(oct_ids),
+                                               timeout=15000)
+                    except Exception:  # noqa: BLE001
+                        pass
+                    shown = sorted(page.evaluate("() => window.ZADMapTime.shown()"))
+                    check(size, "slider: an October step draws every October record", shown == oct_ids
+                          and len(oct_ids) > 0, f"(drawn {len(shown)} of {len(oct_ids)})")
+                    errs += e
+                    ctx.close()
+
+                    # made-up pins, reference from the published records
+                    for dates, frm, to in SYNTH_CHOICES:
+                        want = _reference(Path(dists) / "synth", dates, frm, to)
+                        ctx, page, e = _open(browser, size, base + "synth/", "2026-12-15", _state(dates, frm, to))
+                        try:
+                            _settle(page, len(want))
+                        except Exception:  # noqa: BLE001
+                            pass
+                        got = sorted(page.evaluate(TITLES_JS))
+                        check(size, f"synth: {dates} {frm} {to}".rstrip() + " matches the reference",
+                              got == want and (dates == "30" or len(want) > 0),
+                              f"(listed {len(got)}, reference {len(want)})")
+                        errs += e
+                        ctx.close()
+
                 check(size, "no page errors", not errs, f"({errs[:1]})")
         finally:
             browser.close()
@@ -228,9 +301,11 @@ def run(base: str, sizes=("computer", "phone")) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--base", required=True, help="URL serving the oct/ and dec/ builds")
+    ap.add_argument("--base", required=True, help="URL serving the oct/, dec/ and synth/ builds")
+    ap.add_argument("--dists", type=Path, default=None,
+                    help="the folder --base serves, for the reference counts and the synth/ checks")
     args = ap.parse_args(argv)
-    rep = run(args.base)
+    rep = run(args.base, dists=args.dists)
     for size, res in rep["results"].items():
         print(f"[area-archive] {size}: {sum(res.values())}/{len(res)} passed")
     for p in rep["problems"]:

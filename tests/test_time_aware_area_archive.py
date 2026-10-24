@@ -193,10 +193,9 @@ needs_browser = pytest.mark.skipif(not BROWSER, reason="browser checks are off (
 
 @pytest.fixture(scope="module")
 def served(tmp_path_factory):
-    from time_aware_dists import build
+    from time_aware_dists import build_all
     out = tmp_path_factory.mktemp("ta6dists")
-    build(out / "oct", date(2026, 10, 24))
-    build(out / "dec", date(2026, 12, 15))
+    build_all(out)                       # oct/, dec/ and synth/
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(out))
     handler.log_message = lambda *a, **k: None
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
@@ -208,7 +207,7 @@ def served(tmp_path_factory):
 @needs_browser
 def test_browser_area_check_finds_archived_pins(served):
     import area_archive_check
-    _, base = served
-    rep = area_archive_check.run(base)
+    out, base = served
+    rep = area_archive_check.run(base, dists=out)
     assert rep["problems"] == []
-    assert all(all(r.values()) and len(r) == 22 for r in rep["results"].values())
+    assert all(all(r.values()) and len(r) == 27 for r in rep["results"].values())
