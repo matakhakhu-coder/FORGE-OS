@@ -4,7 +4,9 @@ The browser half of tools/nothing_missing.py. For every approved record in
 records.json it drives the built map page the way a visitor would:
 
   map        the pin is on the map: ZADMapTime.shown() lists it
-  link       BASE?signal=<short id> opens the drawer on this pin's title
+  link       BASE?signal=<short id> opens the drawer on this pin's title,
+             and (from Batch 3) its details arrive: the drawer fetches
+             pins/<short id>.json and reaches data-detail="ready"
   area       on that same load, Area check (placed on the pin, 500 m, the
              record's own incident day as a custom range) lists the pin
   watchlist  starring the pin in its drawer puts it in the Watchlist, and the
@@ -75,6 +77,22 @@ def _drawer_title(page, timeout=15000) -> str:
         " const t = document.getElementById('sd-title');"
         " return d && !d.hidden && t && t.textContent.trim().length > 0; }", timeout=timeout)
     return page.locator("#sd-title").inner_text().strip()
+
+
+def _details_ready(page, timeout=15000) -> str:
+    """Batch 3: '' once the open drawer's details have arrived, else why not.
+    A build from before Batch 3 has no ZADPinDetails and fills at once."""
+    if not page.evaluate("() => !!window.ZADPinDetails"):
+        return ""
+    try:
+        page.wait_for_function(
+            "() => ['ready', 'error'].includes(window.ZADPinDetails.state())", timeout=timeout)
+    except Exception:  # noqa: BLE001
+        return "its details never arrived"
+    state = page.evaluate("() => window.ZADPinDetails.state()")
+    if state != "ready":
+        return f"its details failed to load (drawer says {state!r})"
+    return ""
 
 
 def _area_state(m: dict, day: str) -> str:
@@ -200,8 +218,11 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                     if "link" in routes:
                         try:
                             title = _drawer_title(pg)
-                            if title == rec["title"]:
+                            why = _details_ready(pg) if title == rec["title"] else ""
+                            if title == rec["title"] and not why:
                                 ok["link"] += 1
+                            elif why:
+                                bad(size, rec, "link", f"?signal={short} opened it, but {why}")
                             else:
                                 bad(size, rec, "link", f"?signal={short} opened {title[:60]!r}")
                         except Exception:  # noqa: BLE001

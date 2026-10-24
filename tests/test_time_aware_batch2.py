@@ -551,10 +551,14 @@ def test_real_records_have_blank_update_columns_and_are_otherwise_unchanged():
     assert len(rows) == len(published["records"]) == 72
     old = {r["signal_id"]: r for r in published["records"]}
     earlier = rx.RECORD_FIELDS[:-4]
-    assert [f["name"] for f in published["fields"]] == list(earlier)
+    # Before the first publish after the merge, dist/ has only the earlier
+    # columns; from that publish on, all of them (Batch 3 found this test
+    # would fail on a rebuilt dist/).
+    assert [f["name"] for f in published["fields"]] in (list(earlier), list(rx.RECORD_FIELDS))
     for r in rows:
-        assert {k: r[k] for k in earlier} == old[r["signal_id"]]
+        assert {k: r[k] for k in earlier} == {k: old[r["signal_id"]][k] for k in earlier}
         assert all(r[k] == "" for k in rx.RECORD_FIELDS[-4:])
+        assert all(old[r["signal_id"]].get(k, "") == "" for k in rx.RECORD_FIELDS[-4:])
 
 
 def test_records_carry_clock_and_update_values(repo):

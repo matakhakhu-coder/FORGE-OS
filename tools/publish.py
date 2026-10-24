@@ -1308,12 +1308,20 @@ def _build_dist(
         raise SystemExit(f"[publish] chart timeline holds {len(chart_table['rows'])} rows and ends at "
                          f"{last_total} records, the Records page has {len(records)}")
 
+    # Time-aware pins, Batch 3: the page carries only the map list (what the
+    # map draws before a pin is opened); each pin's full record goes to its
+    # own file, dist/pins/<short id>.json, fetched when the drawer opens it.
+    # See tools/map_data.py.
+    from tools import map_data
+    n_details = map_data.write_pin_details(DIST, geo_signals)
+
     # Single render — index.html is the map shell; every other screen (Wire
     # archive, Streams, Cases, Graph, Entities, Watchlist) is an overlay panel
     # on this one page, populated from the context below.
     (DIST / "index.html").write_text(
         env.get_template("map.html").render(
-            markers=geo_signals,
+            markers=map_data.map_list(geo_signals),
+            pin_detail_dir=map_data.PIN_DIR + "/",
             intel_links=intel_links,
             all_signals=signals,
             cases=cases,
@@ -1334,6 +1342,7 @@ def _build_dist(
         ),
         encoding="utf-8",
     )
+    print(f"[publish] pins/       - {n_details} pin detail files")
     print(f"[publish] index.html  - {len(geo_signals)} geo signals, {len(intel_links)} intel links, "
           f"{span.get('total', 0)} wire items, {len(graph_data['nodes'])} graph nodes, {len(directory_actors)} entities")
 
@@ -1917,7 +1926,16 @@ def _checked_guard_after(cs):
             print(f"[publish]   {p}")
         print("[publish] dist/ is now incomplete. Restore it with: git checkout -- dist/")
         raise CheckedGuardError(3)
-    print(f"[publish] map carries all {len(cs.active)} checked pins")
+    from tools import map_data
+    detail_problems = map_data.problems(DIST)
+    if detail_problems:
+        print(f"[publish] REFUSED after build: {len(detail_problems)} problem(s) with the pin detail files; "
+              f"not deploying.")
+        for p in detail_problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] dist/ is now incomplete. Restore it with: git checkout -- dist/ && git clean -fd dist/pins")
+        raise CheckedGuardError(3)
+    print(f"[publish] map carries all {len(cs.active)} checked pins, each with its detail file")
 
 
 def main() -> None:

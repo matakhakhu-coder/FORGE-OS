@@ -582,6 +582,8 @@
   .sd-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; line-height: 1.35; color: var(--text-primary); margin: 0 0 var(--sp-3); }
   .sd-title:focus { outline: none; }
   .sd-story { font-size: 0.88rem; line-height: 1.6; color: var(--text-secondary); margin: 0; white-space: pre-line; }
+  .sd-detail-status { font-size: 0.84rem; line-height: 1.5; color: var(--text-dim); margin: var(--sp-3) 0 0; }
+  .sd-detail-status .ac-link { margin-left: 6px; }
   .sd-section { border-top: 1px solid var(--border-dim); margin-top: var(--sp-4); padding-top: var(--sp-3); }
   .sd-label { font-family: var(--font-mono); font-size: 0.58rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 var(--sp-2); }
   .sd-facts { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px var(--sp-3); font-size: 0.84rem; line-height: 1.45; }
@@ -1838,6 +1840,7 @@
       <p class="sd-outside" id="sd-outside" hidden>Outside your Area check circle. <button type="button" class="ac-link" id="sd-outside-all">Show all reports</button></p>
       <h2 class="sd-title" id="sd-title" tabindex="-1"></h2>
       <p class="sd-story" id="sd-story"></p>
+      <p class="sd-detail-status" id="sd-detail-status" role="status" aria-live="polite" hidden><span id="sd-detail-msg"></span><button type="button" class="ac-link" id="sd-detail-retry" hidden>Try again</button></p>
       <section class="sd-section" id="sd-when-wrap" hidden>
         <h3 class="sd-label">When</h3>
         <dl class="sd-facts" id="sd-when"></dl>
@@ -2781,9 +2784,79 @@
     if (activePanel === 'watchlist') window.ZADWatchlist.renderWatchlistPage();
   });
 
+  /* ── Pin details, fetched when a pin is opened (time-aware pins, Batch 3) ──
+     RAW holds only what the map draws: id, position, stream, title, clocks,
+     precision and uncertainty. A pin's story, sources, provenance, fact audit,
+     related pins and media are in pins/<short id>.json, loaded once on first
+     open (a pin's preview starts the fetch early) and kept for the visit.
+     Share and the Watchlist star need only the id and title, so they work
+     before the details arrive. */
+  var PIN_DETAIL_DIR = {{ (pin_detail_dir or 'pins/') | tojson }};
+  var detailCache = {};    // short id -> the pin's full record
+  var detailPending = {};  // short id -> its fetch in flight
+  var detailFailed = {};   // short id -> true after a failed fetch
+  function loadDetail(m) {
+    var sid = shortId(m);
+    if (detailCache[sid]) return Promise.resolve(detailCache[sid]);
+    if (detailPending[sid]) return detailPending[sid];
+    var p = fetch(PIN_DETAIL_DIR + encodeURIComponent(sid) + '.json', { credentials: 'same-origin' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (d) {
+        if (!d || String(d.signal_id || '') !== String(m.signal_id || '')) throw new Error('wrong pin');
+        detailCache[sid] = d;
+        delete detailFailed[sid];
+        return d;
+      });
+    detailPending[sid] = p;
+    p.then(function () { delete detailPending[sid]; },
+           function () { delete detailPending[sid]; detailFailed[sid] = true; });
+    return p;
+  }
+  function prefetchDetail(idx) {
+    if (RAW[idx]) loadDetail(RAW[idx]).catch(function () {});
+  }
+  // Fill the drawer again once this pin's details are in, if it is still open.
+  function requestDetail(idx) {
+    var m = RAW[idx];
+    if (!m || detailCache[shortId(m)]) return;
+    loadDetail(m).then(function () {
+      if (drawerIdx === idx) fillDrawer(RAW[idx], { refill: true });
+    }, function () {
+      if (drawerIdx === idx) fillDrawer(RAW[idx], { refill: true });
+    });
+  }
+  document.getElementById('sd-detail-retry').addEventListener('click', function () {
+    if (drawerIdx === null) return;
+    var idx = drawerIdx;
+    delete detailFailed[shortId(RAW[idx])];
+    fillDrawer(RAW[idx], { refill: true });
+    requestDetail(idx);
+  });
+  // window.ZADPinDetails: for the browser checks.
+  window.ZADPinDetails = {
+    loaded: function (sid) { return !!detailCache[String(sid || '').slice(0, 8)]; },
+    state: function () { return drawer.getAttribute('data-detail') || ''; }
+  };
+
+  var DETAIL_SECTIONS = ['sd-where-wrap', 'sd-diff-wrap', 'sd-src-wrap', 'sd-prov-wrap',
+                         'sd-fact-wrap', 'sd-rel-wrap', 'sd-media-wrap', 'sd-more-wrap'];
+
   function fillDrawer(m) {
     closeExtGate({ restoreFocus: false });
     syncStar(m, false);
+    // fillDrawer(m, { refill: true }): the same pin again, once its details
+    // are in (or failed); keeps the reader's scroll position.
+    var fillOpts = arguments[1] || {};
+    var detail = detailCache[shortId(m)] || null;
+    if (detail) {
+      var full = {};
+      for (var dk in detail) full[dk] = detail[dk];
+      for (var mk2 in m) full[mk2] = m[mk2];
+      m = full;
+    }
     var kicker = [m.stream_label || m.stream || '', m.checked ? 'Hand-checked' : '', m.region || ''].filter(Boolean).join(' \u00b7 ');
     document.getElementById('sd-kicker').textContent = kicker;
     document.getElementById('sd-title').textContent = m.title || '';
@@ -2803,6 +2876,29 @@
       anyFact = true;
     });
     section('sd-when-wrap', anyFact);
+
+    // Until the details arrive: title, kicker and dates only, and a line
+    // that says why. No empty audit or sources stand-ins.
+    var status = document.getElementById('sd-detail-status');
+    var retry = document.getElementById('sd-detail-retry');
+    if (!detail) {
+      var failed = !!detailFailed[shortId(m)];
+      drawer.setAttribute('data-detail', failed ? 'error' : 'loading');
+      document.getElementById('sd-story').textContent = '';
+      document.getElementById('sd-detail-msg').textContent = failed
+        ? 'Could not load this event\u2019s details. Check your connection.'
+        : 'Loading the event\u2019s details\u2026';
+      retry.hidden = !failed;
+      status.hidden = false;
+      DETAIL_SECTIONS.forEach(function (id) { section(id, false); });
+      if (!fillOpts.refill) document.getElementById('sd-body').scrollTop = 0;
+      return;
+    }
+    drawer.setAttribute('data-detail', 'ready');
+    status.hidden = true;
+    retry.hidden = true;
+    document.getElementById('sd-detail-msg').textContent = '';
+    section('sd-fact-wrap', true);
 
     document.getElementById('sd-where').textContent = m.location_note || '';
     section('sd-where-wrap', !!m.location_note);
@@ -2938,7 +3034,7 @@
     if (m.article_slug) more.href = 'articles/' + encodeURIComponent(m.article_slug) + '.html';
     section('sd-more-wrap', !!m.article_slug);
 
-    document.getElementById('sd-body').scrollTop = 0;
+    if (!fillOpts.refill) document.getElementById('sd-body').scrollTop = 0;
   }
 
   function markSelected(idx, on) {
@@ -2987,6 +3083,7 @@
     if (opts.trigger || !wasOpen) drawerTrigger = opts.trigger || null;
     fillDrawer(m);
     drawerIdx = idx;
+    requestDetail(idx);
     if (mapFiltered()) refreshPins();   // the open pin shows even outside the Area check circle or the slider's step
     if (areaUI) areaUI.onDrawer();
     markSelected(idx, true);
@@ -3091,6 +3188,7 @@
     }
     popupByKey = byKey;
     mk.openPopup();
+    prefetchDetail(idx);   // the preview usually leads to "View event"
   }
 
   map.on('popupopen', function (e) {

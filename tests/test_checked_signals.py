@@ -100,9 +100,10 @@ def _publish_to(tmp_path, monkeypatch, db_file, index=None):
 
 
 def _markers(dist: Path) -> list[dict]:
-    import re
-    html = (dist / "index.html").read_text()
-    return json.loads(re.search(r"var RAW = (\[.*?\]);\s*$", html, re.M).group(1))
+    """Each map pin's full record: since time-aware Batch 3 the page holds
+    the map list and pins/<short id>.json the rest (tools/map_data.py)."""
+    from tools.map_data import load_markers
+    return load_markers(dist)
 
 
 # ── The committed files ────────────────────────────────────────────────────────────

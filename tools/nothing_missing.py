@@ -4,7 +4,10 @@ Every approved record in records.json must stay reachable through each way a
 visitor finds a pin today:
 
   map        the pin is drawn: it is in the map page's markers with a usable
-             position (map.html skips a marker whose lat or lng is null)
+             position (map.html skips a marker whose lat or lng is null).
+             From Batch 3 the page carries only the map list, and opening a
+             pin fetches pins/<short id>.json, so a build with a pins/
+             folder also needs that file, readable and for this pin
   link       a ?signal=<short id> link opens it: idxForSignal() takes the FIRST
              marker whose id or first 8 characters match, so a short id shared
              with another pin would open the wrong drawer
@@ -105,12 +108,43 @@ def area_days(m: dict) -> dict | None:
     return {"start": sa_day(s), "end": sa_day(end)}
 
 
+PIN_DIR = "pins"   # tools/map_data.py PIN_DIR
+
+
+def detail_status(dist: Path, markers: list[dict]) -> dict | None:
+    """Batch 3 builds: {short id: None if pins/<short id>.json is readable and
+    for this pin, else why not}. None for a build without a pins/ folder (from
+    before Batch 3, when the page held every pin's details itself)."""
+    folder = Path(dist) / PIN_DIR
+    if not folder.is_dir():
+        return None
+    out: dict[str, str | None] = {}
+    for m in markers:
+        full = str(m.get("signal_id") or "")
+        short = full[:8].lower()
+        try:
+            rec = json.loads((folder / f"{short}.json").read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            out[short] = f"no details file {PIN_DIR}/{short}.json, so its drawer cannot fill"
+            continue
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            out[short] = f"details file {PIN_DIR}/{short}.json is not readable JSON"
+            continue
+        if not isinstance(rec, dict) or str(rec.get("signal_id") or "") != full:
+            out[short] = f"details file {PIN_DIR}/{short}.json is for another pin"
+        else:
+            out[short] = None
+    return out
+
+
 def load_dist(dist: Path = DIST) -> dict:
     dist = Path(dist)
+    markers = load_markers((dist / "index.html").read_text(encoding="utf-8"))
     return {
         "records": json.loads((dist / "records.json").read_text(encoding="utf-8"))["records"],
-        "markers": load_markers((dist / "index.html").read_text(encoding="utf-8")),
+        "markers": markers,
         "search": json.loads((dist / "search-index.json").read_text(encoding="utf-8")),
+        "details": detail_status(dist, markers),
     }
 
 
@@ -122,6 +156,7 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
     """
     data = data or load_dist(dist)
     records, markers, search = data["records"], data["markers"], data["search"]
+    details = data.get("details")   # None: a build from before Batch 3
     problems: list[dict] = []
     counts = {r: 0 for r in ROUTES}
 
@@ -170,6 +205,8 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
             bad(rec, "map", "marker has no lat/lng, so it is never drawn")
         elif not (_finite(m["lat"]) and _finite(m["lng"])):
             bad(rec, "map", f"marker position is not a number: {m['lat']!r}, {m['lng']!r}")
+        elif details is not None and details.get(short, "no details file checked") is not None:
+            bad(rec, "map", details.get(short) or "no details file checked")
         else:
             counts["map"] += 1
         drawn = m is not None and _drawn(m)
