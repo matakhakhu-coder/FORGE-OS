@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Records{% endblock %}
-{% block description %}Every approved pin on the FORGE Map as an open, filterable table with a free CSV download. Hand-checked news reports, not crime statistics.{% endblock %}
+{% block description %}Every FORGE Map incident in one table, each checked by hand and linked to its South African news sources. Filter it, or download it free as CSV or JSON. No sign-in.{% endblock %}
 {% block nav_records_active %}site-nav__link--active{% endblock %}
 
 {% block head_extra %}
@@ -104,7 +104,7 @@
 <main class="rec" id="records">
   <div class="rec__eyebrow">Open data · free · no account</div>
   <h1 class="rec__title">Records</h1>
-  <p class="rec__lede">Every pin on the map, as a table you can filter and download. Each row is an incident reported in the news, filed under one of the map's streams (Crime &amp; Security, Infrastructure, Priority Intelligence, Africa &amp; World), that FORGE checked by hand and the owner approved before it went on the map. Nothing here is behind a paywall or a sign-in.</p>
+  <p class="rec__lede">{{ records|length }} incident{{ '' if records|length == 1 else 's' }} reported in South African news, each checked by hand and linked to its sources. They include shootings and other deaths police are investigating, infrastructure failures such as water outages, and arrests, filed under the map's streams (Crime &amp; Security, Infrastructure, Priority Intelligence, Africa &amp; World). The owner approved every row before it went on the map. Filter the table below, or download it free as CSV or JSON. Nothing here is behind a paywall or a sign-in.</p>
 
   <section class="rec-caveats" aria-labelledby="rec-caveats-head">
     <p class="rec-caveats__head" id="rec-caveats-head">Read this before using the data</p>

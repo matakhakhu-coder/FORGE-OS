@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Signal Map{% endblock %}
 {% block full_title %}FORGE Map, Open Source Intelligence{% endblock %}
+{% block description %}A free map of hand-checked incidents from South African news, each linked to its sources. View it and download the data as CSV or JSON with no sign-in.{% endblock %}
 {% block body_attributes %} class="signal-map-page"{% endblock %}
 {% block nav_map_active %}site-nav__link--active{% endblock %}
 
@@ -1360,6 +1361,12 @@
 
 {% block content %}
 <div class="md-shell">
+
+  {# ── Page heading and introduction: read by screen readers and search engines; the map stays full-screen ── #}
+  <div class="sd-sr-only" id="map-intro">
+    <h1>FORGE Map: incidents from South African news, checked by hand</h1>
+    <p>A free map of hand-checked incidents from South African news, each linked to its sources. You can view the map and download the data as CSV or JSON without signing in. Pin counts show what FORGE Map has checked, not how much crime happens anywhere.</p>
+  </div>
 
   {# ── Map canvas ─────────────────────────────────────────────────────────── #}
   <div id="map"></div>
