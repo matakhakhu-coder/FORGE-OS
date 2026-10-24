@@ -60,6 +60,12 @@ RETIRED_DIST_FILES = ("subscribe.html", "thankyou.html", "pro-feed.json")
 # Static legal pages rendered on every build (24 Oct 2026).
 LEGAL_PAGES = ("contact.html", "privacy.html")
 
+# Production address (24 Oct 2026). Canonical links, robots.txt and
+# sitemap.xml all use it. Vercel serves clean URLs (cleanUrls in vercel.json):
+# /about.html and /about/ redirect to /about, /index.html to /, and www and
+# forge-os-alpha.vercel.app redirect here, so those are the addresses to name.
+SITE_URL = "https://forgemap.co.za"
+
 VERCEL_DEPLOY_HOOK = os.environ.get("VERCEL_DEPLOY_HOOK_URL", "")
 
 # SA cases to publish — cases 1-6 are global/seed/auto-generated noise
@@ -1315,6 +1321,7 @@ def _build_dist(
             chart_table=chart_table,
             chart_caveat=CAVEATS[0],
             generated_at=now_str,
+            canonical_url=canonical_url("index.html"),
             **rev,
         ),
         encoding="utf-8",
@@ -1329,8 +1336,11 @@ def _build_dist(
         art["robots_noindex"] = art["slug"] in NOINDEX_ARTICLES
         out = DIST_ART / f"{art['slug']}.html"
         body_html = md_parser.render(art["body_markdown"])
+        # A noindex page gets no canonical link: the two would send mixed signals.
+        art_canonical = None if art["robots_noindex"] else canonical_url(f"articles/{art['slug']}.html")
         out.write_text(
-            tmpl.render(article=art, body_html=body_html, generated_at=now_str, **rev),
+            tmpl.render(article=art, body_html=body_html, generated_at=now_str,
+                        canonical_url=art_canonical, **rev),
             encoding="utf-8",
         )
     print(f"[publish] articles/   - {len(pages_articles)} pages")
@@ -1385,6 +1395,7 @@ def _build_dist(
                 signals=case_signals,
                 actors=case_actors,
                 generated_at=now_str,
+                canonical_url=canonical_url(f"cases/{case['slug']}.html"),
                 **rev,
             ),
             encoding="utf-8",
@@ -1406,21 +1417,24 @@ def _build_dist(
         actor["relationships"] = _fetch_actor_relationships(conn, actor["actor_id"])
         out = DIST_ENTITIES / f"{actor['slug']}.html"
         out.write_text(
-            actor_tmpl.render(actor=actor, generated_at=now_str, stream_labels=STREAM_LABELS, **rev),
+            actor_tmpl.render(actor=actor, generated_at=now_str, stream_labels=STREAM_LABELS,
+                              canonical_url=canonical_url(f"entities/{actor['slug']}.html"), **rev),
             encoding="utf-8",
         )
     print(f"[publish] entities/    - {len(directory_actors)} entity profile pages")
 
     # about.html — methodology and "how it works" page
     (DIST / "about.html").write_text(
-        env.get_template("about.html").render(generated_at=now_str, **rev),
+        env.get_template("about.html").render(generated_at=now_str,
+                                               canonical_url=canonical_url("about.html"), **rev),
         encoding="utf-8",
     )
 
     # contact.html and privacy.html — operator, corrections and privacy notice
     for page in LEGAL_PAGES:
         (DIST / page).write_text(
-            env.get_template(page).render(generated_at=now_str, **rev),
+            env.get_template(page).render(generated_at=now_str,
+                                          canonical_url=canonical_url(page), **rev),
             encoding="utf-8",
         )
 
@@ -1437,6 +1451,7 @@ def _build_dist(
             caveats=CAVEATS,
             fields=[(f, FIELD_HELP[f]) for f in RECORD_FIELDS],
             data_version=rec_version,
+            canonical_url=canonical_url("records.html"),
             **rev,
         ),
         encoding="utf-8",
@@ -1489,7 +1504,73 @@ def _build_dist(
     )
     print(f"[publish] places-za.json - {len(places['rows'])} places")
 
+    # robots.txt and sitemap.xml — written last, from the pages now in dist/
+    write_crawl_files(DIST)
+
     _check_case_triangulation(conn, cases, signals, graph_data)
+
+
+# ── Canonical links, robots.txt, sitemap.xml (24 Oct 2026) ────────────────────
+
+_NOINDEX_META_RE = re.compile(r'<meta\s+name="robots"\s+content="[^"]*noindex', re.I)
+
+
+def canonical_url(rel_path: str) -> str:
+    """The address a dist/ page is served at: index.html -> SITE_URL/,
+    about.html -> SITE_URL/about, articles/x.html -> SITE_URL/articles/x."""
+    rel = rel_path.replace("\\", "/").lstrip("/")
+    if rel.endswith(".html"):
+        rel = rel[: -len(".html")]
+    if rel == "index":
+        rel = ""
+    elif rel.endswith("/index"):
+        rel = rel[: -len("index")]
+    return f"{SITE_URL}/{rel}"
+
+
+def sitemap_urls(dist: pathlib.Path) -> list[str]:
+    """Every HTML page in dist/ except those marked noindex, home first."""
+    urls = []
+    for page in sorted(dist.rglob("*.html")):
+        rel = page.relative_to(dist).as_posix()
+        if rel.startswith("static/") or rel == "digest.html":
+            continue
+        head = page.read_text(encoding="utf-8").split("</head>")[0]
+        if _NOINDEX_META_RE.search(head):
+            continue
+        urls.append(canonical_url(rel))
+    home = f"{SITE_URL}/"
+    return sorted(urls, key=lambda u: (u != home, u))
+
+
+def robots_txt() -> str:
+    # Nothing is blocked: noindex pages must stay fetchable so crawlers can
+    # read their tag, and CSS/JS are needed to render the map.
+    return (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "\n"
+        f"Sitemap: {SITE_URL}/sitemap.xml\n"
+    )
+
+
+def sitemap_xml(urls: list[str]) -> str:
+    from xml.sax.saxutils import escape
+    body = "".join(f"  <url><loc>{escape(u)}</loc></url>\n" for u in urls)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{body}"
+        "</urlset>\n"
+    )
+
+
+def write_crawl_files(dist: pathlib.Path) -> list[str]:
+    urls = sitemap_urls(dist)
+    (dist / "robots.txt").write_text(robots_txt(), encoding="utf-8")
+    (dist / "sitemap.xml").write_text(sitemap_xml(urls), encoding="utf-8")
+    print(f"[publish] sitemap.xml - {len(urls)} pages; robots.txt points to it")
+    return urls
 
 
 # ── Git deploy ────────────────────────────────────────────────────────────────
@@ -1873,7 +1954,7 @@ def main() -> None:
     if args.deploy:
         print()
         _git_deploy(now_str)
-        print("\n[deploy] Done. Vercel will auto-deploy from main -- check forge-os-alpha.vercel.app")
+        print("\n[deploy] Done. Vercel will auto-deploy from main -- check forgemap.co.za")
     else:
         print("[publish] Run with --deploy to commit dist/ and push to GitHub.")
 
