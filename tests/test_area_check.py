@@ -153,7 +153,7 @@ def test_page_has_the_area_check_parts():
 
 
 PRIVACY_LINE = ("Typed addresses are sent to Geoapify, along with your IP address, to find the spot. "
-                "ZA Divergent never receives them.")
+                "FORGE Map never receives them.")
 
 
 def test_only_the_one_address_service_and_its_key():

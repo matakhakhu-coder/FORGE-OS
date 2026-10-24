@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}ZA-DIVERGENT{% endblock %} — South African Intelligence Bulletin</title>
+  <title>{% block title %}FORGE Map{% endblock %} — South African Intelligence Bulletin</title>
   <meta name="description" content="Open-source intelligence bulletin covering South Africa and the surrounding region.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,7 +99,7 @@
 
   {# ── Classification banner ───────────────────────────────────────────────── #}
   <div class="class-banner">
-    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — ZA-DIVERGENT ARCHIVE
+    OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN — SOUTH AFRICA &amp; REGION — FORGE MAP ARCHIVE
   </div>
 
   {# ── Page content ────────────────────────────────────────────────────────── #}
@@ -111,7 +111,7 @@
   <footer class="site-footer">
     <div class="site-footer__inner">
       <div class="site-footer__left mono">
-        ZA-DIVERGENT ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
+        FORGE MAP ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
         <a href="{% block footer_about %}about.html{% endblock %}" style="color:var(--text-dim);">How It Works</a> ·
         <a href="{% block footer_records %}records.html{% endblock %}" style="color:var(--text-dim);">Records</a>
       </div>
@@ -131,7 +131,7 @@
   {# ── Print footer (hidden on screen, repeats on every printed page) ────── #}
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>ZA-DIVERGENT · FORGE OSINT ENGINE · {{ generated_at }}</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · {{ generated_at }}</span>
   </div>
 
   <script src="{% block wl_js_path %}static/js/watchlist.js{% endblock %}"></script>

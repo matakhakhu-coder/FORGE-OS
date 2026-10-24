@@ -783,7 +783,7 @@ def _fetch_articles(conn: sqlite3.Connection) -> list[dict]:
             "body_markdown": r["body_markdown"] or "",
             "stream":        r["stream"] or "GLOBAL",
             "stream_label":  STREAM_LABELS.get(r["stream"] or "GLOBAL", r["stream"]),
-            "author":        r["author"] or "ZA-DIVERGENT Staff",
+            "author":        r["author"] or "FORGE Map Staff",
             "published_at":  r["published_at"],
             "published_fmt": _fmt_dt(r["published_at"]),
             "tags":          tags,
@@ -1345,7 +1345,7 @@ def _build_dist(
     (DIST / "feed.json").write_text(
         json.dumps(
             {
-                "title":        "ZA-DIVERGENT Intelligence Feed",
+                "title":        "FORGE Map Intelligence Feed",
                 "description":  "South African open-source intelligence bulletin",
                 "generated_at": now_str,
                 "items":        feed_items,

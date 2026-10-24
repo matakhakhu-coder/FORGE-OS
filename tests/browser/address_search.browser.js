@@ -15,7 +15,7 @@ if (!process.env.FORGE_UI_BASE) { console.log('FORGE_UI_BASE not set: skipped');
 const REAL = process.env.FORGE_GEOCODER_REAL === '1';
 const FX = n => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'js', 'fixtures', 'geoapify', n + '.json'), 'utf8')).data;
 const FAIL_TEXT = /Search didn\u2019t respond\. Try again or place it on the map\./;
-const PRIVACY = 'Typed addresses are sent to Geoapify, along with your IP address, to find the spot. ZA Divergent never receives them.';
+const PRIVACY = 'Typed addresses are sent to Geoapify, along with your IP address, to find the spot. FORGE Map never receives them.';
 
 // The fixed list from the plan: Cape Town streets, a township street,
 // Ipelegeng, a farm, Potchefstroom and others.
