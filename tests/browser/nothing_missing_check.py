@@ -29,12 +29,14 @@ import argparse
 import json
 import sys
 import urllib.request
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(ROOT))
 
 from forge_clock import freeze_today            # noqa: E402
 import nothing_missing as nm                    # noqa: E402
@@ -60,7 +62,35 @@ def load_from_base(base: str) -> dict:
         "records": json.loads(_fetch(base + "records.json"))["records"],
         "markers": nm.load_markers(_fetch(base).decode("utf-8")),
         "search": json.loads(_fetch(base + "search-index.json")),
+        "archive": _archive_entries(base),
     }
+
+
+def _archive_entries(base: str) -> list[dict]:
+    """Batch 4+: every pin in the month files (map fields). [] before Batch 4."""
+    try:
+        index = json.loads(_fetch(base + "archive/index.json"))
+    except Exception:  # noqa: BLE001
+        return []
+    out = []
+    for row in index.get("months") or []:
+        doc = json.loads(_fetch(base + row["file"]))
+        out += [f["properties"] for f in doc.get("features") or []]
+    return out
+
+
+def _sa_today(today: str | None) -> date:
+    if today:
+        return date.fromisoformat(today)
+    return datetime.now(timezone(timedelta(hours=2))).date()
+
+
+def _live_by_date(entry: dict, today: date) -> bool:
+    """Batch 5's live cut, worked out here independently of the page: the
+    incident day (South African time) is today or one of the 29 days before."""
+    from tools import map_archive as ma
+    d = ma.incident_day(entry)
+    return d is None or (today - d).days < 30
 
 
 def _block_tiles(context):
@@ -71,7 +101,18 @@ def _block_tiles(context):
     context.route("**/*", handler)
 
 
-def _drawer_title(page, timeout=15000) -> str:
+def _drawer_title(page, timeout=15000, expect: str | None = None) -> str:
+    """The open drawer's title. With expect, wait for that title first (a pin
+    from a month file opens a moment later, over the drawer already open)."""
+    if expect is not None:
+        try:
+            page.wait_for_function(
+                "t => { const d = document.getElementById('signal-drawer');"
+                " const e = document.getElementById('sd-title');"
+                " return d && !d.hidden && e && e.textContent.trim() === t; }", arg=expect.strip(),
+                timeout=timeout)
+        except Exception:  # noqa: BLE001
+            pass
     page.wait_for_function(
         "() => { const d = document.getElementById('signal-drawer');"
         " const t = document.getElementById('sd-title');"
@@ -109,7 +150,10 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
     base = base if base.endswith("/") else base + "/"
     data = load_from_base(base)
     records = data["records"]
-    by_id = {str(m["signal_id"]).lower(): m for m in data["markers"]}
+    by_id = {str(m["signal_id"]).lower(): m for m in data.get("archive") or []}
+    by_id.update({str(m["signal_id"]).lower(): m for m in data["markers"]})
+    on_page = {str(m["signal_id"]).lower() for m in data["markers"]}
+    sa_day = _sa_today(today)
     problems: list[dict] = []
     out = {"records": len(records), "today": today, "sizes": {}, "problems": problems}
 
@@ -130,9 +174,34 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
             page = ctx.new_page()
             page.on("pageerror", lambda e: errors.append(str(e)))
             page.goto(base, wait_until="load")
-            page.wait_for_function("() => window.ZADMapTime && window.ZADMapTime.shown().length > 0")
+            live_cut = page.evaluate("() => !!window.ForgePins")
+            if live_cut:
+                page.wait_for_function("() => window.ZADMapTime && window.ZADLive")
+                page.wait_for_timeout(300)
+            else:
+                page.wait_for_function("() => window.ZADMapTime && window.ZADMapTime.shown().length > 0")
             shown = set(page.evaluate("() => window.ZADMapTime.shown()"))
-            if "map" in routes:
+            if "map" in routes and live_cut:
+                # Batch 5: live pins are drawn; older pins are not, and are
+                # either held back on the page or in their month file.
+                held = set(page.evaluate("() => window.ZADLive.archived()"))
+                in_months = set(page.evaluate(
+                    "() => window.ForgePins.loadMonths('all').then(l => l.map(p => p.signal_id.slice(0, 8)))"))
+                for rec in records:
+                    short = rec["signal_id"][:8]
+                    entry = by_id.get(rec["signal_id"].lower()) or rec
+                    if _live_by_date(entry, sa_day):
+                        if short in shown:
+                            ok["map"] += 1
+                        else:
+                            bad(size, rec, "map", f"live on {sa_day} but not drawn on the map")
+                    elif short in shown:
+                        bad(size, rec, "map", f"older than 30 days on {sa_day} but drawn on the live map")
+                    elif short in held or (rec["signal_id"].lower() not in on_page and short in in_months):
+                        ok["map"] += 1
+                    else:
+                        bad(size, rec, "map", "off the live map and in no month file the loader reads")
+            elif "map" in routes:
                 for rec in records:
                     if rec["signal_id"][:8] in shown:
                         ok["map"] += 1
@@ -146,7 +215,8 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                     short = rec["signal_id"][:8]
                     try:
                         page.evaluate("s => window.forgeOpenSignal(s)", short)
-                        _drawer_title(page)
+                        if _drawer_title(page, expect=rec["title"]) != rec["title"]:
+                            raise RuntimeError("drawer opened another pin")
                         star = page.locator("#sd-star")
                         if star.get_attribute("aria-pressed") != "true":
                             star.click()
@@ -165,7 +235,7 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                         continue
                     page.evaluate("s => document.querySelector('#wl-list a[data-wl-signal=\"' + s + '\"]').click()", short)
                     try:
-                        title = _drawer_title(page)
+                        title = _drawer_title(page, expect=rec["title"])
                     except Exception:  # noqa: BLE001
                         bad(size, rec, "watchlist", "its Watchlist entry opened no drawer")
                         continue
@@ -192,7 +262,7 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                         continue
                     page.evaluate("s => document.querySelector(s).click()", sel)
                     try:
-                        title = _drawer_title(page)
+                        title = _drawer_title(page, expect=rec["title"])
                     except Exception:  # noqa: BLE001
                         bad(size, rec, "search", "the search result opened no drawer")
                         continue
@@ -217,7 +287,7 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                     pg.goto(f"{base}?signal={short}", wait_until="load")
                     if "link" in routes:
                         try:
-                            title = _drawer_title(pg)
+                            title = _drawer_title(pg, expect=rec["title"])
                             why = _details_ready(pg) if title == rec["title"] else ""
                             if title == rec["title"] and not why:
                                 ok["link"] += 1
@@ -255,8 +325,9 @@ def main(argv=None) -> int:
     ap.add_argument("--base", required=True, help="URL of a served dist/, e.g. http://127.0.0.1:8765/")
     ap.add_argument("--today", default=None, help="pretend today is YYYY-MM-DD (SAST noon)")
     ap.add_argument("--sizes", default="computer,phone")
+    ap.add_argument("--routes", default=",".join(nm.ROUTES))
     args = ap.parse_args(argv)
-    rep = run(args.base, args.today, tuple(args.sizes.split(",")))
+    rep = run(args.base, args.today, tuple(args.sizes.split(",")), routes=tuple(args.routes.split(",")))
     for pr in rep["problems"]:
         print(f"  MISSING [{pr['size']}] {pr['short']} {pr['route']}: {pr['why']}")
     print("[nothing-missing:browser] " + ("PASS" if not rep["problems"] else f"FAIL ({len(rep['problems'])})"))

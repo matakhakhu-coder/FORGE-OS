@@ -1166,6 +1166,19 @@
     color: var(--text-primary); border: 1px dashed var(--accent-muted); border-radius: var(--r-sm);
   }
   .sd-outside[hidden] { display: none; }
+  .sd-archive {
+    margin: 0 0 var(--sp-3); padding: var(--sp-2) var(--sp-3); font-size: 0.78rem;
+    color: var(--text-secondary); border: 1px solid var(--border-mid); border-radius: var(--r-sm);
+  }
+  .sd-archive[hidden] { display: none; }
+  .md-archive-msg {
+    position: fixed; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 1200;
+    max-width: min(92vw, 420px); padding: var(--sp-2) var(--sp-3);
+    display: flex; align-items: center; gap: var(--sp-3); font-size: 0.8rem;
+    color: var(--text-primary); background: var(--bg-elevated, #0d1620);
+    border: 1px solid var(--border-mid); border-radius: var(--r-sm);
+  }
+  .md-archive-msg[hidden] { display: none; }
 
   /* Sprint 1: a viewport-bound map and a fully visible mobile header.
      Only the map page uses this shell; desktop and other pages are unchanged. */
@@ -1825,6 +1838,9 @@
     <button class="md-ctrl" id="ctrl-reset" type="button" aria-label="Reset map view" title="Reset map view"><span class="md-ctrl__icon" aria-hidden="true">&#10226;</span><span class="md-ctrl__label"> Reset</span></button>
   </div>
 
+  {# Shown when an older pin's month file could not be loaded (Batch 5). #}
+  <div class="md-archive-msg" id="md-archive-msg" role="status" aria-live="polite" hidden><span id="md-archive-msg-text"></span><button type="button" class="ac-link" id="md-archive-retry" hidden>Try again</button><button type="button" class="ac-link" id="md-archive-dismiss" aria-label="Dismiss">&#10005;</button></div>
+
   {# ── Event drawer: opened from a pin's "View event", Wire or the ticker ── #}
   {# Filled in by script with textContent only (never innerHTML).          #}
   <aside class="sd-drawer" id="signal-drawer" role="dialog" aria-modal="false" aria-labelledby="sd-title" hidden>
@@ -1838,6 +1854,7 @@
     </div>
     <div class="sd-body" id="sd-body">
       <p class="sd-outside" id="sd-outside" hidden>Outside your Area check circle. <button type="button" class="ac-link" id="sd-outside-all">Show all reports</button></p>
+      <p class="sd-archive" id="sd-archive" role="note" hidden></p>
       <h2 class="sd-title" id="sd-title" tabindex="-1"></h2>
       <p class="sd-story" id="sd-story"></p>
       <p class="sd-detail-status" id="sd-detail-status" role="status" aria-live="polite" hidden><span id="sd-detail-msg"></span><button type="button" class="ac-link" id="sd-detail-retry" hidden>Try again</button></p>
@@ -1942,6 +1959,7 @@
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {%- endif %}
+<script src="static/js/forge-pins.js"></script>
 <script src="static/js/area-check.js"></script>
 <script src="static/js/record-charts.js" defer></script>
 <script>
@@ -2059,9 +2077,30 @@
   var NOW_MS = Date.now();
   var HOURS_48 = 48 * 60 * 60 * 1000;
 
-  RAW.forEach(function (m, idx) {
-    if (m.lat == null || m.lng == null) return;
+  /* ── The 30-day live cut (time-aware pins, Batch 5) ──────────────────────
+     RAW carries the live months (last month and this one). Which of those
+     pins are on the live map is worked out here, from today's South African
+     date, by window.ForgePins (static/js/forge-pins.js): a pin is live while
+     its incident day is today or one of the 29 days before. So a pin leaves
+     the map on time even when nothing is published, and a tab left open
+     past midnight re-checks (see liveRecheck below).
+     A pin that is no longer live keeps its marker but is not drawn unless
+     its drawer is open or an explicit filter names it (Area check, the
+     chart slider, a heat-map cell). Pins fetched from a month file to open
+     one link, star or search result are added to RAW with fromArchive set
+     and show only while their drawer is open. */
+  var FP = window.ForgePins;
+  FP.configure({ base: '' });
+  var liveDay = FP.today();
+  var cutCount = 0;       // markers not drawn by default: archived by date or fetched from a month
+  function computeLive(m) { return FP.isLive(m); }
+
+  function addPin(m, idx, opts) {
+    opts = opts || {};
+    if (m.lat == null || m.lng == null) return null;
     m._idx = idx;
+    m._live = computeLive(m);
+    m._fromArchive = !!opts.fromArchive;
     var color = STREAM_COLOR[m.stream] || '#7a95aa';
 
     // Determine pulse class based on recency + gravity
@@ -2102,9 +2141,13 @@
     markerByIdx[idx] = marker;
     marker._forgeStream = m.stream;
     marker._forgeIdx = idx;
-    clusterGroup.addLayer(marker);
-    allMarkerLayers.push({ layer: marker, stream: m.stream, lat: m.lat, lng: m.lng, idx: idx });
-  });
+    if (m._live && !opts.fromArchive) clusterGroup.addLayer(marker);
+    else cutCount++;
+    allMarkerLayers.push({ layer: marker, stream: m.stream, lat: m.lat, lng: m.lng, idx: idx,
+                           extra: !!opts.fromArchive });
+    return marker;
+  }
+  RAW.forEach(function (m, idx) { addPin(m, idx); });
 
   map.addLayer(clusterGroup);
 
@@ -2156,12 +2199,18 @@
   var timeIdx = null;
   var cellIdx = null;
   function mapFiltered() { return !!(pinFilter || timeIdx || cellIdx); }
+  // Some pins are held back from the map: by a filter, or by the live cut.
+  function pinsHeldBack() { return mapFiltered() || cutCount > 0; }
   function pinShowState(ml) {
     if (streamVisible[ml.stream] === false) return 'out';
     if (ml.idx === drawerIdx) return 'in';
+    if (ml.extra) return 'out';          // fetched from a month file to open it
     if (timeIdx && !timeIdx[ml.idx]) return 'out';
     if (cellIdx && !cellIdx[ml.idx]) return 'out';
-    if (!pinFilter) return 'in';
+    // Area check, the slider and a heat-map cell choose their own dates, so a
+    // pin they name shows even past the live window. With none of them on,
+    // only live pins are drawn.
+    if (!pinFilter) return (timeIdx || cellIdx || (RAW[ml.idx] && RAW[ml.idx]._live)) ? 'in' : 'out';
     return pinFilter(ml.idx);
   }
   function refreshPins() {
@@ -2178,11 +2227,47 @@
     if (rem.length) clusterGroup.removeLayers(rem);
     if (add.length) clusterGroup.addLayers(add);
     linkLayers.forEach(function (ln) {
-      var vis = !mapFiltered() || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
+      var vis = !pinsHeldBack() || ((!ln.from || shown[ln.from]) && (!ln.to || shown[ln.to]));
       if (vis && !map.hasLayer(ln.layer)) ln.layer.addTo(map);
       else if (!vis && map.hasLayer(ln.layer)) map.removeLayer(ln.layer);
     });
   }
+
+  // Work the live cut out again; called when the South African day changes.
+  function applyLiveCut() {
+    liveDay = FP.today();
+    cutCount = 0;
+    allMarkerLayers.forEach(function (ml) {
+      var m = RAW[ml.idx];
+      if (!m) return;
+      if (!ml.extra) m._live = computeLive(m);
+      if (ml.extra || !m._live) cutCount++;
+    });
+    refreshPins();
+    if (drawerIdx !== null) syncArchiveNote(RAW[drawerIdx]);
+  }
+  // A tab left open past midnight: check once a minute whether the day moved.
+  setInterval(function () { if (FP.today() !== liveDay) applyLiveCut(); }, 60 * 1000);
+  refreshPins();   // hides intel links whose ends are off the live map
+
+  // window.ZADLive: for the browser checks.
+  window.ZADLive = {
+    today: function () { return liveDay; },
+    liveFrom: function () { return FP.liveFrom(); },
+    live: function () {
+      return allMarkerLayers.filter(function (ml) { return !ml.extra && RAW[ml.idx]._live; })
+        .map(function (ml) { return shortId(RAW[ml.idx]); });
+    },
+    archived: function () {
+      return allMarkerLayers.filter(function (ml) { return !ml.extra && !RAW[ml.idx]._live; })
+        .map(function (ml) { return shortId(RAW[ml.idx]); });
+    },
+    fromArchive: function () {
+      return allMarkerLayers.filter(function (ml) { return ml.extra; })
+        .map(function (ml) { return shortId(RAW[ml.idx]); });
+    },
+    recheck: applyLiveCut
+  };
 
   /* ══════════════════════════════════════════════════════════════════════════
      DASHBOARD PANELS
@@ -2662,6 +2747,77 @@
     return null;
   }
 
+  /* ── Opening a pin that is not on this page (time-aware pins, Batch 5) ──
+     A link, star, search result, ticker item or related pin may name a pin
+     from an older month. ForgePins finds it through archive/index.json and
+     its month file; it joins RAW with its own marker (drawn only while its
+     drawer is open) and the drawer opens as usual, saying which month's
+     archive it is from. */
+  var archiveOpenToken = 0;      // the newest archive open wins
+  var archiveLinkPending = false;
+  function pinFromArchive(param) {
+    return FP.findPin(param).then(function (hit) {
+      if (!hit) return null;
+      var have = idxForSignal(hit.pin.signal_id);
+      if (have !== null) return have;
+      var m = {};
+      for (var k in hit.pin) m[k] = hit.pin[k];
+      var idx = RAW.length;
+      RAW.push(m);
+      return addPin(m, idx, { fromArchive: true }) ? idx : null;
+    });
+  }
+  // Opens the pin's drawer and returns true; or returns false when the id
+  // cannot be a pin (the caller then follows its link).
+  function openAnySignal(param, opts) {
+    opts = opts || {};
+    var idx = idxForSignal(param);
+    if (idx !== null) {
+      hideArchiveMsg();
+      showSignal(idx, { trigger: opts.trigger || null });
+      return true;
+    }
+    if (!FP.cleanId(param)) return false;
+    if (FP.knownMonth(param) === '') return false;   // the archive does not list it
+    var token = ++archiveOpenToken;
+    hideArchiveMsg();
+    pinFromArchive(param).then(function (i) {
+      if (token !== archiveOpenToken) return;
+      if (i === null) { showArchiveMsg(param, opts, 'missing'); return; }
+      showSignal(i, { trigger: opts.trigger || null });
+    }, function () {
+      if (token === archiveOpenToken) showArchiveMsg(param, opts, 'failed');
+    });
+    return true;
+  }
+  var archiveMsg = document.getElementById('md-archive-msg');
+  var archiveRetry = null;
+  function hideArchiveMsg() { if (archiveMsg) archiveMsg.hidden = true; archiveRetry = null; }
+  function showArchiveMsg(param, opts, why) {
+    if (!archiveMsg) return;
+    var failed = why !== 'missing';
+    document.getElementById('md-archive-msg-text').textContent = failed
+      ? 'Couldn\u2019t load that event from the archive.'
+      : 'That event isn\u2019t on the map or in the archive.';
+    var retry = document.getElementById('md-archive-retry');
+    retry.hidden = !failed;
+    archiveRetry = failed ? function () { openAnySignal(param, opts); } : null;
+    archiveMsg.hidden = false;
+  }
+  if (archiveMsg) {
+    document.getElementById('md-archive-retry').addEventListener('click', function () {
+      var again = archiveRetry;
+      hideArchiveMsg();
+      if (again) again();
+    });
+    document.getElementById('md-archive-dismiss').addEventListener('click', hideArchiveMsg);
+  }
+  // window.ZADArchive: for the browser checks.
+  window.ZADArchive = {
+    pending: function () { return archiveLinkPending; },
+    message: function () { return archiveMsg && !archiveMsg.hidden ? archiveMsg.textContent.trim() : ''; }
+  };
+
   function urlForSignal(sid) {
     var u = new URL(window.location.href);
     if (sid) u.searchParams.set('signal', sid);
@@ -2844,9 +3000,22 @@
   var DETAIL_SECTIONS = ['sd-where-wrap', 'sd-diff-wrap', 'sd-src-wrap', 'sd-prov-wrap',
                          'sd-fact-wrap', 'sd-rel-wrap', 'sd-media-wrap', 'sd-more-wrap'];
 
+  // A pin past the live window says which month's archive it is from.
+  function syncArchiveNote(m) {
+    var note = document.getElementById('sd-archive');
+    if (!note) return;
+    var month = m && !m._live ? FP.monthLabel(FP.monthOf(m)) : '';
+    note.textContent = month
+      ? 'From the ' + month + ' archive. Older than 30 days, so it isn\u2019t on the live map.'
+      : '';
+    note.hidden = !month;
+    drawer.setAttribute('data-archive', month ? FP.monthOf(m) : '');
+  }
+
   function fillDrawer(m) {
     closeExtGate({ restoreFocus: false });
     syncStar(m, false);
+    syncArchiveNote(m);
     // fillDrawer(m, { refill: true }): the same pin again, once its details
     // are in (or failed); keeps the reader's scroll position.
     var fillOpts = arguments[1] || {};
@@ -3003,10 +3172,8 @@
       a.href = urlForSignal(r.signal);
       a.setAttribute('data-signal', r.signal || '');
       a.addEventListener('click', function (e) {
-        var j = idxForSignal(r.signal);
-        if (j === null) return;          // falls back to the shared link
-        e.preventDefault();
-        showSignal(j, { trigger: a });
+        // A pin on the page, or one fetched from its month file.
+        if (openAnySignal(r.signal, { trigger: a })) e.preventDefault();
       });
       li.appendChild(a);
       if (r.quote) li.appendChild(el('span', 'sd-rel__quote', '\u201c' + r.quote + '\u201d'));
@@ -3084,7 +3251,7 @@
     fillDrawer(m);
     drawerIdx = idx;
     requestDetail(idx);
-    if (mapFiltered()) refreshPins();   // the open pin shows even outside the Area check circle or the slider's step
+    if (pinsHeldBack()) refreshPins();  // the open pin shows even outside the Area check circle, the slider's step or the live window
     if (areaUI) areaUI.onDrawer();
     markSelected(idx, true);
 
@@ -3118,7 +3285,7 @@
     closeExtGate({ restoreFocus: false });
     markSelected(drawerIdx, false);
     drawerIdx = null;
-    if (mapFiltered()) refreshPins();
+    if (pinsHeldBack()) refreshPins();
     if (areaUI) areaUI.onDrawer();
     drawer.hidden = true;
     shellEl.classList.remove('drawer-open');
@@ -3339,10 +3506,7 @@
     tickerEl.addEventListener('click', function (e) {
       var a = e.target.closest ? e.target.closest('a[data-signal]') : null;
       if (!a) return;
-      var idx = idxForSignal(a.getAttribute('data-signal'));
-      if (idx === null) return;          // falls back to the link itself
-      e.preventDefault();
-      showSignal(idx, { trigger: a });
+      if (openAnySignal(a.getAttribute('data-signal'), { trigger: a })) e.preventDefault();
     });
   }
 
@@ -3355,11 +3519,10 @@
     if (idx === null || !RAW[idx]) return null;
     return { title: RAW[idx].title || '' };
   };
+  // Returns true when the drawer opened, or is opening once the pin's month
+  // file arrives (time-aware pins, Batch 5).
   window.forgeOpenSignal = function (sid, trigger) {
-    var idx = idxForSignal(sid);
-    if (idx === null) return false;
-    showSignal(idx, { trigger: trigger || null });
-    return true;
+    return openAnySignal(sid, { trigger: trigger || null });
   };
 
   /* ── Watchlist: a saved pin opens its drawer in place ───────────────────── */
@@ -3377,15 +3540,30 @@
   (function () {
     var params = new URLSearchParams(window.location.search);
     if (!params.has('signal')) return;
-    var idx = idxForSignal(params.get('signal'));
+    var param = params.get('signal');
+    var idx = idxForSignal(param);
     // A bad or unpublished id just shows the normal map (and tidies the address).
     history.replaceState(null, '', urlForSignal(null));
-    if (idx === null) return;
-    // Put the drawer on its own history entry so Back closes it first.
-    var sid = shortId(RAW[idx]);
-    history.pushState({ forgeSignal: sid }, '', urlForSignal(sid));
-    drawerPushed = true;
-    showSignal(idx, { history: false });
+    function openLinked(i) {
+      // Put the drawer on its own history entry so Back closes it first.
+      var sid = shortId(RAW[i]);
+      history.pushState({ forgeSignal: sid }, '', urlForSignal(sid));
+      drawerPushed = true;
+      showSignal(i, { history: false });
+    }
+    if (idx !== null) { openLinked(idx); return; }
+    // Not on this page: an older pin, from its month file.
+    if (!FP.cleanId(param)) return;
+    var token = ++archiveOpenToken;
+    archiveLinkPending = true;
+    pinFromArchive(param).then(function (i) {
+      archiveLinkPending = false;
+      if (token !== archiveOpenToken || i === null || drawerIdx !== null) return;
+      openLinked(i);
+    }, function () {
+      archiveLinkPending = false;
+      if (token === archiveOpenToken) showArchiveMsg(param, {});
+    });
   })();
 
   /* ── Stream filter toggles ──────────────────────────────────────────────── */

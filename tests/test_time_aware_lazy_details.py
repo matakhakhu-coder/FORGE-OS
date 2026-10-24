@@ -220,7 +220,8 @@ def test_code_that_runs_before_details_reads_only_map_fields():
     body = _fn_body("fillDrawer")
     script = script.replace(body, "")
     used = set(re.findall(r"\bm\.([a-z_]+)\b", script))
-    allowed = set(map_data.MAP_FIELDS) | {"_idx", "layer"}
+    # _live and _fromArchive: flags the page sets itself (Batch 5's live cut).
+    allowed = set(map_data.MAP_FIELDS) | {"_idx", "layer", "_live", "_fromArchive"}
     assert used - allowed == set(), sorted(used - allowed)
     assert "fact_basis" not in script and "source_links" not in script
 

@@ -323,13 +323,17 @@ def test_month_file_is_the_same_whichever_day_it_is_built(built_oct, built_dec):
 
 
 def test_a_december_build_alone_fails_the_nothing_missing_check(built_dec):
-    """Until Batch 5's loader reads month files in the browser, an archived
-    pin can't be reached from the page. The nothing-missing check says so,
-    which is why Batches 4 to 9 only go live together."""
+    """Batch 5's loader reaches archived pins by map, link, search and
+    Watchlist, but Area check still reads only the page's live list until
+    Batch 6. The nothing-missing check says so, which is why Batches 4 to 9
+    only go live together."""
     import subprocess
     r = subprocess.run([sys.executable, str(ROOT / "tools" / "nothing_missing.py"), "--dist", str(built_dec)],
                        capture_output=True, text=True, timeout=120)
     assert r.returncode != 0 and "MISSING" in r.stdout
+    missing = [ln for ln in r.stdout.splitlines() if ln.strip().startswith("MISSING")]
+    assert len(missing) == ALL_PINS
+    assert all(" area: " in ln and "Batch 6" in ln for ln in missing), missing[:3]
 
 
 def test_october_build_passes_the_nothing_missing_check(built_oct):
@@ -340,10 +344,12 @@ def test_october_build_passes_the_nothing_missing_check(built_oct):
 
 
 def test_page_is_unchanged_from_batch3_today(built_oct):
-    """No template change: the page carries the same map list it did in
-    Batch 3 while every pin is live."""
+    """The page carries the same map list it did in Batch 3 while every pin
+    is live. (Batch 4 also had no template change; Batch 5 adds the shared
+    loader, which reaches archive/ from static/js/forge-pins.js, so the page
+    only gains that script tag.)"""
     html = (built_oct / "index.html").read_text(encoding="utf-8")
-    assert "archive/" not in html
+    assert 'src="static/js/forge-pins.js"' in html
     entries = map_data.read_map_list(built_oct / "index.html")
     assert all(set(e) == set(map_data.MAP_FIELDS) for e in entries)
 

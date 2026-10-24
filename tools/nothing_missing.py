@@ -20,6 +20,21 @@ visitor finds a pin today:
              readable incident date (pinDays) that falls on the record's own
              incident day in South African time, and a usable uncertainty
 
+From Batch 5 the page carries only the live months, and a pin from an older
+month is reached through the shared loader (publisher/static/js/forge-pins.js):
+archive/index.json's lookup names its month, and its month file holds it. For
+such an archived pin:
+
+  map        it is in its month file with a usable position and details file,
+             and its month is not one the page should carry (a pin missing
+             from a live month is still a gap). The browser keeps it off the
+             live map by date and draws it while its drawer is open
+  link       nothing on the page claims its short id, the index's lookup
+             sends that short id to its month, and the month holds exactly
+             one pin with it (ForgePins.findPin)
+  watchlist  the saved ?signal= link comes back to it the same way
+  area       a gap until Batch 6: Area check reads only the page's live list
+
 This file reads a built dist/ only; it changes nothing. Later batches move pins
 into month files, and this check (with the browser version in
 tests/browser/nothing_missing_check.py) is what they must keep passing.
@@ -137,14 +152,42 @@ def detail_status(dist: Path, markers: list[dict]) -> dict | None:
     return out
 
 
+ARCHIVE_DIR = "archive"   # tools/map_archive.py
+
+
+def load_archive(dist: Path) -> dict | None:
+    """Batch 4+ builds: {"live_months": [...], "lookup": {short id: month},
+    "months": {month: [pin entries]}}. None for a build without archive/."""
+    index_path = Path(dist) / ARCHIVE_DIR / "index.json"
+    if not index_path.is_file():
+        return None
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    months: dict[str, list[dict]] = {}
+    for row in index.get("months") or []:
+        try:
+            doc = json.loads((Path(dist) / row["file"]).read_text(encoding="utf-8"))
+            months[row["month"]] = [f.get("properties") or {} for f in doc.get("features") or []]
+        except (OSError, KeyError, ValueError):
+            months[row.get("month", "?")] = []
+    return {"live_months": list(index.get("live_months") or []),
+            "lookup": {str(k).lower(): v for k, v in (index.get("pins") or {}).items()},
+            "months": months}
+
+
 def load_dist(dist: Path = DIST) -> dict:
     dist = Path(dist)
     markers = load_markers((dist / "index.html").read_text(encoding="utf-8"))
+    archive = load_archive(dist)
+    on_page = {str(m.get("signal_id") or "") for m in markers}
+    archived = [e for entries in (archive or {}).get("months", {}).values() for e in entries
+                if str(e.get("signal_id") or "") not in on_page]
+    details = detail_status(dist, markers + archived)
     return {
         "records": json.loads((dist / "records.json").read_text(encoding="utf-8"))["records"],
         "markers": markers,
         "search": json.loads((dist / "search-index.json").read_text(encoding="utf-8")),
-        "details": detail_status(dist, markers),
+        "details": details,
+        "archive": archive,
     }
 
 
@@ -157,6 +200,7 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
     data = data or load_dist(dist)
     records, markers, search = data["records"], data["markers"], data["search"]
     details = data.get("details")   # None: a build from before Batch 3
+    archive = data.get("archive")   # None: a build from before Batch 4
     problems: list[dict] = []
     counts = {r: 0 for r in ROUTES}
 
@@ -175,6 +219,31 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
                 return i
         return None
 
+    def archive_entry(full: str, short: str):
+        """(month, entry or None, why) for a pin that is not on the page."""
+        if archive is None:
+            return None, None, "not in the map page's markers"
+        month = archive["lookup"].get(short)
+        if not month:
+            return None, None, "not on the page's live list and not in the archive index's lookup"
+        entries = archive["months"].get(month, [])
+        hit = [e for e in entries if str(e.get("signal_id") or "").lower() == full]
+        if not hit:
+            return month, None, f"the archive index sends it to {month}, but that month file lacks it"
+        if month in archive["live_months"]:
+            return month, None, f"its month {month} should be on the page's live list, and it is not"
+        return month, hit[0], ""
+
+    def archive_link_ok(short: str, month: str) -> bool:
+        """ForgePins.findPin(short id): the lookup's month holds exactly one pin with it."""
+        if not LINK_PARAM_RE.match(short) or link_target(short) is not None:
+            return False
+        if archive["lookup"].get(short) != month:
+            return False
+        same = [e for e in archive["months"].get(month, [])
+                if str(e.get("signal_id") or "").lower()[:8] == short]
+        return len(same) == 1
+
     by_id = {}
     for i, m in enumerate(markers):
         by_id.setdefault(str(m.get("signal_id") or "").lower(), i)
@@ -182,6 +251,36 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
     for doc in search:
         if doc.get("kind") == "signal" and doc.get("signal"):
             search_by_signal.setdefault(str(doc["signal"]).lower(), []).append(doc)
+
+    def check_archived(rec, full, short, month, e):
+        """An older pin, reached through archive/index.json and its month file."""
+        if not _drawn(e):
+            bad(rec, "map", f"its {month} archive entry has no lat/lng, so it is never drawn")
+        elif not (_finite(e["lat"]) and _finite(e["lng"])):
+            bad(rec, "map", f"its {month} archive position is not a number")
+        elif details is not None and details.get(short, "no details file checked") is not None:
+            bad(rec, "map", details.get(short) or "no details file checked")
+        else:
+            counts["map"] += 1
+        link_ok = archive_link_ok(short, month)
+        if link_ok:
+            counts["link"] += 1
+        else:
+            bad(rec, "link", f"?signal={short} does not reach it through the {month} archive")
+        if not WATCHLIST_ID_RE.match(full):
+            bad(rec, "watchlist", "full id fails watchlist.js SIGNAL_ID_RE, so the star saves nothing")
+        elif not link_ok:
+            bad(rec, "watchlist", "the saved link (?signal=short id) does not come back to this pin")
+        else:
+            counts["watchlist"] += 1
+        docs = search_by_signal.get(short, [])
+        if docs and any(d.get("url") == f"index.html?signal={short}" for d in docs) \
+                and any(str(d.get("title") or "").strip() for d in docs) and len(docs) == 1:
+            counts["search"] += 1
+        else:
+            bad(rec, "search", "no single titled search document pointing at its ?signal= link")
+        bad(rec, "area", f"archived in {month}: Area check reads only the page's live list "
+                         "until Batch 6 loads month files")
 
     seen = set()
     for rec in records:
@@ -200,7 +299,11 @@ def check(dist: Path = DIST, data: dict | None = None) -> dict:
         idx = by_id.get(full)
         m = markers[idx] if idx is not None else None
         if m is None:
-            bad(rec, "map", "not in the map page's markers")
+            month, entry, why = archive_entry(full, short)
+            if entry is not None:
+                check_archived(rec, full, short, month, entry)
+                continue
+            bad(rec, "map", why)
         elif not _drawn(m):
             bad(rec, "map", "marker has no lat/lng, so it is never drawn")
         elif not (_finite(m["lat"]) and _finite(m["lng"])):
