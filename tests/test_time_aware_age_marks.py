@@ -212,7 +212,8 @@ def test_map_key_names_every_band_the_archive_and_the_updated_mark():
                   "White diamond: updated in the last 7 days", "An update never changes the ring",
                   "The dot's colour is its category"):
         assert words in key, words
-    assert key.count('class="age-key__row"') == 6
+    # Six rows from Batch 7, plus Batch 8's pulse and numbered-circle rows.
+    assert key.count('class="age-key__row"') == 8
     assert "crime rate" not in key.lower()
 
 

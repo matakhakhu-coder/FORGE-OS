@@ -401,7 +401,10 @@
   }
   #map .leaflet-control-attribution a { color: #a9bccb; }
 
-  /* ── Signal dot (divIcon) with data-driven pulse ─────────────────────── */
+  /* ── Signal dot (divIcon) ─────────────────────────────────────────────────
+     The old pulse (recent pins with a gravity score, brightening the dot) is
+     gone since Batch 8: no hand-checked pin has a gravity score, and it
+     animated the red fill's brightness. The newest-pin pulse below replaces it. */
   .sig-dot {
     width: 14px; height: 14px;
     border-radius: 50%;
@@ -409,50 +412,11 @@
     position: relative;
     cursor: pointer;
   }
-  .sig-dot::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 1px solid;
-    opacity: 0;
-  }
-
-  /* Pulse: recent + high gravity — fast, bright */
-  .sig-dot--pulse-critical {
-    animation: sig-pulse-bright 1.8s ease-in-out infinite;
-  }
-  .sig-dot--pulse-critical::after {
-    animation: sig-ring 1.8s ease-out infinite;
-  }
-
-  /* Pulse: recent + moderate gravity — slower, dimmer */
-  .sig-dot--pulse-active {
-    animation: sig-pulse-dim 2.8s ease-in-out infinite;
-  }
-  .sig-dot--pulse-active::after {
-    animation: sig-ring 2.8s ease-out infinite;
-  }
-
-  /* No pulse: older signals — static */
   /* Full strength since Batch 7: the ring now carries age, and at 0.7 the
      crime red and infrastructure blue fell under 3:1 against the dark map
      (tests/browser/age_marks_check.py measures it). */
   .sig-dot--static {
     opacity: 1;
-  }
-
-  @keyframes sig-pulse-bright {
-    0%, 100% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.15); filter: brightness(1.5); }
-  }
-  @keyframes sig-pulse-dim {
-    0%, 100% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.08); filter: brightness(1.2); }
-  }
-  @keyframes sig-ring {
-    0% { transform: scale(0.8); opacity: 0.6; }
-    100% { transform: scale(2.2); opacity: 0; }
   }
 
   /* ── Age ring and Updated mark (time-aware pins, Batch 7) ────────────────
@@ -477,6 +441,44 @@
     background: #ffffff; border: 1.5px solid #0b0f14; transform: rotate(45deg);
     pointer-events: none;
   }
+  /* ── Newest-pin pulse (time-aware pins, Batch 8) ─────────────────────────
+     For pins added to the map in the last 48 hours: a light halo outside
+     the still age ring breathes out and back on a sine curve, one slow
+     breath every 3.2 s. Only its size and opacity change (never the dot's
+     colour or brightness), so it repaints cheaply and never flashes red.
+     Each pin's timing is offset by its id (see syncPulse), so pins added
+     together don't pulse in step. With Motion off, or when the device asks
+     for reduced motion, the halo stays still and faint, so a new pin still
+     looks new without moving. The age ring itself never moves. */
+  .sig-pulse {
+    position: absolute; inset: -9px; border-radius: 50%; pointer-events: none;
+    border: 1.5px solid #dfe8ef; box-sizing: border-box;
+    transform: scale(1.3); opacity: 0.4;
+  }
+  html:not(.forge-motion-off) .leaflet-marker-icon .sig-pulse {
+    animation: sig-breathe 3200ms cubic-bezier(0.37, 0, 0.63, 1) infinite;
+    will-change: transform, opacity;
+  }
+  @keyframes sig-breathe {
+    0%, 100% { transform: scale(1);   opacity: 0.6; }
+    50%      { transform: scale(1.6); opacity: 0.08; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .leaflet-marker-icon .sig-pulse { animation: none !important; will-change: auto; }
+  }
+  /* A numbered circle holding a new pin: a still white dot, no motion. */
+  .marker-cluster .mc-new {
+    position: absolute; top: 1px; right: 1px; width: 9px; height: 9px;
+    border-radius: 50%; background: #ffffff; border: 1.5px solid #0b0f14;
+    box-sizing: border-box; pointer-events: none;
+  }
+  /* The Motion switch in the map controls. */
+  .md-ctrl--motion[aria-checked="false"] { color: var(--text-secondary); }
+  .md-ctrl--motion[aria-checked="true"] { color: var(--text-primary); }
+  .md-ctrl--motion[aria-disabled="true"] { opacity: 0.75; cursor: not-allowed; }
+  .md-ctrl__state { margin-left: 4px; }
+  .md-ctrl__svg { display: inline-block; vertical-align: -2px; }
+  .md-ctrl--motion[aria-checked="true"] .md-ctrl__slash { display: none; }
   /* The same marks, drawn in the map key and the drawer. */
   .age-key { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border-dim); }
   .age-key__title { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 var(--sp-2); }
@@ -486,6 +488,10 @@
   .age-key__swatch { position: relative; flex-shrink: 0; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: #1b1e23; border-radius: 4px; }
   .age-key__swatch .sig-pin { transform: scale(0.85); }
   .age-key__swatch .sig-dot { background: #7a95aa; border-color: #7a95aa; cursor: default; }
+  .age-key__swatch .sig-pulse { inset: -5px; transform: none; opacity: 0.55; }
+  .age-key__cluster { position: relative; display: block; width: 22px; height: 22px; border-radius: 50%; }
+  .age-key__cluster div { width: 16px; height: 16px; margin: 3px; border-radius: 50%; font-size: 9px; line-height: 16px; text-align: center; }
+  .age-key__cluster .mc-new { width: 7px; height: 7px; top: -1px; right: -1px; }
   .sd-dates { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
   .sd-updated { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
   .sd-updated[hidden], .sd-dates[hidden] { display: none; }
@@ -1515,7 +1521,10 @@
           <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--3"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Thin, dashed ring: 15 to 29 days ago</span></li>
           <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-dot sig-dot--static"></span></span></span><span>No ring: older than the 30-day live map. It shows only when you open it or a date lookup finds it, and says which month's archive it's from.</span></li>
           <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-ring sig-ring--1"></span><span class="sig-dot sig-dot--static"></span><span class="sig-upd"></span></span></span><span>White diamond: updated in the last 7 days with a new development. An update never changes the ring, because age counts from the incident.</span></li>
+          <li class="age-key__row" id="age-key-new"><span class="age-key__swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-pulse"></span><span class="sig-ring sig-ring--0"></span><span class="sig-dot sig-dot--static"></span></span></span><span>Soft halo that slowly pulses: added to the map in the last 48 hours. Pins added together don't pulse in step. With Motion off, or if your device asks for reduced motion, the halo stays still. An update doesn't restart it.</span></li>
+          <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="marker-cluster marker-cluster-small age-key__cluster"><div>3</div><span class="mc-new"></span></span></span><span>White dot on a numbered circle: the group holds a pin added in the last 48 hours. Numbered circles never pulse.</span></li>
         </ul>
+        <p class="age-key__intro">The Motion switch with the map buttons turns the pulse off, and the map remembers that on this device.</p>
       </section>
     </div>
   </div>
@@ -1890,6 +1899,10 @@
     <button class="md-ctrl" id="ctrl-zoomin" type="button" aria-label="Zoom in" title="Zoom in"><span class="md-ctrl__icon" aria-hidden="true">+</span><span class="md-ctrl__label"> Zoom In</span></button>
     <button class="md-ctrl" id="ctrl-zoomout" type="button" aria-label="Zoom out" title="Zoom out"><span class="md-ctrl__icon" aria-hidden="true">&minus;</span><span class="md-ctrl__label"> Zoom Out</span></button>
     <button class="md-ctrl" id="ctrl-reset" type="button" aria-label="Reset map view" title="Reset map view"><span class="md-ctrl__icon" aria-hidden="true">&#10226;</span><span class="md-ctrl__label"> Reset</span></button>
+    {# Motion switch (Batch 8): new pins pulse unless this is off. The state word is hidden from screen readers, which hear aria-checked instead. #}
+    <button class="md-ctrl md-ctrl--motion" id="ctrl-motion" type="button" role="switch" aria-checked="true" aria-label="Motion" aria-describedby="motion-desc" title="Motion on: new pins pulse gently. Tap to turn motion off."><span class="md-ctrl__icon" aria-hidden="true"><svg class="md-ctrl__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><circle cx="8" cy="8" r="2.2" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="6"/><path class="md-ctrl__slash" d="M2 14L14 2" stroke-width="1.8"/></svg></span><span class="md-ctrl__label"> Motion<span class="md-ctrl__state" aria-hidden="true">on</span></span></button>
+    <span class="sd-sr-only" id="motion-desc">New pins pulse gently while this is on.</span>
+    <span class="sd-sr-only" id="motion-status" role="status" aria-live="polite"></span>
   </div>
 
   {# Shown when an older pin's month file could not be loaded (Batch 5). #}
@@ -2094,6 +2107,7 @@
     var ago = FP.happenedDay(m) ? FP.ageWords(m) : '';
     if (ago) ageBits.push('Happened ' + ago);
     if (FP.showUpdated(m)) ageBits.push('Updated ' + FP.shortDate(FP.updatedDay(m)));
+    if (pinIsNew(m)) ageBits.push('New: added ' + FP.shortDate(FP.localDay(m.published_at)));
 
     return (
       '<div class="smap-popup">' +
@@ -2124,9 +2138,15 @@
     iconCreateFunction: function (cluster) {
       var count = cluster.getChildCount();
       var size = count < 10 ? 'small' : (count < 30 ? 'medium' : 'large');
+      // A numbered circle never pulses; one holding a pin added in the last
+      // 48 hours gets a still white dot instead (Batch 8).
+      var hasNew = false;
+      if (Object.keys(newIdx).length) {
+        hasNew = cluster.getAllChildMarkers().some(function (mk) { return newIdx[mk._forgeIdx]; });
+      }
       return L.divIcon({
-        html: '<div>' + count + '</div>',
-        className: 'marker-cluster marker-cluster-' + size,
+        html: '<div>' + count + '</div>' + (hasNew ? '<span class="mc-new" aria-hidden="true"></span>' : ''),
+        className: 'marker-cluster marker-cluster-' + size + (hasNew ? ' marker-cluster--new' : ''),
         iconSize: L.point(40, 40),
       });
     },
@@ -2138,8 +2158,6 @@
   var idxByShort = {};    // first 8 characters -> the first such RAW index
   var drawerIdx = null;   // RAW index shown in the event drawer, or null
 
-  var NOW_MS = Date.now();
-  var HOURS_48 = 48 * 60 * 60 * 1000;
 
   /* ── The 30-day live cut (time-aware pins, Batch 5) ──────────────────────
      RAW carries the live months (last month and this one). Which of those
@@ -2167,15 +2185,47 @@
   function ageMarkHtml(m) {
     var band = FP.ageBand(m);
     var upd = FP.showUpdated(m);
+    var fresh = pinIsNew(m);
     return '<div class="sig-pin" data-age-band="' + (band ? band.band : 'none') + '"' +
-      (upd ? ' data-updated="1"' : '') + '>' +
+      (upd ? ' data-updated="1"' : '') + (fresh ? ' data-new="1"' : '') + '>' +
+      (fresh ? '<span class="sig-pulse" aria-hidden="true"></span>' : '') +
       (band ? '<span class="sig-ring sig-ring--' + band.band + '" aria-hidden="true"></span>' : '') +
       (m._dotHtml || '') +
       (upd ? '<span class="sig-upd" aria-hidden="true"></span>' : '') +
       '</div>';
   }
+  /* ── Newest-pin pulse (Batch 8) ──────────────────────────────────────────
+     A pin pulses for 48 hours after it was added to the map, while it is on
+     the live map (ForgePins.isNew). A pin fetched from a month file never
+     pulses. newIdx holds the pins drawn with the pulse; the minute check
+     below drops each one when its 48 hours are up, without a reload. */
+  var newIdx = {};
+  function pinIsNew(m) { return !m._fromArchive && FP.isNew(m); }
+  // Lock a pulse's timing to the clock and the pin's id, so a pin redrawn by
+  // clustering or zoom carries on where it was, and pins added together are
+  // spread across the breath instead of peaking together.
+  function syncPulse(node, m) {
+    var el = node && node.querySelector && node.querySelector('.sig-pulse');
+    if (!el || !m) return;
+    var off = FP.pulsePhase(m) * FP.PULSE_MS;
+    var anims = el.getAnimations ? el.getAnimations() : [];
+    if (anims.length && document.timeline) {
+      anims.forEach(function (a) { a.startTime = -off; });
+    } else {
+      var t = (window.performance && performance.now()) || 0;
+      el.style.animationDelay = (-((t + off) % FP.PULSE_MS)) + 'ms';
+    }
+  }
+  function syncAllPulses() {
+    Object.keys(newIdx).forEach(function (k) {
+      var mk = markerByIdx[k];
+      var node = mk && mk.getElement && mk.getElement();
+      if (node) syncPulse(node, RAW[k]);
+    });
+  }
   function pinIcon(m) {
     m._ageKey = ageMarkKey(m);
+    if (/\+n$/.test(m._ageKey)) newIdx[m._idx] = true; else delete newIdx[m._idx];
     return L.divIcon({
       className: '',
       html: ageMarkHtml(m),
@@ -2186,7 +2236,7 @@
   }
   function ageMarkKey(m) {
     var band = FP.ageBand(m);
-    return (band ? band.band : 'none') + (FP.showUpdated(m) ? '+u' : '');
+    return (band ? band.band : 'none') + (FP.showUpdated(m) ? '+u' : '') + (pinIsNew(m) ? '+n' : '');
   }
   // The pin's name for screen readers and the hover tip: title, how long ago
   // it happened, and the update while its mark shows.
@@ -2195,6 +2245,7 @@
     var age = FP.ageWords(m);
     if (age && FP.happenedDay(m)) bits.push('happened ' + age);
     if (FP.showUpdated(m)) bits.push('updated ' + FP.shortDate(FP.updatedDay(m)));
+    if (pinIsNew(m)) bits.push('new on the map, added ' + FP.shortDate(FP.localDay(m.published_at)));
     return (m.title || '') + (bits.length ? ' (' + bits.join(', ') + ')' : '');
   }
   // After the day changes: the "days ago" words in the hover tip and the
@@ -2206,9 +2257,11 @@
     var node = mk.getElement && mk.getElement();
     if (node) node.setAttribute('title', mk.options.title);
     if (mk.getPopup()) mk.setPopupContent(buildPopup(m));
-    if (m._ageKey === ageMarkKey(m)) return;
+    if (m._ageKey === ageMarkKey(m)) return false;
     mk.setIcon(pinIcon(m));
+    syncPulse(mk.getElement && mk.getElement(), m);
     if (drawerIdx === idx) markSelected(idx, true);
+    return true;
   }
 
   function addPin(m, idx, opts) {
@@ -2219,18 +2272,12 @@
     m._fromArchive = !!opts.fromArchive;
     var color = STREAM_COLOR[m.stream] || '#7a95aa';
 
-    // Determine pulse class based on recency + gravity
-    var ageMs = m.published_at ? (NOW_MS - new Date(m.published_at).getTime()) : Infinity;
-    var isRecent = ageMs < HOURS_48;
-    var g = m.gravity_score || 0;
-    var pulseClass = 'sig-dot--static';
-    if (isRecent && g >= 0.55) pulseClass = 'sig-dot--pulse-critical';
-    else if (isRecent && g >= 0.20) pulseClass = 'sig-dot--pulse-active';
-
-    var dotHtml = '<div class="sig-dot ' + pulseClass + '" style="' +
+    // The dot is still; newness is the halo around it (Batch 8), not the
+    // dot's brightness, and it doesn't depend on a gravity score.
+    var dotHtml = '<div class="sig-dot sig-dot--static" style="' +
       'background:' + color + ';' +
       'border-color:' + color + ';' +
-      'box-shadow:0 0 ' + (g >= 0.55 ? '8' : '4') + 'px ' + color + '60;' +
+      'box-shadow:0 0 4px ' + color + '60;' +
       '"></div>';
     m._dotHtml = dotHtml;
 
@@ -2246,7 +2293,10 @@
       if (k.key === 'Enter' || k.keyCode === 13) onPinActivate(idx, true);
     });
     // Clustering re-creates a pin's element; keep the selected ring on it.
-    marker.on('add', function () { if (drawerIdx === idx) markSelected(idx, true); });
+    marker.on('add', function () {
+      if (drawerIdx === idx) markSelected(idx, true);
+      if (newIdx[idx]) syncPulse(marker.getElement && marker.getElement(), m);
+    });
     markerByIdx[idx] = marker;
     var fullId = String(m.signal_id || '').toLowerCase();
     if (fullId) {
@@ -2361,10 +2411,110 @@
       refreshAgeMark(ml.idx);
     });
     refreshPins();
+    clusterGroup.refreshClusters();   // the white dot on numbered circles (Batch 8)
     if (drawerIdx !== null) syncArchiveNote(RAW[drawerIdx]);
   }
+  // A pin stops pulsing 48 hours after it was added. Once a minute, redraw
+  // any pin whose 48 hours are up, and the numbered circles holding it.
+  function pulseTick() {
+    var changed = false;
+    Object.keys(newIdx).forEach(function (k) { if (refreshAgeMark(+k)) changed = true; });
+    if (changed) clusterGroup.refreshClusters();
+    return changed;
+  }
   // A tab left open past midnight: check once a minute whether the day moved.
-  setInterval(function () { if (FP.today() !== liveDay) applyLiveCut(); }, 60 * 1000);
+  function minuteTick() {
+    if (FP.today() !== liveDay) applyLiveCut();
+    else pulseTick();
+  }
+  setInterval(minuteTick, 60 * 1000);
+
+  /* ── Motion switch (Batch 8) ─────────────────────────────────────────────
+     Motion is on unless the visitor turned it off (remembered in this
+     browser) or the device asks for reduced motion, which always wins. Off
+     stops the pulse (the halo stays still and faint) and the numbered
+     circles' split, merge and fan-out animations. Nothing else depends on
+     motion: the ring, the words and the map key carry the same meaning. */
+  var MOTION_KEY = 'forge_map_motion';
+  var reduceMq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var motionSession = null;   // used only when this browser blocks storage
+  function motionStored() {
+    if (motionSession !== null) return motionSession;
+    try { return localStorage.getItem(MOTION_KEY) !== 'off'; } catch (e) { return true; }
+  }
+  function deviceReduces() { return !!(reduceMq && reduceMq.matches); }
+  function motionOn() { return !deviceReduces() && motionStored(); }
+  var motionBtn = document.getElementById('ctrl-motion');
+  // The numbered circles' animations live on the cluster group and on each
+  // circle's fan-out; swap them to the library's no-animation versions.
+  var MCp = L.MarkerCluster && L.MarkerCluster.prototype;
+  var MCn = L.MarkerClusterNonAnimated && L.MarkerClusterNonAnimated.prototype;
+  if (MCp && MCn && !MCp._forgeMotionWrapped) {
+    ['_animationSpiderfy', '_animationUnspiderfy'].forEach(function (name) {
+      var anim = MCp[name], still = MCn[name];
+      if (!anim || !still || anim === still) return;
+      MCp[name] = function () { return (motionOn() ? anim : still).apply(this, arguments); };
+    });
+    MCp._forgeMotionWrapped = true;
+  }
+  var motionApplied = null;
+  function applyMotion() {
+    var on = motionOn();
+    document.documentElement.classList.toggle('forge-motion-off', !on);
+    if (clusterGroup._withAnimation && clusterGroup._noAnimation && motionApplied !== on && L.DomUtil.TRANSITION) {
+      L.extend(clusterGroup, on ? clusterGroup._withAnimation : clusterGroup._noAnimation);
+    }
+    if (motionBtn) {
+      var reduced = deviceReduces();
+      motionBtn.setAttribute('aria-checked', on ? 'true' : 'false');
+      if (reduced) motionBtn.setAttribute('aria-disabled', 'true'); else motionBtn.removeAttribute('aria-disabled');
+      var st = motionBtn.querySelector('.md-ctrl__state');
+      if (st) st.textContent = on ? 'on' : 'off';
+      motionBtn.title = reduced
+        ? 'Motion off: your device asks for reduced motion. New pins keep a still halo.'
+        : (on ? 'Motion on: new pins pulse gently. Tap to turn motion off.'
+              : 'Motion off: new pins keep a still halo. Tap to turn motion on.');
+    }
+    var changed = motionApplied !== on;
+    motionApplied = on;
+    if (on && changed) requestAnimationFrame(syncAllPulses);
+    return on;
+  }
+  if (motionBtn) {
+    motionBtn.addEventListener('click', function () {
+      var status = document.getElementById('motion-status');
+      if (deviceReduces()) {
+        if (status) status.textContent = 'Motion stays off because your device asks for reduced motion.';
+        return;
+      }
+      var want = !motionOn();
+      try {
+        if (want) localStorage.removeItem(MOTION_KEY);
+        else localStorage.setItem(MOTION_KEY, 'off');
+      } catch (e) { motionSession = want; /* storage blocked: this visit only */ }
+      var on = applyMotion();
+      if (status) status.textContent = on ? 'Motion on. New pins pulse gently.' : 'Motion off. New pins keep a still halo.';
+    });
+  }
+  if (reduceMq) {
+    if (reduceMq.addEventListener) reduceMq.addEventListener('change', applyMotion);
+    else if (reduceMq.addListener) reduceMq.addListener(applyMotion);
+  }
+  applyMotion();
+
+  // window.ZADPulse: for the browser checks.
+  window.ZADPulse = {
+    pulsing: function () {
+      return Object.keys(newIdx).map(function (k) { return shortId(RAW[k]); });
+    },
+    tick: function () { minuteTick(); return Object.keys(newIdx).length; },
+    motionOn: motionOn,
+    phase: function (id) {
+      var k = idxById[String(id).toLowerCase()];
+      if (k === undefined) k = idxByShort[String(id).toLowerCase().slice(0, 8)];
+      return k === undefined ? null : FP.pulsePhase(RAW[k]);
+    },
+  };
   refreshPins();   // hides intel links whose ends are off the live map
 
   // window.ZADLive: for the browser checks.

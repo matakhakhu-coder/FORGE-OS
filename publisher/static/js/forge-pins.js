@@ -57,6 +57,19 @@
     if (!v) return null;
     var m = DATE_ONLY.exec(v);
     if (m) return realDate(+m[1], +m[2], +m[3]) ? v : null;
+    var ms = instantMs(v);
+    return ms === null ? null : dayOfInstant(ms);
+  }
+
+  // The moment an ISO date-time names, in epoch ms, or null. A time without
+  // an offset is South African time; a bare date is the start of that South
+  // African day.
+  function instantMs(value) {
+    if (typeof value !== 'string') return null;
+    var v = value.trim();
+    if (!v) return null;
+    var m = DATE_ONLY.exec(v);
+    if (m) return realDate(+m[1], +m[2], +m[3]) ? Date.UTC(+m[1], +m[2] - 1, +m[3]) - SAST_OFFSET_MS : null;
     m = DATE_TIME.exec(v);
     if (!m) return null;
     var y = +m[1], mo = +m[2], d = +m[3];
@@ -72,8 +85,7 @@
       if (oh > 23 || om > 59) return null;
       offsetMs = sign * (oh * 60 + om) * 60 * 1000;
     }
-    var utcMs = Date.UTC(y, mo - 1, d, hh, mi, ss) - offsetMs;
-    return dayOfInstant(utcMs);
+    return Date.UTC(y, mo - 1, d, hh, mi, ss) - offsetMs;
   }
 
   // The day a pin's age counts from, as 'YYYY-MM-DD', or null.
@@ -168,6 +180,45 @@
   function showUpdated(pin, now) {
     var n = updatedDaysAgo(pin, now);
     return n !== null && n <= UPDATED_DAYS;
+  }
+
+  /* ── The newest-pin pulse (Batch 8) ─────────────────────────────────────
+     A pin is new for 48 hours after it was added to the map (published_at,
+     which no update can change, so an approved material update never
+     restarts it) and only while it is on the 30-day live map. Each pin's
+     place in the pulse comes from its id, so pins added together don't pulse
+     in step, and a pin keeps its place when the map redraws it. */
+  var NEW_HOURS = 48;
+  var NEW_MS = NEW_HOURS * 60 * 60 * 1000;
+  var PULSE_MS = 3200;      // one slow breath: about 0.3 a second
+
+  // When the pin was added to the map, in epoch ms, or null.
+  function addedMs(pin) { return pin ? instantMs(pin.published_at) : null; }
+
+  // True while the pin pulses: added in the last 48 hours and live.
+  function isNew(pin, now) {
+    var a = addedMs(pin);
+    if (a === null) return false;
+    return nowMs(now) - a < NEW_MS && isLive(pin, now);
+  }
+
+  // The moment the pin stops pulsing (epoch ms), or null.
+  function newUntil(pin) {
+    var a = addedMs(pin);
+    return a === null ? null : a + NEW_MS;
+  }
+
+  // The pin's place in the pulse, 0 to 1, from its id: an FNV-1a hash spread
+  // by the golden ratio.
+  function pulsePhase(pin) {
+    var s = String(pin && pin.signal_id || '').toLowerCase();
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul ? Math.imul(h, 16777619) >>> 0 : (h * 16777619) >>> 0;
+    }
+    var f = (h * 0.6180339887498949) % 1;
+    return f < 0 ? f + 1 : f;
   }
 
   // '12 Oct', or '12 Oct 2025' when the year is not this year.
@@ -381,6 +432,13 @@
     updatedDaysAgo: updatedDaysAgo,
     showUpdated: showUpdated,
     shortDate: shortDate,
+    instantMs: instantMs,
+    NEW_HOURS: NEW_HOURS,
+    PULSE_MS: PULSE_MS,
+    addedMs: addedMs,
+    isNew: isNew,
+    newUntil: newUntil,
+    pulsePhase: pulsePhase,
     happenedDay: happenedDay,
     datesLine: datesLine,
     ageWords: ageWords,
