@@ -28,7 +28,7 @@
 @media (max-width: 768px) {
   .signal-map-page .site-header__inner { display: flex; flex-wrap: nowrap; min-height: 60px; gap: 6px; padding: env(safe-area-inset-top, 0px) 8px 0; }
   .signal-map-page .site-header__brand { flex: 1 1 auto; min-width: 0; }
-  .signal-map-page .site-logo { font-size: .85rem; letter-spacing: .04em; }
+  .signal-map-page .site-logo { font-size: 1.2rem; }
   .signal-map-page .map-tools-trigger, .signal-map-page .map-search-trigger { display: block; flex: 0 0 auto; }
   .signal-map-page .nav-toggle { display: flex; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; }
   .signal-map-page .site-header__meta { display: contents; }
@@ -56,6 +56,5 @@
   .signal-map-page .ac-bar, .signal-map-page .md-shell.drawer-open .ac-bar { left: 8px; right: 74px; top: calc(var(--map-header) + 8px); }
 }
 @media (max-width: 360px) {
-  .signal-map-page .site-logo { font-size: 0; }
-  .signal-map-page .site-logo::after { content: 'ZA'; font-size: 1rem; }
+  .signal-map-page .site-logo { font-size: 1.05rem; }
 }

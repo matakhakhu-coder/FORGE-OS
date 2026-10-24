@@ -29,7 +29,7 @@
   var support = document.querySelector('.site-footer .membership-btn');
   if (support) extras.appendChild(support);
   nav.appendChild(extras);
-  document.querySelector('.site-logo').setAttribute('aria-label', 'ZA-Divergent home');
+  document.querySelector('.site-logo').setAttribute('aria-label', 'FORGE Map home');
   input.setAttribute('aria-label', 'Search signals, analysis and entities');
   var settings = document.getElementById('settings-toggle');
   if (settings) settings.setAttribute('aria-label', 'Settings');
