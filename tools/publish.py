@@ -536,8 +536,10 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
         FROM   signals
         WHERE  published_at IS NOT NULL
         ORDER  BY published_at DESC, signal_id ASC
-        LIMIT  200
     """).fetchall()
+    # No row limit (time-aware pins, Batch 4): the old LIMIT 200 dropped the
+    # oldest pins off the map without warning. What the map shows is now the
+    # live window (tools/map_archive.py); older pins live in month files.
     # signal_id breaks ties: pins published in one batch share a publish time,
     # and without it their order (ticker, Wire) shuffled between rebuilds.
 
@@ -1315,12 +1317,23 @@ def _build_dist(
     from tools import map_data
     n_details = map_data.write_pin_details(DIST, geo_signals)
 
+    # Time-aware pins, Batch 4: every pin gets a permanent home in its
+    # incident month (South African time), written to a content-hashed
+    # GeoJSON file under dist/archive/ with an index of months, a pin-to-month
+    # lookup and a search list. The page's map list is the live set: this
+    # month's and last month's pins. The browser makes the exact 30-day cut
+    # (Batch 5). Detail files are written for every pin, archived or live.
+    from tools import map_archive
+    live_signals, archive_index = map_archive.write_archive(DIST, geo_signals)
+    print(f"[publish] archive: {archive_index['count']} pins in {len(archive_index['months'])} "
+          f"month file(s); live list {len(live_signals)} pins ({', '.join(archive_index['live_months'])})")
+
     # Single render — index.html is the map shell; every other screen (Wire
     # archive, Streams, Cases, Graph, Entities, Watchlist) is an overlay panel
     # on this one page, populated from the context below.
     (DIST / "index.html").write_text(
         env.get_template("map.html").render(
-            markers=map_data.map_list(geo_signals),
+            markers=map_data.map_list(live_signals),
             pin_detail_dir=map_data.PIN_DIR + "/",
             intel_links=intel_links,
             all_signals=signals,
@@ -1935,7 +1948,18 @@ def _checked_guard_after(cs):
             print(f"[publish]   {p}")
         print("[publish] dist/ is now incomplete. Restore it with: git checkout -- dist/ && git clean -fd dist/pins")
         raise CheckedGuardError(3)
-    print(f"[publish] map carries all {len(cs.active)} checked pins, each with its detail file")
+    from tools import map_archive
+    archive_problems = map_archive.problems(DIST, expected_ids={s["signal_id"] for s in cs.active})
+    if archive_problems:
+        print(f"[publish] REFUSED after build: {len(archive_problems)} problem(s) with the month archive; "
+              f"not deploying.")
+        for p in archive_problems[:40]:
+            print(f"[publish]   {p}")
+        print("[publish] dist/ is now incomplete. Restore it with: "
+              "git checkout -- dist/ && git clean -fd dist/pins dist/archive")
+        raise CheckedGuardError(3)
+    print(f"[publish] live map and month archive carry all {len(cs.active)} checked pins, "
+          f"each in exactly one month and with its detail file")
 
 
 def main() -> None:

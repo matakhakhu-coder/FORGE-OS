@@ -1,0 +1,8 @@
+{
+  "_about": "Coverage note shown with each month of the FORGE Map archive (tools/map_archive.py). One entry per month, keyed YYYY-MM. A month with pins but no entry here gets the default note in tools/map_archive.py. Changing a note gives that month's archive file a new name at the next publish. Draft wording, written in the Batch 4 build: the owner reviews it before the archive goes live in Batch 11.",
+  "months": {
+    "2026-10": {
+      "note": "Collection began on 1 October 2026, and not every day of October was searched. An empty day means it was not searched or nothing was approved, not that nothing happened. These are hand-checked incidents from news reports, each linked to its sources. This is not a crime rate."
+    }
+  }
+}

@@ -719,7 +719,8 @@ def verify(conn: sqlite3.Connection, cs: CheckedSet) -> list[str]:
 
 
 def count_markers_problems(index_html: pathlib.Path, cs: CheckedSet) -> list[str]:
-    """After a build: the map must carry every active checked pin and no retracted one."""
+    """After a build: the map (its live list plus the month archive) must
+    carry every active checked pin and no retracted one."""
     try:
         html = index_html.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -731,14 +732,20 @@ def count_markers_problems(index_html: pathlib.Path, cs: CheckedSet) -> list[str
         markers = json.loads(m.group(1))
     except json.JSONDecodeError as exc:
         return [f"map markers are not readable JSON ({exc})"]
-    on_map = {mk.get("signal_id") for mk in markers if isinstance(mk, dict)}
+    # Time-aware pins, Batch 4: a pin past the live months is in its month
+    # file under archive/ instead of the page's live list. Both count.
+    from tools.map_data import _archived_entries
+    markers = [mk for mk in markers if isinstance(mk, dict)]
+    live_ids = {mk.get("signal_id") for mk in markers}
+    markers += [e for e in _archived_entries(index_html.parent) if e.get("signal_id") not in live_ids]
+    on_map = {mk.get("signal_id") for mk in markers}
     problems = []
     active = cs.active
     if len(markers) < len(active):
         problems.append(f"the map has {len(markers)} markers, fewer than the {len(active)} checked pins")
     for s in active:
         if s["signal_id"] not in on_map:
-            problems.append(f"not on the map: {s['signal_id'][:8]} ({s['title']})")
+            problems.append(f"not on the map or in the archive: {s['signal_id'][:8]} ({s['title']})")
     for sid in cs.retracted:
         if sid in on_map:
             problems.append(f"retracted pin still on the map: {sid[:8]}")

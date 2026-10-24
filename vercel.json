@@ -17,6 +17,7 @@
     { "src": "/map\\.html", "status": 302, "headers": { "Location": "/" } },
     { "src": "/(?:subscribe|thankyou)(?:\\.html)?/?", "status": 301, "headers": { "Location": "/records" } },
     { "src": "/pro-feed\\.json", "status": 301, "headers": { "Location": "/records.json" } },
+    { "src": "/archive/[0-9]{4}-[0-9]{2}\\.[0-9a-f]{10}\\.json", "headers": { "Cache-Control": "public, max-age=31536000, immutable" }, "continue": true },
     { "src": "/(.*)", "dest": "/dist/$1" }
   ]
 }

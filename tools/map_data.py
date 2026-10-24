@@ -138,16 +138,34 @@ def load_markers(dist: pathlib.Path) -> list[dict]:
     return full
 
 
+def _archived_entries(dist: pathlib.Path) -> list[dict]:
+    """Map entries of the pins in dist/archive/ month files (Batch 4), so a
+    pin that has left the live list still has its detail file. Empty for a
+    build without an archive; an unreadable archive is map_archive's to
+    report."""
+    if not (dist / "archive" / "index.json").is_file():
+        return []
+    try:
+        from tools import map_archive
+        months = map_archive.month_entries(dist)
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
+    return [e for k in sorted(months) for e in months[k]]
+
+
 def problems(dist: pathlib.Path) -> list[str]:
-    """After a build: one readable detail file per map pin, carrying that
-    pin and agreeing with the map list, and no file for any other pin."""
+    """After a build: one readable detail file per pin (on the live map list
+    or in a month file), carrying that pin and agreeing with the map list,
+    and no file for any other pin."""
     dist = pathlib.Path(dist)
     try:
-        entries = read_map_list(dist / "index.html")
+        live = read_map_list(dist / "index.html")
     except FileNotFoundError:
         return [f"{dist / 'index.html'} was not built"]
     except (ValueError, json.JSONDecodeError) as exc:
         return [f"map markers are not readable ({exc})"]
+    live_ids = {e.get("signal_id") for e in live}
+    entries = live + [e for e in _archived_entries(dist) if e.get("signal_id") not in live_ids]
     folder = dist / PIN_DIR
     if not folder.is_dir():
         return [f"no {PIN_DIR}/ folder of pin details next to index.html"]
@@ -180,5 +198,5 @@ def problems(dist: pathlib.Path) -> list[str]:
                 out.append(f"{short}: {k} differs between the map list and its detail file")
     for p in sorted(folder.glob("*.json")):
         if p.stem not in want:
-            out.append(f"leftover detail file for a pin not on the map: {p.name}")
+            out.append(f"leftover detail file for a pin not on the map or in the archive: {p.name}")
     return out
