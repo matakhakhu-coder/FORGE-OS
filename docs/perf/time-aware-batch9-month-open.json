@@ -1,0 +1,256 @@
+{
+ "what": "FORGE Map Batch 9: time to open the October month view",
+ "commit": "fafbe86",
+ "measured_at": "2026-10-25T06:01+02:00",
+ "chromium": "156.0.8078.4",
+ "method": "Batch 9: how long a month view takes to open, on the load test's computer and phone profiles.\n\nTwo ways in, on two real builds (no made-up pins):\n  link: navigate straight to index.html?month=2026-10; time from navigation start until the\n        month view has left 'loading' and the page has had no long task for 500 ms.\n  tap:  open the live map, then tap Earlier months and October; time from the tap on October\n        until the month view has left 'loading' and the page has been quiet for 500 ms.\nBuilds: oct (24 October: October's pins are also on the live list) and dec (15 December:\nOctober's 72 pins sit only in the October month file, so the month must be fetched).\n\n    python3 /tmp/b9_month_open.py DISTS_DIR OUT.json\n",
+ "profiles": {
+  "computer": {
+   "cpu_slowdown": 1,
+   "network": null
+  },
+  "phone": {
+   "cpu_slowdown": 4,
+   "network": {
+    "offline": false,
+    "latency": 150,
+    "downloadThroughput": 209715.2,
+    "uploadThroughput": 96000.0
+   }
+  }
+ },
+ "results": [
+  {
+   "build": "oct",
+   "profile": "computer",
+   "way": "link",
+   "runs": [
+    {
+     "ms": 240,
+     "blocking_ms": 16,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 262,
+     "blocking_ms": 3,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 238,
+     "blocking_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 240
+  },
+  {
+   "build": "oct",
+   "profile": "computer",
+   "way": "tap",
+   "runs": [
+    {
+     "ms": 72,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 67,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 75,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 72
+  },
+  {
+   "build": "oct",
+   "profile": "phone",
+   "way": "link",
+   "runs": [
+    {
+     "ms": 2327,
+     "blocking_ms": 207,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 2299,
+     "blocking_ms": 236,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 2293,
+     "blocking_ms": 213,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 2299
+  },
+  {
+   "build": "oct",
+   "profile": "phone",
+   "way": "tap",
+   "runs": [
+    {
+     "ms": 600,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 609,
+     "longest_task_ms": 50,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 607,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 607
+  },
+  {
+   "build": "dec",
+   "profile": "computer",
+   "way": "link",
+   "runs": [
+    {
+     "ms": 245,
+     "blocking_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 212,
+     "blocking_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 204,
+     "blocking_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 212
+  },
+  {
+   "build": "dec",
+   "profile": "computer",
+   "way": "tap",
+   "runs": [
+    {
+     "ms": 69,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 70,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 68,
+     "longest_task_ms": 0,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 69
+  },
+  {
+   "build": "dec",
+   "profile": "phone",
+   "way": "link",
+   "runs": [
+    {
+     "ms": 2237,
+     "blocking_ms": 150,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 2235,
+     "blocking_ms": 132,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 2267,
+     "blocking_ms": 157,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 2237
+  },
+  {
+   "build": "dec",
+   "profile": "phone",
+   "way": "tap",
+   "runs": [
+    {
+     "ms": 626,
+     "longest_task_ms": 76,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 632,
+     "longest_task_ms": 80,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    },
+    {
+     "ms": 660,
+     "longest_task_ms": 104,
+     "state": "ready",
+     "shown": 72,
+     "errors": 0
+    }
+   ],
+   "median_ms": 632
+  }
+ ]
+}
