@@ -226,10 +226,12 @@ def test_every_way_in_goes_through_the_loader():
 
 
 def test_no_page_text_promises_a_crime_rate_or_a_months_view():
-    """Batch 5 adds no visible months view (that is Batch 9) and no new copy
-    beyond the archive note and the load message."""
+    """Batch 5 added no visible months view and no new copy beyond the archive
+    note and the load message. Batch 9 adds the one months view, behind the
+    Earlier months button (tests/test_time_aware_months.py)."""
     html = TEMPLATE.read_text(encoding="utf-8")
-    assert "Earlier months" not in html
+    assert html.count('id="ctrl-months"') == 1
+    assert "crime rate" not in html.replace("not a crime rate", "").replace("Not a crime rate", "")
 
 
 # ── The static nothing-missing check follows the loader ────────────────────────
