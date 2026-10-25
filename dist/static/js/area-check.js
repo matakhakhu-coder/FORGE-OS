@@ -95,6 +95,21 @@
     return null;
   }
 
+  // Which archive months must be loaded before the count is complete
+  // (time-aware pins, Batch 6). null: the page's live months already hold
+  // every pin these dates can match (Last 7 days, Last 30 days). 'all':
+  // every month (All, or Pick dates without two readable days). {from, to}:
+  // the months a picked range touches; the count still filters to the days.
+  function archiveNeed(mode, range) {
+    if (mode === '7' || mode === '30') return null;
+    if (!range) return 'all';
+    return { from: range.from, to: range.to };
+  }
+  function archiveKey(need) {
+    if (!need) return '';
+    return need === 'all' ? 'all' : need.from.slice(0, 7) + '..' + need.to.slice(0, 7);
+  }
+
   // true, false, or 'unknown' (no readable date: shown and counted apart).
   function dateMatch(pin, range) {
     if (!range) return true;
@@ -379,8 +394,10 @@
   /* ── The page ───────────────────────────────────────────────────────────── */
   // bridge: what map.html hands over (map, L, pins, setPinFilter, refreshPins,
   // showSignal, openPanel, closePanel, activePanel, drawerIdx, isPhone,
-  // placesUrl, now). Pins: [{idx, lat, lng, unc, precision, incident_at,
-  // incident_end, event, title, published_at}].
+  // placesUrl, now; Batch 6: loadArchive(need) -> Promise of pins added from
+  // archive months, archiveFirstDay() -> Promise of a day, archiveLabel(idx)).
+  // Pins: [{idx, lat, lng, unc, precision, incident_at, incident_end, event,
+  // title, published_at}]. More arrive through the returned addPins.
   function mount(bridge) {
     var doc = document, L = bridge.L, map = bridge.map;
     var $ = function (id) { return doc.getElementById(id); };
@@ -396,13 +413,21 @@
       cross: $('ac-cross'), placebar: $('ac-placebar'), placeUse: $('ac-place-use'), placeCancel: $('ac-place-cancel'),
       home: $('ac-home'), outside: $('sd-outside'), outsideAll: $('sd-outside-all'),
       addr: $('ac-addr'), addrQ: $('ac-addr-q'), addrGo: $('ac-addr-go'), addrStatus: $('ac-addr-status'),
-      addrMatches: $('ac-addr-matches'), addrCancel: $('ac-addr-cancel')
+      addrMatches: $('ac-addr-matches'), addrCancel: $('ac-addr-cancel'),
+      archive: $('ac-archive'), archiveText: $('ac-archive-text'), archiveRetry: $('ac-archive-retry')
     };
     if (!el.panel || !map || !L) return null;
 
-    var pins = bridge.pins || [];
+    var pins = [];
     var byIdx = {};
-    pins.forEach(function (p) { byIdx[p.idx] = p; });
+    function addPins(list) {
+      (list || []).forEach(function (p) {
+        if (!p || byIdx[p.idx]) return;
+        byIdx[p.idx] = p;
+        pins.push(p);
+      });
+    }
+    addPins(bridge.pins);
 
     var state = { place: null, radius: DEFAULT_RADIUS, dates: 'all', from: null, to: null,
                   on: false, remember: false };
@@ -422,8 +447,49 @@
       var nd = saDay(newest), np = nd.split('-');
       el.upto.textContent = ', up to ' + fmtDay(nd) + ' ' + np[0];
     }
-    var earliest = pins.reduce(function (m, p) { var d = pinDays(p); return d && (!m || d.start < m) ? d.start : m; }, null);
-    if (earliest && el.datesAll) el.datesAll.textContent = 'All (since ' + fmtDay(earliest) + ')';
+    var earliest = null;
+    function noteEarliest(day) {
+      if (!validDay(day) || (earliest && earliest <= day)) return;
+      earliest = day;
+      if (el.datesAll) el.datesAll.textContent = 'All (since ' + fmtDay(earliest) + ')';
+    }
+    pins.forEach(function (p) { var d = pinDays(p); if (d) noteEarliest(d.start); });
+    var askedFirstDay = false;
+    function askFirstDay() {
+      if (askedFirstDay || !bridge.archiveFirstDay) return;
+      askedFirstDay = true;
+      bridge.archiveFirstDay().then(noteEarliest, function () { askedFirstDay = false; });
+    }
+
+    /* archive months (Batch 6): All and Pick dates load the months they
+       touch before the count is complete; Last 7 and 30 days need none. */
+    var arch = { done: {}, loading: null, failed: null };
+    function archiveState() {
+      var need = state.place && state.on && bridge.loadArchive
+        ? archiveNeed(state.dates, rangeFor(state.dates, today(), state.from, state.to)) : null;
+      var key = archiveKey(need);
+      if (!need || arch.done.all || arch.done[key]) return { key: key, status: 'none' };
+      if (arch.loading === key) return { key: key, status: 'loading' };
+      if (arch.failed === key) return { key: key, status: 'failed' };
+      return { key: key, status: 'needed', need: need };
+    }
+    function ensureArchive() {
+      var a = archiveState();
+      if (a.status !== 'needed') return;
+      var key = a.key;
+      arch.loading = key;
+      if (arch.failed === key) arch.failed = null;
+      bridge.loadArchive(a.need).then(function (added) {
+        arch.done[key] = true;
+        if (arch.loading === key) arch.loading = null;
+        addPins(added);
+        render();
+      }, function () {
+        if (arch.loading === key) arch.loading = null;
+        arch.failed = key;
+        render();
+      });
+    }
 
     /* storage: localStorage when remembered, sessionStorage otherwise */
     function store(kind) {
@@ -517,6 +583,8 @@
     }
 
     function render() {
+      ensureArchive();
+      var arc = archiveState();
       var c = compute();
       bridge.setPinFilter(state.on && state.place ? pinState : null);
       drawLayer(c);
@@ -549,18 +617,30 @@
           var pw = precisionWord(it.p);
           if (it.k === 'maybe') bits.push('may be inside, ' + (pw || 'approximate'));
           else if (pw) bits.push(pw);
+          var arcLabel = bridge.archiveLabel ? bridge.archiveLabel(it.p.idx) : '';
+          if (arcLabel) bits.push(arcLabel);
           var m = doc.createElement('span'); m.className = 'ac-res__meta'; m.textContent = bits.join(' · ');
           b.appendChild(t); b.appendChild(m);
           b.addEventListener('click', function () { bridge.showSignal(it.p.idx); });
           li.appendChild(b); el.results.appendChild(li);
         });
       }
+      if (el.archive) {
+        var arcOn = !!(state.place && state.on && (arc.status === 'loading' || arc.status === 'failed'));
+        el.archive.hidden = !arcOn;
+        el.archiveRetry.hidden = arc.status !== 'failed';
+        el.archiveText.textContent = arc.status === 'failed'
+          ? 'Couldn\u2019t load earlier months from the archive, so older reports may be missing from this count.'
+          : arc.status === 'loading' ? 'Loading earlier months from the archive\u2026' : '';
+      }
       // the one-line bar while the panel is closed
       var showBar = !!(state.place && state.on && bridge.activePanel() !== 'area' && !placing);
       el.bar.hidden = !showBar;
       if (showBar) {
         el.barText.textContent = fmtRadius(state.radius) + ' around ' + state.place.label + ': ' +
-          plural(c.inside, 'report', 'reports') + (c.maybe ? ' (+' + c.maybe + ' maybe)' : '');
+          plural(c.inside, 'report', 'reports') + (c.maybe ? ' (+' + c.maybe + ' maybe)' : '') +
+          (arc.status === 'loading' ? ' \u00b7 loading earlier months' :
+           arc.status === 'failed' ? ' \u00b7 earlier months didn\u2019t load' : '');
       }
       updateOutside();
       save();
@@ -796,6 +876,10 @@
       el.q.focus();
     });
     el.barAll.addEventListener('click', showAll);
+    if (el.archiveRetry) el.archiveRetry.addEventListener('click', function () {
+      arch.failed = null;
+      render();
+    });
     el.barEdit.addEventListener('click', function () { bridge.openPanel('area'); });
     if (el.outsideAll) el.outsideAll.addEventListener('click', showAll);
     el.home.addEventListener('click', function () {
@@ -829,12 +913,20 @@
         if (name !== 'area') cancelAddr(true);
         if (name === 'area') {
           loadPlaces();
+          askFirstDay();
           if (!state.place && !bridge.isPhone()) setTimeout(function () { el.q.focus(); }, 50);
         }
         render();
       },
       onDrawer: updateOutside,
       showAll: showAll,
+      // Pins added from archive months by any route (Batch 6).
+      addPins: function (list) {
+        var before = pins.length;
+        addPins(list);
+        if (pins.length !== before && state.place) render();
+      },
+      archive: function () { return archiveState().status; },
       state: function () { return JSON.parse(JSON.stringify(state)); },
       classOf: function (idx) { return classes[idx] || null; }
     };
@@ -844,6 +936,7 @@
     RADII: RADII, DEFAULT_RADIUS: DEFAULT_RADIUS, STORE_KEY: STORE_KEY,
     distanceM: distanceM, classify: classify, saDay: saDay, addDays: addDays, validDay: validDay,
     pinDays: pinDays, rangeFor: rangeFor, dateMatch: dateMatch, norm: norm,
+    archiveNeed: archiveNeed, archiveKey: archiveKey,
     searchPlaces: searchPlaces, parseSaved: parseSaved, inZA: inZA, roundPoint: roundPoint,
     summaryText: summaryText, fmtRadius: fmtRadius, fmtSpan: fmtSpan, mount: mount,
     GEOCODER: GEOCODER, cleanLabel: cleanLabel, addressUrl: addressUrl,
