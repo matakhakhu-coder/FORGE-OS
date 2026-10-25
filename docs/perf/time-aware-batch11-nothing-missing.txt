@@ -1,0 +1,12 @@
+== dists/today real-today
+[nothing-missing:browser] PASS
+== dists/today 2026-10-31
+[nothing-missing:browser] PASS
+== dists/today 2026-11-01
+[nothing-missing:browser] PASS
+== dists/nov1 2026-11-01
+[nothing-missing:browser] PASS
+== dists/today 2026-12-15
+[nothing-missing:browser] PASS
+== std/dec 2026-12-15
+[nothing-missing:browser] PASS
