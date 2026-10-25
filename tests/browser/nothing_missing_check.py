@@ -326,6 +326,36 @@ def run(base: str, today: str | None = None, sizes=("computer", "phone"),
                                                + (f" ({status})" if status else ""))
                     pg.close()
 
+            if "month" in routes:
+                # Batch 9 (opt-in route): every record is drawn in the
+                # Earlier months view of its own month, at ?month=YYYY-MM.
+                months: dict[str, list] = {}
+                for rec in records:
+                    m = by_id.get(rec["signal_id"].lower())
+                    day = nm.record_incident_day(rec)
+                    if not (m and m.get("lat") is not None and day):
+                        bad(size, rec, "month", "no position or incident day for a month view")
+                        continue
+                    months.setdefault(str(day)[:7], []).append(rec)
+                for key, recs in sorted(months.items()):
+                    pg = ctx.new_page()
+                    pg.on("pageerror", lambda e: errors.append(str(e)))
+                    pg.goto(base + "?month=" + key, wait_until="load")
+                    try:
+                        pg.wait_for_function("() => window.ZADMonth && window.ZADMonth.view()"
+                                             " && window.ZADMonth.view().state !== 'loading'", timeout=15000)
+                        pg.wait_for_timeout(300)
+                        in_view = set(pg.evaluate("() => window.ZADMapTime.shown()"))
+                        state = pg.evaluate("() => window.ZADMonth.view().state")
+                    except Exception:  # noqa: BLE001
+                        in_view, state = set(), "no month view"
+                    for rec in recs:
+                        if rec["signal_id"][:8] in in_view:
+                            ok["month"] += 1
+                        else:
+                            bad(size, rec, "month", f"not drawn in the {key} month view ({state})")
+                    pg.close()
+
             if errors:
                 problems.append({"size": size, "short": "-", "route": "page",
                                  "why": f"{len(errors)} page errors, first: {errors[0][:200]}"})

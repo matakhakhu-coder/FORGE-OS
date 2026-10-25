@@ -207,3 +207,14 @@ def test_browser_earlier_months_view(served):
     rep = earlier_months_check.run(base, out)
     assert rep["problems"] == []
     assert all(all(r.values()) for r in rep["results"].values())
+
+
+@needs_browser
+@pytest.mark.parametrize("build,day", [("oct", "2026-10-24"), ("dec", "2026-12-15")])
+def test_browser_every_pin_is_reachable_through_its_month_view(served, build, day):
+    import nothing_missing_check
+    out, base = served
+    rep = nothing_missing_check.run(base + build + "/", day, ("computer", "phone"), routes=("month",), log=None)
+    assert rep["problems"] == [], rep["problems"][:5]
+    for size in ("computer", "phone"):
+        assert rep["sizes"][size] == {"month": rep["records"]} and rep["records"] == 72
