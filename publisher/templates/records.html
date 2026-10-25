@@ -36,6 +36,9 @@
 .rec-filters input, .rec-filters select { min-height: 44px; padding: 0.45rem 0.6rem; border-radius: var(--r-sm, 4px); border: 1px solid var(--border-mid); background: var(--bg-void); color: var(--text-primary); font-family: var(--font-body); font-size: 16px; text-transform: none; letter-spacing: 0; width: 100%; box-sizing: border-box; }
 .rec-filters__wide { grid-column: 1 / -1; }
 .rec-filters__actions { display: flex; align-items: flex-end; }
+.rec-range-note { border-left: 3px solid var(--accent); background: var(--bg-surface); color: var(--text-primary); padding: 0.5rem 0.75rem; margin: 0 0 0.6rem; font-size: 0.85rem; line-height: 1.5; border-radius: var(--r-md, 6px); }
+.rec-range-note[hidden] { display: none; }
+.rec-filters__hint { grid-column: 1 / -1; margin: 0; font-size: 0.78rem; color: var(--text-secondary); }
 .rec-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.6rem; }
 .rec-table-wrap { overflow-x: auto; border: 1px solid var(--border-dim); border-radius: var(--r-md, 6px); }
 .rec-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
@@ -148,11 +151,12 @@
       </select>
     </label>
     <label>Incident from
-      <input type="date" name="from">
+      <input type="date" name="from" aria-describedby="rec-dates-hint">
     </label>
     <label>Incident to
-      <input type="date" name="to">
+      <input type="date" name="to" aria-describedby="rec-dates-hint">
     </label>
+    <p class="rec-filters__hint" id="rec-dates-hint">Days are South African dates. The from and to dates go in the page address, so the link opens this range.</p>
     <label>Map point
       <select name="precision">
         <option value="">Any precision</option>
@@ -185,6 +189,7 @@
   </form>
   </details>
 
+  <p class="rec-range-note" id="rec-range-note" role="status" hidden></p>
   <p class="rec-count" id="rec-count" aria-live="polite">{{ records|length }} records</p>
 
   <div class="rec-table-wrap">
