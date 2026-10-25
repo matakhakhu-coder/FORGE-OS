@@ -407,6 +407,52 @@
     });
   }
 
+  /* ── Earlier months view (Batch 9) ──────────────────────────────────────────
+     The map's archive opens one whole calendar month at a time. */
+
+  // A ?month= value: 'YYYY-MM' for a real month, else null.
+  function monthParam(s) {
+    s = String(s == null ? '' : s).trim();
+    return monthLabel(s) && /^\d{4}-\d{2}$/.test(s) ? s : null;
+  }
+
+  function nextMonth(key) {
+    var y = +key.slice(0, 4), m = +key.slice(5, 7) + 1;
+    if (m > 12) { m = 1; y++; }
+    return y + '-' + (m < 10 ? '0' : '') + m;
+  }
+
+  // The months the Earlier months list offers, newest first: every month
+  // from the archive's first through the current South African month, the
+  // empty ones included (count 0, no file). [] while the archive is empty.
+  function monthList(doc, todayKey) {
+    var rows = (doc && Array.isArray(doc.months)) ? doc.months : [];
+    var byKey = {};
+    var first = null;
+    rows.forEach(function (r) {
+      if (!r || !monthParam(r.month)) return;
+      byKey[r.month] = r;
+      if (first === null || r.month < first) first = r.month;
+    });
+    if (first === null) return [];
+    var last = monthParam(todayKey) || first;
+    Object.keys(byKey).forEach(function (k) { if (k > last) last = k; });
+    var out = [];
+    for (var k = first, guard = 0; k <= last && guard < 600; k = nextMonth(k), guard++) {
+      var r = byKey[k];
+      out.push({
+        month: k,
+        label: monthLabel(k),
+        count: r ? (+r.count || 0) : 0,
+        file: r ? (r.file || null) : null,
+        coverage_note: r ? (r.coverage_note || '') : '',
+        current: k === todayKey,
+        listed: !!r
+      });
+    }
+    return out.reverse();
+  }
+
   // Synchronous answers once the index is in; null while it is not.
   function indexLoaded() { return !!indexDoc; }
   function knownMonth(param) {
@@ -449,6 +495,8 @@
     findPin: findPin,
     dedupe: dedupe,
     indexLoaded: indexLoaded,
+    monthParam: monthParam,
+    monthList: monthList,
     knownMonth: knownMonth,
     cleanId: cleanId,
     _fetches: function () { return fetches.slice(); }

@@ -1226,6 +1226,96 @@
   }
   .md-archive-msg[hidden] { display: none; }
 
+  /* ── Earlier months view (time-aware pins, Batch 9) ──────────────────────
+     One whole calendar month from the archive. It must never pass for the
+     live map, so four things change together, none of them colour alone:
+     a banner naming the month with "Not the live map" and the way back, a
+     dashed frame round the map, greyed map tiles, and hollow pins with no
+     age ring and no pulse. Numbered circles go hollow too. */
+  .mv-pop {
+    position: absolute; top: var(--sp-4); right: calc(var(--sp-4) + 150px); z-index: 420;
+    width: min(300px, calc(100vw - 2 * var(--sp-3)));
+    background: var(--bg-elevated, #0d1620); border: 1px solid var(--border-mid);
+    border-radius: var(--r-md); padding: var(--sp-3);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  }
+  .mv-pop[hidden] { display: none; }
+  .mv-pop__title { margin: 0 0 4px; font-size: 0.82rem; color: var(--text-primary); }
+  .mv-pop__help { margin: 0 0 var(--sp-2); font-size: 0.72rem; line-height: 1.4; color: var(--text-secondary); }
+  .mv-pop__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 50vh; overflow-y: auto; }
+  .mv-pop__item {
+    display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2);
+    min-height: 44px; padding: 6px 10px; border: 1px solid var(--border-dim); border-radius: var(--r-sm);
+    color: var(--text-primary); text-decoration: none; font-size: 0.8rem;
+  }
+  .mv-pop__item:hover, .mv-pop__item:focus-visible { border-color: var(--accent-bright); outline: none; }
+  .mv-pop__item[aria-current="true"] { border-style: dashed; border-color: var(--accent-bright); }
+  .mv-pop__count { color: var(--text-secondary); font-size: 0.72rem; white-space: nowrap; }
+  .mv-pop__status { font-size: 0.74rem; color: var(--text-secondary); margin: 0; }
+  .mv-pop__status[hidden] { display: none; }
+  .mv-pop__close { position: absolute; top: 6px; right: 6px; min-width: 32px; min-height: 32px; }
+
+  .mv-banner {
+    position: absolute; top: var(--sp-4); left: 50%; transform: translateX(-50%); z-index: 415;
+    width: min(560px, calc(100% - 2 * var(--sp-4) - 420px));
+    min-width: 300px;
+    background: rgba(8,13,18,0.96); border: 2px dashed var(--accent-bright);
+    border-radius: var(--r-md); padding: var(--sp-2) var(--sp-3);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  }
+  .mv-banner[hidden] { display: none; }
+  .mv-banner__top { display: flex; align-items: flex-start; gap: var(--sp-2); }
+  .mv-banner__heading { flex: 1; margin: 0; font-size: 0.86rem; line-height: 1.3; color: var(--text-primary); }
+  .mv-banner__heading:focus { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+  .mv-banner__kicker {
+    display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent-bright);
+  }
+  .mv-banner__back { min-height: 44px; flex-shrink: 0; }
+  .mv-banner__count, .mv-banner__note { margin: 4px 0 0; font-size: 0.74rem; line-height: 1.4; color: var(--text-primary); }
+  .mv-banner__note { color: var(--text-secondary); }
+  .mv-banner__note[hidden], .mv-banner__count[hidden], .mv-banner__retry[hidden] { display: none; }
+  .mv-banner__more { margin-top: 2px; font-size: 0.72rem; }
+  .md-shell.drawer-open .mv-banner { left: calc((100% - 400px) / 2); width: min(520px, calc(100% - 400px - 2 * var(--sp-4) - 170px)); min-width: 260px; }
+
+  html.forge-month-view .md-shell::after {
+    content: ''; position: absolute; inset: 0; z-index: 398; pointer-events: none;
+    border: 3px dashed var(--accent-bright); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.6);
+  }
+  html.forge-month-view #map .leaflet-tile-pane { filter: grayscale(1) brightness(0.85); }
+  html.forge-month-view #map .sig-ring,
+  html.forge-month-view #map .sig-pulse,
+  html.forge-month-view #map .mc-new { display: none; }
+  html.forge-month-view #map .sig-dot {
+    background: rgba(8,13,18,0.55) !important; border-width: 3px; box-shadow: 0 0 0 1.5px #f2f5f7 !important;
+  }
+  html.forge-month-view #map .marker-cluster { background: rgba(242,245,247,0.18) !important; }
+  html.forge-month-view #map .marker-cluster div {
+    background: rgba(8,13,18,0.85) !important; color: #f2f5f7 !important;
+    box-shadow: inset 0 0 0 2px #f2f5f7; line-height: 30px !important;
+  }
+  /* Map-first layout: everything on the map sits below the fixed site header
+     (--map-header), like the pill column and the map buttons. */
+  .signal-map-page .mv-banner { top: calc(var(--map-header, 60px) + 8px); }
+  .signal-map-page .mv-pop { top: calc(var(--map-header, 60px) + 8px); right: 190px; }
+  @media (max-width: 768px) {
+    /* On a phone the banner sits beside the map buttons, where the Area check
+       bar goes; that bar moves down below it (--mv-h is the banner's height,
+       set by script). */
+    .signal-map-page .mv-banner, .signal-map-page .md-shell.drawer-open .mv-banner {
+      left: 8px; right: 74px; transform: none; width: auto; min-width: 0; padding: 6px 8px;
+    }
+    .mv-banner__top { flex-wrap: wrap; }
+    .mv-banner__heading { font-size: 0.8rem; flex-basis: 100%; }
+    .mv-banner__back { width: 100%; }
+    html.forge-month-view .signal-map-page .ac-bar,
+    html.forge-month-view .signal-map-page .md-shell.drawer-open .ac-bar { top: calc(var(--map-header, 60px) + 16px + var(--mv-h, 0px)); }
+    .signal-map-page .mv-pop { left: 8px; right: 74px; width: auto; z-index: 1100; }
+  }
+  .mv-key-swatch { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; vertical-align: -6px; margin-right: 4px; background: #1b1e23; border-radius: 4px; }
+  .mv-key-swatch .sig-dot { border-color: #7a95aa; cursor: default; }
+  .mv-key-swatch .sig-dot { background: rgba(8,13,18,0.55) !important; border-width: 3px; box-shadow: 0 0 0 1.5px #f2f5f7 !important; }
+
   /* Sprint 1: a viewport-bound map and a fully visible mobile header.
      Only the map page uses this shell; desktop and other pages are unchanged. */
   @media (max-width: 768px) {
@@ -1525,6 +1615,7 @@
           <li class="age-key__row"><span class="age-key__swatch" aria-hidden="true"><span class="marker-cluster marker-cluster-small age-key__cluster"><div>3</div><span class="mc-new"></span></span></span><span>White dot on a numbered circle: the group holds a pin added in the last 48 hours. Numbered circles never pulse.</span></li>
         </ul>
         <p class="age-key__intro">The Motion switch with the map buttons turns the pulse off, and the map remembers that on this device.</p>
+        <p class="age-key__intro" id="age-key-months"><span class="mv-key-swatch" aria-hidden="true"><span class="sig-pin"><span class="sig-dot sig-dot--static"></span></span></span> Earlier months, with the map buttons, opens one whole month from the archive. There the pins are hollow, with no ring and no pulse, the map turns grey inside a dashed frame, and a banner names the month and says it's not the live map. Back to live map returns here.</p>
       </section>
     </div>
   </div>
@@ -1892,6 +1983,29 @@
     <button type="button" class="ac-bar__btn" id="ac-place-cancel">Cancel</button>
   </div>
 
+  {# ── Earlier months view (time-aware pins, Batch 9) ──
+     The list of months, and the banner shown while a month is open. Filled
+     by script with textContent only. #}
+  <div class="mv-pop" id="mv-pop" role="dialog" aria-labelledby="mv-pop-title" hidden>
+    <h2 class="mv-pop__title" id="mv-pop-title" tabindex="-1">Earlier months</h2>
+    <p class="mv-pop__help">See one whole calendar month from the archive. For other date ranges, use Records or Area check.</p>
+    <p class="mv-pop__status" id="mv-pop-status" role="status" aria-live="polite"></p>
+    <button type="button" class="ac-link" id="mv-pop-retry" hidden>Try again</button>
+    <ul class="mv-pop__list" id="mv-pop-list"></ul>
+    <button type="button" class="ac-link mv-pop__close" id="mv-pop-close" aria-label="Close earlier months">&#10005;</button>
+  </div>
+  <section class="mv-banner" id="mv-banner" aria-labelledby="mv-heading" hidden>
+    <div class="mv-banner__top">
+      <h2 class="mv-banner__heading" id="mv-heading" tabindex="-1"><span class="mv-banner__kicker">Month view &middot; not the live map</span><span id="mv-heading-text"></span></h2>
+      <button type="button" class="ac-bar__btn ac-bar__btn--main mv-banner__back" id="mv-back">Back to live map</button>
+    </div>
+    <p class="mv-banner__count" id="mv-count"></p>
+    <button type="button" class="ac-link mv-banner__retry" id="mv-retry" hidden>Try again</button>
+    <button type="button" class="ac-link mv-banner__more" id="mv-more" aria-expanded="true" aria-controls="mv-note">About this month</button>
+    <p class="mv-banner__note" id="mv-note"></p>
+  </section>
+  <span class="sd-sr-only" id="mv-status" role="status" aria-live="polite"></span>
+
   {# ── Right controls ─────────────────────────────────────────────────────── #}
   <div class="md-controls">
     <button class="md-ctrl" id="ac-home" type="button" hidden><span class="md-ctrl__icon">&#8962;</span> Home base</button>
@@ -1899,6 +2013,8 @@
     <button class="md-ctrl" id="ctrl-zoomin" type="button" aria-label="Zoom in" title="Zoom in"><span class="md-ctrl__icon" aria-hidden="true">+</span><span class="md-ctrl__label"> Zoom In</span></button>
     <button class="md-ctrl" id="ctrl-zoomout" type="button" aria-label="Zoom out" title="Zoom out"><span class="md-ctrl__icon" aria-hidden="true">&minus;</span><span class="md-ctrl__label"> Zoom Out</span></button>
     <button class="md-ctrl" id="ctrl-reset" type="button" aria-label="Reset map view" title="Reset map view"><span class="md-ctrl__icon" aria-hidden="true">&#10226;</span><span class="md-ctrl__label"> Reset</span></button>
+    {# Earlier months (Batch 9): browse the archive one whole calendar month at a time. #}
+    <button class="md-ctrl" id="ctrl-months" type="button" aria-label="Earlier months" title="Earlier months: browse the archive one whole month at a time" aria-expanded="false" aria-controls="mv-pop"><span class="md-ctrl__icon" aria-hidden="true"><svg class="md-ctrl__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg></span><span class="md-ctrl__label"> Earlier months</span></button>
     {# Motion switch (Batch 8): new pins pulse unless this is off. The state word is hidden from screen readers, which hear aria-checked instead. #}
     <button class="md-ctrl md-ctrl--motion" id="ctrl-motion" type="button" role="switch" aria-checked="true" aria-label="Motion" aria-describedby="motion-desc" title="Motion on: new pins pulse gently. Tap to turn motion off."><span class="md-ctrl__icon" aria-hidden="true"><svg class="md-ctrl__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><circle cx="8" cy="8" r="2.2" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="6"/><path class="md-ctrl__slash" d="M2 14L14 2" stroke-width="1.8"/></svg></span><span class="md-ctrl__label"> Motion<span class="md-ctrl__state" aria-hidden="true">on</span></span></button>
     <span class="sd-sr-only" id="motion-desc">New pins pulse gently while this is on.</span>
@@ -2200,7 +2316,8 @@
      pulses. newIdx holds the pins drawn with the pulse; the minute check
      below drops each one when its 48 hours are up, without a reload. */
   var newIdx = {};
-  function pinIsNew(m) { return !m._fromArchive && FP.isNew(m); }
+  // Earlier months view (Batch 9): a month view is still. No pin pulses there.
+  function pinIsNew(m) { return !monthView && !m._fromArchive && FP.isNew(m); }
   // Lock a pulse's timing to the clock and the pin's id, so a pin redrawn by
   // clustering or zoom carries on where it was, and pins added together are
   // spread across the breath instead of peaking together.
@@ -2236,12 +2353,22 @@
   }
   function ageMarkKey(m) {
     var band = FP.ageBand(m);
-    return (band ? band.band : 'none') + (FP.showUpdated(m) ? '+u' : '') + (pinIsNew(m) ? '+n' : '');
+    return (band ? band.band : 'none') + (FP.showUpdated(m) ? '+u' : '') + (pinIsNew(m) ? '+n' : '') +
+      (monthView ? '+m' : '');
   }
   // The pin's name for screen readers and the hover tip: title, how long ago
   // it happened, and the update while its mark shows.
   function pinTitle(m) {
     var bits = [];
+    // In a month view (Batch 9) the words say which month, and the day it
+    // happened, never "days ago", so no pin there reads as current.
+    if (monthView) {
+      var hd = FP.happenedDay(m);
+      bits.push('from the ' + monthView.label + ' month view, not the live map');
+      if (hd) bits.push('happened ' + FP.shortDate(hd));
+      if (FP.showUpdated(m)) bits.push('updated ' + FP.shortDate(FP.updatedDay(m)));
+      return (m.title || '') + ' (' + bits.join(', ') + ')';
+    }
     var age = FP.ageWords(m);
     if (age && FP.happenedDay(m)) bits.push('happened ' + age);
     if (FP.showUpdated(m)) bits.push('updated ' + FP.shortDate(FP.updatedDay(m)));
@@ -2357,6 +2484,9 @@
   // open in the drawer always shows, even outside the circle.
   var pinFilter = null;
   var areaUI = null;
+  // The Earlier months view (Batch 9): null on the live map, else
+  // { key: 'YYYY-MM', label, state: 'loading'|'ready'|'empty'|'failed', idx: {RAW idx: true} }.
+  var monthView = null;
   // The Graph panel's slider (Batch 6) and heat map (Batch 8): RAW idx -> true
   // for the pins they keep, or null. Streams and Area check still apply on
   // top; the drawer's pin always shows.
@@ -2364,10 +2494,19 @@
   var cellIdx = null;
   function mapFiltered() { return !!(pinFilter || timeIdx || cellIdx); }
   // Some pins are held back from the map: by a filter, or by the live cut.
-  function pinsHeldBack() { return mapFiltered() || cutCount > 0; }
+  function pinsHeldBack() { return mapFiltered() || cutCount > 0 || !!monthView; }
   function pinShowState(ml) {
     if (streamVisible[ml.stream] === false) return 'out';
     if (ml.idx === drawerIdx) return 'in';
+    // A month view draws that month's pins only, live or archived, and
+    // nothing else; the live cut does not apply. Area check, the slider and
+    // a heat-map cell still narrow it.
+    if (monthView) {
+      if (!monthView.idx[ml.idx]) return 'out';
+      if (timeIdx && !timeIdx[ml.idx]) return 'out';
+      if (cellIdx && !cellIdx[ml.idx]) return 'out';
+      return pinFilter ? pinFilter(ml.idx) : 'in';
+    }
     // Fetched from a month file: drawn only while its drawer is open, or
     // when a lookup that chooses its own dates names it (Batch 6).
     if (ml.extra && !mapFiltered()) return 'out';
@@ -3203,6 +3342,279 @@
   window.ZADArchive = {
     pending: function () { return archiveLinkPending; },
     message: function () { return archiveMsg && !archiveMsg.hidden ? archiveMsg.textContent.trim() : ''; }
+  };
+
+  /* ── Earlier months view (time-aware pins, Batch 9) ──────────────────────
+     The map's archive opens one whole calendar month at a time (custom
+     date ranges stay in Records and Area check). The Earlier months button
+     lists every month from the archive's first to this one, with counts.
+     A month opens at its own address, ?month=YYYY-MM, and shows that month's
+     pins only, live or archived, read through the shared ForgePins loader.
+     It never passes for the live map: a banner names the month, says "not
+     the live map" and carries Back to live map and the month's coverage
+     note; the map is greyed in a dashed frame; pins are hollow with no ring
+     and no pulse; the hover text names the month. Back to live map, the
+     list's Live map row or the browser's Back returns to the live map. */
+  var mvCtrl = document.getElementById('ctrl-months');
+  var mvPop = document.getElementById('mv-pop');
+  var mvPopTitle = document.getElementById('mv-pop-title');
+  var mvPopList = document.getElementById('mv-pop-list');
+  var mvPopStatus = document.getElementById('mv-pop-status');
+  var mvPopRetry = document.getElementById('mv-pop-retry');
+  var mvBanner = document.getElementById('mv-banner');
+  var mvHeading = document.getElementById('mv-heading');
+  var mvHeadingText = document.getElementById('mv-heading-text');
+  var mvCount = document.getElementById('mv-count');
+  var mvNote = document.getElementById('mv-note');
+  var mvMore = document.getElementById('mv-more');
+  var mvRetry = document.getElementById('mv-retry');
+  var mvStatus = document.getElementById('mv-status');
+  var mvToken = 0;
+  var mvNoteOpen = null;   // the visitor's choice; null: open on a computer, shut on a phone
+  var EMPTY_MONTH_NOTE = 'An empty month means it was not searched or nothing was approved, ' +
+    'not that nothing happened. This is not a crime rate.';
+
+  function monthUrl(key) {
+    var u = new URL(window.location.href);
+    if (key) u.searchParams.set('month', key);
+    else u.searchParams.delete('month');
+    return u.pathname + u.search + u.hash;
+  }
+  function todayMonth() { return FP.today().slice(0, 7); }
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function mvAnnounce(text) {
+    mvStatus.textContent = '';
+    setTimeout(function () { mvStatus.textContent = text; }, 60);
+  }
+  function syncBannerHeight() {
+    var shell = document.querySelector('.md-shell');
+    if (shell) shell.style.setProperty('--mv-h', (!mvBanner.hidden ? mvBanner.offsetHeight : 0) + 'px');
+  }
+  if (window.ResizeObserver) new ResizeObserver(syncBannerHeight).observe(mvBanner);
+
+  function setNoteOpen(open) {
+    var has = !!mvNote.textContent;
+    mvMore.hidden = !has;
+    mvMore.setAttribute('aria-expanded', open ? 'true' : 'false');
+    mvNote.hidden = !open || !has;
+    syncBannerHeight();
+  }
+  mvMore.addEventListener('click', function () {
+    mvNoteOpen = mvMore.getAttribute('aria-expanded') !== 'true';
+    setNoteOpen(mvNoteOpen);
+  });
+
+  function renderBanner() {
+    var v = monthView;
+    if (!v) { mvBanner.hidden = true; syncBannerHeight(); return; }
+    var current = v.key === todayMonth();
+    mvHeadingText.textContent = v.label + (current ? ' so far' : '');
+    var count = '', note = '';
+    if (v.state === 'loading') count = 'Loading ' + v.label + ' from the archive\u2026';
+    else if (v.state === 'failed') count = 'Couldn\u2019t load ' + v.label + ' from the archive.';
+    else if (v.state === 'empty') { count = 'No pins for ' + v.label + '.'; note = EMPTY_MONTH_NOTE; }
+    else {
+      count = plural(v.total, 'pin', 'pins') + ' that happened in ' + v.label + '.';
+      if (v.shown < v.total) count += ' ' + plural(v.total - v.shown, 'has', 'have').replace(/ has$/, ' pin has').replace(/ have$/, ' pins have') + ' no map position; see Records.';
+      if (current) count += ' This month isn\u2019t over yet.';
+      note = v.note || '';
+    }
+    mvCount.textContent = count;
+    mvRetry.hidden = v.state !== 'failed';
+    mvNote.textContent = note;
+    mvBanner.hidden = false;
+    var phone = window.matchMedia('(max-width: 768px)').matches;
+    setNoteOpen(mvNoteOpen === null ? !phone : mvNoteOpen);
+  }
+
+  // Pins redraw hollow and still (or back), and numbered circles with them.
+  function redrawForMonth() {
+    allMarkerLayers.forEach(function (ml) { refreshAgeMark(ml.idx); });
+    refreshPins();
+    clusterGroup.refreshClusters();
+  }
+  function frameMonth() {
+    var b = mvBanner.getBoundingClientRect();
+    frameIncidents(monthView && !mvBanner.hidden ? { top: b.bottom + 20 } : {});
+  }
+
+  function enterMonth(key, opts) {
+    opts = opts || {};
+    var token = ++mvToken;
+    hideArchiveMsg();
+    monthView = { key: key, label: FP.monthLabel(key), state: 'loading', idx: {}, total: 0, shown: 0, note: '' };
+    document.documentElement.classList.add('forge-month-view');
+    if (opts.history !== false) {
+      history.pushState({ forgeMonth: key }, '', monthUrl(key));
+      drawerPushed = false;   // this entry is the month's, not the drawer's
+    }
+    redrawForMonth();
+    renderBanner();
+    if (opts.focus) mvHeading.focus({ preventScroll: true });
+    mvAnnounce('Loading ' + monthView.label + ' from the archive.');
+    FP.loadIndex().then(function (doc) {
+      if (token !== mvToken) return;
+      var row = FP.monthList(doc, todayMonth()).filter(function (r) { return r.month === key; })[0];
+      if (!row) { notInArchive(key); return; }
+      if (!row.listed) { finishMonth('empty', {}, 0, 0, ''); return; }
+      return FP.loadMonth(key).then(function (pins) {
+        if (token !== mvToken) return;
+        addArchivedPins(pins);
+        var idx = {}, total = 0, shown = 0;
+        pins.forEach(function (p) {
+          var i = idxForSignal(p.signal_id);
+          if (i === null || idx[i]) return;
+          idx[i] = true; total++;
+          if (markerByIdx[i]) shown++;
+        });
+        finishMonth(total ? 'ready' : 'empty', idx, total, shown, row.coverage_note);
+      });
+    }).catch(function () {
+      if (token !== mvToken || !monthView) return;
+      monthView.state = 'failed';
+      renderBanner();
+      mvAnnounce('Couldn\u2019t load ' + monthView.label + ' from the archive. Try again, or go back to the live map.');
+    });
+    function finishMonth(state, idx, total, shown, note) {
+      monthView.state = state; monthView.idx = idx;
+      monthView.total = total; monthView.shown = shown; monthView.note = note || '';
+      redrawForMonth();
+      renderBanner();
+      if (drawerIdx === null) frameMonth();
+      mvAnnounce(state === 'ready'
+        ? 'Showing ' + monthView.label + ': ' + plural(total, 'pin', 'pins') + '. This is a month view, not the live map.'
+        : 'No pins for ' + monthView.label + '. This is a month view, not the live map.');
+    }
+  }
+
+  function exitMonth(opts) {
+    opts = opts || {};
+    mvToken++;
+    if (!monthView) return;
+    monthView = null;
+    document.documentElement.classList.remove('forge-month-view');
+    if (opts.history !== false) {
+      if (opts.replace) history.replaceState(history.state, '', monthUrl(null));
+      else { history.pushState({ forgeMonth: null }, '', monthUrl(null)); drawerPushed = false; }
+    }
+    redrawForMonth();
+    renderBanner();
+    if (drawerIdx === null && !opts.noFrame) frameIncidents();
+    if (opts.focus) mvCtrl.focus({ preventScroll: true });
+    if (!opts.quiet) mvAnnounce('Back to the live map: the last 30 days.');
+  }
+
+  // A ?month= the archive cannot show: say so and stay on the live map.
+  function showMonthMsg(text) {
+    if (!archiveMsg) return;
+    document.getElementById('md-archive-msg-text').textContent = text;
+    document.getElementById('md-archive-retry').hidden = true;
+    archiveRetry = null;
+    archiveMsg.hidden = false;
+  }
+  function notInArchive(key) {
+    exitMonth({ replace: true, quiet: true });
+    showMonthMsg('There\u2019s no ' + FP.monthLabel(key) + ' in the archive. Showing the live map.');
+  }
+
+  var mvBack = document.getElementById('mv-back');
+  mvBack.addEventListener('click', function () { exitMonth({ focus: true }); });
+  mvRetry.addEventListener('click', function () {
+    if (monthView) enterMonth(monthView.key, { history: false, focus: true });
+  });
+
+  /* The list of months. */
+  function addMonthItem(href, label, count, isCurrent, act) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.className = 'mv-pop__item';
+    a.href = href;
+    if (isCurrent) a.setAttribute('aria-current', 'true');
+    var l = document.createElement('span'); l.textContent = label;
+    var c = document.createElement('span'); c.className = 'mv-pop__count'; c.textContent = count;
+    a.appendChild(l); a.appendChild(c);
+    a.addEventListener('click', function (e) {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;   // new tab: the link works
+      e.preventDefault();
+      closeMonthList(false);
+      act();
+    });
+    li.appendChild(a);
+    mvPopList.appendChild(li);
+  }
+  function setPopStatus(text) { mvPopStatus.textContent = text; mvPopStatus.hidden = !text; }
+  function fillMonthList() {
+    mvPopList.textContent = '';
+    mvPopRetry.hidden = true;
+    setPopStatus('Loading the months\u2026');
+    FP.loadIndex().then(function (doc) {
+      if (mvPop.hidden) return;
+      var rows = FP.monthList(doc, todayMonth());
+      mvPopList.textContent = '';
+      setPopStatus(rows.length ? '' : 'No months in the archive yet.');
+      addMonthItem(monthUrl(null), 'Live map', 'last 30 days', !monthView, function () {
+        if (monthView) exitMonth({ focus: true }); else mvCtrl.focus();
+      });
+      rows.forEach(function (r) {
+        addMonthItem(monthUrl(r.month), r.label + (r.current ? ' so far' : ''),
+          r.count ? plural(r.count, 'pin', 'pins') : 'No pins',
+          !!monthView && monthView.key === r.month,
+          function () { enterMonth(r.month, { focus: true }); });
+      });
+    }, function () {
+      if (mvPop.hidden) return;
+      setPopStatus('Couldn\u2019t load the earlier months.');
+      mvPopRetry.hidden = false;
+    });
+  }
+  function openMonthList() {
+    mvPop.hidden = false;
+    mvCtrl.setAttribute('aria-expanded', 'true');
+    fillMonthList();
+    mvPopTitle.focus({ preventScroll: true });
+  }
+  function closeMonthList(restore) {
+    if (mvPop.hidden) return;
+    mvPop.hidden = true;
+    mvCtrl.setAttribute('aria-expanded', 'false');
+    if (restore) mvCtrl.focus({ preventScroll: true });
+  }
+  mvCtrl.addEventListener('click', function () { if (mvPop.hidden) openMonthList(); else closeMonthList(true); });
+  document.getElementById('mv-pop-close').addEventListener('click', function () { closeMonthList(true); });
+  mvPopRetry.addEventListener('click', fillMonthList);
+  mvPop.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); closeMonthList(true); }
+  });
+  document.addEventListener('mousedown', function (e) {
+    if (!mvPop.hidden && !mvPop.contains(e.target) && !mvCtrl.contains(e.target)) closeMonthList(false);
+  });
+
+  // Back and Forward move between the live map and the months visited.
+  window.addEventListener('popstate', function () {
+    var key = FP.monthParam(new URLSearchParams(window.location.search).get('month'));
+    if (key && (!monthView || monthView.key !== key)) enterMonth(key, { history: false });
+    else if (!key && monthView) exitMonth({ history: false });
+  });
+
+  // A ?month= address opens that month straight away.
+  (function () {
+    var raw = new URLSearchParams(window.location.search).get('month');
+    if (raw === null) return;
+    var key = FP.monthParam(raw);
+    if (key) { enterMonth(key, { history: false }); return; }
+    history.replaceState(history.state, '', monthUrl(null));
+    showMonthMsg('That isn\u2019t a month the archive knows. Showing the live map.');
+  })();
+
+  // window.ZADMonth: for the browser checks.
+  window.ZADMonth = {
+    view: function () {
+      return monthView ? { key: monthView.key, label: monthView.label, state: monthView.state,
+        total: monthView.total, shown: monthView.shown } : null;
+    },
+    banner: function () { return mvBanner.hidden ? '' : mvBanner.innerText.trim(); },
+    open: function (key) { enterMonth(key, {}); },
+    live: function () { exitMonth({}); }
   };
 
   function urlForSignal(sid) {
