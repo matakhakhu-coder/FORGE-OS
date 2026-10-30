@@ -1,8 +1,50 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "25 Oct 2026 06:27 UTC",
+  "generated_at": "30 Oct 2026 05:30 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Strandbrook, Brookdale, Phoenix (approx.): man stabbed to death by three men on his way to a tuck shop; security-company account, 28 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T05:05:00Z",
+      "summary": "A man was stabbed to death along Strandbrook in Brookdale, Phoenix, on the afternoon of Wednesday 28 October. According to KZN VIP Security, he was on his way to a local tuck shop when he got into a confrontation with th...",
+      "source": "PHOENIX TABLOID (TABLOID NEWSPAPERS)",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.68213,
+        "lng": 31.00248
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Sbumbu Road, Amaoti, Inanda (map point estimated): two men shot dead, one wounded by two gunmen; murder cases, suspects sought, 25 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T05:05:00Z",
+      "summary": "Police say three men were walking on Sbumbu Road in Amaoti, Inanda, north of Durban, on the morning of Sunday 25 October when two men emerged and fired at them. Two of the three died and the third was taken to a clinic. ...",
+      "source": "EAST COAST RADIO",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.676,
+        "lng": 30.985
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Dr Pixley kaSeme Street, Durban CBD (approx.): immigrant man beaten to death by about 50 people in anti-immigrant march, 22 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T05:05:00Z",
+      "summary": "Police say an immigrant man was beaten to death by a group of about 50 people on Dr Pixley kaSeme Street in the Durban CBD on the morning of Thursday 22 October. According to KwaZulu-Natal police spokesperson Col Robert ...",
+      "source": "GROUNDUP",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.8583,
+        "lng": 31.0245
+      }
+    },
     {
       "kind": "signal",
       "title": "Beitbridge border post (approx.): North West businessman charged 21 Oct as co-accused over two Absa-financed cars intercepted in Jul",
@@ -659,48 +701,6 @@
       "geo": {
         "lat": -27.20251,
         "lng": 25.29221
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Doornpan Farm near Ottosdal (farm area, approx.): woman, 55, attacked at farm gate, died, 5 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T00:50:00Z",
-      "summary": "Reports place the attack on Hannetjie van Zyl, 55, at the gate to Doornpan Farm, outside Ottosdal, on the evening of Monday 5 October; the saved SAPS statement does not itself give the incident date. Her husband took her...",
-      "source": "TAUNG DAILY NEWS",
-      "region": "North West",
-      "geo": {
-        "lat": -26.8781,
-        "lng": 25.8325
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Tafelsig, Mitchells Plain (Hugenot St / AZ Berman Dr, approx.): body found burning, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Mitchells Plain police were called to the corner of Hugenot Street and AZ Berman Drive, Tafelsig, where a body was found burning; it was burned beyond recognition, a murder case was registered and a post-mortem will iden...",
-      "source": "EWN",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.062,
-        "lng": 18.639
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Asanda Village, Strand (Christmas Tinto Park, approx.): man, 35, stabbed and set alight, 16 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-18T18:50:00Z",
-      "summary": "Lwandle police are investigating a murder after a 35-year-old man's body was found still burning at Christmas Tinto Park, Asanda Village, Strand, at about 06:30 on Friday 16 October; police found stab wounds to his upper...",
-      "source": "DISTRICT MAIL (NOVANEWS)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.1077,
-        "lng": 18.8578
       }
     }
   ]
