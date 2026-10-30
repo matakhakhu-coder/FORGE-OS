@@ -1,0 +1,75 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T052631Z-a33aff17",
+  "signal_id": "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kwazulu-natal-durban-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "Police say three men were walking on Sbumbu Road in Amaoti, Inanda, north of Durban, on the morning of Sunday 25 October when two men emerged and fired at them. Two of the three died and the third was taken to a clinic. KwaZulu-Natal police spokesperson Paul Magwaza said police are investigating two cases of murder and one of attempted murder (via East Coast Radio). Reaction Unit South Africa, a private response unit, said the shooting followed a robbery that morning: one of the victims had reportedly gone back with two friends to confront the robbery suspects, who allegedly opened fire. A manhunt was under way; no arrest has been reported. The victims are not named here. One public report: East Coast Radio, 26 October. The map point is estimated: Sbumbu Road could not be found on a map, so the pin is a point in Amaoti, not the road.",
+    "external_id": "checked:kzn-durban-2026-10-30:D2",
+    "lat": -29.676,
+    "lng": 30.985,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T05:05:00Z",
+        "incident": "Sun 25 Oct 2026, morning (police and Reaction Unit South Africa, via East Coast Radio).",
+        "incident_event": "occurred",
+        "incident_part": "morning",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-25",
+        "location": "ESTIMATED MAP POINT. Sbumbu Road, Amaoti, Inanda, north of Durban (police, via East Coast Radio). Sbumbu Road was not found on a map (OpenStreetMap Overpass and Nominatim returned no Sbumbu feature). The pin is a point in Amaoti, near Amaoti Primary School on OpenStreetMap, used only as a reference for the area; it is not the road. Uncertainty about 2 km.",
+        "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "26 Oct 2026 (East Coast Radio)",
+        "reported_at": "2026-10-26",
+        "search_aliases": [
+          "Amaoti",
+          "Inanda",
+          "Sbumbu Road",
+          "Durban",
+          "eThekwini",
+          "shooting",
+          "double murder",
+          "murder",
+          "attempted murder"
+        ],
+        "sources": [
+          {
+            "name": "East Coast Radio, 26 Oct",
+            "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/"
+          }
+        ]
+      },
+      "collected_title": "Police hunt suspects after deadly shooting in Amaoti",
+      "link": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+      "pubdate_raw": "2026-10-26T11:55:00+02:00",
+      "source_outlet": "East Coast Radio"
+    },
+    "published_at": "2026-10-30T05:05:00Z",
+    "signal_id": "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",
+    "source": "East Coast Radio",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-25T07:00:00Z",
+    "title": "Sbumbu Road, Amaoti, Inanda (map point estimated): two men shot dead, one wounded by two gunmen; murder cases, suspects sought, 25 Oct"
+  },
+  "payload_sha256": "sha256:4901e7c0faaa6f13742b13fa6b736d058a6004e4e80fe49c77f4f1072bd8092d",
+  "source_hashes": [
+    {
+      "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+      "retrieved_at": "2026-10-30T04:53:35Z",
+      "content_sha256": "sha256:ebe00e52715d0d1699b4e81470aaf6768fb339a758d767b2ae60bf4ef5593d64"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T06:50:00+02:00",
+  "recorded_at": "2026-10-30T07:26:31+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "durban-approval-2026-10-30",
+    "summary": "Owner: 'I'm clear about the three Durban pins. Those ones are approved' (voice call 30 Oct 2026, about 06:50 SAST). Amaoti double shooting, estimated point. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

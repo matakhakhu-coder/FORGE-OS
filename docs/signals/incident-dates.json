@@ -7,7 +7,7 @@
     "report": "The sources never say when it happened, so incident_start is the report or notice date. The incident date is unknown and charts count it as date not stated.",
     "later_step": "incident_start is a later step (arrest, charge, court appearance or finding) in an older case. The incident itself is on earlier_incident.date, quoted in evidence. Charts do not put it on the day of the later step."
   },
-  "updated": "2026-10-24",
+  "updated": "2026-10-30",
   "classified": "24 Oct 2026, from each pin's incident text and its fact base; the earlier dates are the sources' own words, re-read on 24 Oct (Limpopo Mirror for Beitbridge).",
   "pins": {
     "7bce2be1-912e-48e2-9fd4-c79d1611c16f": {
@@ -252,6 +252,15 @@
         "quote": "was added as a co-accused in a case stemming from an incident on 22 July this year"
       },
       "why": "The pin date (21 Oct) is when the businessman was charged; the vehicles were intercepted at Beitbridge on 22 Jul 2026."
+    },
+    "c9697dcd-becf-5562-a5a0-57382f75bfa5": {
+      "basis": "incident"
+    },
+    "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9": {
+      "basis": "incident"
+    },
+    "55bc58e1-085f-577b-8a5c-4a91ca0a9fef": {
+      "basis": "incident"
     }
   }
 }

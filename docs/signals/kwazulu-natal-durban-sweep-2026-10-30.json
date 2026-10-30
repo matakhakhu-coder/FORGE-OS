@@ -1,0 +1,200 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "KwaZulu-Natal",
+  "batch": "KwaZulu-Natal (Durban targeted sweep) Crime & Security killings, 22-30 Oct 2026, hand-checked 30 Oct 2026; three pins approved by the owner on 30 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Crime & Security (three killings in eThekwini: Durban CBD, Amaoti/Inanda, Brookdale/Phoenix). Collection window: incidents 22-30 Oct 2026, town mode Durban area (60 km). Other candidates from the same sweep are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Killings: private individuals (victims and suspects) are not named; people taken in for questioning are not described as charged. Where the only account comes from a private security company, the pin says so and says that no police statement was found. Pin = the place the source gives; 'approx.' in the title when only a street or area is known. Estimated map points: the title says 'map point estimated' and the drawer location note starts 'ESTIMATED MAP POINT'. Being near another pin is not a link. Caxton papers are not used as sources. Every fact-base quote matched word for word against the saved source text.",
+  "review_status": "Approved by the owner on the voice call of 30 Oct 2026, about 06:50 SAST (all three Durban drafts approved); one explicit version-1 approval record per pin in docs/approvals/pins (reference durban-approval-2026-10-30).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-30 (voice call, about 06:50 SAST)",
+      "decision": "All three Durban drafts approved for publication. Owner's words: \"I'm clear about the three Durban pins. Those ones are approved.\""
+    },
+    {
+      "at": "2026-10-30 (publication)",
+      "decision": "Brookdale (D3) is published with the security-company account attributed as such and the missing police statement said in the pin, as drafted."
+    },
+    {
+      "at": "2026-10-30 (publication)",
+      "decision": "Amaoti (D2) keeps its estimated map point, flagged in the title and the location note, as drafted for the owner to check."
+    },
+    {
+      "at": "2026-10-30 (publication)",
+      "decision": "Brookdale (D3) map point moved from the draft estimate to Strandbrook Crescent on OpenStreetMap, the street the sources name; still approximate."
+    },
+    {
+      "at": "2026-10-30 (publication)",
+      "decision": "Durban CBD (D1): the five men taken in for questioning on 23 Oct are reported from the police update read in full (IOL); they are not described as charged."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "uMhlanga: guesthouse owner murdered, Herrwood Park, 28 Oct",
+      "why": "Only source found is a Caxton paper (Northglen News via The Citizen); held until a non-Caxton source appears."
+    },
+    {
+      "place": "Durban North Beach pier: body found, 25 Oct",
+      "why": "Police opened an inquest, not a murder case."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "c9697dcd-becf-5562-a5a0-57382f75bfa5",
+      "external_id": "checked:kzn-durban-2026-10-30:D1",
+      "source": "GroundUp",
+      "title": "Dr Pixley kaSeme Street, Durban CBD (approx.): immigrant man beaten to death by about 50 people in anti-immigrant march, 22 Oct",
+      "content": "Police say an immigrant man was beaten to death by a group of about 50 people on Dr Pixley kaSeme Street in the Durban CBD on the morning of Thursday 22 October. According to KwaZulu-Natal police spokesperson Col Robert Netshiunda, the group was marching on Dr Pixley kaSeme Street towards Maud Mfusi Street when two men split off and approached the man; about 50 people then assaulted him and he died. A murder case has been opened. A security guard in the area told GroundUp the group was out targeting immigrants and that the man was probably walking to work at around 7am. It happened during renewed anti-immigrant protests in Durban (GroundUp). On 23 October police said five men, aged 19 to 46, had been taken in for questioning in connection with this murder and other attacks on foreign nationals that week; police did not say whether they had been charged (IOL). The victim is not named here; police had not named him. Sources: GroundUp, 22 October; IOL, 23 October. The map point is approximate: the street is known, not the exact spot.",
+      "lat": -29.8583,
+      "lng": 31.0245,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-22T07:00:00Z",
+      "published_at": "2026-10-30T05:05:00Z",
+      "metadata": {
+        "source_outlet": "GroundUp",
+        "link": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+        "pubdate_raw": "2026-10-22T17:57:57+02:00",
+        "checked": {
+          "incident": "Thu 22 Oct 2026, morning (police, via GroundUp); a security guard told GroundUp it was around 7am.",
+          "reported": "22 Oct 2026 (GroundUp); police update on questioning 23 Oct 2026 (IOL)",
+          "location": "Dr Pixley kaSeme Street, Durban CBD, where a march was heading towards Maud Mfusi Street (police, via GroundUp and IOL). No block or address is given. The pin is a point on Dr Pixley kaSeme Street in the CBD (checked against the OpenStreetMap street line), not the exact spot; approximate, street level (about 1.5 km along the street).",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/"
+            },
+            {
+              "name": "IOL, 23 Oct",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/"
+            }
+          ],
+          "checked_at": "2026-10-30T05:05:00Z",
+          "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-22",
+          "incident_precision": "part_of_day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-22",
+          "search_aliases": [
+            "Durban",
+            "Durban CBD",
+            "Durban Central",
+            "Dr Pixley kaSeme Street",
+            "Pixley kaSeme Street",
+            "West Street",
+            "Maud Mfusi Street",
+            "eThekwini",
+            "anti-immigrant march",
+            "xenophobic attack",
+            "mob killing",
+            "murder"
+          ],
+          "incident_part": "morning"
+        },
+        "collected_title": "Man beaten to death in central Durban"
+      },
+      "fingerprint": "sha256:9e3baea823e968c911a4bd1670ca111a3adeea3c95221294bfa9a86ce6e020f5"
+    },
+    {
+      "signal_id": "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",
+      "external_id": "checked:kzn-durban-2026-10-30:D2",
+      "source": "East Coast Radio",
+      "title": "Sbumbu Road, Amaoti, Inanda (map point estimated): two men shot dead, one wounded by two gunmen; murder cases, suspects sought, 25 Oct",
+      "content": "Police say three men were walking on Sbumbu Road in Amaoti, Inanda, north of Durban, on the morning of Sunday 25 October when two men emerged and fired at them. Two of the three died and the third was taken to a clinic. KwaZulu-Natal police spokesperson Paul Magwaza said police are investigating two cases of murder and one of attempted murder (via East Coast Radio). Reaction Unit South Africa, a private response unit, said the shooting followed a robbery that morning: one of the victims had reportedly gone back with two friends to confront the robbery suspects, who allegedly opened fire. A manhunt was under way; no arrest has been reported. The victims are not named here. One public report: East Coast Radio, 26 October. The map point is estimated: Sbumbu Road could not be found on a map, so the pin is a point in Amaoti, not the road.",
+      "lat": -29.676,
+      "lng": 30.985,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-25T07:00:00Z",
+      "published_at": "2026-10-30T05:05:00Z",
+      "metadata": {
+        "source_outlet": "East Coast Radio",
+        "link": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+        "pubdate_raw": "2026-10-26T11:55:00+02:00",
+        "checked": {
+          "incident": "Sun 25 Oct 2026, morning (police and Reaction Unit South Africa, via East Coast Radio).",
+          "reported": "26 Oct 2026 (East Coast Radio)",
+          "location": "ESTIMATED MAP POINT. Sbumbu Road, Amaoti, Inanda, north of Durban (police, via East Coast Radio). Sbumbu Road was not found on a map (OpenStreetMap Overpass and Nominatim returned no Sbumbu feature). The pin is a point in Amaoti, near Amaoti Primary School on OpenStreetMap, used only as a reference for the area; it is not the road. Uncertainty about 2 km.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/"
+            }
+          ],
+          "checked_at": "2026-10-30T05:05:00Z",
+          "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-25",
+          "incident_precision": "part_of_day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-26",
+          "search_aliases": [
+            "Amaoti",
+            "Inanda",
+            "Sbumbu Road",
+            "Durban",
+            "eThekwini",
+            "shooting",
+            "double murder",
+            "murder",
+            "attempted murder"
+          ],
+          "incident_part": "morning"
+        },
+        "collected_title": "Police hunt suspects after deadly shooting in Amaoti"
+      },
+      "fingerprint": "sha256:4901e7c0faaa6f13742b13fa6b736d058a6004e4e80fe49c77f4f1072bd8092d"
+    },
+    {
+      "signal_id": "55bc58e1-085f-577b-8a5c-4a91ca0a9fef",
+      "external_id": "checked:kzn-durban-2026-10-30:D3",
+      "source": "Phoenix Tabloid (Tabloid Newspapers)",
+      "title": "Strandbrook, Brookdale, Phoenix (approx.): man stabbed to death by three men on his way to a tuck shop; security-company account, 28 Oct",
+      "content": "A man was stabbed to death along Strandbrook in Brookdale, Phoenix, on the afternoon of Wednesday 28 October. According to KZN VIP Security, he was on his way to a local tuck shop when he got into a confrontation with three men, who allegedly assaulted him with various weapons and stabbed him several times; he was declared dead at the scene. KZN VIP Security, SAPS and other emergency services responded. KZN VIP spokesperson Gareth Naidoo said the circumstances, the motive and the identities of those involved had not been confirmed. This account comes from a private security company: no police statement was found, and SAPS has not confirmed a case. No arrest has been reported. The victim is not named here. Sources: Phoenix Tabloid, 29 October; Accidents.co.za, 29 October (the security company's statement). The map point is approximate: the pin is Strandbrook Crescent in Brookdale, the only Strandbrook found on the map there.",
+      "lat": -29.68213,
+      "lng": 31.00248,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-28T12:00:00Z",
+      "published_at": "2026-10-30T05:05:00Z",
+      "metadata": {
+        "source_outlet": "Phoenix Tabloid (Tabloid Newspapers)",
+        "link": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+        "pubdate_raw": "2026-10-29T10:46:58+00:00",
+        "checked": {
+          "incident": "Wed 28 Oct 2026, afternoon (KZN VIP Security, via Phoenix Tabloid and Accidents.co.za).",
+          "reported": "29 Oct 2026 (Accidents.co.za, 06:33 UTC; Phoenix Tabloid, 10:46 UTC)",
+          "location": "Along Strandbrook, Brookdale, Phoenix (KZN VIP Security, via Phoenix Tabloid and Accidents.co.za). No number or spot is given. The pin is Strandbrook Crescent, Brookdale, from OpenStreetMap, the only street named Strandbrook found in Brookdale; the sources say only 'Strandbrook'. Approximate, street level (about 500 m).",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/"
+            },
+            {
+              "name": "Accidents.co.za (KZN VIP statement), 29 Oct",
+              "url": "https://www.accidents.co.za/2026/10/29/a-man-has-died-following-a-stabbing-along-strandbrook-in-the-brookdale-area-of-phoenix/"
+            }
+          ],
+          "checked_at": "2026-10-30T05:05:00Z",
+          "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-28",
+          "incident_precision": "part_of_day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-29",
+          "search_aliases": [
+            "Brookdale",
+            "Phoenix",
+            "Strandbrook",
+            "Strandbrook Crescent",
+            "Durban",
+            "eThekwini",
+            "stabbing",
+            "murder",
+            "tuck shop"
+          ],
+          "incident_part": "afternoon"
+        },
+        "collected_title": "Man stabbed to death in Brookdale altercation"
+      },
+      "fingerprint": "sha256:1bd52bd2fa0bf0e307f8a8ffe70832e18f2bbf54315f42c9f5da39c63c53d154"
+    }
+  ]
+}

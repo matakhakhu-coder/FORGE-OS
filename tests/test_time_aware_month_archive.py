@@ -300,7 +300,7 @@ def test_live_list_plus_months_hold_exactly_the_records(which, request):
 
 
 def test_october_build_keeps_every_pin_live(built_oct):
-    """Today all 72 pins are October incidents, so the page is unchanged."""
+    """Today all 75 pins are October incidents, so the page is unchanged."""
     idx = ma.read_index(built_oct)
     assert idx["live_months"] == ["2026-09", "2026-10"]
     assert [r["month"] for r in idx["months"]] == ["2026-10"] and idx["months"][0]["closed"] is False

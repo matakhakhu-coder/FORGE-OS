@@ -1,0 +1,87 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T052631Z-959c4f6b",
+  "signal_id": "c9697dcd-becf-5562-a5a0-57382f75bfa5",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kwazulu-natal-durban-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "Police say an immigrant man was beaten to death by a group of about 50 people on Dr Pixley kaSeme Street in the Durban CBD on the morning of Thursday 22 October. According to KwaZulu-Natal police spokesperson Col Robert Netshiunda, the group was marching on Dr Pixley kaSeme Street towards Maud Mfusi Street when two men split off and approached the man; about 50 people then assaulted him and he died. A murder case has been opened. A security guard in the area told GroundUp the group was out targeting immigrants and that the man was probably walking to work at around 7am. It happened during renewed anti-immigrant protests in Durban (GroundUp). On 23 October police said five men, aged 19 to 46, had been taken in for questioning in connection with this murder and other attacks on foreign nationals that week; police did not say whether they had been charged (IOL). The victim is not named here; police had not named him. Sources: GroundUp, 22 October; IOL, 23 October. The map point is approximate: the street is known, not the exact spot.",
+    "external_id": "checked:kzn-durban-2026-10-30:D1",
+    "lat": -29.8583,
+    "lng": 31.0245,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T05:05:00Z",
+        "incident": "Thu 22 Oct 2026, morning (police, via GroundUp); a security guard told GroundUp it was around 7am.",
+        "incident_event": "occurred",
+        "incident_part": "morning",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-22",
+        "location": "Dr Pixley kaSeme Street, Durban CBD, where a march was heading towards Maud Mfusi Street (police, via GroundUp and IOL). No block or address is given. The pin is a point on Dr Pixley kaSeme Street in the CBD (checked against the OpenStreetMap street line), not the exact spot; approximate, street level (about 1.5 km along the street).",
+        "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "22 Oct 2026 (GroundUp); police update on questioning 23 Oct 2026 (IOL)",
+        "reported_at": "2026-10-22",
+        "search_aliases": [
+          "Durban",
+          "Durban CBD",
+          "Durban Central",
+          "Dr Pixley kaSeme Street",
+          "Pixley kaSeme Street",
+          "West Street",
+          "Maud Mfusi Street",
+          "eThekwini",
+          "anti-immigrant march",
+          "xenophobic attack",
+          "mob killing",
+          "murder"
+        ],
+        "sources": [
+          {
+            "name": "GroundUp, 22 Oct",
+            "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/"
+          },
+          {
+            "name": "IOL, 23 Oct",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/"
+          }
+        ]
+      },
+      "collected_title": "Man beaten to death in central Durban",
+      "link": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+      "pubdate_raw": "2026-10-22T17:57:57+02:00",
+      "source_outlet": "GroundUp"
+    },
+    "published_at": "2026-10-30T05:05:00Z",
+    "signal_id": "c9697dcd-becf-5562-a5a0-57382f75bfa5",
+    "source": "GroundUp",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-22T07:00:00Z",
+    "title": "Dr Pixley kaSeme Street, Durban CBD (approx.): immigrant man beaten to death by about 50 people in anti-immigrant march, 22 Oct"
+  },
+  "payload_sha256": "sha256:9e3baea823e968c911a4bd1670ca111a3adeea3c95221294bfa9a86ce6e020f5",
+  "source_hashes": [
+    {
+      "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+      "retrieved_at": "2026-10-30T04:53:35Z",
+      "content_sha256": "sha256:bd4bc282f8f226a2f1cd111f1a1480442d72e4cc419cc17a54367ff0284bfa70"
+    },
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/",
+      "retrieved_at": "2026-10-30T05:01:51Z",
+      "content_sha256": "sha256:3cd4abbc1575960e8a01c8c04b3c5aac06bf1d2341e59645eaec9f6dbe2e4a4f"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T06:50:00+02:00",
+  "recorded_at": "2026-10-30T07:26:31+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "durban-approval-2026-10-30",
+    "summary": "Owner: 'I'm clear about the three Durban pins. Those ones are approved' (voice call 30 Oct 2026, about 06:50 SAST). Durban CBD mob killing. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

@@ -40,8 +40,10 @@ LPS_IDS = {"befc9ba6-05fd-5471-ac93-fc32257d498b", "891844fa-852b-53f7-aad5-395f
 LPM_KILL_PINS = 2     # Crime & Security (Musina sweep): Matswale Phase 12 and Neltox (SANDF) killings; approved 23 Oct 2026, outside the pattern test
 LPM_PI_PINS = 2       # Priority Intelligence (Musina sweep): Musina cigarette seizure, Beitbridge vehicle case; approved 23 Oct 2026, outside the pattern test
 LPM_IDS = {"b66b55ca-30bf-5b11-b40d-bcfd6627ffa6", "42598400-2dc8-522f-b664-66d912756b03", "f57ecd7b-1268-5ced-a789-b9d01a5a064d", "931b443f-6722-507f-be64-a47bb4ef899f"}
+KZD_PINS = 3          # Crime & Security (Durban targeted sweep): Durban CBD, Amaoti and Brookdale killings; approved 30 Oct 2026, outside the pattern test
+KZD_IDS = {"c9697dcd-becf-5562-a5a0-57382f75bfa5", "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9", "55bc58e1-085f-577b-8a5c-4a91ca0a9fef"}
 INFRA_PINS = LPI_PINS + KZI_PINS
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -127,10 +129,11 @@ def test_index_loads_all_pins_in_order():
         "kwazulu-natal-infrastructure-2026-10-23.json",
         "limpopo-unresolved-deaths-2026-10-23.json",
         "limpopo-polokwane-sweep-2026-10-23.json",
-        "limpopo-musina-sweep-2026-10-23.json"]
+        "limpopo-musina-sweep-2026-10-23.json",
+        "kwazulu-natal-durban-sweep-2026-10-30.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:

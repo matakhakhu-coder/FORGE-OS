@@ -1025,6 +1025,48 @@
       ],
       "independence": "shared_wording",
       "note": "Two outlets on the same day, both resting on police and NPA statements; not independent of each other. They differ on the charges (fraud versus money laundering). The Mirror's postponement date, 'next Thursday, 30 November', cannot be right as written (30 November 2026 is a Monday) and is left out."
+    },
+    "c9697dcd-becf-5562-a5a0-57382f75bfa5": {
+      "statement_from": "KwaZulu-Natal SAPS (Col Robert Netshiunda), quoted by GroundUp and IOL",
+      "spokesperson": [
+        "Col Robert Netshiunda"
+      ],
+      "other_voices": [
+        "A security guard in the area, anonymous (GroundUp)"
+      ],
+      "outlets": [
+        "GroundUp",
+        "IOL"
+      ],
+      "independence": "partly_independent",
+      "note": "The killing itself rests on police; GroundUp adds an anonymous security guard (time and targeting) and its own visit to the scene. IOL adds the police update that five men were taken in for questioning."
+    },
+    "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9": {
+      "statement_from": "KwaZulu-Natal SAPS (Paul Magwaza), quoted by East Coast Radio",
+      "spokesperson": [
+        "Paul Magwaza"
+      ],
+      "other_voices": [
+        "Reaction Unit South Africa (private response unit)"
+      ],
+      "outlets": [
+        "East Coast Radio"
+      ],
+      "independence": "single_report",
+      "note": "One public report. The shooting and the cases rest on police; the robbery background is the private response unit's account, not confirmed by police."
+    },
+    "55bc58e1-085f-577b-8a5c-4a91ca0a9fef": {
+      "statement_from": "KZN VIP Security (Gareth Naidoo), a private security company; reported by Phoenix Tabloid and Accidents.co.za",
+      "spokesperson": [
+        "Gareth Naidoo (KZN VIP Security)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Phoenix Tabloid (Tabloid Newspapers)",
+        "Accidents.co.za"
+      ],
+      "independence": "shared_wording",
+      "note": "Both reports rest on the same private security company account (Accidents.co.za carries KZN VIP's statement). No police statement was found; SAPS attended, according to the security company, but has not been quoted."
     }
   }
 }

@@ -1,0 +1,84 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T052631Z-9d0b58e0",
+  "signal_id": "55bc58e1-085f-577b-8a5c-4a91ca0a9fef",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kwazulu-natal-durban-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "A man was stabbed to death along Strandbrook in Brookdale, Phoenix, on the afternoon of Wednesday 28 October. According to KZN VIP Security, he was on his way to a local tuck shop when he got into a confrontation with three men, who allegedly assaulted him with various weapons and stabbed him several times; he was declared dead at the scene. KZN VIP Security, SAPS and other emergency services responded. KZN VIP spokesperson Gareth Naidoo said the circumstances, the motive and the identities of those involved had not been confirmed. This account comes from a private security company: no police statement was found, and SAPS has not confirmed a case. No arrest has been reported. The victim is not named here. Sources: Phoenix Tabloid, 29 October; Accidents.co.za, 29 October (the security company's statement). The map point is approximate: the pin is Strandbrook Crescent in Brookdale, the only Strandbrook found on the map there.",
+    "external_id": "checked:kzn-durban-2026-10-30:D3",
+    "lat": -29.68213,
+    "lng": 31.00248,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T05:05:00Z",
+        "incident": "Wed 28 Oct 2026, afternoon (KZN VIP Security, via Phoenix Tabloid and Accidents.co.za).",
+        "incident_event": "occurred",
+        "incident_part": "afternoon",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-10-28",
+        "location": "Along Strandbrook, Brookdale, Phoenix (KZN VIP Security, via Phoenix Tabloid and Accidents.co.za). No number or spot is given. The pin is Strandbrook Crescent, Brookdale, from OpenStreetMap, the only street named Strandbrook found in Brookdale; the sources say only 'Strandbrook'. Approximate, street level (about 500 m).",
+        "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+        "reported": "29 Oct 2026 (Accidents.co.za, 06:33 UTC; Phoenix Tabloid, 10:46 UTC)",
+        "reported_at": "2026-10-29",
+        "search_aliases": [
+          "Brookdale",
+          "Phoenix",
+          "Strandbrook",
+          "Strandbrook Crescent",
+          "Durban",
+          "eThekwini",
+          "stabbing",
+          "murder",
+          "tuck shop"
+        ],
+        "sources": [
+          {
+            "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+            "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/"
+          },
+          {
+            "name": "Accidents.co.za (KZN VIP statement), 29 Oct",
+            "url": "https://www.accidents.co.za/2026/10/29/a-man-has-died-following-a-stabbing-along-strandbrook-in-the-brookdale-area-of-phoenix/"
+          }
+        ]
+      },
+      "collected_title": "Man stabbed to death in Brookdale altercation",
+      "link": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+      "pubdate_raw": "2026-10-29T10:46:58+00:00",
+      "source_outlet": "Phoenix Tabloid (Tabloid Newspapers)"
+    },
+    "published_at": "2026-10-30T05:05:00Z",
+    "signal_id": "55bc58e1-085f-577b-8a5c-4a91ca0a9fef",
+    "source": "Phoenix Tabloid (Tabloid Newspapers)",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-28T12:00:00Z",
+    "title": "Strandbrook, Brookdale, Phoenix (approx.): man stabbed to death by three men on his way to a tuck shop; security-company account, 28 Oct"
+  },
+  "payload_sha256": "sha256:1bd52bd2fa0bf0e307f8a8ffe70832e18f2bbf54315f42c9f5da39c63c53d154",
+  "source_hashes": [
+    {
+      "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+      "retrieved_at": "2026-10-30T04:53:37Z",
+      "content_sha256": "sha256:6749ed7d04a12b2db020e1118e8297ee073a452e95358fe642aae6079ea25e6c"
+    },
+    {
+      "url": "https://www.accidents.co.za/2026/10/29/a-man-has-died-following-a-stabbing-along-strandbrook-in-the-brookdale-area-of-phoenix/",
+      "retrieved_at": "2026-10-30T04:53:37Z",
+      "content_sha256": "sha256:6b69ae3428c057b127b1ec8ddac47bd9acb24613798570c6e775d0459600acd9"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T06:50:00+02:00",
+  "recorded_at": "2026-10-30T07:26:31+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "durban-approval-2026-10-30",
+    "summary": "Owner: 'I'm clear about the three Durban pins. Those ones are approved' (voice call 30 Oct 2026, about 06:50 SAST). Brookdale stabbing, security-company account. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

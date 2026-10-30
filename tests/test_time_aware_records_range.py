@@ -42,7 +42,8 @@ SA = timezone(timedelta(hours=2))
 def _node(script: str, payload=None) -> object:
     prog = ("const R = require(%s); const DATA = %s;\n%s"
             % (json.dumps(str(JS)), json.dumps(payload), script))
-    out = subprocess.run([NODE, "-e", prog], capture_output=True, text=True, timeout=60)
+    # The program goes in on stdin: with every record inlined it is longer than one command-line argument may be.
+    out = subprocess.run([NODE, "-"], input=prog, capture_output=True, text=True, timeout=60)
     assert out.returncode == 0, out.stderr
     return json.loads(out.stdout)
 
@@ -174,7 +175,7 @@ def test_range_filter_matches_python_on_every_record(frm, to):
             if (not frm or sa_day(r["incident_start"]) >= frm) and (not to or sa_day(r["incident_start"]) <= to)]
     assert got == want
     if (frm, to) == ("2026-10-01", "2026-10-31"):
-        assert len(got) == len(recs) == 72
+        assert len(got) == len(recs) == 75
 
 
 @needs_node
@@ -235,7 +236,7 @@ def test_records_keep_every_record_in_both_builds(dists):
     for name in ("oct", "dec"):
         recs = json.loads((dists / name / "records.json").read_text())["records"]
         page = (dists / name / "records.html").read_text(encoding="utf-8")
-        assert len(recs) == 72 and page.count('<tr data-id="') == 72, name
+        assert len(recs) == 75 and page.count('<tr data-id="') == 75, name
         assert '<link rel="canonical" href="https://forgemap.co.za/records">' in page
         assert (dists / name / "static" / "js" / "records.js").read_text() == JS.read_text()
 

@@ -53,7 +53,7 @@ def _template() -> str:
     return TEMPLATE.read_text(encoding="utf-8")
 
 
-OCT = {"month": "2026-10", "file": "2026-10.json", "count": 72, "closed": False,
+OCT = {"month": "2026-10", "file": "2026-10.json", "count": 75, "closed": False,
        "coverage_note": "Collection started 1 October 2026 ... This is not a crime rate."}
 
 
@@ -78,7 +78,7 @@ def _list(doc, today):
 def test_today_only_october_listed_as_this_month():
     rows = _list({"months": [OCT]}, "2026-10")
     assert [(r["month"], r["label"], r["count"], r["current"], r["listed"]) for r in rows] == [
-        ("2026-10", "October 2026", 72, True, True)]
+        ("2026-10", "October 2026", 75, True, True)]
     assert rows[0]["coverage_note"].endswith("This is not a crime rate.")
 
 
@@ -88,7 +88,7 @@ def test_15_december_lists_the_empty_months_newest_first():
     assert [(r["month"], r["count"], r["current"], r["listed"], r["file"]) for r in rows] == [
         ("2026-12", 0, True, False, None),
         ("2026-11", 0, False, False, None),
-        ("2026-10", 72, False, True, "2026-10.json")]
+        ("2026-10", 75, False, True, "2026-10.json")]
 
 
 @needs_node
@@ -217,4 +217,4 @@ def test_browser_every_pin_is_reachable_through_its_month_view(served, build, da
     rep = nothing_missing_check.run(base + build + "/", day, ("computer", "phone"), routes=("month",), log=None)
     assert rep["problems"] == [], rep["problems"][:5]
     for size in ("computer", "phone"):
-        assert rep["sizes"][size] == {"month": rep["records"]} and rep["records"] == 72
+        assert rep["sizes"][size] == {"month": rep["records"]} and rep["records"] == 75

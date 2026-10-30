@@ -324,11 +324,11 @@ def test_build_carries_the_timeline_table(built):
     assert [int(n) for n in re.findall(r'<span class="gp-bar__n">(\d+)</span>', sec)] == now["stream"]
 
 
-def test_build_today_is_45_occurred_20_found_5_undated_2_later_steps(built):
+def test_build_today_is_48_occurred_20_found_5_undated_2_later_steps(built):
     t = _chart_table((built / "index.html").read_text())
     inc = rc.counts_from_table(t, len(t["steps"]) - 1)["incident"]
-    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (45, 20, 5, 2)
-    assert len(t["steps"]) == 17
+    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (48, 20, 5, 2)
+    assert len(t["steps"]) == 18   # one more publication step: the Durban sweep pins, 30 Oct
 
 
 def test_build_timeline_table_holds_no_record_text(built):
@@ -422,7 +422,7 @@ def test_line_keeps_the_straight_fallback_and_the_script_draws_the_curve(built):
     sec = _section(html, "incident")
     # without the script: today's line, straight segments, as before
     assert sec.count('<polyline class="gp-line__path"') == 1
-    assert sec.count('class="gp-line__pt"') == 21
+    assert sec.count('class="gp-line__pt"') == 28   # incident days 1-28 Oct since the Durban sweep pins (22, 25, 28 Oct)
     js = JS.read_text()
     assert "function monotonePath" in js and "curveMonotoneX" in js
     # fixed scale: the script uses today's highest day, never the step's

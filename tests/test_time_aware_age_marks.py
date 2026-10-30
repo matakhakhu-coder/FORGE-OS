@@ -93,7 +93,7 @@ def test_bands_match_the_python_rule_every_day_for_real_pins(real_pins):
         const b = F.ageBand(p, Date.parse(d + 'T12:00:00+02:00')); return b ? String(b.band) : 'none'; }))))""",
                {"days": [x.isoformat() for x in days], "pins": pins})
     py = [[expected_band(p, x) for p in real_pins] for x in days]
-    assert len(real_pins) == 72 and js == py
+    assert len(real_pins) == 75 and js == py
 
 
 # ── The Updated mark ───────────────────────────────────────────────────────────────────
@@ -173,7 +173,7 @@ def test_map_list_carries_the_update_date_and_the_details_carry_the_note():
 
 
 def test_every_real_pin_loads_with_no_update(real_pins):
-    assert len(real_pins) == 72
+    assert len(real_pins) == 75
     assert all(p.get("last_material_update_at") is None for p in real_pins)
 
 

@@ -69,6 +69,11 @@ POLOKWANE_SWEEP_PINS = {
     "891844fa-852b-53f7-aad5-395f7bd4291f",   # P1 Capricorn TVET College official (Priority Intelligence)
     "09124894-bed2-5f4e-bd80-e3f7b162ff59",   # H1 Seshego school stomach illness (Africa & World)
 }
+DURBAN_SWEEP_PINS = {
+    "c9697dcd-becf-5562-a5a0-57382f75bfa5",   # D1 Dr Pixley kaSeme Street, Durban CBD killing
+    "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",   # D2 Sbumbu Road, Amaoti (Inanda) shooting, estimated point
+    "55bc58e1-085f-577b-8a5c-4a91ca0a9fef",   # D3 Strandbrook, Brookdale (Phoenix) stabbing, security-company account
+}
 MUSINA_SWEEP_PINS = {
     "b66b55ca-30bf-5b11-b40d-bcfd6627ffa6",   # K1 Matswale Phase 12, Musina killing
     "42598400-2dc8-522f-b664-66d912756b03",   # K2 Neltox killing (SANDF exchange of fire)
@@ -236,8 +241,9 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 2 Limpopo unresolved-death version-1 explicit approvals (voice call, 23 Oct 2026, about 16:53 SAST)
     # + 3 Polokwane sweep version-1 explicit approvals (voice call, 23 Oct 2026, about 17:05 SAST)
     # + 4 Musina sweep version-1 explicit approvals (voice call, 23 Oct 2026, about 17:50 SAST)
-    assert report.records == len(_real_record_files()) == 82
-    assert report.pins_checked == 72
+    # + 3 Durban sweep version-1 explicit approvals (voice call, 30 Oct 2026, about 06:50 SAST)
+    assert report.records == len(_real_record_files()) == 85
+    assert report.pins_checked == 75
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -282,7 +288,7 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
                         "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
-                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
+                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS | DURBAN_SWEEP_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
     assert set(first) == active
     for sid in LIMPOPO_PINS:
         rec = first[sid]
@@ -391,9 +397,9 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     report = ap.verify(check_git=False)
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
-    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS
+    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS
     assert len(published) == 45
-    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active
+    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \
         [f.line() for f in report.violations]

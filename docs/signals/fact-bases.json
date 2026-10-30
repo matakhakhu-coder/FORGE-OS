@@ -7215,6 +7215,366 @@
           ]
         }
       ]
+    },
+    "c9697dcd-becf-5562-a5a0-57382f75bfa5": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, an immigrant, beaten to death.",
+          "basis": "Police account and one report",
+          "detail": "Not named here; police had not named him.",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "On Thursday morning, an immigrant man was beaten to death by a group of about 50 people."
+            },
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "The man, who has not yet been named by police"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Thursday 22 October 2026, morning; around 7am according to a security guard.",
+          "basis": "Police account and one report",
+          "detail": "GroundUp published on Thursday 22 October; the time is the guard's estimate.",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "On Thursday morning, an immigrant man was beaten to death"
+            },
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "He said the man was probably walking to work at around 7am when he was spotted and attacked by the group."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Dr Pixley kaSeme Street, Durban CBD, as a march headed towards Maud Mfusi Street.",
+          "basis": "Police account only",
+          "detail": "No block or address is given; the map point is approximate.",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "was accosted by a group who were marching on Dr Pixley kaSeme Street towards Maud Mfusi Street, according to Colonel Robert Netshiunda, KwaZulu-Natal police spokesperson."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Two men split off from the marching group and approached him; about 50 people then assaulted him.",
+          "basis": "Police account only",
+          "detail": "A security guard told GroundUp the group was out targeting immigrants.",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "Two men split off from the group and approached the man, said Netshiunda. Then about 50 people assaulted him, leading to his death."
+            },
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "told GroundUp that the group was out targeting immigrants."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "A murder case was opened.",
+          "basis": "Police account only",
+          "detail": "Police were investigating other attacks on foreign nationals in Durban the same week.",
+          "sources": [
+            {
+              "name": "GroundUp, 22 Oct",
+              "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
+              "archive": null,
+              "quote": "A murder case has been opened."
+            },
+            {
+              "name": "IOL, 23 Oct",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/",
+              "archive": null,
+              "quote": "The second involves the murder of a foreign national who was allegedly assaulted to death in the CBD on Thursday morning."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "Five men, aged 19 to 46, were taken in for questioning on 23 October; police did not say whether they were charged.",
+          "basis": "Police account only",
+          "detail": "Taken in for questioning, not reported as charged. Police said they were pursuing others.",
+          "sources": [
+            {
+              "name": "IOL, 23 Oct",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/",
+              "archive": null,
+              "quote": "Five men aged between 19 and 46 have been taken in by KwaZulu-Natal police for questioning in connection with the murder, attempted murder and assault of foreign nationals during protests in Durban."
+            },
+            {
+              "name": "IOL, 23 Oct",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/",
+              "archive": null,
+              "quote": "Police have not disclosed the identities of the five men or indicated whether they have been formally charged."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Two men shot dead; a third man wounded and taken to a clinic.",
+          "basis": "Police account only",
+          "detail": "Not named here.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "Two victims died, and another was taken to a clinic."
+            },
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "fatally wounding two males, and one victim was rushed to the clinic for medical attention."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday 25 October 2026, morning.",
+          "basis": "One report",
+          "detail": "East Coast Radio reported on Monday 26 October.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "three men were shot on Sbumbu Road in Amaoti on Sunday morning."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Sbumbu Road, Amaoti, Inanda, north of Durban.",
+          "basis": "Police account only",
+          "detail": "The road could not be placed on a map; the map point is estimated.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "three males were walking on the road in Amaoti"
+            },
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "A manhunt is underway for the suspects involved in a deadly shooting in Inanda, north of Durban."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Two men emerged and fired at three men walking on the road.",
+          "basis": "Police account only",
+          "detail": "A private response unit says one victim had gone back with two friends to confront robbery suspects; police did not say this.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "two other males emerged and fired shots at them"
+            },
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "The unit says the victim reportedly returned with two friends to confront the robbery suspects, who allegedly opened fire as the trio approached."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "Police are investigating two cases of murder and one of attempted murder.",
+          "basis": "Police account only",
+          "detail": "Police spokesperson Paul Magwaza.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "KZN SAPS spokesperson Paul Magwaza says police are investigating two cases of murder and one of attempted murder."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "No arrest reported; a manhunt was under way.",
+          "basis": "One report",
+          "detail": "As of 26 October.",
+          "sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/police-hunt-suspects-after-deadly-shooting/",
+              "archive": null,
+              "quote": "A manhunt is underway for the suspects"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "55bc58e1-085f-577b-8a5c-4a91ca0a9fef": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man stabbed to death; declared dead at the scene.",
+          "basis": "Security company account only",
+          "detail": "Not named here. No police confirmation found.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "A man was stabbed to death during an alleged altercation involving three other men in Brookdale, Phoenix"
+            },
+            {
+              "name": "Accidents.co.za (KZN VIP statement), 29 Oct",
+              "url": "https://www.accidents.co.za/2026/10/29/a-man-has-died-following-a-stabbing-along-strandbrook-in-the-brookdale-area-of-phoenix/",
+              "archive": null,
+              "quote": "paramedics declared the victim deceased at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 28 October 2026, afternoon.",
+          "basis": "Security company account only",
+          "detail": "Reported on 29 October.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "on Wednesday afternoon, October 28."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Along Strandbrook, Brookdale, Phoenix.",
+          "basis": "Security company account only",
+          "detail": "No spot given; the pin is Strandbrook Crescent on the map.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "The incident occurred along Strandbrook"
+            },
+            {
+              "name": "Accidents.co.za (KZN VIP statement), 29 Oct",
+              "url": "https://www.accidents.co.za/2026/10/29/a-man-has-died-following-a-stabbing-along-strandbrook-in-the-brookdale-area-of-phoenix/",
+              "archive": null,
+              "quote": "A man has died following a stabbing along Strandbrook in the Brookdale area of Phoenix on Wednesday afternoon."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "On his way to a tuck shop he got into a confrontation with three men, who allegedly assaulted him with various weapons and stabbed him several times.",
+          "basis": "Security company account only",
+          "detail": "The security company's account; not confirmed by police.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "the victim was reportedly on his way to a local tuck shop when he became involved in a confrontation with the three men."
+            },
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "the suspects allegedly assaulted the victim with various weapons before stabbing him multiple times."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "KZN VIP Security, SAPS and other emergency services responded; motive and identities not confirmed.",
+          "basis": "Security company account only",
+          "detail": "No police statement or case number found.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "KZN VIP Security, the South African Police Service (SAPS) and other emergency services responded to the incident."
+            },
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "The motive for the attack and the identities of those involved have not been confirmed."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "No arrest reported.",
+          "basis": "One report",
+          "detail": "As of 29 October.",
+          "sources": [
+            {
+              "name": "Phoenix Tabloid (Tabloid Newspapers), 29 Oct",
+              "url": "https://tabloidmedia.co.za/man-stabbed-to-death-in-brookdale-altercation/",
+              "archive": null,
+              "quote": "Police investigations are expected to establish the circumstances surrounding the incident"
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

@@ -43,4 +43,5 @@ def test_built_ticker_carries_every_checked_title_whole():
     assert shown, "ticker is empty"
     for title in shown:
         assert not title.endswith("\u2026"), title  # all current titles fit under 140
-    assert any("his mother, 70, shot dead, 13 Oct" in s for s in shown)
+    # The ticker carries the newest pins; since the Durban sweep (30 Oct) the 13 Oct pin has rolled off it.
+    assert any("on his way to a tuck shop; security-company account, 28 Oct" in s for s in shown)

@@ -33,15 +33,15 @@ def _towned(recs, towns=("Cape Town", "Musina", "Polokwane", "Giyani")):
     return [dict(r, town=towns[i % len(towns)]) for i, r in enumerate(recs)]
 
 
-# ── Town labels on the 72 published records ─────────────────────────────────────
+# ── Town labels on the 75 published records ─────────────────────────────────────
 
 @pytest.fixture(scope="module")
 def live():
     if not LIVE.exists():
         pytest.skip("no published records.json in dist/")
     recs = json.loads(LIVE.read_text(encoding="utf-8"))["records"]
-    if len(recs) != 72:
-        pytest.skip("dist/records.json is not the 72-record publish")
+    if len(recs) != 75:
+        pytest.skip("dist/records.json is not the 75-record publish")
     return recs
 
 
@@ -49,7 +49,7 @@ def test_hand_fixes_take_effect_on_the_published_records(live):
     towned, problems, warnings = rt.towns_for_charts(live)
     assert problems == [] and warnings == []
     c = Counter(r["town"] for r in towned)
-    assert sum(c.values()) == 72 and len(c) == 33
+    assert sum(c.values()) == 75 and len(c) == 36
     # the approved fixes
     for gone in ("Westenburg", "Vuwani", "Mmabatho", "Groot-Brakrivier", "Somerset West"):
         assert gone not in c, gone
