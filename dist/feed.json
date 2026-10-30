@@ -1,7 +1,7 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "30 Oct 2026 05:30 UTC",
+  "generated_at": "30 Oct 2026 05:56 UTC",
   "items": [
     {
       "kind": "signal",
@@ -43,6 +43,48 @@
       "geo": {
         "lat": -29.8583,
         "lng": 31.0245
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Wilgehof, Bloemfontein (approx.): man, 57, allegedly fired at an 18-year-old and missed, then died; attempted murder case, inquest, 21 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-25T08:30:00Z",
+      "summary": "Police say a 57-year-old man allegedly fired several shots in the direction of an 18-year-old in Wilgehof, Bloemfontein, on the afternoon of Wednesday 21 October, but missed. Police say he then took his own life; paramed...",
+      "source": "RADIO BLOEM",
+      "region": "Free State",
+      "geo": {
+        "lat": -29.13083,
+        "lng": 26.19833
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Bochabela, Bloemfontein (approx.): the Lekone twins, owners of Ekhayeni Lounge, shot dead in their vehicle; no arrest, 21 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-25T08:30:00Z",
+      "summary": "The Lekone twins, both 52 and owners of Ekhayeni Lounge, were shot dead in their vehicle at a business premises in Bochabela, Bloemfontein, on the morning of Wednesday 21 October, according to police. Police received the...",
+      "source": "NOVANEWS",
+      "region": "Free State",
+      "geo": {
+        "lat": -29.14608,
+        "lng": 26.23763
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Phase 7, Bloemfontein (approx.): man, 31, kidnapped and stabbed to death; five arrested, 4 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-25T08:30:00Z",
+      "summary": "A 31-year-old man was found stabbed to death in a street in Phase 7, a settlement in the Bloemspruit area of Bloemfontein, at about 06:00 on Sunday 4 October, after he was allegedly forced into a vehicle following an arg...",
+      "source": "SAPS FREE STATE",
+      "region": "Free State",
+      "geo": {
+        "lat": -29.20472,
+        "lng": 26.27664
       }
     },
     {
@@ -659,48 +701,6 @@
       "geo": {
         "lat": -31.9858333,
         "lng": 27.1888889
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Modimola Village, Mahikeng (village only, approx.): man, 37, stabbed dead, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T00:50:00Z",
-      "summary": "SAPS says a 37-year-old man was stabbed at Modimola Village, Mmabatho, at about 04:00 on Saturday 17 October. A woman told police a 22-year-old family member came home at about 03:00 and broke the window of the room wher...",
-      "source": "NOVANEWS",
-      "region": "North West",
-      "geo": {
-        "lat": -25.87135,
-        "lng": 25.44809
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Seweding Village, Mahikeng (village only, approx.): man, 37, dies in fight with girlfriend's brother, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T00:50:00Z",
-      "summary": "SAPS says a 37-year-old man died in Seweding Village, Mmabatho, in the early hours of Saturday 17 October. Police called to a complaint at about 00:45 found his body, and paramedics declared him dead. Police say prelimin...",
-      "source": "EWN",
-      "region": "North West",
-      "geo": {
-        "lat": -25.8625,
-        "lng": 25.58361
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Ipelegeng, Schweizer-Reneke (Kgaka St, approx.): man, 22, found stabbed dead, 9 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T00:50:00Z",
-      "summary": "Taung Daily News reports that Atlholang Theteletsa, 22, was found with multiple stab wounds lying on Kgaka Street in Ipelegeng after 20:00 on Friday 9 October, and that paramedics confirmed he had died at the scene, acco...",
-      "source": "TAUNG DAILY NEWS",
-      "region": "North West",
-      "geo": {
-        "lat": -27.20251,
-        "lng": 25.29221
       }
     }
   ]
