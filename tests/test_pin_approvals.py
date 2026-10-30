@@ -69,6 +69,11 @@ POLOKWANE_SWEEP_PINS = {
     "891844fa-852b-53f7-aad5-395f7bd4291f",   # P1 Capricorn TVET College official (Priority Intelligence)
     "09124894-bed2-5f4e-bd80-e3f7b162ff59",   # H1 Seshego school stomach illness (Africa & World)
 }
+BLOEMFONTEIN_SWEEP_PINS = {
+    "ef642f04-1b73-51e6-9411-54ca401c8fc2",   # K1 Bochabela, the Lekone twins shot dead, suburb-level point
+    "15c9b98d-4c33-5120-8abb-fd15686d142f",   # K2 Phase 7 kidnapping and murder, area-level point (Mangaung ward 51)
+    "6515ee45-b2da-5c29-8884-534be08dc621",   # K3 Wilgehof shooting and the shooter's death, owner's explicit exception
+}
 DURBAN_SWEEP_PINS = {
     "c9697dcd-becf-5562-a5a0-57382f75bfa5",   # D1 Dr Pixley kaSeme Street, Durban CBD killing
     "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",   # D2 Sbumbu Road, Amaoti (Inanda) shooting, estimated point
@@ -242,8 +247,9 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 3 Polokwane sweep version-1 explicit approvals (voice call, 23 Oct 2026, about 17:05 SAST)
     # + 4 Musina sweep version-1 explicit approvals (voice call, 23 Oct 2026, about 17:50 SAST)
     # + 3 Durban sweep version-1 explicit approvals (voice call, 30 Oct 2026, about 06:50 SAST)
-    assert report.records == len(_real_record_files()) == 85
-    assert report.pins_checked == 75
+    # + 3 Bloemfontein sweep version-1 explicit approvals (approved 25 Oct 2026; release reaffirmed on the voice call of 30 Oct 2026)
+    assert report.records == len(_real_record_files()) == 88
+    assert report.pins_checked == 78
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -288,7 +294,7 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
                         "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
-                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS | DURBAN_SWEEP_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
+                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS | DURBAN_SWEEP_PINS | BLOEMFONTEIN_SWEEP_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
     assert set(first) == active
     for sid in LIMPOPO_PINS:
         rec = first[sid]
@@ -397,9 +403,9 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     report = ap.verify(check_git=False)
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
-    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS
+    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS - BLOEMFONTEIN_SWEEP_PINS
     assert len(published) == 45
-    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active
+    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active and BLOEMFONTEIN_SWEEP_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \
         [f.line() for f in report.violations]

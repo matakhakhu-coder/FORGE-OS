@@ -1,0 +1,208 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Free State",
+  "batch": "Free State (Bloemfontein town sweep) Crime & Security killings and shooting, 1-25 Oct 2026, hand-checked 25 Oct 2026 and again 30 Oct 2026; three pins approved by the owner on 25 Oct 2026 and released on the owner's word of 30 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Crime & Security only: Bochabela, Phase 7 (Mangaung ward 51, outside Bloemfontein town scope by owner acceptance) and Wilgehof. Collection window: incidents and in-window reports 1-25 Oct 2026, Bloemfontein (Mangaung). Other candidates from the same sweep, including the infrastructure drafts, are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date. Killings: victims referred to as the news refers to them (owner decision for Bochabela); historical background left out; suspects and accused are not named; arrests are not convictions. Caxton papers are not sources. Being near another pin is not a link. Suburb- and area-level points say 'approx.' and the drawer location note starts 'APPROXIMATE MAP POINT'. Every fact-base quote matched word for word against the saved source text; source pages read again on 30 Oct 2026 and every quote still matched.",
+  "review_status": "Approved by the owner on 25 Oct 2026 (voice call about 09:03-09:13 SAST); release of these three pins reaffirmed by the owner on the voice call of 30 Oct 2026 (about 06:50 SAST), superseding the earlier combined-release condition for them. One explicit version-1 approval record per pin in docs/approvals/pins (reference bloemfontein-approval-2026-10-25).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-25 (voice call, about 09:03-09:13 SAST)",
+      "decision": "Bochabela (draft A) approved: refer to the victims as the news does, the Lekone twins, owners of Ekhayeni Lounge; historical background left out."
+    },
+    {
+      "at": "2026-10-25 (voice call, about 09:03-09:13 SAST)",
+      "decision": "Phase 7 (draft B) approved for a pin where Phase 7 actually belongs, even if outside Bloemfontein town scope; area-level location to be verified before placement. Verified on 30 Oct 2026: the IEC 2026 voting station list places erf 31115 Phase 7, Bloemfontein, in Mangaung ward 51, and SABC News describes ward 51 as Phase 7; the pin is that station point, area-level."
+    },
+    {
+      "at": "2026-10-25 (voice call, about 09:03-09:13 SAST)",
+      "decision": "Wilgehof shooting approved for inclusion, the only exception from the excluded list."
+    },
+    {
+      "at": "2026-10-25",
+      "decision": "Publication: these pins were to go out only in a single combined release with the Western Cape approvals and the final gap-sweep pins."
+    },
+    {
+      "at": "2026-10-30 (voice call, about 06:50 SAST)",
+      "decision": "Owner reaffirmed the three Bloemfontein crime pins (Bochabela, Phase 7, Wilgehof) for publication now, alongside the three approved Durban pins (six in total). This supersedes the combined-release condition for these three pins only. The Bloemfontein infrastructure drafts (Freedom Square, the two hospitals, Noordhoek) are not part of this release."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Bloemfontein infrastructure drafts: Freedom Square sewage (OFM, 22 Oct), Universitas and National District hospitals (16 Oct), Noordhoek Centlec cable recovery (6 Oct)",
+      "reason": "Not part of the 30 Oct 2026 release, which the owner limited to the three crime pins. Decisions 5 and 6 are recorded as open in the 25 Oct sweep note; no pin is published for these."
+    },
+    {
+      "place": "Pelonomi Regional Hospital, Bloemfontein (Mail & Guardian, 16 Oct)",
+      "reason": "The report describes theft-prevention measures and an undated R500,000 copper theft by two officials who were dismissed, but no current service failure at Pelonomi. Held pending an owner decision."
+    },
+    {
+      "place": "Bloemspruit: 15 Oct arrest for a 2019 killing",
+      "reason": "Owner decision 25 Oct 2026: left out entirely. How FORGE handles new arrests in older cases is deferred."
+    },
+    {
+      "place": "Bloemfontein Courant items (outages, water crisis, Brebner and Ngalo cable theft)",
+      "reason": "Caxton paper: not a source under the standing Caxton rule. No non-Caxton source found."
+    },
+    {
+      "place": "Plain power outages in Bloemfontein, October",
+      "reason": "Owner's test: only a report that says precisely that cable theft caused it. Left out."
+    },
+    {
+      "place": "Sterkwater and Botshabelo wastewater works, Renosterspruit (SAnews, 9 Oct)",
+      "reason": "An announced oversight visit; findings not read. Not researched further."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "ef642f04-1b73-51e6-9411-54ca401c8fc2",
+      "external_id": "checked:fs-bloemfontein-2026-10-25:K1",
+      "source": "NovaNews",
+      "title": "Bochabela, Bloemfontein (approx.): the Lekone twins, owners of Ekhayeni Lounge, shot dead in their vehicle; no arrest, 21 Oct",
+      "content": "The Lekone twins, both 52 and owners of Ekhayeni Lounge, were shot dead in their vehicle at a business premises in Bochabela, Bloemfontein, on the morning of Wednesday 21 October, according to police. Police received the complaint at about 08:51 (Free State police spokesperson Lt Col Thabo Covane, via NovaNews). A witness reportedly saw a man flee in a white hatchback. Two murder cases were opened at Mangaung Police Station. As of 24 October police had announced no motive and no arrests, and had dismissed rumours of arrests (Radio Bloem). The sources disagree on the street: NovaNews gives the corner of Mkhuhlane Road and Morakile Street and the police quote names Morakile Street; Radio Bloem gives Ramatsoele Street. The map point is a Bochabela suburb point, not the premises. Two public reports, resting on police: NovaNews, 21 October, and Radio Bloem, 24 October.",
+      "lat": -29.14608,
+      "lng": 26.23763,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-21T06:51:00Z",
+      "published_at": "2026-10-25T08:30:00Z",
+      "metadata": {
+        "source_outlet": "NovaNews",
+        "link": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/",
+        "pubdate_raw": "2026-10-21T10:59:46+00:00",
+        "checked": {
+          "incident": "Wed 21 Oct 2026, morning; police received the complaint at about 08:51 (police, via NovaNews)",
+          "reported": "21 Oct 2026 (NovaNews); 24 Oct 2026 (Radio Bloem)",
+          "location": "APPROXIMATE MAP POINT. At their business premises in Bochabela, Bloemfontein. The sources disagree on the street: the corner of Mkhuhlane Road and Morakile Street (NovaNews; the police quote names Morakile Street) or the gate of their premises in Ramatsoele Street (Radio Bloem). The pin is the Bochabela suburb point (OpenStreetMap), which avoids choosing between them. Mangaung police precinct. Not the premises.",
+          "sources": [
+            {
+              "name": "NovaNews, 21 Oct",
+              "url": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/"
+            },
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/"
+            }
+          ],
+          "checked_at": "2026-10-25T08:30:00Z",
+          "method": "Found in the 25 Oct 2026 Bloemfontein town sweep and the follow-up infrastructure research (town mode, Google News, web searches, SAPS newsroom, OFM, NovaNews, Radio Bloem and Mail & Guardian pages, incidents 1-25 Oct); source pages read again on 25 Oct about 07:30 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 25 Oct 2026; source pages read again on 30 Oct 2026 and every quote still matched; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-21T08:51:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-21",
+          "search_aliases": [
+            "Bloemfontein",
+            "Mangaung",
+            "Bochabela",
+            "Lekone",
+            "Lekone twins",
+            "Ekhayeni",
+            "Ekhayeni Lounge",
+            "Free State",
+            "murder",
+            "shooting"
+          ]
+        },
+        "collected_title": "Bloemfontein's Lekone twins shot execution-style, police launch manhunt"
+      },
+      "fingerprint": "sha256:c713e9cdf60431096a84f00512c1a875fe3236dfc39d67cdbd52561ff1bfbd40"
+    },
+    {
+      "signal_id": "15c9b98d-4c33-5120-8abb-fd15686d142f",
+      "external_id": "checked:fs-bloemfontein-2026-10-25:K2",
+      "source": "SAPS Free State",
+      "title": "Phase 7, Bloemfontein (approx.): man, 31, kidnapped and stabbed to death; five arrested, 4 Oct",
+      "content": "A 31-year-old man was found stabbed to death in a street in Phase 7, a settlement in the Bloemspruit area of Bloemfontein, at about 06:00 on Sunday 4 October, after he was allegedly forced into a vehicle following an argument, according to police. Police say he had been drinking with friends when an argument broke out with a group of strangers, who allegedly forced him into a black vehicle and drove away with him; paramedics declared him dead at the scene. A task team led by Bloemspruit detectives arrested five men aged 21 to 34, who were due in court on preliminary charges of kidnapping and murder. An arrest is not a conviction. The victim and the accused are not named. Sources: SAPS Free State statement, 4 October, and NovaNews, 5 October (Lt Col Thabo Covane). The map point is an area-level point in Phase 7 (Mangaung ward 51), not the street where he was found.",
+      "lat": -29.20472,
+      "lng": 26.27664,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-04T04:00:00Z",
+      "published_at": "2026-10-25T08:30:00Z",
+      "metadata": {
+        "source_outlet": "SAPS Free State",
+        "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+        "pubdate_raw": "2026-10-04",
+        "checked": {
+          "incident": "Sun 4 Oct 2026, early hours; the man was found at about 06:00 (police). The time of the kidnapping and of death is not given.",
+          "reported": "4 Oct 2026 (SAPS Free State statement); 5 Oct 2026 (NovaNews)",
+          "location": "APPROXIMATE MAP POINT. In the street in Phase 7, Bloemfontein (SAPS); NovaNews, quoting police, calls Phase 7 'a settlement in the Bloemspruit area'. Area placed on 30 Oct 2026: the IEC 2026 voting station list has the Smart Kids Day Care station at erf 31115 Phase 7, Bloemfontein, in Mangaung ward 51 (49400051); SABC News (13 Mar 2026) also describes ward 51 as Phase 7. The pin is that station's point (-29.20472, 26.27664, as published from the IEC list by The People's Register), in south-east Mangaung near Grootvlei. Uncertainty about 1.5 km. Not the street.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611"
+            },
+            {
+              "name": "NovaNews, 5 Oct",
+              "url": "https://novanews.co.za/police-nab-five-within-hours-of-brazen-kidnapping-and-murder-of-a-man/"
+            }
+          ],
+          "checked_at": "2026-10-25T08:30:00Z",
+          "method": "Found in the 25 Oct 2026 Bloemfontein town sweep and the follow-up infrastructure research (town mode, Google News, web searches, SAPS newsroom, OFM, NovaNews, Radio Bloem and Mail & Guardian pages, incidents 1-25 Oct); source pages read again on 25 Oct about 07:30 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 25 Oct 2026; source pages read again on 30 Oct 2026 and every quote still matched; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-04T06:00:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-04",
+          "search_aliases": [
+            "Bloemfontein",
+            "Mangaung",
+            "Bloemspruit",
+            "Phase 7",
+            "Free State",
+            "kidnapping",
+            "murder",
+            "stabbing"
+          ]
+        },
+        "collected_title": "Police nab five within hours of brazen kidnapping and murder of a man"
+      },
+      "fingerprint": "sha256:a93c3770f22e1009ea570fedfe09c0333e5ca8e1e29155daee8263598e56dcb0"
+    },
+    {
+      "signal_id": "6515ee45-b2da-5c29-8884-534be08dc621",
+      "external_id": "checked:fs-bloemfontein-2026-10-25:K3",
+      "source": "Radio Bloem",
+      "title": "Wilgehof, Bloemfontein (approx.): man, 57, allegedly fired at an 18-year-old and missed, then died; attempted murder case, inquest, 21 Oct",
+      "content": "Police say a 57-year-old man allegedly fired several shots in the direction of an 18-year-old in Wilgehof, Bloemfontein, on the afternoon of Wednesday 21 October, but missed. Police say he then took his own life; paramedics declared him dead at the scene. No other injuries were reported. Police received a distress call at about 14:26, and an attempted murder case and an inquest docket are being opened. No one is named. One public report, resting on police: Radio Bloem, 21 October. The map point is a Wilgehof suburb point, not the property.",
+      "lat": -29.13083,
+      "lng": 26.19833,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-21T12:26:00Z",
+      "published_at": "2026-10-25T08:30:00Z",
+      "metadata": {
+        "source_outlet": "Radio Bloem",
+        "link": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+        "pubdate_raw": "2026-10-21T19:22:04+02:00",
+        "checked": {
+          "incident": "Wed 21 Oct 2026, afternoon; police received a distress call at about 14:26 (police, via Radio Bloem)",
+          "reported": "21 Oct 2026 (Radio Bloem)",
+          "location": "APPROXIMATE MAP POINT. A yard in Wilgehof, Bloemfontein (police, via Radio Bloem); no street given. The pin is the Wilgehof suburb point (OpenStreetMap Nominatim). Not the property.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/"
+            }
+          ],
+          "checked_at": "2026-10-25T08:30:00Z",
+          "method": "Found in the 25 Oct 2026 Bloemfontein town sweep and the follow-up infrastructure research (town mode, Google News, web searches, SAPS newsroom, OFM, NovaNews, Radio Bloem and Mail & Guardian pages, incidents 1-25 Oct); source pages read again on 25 Oct about 07:30 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 25 Oct 2026; source pages read again on 30 Oct 2026 and every quote still matched; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-21T14:26:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-21",
+          "search_aliases": [
+            "Bloemfontein",
+            "Mangaung",
+            "Wilgehof",
+            "Free State",
+            "shooting",
+            "attempted murder",
+            "inquest"
+          ]
+        },
+        "collected_title": "Police investigate shooting incident in Wilgehof, Bloemfontein"
+      },
+      "fingerprint": "sha256:b1db47fb14f4737ece260e49a2be09659541c2407481507a94b3c195652cd9a2"
+    }
+  ]
+}

@@ -5,7 +5,7 @@ The plan's acceptance tests:
   * a routine check that changes anything except last_checked_at is refused;
   * a material update without a material approval is refused;
   * an update that changes incident_start is refused;
-  * all 75 current pins load with no material update;
+  * all 78 current pins load with no material update;
 plus the parts that make those hold: the pin-approval v2 schema, the field
 checks in metadata.checked, docs/signals/pin-clocks.json and the four new
 open-records columns.
@@ -161,18 +161,18 @@ def _approved_then_updated(repo: Path, *, material: bool, schema=ap.RECORD_SCHEM
     return sid, _verify(repo)
 
 
-# ── all 75 current pins load with no material update ─────────────────────────────
+# ── all 78 current pins load with no material update ─────────────────────────────
 
 def test_all_current_pins_load_with_no_material_update():
     loaded = cs.load_index()
-    assert len(loaded.signals) == 75 and len(loaded.active) == 75
+    assert len(loaded.signals) == 78 and len(loaded.active) == 78
     for s in loaded.signals:
         chk = s["metadata"]["checked"]
         assert cs.update_fields(chk) == {}, s["signal_id"]
         assert cs.update_fields_problem(chk, s["published_at"]) is None
         assert "last_checked_at" not in chk
     report = ap.verify(check_git=False)
-    assert report.ok and report.approved_pins == 75
+    assert report.ok and report.approved_pins == 78
     assert not any(f.code in ("unflagged-material-update", "material-update-invalid",
                               "update-changed-clock", "retracted-update") for f in report.findings)
     # No real record is a material update yet, and every one stays valid.
@@ -544,11 +544,11 @@ def _conn_for(sids) -> sqlite3.Connection:
 
 
 def test_real_records_have_blank_update_columns_and_are_otherwise_unchanged():
-    """All 75 records, with the four new columns blank and every earlier column as published."""
+    """All 78 records, with the four new columns blank and every earlier column as published."""
     published = json.loads((ROOT / "dist" / "records.json").read_text())
     rows = rx.build_records(_conn_for(r["signal_id"] for r in published["records"]),
                             version=published["data_version"])
-    assert len(rows) == len(published["records"]) == 75
+    assert len(rows) == len(published["records"]) == 78
     old = {r["signal_id"]: r for r in published["records"]}
     earlier = rx.RECORD_FIELDS[:-4]
     # Before the first publish after the merge, dist/ has only the earlier

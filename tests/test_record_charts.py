@@ -324,11 +324,11 @@ def test_build_carries_the_timeline_table(built):
     assert [int(n) for n in re.findall(r'<span class="gp-bar__n">(\d+)</span>', sec)] == now["stream"]
 
 
-def test_build_today_is_48_occurred_20_found_5_undated_2_later_steps(built):
+def test_build_today_is_50_occurred_21_found_5_undated_2_later_steps(built):
     t = _chart_table((built / "index.html").read_text())
     inc = rc.counts_from_table(t, len(t["steps"]) - 1)["incident"]
-    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (48, 20, 5, 2)
-    assert len(t["steps"]) == 18   # one more publication step: the Durban sweep pins, 30 Oct
+    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (50, 21, 5, 2)   # + the Bloemfontein sweep: Bochabela and Wilgehof occurred, Phase 7 found
+    assert len(t["steps"]) == 19   # publication steps: the Durban sweep pins and then the Bloemfontein sweep pins, 30 Oct
 
 
 def test_build_timeline_table_holds_no_record_text(built):

@@ -1067,6 +1067,44 @@
       ],
       "independence": "shared_wording",
       "note": "Both reports rest on the same private security company account (Accidents.co.za carries KZN VIP's statement). No police statement was found; SAPS attended, according to the security company, but has not been quoted."
+    },
+    "ef642f04-1b73-51e6-9411-54ca401c8fc2": {
+      "statement_from": "Free State SAPS (Lt Col Thabo Covane), quoted by NovaNews; police account summarised by Radio Bloem",
+      "spokesperson": [
+        "Lt Col Thabo Covane"
+      ],
+      "other_voices": [
+        "A witness, as relayed by police"
+      ],
+      "outlets": [
+        "NovaNews",
+        "Radio Bloem"
+      ],
+      "independence": "same_statement",
+      "note": "Two outlets, both resting on police. The account of the shooting is the police's and a witness's, not independently established. Victims referred to as the news refers to them, by owner decision; historical background left out by owner decision."
+    },
+    "15c9b98d-4c33-5120-8abb-fd15686d142f": {
+      "statement_from": "SAPS Free State media statement (enquiries Lt Col Thabo Covane); Covane quoted by NovaNews",
+      "spokesperson": [
+        "Lt Col Thabo Covane"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SAPS (saps.gov.za)",
+        "NovaNews"
+      ],
+      "independence": "same_statement",
+      "note": "Police statement and one outlet relaying police. Nothing independent of police. The accused are charged, not convicted."
+    },
+    "6515ee45-b2da-5c29-8884-534be08dc621": {
+      "statement_from": "Free State SAPS, as reported by Radio Bloem (no spokesperson named)",
+      "spokesperson": [],
+      "other_voices": [],
+      "outlets": [
+        "Radio Bloem"
+      ],
+      "independence": "single_report",
+      "note": "One public report, resting on police. The man who died is the alleged shooter; the death is the subject of an inquest. Method detail kept to the minimum the source needs."
     }
   }
 }

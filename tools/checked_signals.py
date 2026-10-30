@@ -138,6 +138,7 @@ PROVINCE_BOUNDS = {
     "Limpopo": {"lat": (-25.50, -22.10), "lng": (26.30, 31.95)},
     "Mpumalanga": {"lat": (-27.85, -24.40), "lng": (28.15, 32.10)},
     "KwaZulu-Natal": {"lat": (-31.20, -26.70), "lng": (28.80, 33.00)},
+    "Free State": {"lat": (-30.75, -26.60), "lng": (24.30, 29.85)},
 }
 
 # The Sprint 5 pattern test (private/sprint5/predictions.md) is about Western

@@ -43,7 +43,9 @@ LPM_IDS = {"b66b55ca-30bf-5b11-b40d-bcfd6627ffa6", "42598400-2dc8-522f-b664-66d9
 KZD_PINS = 3          # Crime & Security (Durban targeted sweep): Durban CBD, Amaoti and Brookdale killings; approved 30 Oct 2026, outside the pattern test
 KZD_IDS = {"c9697dcd-becf-5562-a5a0-57382f75bfa5", "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9", "55bc58e1-085f-577b-8a5c-4a91ca0a9fef"}
 INFRA_PINS = LPI_PINS + KZI_PINS
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS
+FSB_PINS = 3          # Crime & Security (Bloemfontein town sweep): Bochabela and Phase 7 killings, Wilgehof shooting; approved 25 Oct 2026, released 30 Oct 2026, outside the pattern test
+FSB_IDS = {"ef642f04-1b73-51e6-9411-54ca401c8fc2", "15c9b98d-4c33-5120-8abb-fd15686d142f", "6515ee45-b2da-5c29-8884-534be08dc621"}
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -130,10 +132,11 @@ def test_index_loads_all_pins_in_order():
         "limpopo-unresolved-deaths-2026-10-23.json",
         "limpopo-polokwane-sweep-2026-10-23.json",
         "limpopo-musina-sweep-2026-10-23.json",
-        "kwazulu-natal-durban-sweep-2026-10-30.json"]
+        "kwazulu-natal-durban-sweep-2026-10-30.json",
+        "free-state-bloemfontein-sweep-2026-10-25.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:

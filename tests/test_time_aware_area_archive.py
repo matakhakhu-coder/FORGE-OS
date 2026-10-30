@@ -48,7 +48,7 @@ from tools import nothing_missing as nm  # noqa: E402
 AREA_JS = ROOT / "publisher" / "static" / "js" / "area-check.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 75
+ALL_PINS = 78
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 

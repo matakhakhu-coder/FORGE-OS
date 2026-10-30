@@ -7575,6 +7575,320 @@
           "conflicts": []
         }
       ]
+    },
+    "ef642f04-1b73-51e6-9411-54ca401c8fc2": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "The Lekone twins, both 52, owners of Ekhayeni Lounge, shot dead.",
+          "basis": "Two reports",
+          "detail": "Referred to as the news refers to them, by owner decision. Declared dead at the scene.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "52, owners of Ekhayeni Lounge Bar"
+            },
+            {
+              "name": "NovaNews, 21 Oct",
+              "url": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/",
+              "archive": null,
+              "quote": "declared the two men dead at the scene"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 21 October 2026, morning; police received the complaint at about 08:51.",
+          "basis": "Police account only",
+          "detail": "Reported on 21 October.",
+          "sources": [
+            {
+              "name": "NovaNews, 21 Oct",
+              "url": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/",
+              "archive": null,
+              "quote": "It is alleged that at about 08:51, a complaint was received from radio control."
+            },
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "They were shot dead on Wednesday morning"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "At their business premises in Bochabela, inside their vehicle.",
+          "basis": "Two reports",
+          "detail": "The street differs between sources; the map point is the suburb.",
+          "sources": [
+            {
+              "name": "NovaNews, 21 Oct",
+              "url": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/",
+              "archive": null,
+              "quote": "They were ambushed at one of the business premises situated on the corner of Mkhuhlane Road and Morakile Street in Bochabela."
+            },
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "at the gate of their premises in Ramatsoele Street, Bochabela, while inside their Ford Ranger."
+            }
+          ],
+          "conflicts": [
+            "Street: corner of Mkhuhlane Road and Morakile Street (NovaNews) or Ramatsoele Street (Radio Bloem)."
+          ]
+        },
+        {
+          "label": "How",
+          "claim": "A witness reportedly saw a man flee in a white hatchback.",
+          "basis": "Police account only",
+          "detail": "The witness's account, as given by police.",
+          "sources": [
+            {
+              "name": "NovaNews, 21 Oct",
+              "url": "https://novanews.co.za/bloemfonteins-lekone-twins-shot-execution-style-police-launch-manhunt/",
+              "archive": null,
+              "quote": "he allegedly saw a male jumping into a white hatchback motor vehicle and fleeing the scene"
+            },
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "A witness reportedly saw a man run to a white Chevrolet Aveo hatchback, which sped off."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "Two murder cases opened at Mangaung Police Station; no motive announced.",
+          "basis": "One report",
+          "detail": "As of 24 October.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "Two murder cases have been opened at Mangaung Police Station."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "No arrests; police dismissed rumours of arrests.",
+          "basis": "One report",
+          "detail": "As of 24 October.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 24 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-murder-of-ekhayeni-lounge-owners-in-bochabela/",
+              "archive": null,
+              "quote": "Police have not announced a motive or any arrests, and have dismissed rumours of arrests."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "15c9b98d-4c33-5120-8abb-fd15686d142f": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man, 31, found stabbed to death.",
+          "basis": "Police account only",
+          "detail": "Not named. Declared dead at the scene by paramedics.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "the victim was found lying supine in the street in Phase 7 with multiple stab wounds to his face"
+            },
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "Paramedics declared him dead at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Early hours of Sunday 4 October 2026; found at about 06:00.",
+          "basis": "Police account only",
+          "detail": "Reported on 4 October.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "The incident occurred in the early hours of Sunday, 04 October 2026."
+            },
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "At approximately 06:00"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "In a street in Phase 7, a settlement in the Bloemspruit area of Bloemfontein.",
+          "basis": "Police account only",
+          "detail": "The map point is area-level: Phase 7 placed in Mangaung ward 51 from the IEC voting station list; not the street.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "a 31-year-old male in Phase 7, Bloemfontein."
+            },
+            {
+              "name": "NovaNews, 5 Oct",
+              "url": "https://novanews.co.za/police-nab-five-within-hours-of-brazen-kidnapping-and-murder-of-a-man/",
+              "archive": null,
+              "quote": "the incident reportedly occurred in Phase 7, a settlement in the Bloemspruit area"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "After an argument while drinking with friends, a group of strangers allegedly forced him into a black vehicle and drove away with him.",
+          "basis": "Police account only",
+          "detail": "Police account.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "It is alleged that the deceased was drinking with friends when an argument broke out with a group of strangers."
+            },
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "reportedly forced the victim into a black vehicle and drove away with him."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests and charges",
+          "claim": "Five men aged 21 to 34 arrested by a task team led by Bloemspruit detectives; due in court on preliminary charges of kidnapping and murder.",
+          "basis": "Police account only",
+          "detail": "Charged, not convicted. No later court outcome was read.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 4 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+              "archive": null,
+              "quote": "Their intensive investigation led to the swift arrest of five suspects, aged between 21 and 34."
+            },
+            {
+              "name": "NovaNews, 5 Oct",
+              "url": "https://novanews.co.za/police-nab-five-within-hours-of-brazen-kidnapping-and-murder-of-a-man/",
+              "archive": null,
+              "quote": "The suspects are expected to appear in the Bloemfontein Magistrate's Court tomorrow, facing preliminary charges of kidnapping and murder."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "6515ee45-b2da-5c29-8884-534be08dc621": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What happened",
+          "claim": "A 57-year-old man allegedly fired several shots in the direction of an 18-year-old but missed.",
+          "basis": "Police account only",
+          "detail": "No one is named.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+              "archive": null,
+              "quote": "Police say a 57-year-old man allegedly fired several shots in the direction of an 18-year-old but missed."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Death",
+          "claim": "Police say the man then took his own life; paramedics declared him dead at the scene. No other injuries.",
+          "basis": "Police account only",
+          "detail": "Subject of an inquest docket.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+              "archive": null,
+              "quote": "Paramedics found the man unresponsive and declared him dead at the scene. No other injuries were reported."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 21 October 2026, afternoon; distress call at about 14:26.",
+          "basis": "Police account only",
+          "detail": "Reported the same day.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+              "archive": null,
+              "quote": "a distress call was received at about 14:26."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Wilgehof, Bloemfontein.",
+          "basis": "Police account only",
+          "detail": "No street given.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+              "archive": null,
+              "quote": "following a shooting incident in Wilgehof, Bloemfontein, this afternoon."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "An attempted murder case and an inquest docket are being opened.",
+          "basis": "Police account only",
+          "detail": "As of 21 October.",
+          "sources": [
+            {
+              "name": "Radio Bloem, 21 Oct",
+              "url": "https://www.radiobloem.co.za/news/police-investigate-shooting-incident-in-wilgehof-bloemfontein/",
+              "archive": null,
+              "quote": "An attempted murder case and an inquest docket are being opened."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

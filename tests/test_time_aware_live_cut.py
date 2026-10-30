@@ -47,7 +47,7 @@ from tools import nothing_missing as nm  # noqa: E402
 JS = ROOT / "publisher" / "static" / "js" / "forge-pins.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 75
+ALL_PINS = 78
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 
@@ -68,7 +68,7 @@ def built_dec(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def real_pins(built_dec):
-    """The 75 checked pins' map entries (their dates), from their month file."""
+    """The 78 checked pins' map entries (their dates), from their month file."""
     return ma.all_entries(built_dec)
 
 

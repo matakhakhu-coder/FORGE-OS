@@ -83,6 +83,11 @@
       "file": "kwazulu-natal-durban-sweep-2026-10-30.json",
       "province": "KwaZulu-Natal",
       "signals": 3
+    },
+    {
+      "file": "free-state-bloemfontein-sweep-2026-10-25.json",
+      "province": "Free State",
+      "signals": 3
     }
   ]
 }

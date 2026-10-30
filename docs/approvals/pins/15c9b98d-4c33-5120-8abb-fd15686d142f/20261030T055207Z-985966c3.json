@@ -1,0 +1,82 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T055207Z-985966c3",
+  "signal_id": "15c9b98d-4c33-5120-8abb-fd15686d142f",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "free-state-bloemfontein-sweep-2026-10-25.json",
+  "approved_payload": {
+    "content": "A 31-year-old man was found stabbed to death in a street in Phase 7, a settlement in the Bloemspruit area of Bloemfontein, at about 06:00 on Sunday 4 October, after he was allegedly forced into a vehicle following an argument, according to police. Police say he had been drinking with friends when an argument broke out with a group of strangers, who allegedly forced him into a black vehicle and drove away with him; paramedics declared him dead at the scene. A task team led by Bloemspruit detectives arrested five men aged 21 to 34, who were due in court on preliminary charges of kidnapping and murder. An arrest is not a conviction. The victim and the accused are not named. Sources: SAPS Free State statement, 4 October, and NovaNews, 5 October (Lt Col Thabo Covane). The map point is an area-level point in Phase 7 (Mangaung ward 51), not the street where he was found.",
+    "external_id": "checked:fs-bloemfontein-2026-10-25:K2",
+    "lat": -29.20472,
+    "lng": 26.27664,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-25T08:30:00Z",
+        "incident": "Sun 4 Oct 2026, early hours; the man was found at about 06:00 (police). The time of the kidnapping and of death is not given.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-04T06:00:00+02:00",
+        "location": "APPROXIMATE MAP POINT. In the street in Phase 7, Bloemfontein (SAPS); NovaNews, quoting police, calls Phase 7 'a settlement in the Bloemspruit area'. Area placed on 30 Oct 2026: the IEC 2026 voting station list has the Smart Kids Day Care station at erf 31115 Phase 7, Bloemfontein, in Mangaung ward 51 (49400051); SABC News (13 Mar 2026) also describes ward 51 as Phase 7. The pin is that station's point (-29.20472, 26.27664, as published from the IEC list by The People's Register), in south-east Mangaung near Grootvlei. Uncertainty about 1.5 km. Not the street.",
+        "method": "Found in the 25 Oct 2026 Bloemfontein town sweep and the follow-up infrastructure research (town mode, Google News, web searches, SAPS newsroom, OFM, NovaNews, Radio Bloem and Mail & Guardian pages, incidents 1-25 Oct); source pages read again on 25 Oct about 07:30 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 25 Oct 2026; source pages read again on 30 Oct 2026 and every quote still matched; standalone (no case, entity or map line).",
+        "reported": "4 Oct 2026 (SAPS Free State statement); 5 Oct 2026 (NovaNews)",
+        "reported_at": "2026-10-04",
+        "search_aliases": [
+          "Bloemfontein",
+          "Mangaung",
+          "Bloemspruit",
+          "Phase 7",
+          "Free State",
+          "kidnapping",
+          "murder",
+          "stabbing"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Free State statement, 4 Oct",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611"
+          },
+          {
+            "name": "NovaNews, 5 Oct",
+            "url": "https://novanews.co.za/police-nab-five-within-hours-of-brazen-kidnapping-and-murder-of-a-man/"
+          }
+        ]
+      },
+      "collected_title": "Police nab five within hours of brazen kidnapping and murder of a man",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+      "pubdate_raw": "2026-10-04",
+      "source_outlet": "SAPS Free State"
+    },
+    "published_at": "2026-10-25T08:30:00Z",
+    "signal_id": "15c9b98d-4c33-5120-8abb-fd15686d142f",
+    "source": "SAPS Free State",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-04T04:00:00Z",
+    "title": "Phase 7, Bloemfontein (approx.): man, 31, kidnapped and stabbed to death; five arrested, 4 Oct"
+  },
+  "payload_sha256": "sha256:a93c3770f22e1009ea570fedfe09c0333e5ca8e1e29155daee8263598e56dcb0",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=71611",
+      "retrieved_at": "2026-10-25T07:40:00Z",
+      "content_sha256": "sha256:dc343811b76882453987afa9509f012c08499d32fd652764bff5438230075347"
+    },
+    {
+      "url": "https://novanews.co.za/police-nab-five-within-hours-of-brazen-kidnapping-and-murder-of-a-man/",
+      "retrieved_at": "2026-10-25T07:30:00Z",
+      "content_sha256": "sha256:286a633356351aea6bcc1f6b6a594cc4929acd5e53456e7ce5415591692a2c77"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-25T09:13:00+02:00",
+  "recorded_at": "2026-10-30T07:52:07+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "bloemfontein-approval-2026-10-25",
+    "summary": "Owner approved Phase 7 where it belongs, location to be verified (call 25 Oct 2026); placed 30 Oct at the IEC ward 51 Phase 7 point; release reaffirmed 30 Oct. Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}
