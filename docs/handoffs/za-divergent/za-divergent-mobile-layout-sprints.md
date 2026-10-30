@@ -24,7 +24,7 @@ Fit the existing header, map, controls, drawers and footer within the phone scre
 - Preserve the existing functions; this is a placement and fit change, not a feature redesign.
 - Keep the Leaflet and © OpenStreetMap contributors attribution above the horizontal scrolling ticker.
 - Keep the ticker and the existing footer below it within the mobile layout.
-- Preserve the footer wording and links: ZA-DIVERGENT ARCHIVE, FORGE OSINT ENGINE, ALL SOURCES OPEN, How It Works and Support Independent OSINT leading to Ko-fi.
+- Preserve the footer wording and links: ZA-DIVERGENT ARCHIVE, FORGE OSINT ENGINE, ALL SOURCES OPEN, How It Works and Support Independent OSINT leading to the Yoco Payment Page (it led to Ko-fi until 30 Oct 2026).
 - Preserve the generated timestamp as existing footer content. Changing the timestamp or other footer content is outside this layout scope.
 
 ## Sprint 3: Verification

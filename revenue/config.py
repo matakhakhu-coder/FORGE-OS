@@ -20,9 +20,13 @@ import os
 # ── Master switch ────────────────────────────────────────────────────────────
 REVENUE_LIVE: bool = os.environ.get("FORGE_REVENUE_LIVE", "true").lower() == "true"
 
-# ── Membership button (Ko-fi / Buy Me a Coffee / custom URL) ────────────────
+# ── Membership button (support / tip link) ───────────────────────────────────
 # Set to a URL to render the button. None = hidden.
-MEMBERSHIP_URL: str | None = os.environ.get("FORGE_MEMBERSHIP_URL", "https://ko-fi.com/zadivergent")
+# Since 30 Oct 2026 it opens the owner's Yoco Payment Page (the same page the
+# OSINT site's Donate button uses). Payers enter their own amount and pay by
+# card on Yoco's page; FORGE Map never sees card details. It replaced the Ko-fi
+# page, which could not take payments.
+MEMBERSHIP_URL: str | None = os.environ.get("FORGE_MEMBERSHIP_URL", "https://pay.yoco.com/matameramovhacoza")
 MEMBERSHIP_LABEL: str = "Support Independent OSINT"
 
 # ── Sponsor slots (rendered in map ticker + article footers) ─────────────────
