@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T065740Z-f7f18fba",
+  "signal_id": "64649653-8eae-5e0e-8868-54fbfb2ce467",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "gauteng-provinces-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "Police, the army and the mine's own security moved on a group of armed illegal miners at the Kloof Gold Mine hostel in Westonaria on Wednesday 28 October, according to police. Sibanye Protection Services received information about the group at about 16:00 and asked the police Public Order Policing unit and the SANDF for help. Two men aged 32 and 35 were found with an AK-47 and an R5 rifle, and two more AK-47s were found abandoned. Police recovered three AK-47 rifles, one R5 rifle, six magazines, 246 live rounds and two Lesotho passports. The two men, Lesotho nationals, face charges of possessing unlicensed firearms and ammunition and were due in the Westonaria Magistrate's Court on 30 October. No one was killed or injured in the report. An arrest is not a conviction, and the accused are not named. Filed as Priority Intelligence (armed illegal mining), not as a crime pin. One source, the SAPS Gauteng statement of 29 October. The map point is estimated: the hostel is not mapped, so the pin is the Kloof mine area point.",
+    "external_id": "checked:gp-provinces-2026-10-30:G2",
+    "lat": -26.39056,
+    "lng": 27.60028,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T07:30:00Z",
+        "incident": "Wed 28 Oct 2026; Sibanye Protection Services received information at about 16:00 (police). The time of the operation and arrests is not given. Court appearance expected Fri 30 Oct.",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-10-28",
+        "location": "ESTIMATED MAP POINT. Kloof Gold Mine Hostel, Westonaria (police). The hostel is not mapped. The pin is the 'Kloof' place point (OpenStreetMap, from the national place-names list) in the Kloof mine area east of Westonaria, used as a reference; the mine's shafts are spread over about 10 km. Westonaria police precinct. Uncertainty about 6 km. Not the hostel.",
+        "method": "Found in the 30 Oct 2026 remaining-provinces sweep (collector runs, Google News, web searches and the full SAPS newsroom list for 22-30 Oct, incidents 22-30 Oct); claims, dates and place checked by hand. Approved by the owner on 30 Oct 2026; source pages read again on 30 Oct 2026 (each SAPS statement checked to be the right statement for its link) and every quote matched word for word against the saved text; standalone (no case, entity or map line).",
+        "reported": "29 Oct 2026 (SAPS Gauteng statement)",
+        "reported_at": "2026-10-29",
+        "search_aliases": [
+          "Westonaria",
+          "Kloof",
+          "Kloof Gold Mine",
+          "Kloof Gold Mine Hostel",
+          "Sibanye",
+          "Sibanye-Stillwater",
+          "illegal mining",
+          "zama zama",
+          "AK-47",
+          "R5 rifle",
+          "SANDF",
+          "West Rand",
+          "Gauteng"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Gauteng statement, 29 Oct",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133"
+          }
+        ]
+      },
+      "collected_title": "Police recover three AK-47 rifles and an R5 rifle, arrest two suspects in Westonaria",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+      "pubdate_raw": "2026/10/29",
+      "source_outlet": "SAPS Gauteng"
+    },
+    "published_at": "2026-10-30T07:30:00Z",
+    "signal_id": "64649653-8eae-5e0e-8868-54fbfb2ce467",
+    "source": "SAPS Gauteng",
+    "stream": "PRIORITY",
+    "timestamp": "2026-10-28T14:00:00Z",
+    "title": "Kloof Gold Mine hostel, Westonaria (map point estimated): two arrested, three AK-47s and an R5 rifle seized from illegal miners, 28 Oct"
+  },
+  "payload_sha256": "sha256:2fb10828074a23702b871b5139de1e65ff346e17b510dfb42e2bd55ff33b9c40",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+      "retrieved_at": "2026-10-30T06:47:29Z",
+      "content_sha256": "sha256:9bf360b186c2e09a4dcabf7289c819f3b13d1db4ad328fdbfa2a225da48fe3ec"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T08:45:00+02:00",
+  "recorded_at": "2026-10-30T08:57:40+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "provinces-approval-2026-10-30",
+    "summary": "Owner approved the Kloof Gold Mine hostel operation, Westonaria, as an intelligence pin, not a crime pin ('Publish all', text chat 30 Oct 2026). Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

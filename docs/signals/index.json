@@ -88,6 +88,21 @@
       "file": "free-state-bloemfontein-sweep-2026-10-25.json",
       "province": "Free State",
       "signals": 3
+    },
+    {
+      "file": "gauteng-provinces-sweep-2026-10-30.json",
+      "province": "Gauteng",
+      "signals": 2
+    },
+    {
+      "file": "free-state-provinces-sweep-2026-10-30.json",
+      "province": "Free State",
+      "signals": 2
+    },
+    {
+      "file": "northern-cape-provinces-sweep-2026-10-30.json",
+      "province": "Northern Cape",
+      "signals": 1
     }
   ]
 }

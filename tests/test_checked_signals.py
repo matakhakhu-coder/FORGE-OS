@@ -45,7 +45,13 @@ KZD_IDS = {"c9697dcd-becf-5562-a5a0-57382f75bfa5", "8c2de9ee-aa2b-5713-839f-32c1
 INFRA_PINS = LPI_PINS + KZI_PINS
 FSB_PINS = 3          # Crime & Security (Bloemfontein town sweep): Bochabela and Phase 7 killings, Wilgehof shooting; approved 25 Oct 2026, released 30 Oct 2026, outside the pattern test
 FSB_IDS = {"ef642f04-1b73-51e6-9411-54ca401c8fc2", "15c9b98d-4c33-5120-8abb-fd15686d142f", "6515ee45-b2da-5c29-8884-534be08dc621"}
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS
+GPP_KILL_PINS = 1     # Crime & Security (remaining-provinces sweep, Gauteng): Esangweni taxi rank shooting, Tembisa; approved and released 30 Oct 2026, outside the pattern test
+GPP_PI_PINS = 1       # Priority Intelligence (remaining-provinces sweep, Gauteng): Kloof Gold Mine hostel illegal-mining firearms, Westonaria; approved and released 30 Oct 2026, outside the pattern test
+FSP_PINS = 2          # Crime & Security (remaining-provinces sweep, Free State): Zamdela and Meqheleng killings; approved and released 30 Oct 2026, outside the pattern test
+NCP_PINS = 1          # Crime & Security (remaining-provinces sweep, Northern Cape): Currieskamp, Keimoes; approved and released 30 Oct 2026, outside the pattern test
+PROV_IDS = {"97b63775-11a0-5fdf-9e98-34fda69cfd80", "64649653-8eae-5e0e-8868-54fbfb2ce467", "1d4bd77f-c21d-5f11-8dde-5367760801e1",
+            "95842808-2427-5ea9-beaa-9995d13495ed", "bceb3bc0-a276-57d1-8ff7-1c5adb933f11"}
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS + GPP_KILL_PINS + GPP_PI_PINS + FSP_PINS + NCP_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -133,10 +139,14 @@ def test_index_loads_all_pins_in_order():
         "limpopo-polokwane-sweep-2026-10-23.json",
         "limpopo-musina-sweep-2026-10-23.json",
         "kwazulu-natal-durban-sweep-2026-10-30.json",
-        "free-state-bloemfontein-sweep-2026-10-25.json"]
+        "free-state-bloemfontein-sweep-2026-10-25.json",
+        "gauteng-provinces-sweep-2026-10-30.json",
+        "free-state-provinces-sweep-2026-10-30.json",
+        "northern-cape-provinces-sweep-2026-10-30.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
-        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State"]
+        "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State",
+        "Gauteng", "Free State", "Northern Cape"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -734,3 +744,21 @@ def test_musina_sweep_pins_follow_the_killing_and_priority_intelligence_rules():
     # inconsistent postponement date is left out.
     assert bb["metadata"]["checked"]["incident_start"] == "2026-10-21"
     assert "22 July" in bb["content"] and "30 November" not in bb["content"]
+
+
+def test_remaining_provinces_pins_stay_out_of_the_pattern_test():
+    """The five remaining-provinces pins (released 30 Oct 2026) are outside the Western Cape test,
+    standalone, and the Westonaria pin is Priority Intelligence, not a crime pin."""
+    from tools.checked_signals import load_index, pattern_test_pins
+
+    cs = load_index()
+    pins = {s["signal_id"]: s for s in cs.active if s["signal_id"] in PROV_IDS}
+    assert set(pins) == PROV_IDS
+    assert not (PROV_IDS & {s["signal_id"] for s in pattern_test_pins(cs)})
+    assert sum(s["stream"] == "PRIORITY" for s in pins.values()) == GPP_PI_PINS
+    assert pins["64649653-8eae-5e0e-8868-54fbfb2ce467"]["stream"] == "PRIORITY"
+    for s in pins.values():
+        assert len(s["title"]) <= 140
+        assert "approx." in s["title"] or "map point estimated" in s["title"]
+    keimoes = pins["bceb3bc0-a276-57d1-8ff7-1c5adb933f11"]["metadata"]["checked"]
+    assert keimoes["incident_event"] == "found" and keimoes["incident_start"].startswith("2026-10-25")

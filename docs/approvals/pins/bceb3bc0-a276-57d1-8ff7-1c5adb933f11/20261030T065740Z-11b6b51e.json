@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T065740Z-11b6b51e",
+  "signal_id": "bceb3bc0-a276-57d1-8ff7-1c5adb933f11",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "northern-cape-provinces-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "The body of a 44-year-old woman from Keimoes was found in a shallow grave near the river in Currieskamp, Keimoes, at about 13:30 on Sunday 25 October, according to police. Her family had reported her missing on Friday 23 October, and Keimoes police, the Upington Search and Rescue Unit and the Upington K9 Unit searched for her. A 32-year-old man was arrested in Currieskamp on Wednesday 28 October, and police are conducting a murder investigation. An arrest is not a conviction; the woman and the man are not named. When she died is not known: some time between 23 and 25 October. The date shown is when she was found. One source, the SAPS Northern Cape statement of 28 October. The map point is estimated: the grave site is not given, so the pin is in the Currieskamp settlement area.",
+    "external_id": "checked:nc-provinces-2026-10-30:N1",
+    "lat": -28.67835,
+    "lng": 21.03793,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T07:30:00Z",
+        "incident": "Body found Sun 25 Oct 2026 at about 13:30 (police). She was reported missing on Fri 23 Oct; the date of death is not known (between 23 and 25 Oct). Arrest on Wed 28 Oct.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-25T13:30:00+02:00",
+        "location": "ESTIMATED MAP POINT. A shallow grave near the river in Currieskamp, Keimoes (police); the site is not given. The pin is a residential area of the Currieskamp (Currie's Camp) settlement east of Keimoes, from OpenStreetMap, near the Orange River. Keimoes police precinct. Uncertainty about 3 km. Not the grave.",
+        "method": "Found in the 30 Oct 2026 remaining-provinces sweep (collector runs, Google News, web searches and the full SAPS newsroom list for 22-30 Oct, incidents 22-30 Oct); claims, dates and place checked by hand. Approved by the owner on 30 Oct 2026; source pages read again on 30 Oct 2026 (each SAPS statement checked to be the right statement for its link) and every quote matched word for word against the saved text; standalone (no case, entity or map line).",
+        "reported": "28 Oct 2026 (SAPS Northern Cape statement)",
+        "reported_at": "2026-10-28",
+        "search_aliases": [
+          "Keimoes",
+          "Currieskamp",
+          "Currie's Camp",
+          "Curries Camp",
+          "Upington",
+          "ZF Mgcawu",
+          "Kai !Garib",
+          "Northern Cape",
+          "missing woman",
+          "shallow grave",
+          "murder"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Northern Cape statement, 28 Oct",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107"
+          }
+        ]
+      },
+      "collected_title": "Suspect arrested after missing Keimoes woman found deceased",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+      "pubdate_raw": "2026/10/28",
+      "source_outlet": "SAPS Northern Cape"
+    },
+    "published_at": "2026-10-30T07:30:00Z",
+    "signal_id": "bceb3bc0-a276-57d1-8ff7-1c5adb933f11",
+    "source": "SAPS Northern Cape",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-25T11:30:00Z",
+    "title": "Currieskamp, Keimoes (map point estimated): missing woman, 44, found in a shallow grave; man, 32, arrested, found 25 Oct"
+  },
+  "payload_sha256": "sha256:4b6f235a11806d01ce1e6a9eebd35d3fc41a72b108ca0652317307dedc909e3b",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+      "retrieved_at": "2026-10-30T06:47:33Z",
+      "content_sha256": "sha256:8c92dd9ebc19f13d9a562e094fd4d2e89602ad25b79618d1ce7d17a93ed5189d"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T08:45:00+02:00",
+  "recorded_at": "2026-10-30T08:57:40+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "provinces-approval-2026-10-30",
+    "summary": "Owner approved the Currieskamp, Keimoes case as a found event dated 25 Oct with the date of death unknown ('Publish all', text chat 30 Oct 2026). Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

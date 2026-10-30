@@ -139,6 +139,8 @@ PROVINCE_BOUNDS = {
     "Mpumalanga": {"lat": (-27.85, -24.40), "lng": (28.15, 32.10)},
     "KwaZulu-Natal": {"lat": (-31.20, -26.70), "lng": (28.80, 33.00)},
     "Free State": {"lat": (-30.75, -26.60), "lng": (24.30, 29.85)},
+    "Gauteng": {"lat": (-27.00, -25.05), "lng": (27.00, 29.10)},
+    "Northern Cape": {"lat": (-33.10, -24.60), "lng": (16.40, 25.30)},
 }
 
 # The Sprint 5 pattern test (private/sprint5/predictions.md) is about Western

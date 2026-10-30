@@ -1,0 +1,94 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Northern Cape",
+  "batch": "Northern Cape (remaining-provinces sweep) pins, incidents 22-30 Oct 2026, hand-checked and approved by the owner on 30 Oct 2026",
+  "scope": "Not part of the Western Cape Sprint 5 pattern test. These pins do not feed its predictions, scoring, thresholds or the arrest-gap comparison (tools/checked_signals.py: pattern_test_pins). Places: Currieskamp, Keimoes. Collection window: incidents 22-30 Oct 2026, outside the areas of the 31 Oct collection run. Other candidates from the same sweep are held or excluded and are not in this file.",
+  "rules": "Standalone signals: no case, entity or map-line links. Incident date kept apart from report date; a body found is dated when found and the unknown time of death is stated. Victims named only as police and the news name them; suspects and accused are not named; arrests are not convictions. Caxton papers are not sources. Being near another pin is not a link. Suburb- and area-level points say 'approx.' and the location note starts 'APPROXIMATE MAP POINT'; estimated points say 'map point estimated' and 'ESTIMATED MAP POINT'. Every fact-base quote matched word for word against the saved source text on 30 Oct 2026.",
+  "review_status": "Approved by the owner on 30 Oct 2026 (text chat, about 08:45 SAST, 'Publish all'). One explicit version-1 approval record per pin in docs/approvals/pins (reference provinces-approval-2026-10-30).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-30 (text chat, about 08:45 SAST)",
+      "decision": "Owner approved all five drafts from the 30 Oct 2026 remaining-provinces sweep with the words 'Publish all': Esangweni taxi rank (Tembisa), Kloof Gold Mine hostel (Westonaria), Taylor Park (Zamdela), Meqheleng (Ficksburg) and Currieskamp (Keimoes)."
+    },
+    {
+      "at": "2026-10-30 (text chat, about 08:45 SAST)",
+      "decision": "Kloof Gold Mine hostel approved as an intelligence pin (Priority Intelligence stream), not a crime pin: no one was killed and the only charge is unlicensed firearms."
+    },
+    {
+      "at": "2026-10-30 (text chat, about 08:45 SAST)",
+      "decision": "Esangweni approved on the SAPS statement alone, since the only news coverage is in Caxton papers."
+    },
+    {
+      "at": "2026-10-30 (text chat, about 08:45 SAST)",
+      "decision": "Currieskamp approved as a found event dated 25 Oct, with the unknown date of death (23-25 Oct) stated."
+    },
+    {
+      "at": "2026-10-30",
+      "decision": "Not in this release: the on-hold water items (Robertsham, Pretoria boil-water notice, Bronkhorstspruit), the Eastern Cape and Limpopo cases left for the 31 Oct collection run, and the open Bloemfontein infrastructure decisions."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Kimberley and Upington",
+      "reason": "No pinnable incident found in the window. Northern Cape local papers found are Caxton and are not sources."
+    },
+    {
+      "place": "Louisvale boy murder",
+      "reason": "Outside the collection window (22-30 Oct 2026)."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "bceb3bc0-a276-57d1-8ff7-1c5adb933f11",
+      "external_id": "checked:nc-provinces-2026-10-30:N1",
+      "source": "SAPS Northern Cape",
+      "title": "Currieskamp, Keimoes (map point estimated): missing woman, 44, found in a shallow grave; man, 32, arrested, found 25 Oct",
+      "content": "The body of a 44-year-old woman from Keimoes was found in a shallow grave near the river in Currieskamp, Keimoes, at about 13:30 on Sunday 25 October, according to police. Her family had reported her missing on Friday 23 October, and Keimoes police, the Upington Search and Rescue Unit and the Upington K9 Unit searched for her. A 32-year-old man was arrested in Currieskamp on Wednesday 28 October, and police are conducting a murder investigation. An arrest is not a conviction; the woman and the man are not named. When she died is not known: some time between 23 and 25 October. The date shown is when she was found. One source, the SAPS Northern Cape statement of 28 October. The map point is estimated: the grave site is not given, so the pin is in the Currieskamp settlement area.",
+      "lat": -28.67835,
+      "lng": 21.03793,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-25T11:30:00Z",
+      "published_at": "2026-10-30T07:30:00Z",
+      "metadata": {
+        "source_outlet": "SAPS Northern Cape",
+        "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+        "pubdate_raw": "2026/10/28",
+        "checked": {
+          "incident": "Body found Sun 25 Oct 2026 at about 13:30 (police). She was reported missing on Fri 23 Oct; the date of death is not known (between 23 and 25 Oct). Arrest on Wed 28 Oct.",
+          "reported": "28 Oct 2026 (SAPS Northern Cape statement)",
+          "location": "ESTIMATED MAP POINT. A shallow grave near the river in Currieskamp, Keimoes (police); the site is not given. The pin is a residential area of the Currieskamp (Currie's Camp) settlement east of Keimoes, from OpenStreetMap, near the Orange River. Keimoes police precinct. Uncertainty about 3 km. Not the grave.",
+          "sources": [
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107"
+            }
+          ],
+          "checked_at": "2026-10-30T07:30:00Z",
+          "method": "Found in the 30 Oct 2026 remaining-provinces sweep (collector runs, Google News, web searches and the full SAPS newsroom list for 22-30 Oct, incidents 22-30 Oct); claims, dates and place checked by hand. Approved by the owner on 30 Oct 2026; source pages read again on 30 Oct 2026 (each SAPS statement checked to be the right statement for its link) and every quote matched word for word against the saved text; standalone (no case, entity or map line).",
+          "incident_start": "2026-10-25T13:30:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "found",
+          "reported_at": "2026-10-28",
+          "search_aliases": [
+            "Keimoes",
+            "Currieskamp",
+            "Currie's Camp",
+            "Curries Camp",
+            "Upington",
+            "ZF Mgcawu",
+            "Kai !Garib",
+            "Northern Cape",
+            "missing woman",
+            "shallow grave",
+            "murder"
+          ]
+        },
+        "collected_title": "Suspect arrested after missing Keimoes woman found deceased"
+      },
+      "fingerprint": "sha256:4b6f235a11806d01ce1e6a9eebd35d3fc41a72b108ca0652317307dedc909e3b"
+    }
+  ]
+}

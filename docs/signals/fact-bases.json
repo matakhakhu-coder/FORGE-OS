@@ -7889,6 +7889,482 @@
           "conflicts": []
         }
       ]
+    },
+    "97b63775-11a0-5fdf-9e98-34fda69cfd80": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Deaths and injuries",
+          "claim": "One taxi driver shot dead; two other people wounded and taken to hospital.",
+          "basis": "Police account only",
+          "detail": "No one is named.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "The incident left one taxi driver dead, while two other victims were rushed to hospital for medical treatment."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Tuesday 27 October 2026, at about 05:00.",
+          "basis": "Police account only",
+          "detail": "Reported the same day.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "On Tuesday, 27 October 2026, at approximately 05:00, Tembisa South SAPS received a complaint of a shooting at Esangweni Taxi Rank."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Esangweni Taxi Rank, Tembisa; Tembisa South police station.",
+          "basis": "Police account only",
+          "detail": "The map point is the mapped Esangweni taxi rank; approximate.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "Tembisa South SAPS received a complaint of a shooting at Esangweni Taxi Rank."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Five unknown men approached; two of them, armed with 9mm firearms, opened fire. The men fled on foot.",
+          "basis": "Police account only",
+          "detail": "Police account. Motive unknown.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "It is alleged that five unknown men approached the victim, with two of them reportedly armed with 9mm firearms, and opened fire."
+            },
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "The suspects fled the scene on foot. The motive for the shooting is unknown."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests",
+          "claim": "No arrests.",
+          "basis": "Police account only",
+          "detail": "As of 27 October.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72070",
+              "archive": null,
+              "quote": "no arrests have been made at this stage."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "64649653-8eae-5e0e-8868-54fbfb2ce467": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "What happened",
+          "claim": "An operation against a group of armed illegal miners at Kloof Gold Mine Hostel, Westonaria, by police Public Order Policing and the SANDF at the request of Sibanye Protection Services.",
+          "basis": "Police account only",
+          "detail": "Police account.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "during an operation at Kloof Gold Mine Hostel in Westonaria."
+            },
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "Sibanye Protection Services received information about a group of armed illegal miners and requested assistance from the South African Police Service (SAPS) Gauteng Public Order Policing (POP) unit and the South African National Defence Force (SANDF)."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 28 October 2026; information received at about 16:00.",
+          "basis": "Police account only",
+          "detail": "Reported on 29 October. The operation time is not given.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "It is reported that on Wednesday, 28 October 2026, at approximately 16:00"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrests and charges",
+          "claim": "Two men aged 32 and 35, Lesotho nationals, arrested; charged with possessing unlicensed firearms and ammunition; due in the Westonaria Magistrate's Court on 30 October.",
+          "basis": "Police account only",
+          "detail": "Charged, not convicted. Not named. No court outcome read.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "Gauteng police have arrested two suspects, aged 32 and 35"
+            },
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "The two arrested suspects are Lesotho nationals and face charges of possession of unlicensed firearms and ammunition."
+            },
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "Both suspects are expected to appear before the Westonaria Magistrate's Court on Friday, 30 October 2026."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Weapons recovered",
+          "claim": "Three AK-47 rifles, one R5 rifle, six magazines, 246 live rounds and two Lesotho passports; two of the AK-47s were found abandoned.",
+          "basis": "Police account only",
+          "detail": "Police account.",
+          "sources": [
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "two suspects were found in possession of an AK-47 rifle and an R5 rifle, while two additional AK-47 rifles were found abandoned at the scene."
+            },
+            {
+              "name": "SAPS Gauteng statement, 29 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72133",
+              "archive": null,
+              "quote": "three AK-47 rifles, one R5 rifle, six magazines, 246 live rounds of ammunition and two Lesotho passports."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Casualties",
+          "claim": "No deaths or injuries reported.",
+          "basis": "Not reported in the saved sources",
+          "detail": "The statement mentions no one killed or hurt.",
+          "sources": [],
+          "conflicts": []
+        }
+      ]
+    },
+    "1d4bd77f-c21d-5f11-8dde-5367760801e1": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Death",
+          "claim": "Thulani Mbana, DA ward 14 candidate and Metsimaholo caucus leader, shot several times; died at the scene.",
+          "basis": "Police account only",
+          "detail": "Named as police and the news name him. His roles are as police and the DA describe them.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "following the fatal shooting of Mr Thulani Mbana, a Democratic Alliance (DA) Ward 14 candidate, at Taylor Park, Zamdela"
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "Mr Mbana sustained multiple gunshot wounds and died at the scene."
+            },
+            {
+              "name": "OFM News, 27 Oct",
+              "url": "https://www.ofm.co.za/article/centralsa/343791/police-investigate-killing-of-metsimaholo-da-candidate-",
+              "archive": null,
+              "quote": "The DA in the Free State is mourning the killing of its Metsimaholo caucus leader"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 26 October 2026, at about 21:40.",
+          "basis": "Police account only",
+          "detail": "Reported on 27 October.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "on Monday evening, 26 October 2026."
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "It is alleged that at approximately 21:40, the deceased was at his residence"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "At his residence in Taylor Park, Zamdela, Sasolburg.",
+          "basis": "Police account and one report",
+          "detail": "No street given. The map point is the Zamdela suburb point.",
+          "sources": [
+            {
+              "name": "OFM News, 27 Oct",
+              "url": "https://www.ofm.co.za/article/centralsa/343791/police-investigate-killing-of-metsimaholo-da-candidate-",
+              "archive": null,
+              "quote": "at his residence in Taylor Park, Zamdela, at around 21:40."
+            },
+            {
+              "name": "SABC News, 27 Oct",
+              "url": "https://www.sabcnews.com/sabcnews/probe-under-way-following-murder-of-da-metsimaholo-councillor/",
+              "archive": null,
+              "quote": "who was shot and killed Monday night at his residence at Taylor Park in Zamdela, Sasolburg."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Two unknown men approached and called out to him; when he went to them, one produced a firearm and shot him several times at close range. Both fled on foot.",
+          "basis": "Police account only",
+          "detail": "Police account.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "two unknown males approached him and called out to him. When he approached them, one of the suspects allegedly produced a firearm and shot him several times at close range. The suspects subsequently fled the scene on foot."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Investigation",
+          "claim": "Murder case registered; the Zamdela Trio Task Team and Serious Organised Crime Unit activated. Motive not established; not confirmed whether politically motivated.",
+          "basis": "Police account only",
+          "detail": "As of 27 October. No arrests reported.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "has registered a case of murder for further investigation"
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "has activated the Zamdela Trio Task Team and Serious Organised Crime Unit to investigate the murder"
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+              "archive": null,
+              "quote": "The motive for the killing has not yet been established, and it has not been confirmed whether the incident is politically motivated."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "95842808-2427-5ea9-beaa-9995d13495ed": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Death",
+          "claim": "Mophinia Molise, 49, from Meqheleng, found dead with a severe open wound to the throat.",
+          "basis": "Police account only",
+          "detail": "Named as police name her. Identified at the scene by her husband and son.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "the alleged murder of Mophinia Molise (49) from Meqheleng, near Ficksburg."
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "the deceased had sustained a severe open wound to the throat."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Found on Sunday 25 October 2026 at about 08:00; last seen at a local tavern on Saturday night.",
+          "basis": "Police account only",
+          "detail": "When she died is not given. Reported on 27 October.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "It is alleged that on Sunday, 25 October 2026, at approximately 08:00, the body of a woman was discovered lying in a yard near a certain house in Zone 2, Meqheleng."
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "whom he had last seen at a local tavern on Saturday night."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A yard near a house in Zone 2, Meqheleng, near Ficksburg.",
+          "basis": "Police account only",
+          "detail": "No street given. The map point is the Meqheleng township point.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "lying in a yard near a certain house in Zone 2, Meqheleng."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrest and charges",
+          "claim": "A 22-year-old man arrested on Sunday evening, charged with murder and rape; due in the Ficksburg Magistrate's Court on 27 October. A post-mortem confirmed sexual assault.",
+          "basis": "Police account only",
+          "detail": "Charged, not convicted. Not named. No court outcome read.",
+          "sources": [
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "the police arrested the 22-year-old suspect on Sunday evening."
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "He has been charged with murder and rape is expected to appear before the Ficksburg Magistrate's Court today, Tuesday, 27 October 2026."
+            },
+            {
+              "name": "SAPS Free State statement, 27 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+              "archive": null,
+              "quote": "A post-mortem examination was conducted and confirmed sexual assault. Therefore a case of rape and murder is being investigated."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
+    },
+    "bceb3bc0-a276-57d1-8ff7-1c5adb933f11": {
+      "status": "audited",
+      "police_party": false,
+      "facts": [
+        {
+          "label": "Death",
+          "claim": "A 44-year-old woman from Keimoes, reported missing, found in a shallow grave.",
+          "basis": "Police account only",
+          "detail": "Not named. Police are conducting a murder investigation.",
+          "sources": [
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "The family of a 44-year- old woman from Keimoes reported her as missing on Friday, 23 October 2026."
+            },
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "the body of the victim was discovered in a shallow grave near the river in Currieskamp."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Reported missing Friday 23 October 2026; found Sunday 25 October at about 13:30.",
+          "basis": "Police account only",
+          "detail": "When she died is not known: between 23 and 25 October. The pin date is when she was found.",
+          "sources": [
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "On Sunday, 25 October 2026 the Upington K9 Unit joined the search."
+            },
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "At approximately 13:30 the body of the victim was discovered"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Near the river in Currieskamp, Keimoes.",
+          "basis": "Police account only",
+          "detail": "Site not given. The map point is estimated.",
+          "sources": [
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "in a shallow grave near the river in Currieskamp."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Arrest",
+          "claim": "A 32-year-old man arrested in Currieskamp on Wednesday 28 October; murder investigation under way.",
+          "basis": "Police account only",
+          "detail": "Arrested, not convicted. Not named. No charge or court date given in the statement.",
+          "sources": [
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "resulted in the arrest of a 32-year-old male in Currieskamp in Keimoes on Wednesday, 28 October 2026."
+            },
+            {
+              "name": "SAPS Northern Cape statement, 28 Oct",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72107",
+              "archive": null,
+              "quote": "Police are conducting a murder investigation regarding the circumstances surrounding her death."
+            }
+          ],
+          "conflicts": []
+        }
+      ]
     }
   }
 }

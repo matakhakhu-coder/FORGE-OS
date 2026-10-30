@@ -33,15 +33,15 @@ def _towned(recs, towns=("Cape Town", "Musina", "Polokwane", "Giyani")):
     return [dict(r, town=towns[i % len(towns)]) for i, r in enumerate(recs)]
 
 
-# ── Town labels on the 78 published records ─────────────────────────────────────
+# ── Town labels on the 83 published records ─────────────────────────────────────
 
 @pytest.fixture(scope="module")
 def live():
     if not LIVE.exists():
         pytest.skip("no published records.json in dist/")
     recs = json.loads(LIVE.read_text(encoding="utf-8"))["records"]
-    if len(recs) != 78:
-        pytest.skip("dist/records.json is not the 78-record publish")
+    if len(recs) != 83:
+        pytest.skip("dist/records.json is not the 83-record publish")
     return recs
 
 
@@ -49,9 +49,13 @@ def test_hand_fixes_take_effect_on_the_published_records(live):
     towned, problems, warnings = rt.towns_for_charts(live)
     assert problems == [] and warnings == []
     c = Counter(r["town"] for r in towned)
-    assert sum(c.values()) == 78 and len(c) == 37   # + Bloemfontein (Bochabela, Phase 7, Wilgehof), 30 Oct
+    assert sum(c.values()) == 83 and len(c) == 42   # + Bloemfontein (Bochabela, Phase 7, Wilgehof), 30 Oct
+    # + remaining-provinces sweep, 30 Oct: Tembisa and Westonaria (hand fixes), Sasolburg, Ficksburg, Keimoes
+    for town in ("Tembisa", "Westonaria", "Sasolburg", "Ficksburg", "Keimoes"):
+        assert c[town] == 1, town
+    assert "Glenharvie" not in c and c["Johannesburg"] == 0
     # the approved fixes
-    for gone in ("Westenburg", "Vuwani", "Mmabatho", "Groot-Brakrivier", "Somerset West"):
+    for gone in ("Westenburg", "Vuwani", "Mmabatho", "Groot-Brakrivier", "Somerset West", "Glenharvie"):
         assert gone not in c, gone
     assert c["Cape Town"] == 26 and c["Polokwane"] == 4 and c["Mahikeng"] == 2
     assert c["Thohoyandou"] == 1 and c["Great Brak River"] == 1

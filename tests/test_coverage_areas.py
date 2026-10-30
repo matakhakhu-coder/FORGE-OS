@@ -194,7 +194,7 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 78            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga + 4 Limpopo infrastructure + 1 KwaZulu-Natal infrastructure + 2 Limpopo unresolved deaths + 3 Polokwane sweep (2 Priority Intelligence, 1 Africa & World) + 4 Musina sweep (2 killings, 2 Priority Intelligence) + 3 Durban sweep (killings) + 3 Bloemfontein sweep (killings and a shooting)
+    assert len(pins) == 83            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga + 4 Limpopo infrastructure + 1 KwaZulu-Natal infrastructure + 2 Limpopo unresolved deaths + 3 Polokwane sweep (2 Priority Intelligence, 1 Africa & World) + 4 Musina sweep (2 killings, 2 Priority Intelligence) + 3 Durban sweep (killings) + 3 Bloemfontein sweep (killings and a shooting) + 5 remaining-provinces sweep (Gauteng 2 incl. 1 Priority Intelligence, Free State 2, Northern Cape 1)
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
@@ -230,8 +230,14 @@ def test_current_pins_make_their_areas_and_skip_held_places():
                     "kwazulu-natal--durban", "kwazulu-natal--inanda", "kwazulu-natal--phoenix",
                     # Bloemfontein sweep (released 30 Oct 2026): Free State is not split by precinct, so
                     # Bochabela, Wilgehof and Phase 7 join one area at 30 km.
-                    "free-state--bloemfontein"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 78
+                    "free-state--bloemfontein",
+                    # Remaining-provinces sweep (30 Oct 2026): Gauteng, Free State and Northern Cape are not
+                    # split by precinct, so each pin makes an area named after the nearest listed place:
+                    # Tembisa -> Johannesburg, Westonaria (Kloof) -> Glenharvie, Zamdela -> Sasolburg,
+                    # Meqheleng -> Ficksburg, Currieskamp -> Keimoes.
+                    "gauteng--johannesburg", "gauteng--glenharvie", "free-state--sasolburg",
+                    "free-state--ficksburg", "northern-cape--keimoes"}
+    assert sum(len(a["pins"]) for a in res["areas"]) == 83
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])
@@ -275,7 +281,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
     first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
-    assert len(first["areas"]) == 34 and len(first["new_since_last_run"]) == 34   # first run: all new
+    assert len(first["areas"]) == 39 and len(first["new_since_last_run"]) == 39   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -290,7 +296,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     # Computing again the same day (compute, then sweep) keeps the flag.
     again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
     assert again["new_since_last_run"] == second["new_since_last_run"]
-    assert len(second["areas"]) == 35
+    assert len(second["areas"]) == 40
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
     assert added[0]["province"] == "North West" and not added[0]["pattern_test"]
@@ -312,7 +318,7 @@ def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     assert ip["signal_id"] not in {p["signal_id"] for p in pins}
     keys = {a["key"] for a in ca.compute_areas(pins)["areas"]}
     assert "north-west--schweizer-reneke" not in keys
-    assert not any("brits" in k for k in keys) and len(keys) == 33   # 34 areas less Schweizer-Reneke
+    assert not any("brits" in k for k in keys) and len(keys) == 38   # 39 areas less Schweizer-Reneke
 
 
 # ── Western Cape scoring stays apart ───────────────────────────────────────────

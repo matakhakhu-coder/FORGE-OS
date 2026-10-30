@@ -1105,6 +1105,76 @@
       ],
       "independence": "single_report",
       "note": "One public report, resting on police. The man who died is the alleged shooter; the death is the subject of an inquest. Method detail kept to the minimum the source needs."
+    },
+    "97b63775-11a0-5fdf-9e98-34fda69cfd80": {
+      "statement_from": "SAPS Gauteng media statement (enquiries Sgt Selepe Kate)",
+      "spokesperson": [
+        "Sgt Selepe Kate"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SAPS (saps.gov.za)"
+      ],
+      "independence": "same_statement",
+      "note": "One police statement only. News coverage found was in Caxton papers, which are not used as sources. Nothing independent of police. No one is named."
+    },
+    "64649653-8eae-5e0e-8868-54fbfb2ce467": {
+      "statement_from": "SAPS Gauteng media statement (enquiries Captain Tintswalo Sibeko)",
+      "spokesperson": [
+        "Captain Tintswalo Sibeko"
+      ],
+      "other_voices": [
+        "Sibanye Protection Services (as relayed by police)"
+      ],
+      "outlets": [
+        "SAPS (saps.gov.za)"
+      ],
+      "independence": "same_statement",
+      "note": "One police statement only. Nothing independent of police. The accused are charged, not convicted, and are not named. No court outcome read. Owner approved this as an intelligence pin, not a crime pin."
+    },
+    "1d4bd77f-c21d-5f11-8dde-5367760801e1": {
+      "statement_from": "SAPS Free State media statement (enquiries Brig Thandi Mbambo); Mbambo quoted by OFM News; DA statement reported by OFM News and SABC News",
+      "spokesperson": [
+        "Brig Thandi Mbambo"
+      ],
+      "other_voices": [
+        "DA Free State leader Dr Roy Jankielsohn (party statement)"
+      ],
+      "outlets": [
+        "SAPS (saps.gov.za)",
+        "OFM News",
+        "SABC News"
+      ],
+      "independence": "same_statement",
+      "note": "The account of the shooting is the police's: the statement and OFM's report of it. SABC carries the DA's statement. Whether the killing was political is not established; police say it has not been confirmed. Named as the police and news name him."
+    },
+    "95842808-2427-5ea9-beaa-9995d13495ed": {
+      "statement_from": "SAPS Free State media statement (enquiries Warrant Officer Mmako Mophiring)",
+      "spokesperson": [
+        "Warrant Officer Mmako Mophiring"
+      ],
+      "other_voices": [
+        "Her husband, as relayed by police"
+      ],
+      "outlets": [
+        "SAPS (saps.gov.za)"
+      ],
+      "independence": "same_statement",
+      "note": "One police statement only. Nothing independent of police. The victim is named as police name her; the accused is charged, not convicted, and is not named. Detail of the body kept to what the pin needs."
+    },
+    "bceb3bc0-a276-57d1-8ff7-1c5adb933f11": {
+      "statement_from": "SAPS Northern Cape media statement (enquiries Colonel Cherelle Ehlers)",
+      "spokesperson": [
+        "Colonel Cherelle Ehlers"
+      ],
+      "other_voices": [
+        "Maj Gen Monica Sebili, ZF Mgcawu District Commissioner (statement)"
+      ],
+      "outlets": [
+        "SAPS (saps.gov.za)"
+      ],
+      "independence": "same_statement",
+      "note": "One police statement only. Nothing independent of police. No one is named. The arrested man is not charged in the statement and is not convicted. The date of death is not known."
     }
   }
 }

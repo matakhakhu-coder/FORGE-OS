@@ -1,0 +1,76 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T065740Z-18b4c70c",
+  "signal_id": "95842808-2427-5ea9-beaa-9995d13495ed",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "free-state-provinces-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "The body of Mophinia Molise, 49, from Meqheleng near Ficksburg, was found lying in a yard near a house in Zone 2, Meqheleng, at about 08:00 on Sunday 25 October, according to police. Police say the body was covered with a blanket and she had a severe open wound to the throat; her husband, who had last seen her at a local tavern on Saturday night, found her. A 22-year-old man was arrested on Sunday evening and charged with murder and rape, and was due in the Ficksburg Magistrate's Court on 27 October; police say a post-mortem confirmed sexual assault and a case of rape and murder is being investigated. An arrest is not a conviction, and the accused is not named. One source, the SAPS Free State statement of 27 October. The date is when she was found; when she died is not given. The map point is the Meqheleng township point, not the yard.",
+    "external_id": "checked:fs-provinces-2026-10-30:F2",
+    "lat": -28.90119,
+    "lng": 27.87916,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T07:30:00Z",
+        "incident": "Body found Sun 25 Oct 2026 at about 08:00 (police). She was last seen at a tavern on Saturday night, 24 Oct; the time of death is not given.",
+        "incident_event": "found",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-25T08:00:00+02:00",
+        "location": "APPROXIMATE MAP POINT. A yard near a house in Zone 2, Meqheleng, near Ficksburg (police); no street given. Zone 2 is not mapped, so the pin is the Meqheleng township point (OpenStreetMap). Ficksburg police precinct. Not the yard.",
+        "method": "Found in the 30 Oct 2026 remaining-provinces sweep (collector runs, Google News, web searches and the full SAPS newsroom list for 22-30 Oct, incidents 22-30 Oct); claims, dates and place checked by hand. Approved by the owner on 30 Oct 2026; source pages read again on 30 Oct 2026 (each SAPS statement checked to be the right statement for its link) and every quote matched word for word against the saved text; standalone (no case, entity or map line).",
+        "reported": "27 Oct 2026 (SAPS Free State statement)",
+        "reported_at": "2026-10-27",
+        "search_aliases": [
+          "Ficksburg",
+          "Meqheleng",
+          "Zone 2",
+          "Mophinia Molise",
+          "Molise",
+          "Setsoto",
+          "femicide",
+          "gender-based violence",
+          "Free State",
+          "murder",
+          "rape"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Free State statement, 27 Oct",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065"
+          }
+        ]
+      },
+      "collected_title": "Young man arrested for alleged murder of woman to appear in Ficksburg Magistrate's Court",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+      "pubdate_raw": "2026/10/27",
+      "source_outlet": "SAPS Free State"
+    },
+    "published_at": "2026-10-30T07:30:00Z",
+    "signal_id": "95842808-2427-5ea9-beaa-9995d13495ed",
+    "source": "SAPS Free State",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-25T06:00:00Z",
+    "title": "Meqheleng, Ficksburg (approx.): Mophinia Molise, 49, found dead in a yard; man, 22, charged with murder and rape, 25 Oct"
+  },
+  "payload_sha256": "sha256:ac9bab071e1a8d141a4c875fe9f58eb1ea320645d74480b80bf07de671b386f3",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72065",
+      "retrieved_at": "2026-10-30T06:47:32Z",
+      "content_sha256": "sha256:e6dc2a9bc2713abe743a1a8978c96e55e758dfb49897f06bd83dd1d75e9398c8"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T08:45:00+02:00",
+  "recorded_at": "2026-10-30T08:57:40+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "provinces-approval-2026-10-30",
+    "summary": "Owner approved the killing of Mophinia Molise, Meqheleng, Ficksburg ('Publish all', text chat 30 Oct 2026). Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

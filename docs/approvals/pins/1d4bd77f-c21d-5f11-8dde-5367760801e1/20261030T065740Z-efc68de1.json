@@ -1,0 +1,97 @@
+{
+  "schema": "forge.pin_approval.v1",
+  "approval_id": "20261030T065740Z-efc68de1",
+  "signal_id": "1d4bd77f-c21d-5f11-8dde-5367760801e1",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "free-state-provinces-sweep-2026-10-30.json",
+  "approved_payload": {
+    "content": "Thulani Mbana, the DA's ward 14 candidate and Metsimaholo caucus leader, was shot dead at his home in Taylor Park, Zamdela, Sasolburg, at about 21:40 on Monday 26 October, according to police. Police say two unknown men approached his residence and called out to him; when he went to them, one produced a firearm and shot him several times at close range, and both fled on foot. He died at the scene. A murder case is being investigated; the provincial commissioner activated the Zamdela Trio Task Team and the Serious Organised Crime Unit. Police say the motive has not been established and it has not been confirmed whether the killing was politically motivated. No arrests were reported. Sources: SAPS Free State statement and OFM News (Brig Thandi Mbambo), 27 October, and SABC News, 27 October (DA statement). The map point is the Zamdela suburb point, not his home.",
+    "external_id": "checked:fs-provinces-2026-10-30:F1",
+    "lat": -26.84278,
+    "lng": 27.85694,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-10-30T07:30:00Z",
+        "incident": "Mon 26 Oct 2026, at about 21:40 (police)",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-10-26T21:40:00+02:00",
+        "location": "APPROXIMATE MAP POINT. His residence in Taylor Park, Zamdela, Sasolburg (police, OFM, SABC); no street given. Taylor Park is not mapped separately, so the pin is the Zamdela suburb point (OpenStreetMap, from the national place-names list). Zamdela police precinct. Not his home.",
+        "method": "Found in the 30 Oct 2026 remaining-provinces sweep (collector runs, Google News, web searches and the full SAPS newsroom list for 22-30 Oct, incidents 22-30 Oct); claims, dates and place checked by hand. Approved by the owner on 30 Oct 2026; source pages read again on 30 Oct 2026 (each SAPS statement checked to be the right statement for its link) and every quote matched word for word against the saved text; standalone (no case, entity or map line).",
+        "reported": "27 Oct 2026 (SAPS Free State statement; OFM News; SABC News)",
+        "reported_at": "2026-10-27",
+        "search_aliases": [
+          "Sasolburg",
+          "Zamdela",
+          "Taylor Park",
+          "Metsimaholo",
+          "Thulani Mbana",
+          "Mbana",
+          "DA",
+          "Democratic Alliance",
+          "ward 14",
+          "councillor",
+          "political killing",
+          "Free State",
+          "murder",
+          "shooting"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Free State statement, 27 Oct",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072"
+          },
+          {
+            "name": "OFM News, 27 Oct",
+            "url": "https://www.ofm.co.za/article/centralsa/343791/police-investigate-killing-of-metsimaholo-da-candidate-"
+          },
+          {
+            "name": "SABC News, 27 Oct",
+            "url": "https://www.sabcnews.com/sabcnews/probe-under-way-following-murder-of-da-metsimaholo-councillor/"
+          }
+        ]
+      },
+      "collected_title": "Police investigate killing of Metsimaholo DA candidate",
+      "link": "https://www.ofm.co.za/article/centralsa/343791/police-investigate-killing-of-metsimaholo-da-candidate-",
+      "pubdate_raw": "2026-10-27T14:47:00+02:00",
+      "source_outlet": "OFM News"
+    },
+    "published_at": "2026-10-30T07:30:00Z",
+    "signal_id": "1d4bd77f-c21d-5f11-8dde-5367760801e1",
+    "source": "OFM News",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-10-26T19:40:00Z",
+    "title": "Taylor Park, Zamdela, Sasolburg (approx.): DA ward 14 candidate Thulani Mbana shot dead at his home, 26 Oct"
+  },
+  "payload_sha256": "sha256:3e62b4e710f9b87100b6ff969a5e60fbab536ef7ae57ce6214b0d3ea8049ce58",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72072",
+      "retrieved_at": "2026-10-30T06:47:31Z",
+      "content_sha256": "sha256:9229cb3062a16c1846ab54680648c2b31521f531c6a88387df1bd3808cdfcd79"
+    },
+    {
+      "url": "https://www.ofm.co.za/article/centralsa/343791/police-investigate-killing-of-metsimaholo-da-candidate-",
+      "retrieved_at": "2026-10-30T06:47:36Z",
+      "content_sha256": "sha256:5b6db7dcf70c8e68167c913039621aa0221bfe42575ef0d4d9cfda725f34e727"
+    },
+    {
+      "url": "https://www.sabcnews.com/sabcnews/probe-under-way-following-murder-of-da-metsimaholo-councillor/",
+      "retrieved_at": "2026-10-30T06:47:38Z",
+      "content_sha256": "sha256:8abea54a2b0c5a6b5ceb3aa2c979880f55444f568e60d59a41d1f18d7816d3b0"
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-10-30T08:45:00+02:00",
+  "recorded_at": "2026-10-30T08:57:40+02:00",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "provinces-approval-2026-10-30",
+    "summary": "Owner approved the killing of DA ward 14 candidate Thulani Mbana, Taylor Park, Zamdela ('Publish all', text chat 30 Oct 2026). Data only."
+  },
+  "basis": "explicit",
+  "scope": "data-only"
+}

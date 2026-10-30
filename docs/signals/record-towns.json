@@ -30,6 +30,16 @@
       "town": "Cape Town",
       "rule_name": "Somerset West",
       "why": "Asanda Village, Strand is in the City of Cape Town, like the Khayelitsha, Delft and Wesbank pins the rule already names Cape Town. The rule only merges a suburb into the city when the city's centre point is within the coverage radius."
+    },
+    "97b63775-11a0-5fdf-9e98-34fda69cfd80": {
+      "town": "Tembisa",
+      "rule_name": "Johannesburg",
+      "why": "Police place the shooting at Esangweni Taxi Rank, Tembisa (Tembisa South police station), in Ekurhuleni. The rule named the nearest big city, Johannesburg."
+    },
+    "64649653-8eae-5e0e-8868-54fbfb2ce467": {
+      "town": "Westonaria",
+      "rule_name": "Glenharvie",
+      "why": "Police place the operation at Kloof Gold Mine Hostel in Westonaria (Westonaria police). The rule named Glenharvie, the gazetteer place nearest the estimated pin."
     }
   }
 }
