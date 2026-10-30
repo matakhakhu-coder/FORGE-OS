@@ -1,8 +1,78 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "30 Oct 2026 05:56 UTC",
+  "generated_at": "30 Oct 2026 07:30 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Kloof Gold Mine hostel, Westonaria (map point estimated): two arrested, three AK-47s and an R5 rifle seized from illegal miners, 28 Oct",
+      "stream": "PRIORITY",
+      "stream_label": "Priority Intelligence",
+      "published_at": "2026-10-30T07:30:00Z",
+      "summary": "Police, the army and the mine's own security moved on a group of armed illegal miners at the Kloof Gold Mine hostel in Westonaria on Wednesday 28 October, according to police. Sibanye Protection Services received informa...",
+      "source": "SAPS GAUTENG",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -26.39056,
+        "lng": 27.60028
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Esangweni taxi rank, Tembisa (approx.): taxi driver shot dead and two wounded by gunmen; no arrests, 27 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T07:30:00Z",
+      "summary": "A taxi driver was shot dead and two other people were wounded at the Esangweni taxi rank in Tembisa at about 05:00 on Tuesday 27 October, according to police. Police say five unknown men approached the victim, two of the...",
+      "source": "SAPS GAUTENG",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -26.02061,
+        "lng": 28.20137
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Taylor Park, Zamdela, Sasolburg (approx.): DA ward 14 candidate Thulani Mbana shot dead at his home, 26 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T07:30:00Z",
+      "summary": "Thulani Mbana, the DA's ward 14 candidate and Metsimaholo caucus leader, was shot dead at his home in Taylor Park, Zamdela, Sasolburg, at about 21:40 on Monday 26 October, according to police. Police say two unknown men ...",
+      "source": "OFM NEWS",
+      "region": "Free State",
+      "geo": {
+        "lat": -26.84278,
+        "lng": 27.85694
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Currieskamp, Keimoes (map point estimated): missing woman, 44, found in a shallow grave; man, 32, arrested, found 25 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T07:30:00Z",
+      "summary": "The body of a 44-year-old woman from Keimoes was found in a shallow grave near the river in Currieskamp, Keimoes, at about 13:30 on Sunday 25 October, according to police. Her family had reported her missing on Friday 23...",
+      "source": "SAPS NORTHERN CAPE",
+      "region": "Northern Cape",
+      "geo": {
+        "lat": -28.67835,
+        "lng": 21.03793
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Meqheleng, Ficksburg (approx.): Mophinia Molise, 49, found dead in a yard; man, 22, charged with murder and rape, 25 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-10-30T07:30:00Z",
+      "summary": "The body of Mophinia Molise, 49, from Meqheleng near Ficksburg, was found lying in a yard near a house in Zone 2, Meqheleng, at about 08:00 on Sunday 25 October, according to police. Police say the body was covered with ...",
+      "source": "SAPS FREE STATE",
+      "region": "Free State",
+      "geo": {
+        "lat": -28.90119,
+        "lng": 27.87916
+      }
+    },
     {
       "kind": "signal",
       "title": "Strandbrook, Brookdale, Phoenix (approx.): man stabbed to death by three men on his way to a tuck shop; security-company account, 28 Oct",
@@ -631,76 +701,6 @@
       "geo": {
         "lat": -33.8640249,
         "lng": 25.5773031
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Gardenia St, Duncan Village, KuGompo City (suburb only, approx.): off-duty police sergeant stabbed dead, 11 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "The Hawks say Sgt Nokuphumla Nyangwa, 48, of the Mdantsane Flying Squad, off duty, went to check on a fellow tenant at a property in Gardenia Street, Duncan Village, at about 16:30 on Sunday 11 October. An argument follo...",
-      "source": "NOVANEWS (PE EXPRESS)",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -33.01226,
-        "lng": 27.86332
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Kuzwayo St, KwaZakhele, Gqeberha (street, approx.): two men found shot dead at a car, 7 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police say New Brighton officers responding to a shooting complaint at about 19:40 on Wednesday 7 October found a grey VW Polo on the pavement in Kuzwayo Street, KwaZakhele, with one man dead inside and one lying next to...",
-      "source": "SABC NEWS",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -33.876454,
-        "lng": 25.59849
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Willowvale Extension 1, Mbhashe (town only, approx.): five young men shot dead, one wounded, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police say three unknown gunmen kicked open the door of a two-room flat at Willowvale Extension 1 informal settlement, near Ematyotyombeni, at about 21:50 on Tuesday 6 October and opened fire. Five young men aged 17 to 2...",
-      "source": "DAILY DISPATCH",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -32.26588,
-        "lng": 28.50727
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Mtshekisani St, Kwadwesi, Gqeberha (suburb only, approx.): four men shot dead by police in reported shootout, 6 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police-involved deaths. SAPS says members of the Motherwell Tactical Response Team patrolling Mtshekisani Street at about 20:00 on Tuesday 6 October approached a suspicious vehicle, the occupants allegedly opened fire, a...",
-      "source": "SABC NEWS",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -33.843342,
-        "lng": 25.5156979
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Mawethu Tavern, Bholotwa (village only, approx.): one dead during police call-out, cause not confirmed, 4 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Komani News reports, quoting SAPS spokesperson Capt Yolisa Mgolodela, that Bholotwa police were called back to Mawethu Tavern at about 01:15 on Sunday 4 October after a group of men allegedly returned, some armed, stoppi...",
-      "source": "KOMANI NEWS",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -31.9858333,
-        "lng": 27.1888889
       }
     }
   ]
