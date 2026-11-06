@@ -5,6 +5,20 @@
 {% block body_attributes %} class="signal-map-page"{% endblock %}
 {% block nav_map_active %}site-nav__link--active{% endblock %}
 
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://forgemap.co.za/#website",
+  "name": "FORGE Map",
+  "url": "https://forgemap.co.za/",
+  "creator": { "@id": "https://matamelaramovha.co.za/#person" },
+  "publisher": { "@id": "https://www.zone2freelancers.co.za/#organization" }
+}
+</script>
+{% endblock %}
+
 {% block head_extra %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
       crossorigin="anonymous" referrerpolicy="no-referrer">
