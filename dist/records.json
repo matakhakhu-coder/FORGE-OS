@@ -1,6 +1,6 @@
 {
   "schema": "za-divergent.records",
-  "version": 1,
+  "version": 2,
   "data_version": "4e10e99571557059edf7158aee97631c2bd96f80",
   "count": 83,
   "caveats": [
@@ -3223,5 +3223,7 @@
       "update_note": "",
       "update_sources": ""
     }
-  ]
+  ],
+  "thread_caveat": "Relationships as stated by the cited source or party. Not police findings. Order in time does not mean one event caused another.",
+  "threads": []
 }

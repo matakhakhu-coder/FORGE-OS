@@ -668,6 +668,39 @@
   .sd-rel__kind { display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
   .sd-rel__pin { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
   .sd-rel__quote { display: block; margin-top: 2px; font-size: 0.78rem; color: var(--text-dim); font-style: italic; }
+  /* ── Story threads: "Over time" list and thread view (POLICY 11 Nov 2026) ── */
+  .tl-thread + .tl-thread { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid rgba(255,255,255,0.08); }
+  .tl-title { margin: 0 0 2px; font-size: 0.86rem; color: var(--text-primary); }
+  .tl-caption { margin: 0 0 var(--sp-2); font-size: 0.74rem; line-height: 1.4; color: var(--text-dim); }
+  .tl-list { list-style: none; margin: 0 0 var(--sp-2); padding: 0 0 0 14px; border-left: 2px dashed rgba(242,193,78,0.55); display: flex; flex-direction: column; gap: var(--sp-2); }
+  .tl-item { position: relative; font-size: 0.82rem; line-height: 1.45; color: var(--text-secondary); }
+  .tl-item::before { content: ''; position: absolute; left: -21px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: #f2c14e; border: 2px solid #0b1117; }
+  .tl-item--context::before { background: transparent; border: 2px solid var(--text-dim); border-radius: 2px; }
+  .tl-item.is-current { color: var(--text-primary); }
+  .tl-item.is-current .tl-pin { font-weight: 700; }
+  .tl-when { display: block; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); }
+  .tl-pin { color: var(--accent-bright); text-decoration: underline; text-underline-offset: 2px; }
+  .tl-text { display: block; }
+  .tl-claim { display: block; margin-top: 2px; font-size: 0.74rem; color: var(--text-dim); }
+  .tl-quote { display: block; font-size: 0.76rem; color: var(--text-dim); font-style: italic; }
+  .tl-src { display: inline-block; margin-top: 2px; font-size: 0.74rem; color: var(--accent-bright); }
+  .tl-flag { display: inline-block; margin: 2px 6px 0 0; padding: 0 5px; border: 1px solid rgba(255,255,255,0.18); border-radius: 3px; font-size: 0.66rem; color: var(--text-secondary); }
+  .sd-thread-wrap .ac-bar__btn.tl-show, #sd-thread .ac-bar__btn.tl-show { min-height: 44px; min-width: 44px; }
+  .tl-show[aria-pressed="true"] { outline: 2px solid #f2c14e; }
+  .tv-banner { border-color: #f2c14e; }
+  .tv-banner .mv-banner__kicker { color: #f2c14e; }
+  .tv-pin { display: flex; align-items: center; justify-content: center; }
+  .tv-pin__n { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%;
+    background: #f2c14e; color: #0b1117; font: 700 0.8rem/1 var(--font-mono); border: 2px solid #0b1117; box-shadow: 0 0 0 2px #f2c14e; }
+  .tv-pin--hollow .tv-pin__n { background: #0b1117; color: #f2c14e; border-color: #f2c14e; }
+  .tv-pin:focus { outline: none; }
+  .tv-pin:focus .tv-pin__n { box-shadow: 0 0 0 3px #fff; }
+  .tv-chev { pointer-events: none; }
+  .tv-chev span { display: block; width: 18px; height: 18px; line-height: 16px; text-align: center; font: 700 18px/16px var(--font-mono); color: #f2c14e; text-shadow: 0 0 3px #000, 0 0 3px #000; }
+  html.forge-thread-view #map .leaflet-marker-icon:not(.tv-pin):not(.tv-chev),
+  html.forge-thread-view #map .marker-cluster { opacity: 0.28; }
+  html.forge-thread-view #map .sig-pulse, html.forge-thread-view #map .sig-ring { display: none; }
+  @media (prefers-reduced-motion: reduce) { .tv-line { transition: none; } }
   .sd-src__opened { display: none; margin-left: 6px; color: #a395d6; }
   .sd-src.is-opened .sd-src__opened { display: inline; }
   .sd-src__arrow { flex-shrink: 0; font-size: 1rem; }
@@ -1316,6 +1349,10 @@
     .mv-banner__top { flex-wrap: wrap; }
     .mv-banner__heading { font-size: 0.8rem; flex-basis: 100%; }
     .mv-banner__back { width: 100%; }
+    /* Thread view on a phone: the full-screen drawer steps aside so the
+       numbered pins show; Back, Escape or the banner button bring it back. */
+    html.forge-thread-view .signal-map-page .sd-drawer { display: none; }
+    html.forge-thread-view .signal-map-page .ac-bar,
     html.forge-month-view .signal-map-page .ac-bar,
     html.forge-month-view .signal-map-page .md-shell.drawer-open .ac-bar { top: calc(var(--map-header, 60px) + 16px + var(--mv-h, 0px)); }
     .signal-map-page .mv-pop { left: 8px; right: 74px; width: auto; z-index: 1100; }
@@ -1517,6 +1554,7 @@
 </style>
 <link rel="stylesheet" href="static/css/map-first.css">
 
+  
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1528,6 +1566,7 @@
   "publisher": { "@id": "https://www.zone2freelancers.co.za/#organization" }
 }
 </script>
+
 </head>
 <body class="signal-map-page">
 
@@ -1568,7 +1607,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="30 Oct 2026 08:31 UTC" title="30 Oct 2026 08:31 UTC">30 Oct 2026 08:31 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="11 Nov 2026 15:50 UTC" title="11 Nov 2026 15:50 UTC">11 Nov 2026 15:50 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1748,7 +1787,7 @@
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
       <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>83 approved records &middot; as of 30 Oct 2026 08:31 UTC</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>83 approved records &middot; as of 11 Nov 2026 15:50 UTC</span>
       
       <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
     </div>
@@ -3672,6 +3711,15 @@
     <p class="mv-banner__note" id="mv-note"></p>
   </section>
   <span class="sd-sr-only" id="mv-status" role="status" aria-live="polite"></span>
+  <section class="mv-banner tv-banner" id="tv-banner" aria-labelledby="tv-heading" hidden>
+    <div class="mv-banner__top">
+      <h2 class="mv-banner__heading" id="tv-heading" tabindex="-1"><span class="mv-banner__kicker">Thread view &middot; order in time</span><span id="tv-heading-text"></span></h2>
+      <button type="button" class="ac-bar__btn ac-bar__btn--main mv-banner__back" id="tv-exit">Back to live map</button>
+    </div>
+    <p class="mv-banner__count" id="tv-count"></p>
+    <p class="mv-banner__note" id="tv-note"></p>
+  </section>
+  <span class="sd-sr-only" id="tv-status" role="status" aria-live="polite"></span>
 
   
   <div class="md-controls">
@@ -3737,6 +3785,10 @@
         <h3 class="sd-label">What each fact rests on</h3>
         <p id="sd-audit-status"></p>
         <dl class="sd-facts" id="sd-fact-bases"></dl>
+      </section>
+      <section class="sd-section" id="sd-thread-wrap" aria-labelledby="sd-thread-h" hidden>
+        <h3 class="sd-label" id="sd-thread-h">Over time</h3>
+        <div id="sd-thread"></div>
       </section>
       <section class="sd-section" id="sd-rel-wrap" hidden>
         <h3 class="sd-label">Related pins</h3>
@@ -3977,7 +4029,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 30 Oct 2026 08:31 UTC
+        Generated 11 Nov 2026 15:50 UTC
       </div>
     </div>
   </footer>
@@ -3985,7 +4037,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>FORGE MAP · FORGE OSINT ENGINE · 30 Oct 2026 08:31 UTC</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · 11 Nov 2026 15:50 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -4484,7 +4536,9 @@
     var color = STREAM_COLOR[link.stream] || '#7a95aa';
     var line = L.polyline([[link.from_lat, link.from_lng], [link.to_lat, link.to_lng]], {
       color: color, weight: 1.2, opacity: 0.25, dashArray: '8 6',
-    }).bindTooltip(link.label || link.case_name || 'Linked incident', { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
+    }).bindTooltip((link.label || link.case_name || 'Linked incident') +
+      (link.type === 'follow_on' ? ' \u00b7 ' + (link.arrow ? 'older to newer' : 'same period, order unknown') +
+        (link.claim_by ? ' \u00b7 as stated by ' + String(link.claim_by).replace(/^party: /, '') : '') : ''), { permanent: false, direction: 'center', className: 'intel-link-tooltip' }).addTo(map);
     linkLayers.push({ layer: line, from: link.from || null, to: link.to || null });
   });
 
@@ -5397,9 +5451,12 @@
   }
   function syncBannerHeight() {
     var shell = document.querySelector('.md-shell');
-    if (shell) shell.style.setProperty('--mv-h', (!mvBanner.hidden ? mvBanner.offsetHeight : 0) + 'px');
+    var tvb = document.getElementById('tv-banner');
+    var h = !mvBanner.hidden ? mvBanner.offsetHeight : (tvb && !tvb.hidden ? tvb.offsetHeight : 0);
+    if (shell) shell.style.setProperty('--mv-h', h + 'px');
   }
   if (window.ResizeObserver) new ResizeObserver(syncBannerHeight).observe(mvBanner);
+  if (window.ResizeObserver && document.getElementById('tv-banner')) new ResizeObserver(syncBannerHeight).observe(document.getElementById('tv-banner'));
 
   function setNoteOpen(open) {
     var has = !!mvNote.textContent;
@@ -5449,6 +5506,7 @@
 
   function enterMonth(key, opts) {
     opts = opts || {};
+    if (threadView) exitThread({ history: false, focus: false });
     var token = ++mvToken;
     hideArchiveMsg();
     monthView = { key: key, label: FP.monthLabel(key), state: 'loading', idx: {}, total: 0, shown: 0, note: '' };
@@ -6009,10 +6067,12 @@
         if (openAnySignal(r.signal, { trigger: a })) e.preventDefault();
       });
       li.appendChild(a);
+      if (r.claim_by) li.appendChild(el('span', 'sd-rel__kind', 'As stated by ' + String(r.claim_by).replace(/^party: /, '')));
       if (r.quote) li.appendChild(el('span', 'sd-rel__quote', '\u201c' + r.quote + '\u201d'));
       rel.appendChild(li);
     });
     section('sd-rel-wrap', rel.children.length > 0);
+    fillThreadSection(m);
 
     // Media: only files FORGE hosts, each with its credit and licence.
     var media = document.getElementById('sd-media');
@@ -6159,6 +6219,260 @@
       showSignal(idx, { history: false });
     }
   });
+
+  /* ── Story threads (owner policy 11 Nov 2026, docs/threads/POLICY.md) ─────
+     STORY_THREADS holds approved threads only: members a source places in one
+     named conflict, already sorted by incident time at publish, with the
+     arrow decision made (no arrow when two windows overlap). The drawer's
+     "Over time" list is the full text twin of every line; the map draws a
+     thread only in thread view, never on the default map. */
+  var STORY_THREADS = [];
+  var THREAD_CAPTION = 'Order in time. Sources place each event in this dispute. One did not cause the next.';
+  var threadView = null;     // { thread, layer, pushed, trigger }
+  var tvBanner = document.getElementById('tv-banner');
+  function phoneLayout() {
+    return !!(window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+  }
+  function threadsForPin(sid) {
+    sid = String(sid || '').slice(0, 8);
+    return STORY_THREADS.filter(function (t) {
+      return (t.members || []).some(function (mb) { return mb.signal === sid; });
+    });
+  }
+  function threadById(id) {
+    for (var i = 0; i < STORY_THREADS.length; i++) if (STORY_THREADS[i].id === id) return STORY_THREADS[i];
+    return null;
+  }
+  // "party: Codeta" -> "Codeta says"; police -> "Police say".
+  function claimText(c, outlet) {
+    c = String(c || '');
+    if (c.indexOf('party: ') === 0) return c.slice(7) + ' says';
+    if (c === 'police') return 'Police say';
+    if (c === 'court') return 'Court record';
+    return (outlet || 'The source') + ' reports';
+  }
+  function dayLabel(iso) {
+    var d = String(iso || '').slice(0, 10).split('-');
+    if (d.length !== 3) return '';
+    var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1] - 1] || '';
+    return (+d[2]) + ' ' + mon + ' ' + d[0];
+  }
+  // The dated list, members and context entries together; undated members last.
+  function threadRows(t) {
+    var rows = [];
+    (t.members || []).forEach(function (mb) {
+      rows.push({ kind: 'member', key: mb.incident_at || '', m: mb });
+    });
+    (t.context || []).forEach(function (c) {
+      rows.push({ kind: 'context', key: String(c.date || '') + 'T23:59:59Z', c: c });
+    });
+    rows.sort(function (a, b) {
+      if (!a.key !== !b.key) return a.key ? -1 : 1;
+      return a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
+    });
+    return rows;
+  }
+  function segmentAfter(t, sid) {
+    for (var i = 0; i < (t.segments || []).length; i++) if (t.segments[i].from === sid) return t.segments[i];
+    return null;
+  }
+  function sourceLink(parent, url, label) {
+    if (!/^https?:\/\//i.test(url || '')) return;
+    var a = el('a', 'tl-src', label);
+    a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.addEventListener('click', function (e) { e.preventDefault(); openExtGate(url, a); });
+    parent.appendChild(a);
+  }
+  function buildThreadList(t, currentSid) {
+    var ol = el('ol', 'tl-list');
+    threadRows(t).forEach(function (r) {
+      var li = el('li', 'tl-item tl-item--' + r.kind);
+      if (r.kind === 'member') {
+        var mb = r.m;
+        if (mb.signal === currentSid) li.classList.add('is-current');
+        li.appendChild(el('span', 'tl-when', (mb.n ? mb.n + '. ' : '') + (mb.when || 'Date not known')));
+        var a = el('a', 'tl-pin', mb.title || 'Pin');
+        a.href = urlForSignal(mb.signal);
+        a.setAttribute('data-signal', mb.signal);
+        if (mb.signal === currentSid) a.setAttribute('aria-current', 'true');
+        a.addEventListener('click', function (e) {
+          // Live pin or archived: openAnySignal fetches its month if needed.
+          if (openAnySignal(mb.signal, { trigger: a })) e.preventDefault();
+        });
+        li.appendChild(a);
+        if (mb.approximate) li.appendChild(el('span', 'tl-flag', 'Approximate place'));
+        li.appendChild(el('span', 'tl-claim', claimText(mb.claim_by, mb.outlet) + ':'));
+        li.appendChild(el('span', 'tl-quote', '\u201c' + mb.quote + '\u201d'));
+        sourceLink(li, mb.url, mb.outlet || 'Source');
+        var seg = segmentAfter(t, mb.signal);
+        if (seg && !seg.arrow) li.appendChild(el('span', 'tl-flag', 'Same period as the next event: order unknown'));
+      } else {
+        var c = r.c;
+        li.appendChild(el('span', 'tl-when', dayLabel(c.date) + ' \u00b7 context, not a map pin'));
+        li.appendChild(el('span', 'tl-text', c.text));
+        li.appendChild(el('span', 'tl-quote', '\u201c' + c.quote + '\u201d'));
+        sourceLink(li, c.url, c.outlet || 'Source');
+      }
+      ol.appendChild(li);
+    });
+    return ol;
+  }
+  function fillThreadSection(m) {
+    var box = document.getElementById('sd-thread');
+    box.textContent = '';
+    var sid = String(m && m.signal_id || '').slice(0, 8);
+    threadsForPin(sid).forEach(function (t) {
+      var wrap = el('div', 'tl-thread');
+      wrap.appendChild(el('h4', 'tl-title', t.title));
+      wrap.appendChild(el('p', 'tl-caption', t.caption || THREAD_CAPTION));
+      wrap.appendChild(buildThreadList(t, sid));
+      var btn = el('button', 'ac-bar__btn tl-show', 'Show on map');
+      btn.type = 'button';
+      btn.setAttribute('data-thread', t.id);
+      btn.setAttribute('aria-pressed', threadView && threadView.thread.id === t.id ? 'true' : 'false');
+      btn.addEventListener('click', function () {
+        if (threadView && threadView.thread.id === t.id) exitThread({ focus: false });
+        else enterThread(t.id, { trigger: btn });
+      });
+      wrap.appendChild(btn);
+      box.appendChild(wrap);
+    });
+    section('sd-thread-wrap', box.children.length > 0);
+  }
+
+  function tvPinIcon(mb, hollow) {
+    return L.divIcon({
+      className: 'tv-pin' + (hollow ? ' tv-pin--hollow' : ''),
+      html: '<span class="tv-pin__n">' + (mb.n || '?') + '</span>',
+      iconSize: [30, 30], iconAnchor: [15, 15],
+    });
+  }
+  // A chevron at the middle of a segment, pointing at the newer event.
+  function tvChevron(a, b) {
+    var z = map.getZoom();
+    var pa = map.project([a.lat, a.lng], z), pb = map.project([b.lat, b.lng], z);
+    var deg = Math.atan2(pb.y - pa.y, pb.x - pa.x) * 180 / Math.PI;
+    var mid = L.latLng((a.lat + b.lat) / 2, (a.lng + b.lng) / 2);
+    return L.marker(mid, {
+      interactive: false, keyboard: false,
+      icon: L.divIcon({ className: 'tv-chev', iconSize: [18, 18], iconAnchor: [9, 9],
+        html: '<span style="transform:rotate(' + deg.toFixed(1) + 'deg)">\u203a</span>' }),
+    });
+  }
+  function drawThread(t) {
+    var layer = L.layerGroup();
+    var bySid = {};
+    var pts = [];
+    (t.members || []).forEach(function (mb) {
+      if (!mb.n) return;                       // undated: listed, never a line end
+      bySid[mb.signal] = mb;
+      // Hollow end: archived (not on the live map) or placed only approximately.
+      var hollow = mb.approximate || idxForSignal(mb.signal) === null;
+      var mk = L.marker([mb.lat, mb.lng], { icon: tvPinIcon(mb, hollow), zIndexOffset: 2000,
+        title: mb.n + '. ' + (mb.title || ''), alt: mb.n + '. ' + (mb.title || ''), riseOnHover: true });
+      function openMember() {
+        // On a phone the drawer is hidden in thread view: leave it first,
+        // putting back the address entry the view had added.
+        if (phoneLayout() && threadView) {
+          var prev = threadView.prevState;
+          exitThread({ history: false, focus: false });
+          if (history.state && history.state.forgeThread) history.replaceState(prev, '', window.location.href);
+        }
+        openAnySignal(mb.signal, { trigger: mk.getElement() });
+      }
+      mk.on('click', openMember);
+      mk.on('keypress', function (e) {
+        if (e.originalEvent && e.originalEvent.key === 'Enter') openMember();
+      });
+      layer.addLayer(mk);
+      pts.push([mb.lat, mb.lng]);
+    });
+    (t.segments || []).forEach(function (sg) {
+      var a = bySid[sg.from], b = bySid[sg.to];
+      if (!a || !b) return;                    // never a line with a missing end
+      layer.addLayer(L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
+        className: 'tv-line', color: '#f2c14e', weight: 2.5, opacity: 0.9, dashArray: '6 6', interactive: false,
+      }));
+      if (sg.arrow) layer.addLayer(tvChevron(a, b));
+    });
+    return { layer: layer, pts: pts };
+  }
+  function enterThread(id, opts) {
+    opts = opts || {};
+    var t = threadById(id);
+    if (!t) return;
+    if (monthView) exitMonth({});
+    if (threadView) exitThread({ history: false });
+    var d = drawThread(t);
+    d.layer.addTo(map);
+    threadView = { thread: t, layer: d.layer, pushed: false, trigger: opts.trigger || null,
+                   prevState: history.state };
+    document.documentElement.classList.add('forge-thread-view');
+    var n = (t.members || []).filter(function (mb) { return mb.n; }).length;
+    document.getElementById('tv-heading-text').textContent = t.title;
+    document.getElementById('tv-count').textContent = n + ' events in time order, numbered 1 to ' + n +
+      '. Hollow numbers: archived or approximate place.';
+    document.getElementById('tv-note').textContent = t.caption || THREAD_CAPTION;
+    tvBanner.hidden = false;
+    document.getElementById('tv-status').textContent = 'Thread view: ' + t.title + '. ' + n + ' events. ' + (t.caption || THREAD_CAPTION);
+    if (opts.history !== false) {
+      history.pushState({ forgeThread: t.id }, '', window.location.href);
+      threadView.pushed = true;
+      drawerPushed = false;   // this entry is the thread view's, not the drawer's
+    }
+    if (d.pts.length) map.fitBounds(L.latLngBounds(d.pts).pad(0.3), { maxZoom: 14 });
+    if (drawerIdx !== null) fillThreadSection(RAW[drawerIdx] || {});
+    if (opts.focus !== false) {
+      var h = document.getElementById('tv-heading');
+      try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); }
+    }
+  }
+  function exitThread(opts) {
+    opts = opts || {};
+    if (!threadView) return;
+    if (opts.history !== false && threadView.pushed && history.state && history.state.forgeThread) {
+      history.back();                          // popstate below finishes the exit
+      return;
+    }
+    var tv = threadView;
+    threadView = null;
+    map.removeLayer(tv.layer);
+    document.documentElement.classList.remove('forge-thread-view');
+    tvBanner.hidden = true;
+    document.getElementById('tv-status').textContent = 'Back to the live map.';
+    if (drawerIdx !== null) fillThreadSection(RAW[drawerIdx] || {});
+    if (opts.focus !== false) {
+      // The drawer list was rebuilt: focus that thread's button again, else the old trigger.
+      var target = document.querySelector('#sd-thread .tl-show[data-thread="' + tv.thread.id + '"]');
+      if (!target && tv.trigger && document.body.contains(tv.trigger)) target = tv.trigger;
+      if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+    }
+  }
+  document.getElementById('tv-exit').addEventListener('click', function () { exitThread({ focus: true }); });
+  // Back gesture: leaving the thread view's history entry ends the view.
+  // Other popstate handlers still run (the drawer and month view follow the
+  // address as before).
+  window.addEventListener('popstate', function () {
+    if (!threadView) return;
+    if (history.state && history.state.forgeThread === threadView.thread.id) return;
+    threadView.pushed = false;
+    exitThread({ history: false, focus: true });
+  });
+  // Escape leaves thread view first (the drawer stays open), unless the
+  // external-link box is open.
+  document.addEventListener('keydown', function (e) {
+    if (!threadView || (e.key !== 'Escape' && e.key !== 'Esc') || extGateOpen()) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    exitThread({ focus: true });
+  }, true);
+  window.ForgeThreads = {
+    list: function () { return STORY_THREADS; },
+    enter: function (id) { enterThread(id, {}); },
+    exit: function () { exitThread({}); },
+    active: function () { return threadView ? threadView.thread.id : null; },
+  };
+
 
   // From Wire, the ticker or a link: open the drawer straight away, then zoom
   // just far enough for the pin to come out of its cluster.
