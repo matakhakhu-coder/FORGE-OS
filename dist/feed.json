@@ -1,8 +1,36 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "11 Nov 2026 16:32 UTC",
+  "generated_at": "11 Nov 2026 17:01 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Palm taxi rank, Delft (approx.): two men wounded as shots fired at taxi rank; no arrests, 28 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-11T16:33:37Z",
+      "summary": "Two men were wounded when shots were fired at the Palm taxi rank in Delft at about 07:00 on Wednesday 28 October, according to police. Police are investigating two counts of attempted murder and the discharge of a firear...",
+      "source": "CAPE ARGUS (IOL)",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.98844,
+        "lng": 18.63882
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Palm taxi rank, Delft (approx.): two men shot dead and one wounded in suspected taxi-related shooting, 22 Oct",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-11T16:33:37Z",
+      "summary": "Two men were shot dead and another person wounded at the Palm taxi rank on Main Road, Delft, in the early hours of Thursday 22 October, police said. Delft police registered two counts of murder and one of attempted murde...",
+      "source": "CAPE TIMES (IOL)",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.98844,
+        "lng": 18.63882
+      }
+    },
     {
       "kind": "signal",
       "title": "Kloof Gold Mine hostel, Westonaria (map point estimated): two arrested, three AK-47s and an R5 rifle seized from illegal miners, 28 Oct",
@@ -673,34 +701,6 @@
       "geo": {
         "lat": -31.81919,
         "lng": 28.76175
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Komkhulu, Konkwana near Willowvale (town only, approx.): headman, 44, and his mother, 70, shot dead, 13 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police say two armed men stormed a homestead in Komkhulu locality, Konkwana administrative area, near Willowvale, at about 18:45 on Tuesday 13 October, held five people at gunpoint and demanded cash and a firearm, then s...",
-      "source": "NOVANEWS (PE EXPRESS)",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -32.26588,
-        "lng": 28.50727
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Sebothe St, Soweto-on-Sea, Gqeberha (suburb only, approx.): woman, 86, and man, 21, found shot dead at home, 12 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police say an 86-year-old woman and a 21-year-old man were found shot dead inside a house in Sebothe Street, Soweto-on-Sea, at about 01:20 on Monday 12 October. Police think the woman may have been shot after getting up ...",
-      "source": "THE HERALD",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -33.8640249,
-        "lng": 25.5773031
       }
     }
   ]
