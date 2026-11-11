@@ -256,7 +256,8 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 3 Durban sweep version-1 explicit approvals (voice call, 30 Oct 2026, about 06:50 SAST)
     # + 3 Bloemfontein sweep version-1 explicit approvals (approved 25 Oct 2026; release reaffirmed on the voice call of 30 Oct 2026)
     # + 5 remaining-provinces sweep version-1 explicit approvals (text chat, 30 Oct 2026, about 08:45 SAST, "Publish all")
-    assert report.records == len(_real_record_files()) == 93
+    # + 1 Durban CBD version-2 material supersede: charges and arrests update (owner approval, 11 Nov 2026)
+    assert report.records == len(_real_record_files()) == 94
     assert report.pins_checked == 83
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
@@ -627,8 +628,26 @@ def test_real_approval_passes_enforced(repo):
 
 def test_every_pin_approved_passes_enforcement(repo):
     for i, (sid, _) in enumerate(_pins(repo)):
-        _write(repo, _record(repo, sid, basis="legacy", approved_at=None,
-                             approval_id=f"20261021T013000Z-{i:08x}"))
+        pin, _batch = _pin(repo, sid)
+        chk = pin["metadata"]["checked"]
+        if not cs.update_fields(chk):
+            _write(repo, _record(repo, sid, basis="legacy", approved_at=None,
+                                 approval_id=f"20261021T013000Z-{i:08x}"))
+            continue
+        # A pin that carries a material update: version 1 without the update fields,
+        # then a version-2 material supersede that adds them.
+        first = copy.deepcopy(pin)
+        for k in cs.UPDATE_FIELDS:
+            first["metadata"]["checked"].pop(k, None)
+        v1 = f"20261021T013000Z-{i:08x}"
+        _write(repo, _record(repo, sid, basis="legacy", approved_at=None, approval_id=v1, payload=first))
+        v2 = _record(repo, sid, version=2, action="supersede", supersedes=v1,
+                     approval_id=f"20261111T170000Z-{i:08x}", approved_at="2026-11-11T19:00:00+02:00",
+                     diff={"metadata.checked": "material update fields added"})
+        v2["recorded_at"] = "2026-11-11T19:01:00+02:00"
+        v2["schema"] = ap.RECORD_SCHEMA_V2
+        v2["material"] = True
+        _write(repo, v2)
     r = _verify(repo, enforce=True)
     assert r.ok, [f.line() for f in r.findings]
     assert r.approved_pins == r.pins_checked

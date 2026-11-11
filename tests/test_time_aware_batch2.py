@@ -163,21 +163,28 @@ def _approved_then_updated(repo: Path, *, material: bool, schema=ap.RECORD_SCHEM
 
 # ── all 83 current pins load with no material update ─────────────────────────────
 
+# Pins with an owner-approved material update (version-2 supersede, material: true).
+UPDATED_PINS = {'c9697dcd-becf-5562-a5a0-57382f75bfa5'}  # Durban CBD charges and arrests, 11 Nov 2026
+
+
 def test_all_current_pins_load_with_no_material_update():
     loaded = cs.load_index()
     assert len(loaded.signals) == 83 and len(loaded.active) == 83
     for s in loaded.signals:
         chk = s["metadata"]["checked"]
-        assert cs.update_fields(chk) == {}, s["signal_id"]
+        if s["signal_id"] not in UPDATED_PINS:
+            assert cs.update_fields(chk) == {}, s["signal_id"]
+        else:
+            assert set(cs.update_fields(chk)) == set(cs.UPDATE_FIELDS), s["signal_id"]
         assert cs.update_fields_problem(chk, s["published_at"]) is None
         assert "last_checked_at" not in chk
     report = ap.verify(check_git=False)
     assert report.ok and report.approved_pins == 83
     assert not any(f.code in ("unflagged-material-update", "material-update-invalid",
                               "update-changed-clock", "retracted-update") for f in report.findings)
-    # No real record is a material update yet, and every one stays valid.
+    # The only material records are the approved updates in UPDATED_PINS, and every record stays valid.
     records = ap.load_records(REAL_LEDGER, [])
-    assert not any(ap.is_material(r) for recs in records.values() for r in recs)
+    assert {sid for sid, recs in records.items() if any(ap.is_material(r) for r in recs)} == UPDATED_PINS
 
 
 def test_real_pin_clocks_file_is_valid_and_starts_empty():
@@ -556,6 +563,10 @@ def test_real_records_have_blank_update_columns_and_are_otherwise_unchanged():
     # would fail on a rebuilt dist/).
     assert [f["name"] for f in published["fields"]] in (list(earlier), list(rx.RECORD_FIELDS))
     for r in rows:
+        if r["signal_id"] in UPDATED_PINS:
+            # An approved material update changes its version, sources and update columns.
+            assert all(r[k] for k in rx.RECORD_FIELDS[-3:])
+            continue
         assert {k: r[k] for k in earlier} == {k: old[r["signal_id"]][k] for k in earlier}
         assert all(r[k] == "" for k in rx.RECORD_FIELDS[-4:])
         assert all(old[r["signal_id"]].get(k, "") == "" for k in rx.RECORD_FIELDS[-4:])

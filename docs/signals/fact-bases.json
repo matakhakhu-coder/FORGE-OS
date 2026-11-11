@@ -7224,7 +7224,7 @@
           "label": "Deaths",
           "claim": "One man, an immigrant, beaten to death.",
           "basis": "Police account and one report",
-          "detail": "Not named here; police had not named him.",
+          "detail": "Not named here; police had not named him. IOL later describes him as a Ugandan national.",
           "sources": [
             {
               "name": "GroundUp, 22 Oct",
@@ -7237,6 +7237,12 @@
               "url": "https://groundup.org.za/article/man-beaten-to-death-by-anti-immigrant-vigilantes-in-durban/",
               "archive": null,
               "quote": "The man, who has not yet been named by police"
+            },
+            {
+              "name": "IOL, 10 Nov",
+              "url": "https://iol.co.za/news/2026-11-10-sandf-patrols-durban-cbd-amid-reports-of-renewed-anti-foreigner-violence/",
+              "archive": null,
+              "quote": "On 22 October, a Ugandan national was beaten to death during a protest march in central Durban."
             }
           ],
           "conflicts": []
@@ -7321,9 +7327,9 @@
         },
         {
           "label": "Arrests",
-          "claim": "Five men, aged 19 to 46, were taken in for questioning on 23 October; police did not say whether they were charged.",
-          "basis": "Police account only",
-          "detail": "Taken in for questioning, not reported as charged. Police said they were pursuing others.",
+          "claim": "Five men taken in for questioning on 23 October; IOL later reports five arrested in connection with the murder, while East Coast Radio reports four facing charges and one released.",
+          "basis": "Reports disagree",
+          "detail": "Police took in five men, aged 19 to 46 (IOL, 23 Oct). East Coast Radio (26 Oct): four men facing charges over attacks on foreign nationals in Durban central, appearing in court that Monday, one released; charges not listed. IOL (31 Oct, 10 Nov): five men arrested in connection with the murder. The men are not named; no court outcome reported.",
           "sources": [
             {
               "name": "IOL, 23 Oct",
@@ -7332,13 +7338,32 @@
               "quote": "Five men aged between 19 and 46 have been taken in by KwaZulu-Natal police for questioning in connection with the murder, attempted murder and assault of foreign nationals during protests in Durban."
             },
             {
-              "name": "IOL, 23 Oct",
-              "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/",
+              "name": "IOL, 31 Oct",
+              "url": "https://iol.co.za/news/south-africa/kwazulu-natal/2026-10-31-march-and-march-the-protests-the-violence-and-the-growing-legal-battles/",
               "archive": null,
-              "quote": "Police have not disclosed the identities of the five men or indicated whether they have been formally charged."
+              "quote": "were arrested for the murder of a Ugandan national in Durban and the assault of several others on October 23."
+            },
+            {
+              "name": "IOL, 10 Nov",
+              "url": "https://iol.co.za/news/2026-11-10-sandf-patrols-durban-cbd-amid-reports-of-renewed-anti-foreigner-violence/",
+              "archive": null,
+              "quote": "Police later arrested five men in connection with the murder and attempted murder of foreign nationals."
             }
           ],
-          "conflicts": []
+          "conflicts": [
+            {
+              "quote": "Four men are now facing charges in connection with attacks on foreign nationals in Durban central.",
+              "url": "https://www.ecr.co.za/news/news/four-men-in-court-over-attacks-on-foreign-nationals/",
+              "archive": null,
+              "version": null
+            },
+            {
+              "quote": "One of the men has since been released, while four have been appearing in court on Monday.",
+              "url": "https://www.ecr.co.za/news/news/four-men-in-court-over-attacks-on-foreign-nationals/",
+              "archive": null,
+              "version": null
+            }
+          ]
         }
       ]
     },

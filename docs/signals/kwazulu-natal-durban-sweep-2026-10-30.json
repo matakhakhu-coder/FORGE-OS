@@ -46,7 +46,7 @@
       "external_id": "checked:kzn-durban-2026-10-30:D1",
       "source": "GroundUp",
       "title": "Dr Pixley kaSeme Street, Durban CBD (approx.): immigrant man beaten to death by about 50 people in anti-immigrant march, 22 Oct",
-      "content": "Police say an immigrant man was beaten to death by a group of about 50 people on Dr Pixley kaSeme Street in the Durban CBD on the morning of Thursday 22 October. According to KwaZulu-Natal police spokesperson Col Robert Netshiunda, the group was marching on Dr Pixley kaSeme Street towards Maud Mfusi Street when two men split off and approached the man; about 50 people then assaulted him and he died. A murder case has been opened. A security guard in the area told GroundUp the group was out targeting immigrants and that the man was probably walking to work at around 7am. It happened during renewed anti-immigrant protests in Durban (GroundUp). On 23 October police said five men, aged 19 to 46, had been taken in for questioning in connection with this murder and other attacks on foreign nationals that week; police did not say whether they had been charged (IOL). The victim is not named here; police had not named him. Sources: GroundUp, 22 October; IOL, 23 October. The map point is approximate: the street is known, not the exact spot.",
+      "content": "Police say an immigrant man was beaten to death by a group of about 50 people on Dr Pixley kaSeme Street in the Durban CBD on the morning of Thursday 22 October. According to KwaZulu-Natal police spokesperson Col Robert Netshiunda, the group was marching on Dr Pixley kaSeme Street towards Maud Mfusi Street when two men split off and approached the man; about 50 people then assaulted him and he died. A murder case has been opened. A security guard in the area told GroundUp the group was out targeting immigrants and that the man was probably walking to work at around 7am. It happened during renewed anti-immigrant protests in Durban (GroundUp). On 23 October police said five men, aged 19 to 46, had been taken in for questioning in connection with this murder and other attacks on foreign nationals that week (IOL). On 26 October East Coast Radio reported that four men were facing charges in connection with attacks on foreign nationals in Durban central and were appearing in court that day, and that one of the men had been released; it did not list the charges. IOL later reported that five men were arrested in connection with the murder, and described the victim as a Ugandan national (IOL, 31 October and 10 November). The reports differ on the number: East Coast Radio says four men face charges and one was released, while IOL says five were arrested. The men have not been named, and none of these reports gives a court outcome. The victim is not named here; police had not named him. Sources: GroundUp, 22 October; IOL, 23 October; East Coast Radio, 26 October; IOL, 31 October and 10 November. The map point is approximate: the street is known, not the exact spot.",
       "lat": -29.8583,
       "lng": 31.0245,
       "stream": "CRIME_INTEL",
@@ -58,7 +58,7 @@
         "pubdate_raw": "2026-10-22T17:57:57+02:00",
         "checked": {
           "incident": "Thu 22 Oct 2026, morning (police, via GroundUp); a security guard told GroundUp it was around 7am.",
-          "reported": "22 Oct 2026 (GroundUp); police update on questioning 23 Oct 2026 (IOL)",
+          "reported": "22 Oct 2026 (GroundUp); police update on questioning 23 Oct 2026 (IOL); charges and release reported 26 Oct 2026 (East Coast Radio); arrests reported 31 Oct and 10 Nov 2026 (IOL)",
           "location": "Dr Pixley kaSeme Street, Durban CBD, where a march was heading towards Maud Mfusi Street (police, via GroundUp and IOL). No block or address is given. The pin is a point on Dr Pixley kaSeme Street in the CBD (checked against the OpenStreetMap street line), not the exact spot; approximate, street level (about 1.5 km along the street).",
           "sources": [
             {
@@ -68,10 +68,22 @@
             {
               "name": "IOL, 23 Oct",
               "url": "https://iol.co.za/news/crime-and-courts/2026-10-23-five-men-taken-in-for-questioning-over-murder-of-foreign-national-during-durban-protests/"
+            },
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/four-men-in-court-over-attacks-on-foreign-nationals/"
+            },
+            {
+              "name": "IOL, 31 Oct",
+              "url": "https://iol.co.za/news/south-africa/kwazulu-natal/2026-10-31-march-and-march-the-protests-the-violence-and-the-growing-legal-battles/"
+            },
+            {
+              "name": "IOL, 10 Nov",
+              "url": "https://iol.co.za/news/2026-11-10-sandf-patrols-durban-cbd-amid-reports-of-renewed-anti-foreigner-violence/"
             }
           ],
           "checked_at": "2026-10-30T05:05:00Z",
-          "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line).",
+          "method": "Found in the 30 Oct 2026 Durban targeted sweep (town mode collector, Google News, township news searches, web and X searches, incidents 22-30 Oct); source pages read again on 30 Oct about 05:00 UTC and claims, dates and place checked by hand; every quote matched word for word against the saved text. Approved by the owner on 30 Oct 2026; standalone (no case, entity or map line). Update prepared 11 Nov 2026 (version 2): East Coast Radio (26 Oct) and IOL (31 Oct, 10 Nov) read in full on 11 Nov about 16:12 UTC and every new quote matched word for word against the saved text. The reports differ on the number charged (four, one released) and arrested (five); both are given, attributed. IOL 31 Oct describes the men as believed to be members of a named movement; that is left out because it is unattributed and not part of any reported charge. The same IOL sentence ends \"on October 23\", which may refer to the arrests or the attacks; police (via GroundUp) and IOL on 10 Nov put the killing on 22 October, so the date is unchanged. Arrests are an update to this pin, not a new pin or a map line.",
           "incident_start": "2026-10-22",
           "incident_precision": "part_of_day",
           "incident_event": "occurred",
@@ -88,13 +100,30 @@
             "anti-immigrant march",
             "xenophobic attack",
             "mob killing",
-            "murder"
+            "murder",
+            "Ugandan national"
           ],
-          "incident_part": "morning"
+          "incident_part": "morning",
+          "last_material_update_at": "2026-11-11T18:13:00+02:00",
+          "update_note": "Charges and arrests reported: East Coast Radio (26 Oct) says four men face charges and one was released; IOL (31 Oct, 10 Nov) says five men were arrested in connection with the murder. The men are not named; no court outcome reported.",
+          "update_sources": [
+            {
+              "name": "East Coast Radio, 26 Oct",
+              "url": "https://www.ecr.co.za/news/news/four-men-in-court-over-attacks-on-foreign-nationals/"
+            },
+            {
+              "name": "IOL, 31 Oct",
+              "url": "https://iol.co.za/news/south-africa/kwazulu-natal/2026-10-31-march-and-march-the-protests-the-violence-and-the-growing-legal-battles/"
+            },
+            {
+              "name": "IOL, 10 Nov",
+              "url": "https://iol.co.za/news/2026-11-10-sandf-patrols-durban-cbd-amid-reports-of-renewed-anti-foreigner-violence/"
+            }
+          ]
         },
         "collected_title": "Man beaten to death in central Durban"
       },
-      "fingerprint": "sha256:9e3baea823e968c911a4bd1670ca111a3adeea3c95221294bfa9a86ce6e020f5"
+      "fingerprint": "sha256:d63cb89ea71ef840af9480cbd91fa65842c3accbeeea50a190675f0131ab4049"
     },
     {
       "signal_id": "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9",
