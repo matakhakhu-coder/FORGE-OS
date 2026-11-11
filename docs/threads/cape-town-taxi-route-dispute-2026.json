@@ -1,0 +1,99 @@
+{
+  "schema": "forge.thread",
+  "version": 1,
+  "thread_id": "cape-town-taxi-route-dispute-2026",
+  "title": "CATA and CODETA route dispute, Cape Town, 2026",
+  "status": "approved",
+  "summary": "Shootings that a source places in the route dispute between the Cape Amalgamated Taxi Association (CATA) and the Congress of Democratic Taxi Associations (CODETA). Pilot thread. It stays off the page until a second published pin has its own source placing it in this dispute.",
+  "basis": [
+    {
+      "quote": "The Western Cape Mobility Department welcomes the Western Cape High Court's interim interdict against the Cape Amalgamated Taxi Association (CATA), the Congress of Democratic Taxi Associations (CODETA), their cited office bearers and affiliated associations and members.",
+      "url": "https://www.westerncape.gov.za/mobility/article/high-court-grants-temporary-interdict-western-cape-holds-taxi-organisations-account",
+      "outlet": "Western Cape Government, Mobility",
+      "published": "2026-10-31",
+      "read_at": "2026-11-11"
+    }
+  ],
+  "members": [
+    {
+      "signal_id": "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c",
+      "claim_by": "party: Codeta",
+      "basis": {
+        "quote": "According to Enge, the shooting followed a dispute after a Cape Amalgamated Taxi Association (Cata) vehicle was fined R150 by Codeta members for loading passengers in the wrong place.",
+        "url": "https://iol.co.za/capetimes/2026-10-18-two-taxi-owners-shot-dead-in-epping-as-police-arrest-two-suspects/",
+        "outlet": "Cape Times (IOL)",
+        "published": "2026-10-18",
+        "read_at": "2026-10-19"
+      },
+      "approved_by": "Matamela Ramovha",
+      "approved_at": "2026-11-11",
+      "note": "The tie to the dispute is Codeta's account (Nceba Enge). Police describe it as taxi-related violence and name no association. Codeta also said it did not know whether a warning call referred to this shooting. Arrests of two suspects (27 and 31) are an update on this pin, not a member."
+    }
+  ],
+  "context": [
+    {
+      "date": "2026-10-30",
+      "precision": "day",
+      "text": "Western Cape High Court interim interdict against CATA and CODETA, their office bearers and members. Return date 20 November 2026 at 10am.",
+      "basis": {
+        "quote": "The respondents must return to court on 20 November 2026 at 10:00 to show why the order should not be made final.",
+        "url": "https://www.capetownetc.com/news/western-cape-tougher-stance-taxi-industry-disputes/",
+        "outlet": "Cape Town ETC",
+        "published": "2026-10-30",
+        "read_at": "2026-11-11"
+      }
+    },
+    {
+      "date": "2026-10-30",
+      "precision": "day",
+      "text": "Provincial Taxi Registrar suspends the CATA Langa Inter-township Taxi Association for six months after an inquiry into unlawful operations in Epping.",
+      "basis": {
+        "quote": "In a separate action, the Provincial Taxi Registrar suspended the registration of the CATA Langa Inter-township Taxi Association for six months following an inquiry into unlawful operations in Epping.",
+        "url": "https://www.capetownetc.com/news/western-cape-tougher-stance-taxi-industry-disputes/",
+        "outlet": "Cape Town ETC",
+        "published": "2026-10-30",
+        "read_at": "2026-11-11"
+      },
+      "note": "No source ties the 16 October Epping shooting to this suspension. Do not present it as the cause or the result of the shooting."
+    },
+    {
+      "date": "2026-11-02",
+      "precision": "day",
+      "text": "CATA and CODETA agree to a week of calm and an independently facilitated process at a meeting with SANTACO, the City and the provincial government.",
+      "basis": {
+        "quote": "Following the discussions, both CATA and CODETA committed ending the violence and participating in an independently facilitated process amid at adressing the underlying causes of the conflict.",
+        "url": "https://www.capetownetc.com/news/cata-and-codeta-agree-to-a-week-of-calm-amid-taxi-violence/",
+        "outlet": "Cape Town ETC",
+        "published": "2026-11-02",
+        "read_at": "2026-11-11"
+      },
+      "note": "Quote copied as published, including the outlet's typos."
+    }
+  ],
+  "excluded": [
+    {
+      "label": "Maitland shooting (held candidate)",
+      "reason": "Held, not published. May join only after its own publication approval and a source placing it in the CATA and CODETA dispute."
+    },
+    {
+      "label": "Bofors Circle, Epping shooting (held candidate)",
+      "reason": "Held, not published. May join only after its own publication approval and a source placing it in the CATA and CODETA dispute."
+    },
+    {
+      "label": "Bellville taxi rank shooting, 7 November 2026",
+      "reason": "No arrests, no motive and no confirmed taxi-dispute link from police or any source read on 11 November 2026."
+    },
+    {
+      "label": "Langa Zone 5 shooting, 12 October 2026",
+      "reason": "No source places it in the CATA and CODETA dispute. Same area and month is not a basis."
+    },
+    {
+      "label": "Delft shootings",
+      "reason": "No source places them in the CATA and CODETA dispute. Delft appearing in the Epping to Delft route quote is not a basis."
+    }
+  ],
+  "approved_by": "Matamela Ramovha",
+  "approved_at": "2026-11-11",
+  "reviewed_at": "2026-11-11",
+  "note": "Pilot approved on the 11 November 2026 call. One published member, so tools/threads.py keeps it off the page and out of records.json until a second qualifying member is approved."
+}

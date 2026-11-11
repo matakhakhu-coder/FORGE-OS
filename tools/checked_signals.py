@@ -123,8 +123,13 @@ STREAMS = {"GLOBAL", "CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"}
 PRECISIONS = {"time", "approx_time", "part_of_day", "day"}
 PARTS_OF_DAY = {"morning", "afternoon", "evening", "night"}
 EVENTS = {"occurred", "found"}
-LINK_TYPES = {"incident", "shared_source", "similar_pattern"}
-LINE_LINK_TYPES = {"incident"}          # the only kind that draws a map line
+LINK_TYPES = {"incident", "follow_on", "shared_source", "similar_pattern"}
+# The kinds that draw a map line. follow_on (owner policy, 11 Nov 2026,
+# docs/threads/POLICY.md): the NEWER pin's source names the older event; it
+# sits on the newer pin, says who makes the claim, and never joins two pins
+# whose incident windows overlap (order unknown: use a thread instead).
+LINE_LINK_TYPES = {"incident", "follow_on"}
+CLAIM_BY_RE = re.compile(r"^(police|source|court|party: .{2,60})$")
 LINK_LABEL_MAX = 80
 _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
@@ -445,7 +450,29 @@ def load_index(index_path: pathlib.Path = INDEX_PATH) -> CheckedSet:
     cs = CheckedSet(batches)
     _reject_duplicates(cs.signals)
     validate_links(cs)
+    # Threads sit beside the signals folder: docs/threads for docs/signals.
+    validate_threads(cs, pathlib.Path(index_path).resolve().parent.parent / "threads")
     return cs
+
+
+# Story threads live in docs/threads/ (tools/threads.py) and are checked with
+# the batches: a thread naming a pin that is not an active checked pin stops
+# the import like a bad link would. A copy of docs/signals elsewhere (tests)
+# is checked against the threads folder beside that copy, if any.
+THREADS_DIR = ROOT / "docs" / "threads"
+
+
+def validate_threads(cs: "CheckedSet", threads_dir: pathlib.Path | None = None) -> None:
+    try:
+        from tools import threads as threads_mod
+    except ImportError:            # run as a script from tools/
+        import threads as threads_mod
+    active = {s["signal_id"]: s for s in cs.active}
+    windows = {sid: incident_window(s["metadata"]["checked"]) for sid, s in active.items()}
+    try:
+        threads_mod.validate(threads_mod.load_threads(threads_dir or THREADS_DIR), active, windows)
+    except threads_mod.ThreadError as exc:
+        raise CheckedSignalError(f"docs/threads: {exc}") from None
 
 
 def provinces(cs: "CheckedSet") -> dict[str, str]:
@@ -468,6 +495,7 @@ def validate_links(cs: CheckedSet) -> None:
     """Every link record must point at another checked pin, say what it is,
     rest on a quote or link, and name who approved it."""
     known = {s["signal_id"] for s in cs.signals}
+    by_sid = {s["signal_id"]: s for s in cs.signals}
     pairs: dict[tuple, str] = {}
     for s in cs.signals:
         sid = s["signal_id"]
@@ -480,7 +508,7 @@ def validate_links(cs: CheckedSet) -> None:
             where = f"{sid}: checked.links[{i}]"
             if not isinstance(ln, dict):
                 raise CheckedSignalError(f"{where} is not an object")
-            extra = set(ln) - {"to", "type", "label", "basis", "approved_by", "approved_at", "note"}
+            extra = set(ln) - {"to", "type", "label", "basis", "claim_by", "approved_by", "approved_at", "note"}
             if extra:
                 raise CheckedSignalError(f"{where}: unknown fields {sorted(extra)}")
             to = str(ln.get("to") or "").strip().lower()
@@ -504,7 +532,24 @@ def validate_links(cs: CheckedSet) -> None:
             if url and not _is_url(url):
                 raise CheckedSignalError(f"{where}: basis.url must be an http(s) link")
             if kind in LINE_LINK_TYPES and not (quote and url):
-                raise CheckedSignalError(f"{where}: an incident link needs both basis.quote and basis.url")
+                raise CheckedSignalError(f"{where}: an {kind} link needs both basis.quote and basis.url")
+            if kind == "follow_on":
+                if not CLAIM_BY_RE.match(str(ln.get("claim_by") or "")):
+                    raise CheckedSignalError(
+                        f"{where}: a follow_on link needs claim_by: police, source, court or 'party: <name>'")
+                mine = incident_window(s["metadata"]["checked"])
+                theirs = incident_window(by_sid[to]["metadata"]["checked"])
+                if not mine or not theirs:
+                    raise CheckedSignalError(f"{where}: follow_on needs an incident date on both pins")
+                if mine[0] < theirs[1] and theirs[0] < mine[1]:
+                    raise CheckedSignalError(
+                        f"{where}: incident windows overlap: order unknown, use a thread "
+                        "(or, if it is the same incident, record an update on that pin)")
+                if mine[0] < theirs[0]:
+                    raise CheckedSignalError(
+                        f"{where}: a follow_on link sits on the newer pin; {to[:8]} is newer")
+            elif ln.get("claim_by") is not None and not CLAIM_BY_RE.match(str(ln.get("claim_by"))):
+                raise CheckedSignalError(f"{where}: claim_by must be police, source, court or 'party: <name>'")
             if not (quote or url):
                 raise CheckedSignalError(f"{where}: basis needs a quote or a link")
             if not str(ln.get("approved_by") or "").strip():

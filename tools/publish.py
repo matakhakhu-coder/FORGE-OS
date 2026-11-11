@@ -475,6 +475,7 @@ def _signal_search_target(s: dict) -> dict:
 
 LINK_KIND_LABELS = {
     "incident":        "Linked incident",
+    "follow_on":       "Follows from",
     "shared_source":   "Shared source",
     "similar_pattern": "Similar pattern",
 }
@@ -499,12 +500,33 @@ def _clean_link_records(raw) -> list[dict]:
             continue
         if not str(ln.get("approved_by") or "").strip():
             continue                      # unapproved: shown nowhere
-        if kind == "incident" and not (quote and url):
+        if kind in ("incident", "follow_on") and not (quote and url):
             continue
+        claim_by = str(ln.get("claim_by") or "").strip()[:70]
+        if kind == "follow_on" and not claim_by:
+            continue                      # a follow_on line always says who claims it
         if not (quote or url):
             continue
-        out.append({"to": to, "type": kind, "label": label, "quote": quote, "url": url})
+        out.append({"to": to, "type": kind, "label": label, "quote": quote, "url": url,
+                    "claim_by": claim_by})
     return out
+
+
+def _time_order(a: dict, b: dict) -> tuple[dict, dict]:
+    """(older, newer) by incident_at; ties and unknowns keep (a, b)."""
+    ka, kb = a.get("incident_at") or "", b.get("incident_at") or ""
+    if ka and kb and kb < ka:
+        return b, a
+    return a, b
+
+
+def _windows_apart(a: dict, b: dict) -> bool:
+    """True when both incident windows are known and do not overlap."""
+    a0, a1, b0, b1 = (a.get("incident_at"), a.get("incident_end"),
+                      b.get("incident_at"), b.get("incident_end"))
+    if not (a0 and a1 and b0 and b1):
+        return False
+    return not (a0 < b1 and b0 < a1)
 
 
 def _resolve_links(signals: list[dict]) -> list[dict]:
@@ -532,21 +554,28 @@ def _resolve_links(signals: list[dict]) -> list[dict]:
                     "label":      ln["label"],
                     "quote":      ln["quote"],
                     "url":        ln["url"],
+                    "claim_by":   ln.get("claim_by") or "",
                     "signal":     b["signal_id"][:8],
                     "title":      b["title"],
                 })
-            if (ln["type"] == "incident" and s["lat"] and s["lng"]
+            if (ln["type"] in ("incident", "follow_on") and s["lat"] and s["lng"]
                     and other["lat"] and other["lng"]):
+                # Direction comes from incident time, older to newer, never
+                # from which pin holds the record. Overlapping windows (or a
+                # missing date) draw no arrow: order unknown.
+                old, new = _time_order(s, other)
                 lines.append({
-                    "from_lat": s["lat"], "from_lng": s["lng"],
-                    "to_lat": other["lat"], "to_lng": other["lng"],
-                    # Pin IDs, so Area check hides a line when either end is hidden.
-                    "from": s["signal_id"][:8], "to": other["signal_id"][:8],
+                    "from_lat": old["lat"], "from_lng": old["lng"],
+                    "to_lat": new["lat"], "to_lng": new["lng"],
+                    # Pin IDs, so a line is hidden whenever either end is hidden.
+                    "from": old["signal_id"][:8], "to": new["signal_id"][:8],
                     "label": ln["label"],
-                    "type": "incident",
+                    "type": ln["type"],
+                    "arrow": _windows_apart(s, other),
+                    "claim_by": ln.get("claim_by") or "",
                     "stream": s["stream"] or "GLOBAL",
                 })
-    order = {"incident": 0, "shared_source": 1, "similar_pattern": 2}
+    order = {"incident": 0, "follow_on": 0, "shared_source": 1, "similar_pattern": 2}
     for s in signals:
         s["related"].sort(key=lambda r: (order[r["type"]], r["title"]))
     return lines
@@ -1239,6 +1268,12 @@ def _build_dist(
     # Link records -> drawer rows + map lines, before any render sees the pins.
     intel_links = _resolve_links(signals)
 
+    # Story threads (tools/threads.py): only approved threads with at least
+    # two approved, published members reach the page and records.json.
+    from tools import threads as threads_mod
+    story_threads = threads_mod.public_threads(
+        threads_mod.load_threads(pathlib.Path(CHECKED_INDEX).resolve().parent.parent / "threads"), signals)
+
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
     DIST_CASES.mkdir(exist_ok=True)
@@ -1359,6 +1394,7 @@ def _build_dist(
             markers=map_data.map_list(live_signals),
             pin_detail_dir=map_data.PIN_DIR + "/",
             intel_links=intel_links,
+            story_threads=story_threads,
             all_signals=signals,
             cases=cases,
             grouped=grouped,
@@ -1498,7 +1534,7 @@ def _build_dist(
     # Approved map pins only (tools/records_export.py), free to read and
     # download; there is no paid tier (22 Oct 2026).
     # `records` was built above, before the map render, for the charts.
-    records_payload = write_records(DIST, records, rec_version)
+    records_payload = write_records(DIST, records, rec_version, story_threads)
     (DIST / "records.html").write_text(
         env.get_template("records.html").render(
             generated_at=now_str,
@@ -1803,6 +1839,7 @@ def _build_digest(
 # active checked pin. Either failure stops the publish before any deploy.
 
 CHECKED_INDEX = ROOT / "docs" / "signals" / "index.json"
+THREADS_DIR = ROOT / "docs" / "threads"
 
 
 class CheckedGuardError(SystemExit):

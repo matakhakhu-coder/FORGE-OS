@@ -387,21 +387,30 @@ def to_csv(rows: list[dict]) -> str:
     return "\ufeff" + buf.getvalue()
 
 
-def to_json(rows: list[dict], version: str) -> dict:
+# Version 2 (11 Nov 2026) adds "threads": approved story threads only, each
+# member a short signal id with who places it in the thread and the quote.
+RECORDS_JSON_VERSION = 2
+
+
+def to_json(rows: list[dict], version: str, threads: list[dict] | None = None) -> dict:
+    from tools.threads import RECORDS_CAVEAT
     return {
         "schema": "za-divergent.records",
-        "version": 1,
+        "version": RECORDS_JSON_VERSION,
         "data_version": version,
         "count": len(rows),
         "caveats": list(CAVEATS),
         "fields": [{"name": f, "help": FIELD_HELP[f]} for f in RECORD_FIELDS],
         "records": rows,
+        "thread_caveat": RECORDS_CAVEAT,
+        "threads": list(threads or []),
     }
 
 
-def write_records(dist: pathlib.Path, rows: list[dict], version: str) -> dict:
+def write_records(dist: pathlib.Path, rows: list[dict], version: str,
+                  threads: list[dict] | None = None) -> dict:
     """Write dist/records.csv and dist/records.json; return the JSON payload."""
-    payload = to_json(rows, version)
+    payload = to_json(rows, version, threads)
     (dist / "records.csv").write_text(to_csv(rows), encoding="utf-8", newline="")
     (dist / "records.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
