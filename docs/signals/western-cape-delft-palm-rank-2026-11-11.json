@@ -1,0 +1,166 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Western Cape",
+  "batch": "Western Cape (Delft, Palm taxi rank) pins, incidents 22 and 28 Oct 2026, hand-checked, approved by the owner on 30 Oct 2026 and re-confirmed on 11 Nov 2026",
+  "scope": "Western Cape pins, so both fall inside the Sprint 5 pattern-test set by province (tools/checked_signals.py: pattern_test_pins). The 22 Oct double murder is Sprint 5 candidate C5-4 (first reported 22 Oct). The 28 Oct shooting killed no one, so it is not a killing and does not count as a Sprint 5 killing under the frozen predictions; it must be left out of any killing count. Nothing here edits the predictions or scoring files. Places: Palm taxi rank, Main Road, Delft (Cape Town). Other candidates are held or excluded and are not in this file.",
+  "rules": "No case or entity links on the signals; thread membership, where a source places a pin in a named conflict, is kept in docs/threads under docs/threads/POLICY.md, never from closeness alone. Incident date kept apart from report date. Victims named only as police and the news name them (no one is named here); suspects are not named; an allegation by an unnamed source is labelled as unconfirmed. Caxton papers are not sources. Being at the same rank is not a link. Area-level points say 'approx.' and the location note starts 'APPROXIMATE MAP POINT'. Every fact-base quote matched word for word against the saved source text on 11 Nov 2026.",
+  "review_status": "Approved by the owner on 30 Oct 2026 (voice call, about 12:20 SAST, 'Publish those two'); not pushed then; publication re-confirmed by the owner on 11 Nov 2026 after the sources were re-read. One explicit version-1 approval record per pin in docs/approvals/pins (reference delft-palm-approval-2026-11-11).",
+  "owner_decisions": [
+    {
+      "at": "2026-10-30 (voice call, about 12:20 SAST)",
+      "decision": "Owner approved both Palm taxi rank, Delft candidates for the map with the words 'Publish those two': the 22 Oct double murder (Sprint 5 candidate C5-4) and the 28 Oct shooting in which two men were wounded."
+    },
+    {
+      "at": "2026-11-11",
+      "decision": "The batch was not pushed on 30 Oct. Sources re-read and arrests re-checked on 11 Nov 2026 (none found); the owner re-confirmed publication of both pins on 11 Nov 2026."
+    },
+    {
+      "at": "2026-10-30",
+      "decision": "The 28 Oct shooting is published although no one was killed; it is a crime pin, not a killing, and does not count as a Sprint 5 killing under the frozen predictions."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Delft Palm taxi rank: earlier shooting near the rank in March 2026 (two killed, per Cape Town Etc)",
+      "reason": "Outside the collection window and not part of the owner approval; mentioned only as background in the source."
+    },
+    {
+      "place": "Other Cape Town taxi-related shootings of 27-29 Oct (Khayelitsha, Mfuleni, Gugulethu)",
+      "reason": "Not checked or approved as pins; not part of this release."
+    },
+    {
+      "place": "Leaked internal police advisory of 27 Oct described by IOL",
+      "reason": "Not used as a source: it is an unverified document seen on social media and names an association as planning an attack. Only the commissioner's own on-record words are used."
+    },
+    {
+      "place": "Unrelated video clips of taxi-rank shootings shared online",
+      "reason": "Not linked to either pin; no clip is used as a source."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "2e14d317-105f-5b93-9f23-9db230dfe7af",
+      "external_id": "checked:wc-delft-palm-2026-10-30:D1",
+      "source": "Cape Times (IOL)",
+      "title": "Palm taxi rank, Delft (approx.): two men shot dead and one wounded in suspected taxi-related shooting, 22 Oct",
+      "content": "Two men were shot dead and another person wounded at the Palm taxi rank on Main Road, Delft, in the early hours of Thursday 22 October, police said. Delft police registered two counts of murder and one of attempted murder, and police believe the motive is taxi-related. Accounts of the time differ: a resident told the Cape Times of gunfire at about 03:45 and again at 04:20, while police told Cape Town Etc the shooting was reported at about 05:10. An unnamed taxi operator quoted by the Cape Times blamed a route dispute between the taxi associations CATA and CODETA; the paper says this was not independently confirmed, and both associations said they could not comment. We found no report of an arrest (checked 11 Nov). No one is named. Police statements carried by news outlets; no SAPS statement found. The map point is approximate: the rank is not mapped, so the pin is where Palm Street meets Delft Main Road, not a confirmed spot.",
+      "lat": -33.98844,
+      "lng": 18.63882,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-22T03:10:00Z",
+      "published_at": "2026-11-11T16:33:37Z",
+      "metadata": {
+        "source_outlet": "Cape Times (IOL)",
+        "link": "https://iol.co.za/capetimes/news/2026-10-22-two-killed-and-one-wounded-in-suspected-taxi-related-shooting-at-delft-rank/",
+        "pubdate_raw": "2026-10-22T06:08:00+0000",
+        "checked": {
+          "incident": "Thu 22 Oct 2026, early morning. A resident heard gunfire at about 03:45 and 04:20 (Cape Times); police say it was reported at about 05:10 (Cape Town Etc). Exact time not settled.",
+          "reported": "22 Oct 2026 (Cape Times and Cape Town Etc, quoting police)",
+          "location": "APPROXIMATE MAP POINT. Palm taxi rank, Main Road, Delft (Cape Town Etc, citing police). The rank is not mapped in OpenStreetMap; the pin is where Palm Street meets Delft Main Road, chosen only because the names match, so the rank may be elsewhere along Main Road. Not a confirmed spot. Delft police station.",
+          "sources": [
+            {
+              "name": "Cape Times (IOL), 22 Oct",
+              "url": "https://iol.co.za/capetimes/news/2026-10-22-two-killed-and-one-wounded-in-suspected-taxi-related-shooting-at-delft-rank/"
+            },
+            {
+              "name": "Cape Town Etc, 22 Oct",
+              "url": "https://www.capetownetc.com/news/two-men-killed-shooting-delft-taxi-rank/"
+            },
+            {
+              "name": "Cape Argus (IOL), 24 Oct",
+              "url": "https://iol.co.za/capeargus/news/2026-10-24-four-killed-in-suspected-taxi-related-shootings-in-delft-and-maitland/"
+            }
+          ],
+          "checked_at": "2026-11-11T16:33:37Z",
+          "method": "22 Oct shooting found in the Sprint 5 collection run (candidate C5-4, source-checked 22 Oct); 28 Oct shooting found in news searches on 30 Oct. Approved by the owner on 30 Oct 2026 and re-confirmed on 11 Nov 2026; source pages read again on 11 Nov 2026, news searched for later arrests, the rank looked up in OpenStreetMap (not mapped), live map checked for duplicates (none), and every quote matched word for word against the saved text; standalone (no case, entity links; any thread membership is recorded only in docs/threads under docs/threads/POLICY.md).",
+          "incident_start": "2026-10-22",
+          "incident_precision": "day",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-22",
+          "search_aliases": [
+            "Delft",
+            "Palm taxi rank",
+            "Palm Taxi Rank",
+            "Main Road",
+            "taxi rank",
+            "taxi violence",
+            "CATA",
+            "CODETA",
+            "Cape Town",
+            "Cape Flats",
+            "Western Cape",
+            "murder",
+            "shooting"
+          ]
+        },
+        "collected_title": "Two killed and one wounded in suspected taxi-related shooting at Delft rank"
+      },
+      "fingerprint": "sha256:39c1e61d72f6416639909a6414537e7f2b9882b8d63717ebe7ecef6ede69621b"
+    },
+    {
+      "signal_id": "6e0a60fb-20f8-545e-b9bc-dff46600c68b",
+      "external_id": "checked:wc-delft-palm-2026-10-30:D2",
+      "source": "Cape Argus (IOL)",
+      "title": "Palm taxi rank, Delft (approx.): two men wounded as shots fired at taxi rank; no arrests, 28 Oct",
+      "content": "Two men were wounded when shots were fired at the Palm taxi rank in Delft at about 07:00 on Wednesday 28 October, according to police. Police are investigating two counts of attempted murder and the discharge of a firearm, and no arrests had been made (Cape Argus, 28 Oct). Police described the shooting as between taxi drivers. Hundreds of commuters ran for cover and police closed the rank. On 29 October the Western Cape police commissioner, Sizakhele Dyantyi, told IOL that police had intelligence about a planned shooting in Delft and had officers at the rank when shots were fired from another part of it. No one was killed and no one is named. Accounts differ on small points: the Cape Times says Tuesday morning, but its police quote says 'this morning' and it was published on Wednesday 28 October, the date TygerBurger gives; the Cape Argus says the wounded went to hospital in a private vehicle, TygerBurger says by another taxi. It is the second shooting at this rank since 22 October; sharing a rank is not, on its own, a link. The map point is approximate: the rank is not mapped, so the pin is where Palm Street meets Delft Main Road, not a confirmed spot.",
+      "lat": -33.98844,
+      "lng": 18.63882,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-10-28T05:00:00Z",
+      "published_at": "2026-11-11T16:33:37Z",
+      "metadata": {
+        "source_outlet": "Cape Argus (IOL)",
+        "link": "https://iol.co.za/capeargus/news/2026-10-28-delft-taxi-rank-shooting-santaco-to-meet-cata-and-codeta/",
+        "pubdate_raw": "2026-10-28T12:00:00+0000",
+        "checked": {
+          "incident": "Wed 28 Oct 2026, at about 07:00 (police, via the Cape Argus)",
+          "reported": "28 Oct 2026 (Cape Times, TygerBurger and Cape Argus, quoting police)",
+          "location": "APPROXIMATE MAP POINT. Palm taxi rank, Main Road, Delft (Cape Town Etc, citing police). The rank is not mapped in OpenStreetMap; the pin is where Palm Street meets Delft Main Road, chosen only because the names match, so the rank may be elsewhere along Main Road. Not a confirmed spot. Delft police station.",
+          "sources": [
+            {
+              "name": "Cape Argus (IOL), 28 Oct",
+              "url": "https://iol.co.za/capeargus/news/2026-10-28-delft-taxi-rank-shooting-santaco-to-meet-cata-and-codeta/"
+            },
+            {
+              "name": "Cape Times (IOL), 28 Oct",
+              "url": "https://iol.co.za/capetimes/2026-10-28-two-wounded-as-gunmen-open-fire-at-delft-taxi-rank-commuters-flee-in-panic/"
+            },
+            {
+              "name": "TygerBurger (NovaNews), 28 Oct",
+              "url": "https://novanews.co.za/tygerburger/police-still-on-the-scene-in-delft-after-taxi-shooting/"
+            },
+            {
+              "name": "Cape Argus (IOL), 29 Oct",
+              "url": "https://iol.co.za/capeargus/news/2026-10-29-police-had-intelligence-about-planned-delft-taxi-rank-shooting-commissioner-confirms/"
+            }
+          ],
+          "checked_at": "2026-11-11T16:33:37Z",
+          "method": "22 Oct shooting found in the Sprint 5 collection run (candidate C5-4, source-checked 22 Oct); 28 Oct shooting found in news searches on 30 Oct. Approved by the owner on 30 Oct 2026 and re-confirmed on 11 Nov 2026; source pages read again on 11 Nov 2026, news searched for later arrests, the rank looked up in OpenStreetMap (not mapped), live map checked for duplicates (none), and every quote matched word for word against the saved text; standalone (no case, entity links; any thread membership is recorded only in docs/threads under docs/threads/POLICY.md).",
+          "incident_start": "2026-10-28T07:00:00+02:00",
+          "incident_precision": "approx_time",
+          "incident_event": "occurred",
+          "reported_at": "2026-10-28",
+          "search_aliases": [
+            "Delft",
+            "Palm taxi rank",
+            "Palm Taxi Rank",
+            "taxi rank",
+            "taxi violence",
+            "CATA",
+            "CODETA",
+            "attempted murder",
+            "Cape Town",
+            "Cape Flats",
+            "Western Cape",
+            "shooting"
+          ]
+        },
+        "collected_title": "Delft taxi-rank shooting: SANTACO to meet CATA and CODETA"
+      },
+      "fingerprint": "sha256:99e025a266be04ab3983d5141d7c7c615ab4a5dc4019a5daa4bf8b3e62c4b10e"
+    }
+  ]
+}

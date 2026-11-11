@@ -85,8 +85,8 @@ def test_export_matches_private_audit_scope():
 
 def test_export_covers_frozen_scope_without_numeric_grades():
     exported = load('docs/signals/fact-bases.json')['pins']
-    assert len(exported) == 83                                      # 42 audited + 41 separately audited
-    assert sum(len(p['facts']) for p in exported.values()) == 484   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths + 18 Polokwane sweep + 24 Musina sweep + 18 Durban sweep + 16 Bloemfontein sweep + 23 remaining-provinces sweep (Tembisa 5, Westonaria 5, Zamdela 5, Meqheleng 4, Currieskamp 4)
+    assert len(exported) == 85                                      # 42 audited + 43 separately audited (+ Palm taxi rank, Delft, 22 and 28 Oct)
+    assert sum(len(p['facts']) for p in exported.values()) == 495   # 222 + six each for Gqeberha, Steenberg, Strandfontein, the four C5 pins and Firethorne, + 43 Limpopo + 30 Mpumalanga + 24 Limpopo infrastructure + 6 KwaZulu-Natal infrastructure + 12 Limpopo unresolved deaths + 18 Polokwane sweep + 24 Musina sweep + 18 Durban sweep + 16 Bloemfontein sweep + 23 remaining-provinces sweep (Tembisa 5, Westonaria 5, Zamdela 5, Meqheleng 4, Currieskamp 4) + 11 Palm taxi rank, Delft (22 Oct 6, 28 Oct 5)
     assert sum(len(exported[s]['facts']) for s in LIMPOPO_INFRA) == 24  # six each
     assert all(exported[s]['status'] == 'audited' and exported[s]['police_party'] is False for s in LIMPOPO_INFRA)
     assert sum(len(exported[s]['facts']) for s in KZN_INFRA) == 6

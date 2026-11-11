@@ -4343,12 +4343,17 @@
     section('sd-thread-wrap', box.children.length > 0);
   }
 
-  function tvPinIcon(mb, hollow) {
+  // dx: sideways nudge in pixels, so members at the same point sit side by
+  // side in time order instead of one number hiding another.
+  function tvPinIcon(mb, hollow, dx) {
     return L.divIcon({
       className: 'tv-pin' + (hollow ? ' tv-pin--hollow' : ''),
       html: '<span class="tv-pin__n">' + (mb.n || '?') + '</span>',
-      iconSize: [30, 30], iconAnchor: [15, 15],
+      iconSize: [30, 30], iconAnchor: [15 - (dx || 0), 15],
     });
+  }
+  function tvSamePoint(a, b) {
+    return a.lat.toFixed(6) === b.lat.toFixed(6) && a.lng.toFixed(6) === b.lng.toFixed(6);
   }
   // A chevron at the middle of a segment, pointing at the newer event.
   function tvChevron(a, b) {
@@ -4366,12 +4371,16 @@
     var layer = L.layerGroup();
     var bySid = {};
     var pts = [];
+    var dated = (t.members || []).filter(function (mb) { return mb.n; });
     (t.members || []).forEach(function (mb) {
       if (!mb.n) return;                       // undated: listed, never a line end
       bySid[mb.signal] = mb;
+      // Members at the same point: spread side by side, older on the left.
+      var same = dated.filter(function (o) { return tvSamePoint(o, mb); });
+      var dx = (same.indexOf(mb) - (same.length - 1) / 2) * 32;
       // Hollow end: archived (not on the live map) or placed only approximately.
       var hollow = mb.approximate || idxForSignal(mb.signal) === null;
-      var mk = L.marker([mb.lat, mb.lng], { icon: tvPinIcon(mb, hollow), zIndexOffset: 2000,
+      var mk = L.marker([mb.lat, mb.lng], { icon: tvPinIcon(mb, hollow, dx), zIndexOffset: 2000,
         title: mb.n + '. ' + (mb.title || ''), alt: mb.n + '. ' + (mb.title || ''), riseOnHover: true });
       function openMember() {
         // On a phone the drawer is hidden in thread view: leave it first,
@@ -4393,6 +4402,7 @@
     (t.segments || []).forEach(function (sg) {
       var a = bySid[sg.from], b = bySid[sg.to];
       if (!a || !b) return;                    // never a line with a missing end
+      if (tvSamePoint(a, b)) return;           // same point: the side-by-side numbers carry the order
       layer.addLayer(L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
         className: 'tv-line', color: '#f2c14e', weight: 2.5, opacity: 0.9, dashArray: '6 6', interactive: false,
       }));

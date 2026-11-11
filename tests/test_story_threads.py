@@ -25,6 +25,8 @@ from tests.test_checked_signals import (  # noqa: E402
 from tests.test_sprint3_links import _add_links, _approve_test_edits, _build, _link  # noqa: E402
 
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"       # batch 0, 16 Oct 05:00-07:00 SAST
+PALM_22 = "2e14d317-105f-5b93-9f23-9db230dfe7af"   # Palm taxi rank, Delft, 22 Oct 2026 (two killed)
+PALM_28 = "6e0a60fb-20f8-545e-b9bc-dff46600c68b"   # Palm taxi rank, Delft, 28 Oct 2026 (two wounded)
 WORCESTER = "7bce2be1-912e-48e2-9fd4-c79d1611c16f"    # batch 0, 14 Oct (day)
 ZOLA = "0d2ac747-e939-48fd-a116-3d99c1a95758"         # 16 Oct, overlaps Epping
 N2_GATEWAY = "21b2a9b0-66c3-4045-924d-963eaa85b4a1"   # batch 1, 4 Oct
@@ -70,7 +72,7 @@ def _story_threads(dist: Path) -> list[dict]:
 
 # ── The committed pilot ─────────────────────────────────────────────────────
 
-def test_committed_pilot_is_valid_and_private():
+def test_committed_pilot_is_valid_and_public_with_three_members():
     from tools import threads as th
     from tools.checked_signals import load_index
 
@@ -80,15 +82,30 @@ def test_committed_pilot_is_valid_and_private():
     assert len(pilot) == 1
     t = pilot[0]
     assert t["status"] == "approved"
-    assert [m["signal_id"] for m in t["members"]] == [EPPING]
+    assert [m["signal_id"] for m in t["members"]] == [EPPING, PALM_22, PALM_28]
     assert t["members"][0]["claim_by"] == "party: Codeta"
     assert "Enge" in t["members"][0]["basis"]["quote"]
-    # One published member: never public, so no line and nothing in records.json.
-    published = [{"signal_id": s["signal_id"], "lat": s["lat"], "lng": s["lng"]} for s in cs.active]
-    assert th.public_threads(threads, published) == []
+    # Each Palm taxi rank member rests on its own source naming the dispute (11 Nov 2026).
+    assert "Palm taxi rank" in t["members"][1]["basis"]["quote"]
+    assert "CODETA and CATA" in t["members"][2]["basis"]["quote"]
+    assert t["members"][1]["basis"]["url"] != t["members"][2]["basis"]["url"]
+    assert all(m["approved_by"] == "Matamela Ramovha" for m in t["members"])
+    # Three published members: public, ordered by incident time, older to newer.
+    from tools.checked_signals import incident_window
+    published = []
+    for s in cs.active:
+        w = incident_window(s["metadata"]["checked"])
+        published.append({"signal_id": s["signal_id"], "lat": s["lat"], "lng": s["lng"],
+                          "incident_at": w[0].strftime("%Y-%m-%dT%H:%M:%SZ"),
+                          "incident_end": w[1].strftime("%Y-%m-%dT%H:%M:%SZ")})
+    pub = th.public_threads(threads, published)
+    assert len(pub) == 1
+    assert [m["signal"] for m in pub[0]["members"]] == [EPPING[:8], PALM_22[:8], PALM_28[:8]]
+    assert [m["n"] for m in pub[0]["members"]] == [1, 2, 3]
+    assert all(seg["arrow"] for seg in pub[0]["segments"]) and len(pub[0]["segments"]) == 2
     # Held candidates and the excluded events are named, never members.
     labels = " ".join(x["label"] for x in t["excluded"])
-    for word in ("Maitland", "Bofors", "Bellville", "Langa Zone 5", "Delft"):
+    for word in ("Maitland", "Bofors", "Bellville", "Langa Zone 5", "Delft", "Nyanga"):
         assert word in labels
     assert all(not x.get("signal_id") for x in t["excluded"])
     # Context entries are text with a source, never pins.
@@ -285,3 +302,12 @@ def test_template_thread_view_contract():
     # The thread layer only exists inside thread view.
     assert t.count("= drawThread(") == 1
     assert "var d = drawThread(t);" in t
+
+
+def test_thread_view_spreads_members_at_the_same_point():
+    """Two members at one point (the Palm taxi rank pins, 22 and 28 Oct) sit side by
+    side in time order; no zero-length line is drawn between them."""
+    html = (ROOT / "publisher" / "templates" / "map.html").read_text(encoding="utf-8")
+    assert "function tvSamePoint(a, b)" in html
+    assert "iconAnchor: [15 - (dx || 0), 15]" in html
+    assert "if (tvSamePoint(a, b)) return;" in html

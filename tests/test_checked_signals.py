@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT))
 
 SIGNALS_DIR = ROOT / "docs" / "signals"
 EPPING = "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c"
-WC_PINS = 32          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct + Steenberg, Strandfontein and Athlone, 21 Oct + Tafelsig barber, Valhalla Park, St Montague Village and Firethorne, 22 Oct)
+WC_PINS = 34          # Western Cape: the Sprint 5 pattern-test pins (24 + Retreat, 19 Oct + Steenberg, Strandfontein and Athlone, 21 Oct + Tafelsig barber, Valhalla Park, St Montague Village and Firethorne, 22 Oct + Palm taxi rank, Delft, 22 and 28 Oct, approved 30 Oct and re-confirmed 11 Nov 2026)
 NW_PINS = 4           # North West, published 19 Oct 2026, outside the pattern test
 EC_PINS = 9           # Eastern Cape: 8 published 19 Oct 2026 + Gqeberha (21 Oct), outside the pattern test
 LP_PINS = 8           # Limpopo: incidents 1-22 Oct 2026, prepared 22 Oct 2026, outside the pattern test
@@ -142,11 +142,12 @@ def test_index_loads_all_pins_in_order():
         "free-state-bloemfontein-sweep-2026-10-25.json",
         "gauteng-provinces-sweep-2026-10-30.json",
         "free-state-provinces-sweep-2026-10-30.json",
-        "northern-cape-provinces-sweep-2026-10-30.json"]
+        "northern-cape-provinces-sweep-2026-10-30.json",
+        "western-cape-delft-palm-rank-2026-11-11.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
         "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State",
-        "Gauteng", "Free State", "Northern Cape"]
+        "Gauteng", "Free State", "Northern Cape", "Western Cape"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:

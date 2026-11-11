@@ -4,7 +4,7 @@
   "thread_id": "cape-town-taxi-route-dispute-2026",
   "title": "CATA and CODETA route dispute, Cape Town, 2026",
   "status": "approved",
-  "summary": "Shootings that a source places in the route dispute between the Cape Amalgamated Taxi Association (CATA) and the Congress of Democratic Taxi Associations (CODETA). Pilot thread. It stays off the page until a second published pin has its own source placing it in this dispute.",
+  "summary": "Shootings that a source places in the route dispute between the Cape Amalgamated Taxi Association (CATA) and the Congress of Democratic Taxi Associations (CODETA). Each member has its own source; being close in place or time is never a reason to join.",
   "basis": [
     {
       "quote": "The Western Cape Mobility Department welcomes the Western Cape High Court's interim interdict against the Cape Amalgamated Taxi Association (CATA), the Congress of Democratic Taxi Associations (CODETA), their cited office bearers and affiliated associations and members.",
@@ -28,6 +28,34 @@
       "approved_by": "Matamela Ramovha",
       "approved_at": "2026-11-11",
       "note": "The tie to the dispute is Codeta's account (Nceba Enge). Police describe it as taxi-related violence and name no association. Codeta also said it did not know whether a warning call referred to this shooting. Arrests of two suspects (27 and 31) are an update on this pin, not a member."
+    },
+    {
+      "signal_id": "2e14d317-105f-5b93-9f23-9db230dfe7af",
+      "claim_by": "source",
+      "basis": {
+        "quote": "The agreement followed a series of deadly incidents, including a shooting at Delft's Palm taxi rank that left two people dead and another wounded.",
+        "url": "https://iol.co.za/capetimes/2026-11-06-cata-chairperson-shot-at-nyanga-taxi-rank-as-fragile-cape-town-taxi-truce-faces-new-test/",
+        "outlet": "Cape Times (IOL)",
+        "published": "2026-11-06",
+        "read_at": "2026-11-11"
+      },
+      "approved_by": "Matamela Ramovha",
+      "approved_at": "2026-11-11",
+      "note": "The Cape Times places the shooting among the incidents behind the 2 November CATA and CODETA agreement, which it says followed 'weeks of deadly shootings linked to disputed taxi routes between Delft, Langa and Epping'. On 22 October an unnamed taxi operator quoted by the same paper also blamed the CATA and CODETA route dispute; that was not independently confirmed. Police call the motive taxi-related and name no association. No arrest found (checked 11 November 2026)."
+    },
+    {
+      "signal_id": "6e0a60fb-20f8-545e-b9bc-dff46600c68b",
+      "claim_by": "source",
+      "basis": {
+        "quote": "The incident comes amid a wave of taxi violence stemming from a feud for control over routes between rival taxi associations CODETA and CATA.",
+        "url": "https://iol.co.za/capeargus/news/2026-10-29-police-had-intelligence-about-planned-delft-taxi-rank-shooting-commissioner-confirms/",
+        "outlet": "Cape Argus (IOL)",
+        "published": "2026-10-29",
+        "read_at": "2026-11-11"
+      },
+      "approved_by": "Matamela Ramovha",
+      "approved_at": "2026-11-11",
+      "note": "The same report says a police intelligence report dated 27 October warned of a planned CATA attempt to take the Delft rank on 28 October, and the provincial commissioner said officers were talking to CODETA and CATA members when shots were fired. That is the account of the paper and the police; no one has been charged and no association has been found responsible. No one was killed."
     }
   ],
   "context": [
@@ -88,12 +116,16 @@
       "reason": "No source places it in the CATA and CODETA dispute. Same area and month is not a basis."
     },
     {
-      "label": "Delft shootings",
-      "reason": "No source places them in the CATA and CODETA dispute. Delft appearing in the Epping to Delft route quote is not a basis."
+      "label": "Other Delft shootings (Voorbrug, 3 Oct; N2 Gateway, 4 Oct)",
+      "reason": "No source places them in the CATA and CODETA dispute. Delft appearing in the Epping to Delft route quote is not a basis, and sharing a suburb with the Palm taxi rank members is not a basis."
+    },
+    {
+      "label": "Nyanga taxi rank shooting of the CATA chairperson, 5 November 2026",
+      "reason": "Not a published pin. The Cape Times reports it as a test of the CATA and CODETA truce; it may join only after its own publication approval."
     }
   ],
   "approved_by": "Matamela Ramovha",
   "approved_at": "2026-11-11",
   "reviewed_at": "2026-11-11",
-  "note": "Pilot approved on the 11 November 2026 call. One published member, so tools/threads.py keeps it off the page and out of records.json until a second qualifying member is approved."
+  "note": "Pilot approved on the 11 November 2026 call. Epping (16 Oct) joined first; the two Palm taxi rank, Delft shootings (22 and 28 Oct) joined on 11 November 2026, each on its own source naming the dispute, when the owner approved them."
 }

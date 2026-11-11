@@ -194,7 +194,7 @@ def _save(index: Path, path: Path, data: dict):
 
 def test_current_pins_make_their_areas_and_skip_held_places():
     pins = ca.published_pins()
-    assert len(pins) == 83            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga + 4 Limpopo infrastructure + 1 KwaZulu-Natal infrastructure + 2 Limpopo unresolved deaths + 3 Polokwane sweep (2 Priority Intelligence, 1 Africa & World) + 4 Musina sweep (2 killings, 2 Priority Intelligence) + 3 Durban sweep (killings) + 3 Bloemfontein sweep (killings and a shooting) + 5 remaining-provinces sweep (Gauteng 2 incl. 1 Priority Intelligence, Free State 2, Northern Cape 1)
+    assert len(pins) == 85            # 32 Western Cape + 4 North West + 9 Eastern Cape + 8 Limpopo + 5 Mpumalanga + 4 Limpopo infrastructure + 1 KwaZulu-Natal infrastructure + 2 Limpopo unresolved deaths + 3 Polokwane sweep (2 Priority Intelligence, 1 Africa & World) + 4 Musina sweep (2 killings, 2 Priority Intelligence) + 3 Durban sweep (killings) + 3 Bloemfontein sweep (killings and a shooting) + 5 remaining-provinces sweep (Gauteng 2 incl. 1 Priority Intelligence, Free State 2, Northern Cape 1)
     res = ca.compute_areas(pins)
     keys = {a["key"] for a in res["areas"]}
     assert keys == {"western-cape--cape-town", "western-cape--mossel-bay", "western-cape--worcester",
@@ -237,7 +237,7 @@ def test_current_pins_make_their_areas_and_skip_held_places():
                     # Meqheleng -> Ficksburg, Currieskamp -> Keimoes.
                     "gauteng--johannesburg", "gauteng--glenharvie", "free-state--sasolburg",
                     "free-state--ficksburg", "northern-cape--keimoes"}
-    assert sum(len(a["pins"]) for a in res["areas"]) == 83
+    assert sum(len(a["pins"]) for a in res["areas"]) == 85
     held = {h["place"] for h in ca.held_back()}
     assert any("Lebotloane" in h for h in held)
     pin_titles = " ".join(p["title"] for a in res["areas"] for p in a["pins"])

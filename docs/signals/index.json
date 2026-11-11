@@ -103,6 +103,11 @@
       "file": "northern-cape-provinces-sweep-2026-10-30.json",
       "province": "Northern Cape",
       "signals": 1
+    },
+    {
+      "file": "western-cape-delft-palm-rank-2026-11-11.json",
+      "province": "Western Cape",
+      "signals": 2
     }
   ]
 }
