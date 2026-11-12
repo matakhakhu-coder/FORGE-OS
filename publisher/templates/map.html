@@ -4654,7 +4654,10 @@
         var mk = L.marker([p.lat, p.lng], { icon: rvIcon(String(count), far), zIndexOffset: 2500,
           title: lab + ': ' + rvPlural(count, 'reported case', 'reported cases'),
           alt: lab + ': ' + rvPlural(count, 'reported case', 'reported cases'), riseOnHover: true });
-        mk.bindTooltip(lab, { permanent: true, direction: 'bottom', offset: [0, 14], className: 'rv-label' });
+        // The place abroad is labelled above its marker and the South African
+        // end below, so two ends drawn close together on a phone never stack
+        // their labels on top of each other.
+        mk.bindTooltip(lab, { permanent: true, direction: far ? 'top' : 'bottom', offset: far ? [0, -14] : [0, 14], className: 'rv-label' });
         mk.on('click', function () { rvFocusLine(r.id); });
         mk.on('keypress', function (e) { if (e.originalEvent && e.originalEvent.key === 'Enter') rvFocusLine(r.id); });
         layer.addLayer(mk);
