@@ -701,6 +701,63 @@
   html.forge-thread-view #map .marker-cluster { opacity: 0.28; }
   html.forge-thread-view #map .sig-pulse, html.forge-thread-view #map .sig-ring { display: none; }
   @media (prefers-reduced-motion: reduce) { .tv-line { transition: none; } }
+  /* ── Reported routes view (docs/routes/POLICY.md, 12 Nov 2026) ──────────
+     A second kind of line, kept apart from story threads: one South African
+     case joined to a named place abroad. One neutral colour, never red and
+     never the thread yellow. Seizure cases show only here. */
+  .rv-panel {
+    position: absolute; z-index: 430; left: var(--sp-4); top: calc(var(--map-header, 60px) + 8px); bottom: var(--sp-4);
+    width: 360px; display: flex; flex-direction: column;
+    background: rgba(8,13,18,0.97); border: 2px solid #8fbcd4; border-radius: var(--r-md);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5); color: var(--text-primary);
+  }
+  .rv-panel[hidden] { display: none; }
+  .rv-head { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+  .rv-kicker { display: block; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8fbcd4; }
+  .rv-heading { margin: 0; font-size: 0.9rem; line-height: 1.3; }
+  .rv-heading:focus { outline: 2px solid #8fbcd4; outline-offset: 2px; }
+  .rv-count { margin: 4px 0 0; font-size: 0.76rem; color: var(--text-secondary); }
+  .rv-caption { margin: 4px 0 0; font-size: 0.74rem; line-height: 1.4; color: var(--text-dim); }
+  .rv-panel .rv-back { margin-top: var(--sp-2); width: 100%; min-height: 44px; }
+  .rv-body { overflow-y: auto; padding: var(--sp-2) var(--sp-3) var(--sp-3); flex: 1; }
+  .rv-list-title { margin: 0 0 var(--sp-2); font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .rv-route { list-style: none; margin: 0; padding: 0; }
+  .rv-line + .rv-line { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid rgba(255,255,255,0.08); }
+  .rv-line:focus { outline: 2px solid #8fbcd4; outline-offset: 2px; }
+  .rv-line__title { margin: 0 0 2px; font-size: 0.86rem; }
+  .rv-line__note { margin: 0 0 var(--sp-2); font-size: 0.72rem; color: var(--text-dim); }
+  .rv-case { margin: var(--sp-2) 0 0; padding: 0 0 0 12px; border-left: 2px solid rgba(143,188,212,0.6); font-size: 0.78rem; line-height: 1.45; }
+  .rv-case p { margin: 2px 0; }
+  .rv-case .tl-quote { margin: 2px 0; }
+  .rv-kind { display: inline-block; margin: 2px 6px 0 0; padding: 0 5px; border: 1px solid #8fbcd4; border-radius: 3px; font-size: 0.66rem; color: #8fbcd4; }
+  .rv-differ { margin: 4px 0 0; padding-left: 16px; font-size: 0.72rem; color: var(--text-secondary); }
+  .rv-panel .rv-show { margin-top: var(--sp-2); min-height: 44px; padding-left: 14px; padding-right: 14px; }
+  .rv-panel .tl-src { display: inline-block; margin-right: 8px; min-height: 24px; }
+  .rv-pin { display: flex; align-items: center; justify-content: center; }
+  .rv-pin__dot { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%;
+    font: 700 12px/1 var(--font-mono); color: #0b1117; background: #8fbcd4; border: 2px solid #0b1117; box-shadow: 0 0 0 2px #8fbcd4; }
+  .rv-pin--far .rv-pin__dot { background: #0b1117; color: #cfe4ef; border: 3px solid #8fbcd4; box-shadow: 0 0 0 1px #0b1117; }
+  .rv-pin:focus { outline: none; }
+  .rv-pin:focus .rv-pin__dot { box-shadow: 0 0 0 3px #fff; }
+  .rv-label.leaflet-tooltip { background: rgba(8,13,18,0.92); color: #e8f1f6; border: 1px solid #8fbcd4; border-radius: 3px; font: 600 11px/1.3 var(--font-mono); padding: 2px 6px; box-shadow: none; }
+  .rv-label.leaflet-tooltip::before { display: none; }
+  .rv-chev { pointer-events: none; }
+  .rv-chev span { display: block; width: 20px; height: 20px; text-align: center; font: 700 20px/18px var(--font-mono); color: #8fbcd4; text-shadow: 0 0 3px #000, 0 0 3px #000; }
+  html.forge-route-view #map .leaflet-marker-icon:not(.rv-pin):not(.rv-chev),
+  html.forge-route-view #map .marker-cluster { opacity: 0.22; }
+  html.forge-route-view #map .sig-pulse, html.forge-route-view #map .sig-ring { display: none; }
+  .md-ctrl[aria-pressed="true"] { color: #8fbcd4; border-color: #8fbcd4; }
+  .rv-entry { display: flex; width: 100%; align-items: center; gap: 8px; margin: var(--sp-2) 0; padding: 8px 10px; min-height: 44px;
+    background: transparent; border: 1px solid #8fbcd4; border-radius: 4px; color: var(--text-primary); font-size: 0.78rem; text-align: left; cursor: pointer; }
+  .rv-entry__dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #8fbcd4; flex-shrink: 0; }
+  @media (max-width: 768px) {
+    /* Phone: a bottom sheet. The list is the main view; the map shows above it. */
+    .signal-map-page .rv-panel { left: 0; right: 0; bottom: 0; top: auto; width: auto; max-height: 52%; border-radius: 12px 12px 0 0; border-width: 2px 0 0; }
+    .rv-panel .rv-back { margin-top: 6px; }
+    html.forge-route-view .signal-map-page .sd-drawer { display: none; }
+    html.forge-route-view .signal-map-page .ac-bar { display: none; }
+    .rv-label.leaflet-tooltip { white-space: normal; width: max-content; max-width: 130px; text-align: center; }
+  }
   .sd-src__opened { display: none; margin-left: 6px; color: #a395d6; }
   .sd-src.is-opened .sd-src__opened { display: inline; }
   .sd-src__arrow { flex-shrink: 0; font-size: 1rem; }
@@ -1607,7 +1664,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="11 Nov 2026 17:01 UTC" title="11 Nov 2026 17:01 UTC">11 Nov 2026 17:01 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="12 Nov 2026 07:52 UTC" title="12 Nov 2026 07:52 UTC">12 Nov 2026 07:52 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1749,6 +1806,10 @@
       </div>
       
       
+      
+      <button type="button" class="rv-entry" id="rv-entry" aria-controls="rv-panel"><span class="rv-entry__dot" aria-hidden="true"></span><span>Reported routes: Africa and the world (1 case)</span></button>
+      
+      
       <section class="age-key" id="age-key" aria-labelledby="age-key-title">
         <h3 class="age-key__title" id="age-key-title">How old a pin is</h3>
         <p class="age-key__intro">The dot's colour is its category. The ring around it shows how long ago the incident happened, counted from the incident date in South African time. The live map shows the last 30 days.</p>
@@ -1787,7 +1848,7 @@
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
       <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>85 approved records &middot; as of 11 Nov 2026 17:01 UTC</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>85 approved records &middot; as of 12 Nov 2026 07:52 UTC</span>
       
       <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
     </div>
@@ -3742,6 +3803,22 @@
     <p class="mv-banner__note" id="tv-note"></p>
   </section>
   <span class="sd-sr-only" id="tv-status" role="status" aria-live="polite"></span>
+  
+  
+  <section class="rv-panel" id="rv-panel" aria-labelledby="rv-heading" hidden>
+    <div class="rv-head">
+      <h2 class="rv-heading" id="rv-heading" tabindex="-1"><span class="rv-kicker">Reported routes &middot; Africa and the world</span>Places abroad that sources name for South African cases</h2>
+      <p class="rv-count" id="rv-count"></p>
+      <p class="rv-caption" id="rv-caption"></p>
+      <button type="button" class="ac-bar__btn ac-bar__btn--main rv-back" id="rv-exit">Back to South Africa map</button>
+    </div>
+    <div class="rv-body">
+      <h3 class="rv-list-title" id="rv-list-title">Routes list</h3>
+      <ul class="rv-route" id="rv-list" aria-labelledby="rv-list-title"></ul>
+    </div>
+  </section>
+  
+  <span class="sd-sr-only" id="rv-status" role="status" aria-live="polite"></span>
 
   
   <div class="md-controls">
@@ -3752,6 +3829,10 @@
     <button class="md-ctrl" id="ctrl-reset" type="button" aria-label="Reset map view" title="Reset map view"><span class="md-ctrl__icon" aria-hidden="true">&#10226;</span><span class="md-ctrl__label"> Reset</span></button>
     
     <button class="md-ctrl" id="ctrl-months" type="button" aria-label="Earlier months" title="Earlier months: browse the archive one whole month at a time" aria-expanded="false" aria-controls="mv-pop"><span class="md-ctrl__icon" aria-hidden="true"><svg class="md-ctrl__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3"/></svg></span><span class="md-ctrl__label"> Earlier months</span></button>
+    
+    
+    <button class="md-ctrl" id="ctrl-routes" type="button" aria-pressed="false" aria-controls="rv-panel" aria-label="Reported routes: Africa and the world" title="Reported routes: places abroad that sources name for South African cases"><span class="md-ctrl__icon" aria-hidden="true">&#8644;</span><span class="md-ctrl__label"> Routes</span></button>
+    
     
     <button class="md-ctrl md-ctrl--motion" id="ctrl-motion" type="button" role="switch" aria-checked="true" aria-label="Motion" aria-describedby="motion-desc" title="Motion on: new pins pulse gently. Tap to turn motion off."><span class="md-ctrl__icon" aria-hidden="true"><svg class="md-ctrl__svg" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" focusable="false"><circle cx="8" cy="8" r="2.2" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="6"/><path class="md-ctrl__slash" d="M2 14L14 2" stroke-width="1.8"/></svg></span><span class="md-ctrl__label"> Motion<span class="md-ctrl__state" aria-hidden="true">on</span></span></button>
     <span class="sd-sr-only" id="motion-desc">New pins pulse gently while this is on.</span>
@@ -4051,7 +4132,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 11 Nov 2026 17:01 UTC
+        Generated 12 Nov 2026 07:52 UTC
       </div>
     </div>
   </footer>
@@ -4059,7 +4140,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>FORGE MAP · FORGE OSINT ENGINE · 11 Nov 2026 17:01 UTC</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · 12 Nov 2026 07:52 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -5529,6 +5610,7 @@
   function enterMonth(key, opts) {
     opts = opts || {};
     if (threadView) exitThread({ history: false, focus: false });
+    if (routeView) exitRoutes({ history: false, focus: false, restore: false });
     var token = ++mvToken;
     hideArchiveMsg();
     monthView = { key: key, label: FP.monthLabel(key), state: 'loading', idx: {}, total: 0, shown: 0, note: '' };
@@ -6271,6 +6353,7 @@
     if (c.indexOf('party: ') === 0) return c.slice(7) + ' says';
     if (c === 'police') return 'Police say';
     if (c === 'court') return 'Court record';
+    if (c === 'customs') return 'Customs say';
     return (outlet || 'The source') + ' reports';
   }
   function dayLabel(iso) {
@@ -6434,6 +6517,7 @@
     var t = threadById(id);
     if (!t) return;
     if (monthView) exitMonth({});
+    if (routeView) exitRoutes({ history: false, focus: false, restore: false });
     if (threadView) exitThread({ history: false });
     var d = drawThread(t);
     d.layer.addTo(map);
@@ -6503,6 +6587,236 @@
     enter: function (id) { enterThread(id, {}); },
     exit: function () { exitThread({}); },
     active: function () { return threadView ? threadView.thread.id : null; },
+  };
+
+  /* ── Reported routes view (tools/routes.py, docs/routes/POLICY.md) ──────
+     REPORTED_ROUTES holds approved cases only, one entry per line: a South
+     African end and a named place abroad, with every case that names both.
+     These cases are not map signals: they are drawn only here. */
+  var REPORTED_ROUTES = [{"caption": "A line joins two places a source names for the same case. It shows what was reported, not a checked path, and says nothing about the place or its people.", "cases": [{"approved_at": "2026-11-12", "arrests": "None reported. On 26 Oct The Witness wrote that police had not said whether anyone was arrested.", "case_id": "or-tambo-cocaine-2026-10-25", "claim_by": "police", "date": "2026-10-25", "disagreements": ["An early Witness report on 26 Oct said police had not disclosed where the cocaine came from. The SAPS national statement the same day names a flight from S\u00e3o Paulo, Brazil, and that is what the line shows."], "far_sources": [{"locator": "Media statements list, 26 Oct 2026: \u0027267 alleged drug dealers amongst 17 914 arrested, more drug labs dismantled, raw cocaine worth R200 mil seized at ORTIA, 164 illegal firearms and 1 425 rounds of ammunition recovered\u0027", "outlet": "SAPS national media statement, 26 Oct 2026", "quote": "The drugs had arrived on a flight from S\u00e3o Paulo, Brazil.", "url": "https://www.saps.gov.za/newsroom/ms.php"}, {"outlet": "The South African, 26 Oct 2026, citing SAPS", "quote": "The bags arrived on a flight from S\u00e3o Paulo, Brazil, which landed that afternoon.", "url": "https://www.thesouthafrican.com/news/five-suitcases-216-blocks-r200-million-inside-the-or-tambo-cocaine-bust/"}], "kind": "seizure", "role": "flight origin", "role_text": "Flight left from", "sa_sources": [{"outlet": "IOL / The Post, 26 Oct 2026", "quote": "intercepting the five luggage bags containing 216 blocks of cocaine weighing approximately 250 kilograms", "url": "https://iol.co.za/thepost/news/2026-10-26-saps-seizes-250kg-of-cocaine-worth-more-than-r200m-concealed-in-luggage-at-or-tambo/"}, {"outlet": "The South African, 26 Oct 2026", "quote": "A multidisciplinary team intercepted approximately 250kg of cocaine at OR Tambo International Airport on Sunday, 25 October.", "url": "https://www.thesouthafrican.com/news/five-suitcases-216-blocks-r200-million-inside-the-or-tambo-cocaine-bust/"}], "summary": "A team of police, SARS Customs and the Border Management Authority found five luggage bags holding 216 blocks of cocaine, about 250 kg, at OR Tambo International Airport. Police put the street value at more than R200 million.", "title": "About 250 kg of cocaine found in five luggage bags at OR Tambo", "when": "25 Oct 2026"}], "far": {"country": "Brazil", "label": "S\u00e3o Paulo, Brazil", "lat": -23.5505, "lng": -46.6333, "note": "The police statement names the city the flight came from, not the airport, and not where the drugs were first packed.", "place": "S\u00e3o Paulo", "place_kind": "city", "precision": "city"}, "id": "sao-paulo--or-tambo-international-airport", "sa": {"label": "OR Tambo International Airport", "lat": -26.1337, "lng": 28.242, "precision": "site", "province": "Gauteng"}}];
+  var ROUTE_CAPTION = "A line joins two places a source names for the same case. It shows what was reported, not a checked path, and says nothing about the place or its people.";
+  var ROUTE_BIAS = 'Places with more press and customs reporting show more routes; this is not a measure of where crime comes from.';
+  var routeView = null;
+  var rvPanel = document.getElementById('rv-panel');
+  function rvPlural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function rvTotals() {
+    var cases = {}, far = {};
+    REPORTED_ROUTES.forEach(function (r) {
+      far[r.far.label] = 1;
+      (r.cases || []).forEach(function (c) { cases[c.case_id] = 1; });
+    });
+    return { cases: Object.keys(cases).length, places: Object.keys(far).length };
+  }
+  // A great-circle arc (about 32 points), the short way round; longitudes are
+  // unwrapped so a line never jumps across the map edge.
+  function rvArc(a, b, n) {
+    n = n || 32;
+    var rad = Math.PI / 180;
+    function v(p) { var la = p[0] * rad, lo = p[1] * rad; return [Math.cos(la) * Math.cos(lo), Math.cos(la) * Math.sin(lo), Math.sin(la)]; }
+    var A = v(a), B = v(b);
+    var dot = Math.max(-1, Math.min(1, A[0] * B[0] + A[1] * B[1] + A[2] * B[2]));
+    var w = Math.acos(dot);
+    if (w < 1e-6) return [a, b];
+    var out = [], prevLng = null;
+    for (var i = 0; i <= n; i++) {
+      var t = i / n, s1 = Math.sin((1 - t) * w) / Math.sin(w), s2 = Math.sin(t * w) / Math.sin(w);
+      var x = s1 * A[0] + s2 * B[0], y = s1 * A[1] + s2 * B[1], z = s1 * A[2] + s2 * B[2];
+      var lat = Math.atan2(z, Math.sqrt(x * x + y * y)) / rad, lng = Math.atan2(y, x) / rad;
+      if (prevLng !== null) { while (lng - prevLng > 180) lng -= 360; while (lng - prevLng < -180) lng += 360; }
+      prevLng = lng;
+      out.push([lat, lng]);
+    }
+    return out;
+  }
+  function rvIcon(text, far) {
+    return L.divIcon({ className: 'rv-pin' + (far ? ' rv-pin--far' : ''),
+      html: '<span class="rv-pin__dot">' + text + '</span>', iconSize: [30, 30], iconAnchor: [15, 15] });
+  }
+  // A chevron at the middle of the arc, pointing from where the source says
+  // the case came from towards where it ended up. No known direction, no arrow.
+  function rvChevron(pts) {
+    var i = Math.floor(pts.length / 2), z = map.getZoom();
+    var pa = map.project(pts[i - 1], z), pb = map.project(pts[i + 1], z);
+    var deg = Math.atan2(pb.y - pa.y, pb.x - pa.x) * 180 / Math.PI;
+    return L.marker(pts[i], { interactive: false, keyboard: false,
+      icon: L.divIcon({ className: 'rv-chev', iconSize: [20, 20], iconAnchor: [10, 10],
+        html: '<span style="transform:rotate(' + deg.toFixed(1) + 'deg)">\u203a</span>' }) });
+  }
+  function rvFocusLine(id) {
+    var li = document.querySelector('#rv-list .rv-line[data-route="' + id + '"]');
+    if (!li) return;
+    li.scrollIntoView({ block: 'nearest' });
+    try { li.focus({ preventScroll: true }); } catch (e) { li.focus(); }
+  }
+  function rvDraw() {
+    var layer = L.layerGroup(), pts = [], seen = {};
+    REPORTED_ROUTES.forEach(function (r) {
+      var n = (r.cases || []).length;
+      var toward = (r.cases || []).every(function (c) { return c.role !== 'destination'; });
+      var away = (r.cases || []).every(function (c) { return c.role === 'destination'; });
+      var arc = toward ? rvArc([r.far.lat, r.far.lng], [r.sa.lat, r.sa.lng])
+                       : rvArc([r.sa.lat, r.sa.lng], [r.far.lat, r.far.lng]);
+      layer.addLayer(L.polyline(arc, { className: 'rv-line-path', color: '#8fbcd4', weight: 2 + Math.min(n, 4) * 0.75,
+        opacity: 0.9, interactive: false }));
+      if (toward || away) layer.addLayer(rvChevron(arc));
+      [[r.sa, false], [r.far, true]].forEach(function (pair) {
+        var p = pair[0], far = pair[1];
+        var key = p.lat.toFixed(4) + ',' + p.lng.toFixed(4);
+        if (seen[key]) return;
+        seen[key] = 1;
+        var count = 0;
+        REPORTED_ROUTES.forEach(function (o) {
+          var q = far ? o.far : o.sa;
+          if (q.lat.toFixed(4) + ',' + q.lng.toFixed(4) === key) count += (o.cases || []).length;
+        });
+        var lab = far ? p.label : p.label + ', ' + p.province;
+        var mk = L.marker([p.lat, p.lng], { icon: rvIcon(String(count), far), zIndexOffset: 2500,
+          title: lab + ': ' + rvPlural(count, 'reported case', 'reported cases'),
+          alt: lab + ': ' + rvPlural(count, 'reported case', 'reported cases'), riseOnHover: true });
+        mk.bindTooltip(lab, { permanent: true, direction: 'bottom', offset: [0, 14], className: 'rv-label' });
+        mk.on('click', function () { rvFocusLine(r.id); });
+        mk.on('keypress', function (e) { if (e.originalEvent && e.originalEvent.key === 'Enter') rvFocusLine(r.id); });
+        layer.addLayer(mk);
+        pts.push([p.lat, p.lng]);
+      });
+    });
+    return { layer: layer, pts: pts };
+  }
+  function rvFit(points) {
+    if (!points.length) return;
+    var opts = { maxZoom: 6 };
+    // Room for the labels under each end, the panel and the map buttons.
+    if (phoneLayout()) { opts.paddingTopLeft = [100, 90]; opts.paddingBottomRight = [140, Math.round(rvPanel.offsetHeight) + 50]; }
+    else { opts.paddingTopLeft = [480, 100]; opts.paddingBottomRight = [200, 70]; }
+    map.fitBounds(L.latLngBounds(points), opts);
+  }
+  function rvBuildList() {
+    var ul = document.getElementById('rv-list');
+    ul.textContent = '';
+    REPORTED_ROUTES.forEach(function (r) {
+      var li = el('li', 'rv-line');
+      li.setAttribute('data-route', r.id);
+      li.tabIndex = -1;
+      li.appendChild(el('h4', 'rv-line__title', r.far.label + ' to ' + r.sa.label + ', ' + r.sa.province));
+      if (r.far.note) li.appendChild(el('p', 'rv-line__note', r.far.note));
+      (r.cases || []).forEach(function (c) {
+        var box = el('div', 'rv-case');
+        box.appendChild(el('span', 'tl-when', c.when));
+        box.appendChild(el('span', 'rv-kind', c.kind === 'seizure' ? 'Seizure' : c.kind));
+        box.appendChild(el('p', 'tl-text', c.title));
+        box.appendChild(el('p', 'tl-claim', c.summary));
+        box.appendChild(el('p', 'tl-claim', 'Arrests: ' + c.arrests));
+        box.appendChild(el('p', 'tl-claim', c.role_text + ' ' + r.far.label + '. ' + claimText(c.claim_by, (c.far_sources[0] || {}).outlet) + ':'));
+        (c.far_sources || []).forEach(function (s) {
+          box.appendChild(el('span', 'tl-quote', '\u201c' + s.quote + '\u201d'));
+          sourceLink(box, s.url, s.outlet || 'Source');
+          if (s.locator) box.appendChild(el('span', 'tl-claim', s.locator));
+        });
+        box.appendChild(el('p', 'tl-claim', 'Where it was found:'));
+        (c.sa_sources || []).forEach(function (s) {
+          box.appendChild(el('span', 'tl-quote', '\u201c' + s.quote + '\u201d'));
+          sourceLink(box, s.url, s.outlet || 'Source');
+        });
+        if ((c.disagreements || []).length) {
+          box.appendChild(el('p', 'tl-claim', 'Sources differ:'));
+          var dl = el('ul', 'rv-differ');
+          c.disagreements.forEach(function (d) { dl.appendChild(el('li', '', d)); });
+          box.appendChild(dl);
+        }
+        li.appendChild(box);
+      });
+      var btn = el('button', 'ac-bar__btn rv-show', 'Show on map');
+      btn.type = 'button';
+      btn.addEventListener('click', function () { rvFit([[r.sa.lat, r.sa.lng], [r.far.lat, r.far.lng]]); });
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+  }
+  function rvSetPressed(on) {
+    var c = document.getElementById('ctrl-routes');
+    if (c) c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function enterRoutes(opts) {
+    opts = opts || {};
+    if (!REPORTED_ROUTES.length || !rvPanel || routeView) return;
+    if (threadView) exitThread({ history: false, focus: false });
+    if (monthView) exitMonth({ replace: true, noFrame: true, quiet: true });
+    if (typeof closePanel === 'function') { try { closePanel(); } catch (e) {} }
+    var d = rvDraw();
+    d.layer.addTo(map);
+    routeView = { layer: d.layer, pts: d.pts, pushed: false, trigger: opts.trigger || null,
+                  prevView: { center: map.getCenter(), zoom: map.getZoom() } };
+    document.documentElement.classList.add('forge-route-view');
+    var tot = rvTotals();
+    document.getElementById('rv-count').textContent = rvPlural(tot.cases, 'case', 'cases') + ', ' +
+      rvPlural(tot.places, 'place abroad', 'places abroad') + '. Seizure cases show only in this view, not on the South Africa map.';
+    document.getElementById('rv-caption').textContent = ROUTE_CAPTION + ' ' + ROUTE_BIAS;
+    rvBuildList();
+    rvPanel.hidden = false;
+    rvSetPressed(true);
+    document.getElementById('rv-status').textContent = 'Reported routes view: ' + rvPlural(tot.cases, 'case', 'cases') + ', ' +
+      rvPlural(tot.places, 'place', 'places') + '. ' + ROUTE_CAPTION;
+    if (opts.history !== false) {
+      history.pushState({ forgeRoutes: 1 }, '', window.location.href);
+      routeView.pushed = true;
+      drawerPushed = false;
+    }
+    rvFit(d.pts);
+    if (opts.focus !== false) {
+      var h = document.getElementById('rv-heading');
+      try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); }
+    }
+  }
+  function exitRoutes(opts) {
+    opts = opts || {};
+    if (!routeView) return;
+    if (opts.history !== false && routeView.pushed && history.state && history.state.forgeRoutes) {
+      history.back();                          // popstate below finishes the exit
+      return;
+    }
+    var rv = routeView;
+    routeView = null;
+    map.removeLayer(rv.layer);
+    document.documentElement.classList.remove('forge-route-view');
+    rvPanel.hidden = true;
+    rvSetPressed(false);
+    if (opts.restore !== false) map.setView(rv.prevView.center, rv.prevView.zoom);
+    document.getElementById('rv-status').textContent = 'Back to the South Africa map.';
+    if (opts.focus !== false) {
+      var target = rv.trigger && document.body.contains(rv.trigger) ? rv.trigger : document.getElementById('ctrl-routes');
+      if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+    }
+  }
+  if (rvPanel) {
+    var rvCtrl = document.getElementById('ctrl-routes');
+    if (rvCtrl) rvCtrl.addEventListener('click', function () {
+      if (routeView) exitRoutes({ focus: true }); else enterRoutes({ trigger: rvCtrl });
+    });
+    var rvEntry = document.getElementById('rv-entry');
+    if (rvEntry) rvEntry.addEventListener('click', function () { enterRoutes({ trigger: rvCtrl || rvEntry }); });
+    document.getElementById('rv-exit').addEventListener('click', function () { exitRoutes({ focus: true }); });
+    window.addEventListener('popstate', function () {
+      if (!routeView) return;
+      if (history.state && history.state.forgeRoutes) return;
+      routeView.pushed = false;
+      exitRoutes({ history: false, focus: true });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!routeView || (e.key !== 'Escape' && e.key !== 'Esc') || extGateOpen()) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      exitRoutes({ focus: true });
+    }, true);
+    // A shared link: forgemap.co.za/?view=routes opens this view.
+    if (new URLSearchParams(window.location.search).get('view') === 'routes') {
+      setTimeout(function () { enterRoutes({ history: false, focus: false }); }, 0);
+    }
+  }
+  window.ForgeRoutes = {
+    list: function () { return REPORTED_ROUTES; },
+    enter: function () { enterRoutes({}); },
+    exit: function () { exitRoutes({}); },
+    active: function () { return !!routeView; },
   };
 
 
