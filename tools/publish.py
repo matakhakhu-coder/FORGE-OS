@@ -629,6 +629,11 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             # How exact the map point is (Area check), checked pins only.
             **((_precision_for(r["signal_id"]) if checked["checked"] else None)
                or {"precision": None, "uncertainty_m": None}),
+            # "Last reviewed" date (12 Nov 2026), checked pins only: the later
+            # of a recorded routine check and the last material update. No
+            # record, no date (docs/signals/REVIEW_DATES.md).
+            **(_review_for(r["signal_id"], r["published_at"], checked) if checked["checked"]
+               else {"last_reviewed_at": None, "review_outcome": None}),
         })
     # Same publish time (a whole batch goes live at once): put the incidents
     # in the order they happened, newest first, not in signal-ID order.
@@ -636,6 +641,29 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     items.sort(key=lambda x: x.get("incident_at") or "", reverse=True)
     items.sort(key=lambda x: x["published_at"] or "", reverse=True)
     return items
+
+
+# ── Last reviewed (12 Nov 2026) ──────────────────────────────────────────────
+# docs/signals/pin-clocks.json holds each recorded routine check of a pin's
+# sources, with the log it is written in. The drawer shows the later of that
+# check and the pin's last owner-approved material update as "Last reviewed".
+_CLOCKS_CACHE: dict = {}
+
+
+def _review_for(signal_id: str, published_at, checked: dict) -> dict:
+    from tools import pin_clocks as _clocks
+    path = CHECKED_INDEX.parent / _clocks.CLOCKS_NAME
+    try:
+        key = (str(path), path.stat().st_mtime_ns)
+    except OSError:
+        key = (str(path), None)
+    if key not in _CLOCKS_CACHE:
+        _CLOCKS_CACHE.clear()
+        _CLOCKS_CACHE[key] = _clocks.load(path)
+    pin = {"published_at": published_at,
+           "metadata": {"checked": {"incident_start": checked.get("incident_start")}}}
+    return _clocks.last_review(_CLOCKS_CACHE[key].get(signal_id), pin,
+                               checked.get("last_material_update_at"))
 
 
 # ── Source provenance (Sprint 4) ─────────────────────────────────────────────
@@ -1995,8 +2023,9 @@ def _checked_guard_before(conn):
         print(f"[publish] REFUSED: {len(clock_problems)} problem(s) in docs/signals/{_clocks.CLOCKS_NAME}:")
         for p in clock_problems[:40]:
             print(f"[publish]   {p}")
-        print("[publish] Fix: a routine check may record only last_checked_at for a pin in a batch; "
-              "see tools/pin_clocks.py")
+        print("[publish] Fix: a routine check may record only last_checked_at, its record and "
+              "an outcome for a pin in a batch; see tools/pin_clocks.py and "
+              "docs/signals/REVIEW_DATES.md")
         raise CheckedGuardError(2)
     print(f"[publish] checked pins OK: {len(cs.active)} active, {len(cs.retracted)} retracted, "
           f"all with source provenance, precision and an incident-date basis")

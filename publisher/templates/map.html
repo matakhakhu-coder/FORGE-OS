@@ -508,7 +508,8 @@
   .age-key__cluster .mc-new { width: 7px; height: 7px; top: -1px; right: -1px; }
   .sd-dates { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
   .sd-updated { margin: 0 0 var(--sp-2); font-size: 0.8rem; color: var(--text-primary); }
-  .sd-updated[hidden], .sd-dates[hidden] { display: none; }
+  .sd-reviewed { margin: 0 0 var(--sp-2); font-size: 0.75rem; line-height: 1.4; color: var(--text-secondary); }
+  .sd-updated[hidden], .sd-dates[hidden], .sd-reviewed[hidden] { display: none; }
   .sd-updated__mark { display: inline-block; width: 7px; height: 7px; margin: 0 6px 1px 2px; background: #ffffff; border: 1.5px solid #0b0f14; transform: rotate(45deg); vertical-align: middle; }
   .sd-updated__new { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin-left: 4px; }
 
@@ -2186,6 +2187,7 @@
         <h3 class="sd-label">When</h3>
         <p class="sd-dates" id="sd-dates" hidden></p>
         <p class="sd-updated" id="sd-updated" hidden></p>
+        <p class="sd-reviewed" id="sd-reviewed" hidden></p>
         <dl class="sd-facts" id="sd-when"></dl>
       </section>
       <section class="sd-section" id="sd-where-wrap" hidden>
@@ -4019,7 +4021,12 @@
       });
     }
     updEl.hidden = !updEl.firstChild;
-    anyFact = anyFact || !!datesText || !updEl.hidden;
+    // "Last reviewed" (12 Nov 2026): only when a FORGE log records a review.
+    var revEl = document.getElementById('sd-reviewed');
+    var revText = FP.reviewedLine(m);
+    revEl.textContent = revText;
+    revEl.hidden = !revText;
+    anyFact = anyFact || !!datesText || !updEl.hidden || !revEl.hidden;
     section('sd-when-wrap', anyFact);
 
     // Until the details arrive: title, kicker and dates only, and a line

@@ -17,7 +17,9 @@ clocks, and each one has exactly one writer:
                            approval, so it lives outside the pin files: writing
                            it never touches a fingerprint or an approval hash.
 
-A routine check may change one thing only: a pin's last_checked_at here.
+A routine check may change one thing only: a pin's entry here (its
+last_checked_at, the record the check is written in, and optionally the
+outcome no_new_information).
 record_check() is the one way a routine writes it, and
 routine_write_problems() refuses a routine's write that changes anything
 else (a pin file, an approval record, another sidecar, another key here, or
@@ -25,7 +27,15 @@ a clock moved backwards).
 
 File format:
     {"schema": "forge.pin_clocks", "version": 1, "about": "...",
-     "pins": {"<signal_id>": {"last_checked_at": "2026-11-03T08:15:00+02:00"}}}
+     "pins": {"<signal_id>": {"last_checked_at": "2026-11-03T08:15:00+02:00",
+                              "record": "Sprint 5 results, section 15c",
+                              "outcome": "no_new_information"}}}
+
+"record" names the private log the check is written in (required: no log,
+no date). "outcome" is optional and has one allowed value; a check that
+found a lead or a possible update leaves it out. The map's "Last reviewed"
+date is last_review(): the later of this check and the pin's last material
+update. See docs/signals/REVIEW_DATES.md.
 
 A pin with no entry has not been re-checked by a routine since it was
 approved, and its last_checked_at is blank in the open records. Nothing is
@@ -33,6 +43,7 @@ back-filled: an unrecorded check is left unknown, never invented.
 
 Commands (from the repo root):
     python tools/pin_clocks.py verify                       check this file
+    python tools/pin_clocks.py record SIGNAL_ID --at ISO --record "LOG" [--outcome no_new_information]
     python tools/pin_clocks.py check-routine [--base REF]   is the working tree's
                                                             change vs REF (default
                                                             HEAD) a valid routine write?
@@ -41,6 +52,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import pathlib
 import subprocess
 import sys
@@ -55,16 +67,41 @@ CLOCKS_NAME = "pin-clocks.json"
 CLOCKS_FILE = SIGNALS_DIR / CLOCKS_NAME
 SCHEMA = "forge.pin_clocks"
 VERSION = 1
-ENTRY_KEYS = {"last_checked_at"}
+# Last reviewed dates (12 Nov 2026): every entry names the record the check
+# is written in, and may say what the check found. See
+# docs/signals/REVIEW_DATES.md for what counts as a review.
+REQUIRED_KEYS = {"last_checked_at", "record"}
+OPTIONAL_KEYS = {"outcome"}
+ENTRY_KEYS = REQUIRED_KEYS | OPTIONAL_KEYS
+# The one outcome a check may state on the map. A check that found something
+# (a lead, a possible update) states nothing: the date alone shows it ran,
+# and any real development goes through an owner-approved material update.
+OUTCOMES = {
+    "no_new_information": "No new information was found in the sources checked.",
+}
+RECORD_MAX = 200
+# Words a review must never use about a case. "No new information" is not
+# "cold", "closed" or "resolved": FORGE cannot know any of that.
+BANNED_REVIEW_WORDS = (
+    "cold", "closed", "resolved", "solved", "dormant", "inactive", "no longer",
+    "dead end", "dead-end", "abandoned", "gone quiet", "went quiet", "shelved",
+    "concluded",
+)
+_BANNED_RE = re.compile(
+    r"\b(" + "|".join(re.escape(w) for w in BANNED_REVIEW_WORDS) + r")\b", re.I)
 # A check stamped a little ahead of this machine's clock is tolerated.
 FUTURE_SKEW = timedelta(minutes=10)
 
 ABOUT = ("When a routine (a town sweep, a parked-case review) last re-read each "
          "hand-checked pin's sources. Kept apart from the pin files so a routine check "
          "never changes a fingerprint or needs an owner approval. A routine may change only "
-         "last_checked_at here; anything else is refused (tools/pin_clocks.py). A pin with "
-         "no entry has not been re-checked since it was approved. Material updates are not "
-         "recorded here: they need an owner approval with material set.")
+         "a pin's entry here: last_checked_at, the record the check is written in, and "
+         "optionally outcome (no_new_information); anything else is refused "
+         "(tools/pin_clocks.py). Only a check with a written record goes here; none is "
+         "back-filled. A pin with no entry has not been re-checked since it was approved. "
+         "Material updates are not recorded here: they need an owner approval with material "
+         "set. The map's 'Last reviewed' date is the later of last_checked_at and the last "
+         "material update (docs/signals/REVIEW_DATES.md).")
 
 
 class PinClockError(ValueError):
@@ -80,6 +117,19 @@ def _parse_dt(value) -> datetime | None:
     except ValueError:
         return None
     return dt if dt.tzinfo is not None else None
+
+
+def _incident_start(value) -> datetime | None:
+    """The incident's start: a date-time with an offset, or a bare date read
+    as the start of that day in South African time (UTC+2)."""
+    dt = _parse_dt(value)
+    if dt is not None or not isinstance(value, str):
+        return dt
+    try:
+        d = datetime.fromisoformat(value.strip()[:10])
+    except ValueError:
+        return None
+    return d.replace(tzinfo=timezone(timedelta(hours=2)))
 
 
 def empty_file() -> dict:
@@ -110,17 +160,35 @@ def load(path: pathlib.Path | None = None) -> dict:
         return {}
 
 
+def wording_problem(text) -> str | None:
+    """Why `text` may not describe a review (it calls a case cold, closed,
+    resolved and the like), or None."""
+    m = _BANNED_RE.search(str(text or ""))
+    return f"review wording may not say {m.group(1).lower()!r} about a case" if m else None
+
+
 def entry_problem(entry, pin: dict | None = None, now: datetime | None = None) -> str | None:
     """Why one entry is invalid, or None."""
     if not isinstance(entry, dict):
         return "entry must be an object"
-    if set(entry) != ENTRY_KEYS:
-        extra = sorted(set(entry) - ENTRY_KEYS)
-        return (f"only last_checked_at may be recorded here (found {extra})" if extra
-                else "last_checked_at is missing")
+    extra = sorted(set(entry) - ENTRY_KEYS)
+    if extra:
+        return f"only last_checked_at, record and outcome may be recorded here (found {extra})"
+    missing = sorted(REQUIRED_KEYS - set(entry))
+    if missing:
+        return f"{', '.join(missing)} is missing"
     when = _parse_dt(entry["last_checked_at"])
     if when is None:
         return "last_checked_at must be a date-time with a UTC offset"
+    record = entry["record"]
+    if not isinstance(record, str) or not record.strip() or "\n" in record \
+            or len(record) > RECORD_MAX:
+        return f"record must name the log the check is written in, one line of 1 to {RECORD_MAX} characters"
+    why = wording_problem(record)
+    if why:
+        return f"record: {why}"
+    if "outcome" in entry and entry["outcome"] not in OUTCOMES:
+        return f"outcome must be one of {sorted(OUTCOMES)} (or left out)"
     now = now or datetime.now(timezone.utc)
     if when > now + FUTURE_SKEW:
         return "last_checked_at is in the future"
@@ -128,12 +196,39 @@ def entry_problem(entry, pin: dict | None = None, now: datetime | None = None) -
         published = _parse_dt(pin.get("published_at"))
         if published is not None and when < published:
             return "last_checked_at is before the pin was published"
+        chk = (pin.get("metadata") or {}).get("checked") if isinstance(pin.get("metadata"), dict) else None
+        start = _incident_start((chk or {}).get("incident_start")) if isinstance(chk, dict) else None
+        if start is not None and when < start:
+            return "last_checked_at is before the incident"
     return None
 
 
 def last_checked_at(entry, pin: dict | None = None) -> str:
     """The entry's value when valid, else ''."""
     return "" if entry_problem(entry, pin) else entry["last_checked_at"]
+
+
+def check_outcome(entry, pin: dict | None = None) -> str:
+    """The entry's outcome when the entry is valid, else ''."""
+    return "" if entry_problem(entry, pin) else str(entry.get("outcome") or "")
+
+
+def last_review(entry, pin: dict | None = None, material_update_at=None) -> dict:
+    """The map's Last reviewed date for one pin.
+
+    {"last_reviewed_at": the later of a valid last_checked_at and the last
+     owner-approved material update (an update is itself a review of the
+     sources), or None; "review_outcome": the check's outcome, only when that
+     check is the latest review, else None}. Nothing is invented: no record,
+    no date."""
+    checked = last_checked_at(entry, pin)
+    c_dt = _parse_dt(checked)
+    u_dt = _parse_dt(material_update_at)
+    if c_dt is None and u_dt is None:
+        return {"last_reviewed_at": None, "review_outcome": None}
+    if u_dt is not None and (c_dt is None or u_dt >= c_dt):
+        return {"last_reviewed_at": str(material_update_at), "review_outcome": None}
+    return {"last_reviewed_at": checked, "review_outcome": check_outcome(entry, pin) or None}
 
 
 def problems(pins: list[dict], path: pathlib.Path | None = None,
@@ -159,9 +254,11 @@ def _dump(data: dict) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
-def record_check(signal_id: str, checked_at: str, *, path: pathlib.Path | None = None,
-                 index_path: pathlib.Path | None = None, now: datetime | None = None) -> dict:
-    """The routine writer: set one pin's last_checked_at and nothing else.
+def record_check(signal_id: str, checked_at: str, *, record: str, outcome: str | None = None,
+                 path: pathlib.Path | None = None, index_path: pathlib.Path | None = None,
+                 now: datetime | None = None) -> dict:
+    """The routine writer: set one pin's last_checked_at, with the record the
+    check is written in and, optionally, its outcome. Nothing else.
 
     Refuses an unknown pin, a malformed or future time, a time before the pin
     was published, and a time earlier than the one already recorded (clocks
@@ -172,7 +269,9 @@ def record_check(signal_id: str, checked_at: str, *, path: pathlib.Path | None =
     by_id = {s["signal_id"]: s for s in cs.signals}
     if signal_id not in by_id:
         raise PinClockError(f"{signal_id}: not a hand-checked pin in any batch")
-    entry = {"last_checked_at": checked_at}
+    entry = {"last_checked_at": checked_at, "record": record}
+    if outcome:
+        entry["outcome"] = outcome
     why = entry_problem(entry, by_id[signal_id], now)
     if why:
         raise PinClockError(f"{signal_id[:8]}: {why}")
@@ -200,8 +299,8 @@ def routine_write_problems(before: dict[str, str], after: dict[str, str]) -> lis
         if rel == clocks_rel:
             continue
         if before.get(rel) != after.get(rel):
-            out.append(f"{rel}: a routine check may change only last_checked_at in "
-                       f"{clocks_rel}; this file changed")
+            out.append(f"{rel}: a routine check may change only last_checked_at (with its "
+                       f"record and outcome) in {clocks_rel}; this file changed")
     old_text, new_text = before.get(clocks_rel), after.get(clocks_rel)
     if old_text == new_text:
         return out
@@ -225,8 +324,15 @@ def routine_write_problems(before: dict[str, str], after: dict[str, str]) -> lis
         out.append(f"{sid[:8]}: a routine check may not remove a pin's last_checked_at")
     for sid in sorted(np_):
         e = np_[sid]
-        if not isinstance(e, dict) or set(e) != ENTRY_KEYS:
-            out.append(f"{sid[:8]}: a routine check may record only last_checked_at")
+        if not isinstance(e, dict) or (set(e) - ENTRY_KEYS) or (REQUIRED_KEYS - set(e)):
+            out.append(f"{sid[:8]}: a routine check may record only last_checked_at, "
+                       f"its record and an outcome")
+            continue
+        if e.get("outcome") is not None and e.get("outcome") not in OUTCOMES:
+            out.append(f"{sid[:8]}: outcome must be one of {sorted(OUTCOMES)}")
+            continue
+        if wording_problem(e.get("record")):
+            out.append(f"{sid[:8]}: record: {wording_problem(e.get('record'))}")
             continue
         if op.get(sid) == e:
             continue
@@ -273,7 +379,20 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("verify", help="check docs/signals/pin-clocks.json")
     c = sub.add_parser("check-routine", help="is the working-tree change a valid routine write?")
     c.add_argument("--base", default="HEAD")
+    r = sub.add_parser("record", help="record one written check of a pin's sources")
+    r.add_argument("signal_id")
+    r.add_argument("--at", required=True, help="when the check ran, ISO date-time with offset")
+    r.add_argument("--record", required=True, help="the log the check is written in")
+    r.add_argument("--outcome", choices=sorted(OUTCOMES))
     args = ap.parse_args(argv)
+    if args.cmd == "record":
+        try:
+            e = record_check(args.signal_id, args.at, record=args.record, outcome=args.outcome)
+        except PinClockError as exc:
+            print(f"[pin-clocks] REFUSED: {exc}")
+            return 1
+        print(f"[pin-clocks] recorded {args.signal_id[:8]}: {e}")
+        return 0
     if args.cmd == "verify":
         from tools.checked_signals import load_index
         cs = load_index()
@@ -288,7 +407,7 @@ def main(argv: list[str] | None = None) -> int:
     for line in found:
         print(f"[pin-clocks] REFUSED: {line}")
     if not found:
-        print("[pin-clocks] OK: only last_checked_at values changed (or nothing did)")
+        print("[pin-clocks] OK: only review entries changed (or nothing did)")
     return 1 if found else 0
 
 

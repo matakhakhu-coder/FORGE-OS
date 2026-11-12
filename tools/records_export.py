@@ -72,6 +72,9 @@ RECORD_FIELDS: tuple[str, ...] = (
     "last_material_update_at",
     "update_note",
     "update_sources",
+    # Last reviewed (12 Nov 2026), appended for the same reason.
+    "last_reviewed_at",
+    "review_outcome",
 )
 
 # Plain-language help for each column, shown on the page and in records.json.
@@ -117,7 +120,20 @@ FIELD_HELP: dict[str, str] = {
                                 "and an update never changes incident_start or published_at."),
     "update_note": "One line on what the material update changed. Blank = no material update.",
     "update_sources": "Source links for the material update, separated by ' | '. Blank = no material update.",
+    "last_reviewed_at": ("The pin's Last reviewed date on the map: the later of last_checked_at and "
+                         "last_material_update_at. Only a check written in a FORGE log counts; none is "
+                         "back-filled. Blank = no recorded review since the pin was published."),
+    "review_outcome": ("What the latest review found, when it was a routine check that found nothing: "
+                       "'No new information was found in the sources checked.' Blank otherwise. It never "
+                       "means a case is cold, closed or resolved."),
 }
+
+def _review_columns(entry, pin: dict, checked: dict) -> dict:
+    from tools import pin_clocks
+    got = pin_clocks.last_review(entry, pin, _clean(checked.get("last_material_update_at")) or None)
+    return {"last_reviewed_at": got["last_reviewed_at"] or "",
+            "review_outcome": pin_clocks.OUTCOMES.get(got["review_outcome"] or "", "")}
+
 
 CAVEATS: tuple[str, ...] = (
     "These are hand-checked news reports of incidents across the map's streams, not statistics. "
@@ -357,6 +373,7 @@ def build_records(conn: sqlite3.Connection,
             "update_sources": LIST_SEP.join(
                 u for u in (_http(s.get("url")) if isinstance(s, dict) else None
                             for s in (checked.get("update_sources") or [])) if u),
+            **_review_columns(clocks.get(sid), pin, checked),
         }
         assert tuple(row) == RECORD_FIELDS
         rows.append(row)

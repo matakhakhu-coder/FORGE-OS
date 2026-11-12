@@ -55,6 +55,9 @@ def repo(tmp_path):
     """docs/signals plus the ledger's rules (no records), enforcement off."""
     r = tmp_path / "repo"
     shutil.copytree(REAL_SIGNALS, r / "docs" / "signals")
+    # Start each throwaway copy with no review entries, so these tests don't
+    # depend on the real Last reviewed records (tests/test_last_reviewed.py).
+    (r / "docs" / "signals" / pc.CLOCKS_NAME).write_text(pc._dump(pc.empty_file()))
     ledger = r / "docs" / "approvals" / "pins"
     ledger.mkdir(parents=True)
     for name in ("README.md", "schema", "_examples"):
@@ -187,10 +190,12 @@ def test_all_current_pins_load_with_no_material_update():
     assert {sid for sid, recs in records.items() if any(ap.is_material(r) for r in recs)} == UPDATED_PINS
 
 
-def test_real_pin_clocks_file_is_valid_and_starts_empty():
+def test_real_pin_clocks_file_is_valid():
     data = pc.read_file()
     assert data["schema"] == pc.SCHEMA and data["version"] == pc.VERSION
-    assert data["pins"] == {}                         # nothing back-filled or invented
+    # Empty until the Last reviewed records of 12 Nov 2026; every entry now
+    # names its log (tests/test_last_reviewed.py checks them one by one).
+    assert all(e.get("record") for e in data["pins"].values())
     assert pc.problems(cs.load_index().signals) == []
 
 
@@ -397,7 +402,11 @@ def _clocks(repo: Path) -> Path:
     return repo / "docs" / "signals" / pc.CLOCKS_NAME
 
 
+TEST_RECORD = "Test log, routine check"
+
+
 def _check(repo: Path, sid: str, when: str, **kw):
+    kw.setdefault("record", TEST_RECORD)
     return pc.record_check(sid, when, path=_clocks(repo), index_path=_index(repo), **kw)
 
 
@@ -406,7 +415,7 @@ def test_routine_check_writes_only_last_checked_at(repo):
     before = _snap(repo)
     entry = _check(repo, sid, "2026-10-24T09:00:00+02:00")
     after = _snap(repo)
-    assert entry == {"last_checked_at": "2026-10-24T09:00:00+02:00"}
+    assert entry == {"last_checked_at": "2026-10-24T09:00:00+02:00", "record": TEST_RECORD}
     changed = {k for k in set(before) | set(after) if before.get(k) != after.get(k)}
     assert changed == {"docs/signals/pin-clocks.json"}
     assert pc.routine_write_problems(before, after) == []
@@ -532,11 +541,15 @@ def test_check_routine_against_git(repo):
 
 # ── open records: four new columns at the end ─────────────────────────────────────
 
+# Batch 2's four columns, then the two Last reviewed columns (12 Nov 2026).
+B2_COLS = ("last_checked_at", "last_material_update_at", "update_note", "update_sources")
+REVIEW_COLS = ("last_reviewed_at", "review_outcome")
+
+
 def test_records_gain_the_new_columns_at_the_end():
-    assert rx.RECORD_FIELDS[-4:] == ("last_checked_at", "last_material_update_at",
-                                     "update_note", "update_sources")
-    assert rx.RECORD_FIELDS.index("data_version") == len(rx.RECORD_FIELDS) - 5
-    for name in rx.RECORD_FIELDS[-4:]:
+    assert rx.RECORD_FIELDS[-6:] == B2_COLS + REVIEW_COLS
+    assert rx.RECORD_FIELDS.index("data_version") == len(rx.RECORD_FIELDS) - 7
+    for name in rx.RECORD_FIELDS[-6:]:
         assert rx.FIELD_HELP[name]
 
 
@@ -551,25 +564,34 @@ def _conn_for(sids) -> sqlite3.Connection:
 
 
 def test_real_records_have_blank_update_columns_and_are_otherwise_unchanged():
-    """All 85 records, with the four new columns blank and every earlier column as published."""
+    """All 85 records: every earlier column as published; the update columns
+    blank except on updated pins; the clock and Last reviewed columns blank
+    except on pins with a recorded review (12 Nov 2026)."""
     published = json.loads((ROOT / "dist" / "records.json").read_text())
     rows = rx.build_records(_conn_for(r["signal_id"] for r in published["records"]),
                             version=published["data_version"])
     assert len(rows) == len(published["records"]) == 85
     old = {r["signal_id"]: r for r in published["records"]}
-    earlier = rx.RECORD_FIELDS[:-4]
-    # Before the first publish after the merge, dist/ has only the earlier
-    # columns; from that publish on, all of them (Batch 3 found this test
-    # would fail on a rebuilt dist/).
-    assert [f["name"] for f in published["fields"]] in (list(earlier), list(rx.RECORD_FIELDS))
+    earlier = rx.RECORD_FIELDS[:-6]
+    # dist/ may hold the columns before Batch 2, before Last reviewed, or all of them.
+    assert [f["name"] for f in published["fields"]] in (
+        list(earlier), list(rx.RECORD_FIELDS[:-2]), list(rx.RECORD_FIELDS))
+    reviewed = set(pc.read_file()["pins"])
     for r in rows:
-        if r["signal_id"] in UPDATED_PINS:
+        sid = r["signal_id"]
+        if sid in reviewed:
+            assert r["last_checked_at"] and r["last_reviewed_at"]
+        else:
+            assert r["last_checked_at"] == "" and r["review_outcome"] == ""
+        if sid in UPDATED_PINS:
             # An approved material update changes its version, sources and update columns.
-            assert all(r[k] for k in rx.RECORD_FIELDS[-3:])
+            assert all(r[k] for k in B2_COLS[1:])
+            assert r["last_reviewed_at"]
             continue
-        assert {k: r[k] for k in earlier} == {k: old[r["signal_id"]][k] for k in earlier}
-        assert all(r[k] == "" for k in rx.RECORD_FIELDS[-4:])
-        assert all(old[r["signal_id"]].get(k, "") == "" for k in rx.RECORD_FIELDS[-4:])
+        assert {k: r[k] for k in earlier} == {k: old[sid][k] for k in earlier}
+        assert all(r[k] == "" for k in B2_COLS[1:])
+        if sid not in reviewed:
+            assert r["last_reviewed_at"] == ""
 
 
 def test_records_carry_clock_and_update_values(repo):
@@ -585,8 +607,11 @@ def test_records_carry_clock_and_update_values(repo):
     assert r["update_note"] == UPDATE["update_note"]
     assert r["update_sources"] == "https://example.org/follow-up"
     assert r["pin_version"] == 2
+    # the update (12:00) is older than the check (14:00), so the check is the review
+    assert r["last_reviewed_at"] == "2026-10-24T14:00:00+02:00"
+    assert r["review_outcome"] == ""
     header = rx.to_csv(rows).split("\r\n")[0].lstrip("\ufeff").split(",")
-    assert header[-4:] == list(rx.RECORD_FIELDS[-4:])
+    assert header[-6:] == list(rx.RECORD_FIELDS[-6:])
 
 
 def test_invalid_clock_entry_exports_blank(repo):

@@ -1,6 +1,73 @@
 {
   "schema": "forge.pin_clocks",
   "version": 1,
-  "about": "When a routine (a town sweep, a parked-case review) last re-read each hand-checked pin's sources. Kept apart from the pin files so a routine check never changes a fingerprint or needs an owner approval. A routine may change only last_checked_at here; anything else is refused (tools/pin_clocks.py). A pin with no entry has not been re-checked since it was approved. Material updates are not recorded here: they need an owner approval with material set.",
-  "pins": {}
+  "about": "When a routine (a town sweep, a parked-case review) last re-read each hand-checked pin's sources. Kept apart from the pin files so a routine check never changes a fingerprint or needs an owner approval. A routine may change only a pin's entry here: last_checked_at, the record the check is written in, and optionally outcome (no_new_information); anything else is refused (tools/pin_clocks.py). Only a check with a written record goes here; none is back-filled. A pin with no entry has not been re-checked since it was approved. Material updates are not recorded here: they need an owner approval with material set. The map's 'Last reviewed' date is the later of last_checked_at and the last material update (docs/signals/REVIEW_DATES.md).",
+  "pins": {
+    "048440e0-0be5-53d8-934a-1ba6233a0dfa": {
+      "last_checked_at": "2026-11-11T16:44:00+02:00",
+      "record": "Connections run notes, 11 Nov 2026: live pins checked against news to 11 Nov"
+    },
+    "06219161-76ad-5b50-91d0-e58235427edf": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST"
+    },
+    "0c9f233c-6c38-5da4-a660-c6776f575667": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST"
+    },
+    "0caa5a74-cc5e-5f04-a0cb-aa13466552d4": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST"
+    },
+    "19a71c43-7584-4483-8cb1-9c71f12a9cb8": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "1d4bd77f-c21d-5f11-8dde-5367760801e1": {
+      "last_checked_at": "2026-11-11T16:44:00+02:00",
+      "record": "Connections run notes, 11 Nov 2026: live pins checked against news to 11 Nov"
+    },
+    "2fdd9a56-11a3-4877-891a-bd46f152c44b": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "42598400-2dc8-522f-b664-66d912756b03": {
+      "last_checked_at": "2026-11-11T16:44:00+02:00",
+      "record": "Connections run notes, 11 Nov 2026: live pins checked against news to 11 Nov"
+    },
+    "49773d55-5704-5fcb-ac36-1f7eda5de54b": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "7aa4eea1-c1f4-55af-b761-d55ff2df3a51": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "adf99019-941e-5dd0-9851-635da0a1e146": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "c2601d28-ecde-4cd0-b9e3-0c19230dafac": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST"
+    },
+    "c9697dcd-becf-5562-a5a0-57382f75bfa5": {
+      "last_checked_at": "2026-11-11T16:44:00+02:00",
+      "record": "Connections run notes, 11 Nov 2026: live pins checked against news to 11 Nov"
+    },
+    "d09da7da-5705-46e3-8d10-5fef0db6c639": {
+      "last_checked_at": "2026-10-25T09:45:00+02:00",
+      "record": "Sprint 5 results, section 15c: arrest follow-ups, 25 Oct 2026, 09:15-09:45 SAST",
+      "outcome": "no_new_information"
+    },
+    "dbf90d51-2633-4a8f-86f1-ab1bf2b48d6c": {
+      "last_checked_at": "2026-11-11T16:44:00+02:00",
+      "record": "Connections run notes, 11 Nov 2026: live pins checked against news to 11 Nov"
+    }
+  }
 }
