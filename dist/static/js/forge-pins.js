@@ -247,6 +247,32 @@
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
   }
 
+  /* ── Last reviewed (12 Nov 2026) ───────────────────────────────────────
+     last_reviewed_at is the later of a recorded routine check of the pin's
+     sources and its last material update (tools/pin_clocks.py). It shows
+     only when a FORGE log records the review: no record, no line. A check
+     that found nothing says only that, never that a case is cold, closed or
+     resolved. When the latest review is the material update itself, the
+     Updated line already gives that day, so this line stays empty. */
+  var REVIEW_OUTCOMES = {
+    no_new_information: 'no new information was found in the sources checked'
+  };
+
+  // The South African day of the pin's last recorded review, or null.
+  function reviewedDay(pin) {
+    return pin ? localDay(pin.last_reviewed_at) : null;
+  }
+
+  // "Last reviewed 25 Oct: no new information was found in the sources
+  // checked", "Last reviewed 11 Nov", or ''.
+  function reviewedLine(pin, now) {
+    var d = reviewedDay(pin);
+    if (!d) return '';
+    var outcome = REVIEW_OUTCOMES[pin.review_outcome] || '';
+    if (!outcome && d === updatedDay(pin)) return '';
+    return 'Last reviewed ' + shortDate(d, now) + (outcome ? ': ' + outcome + '.' : '');
+  }
+
   // How old a pin is, in words: 'today', 'yesterday', '12 days ago', or ''.
   function ageWords(pin, now) {
     var a = ageDays(pin, now);
@@ -487,6 +513,9 @@
     pulsePhase: pulsePhase,
     happenedDay: happenedDay,
     datesLine: datesLine,
+    reviewedDay: reviewedDay,
+    reviewedLine: reviewedLine,
+    REVIEW_OUTCOMES: REVIEW_OUTCOMES,
     ageWords: ageWords,
     configure: configure,
     loadIndex: loadIndex,
