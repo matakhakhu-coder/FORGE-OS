@@ -1,0 +1,67 @@
+{
+  "schema": "forge.route_case",
+  "version": 1,
+  "case_id": "or-tambo-cocaine-2026-10-25",
+  "kind": "seizure",
+  "status": "approved",
+  "approved_by": "Matamela Ramovha",
+  "approved_at": "2026-11-12T09:16:00+02:00",
+  "approval_note": "Owner approved this case as the first reported-routes pilot on 12 Nov 2026, with the three route rules. The origin was checked against the SAPS national media statement of 26 Oct 2026 before publishing.",
+  "incident_date": "2026-10-25",
+  "title": "About 250 kg of cocaine found in five luggage bags at OR Tambo",
+  "summary": "A team of police, SARS Customs and the Border Management Authority found five luggage bags holding 216 blocks of cocaine, about 250 kg, at OR Tambo International Airport. Police put the street value at more than R200 million.",
+  "arrests": "None reported. On 26 Oct The Witness wrote that police had not said whether anyone was arrested.",
+  "case_key": "Five luggage bags off one flight that landed on the afternoon of 25 Oct 2026",
+  "sa_end": {
+    "label": "OR Tambo International Airport",
+    "province": "Gauteng",
+    "lat": -26.1337,
+    "lng": 28.2420,
+    "precision": "site",
+    "basis": [
+      {
+        "quote": "intercepting the five luggage bags containing 216 blocks of cocaine weighing approximately 250 kilograms",
+        "url": "https://iol.co.za/thepost/news/2026-10-26-saps-seizes-250kg-of-cocaine-worth-more-than-r200m-concealed-in-luggage-at-or-tambo/",
+        "outlet": "IOL / The Post, 26 Oct 2026"
+      },
+      {
+        "quote": "A multidisciplinary team intercepted approximately 250kg of cocaine at OR Tambo International Airport on Sunday, 25 October.",
+        "url": "https://www.thesouthafrican.com/news/five-suitcases-216-blocks-r200-million-inside-the-or-tambo-cocaine-bust/",
+        "outlet": "The South African, 26 Oct 2026"
+      }
+    ]
+  },
+  "far_ends": [
+    {
+      "label": "São Paulo, Brazil",
+      "place": "São Paulo",
+      "country": "Brazil",
+      "place_kind": "city",
+      "role": "flight origin",
+      "precision": "city",
+      "lat": -23.5505,
+      "lng": -46.6333,
+      "claim_by": "police",
+      "note": "The police statement names the city the flight came from, not the airport, and not where the drugs were first packed.",
+      "basis": {
+        "quote": "The drugs had arrived on a flight from São Paulo, Brazil.",
+        "url": "https://www.saps.gov.za/newsroom/ms.php",
+        "outlet": "SAPS national media statement, 26 Oct 2026",
+        "locator": "Media statements list, 26 Oct 2026: '267 alleged drug dealers amongst 17 914 arrested, more drug labs dismantled, raw cocaine worth R200 mil seized at ORTIA, 164 illegal firearms and 1 425 rounds of ammunition recovered'"
+      },
+      "also": [
+        {
+          "quote": "The bags arrived on a flight from São Paulo, Brazil, which landed that afternoon.",
+          "url": "https://www.thesouthafrican.com/news/five-suitcases-216-blocks-r200-million-inside-the-or-tambo-cocaine-bust/",
+          "outlet": "The South African, 26 Oct 2026, citing SAPS"
+        }
+      ]
+    }
+  ],
+  "disagreements": [
+    "An early Witness report on 26 Oct said police had not disclosed where the cocaine came from. The SAPS national statement the same day names a flight from São Paulo, Brazil, and that is what the line shows."
+  ],
+  "excluded": [
+    "Where the cocaine was meant to end up: no source names it."
+  ]
+}

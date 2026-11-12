@@ -1274,6 +1274,17 @@ def _build_dist(
     story_threads = threads_mod.public_threads(
         threads_mod.load_threads(pathlib.Path(CHECKED_INDEX).resolve().parent.parent / "threads"), signals)
 
+    # Reported routes (tools/routes.py, docs/routes/POLICY.md): approved cases
+    # only, shown only in the routes view. A case breaking the rule stops the
+    # publish here, before anything is written or deployed. Seizure cases are
+    # not signals: they never join the live map, the counts or the records.
+    from tools import routes as routes_mod
+    try:
+        reported_routes = routes_mod.page_routes(
+            pathlib.Path(CHECKED_INDEX).resolve().parent.parent / "routes")
+    except routes_mod.RouteError as exc:
+        raise SystemExit(f"[routes] REFUSED: {exc}")
+
     DIST.mkdir(exist_ok=True)
     DIST_ART.mkdir(exist_ok=True)
     DIST_CASES.mkdir(exist_ok=True)
@@ -1395,6 +1406,8 @@ def _build_dist(
             pin_detail_dir=map_data.PIN_DIR + "/",
             intel_links=intel_links,
             story_threads=story_threads,
+            reported_routes=reported_routes,
+            route_caption=routes_mod.CAPTION,
             all_signals=signals,
             cases=cases,
             grouped=grouped,

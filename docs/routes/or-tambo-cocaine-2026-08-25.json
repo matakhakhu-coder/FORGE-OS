@@ -1,0 +1,60 @@
+{
+  "schema": "forge.route_case",
+  "version": 1,
+  "case_id": "or-tambo-cocaine-2026-08-25",
+  "kind": "seizure",
+  "status": "held",
+  "approved_by": "",
+  "approved_at": "",
+  "incident_date": "2026-08-25",
+  "title": "More than 333 kg of cocaine found in luggage and cargo off one flight at OR Tambo",
+  "summary": "SARS Customs found 75 bricks of cocaine (83.10 kg) in two suitcases in the international arrivals hall, and a detector dog found four boxes of unmanifested cargo off the same flight holding 250 kg. SARS put the street value at R167 million.",
+  "arrests": "None at the time. Police spokesperson Athlenda Mathe said no arrests had been made.",
+  "case_key": "Passenger bags and unmanifested cargo off the same flight, 25 Aug 2026",
+  "sa_end": {
+    "label": "OR Tambo International Airport",
+    "province": "Gauteng",
+    "lat": -26.1337,
+    "lng": 28.2420,
+    "precision": "site",
+    "basis": [
+      {
+        "quote": "intercepted more than 333kg of cocaine during a targeted enforcement operation conducted at OR Tambo International Airport (ORTIA)",
+        "url": "https://www.sars.gov.za/latest-news/media-release-sars-customs-intercepts-more-than-333kg-of-cocaine-worth-over-r167-million-at-or-tambo-international-airport/",
+        "outlet": "SARS media release, 25 Aug 2026"
+      },
+      {
+        "quote": "Mathe added that no arrests have been made at this stage following the discovery of the drugs.",
+        "url": "https://www.citizen.co.za/news/south-africa/crime/police-intercept-massive-r200m-cocaine-shipment-or-tambo/",
+        "outlet": "The Citizen, 26 Aug 2026"
+      }
+    ]
+  },
+  "far_ends": [
+    {
+      "label": "São Paulo, Brazil",
+      "place": "São Paulo",
+      "country": "Brazil",
+      "place_kind": "city",
+      "role": "flight origin",
+      "precision": "city",
+      "lat": -23.5505,
+      "lng": -46.6333,
+      "claim_by": "customs",
+      "note": "SARS names the city the flight came from, not the airport, and not where the drugs were first packed.",
+      "basis": {
+        "quote": "on a flight arriving from Sao Paulo, Brazil",
+        "url": "https://www.sars.gov.za/latest-news/media-release-sars-customs-intercepts-more-than-333kg-of-cocaine-worth-over-r167-million-at-or-tambo-international-airport/",
+        "outlet": "SARS media release, 25 Aug 2026"
+      }
+    }
+  ],
+  "disagreements": [
+    "Value: SARS says R167 million; police (The Citizen, SABC) said more than R200 million.",
+    "Weight: SARS gives 83.10 kg in the suitcases; police said about 84 kg. Both give 250 kg in the cargo boxes.",
+    "Date: SARS dates its release 25 Aug and says 'today'. The Citizen wrote 'Tuesday, 26 August'; 25 Aug 2026 was the Tuesday."
+  ],
+  "excluded": [
+    "Where the cocaine was meant to end up: no source names it."
+  ]
+}

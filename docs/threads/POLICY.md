@@ -6,6 +6,8 @@ Owner decision: Matamela Ramovha, 11 November 2026, on approving the temporal-li
 
 Every checked batch up to now carries the rule "Standalone signals: no case, entity or map-line links." From 11 November 2026 that clause no longer forbids lines outright. A pin may be linked to another pin, or join a story thread, **only** under the rule below. The batch files keep their original text, because each one was approved as it stands; this file is the rule that now applies to links and threads, and `tools/checked_signals.py` and `tools/threads.py` enforce it at import and publish.
 
+Second kind of line, 12 November 2026: **reported routes** join one South African case to a named city, port, airport or border post abroad, and show only in the "Reported routes" view. They have their own rule in `docs/routes/POLICY.md`; nothing below changes for threads.
+
 ## The rule
 
 A line stands for something a source said, never for something we noticed.
