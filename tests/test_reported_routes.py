@@ -21,18 +21,31 @@ def test_repo_cases_follow_the_rule():
     assert {c["case_id"] for c in cases} >= {"or-tambo-cocaine-2026-10-25", "or-tambo-cocaine-2026-08-25"}
 
 
-def test_pilot_is_public_and_august_is_held():
+def test_pilot_and_august_share_one_line_in_date_order():
+    # August case approved by the owner on 12 Nov 2026 (approval_note in its file).
     lines = routes.page_routes()
+    assert len(lines) == 1
     ids = [c["case_id"] for l in lines for c in l["cases"]]
-    assert ids == ["or-tambo-cocaine-2026-10-25"]
-    assert json.loads(AUGUST.read_text(encoding="utf-8"))["status"] == "held"
+    assert ids == ["or-tambo-cocaine-2026-08-25", "or-tambo-cocaine-2026-10-25"]
+    aug = json.loads(AUGUST.read_text(encoding="utf-8"))
+    assert aug["status"] == "approved" and aug["approved_by"] == "Matamela Ramovha"
+
+
+def test_august_far_end_is_the_sars_release_quote():
+    line = routes.page_routes()[0]
+    case = next(c for c in line["cases"] if c["case_id"] == "or-tambo-cocaine-2026-08-25")
+    assert case["kind"] == "seizure"
+    assert case["claim_by"] == "customs"
+    assert case["far_sources"][0]["quote"] == "on a flight arriving from Sao Paulo, Brazil"
+    assert case["far_sources"][0]["url"].startswith("https://www.sars.gov.za/")
+    assert len(case["disagreements"]) == 3
 
 
 def test_pilot_far_end_is_the_police_statement_quote():
     line = routes.page_routes()[0]
     assert line["far"]["label"] == "São Paulo, Brazil"
     assert line["far"]["place_kind"] == "city"
-    case = line["cases"][0]
+    case = next(c for c in line["cases"] if c["case_id"] == "or-tambo-cocaine-2026-10-25")
     assert case["claim_by"] == "police"
     assert case["far_sources"][0]["quote"] == "The drugs had arrived on a flight from São Paulo, Brazil."
     assert case["far_sources"][0]["url"].startswith("https://www.saps.gov.za/")

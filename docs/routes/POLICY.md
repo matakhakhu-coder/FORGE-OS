@@ -54,6 +54,10 @@ cross-border routes scope. This file is the rule `tools/routes.py` enforces.
   cocaine; the SAPS national media statement of 26 Oct 2026 says it "had
   arrived on a flight from São Paulo, Brazil." Approved by the owner on
   12 Nov 2026.
+- Second case: OR Tambo International Airport, 25 Aug 2026, more than
+  333 kg of cocaine; the SARS media release of 25 Aug 2026 says it came "on a
+  flight arriving from Sao Paulo, Brazil." Held at first, approved by the
+  owner on 12 Nov 2026. It joins the same São Paulo to OR Tambo line.
 - Pilot cap: 24 approved cases.
 
 ## Checks
