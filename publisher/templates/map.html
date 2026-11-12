@@ -4693,6 +4693,7 @@
           sourceLink(box, s.url, s.outlet || 'Source');
           if (s.locator) box.appendChild(el('span', 'tl-claim', s.locator));
         });
+        if (c.far_note && c.far_note !== r.far.note) box.appendChild(el('p', 'rv-line__note', c.far_note));
         box.appendChild(el('p', 'tl-claim', 'Where it was found:'));
         (c.sa_sources || []).forEach(function (s) {
           box.appendChild(el('span', 'tl-quote', '\u201c' + s.quote + '\u201d'));

@@ -113,6 +113,26 @@ def test_cases_sharing_both_ends_share_one_line():
     assert [c["date"] for c in lines[0]["cases"]] == ["2026-08-25", "2026-10-25"]
 
 
+def test_shared_line_does_not_credit_one_source_for_every_case():
+    # 12 Nov 2026: the line note read "SARS names the city..." for both cases,
+    # but SARS only speaks for August; police named the city for October.
+    line = routes.page_routes()[0]
+    assert "SARS" not in line["far"]["note"]
+    notes = {c["case_id"]: c["far_note"] for c in line["cases"]}
+    assert notes["or-tambo-cocaine-2026-08-25"].startswith("SARS names the city")
+    assert notes["or-tambo-cocaine-2026-10-25"].startswith("The police statement names the city")
+
+
+def test_line_note_stays_when_every_case_agrees():
+    a = pilot()
+    b = copy.deepcopy(a)
+    b["case_id"], b["incident_date"] = "or-tambo-cocaine-test", "2026-08-25"
+    line = routes.public_routes([a, b])[0]
+    assert line["far"]["note"] == a["far_ends"][0]["note"]
+    one = routes.public_routes([a])[0]
+    assert one["far"]["note"] == a["far_ends"][0]["note"]
+
+
 def test_a_bad_case_stops_the_publish(tmp_path):
     bad = pilot()
     bad["far_ends"] = []

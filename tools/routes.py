@@ -255,11 +255,20 @@ def public_routes(cases: list[dict]) -> list[dict]:
                 "summary": c["summary"], "arrests": c["arrests"],
                 "role": f["role"], "role_text": ROLES[f["role"]],
                 "claim_by": f["claim_by"],
+                # What this case's own source does and does not say about the
+                # place abroad. Kept with the case: a line shared by several
+                # cases must not credit one case's source for all of them.
+                "far_note": str(f.get("note") or "").strip(),
                 "far_sources": [_pub_basis(b) for b in [f["basis"], *(f.get("also") or [])]],
                 "sa_sources": [_pub_basis(b) for b in sa["basis"]],
                 "disagreements": [str(d) for d in c.get("disagreements") or []],
                 "approved_at": str(c.get("approved_at"))[:10],
             })
+    for line in lines.values():
+        # The line's own note only when every case on it says the same thing;
+        # otherwise each case carries its note (far_note) and the line has none.
+        notes = {c["far_note"] for c in line["cases"]}
+        line["far"]["note"] = notes.pop() if len(notes) == 1 else ""
     return [dict(l, caption=CAPTION) for l in lines.values()]
 
 
