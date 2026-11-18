@@ -765,6 +765,17 @@
   .sd-media figure { margin: 0 0 var(--sp-3); }
   .sd-media img { display: block; width: 100%; height: auto; border-radius: var(--r-sm); }
   .sd-media figcaption { margin-top: 4px; font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-dim); }
+  /* Location photos (18 Nov 2026): a photo of the place, never the incident. */
+  .sd-lp__flag { margin: 0 0 var(--sp-2); padding: 6px 8px; border: 1px solid var(--border-mid); border-radius: var(--r-sm); font-family: var(--font-mono); font-size: 0.66rem; line-height: 1.45; color: var(--text-primary); }
+  .sd-lp figure { margin: 0 0 var(--sp-3); }
+  .sd-lp__frame { position: relative; width: 100%; max-height: 240px; overflow: hidden; border-radius: var(--r-sm); background: var(--border-subtle); }
+  .sd-lp__frame img { display: block; width: 100%; height: auto; max-height: 240px; object-fit: contain; }
+  .sd-lp__badge { position: absolute; left: 6px; top: 6px; padding: 2px 6px; border-radius: 3px; background: rgba(10,10,14,0.82); color: #fff; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.02em; }
+  .sd-lp__fallback { padding: 18px 10px; font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-dim); text-align: center; }
+  .sd-lp figcaption { margin-top: 6px; font-size: 0.74rem; color: var(--text-primary); }
+  .sd-lp__meta { margin: 3px 0 0; font-family: var(--font-mono); font-size: 0.62rem; line-height: 1.5; color: var(--text-dim); }
+  .sd-lp__meta a { color: var(--accent); }
+  .sd-lp__meta a { display: inline-flex; align-items: center; min-height: 32px; vertical-align: middle; }
   .sd-more { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); text-decoration: none; }
   .sd-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   .sig-dot.is-selected { outline: 2px solid #f0f4f8; outline-offset: 3px; }
@@ -1665,7 +1676,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="12 Nov 2026 16:13 UTC" title="12 Nov 2026 16:13 UTC">12 Nov 2026 16:13 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="18 Nov 2026 20:23 UTC" title="18 Nov 2026 20:23 UTC">18 Nov 2026 20:23 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1849,7 +1860,7 @@
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
       <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>85 approved records &middot; as of 12 Nov 2026 16:13 UTC</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>85 approved records &middot; as of 18 Nov 2026 20:23 UTC</span>
       
       <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
     </div>
@@ -3880,6 +3891,11 @@
         <p class="sd-basis" id="sd-basis"></p>
         <ul class="sd-sources" id="sd-sources"></ul>
       </section>
+      <section class="sd-section sd-lp" id="sd-lp-wrap" hidden aria-labelledby="sd-lp-label">
+        <h3 class="sd-label" id="sd-lp-label">The place</h3>
+        <p class="sd-lp__flag" id="sd-lp-flag">A general photo of the place near this pin. It is not a photo of this incident and does not show what happened.</p>
+        <div id="sd-lp"></div>
+      </section>
       <section class="sd-section" id="sd-prov-wrap" hidden>
         <h3 class="sd-label">Where the reporting comes from</h3>
         <p class="sd-indep" id="sd-indep"></p>
@@ -4134,7 +4150,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 12 Nov 2026 16:13 UTC
+        Generated 18 Nov 2026 20:23 UTC
       </div>
     </div>
   </footer>
@@ -4142,7 +4158,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>FORGE MAP · FORGE OSINT ENGINE · 12 Nov 2026 16:13 UTC</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · 18 Nov 2026 20:23 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -5969,7 +5985,7 @@
     state: function () { return drawer.getAttribute('data-detail') || ''; }
   };
 
-  var DETAIL_SECTIONS = ['sd-where-wrap', 'sd-diff-wrap', 'sd-src-wrap', 'sd-prov-wrap',
+  var DETAIL_SECTIONS = ['sd-where-wrap', 'sd-diff-wrap', 'sd-src-wrap', 'sd-lp-wrap', 'sd-prov-wrap',
                          'sd-fact-wrap', 'sd-rel-wrap', 'sd-media-wrap', 'sd-more-wrap'];
 
   // A pin past the live window says which month's archive it is from.
@@ -5982,6 +5998,79 @@
       : '';
     note.hidden = !month;
     drawer.setAttribute('data-archive', month ? FP.monthOf(m) : '');
+  }
+
+  // Location photos (18 Nov 2026, docs/signals/LOCATION_PHOTOS.md): owner-
+  // approved photos of the place, FORGE-hosted, each with its credit, licence,
+  // source page and where its location comes from. Never the incident unless
+  // the record is an incident_verified one.
+  function fmtDistance(mtr) {
+    if (mtr === null || mtr === undefined) return '';
+    if (mtr < 1000) return 'about ' + (Math.round(mtr / 10) * 10) + ' m';
+    return 'about ' + (Math.round(mtr / 100) / 10) + ' km';
+  }
+  function fillLocationPhotos(photos, pinUncertainty) {
+    var box = document.getElementById('sd-lp');
+    box.textContent = '';
+    var shown = 0, anyContext = false;
+    (photos || []).forEach(function (p) {
+      if (!p || !/^static\/media\/locations\/[a-z0-9][a-z0-9-]*\.(jpg|jpeg|webp|png)$/.test(p.src || '')) return;
+      if (!p.creator || !p.licence || !/^https:\/\//.test(p.source_url || '')) return;
+      if (p.kind !== 'location_context' && p.kind !== 'incident_verified') return;
+      var context = p.kind === 'location_context';
+      anyContext = anyContext || context;
+      var fig = el('figure');
+      var frame = el('div', 'sd-lp__frame');
+      var img = el('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      if (p.width && p.height) { img.width = p.width; img.height = p.height; }
+      img.alt = p.alt || '';
+      img.addEventListener('error', function () {
+        frame.textContent = '';
+        frame.appendChild(el('p', 'sd-lp__fallback', 'The photo did not load. Its source page is linked below.'));
+      });
+      img.src = p.src;
+      frame.appendChild(img);
+      var badge = el('span', 'sd-lp__badge', context ? 'Place photo \u00b7 not the incident' : 'Verified incident photo');
+      badge.setAttribute('aria-hidden', 'true');
+      frame.appendChild(badge);
+      fig.appendChild(frame);
+      var cap = el('figcaption');
+      cap.appendChild(el('span', null, p.caption || ''));
+      if (context) cap.appendChild(el('span', 'sd-sr-only', '. General photo of the place, not of this incident.'));
+      var where = el('p', 'sd-lp__meta');
+      var dist = fmtDistance(p.distance_m);
+      where.textContent = (p.geotag_label || '') +
+        (dist ? '. Taken ' + dist + ' from the pin\u2019s map point' +
+                (pinUncertainty ? ', which is itself approximate (within about ' + fmtDistance(pinUncertainty).replace('about ', '') + ')' : '') : '') +
+        (p.place_named ? '. Place named: ' + p.place_named : '') + '.';
+      cap.appendChild(where);
+      var credit = el('p', 'sd-lp__meta');
+      credit.appendChild(document.createTextNode((p.taken ? 'Taken ' + p.taken + '. ' : '') + 'Photo: ' + p.creator + ', '));
+      if (p.licence_url && /^https:\/\//.test(p.licence_url)) {
+        var lic = el('a', null, p.licence);
+        lic.href = p.licence_url; lic.target = '_blank'; lic.rel = 'noopener noreferrer license';
+        lic.addEventListener('click', function (e) { e.preventDefault(); openExtGate(p.licence_url, lic); });
+        credit.appendChild(lic);
+      } else {
+        credit.appendChild(document.createTextNode(p.licence));
+      }
+      credit.appendChild(document.createTextNode(p.edits ? '. ' + p.edits + '.' : '.'));
+      cap.appendChild(credit);
+      var srcP = el('p', 'sd-lp__meta');
+      var srcA = el('a', 'sd-lp__src', 'Source page on ' + (p.platform || 'the web') + ' \u2197');
+      srcA.href = p.source_url; srcA.target = '_blank'; srcA.rel = 'noopener noreferrer';
+      srcA.appendChild(el('span', 'sd-sr-only', ' (opens in a new tab)'));
+      srcA.addEventListener('click', function (e) { e.preventDefault(); openExtGate(p.source_url, srcA); });
+      srcP.appendChild(srcA);
+      cap.appendChild(srcP);
+      fig.appendChild(cap);
+      box.appendChild(fig);
+      shown += 1;
+    });
+    document.getElementById('sd-lp-flag').hidden = !anyContext;
+    section('sd-lp-wrap', shown > 0);
   }
 
   function fillDrawer(m) {
@@ -6110,6 +6199,8 @@
     var basis = links.length + (links.length === 1 ? ' report' : ' reports') + (m.basis ? ' \u00b7 ' + m.basis : '');
     document.getElementById('sd-basis').textContent = basis;
     section('sd-src-wrap', links.length > 0);
+
+    fillLocationPhotos(m.location_photos, m.uncertainty_m);
 
     // Where the reporting comes from (Sprint 4): statement, spokesperson,
     // outlets, other voices, and whether the reports are independent.
