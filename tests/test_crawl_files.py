@@ -22,6 +22,10 @@ NOINDEX_PAGES = {
     "articles/limpopo-procurement-arrests-v2.html",
     "cases/limpopo-municipal-procurement-arrests-april-2026-rerun-v2.html",
 }
+# The Journal page is noindex while it has no published entries (18 Nov 2026).
+from tools import journal as _journal  # noqa: E402
+if not _journal.load_entries():
+    NOINDEX_PAGES = NOINDEX_PAGES | {"journal.html"}
 CANON_RE = re.compile(r'<link rel="canonical" href="([^"]+)">')
 
 

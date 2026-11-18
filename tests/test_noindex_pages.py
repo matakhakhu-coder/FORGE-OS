@@ -21,6 +21,10 @@ NOINDEX_PAGES = {
     f"articles/{FOLLOW_UP}.html",
     f"cases/{CASE17}.html",
 }
+# The Journal page is noindex while it has no published entries (18 Nov 2026).
+from tools import journal as _journal  # noqa: E402
+if not _journal.load_entries():
+    NOINDEX_PAGES = NOINDEX_PAGES | {"journal.html"}
 NOINDEX_RE = re.compile(r'<meta\s+name="robots"\s+content="[^"]*noindex', re.I)
 
 

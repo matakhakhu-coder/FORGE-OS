@@ -47,6 +47,7 @@
       <nav class="site-nav">
         <a href="{% block nav_about %}about.html{% endblock %}" class="site-nav__link {% block nav_about_active %}{% endblock %}">How It Works</a>
         <a href="{% block nav_records %}records.html{% endblock %}" class="site-nav__link {% block nav_records_active %}{% endblock %}">Records</a>
+        <a href="{% block nav_journal %}journal.html{% endblock %}" class="site-nav__link {% block nav_journal_active %}{% endblock %}">Journal</a>
       </nav>
       <div class="site-header__meta">
         <div class="site-search" style="position:relative;">
@@ -116,6 +117,7 @@
         FORGE MAP ARCHIVE · FORGE OSINT ENGINE · ALL SOURCES OPEN ·
         <a href="{% block footer_about %}about.html{% endblock %}" style="color:var(--text-dim);">How It Works</a> ·
         <a href="{% block footer_records %}records.html{% endblock %}" style="color:var(--text-dim);">Records</a> ·
+        <a href="{% block footer_journal %}journal.html{% endblock %}" style="color:var(--text-dim);">Journal</a> ·
         <a href="{% block footer_contact %}contact.html{% endblock %}" style="color:var(--text-dim);">Contact</a> ·
         <a href="{% block footer_privacy %}privacy.html{% endblock %}" style="color:var(--text-dim);">Privacy</a>
       </div>

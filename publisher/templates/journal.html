@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Journal{% endblock %}
+{% block description %}Field notes from FORGE Map, each written by a named person and tied to a place on the map of reported incidents in South Africa.{% endblock %}
+{% block nav_journal_active %}site-nav__link--active{% endblock %}
+
+{% block head_extra %}
+{% if not entries %}<meta name="robots" content="noindex">{% endif %}
+{% include "_legal_styles.html" %}
+<style>
+.jr-back { margin-bottom: var(--sp-6); }
+.jr-back a {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+}
+.jr-empty {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-8);
+}
+.jr-empty__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-2);
+}
+.jr-empty p { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+.jr-steps { list-style: none; margin: 0; padding: 0; counter-reset: jr; }
+.jr-steps li {
+  counter-increment: jr;
+  position: relative;
+  padding: 0 0 var(--sp-4) var(--sp-8);
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.jr-steps li::before {
+  content: counter(jr);
+  position: absolute; left: 0; top: 0.1em;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  border: 1px solid var(--border-dim);
+  font-family: var(--font-mono); font-size: 0.7rem;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+}
+.jr-steps strong { color: var(--text-primary); }
+.jr-list { display: flex; flex-direction: column; gap: var(--sp-6); margin-bottom: var(--sp-8); }
+.jr-entry {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-md);
+  padding: var(--sp-6);
+  scroll-margin-top: 80px;
+}
+.jr-entry__meta {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--sp-2);
+  overflow-wrap: anywhere;
+}
+.jr-entry__title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 var(--sp-3);
+}
+.jr-entry__title a { color: inherit; text-decoration: none; }
+.jr-entry__summary { font-size: 0.9rem; color: var(--text-primary); line-height: 1.7; margin: 0 0 var(--sp-4); }
+.jr-entry__body p { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.8; margin: 0 0 var(--sp-4); }
+.jr-entry__by { font-size: 0.78rem; color: var(--text-dim); margin: 0 0 var(--sp-4); }
+.jr-entry__sources { font-size: 0.78rem; color: var(--text-secondary); margin: 0 0 var(--sp-4); padding-left: var(--sp-5); }
+.jr-entry__sources a { color: var(--accent); overflow-wrap: anywhere; }
+.jr-entry__map {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-3);
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+  .about-shell { padding: var(--sp-6) var(--sp-4) var(--sp-12); }
+  .jr-entry, .jr-empty { padding: var(--sp-4); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-shell">
+
+  <div class="jr-back"><a href="index.html">&larr; Back to the map</a></div>
+
+  <div class="about-header">
+    <div class="about-header__eyebrow">Journal &middot; FORGE Map</div>
+    <h1 class="about-header__title">Journal</h1>
+    <p class="about-header__sub">
+      Field notes from the people behind FORGE Map, each tied to a place on the map.
+      The map shows where; the journal holds the writing.
+    </p>
+  </div>
+
+  {% if entries %}
+  <div class="jr-list">
+    {% for e in entries %}
+    <article class="jr-entry" id="{{ e.id }}">
+      <div class="jr-entry__meta"><time datetime="{{ e.published }}">{{ e.published_fmt }}</time> &middot; {{ e.place }}</div>
+      <h2 class="jr-entry__title"><a href="#{{ e.id }}">{{ e.title }}</a></h2>
+      <p class="jr-entry__summary">{{ e.summary }}</p>
+      <div class="jr-entry__body">
+        {% for p in e.body %}<p>{{ p }}</p>
+        {% endfor %}
+      </div>
+      <p class="jr-entry__by">Written by {{ e.author }}</p>
+      {% if e.sources %}
+      <ul class="jr-entry__sources">
+        {% for s in e.sources %}<li><a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.label }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% if e.pin_url %}<a class="jr-entry__map" href="{{ e.pin_url }}">Open this place on the map</a>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="jr-empty">
+    <div class="jr-empty__title">No journal entries yet</div>
+    <p>The first entries will appear here once they are written and published.</p>
+  </div>
+  {% endif %}
+
+  <div class="about-section">
+    <h2 class="about-section__title">How an entry gets here</h2>
+    <ol class="jr-steps">
+      <li><strong>Written about a place.</strong> A named person writes a note about somewhere they have been, tied to a place on the map.</li>
+      <li><strong>Checked before it goes up.</strong> The note is read and checked before anything is published.</li>
+      <li><strong>Published on purpose.</strong> An entry appears only when it is deliberately published. Nothing is posted automatically.</li>
+    </ol>
+  </div>
+
+  <div class="about-section">
+    <h2 class="about-section__title">Journal entries and map pins</h2>
+    <div class="about-body">
+      <p>A journal entry is a person&rsquo;s own account. It does not add, change or confirm a pin on the map. Pins keep their own checks, described in <a href="about.html">How It Works</a>.</p>
+      <p>Spotted a mistake in an entry? <a href="contact.html#report-a-mistake">Tell us</a>.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

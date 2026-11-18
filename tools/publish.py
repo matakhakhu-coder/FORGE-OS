@@ -1609,6 +1609,21 @@ def _build_dist(
         encoding="utf-8",
     )
 
+    # journal.html — field notes tied to a place on the map (18 Nov 2026).
+    # docs/journal/entries.json, checked by tools/journal.py; a bad entry
+    # stops the build. Empty: an honest empty state, noindex, no canonical.
+    journal_entries = journal_entries_for(signals)
+    (DIST / "journal.html").write_text(
+        env.get_template("journal.html").render(
+            generated_at=now_str,
+            entries=journal_entries,
+            canonical_url=canonical_url("journal.html") if journal_entries else None,
+            **rev),
+        encoding="utf-8",
+    )
+    print(f"[publish] journal.html - {len(journal_entries)} published entr"
+          f"{'y' if len(journal_entries) == 1 else 'ies'}")
+
     # contact.html and privacy.html — operator, corrections and privacy notice
     for page in LEGAL_PAGES:
         (DIST / page).write_text(
@@ -1687,6 +1702,22 @@ def _build_dist(
     write_crawl_files(DIST)
 
     _check_case_triangulation(conn, cases, signals, graph_data)
+
+
+# ── Journal (18 Nov 2026) ────────────────────────────────────────────────────
+
+def live_pin_ids(signals: list[dict]) -> set[str]:
+    """The 8-character ids that open a pin on the map (index.html?signal=)."""
+    return {t["signal"] for t in map(_signal_search_target, signals) if t.get("signal")}
+
+
+def journal_entries_for(signals: list[dict]) -> list[dict]:
+    from tools import journal as _journal
+    try:
+        return _journal.published_entries(_journal.load_entries(), live_pin_ids(signals))
+    except _journal.JournalError as exc:
+        print(f"[publish] REFUSED: {exc}")
+        raise SystemExit(5)
 
 
 # ── Canonical links, robots.txt, sitemap.xml (24 Oct 2026) ────────────────────
