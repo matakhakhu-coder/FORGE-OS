@@ -5,6 +5,9 @@ database.db
 
 # Media uploads
 media/
+# Approved place photos the build copies into the site (18 Nov 2026).
+# The deploy stages dist/ by this file, so without this line they never go live.
+!dist/static/media/
 
 # Python bytecode
 __pycache__/

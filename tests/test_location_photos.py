@@ -230,23 +230,40 @@ def test_at_most_two_per_pin_context_first(files):
 
 # ── The registry as committed ──
 
-def test_committed_registry_is_valid_and_has_nothing_approved_yet():
+def test_committed_registry_is_valid_and_only_the_owner_approved_photo_is_approved():
+    # 18 Nov 2026: the owner looked at the Polokwane photo and approved it
+    # ("Yes approved" to: free of faces and number plates?). Nothing else.
     reg = lp.load_registry()
     assert lp.validate(reg) == []
-    assert lp.approved_files(reg) == []
+    assert lp.approved_files(reg) == ["polokwane-peter-mokaba-stadium-2010.jpg"]
     for p in reg["photos"]:
         assert p["kind"] == "location_context"
         assert p["ai_generated"] is False
 
 
-def test_committed_candidate_matches_its_file_and_is_not_published():
+def test_committed_polokwane_photo_carries_the_owner_check_and_matches_its_file():
     reg = lp.load_registry()
     p = next(x for x in reg["photos"] if x["id"] == "polokwane-peter-mokaba-stadium-2010")
-    assert p["status"] == "candidate"
+    assert p["status"] == "approved"
+    assert p["approval"] == {"by": "owner", "at": "2026-11-18"}
+    assert p["privacy"]["checked_by"] == "owner"
+    assert p["privacy"]["checked_at"] == "2026-11-18"
+    assert "PREVIEW" not in json.dumps(p)
     fp = lp.FILES_DIR / p["file"]["name"]
     assert hashlib.sha1(fp.read_bytes()).hexdigest() == p["file"]["sha1"]
     assert p["geotag"]["basis"] == "page_location"
-    assert lp.published_for(SID, PIN, reg) == []
+    shown = lp.published_for(SID, PIN, reg)
+    assert len(shown) == 1
+    assert shown[0]["geotag_basis"] == "page_location"
+    assert shown[0]["geotag_label"] == "Location from the photo's page, not from camera data"
+
+
+def test_repo_gitignore_lets_the_deploy_stage_built_place_photos():
+    # The deploy stages new dist/ files by the repo's .gitignore; its
+    # 'media/' rule would otherwise drop dist/static/media/locations/*.
+    lines = [l.strip() for l in (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()]
+    assert "!dist/static/media/" in lines
+    assert lines.index("!dist/static/media/") > lines.index("media/")
 
 
 def test_candidate_files_are_outside_the_public_static_folder():
@@ -279,5 +296,15 @@ def test_publish_detail_carries_only_approved_photos():
     from tools import publish
     reg = lp.load_registry()
     pin_checked = {"location_note": PIN["location_note"]}
-    assert publish._location_photos_for(SID, PIN["title"], PIN["lat"], PIN["lng"], pin_checked) == []
+    # The committed registry holds one owner-approved photo (18 Nov 2026).
+    shown = publish._location_photos_for(SID, PIN["title"], PIN["lat"], PIN["lng"], pin_checked)
+    assert [e["src"] for e in shown] == ["static/media/locations/polokwane-peter-mokaba-stadium-2010.jpg"]
     assert publish._location_photos_for(SID, PIN["title"], None, None, pin_checked) == []
+    # No other pin gets it.
+    assert publish._location_photos_for("00000000-0000-0000-0000-000000000000", PIN["title"],
+                                        PIN["lat"], PIN["lng"], pin_checked) == []
+    # A record put back to candidate is not shown.
+    cand = copy.deepcopy(reg)
+    for p in cand["photos"]:
+        p["status"] = "candidate"
+    assert lp.published_for(SID, PIN, cand) == []

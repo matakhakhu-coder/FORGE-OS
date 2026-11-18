@@ -6,7 +6,7 @@
       "id": "polokwane-peter-mokaba-stadium-2010",
       "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
       "kind": "location_context",
-      "status": "candidate",
+      "status": "approved",
       "ai_generated": false,
       "caption": "Peter Mokaba Stadium, Polokwane, in 2010",
       "alt": "Photo of Peter Mokaba Stadium in Polokwane, taken in June 2010",
@@ -38,19 +38,19 @@
         "edits": "Resized to 640 pixels wide and file metadata removed; the picture is not otherwise changed"
       },
       "privacy": {
-        "people_identifiable": null,
-        "vehicle_plates_readable": null,
-        "private_home": null,
-        "children": null,
-        "sensitive_site": null,
-        "house_numbers_readable": null,
-        "checked_by": null,
-        "checked_at": null,
-        "note": "Not yet looked at by a person. The photo is from a World Cup match, so a crowd may be in frame."
+        "people_identifiable": false,
+        "vehicle_plates_readable": false,
+        "private_home": false,
+        "children": false,
+        "sensitive_site": false,
+        "house_numbers_readable": false,
+        "checked_by": "owner",
+        "checked_at": "2026-11-18",
+        "note": "Checked by the owner (Matamela Ramovha) by looking at the photo on its Commons page. Asked whether it is free of faces and number plates, the owner replied: 'Yes approved' (18 Nov 2026). Subject is a public stadium, not a home, school, grave or care site."
       },
       "approval": {
-        "by": null,
-        "at": null
+        "by": "owner",
+        "at": "2026-11-18"
       }
     }
   ]
