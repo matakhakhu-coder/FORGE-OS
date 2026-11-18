@@ -1,0 +1,37 @@
+{
+  "signal_id": "55bc58e1-085f-577b-8a5c-4a91ca0a9fef",
+  "pin": {
+    "title": "Strandbrook, Brookdale, Phoenix (approx.): man stabbed to death by three men on his way to a tuck shop; security-company account, 28 Oct",
+    "lat": -29.68213,
+    "lng": 31.00248,
+    "location_note": "Along Strandbrook, Brookdale, Phoenix (KZN VIP Security, via Phoenix Tabloid and Accidents.co.za). No number or spot is given. The pin is Strandbrook Crescent, Brookdale, from OpenStreetMap, the only street named Strandbrook found in Brookdale; the sources say only 'Strandbrook'. Approximate, street level (about 500 m)."
+  },
+  "searched_at": "2026-11-18",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Beautiful sunrise at 6.01an.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Beautiful_sunrise_at_6.01an.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Beautiful_sunrise_at_6.01an.jpg/960px-Beautiful_sunrise_at_6.01an.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2296,
+      "height": 4080,
+      "original_sha1": "82364160454b77bf7e33fb899566aa894d78fd3b",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.69474915,
+        "lng": 31.00565622
+      },
+      "distance_m": 1436,
+      "creator": "Tazzosun",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "11 March 2023 (according to Exif data)",
+      "description": "bright orange sun",
+      "categories": "Self-published work|Uploaded with Mobile/Android|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2023-03-11|Orange sunrises of South Africa|2023 in Durban|Sunrises in 2023|Sunrises of Durban",
+      "auto_refusals": []
+    }
+  ]
+}

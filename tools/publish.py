@@ -634,6 +634,11 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
             # record, no date (docs/signals/REVIEW_DATES.md).
             **(_review_for(r["signal_id"], r["published_at"], checked) if checked["checked"]
                else {"last_reviewed_at": None, "review_outcome": None}),
+            # Location photos (18 Nov 2026), checked pins only: owner-approved
+            # photos of the place, each marked as not the incident
+            # (docs/signals/LOCATION_PHOTOS.md). Drawer detail only.
+            "location_photos": (_location_photos_for(r["signal_id"], r["title"], r["lat"], r["lng"], checked)
+                                if checked["checked"] else []),
         })
     # Same publish time (a whole batch goes live at once): put the incidents
     # in the order they happened, newest first, not in signal-ID order.
@@ -641,6 +646,45 @@ def _fetch_signals(conn: sqlite3.Connection) -> list[dict]:
     items.sort(key=lambda x: x.get("incident_at") or "", reverse=True)
     items.sort(key=lambda x: x["published_at"] or "", reverse=True)
     return items
+
+
+# ── Location photos (18 Nov 2026) ────────────────────────────────────────────
+# docs/signals/location-photos.json; only approved records that pass every
+# rule in tools/location_photos.py reach the page.
+_LOC_PHOTOS_CACHE: dict = {}
+
+
+def _location_photos_registry():
+    from tools import location_photos as _lp
+    try:
+        key = _lp.REGISTRY.stat().st_mtime_ns
+    except OSError:
+        key = None
+    if _LOC_PHOTOS_CACHE.get("key") != key or "reg" not in _LOC_PHOTOS_CACHE:
+        _LOC_PHOTOS_CACHE["key"] = key
+        _LOC_PHOTOS_CACHE["reg"] = _lp.load_registry()
+    return _LOC_PHOTOS_CACHE["reg"]
+
+
+def _location_photos_for(signal_id, title, lat, lng, checked) -> list[dict]:
+    from tools import location_photos as _lp
+    if lat is None or lng is None:
+        return []
+    pin = {"title": title, "lat": lat, "lng": lng, "location_note": checked.get("location_note")}
+    return _lp.published_for(signal_id, pin, _location_photos_registry())
+
+
+def _copy_location_photos(items) -> int:
+    """Copy only the files that an approved, shown photo uses."""
+    from tools import location_photos as _lp
+    wanted = {e["src"].rsplit("/", 1)[-1] for it in items for e in (it.get("location_photos") or [])}
+    if not wanted:
+        return 0
+    dest = DIST_STATIC / _lp.SITE_SUBDIR
+    dest.mkdir(parents=True, exist_ok=True)
+    for name in sorted(wanted):
+        shutil.copy2(_lp.FILES_DIR / name, dest / name)
+    return len(wanted)
 
 
 # ── Last reviewed (12 Nov 2026) ──────────────────────────────────────────────
@@ -1322,6 +1366,8 @@ def _build_dist(
         shutil.rmtree(DIST_STATIC)
     if STATIC_SRC.exists():
         shutil.copytree(STATIC_SRC, DIST_STATIC)
+    n_loc = _copy_location_photos(signals)
+    print(f"[publish] location photos - {n_loc} approved file(s) copied")
 
     items = sorted(
         signals + articles, key=lambda x: x["published_at"] or "", reverse=True

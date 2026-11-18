@@ -1,0 +1,59 @@
+{
+  "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
+  "pin": {
+    "title": "Near Peter Mokaba Stadium, Polokwane (approx.): man, 29, assaulted by a group, dies in hospital, 4 Oct",
+    "lat": -23.92481,
+    "lng": 29.46796,
+    "location_note": "Near the stadium, in the early hours after a show at the Peter Mokaba rugby field, Polokwane (police, via Review Online). No street or exact spot given. The pin is the Peter Mokaba Stadium map point, inside the Polokwane police precinct; approximate, within about 1.5 km. It is not the scene."
+  },
+  "searched_at": "2026-11-18",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:ZA Polokwane- France VS MEXICO.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:ZA_Polokwane-_France_VS_MEXICO.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/ZA_Polokwane-_France_VS_MEXICO.jpg/960px-ZA_Polokwane-_France_VS_MEXICO.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3635,
+      "height": 2424,
+      "original_sha1": "b018f3784721c7af196cc6b3746472dcc28cb984",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -23.925012,
+        "lng": 29.46855
+      },
+      "distance_m": 64,
+      "creator": "Celso FLORES",
+      "licence": "CC BY 2.0",
+      "licence_url": "https://creativecommons.org/licenses/by/2.0",
+      "taken": "2010-06-17 20:34:35",
+      "description": "South Africa, city of Polokwane, Peter Mokaba Stadium - France VS MEXICO",
+      "categories": "Taken with Nikon D40x|Flickr images reviewed by FlickreviewR|Files with coordinates missing SDC location of creation|2010 FIFA World Cup Match 18, France v Mexico",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Xitsonga Spelling and Orthography Rules.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Xitsonga_Spelling_and_Orthography_Rules.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Xitsonga_Spelling_and_Orthography_Rules.jpg/960px-Xitsonga_Spelling_and_Orthography_Rules.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2077,
+      "height": 3017,
+      "original_sha1": "2f19a629eee8d05f30e3ccc7541d830097a4a16c",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -23.914503,
+        "lng": 29.455719
+      },
+      "distance_m": 1692,
+      "creator": "Nsuku Pius",
+      "licence": "CC BY 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0",
+      "taken": "2025-05-08 14:37:17",
+      "description": "Xitsonga Spelling and Orthography Rules",
+      "categories": "Self-published work|Files with coordinates missing SDC location of creation|All media needing categories as of 2025|Media needing categories as of 8 May 2025",
+      "auto_refusals": []
+    }
+  ]
+}

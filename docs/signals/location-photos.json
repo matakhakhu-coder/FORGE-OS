@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "policy": "docs/signals/LOCATION_PHOTOS.md",
+  "photos": [
+    {
+      "id": "polokwane-peter-mokaba-stadium-2010",
+      "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
+      "kind": "location_context",
+      "status": "candidate",
+      "ai_generated": false,
+      "caption": "Peter Mokaba Stadium, Polokwane, in 2010",
+      "alt": "Photo of Peter Mokaba Stadium in Polokwane, taken in June 2010",
+      "taken": "17 June 2010",
+      "creator": "Celso FLORES",
+      "licence": "CC BY 2.0",
+      "licence_url": "https://creativecommons.org/licenses/by/2.0",
+      "source": {
+        "platform": "Wikimedia Commons",
+        "page_url": "https://commons.wikimedia.org/wiki/File:ZA_Polokwane-_France_VS_MEXICO.jpg",
+        "file_title": "File:ZA Polokwane- France VS MEXICO.jpg",
+        "description": "South Africa, city of Polokwane, Peter Mokaba Stadium - France VS MEXICO",
+        "categories": "Taken with Nikon D40x|Flickr images reviewed by FlickreviewR|Files with coordinates missing SDC location of creation|2010 FIFA World Cup Match 18, France v Mexico",
+        "thumb_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/ZA_Polokwane-_France_VS_MEXICO.jpg/960px-ZA_Polokwane-_France_VS_MEXICO.jpg",
+        "original_sha1": "b018f3784721c7af196cc6b3746472dcc28cb984",
+        "retrieved_at": "2026-11-18"
+      },
+      "geotag": {
+        "basis": "page_location",
+        "lat": -23.925012,
+        "lng": 29.46855,
+        "from": "Commons page coordinates; the file holds no camera GPS data (checked in the file's metadata, 18 Nov 2026)"
+      },
+      "file": {
+        "name": "polokwane-peter-mokaba-stadium-2010.jpg",
+        "sha1": "e6bab3b359c2cc3a9efba829330e4f1e3183fa41",
+        "width": 640,
+        "height": 427,
+        "edits": "Resized to 640 pixels wide and file metadata removed; the picture is not otherwise changed"
+      },
+      "privacy": {
+        "people_identifiable": null,
+        "vehicle_plates_readable": null,
+        "private_home": null,
+        "children": null,
+        "sensitive_site": null,
+        "house_numbers_readable": null,
+        "checked_by": null,
+        "checked_at": null,
+        "note": "Not yet looked at by a person. The photo is from a World Cup match, so a crowd may be in frame."
+      },
+      "approval": {
+        "by": null,
+        "at": null
+      }
+    }
+  ]
+}
