@@ -40,6 +40,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "tests" / "browser"))
 
+from tests import real_inventory as ri  # noqa: E402
 from tools import map_archive as ma  # noqa: E402
 from tools import map_data  # noqa: E402
 from tools import nothing_missing as nm  # noqa: E402
@@ -47,7 +48,7 @@ from tools import nothing_missing as nm  # noqa: E402
 JS = ROOT / "publisher" / "static" / "js" / "forge-pins.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 86
+ALL_PINS = ri.active_count()   # 86 on 21 Nov 2026; counted from docs/signals
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 
@@ -174,11 +175,11 @@ F.configure({ base: '' });
 def test_loader_reads_months_once_and_finds_pins(built_dec):
     entries = ma.all_entries(built_dec)
     assert len(entries) == ALL_PINS
-    first = next(e["signal_id"] for e in entries if not e["signal_id"].startswith("c522699e"))   # an October pin (Flora Park is November)
+    first = next(e["signal_id"] for e in entries if e["signal_id"] in ri.ids_by_month()["2026-10"])   # an October pin
     r = _node(LOADER_HARNESS, {"dist": str(built_dec), "short": first[:8], "full": first})
     assert r["before"] == 0 and r["knownBefore"] is None
     assert sorted(r["all"]) == sorted(e["signal_id"] for e in entries) and len(set(r["all"])) == ALL_PINS
-    assert r["again"] == ALL_PINS and r["none"] == 0 and r["list"] == ALL_PINS - 1   # October only; Flora Park is November
+    assert r["again"] == ALL_PINS and r["none"] == 0 and r["list"] == ALL_PINS - len(ri.ids_from_month("2026-11"))   # October only; November-onwards pins stay on the live map
     assert r["short"] == [first, "2026-10"] and r["full"] == first
     assert r["missing"] is None and r["bad"] is None
     assert r["knownAfter"] == ["2026-10", ""]
@@ -242,7 +243,7 @@ def test_december_build_reaches_every_pin_every_way(built_dec):
     # Batch 5 left Area check as the one gap; Batch 6 closes it (Area check
     # loads the months its dates touch). tests/test_time_aware_area_archive.py
     data = nm.load_dist(built_dec)
-    assert [m["signal_id"] for m in data["markers"]] == ["c522699e-12c5-537b-8759-d35744aa28ce"]   # Flora Park, 5 Nov: November is still live
+    assert sorted(m["signal_id"] for m in data["markers"]) == sorted(ri.ids_from_month("2026-11"))   # November onwards (Flora Park, 5 Nov, first) is still live
     assert data["archive"]["live_months"] == ["2026-11", "2026-12"]
     rep = nm.check(data=data)
     assert rep["routes"] == {r: ALL_PINS for r in nm.ROUTES}
@@ -271,7 +272,7 @@ def test_a_pin_missing_from_a_live_month_is_still_a_gap(built_dec):
     data = nm.load_dist(built_dec)
     data["archive"]["live_months"].append("2026-10")
     rep = nm.check(data=data)
-    assert rep["routes"]["map"] == 1   # only the November pin (Flora Park) stays on the map
+    assert rep["routes"]["map"] == len(ri.ids_from_month("2026-11"))   # only November-onwards pins stay on the map
     assert all("live list" in p["why"] for p in rep["problems"] if p["route"] == "map")
 
 

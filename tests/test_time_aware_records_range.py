@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "tests" / "browser"))
+from tests import real_inventory as ri  # noqa: E402
 
 JS = ROOT / "publisher" / "static" / "js" / "records.js"
 PINS_JS = ROOT / "publisher" / "static" / "js" / "forge-pins.js"
@@ -175,7 +176,7 @@ def test_range_filter_matches_python_on_every_record(frm, to):
             if (not frm or sa_day(r["incident_start"]) >= frm) and (not to or sa_day(r["incident_start"]) <= to)]
     assert got == want
     if (frm, to) == ("2026-10-01", "2026-10-31"):
-        assert len(got) == len(recs) - 1 == 85   # every pin but Flora Park (5 Nov)
+        assert len(got) == len([r for r in recs if r["signal_id"] in ri.ids_by_month().get("2026-10", set())]) == ri.count_in_month("2026-10")   # every October pin (85 on 21 Nov 2026)
 
 
 @needs_node
@@ -236,7 +237,7 @@ def test_records_keep_every_record_in_both_builds(dists):
     for name in ("oct", "dec"):
         recs = json.loads((dists / name / "records.json").read_text())["records"]
         page = (dists / name / "records.html").read_text(encoding="utf-8")
-        assert len(recs) == 86 and page.count('<tr data-id="') == 86, name
+        assert len(recs) == ri.active_count() and page.count('<tr data-id="') == ri.active_count(), name
         assert '<link rel="canonical" href="https://forgemap.co.za/records">' in page
         assert (dists / name / "static" / "js" / "records.js").read_text() == JS.read_text()
 

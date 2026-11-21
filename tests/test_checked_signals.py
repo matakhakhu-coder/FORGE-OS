@@ -53,7 +53,33 @@ PROV_IDS = {"97b63775-11a0-5fdf-9e98-34fda69cfd80", "64649653-8eae-5e0e-8868-54f
             "95842808-2427-5ea9-beaa-9995d13495ed", "bceb3bc0-a276-57d1-8ff7-1c5adb933f11"}
 LPF_PINS = 1          # Crime & Security (Polokwane town sweep, 21 Nov 2026): Flora Park stabbing opposite a vote-counting station, 5 Nov; published under the owner's approval-free test, outside the pattern test
 LPF_IDS = {"c522699e-12c5-537b-8759-d35744aa28ce"}
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS + GPP_KILL_PINS + GPP_PI_PINS + FSP_PINS + NCP_PINS + LPF_PINS
+HIST_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS + GPP_KILL_PINS + GPP_PI_PINS + FSP_PINS + NCP_PINS + LPF_PINS   # every pin published up to 21 Nov 2026, counted batch by batch above
+# Pins published after 21 Nov 2026 are counted from docs/signals itself, so a valid new
+# pin needs no test edit (tests/real_inventory.py). HIST_* keeps the exact per-batch checks.
+from tests import real_inventory as ri  # noqa: E402
+ALL_PINS = ri.active_count()
+
+
+HIST_BATCHES = (
+    "western-cape-murders-2026-10-18.json", "western-cape-murders-2026-10-18-batch2.json",
+    "north-west-killings-2026-10-19.json", "eastern-cape-killings-2026-10-19.json",
+    "western-cape-murders-2026-10-19-sprint5.json", "eastern-cape-killings-2026-10-21.json",
+    "western-cape-murders-2026-10-21-sprint5.json", "western-cape-murders-2026-10-22-sprint5.json",
+    "limpopo-killings-2026-10-22.json", "mpumalanga-killings-2026-10-23.json",
+    "limpopo-infrastructure-2026-10-23.json", "kwazulu-natal-infrastructure-2026-10-23.json",
+    "limpopo-unresolved-deaths-2026-10-23.json", "limpopo-polokwane-sweep-2026-10-23.json",
+    "limpopo-musina-sweep-2026-10-23.json", "kwazulu-natal-durban-sweep-2026-10-30.json",
+    "free-state-bloemfontein-sweep-2026-10-25.json", "gauteng-provinces-sweep-2026-10-30.json",
+    "free-state-provinces-sweep-2026-10-30.json", "northern-cape-provinces-sweep-2026-10-30.json",
+    "western-cape-delft-palm-rank-2026-11-11.json", "limpopo-polokwane-flora-park-2026-11-21.json",
+)   # the batches as of 21 Nov 2026, in load order; later batches must come after them
+LATER_BATCHES = ri.batch_files()[len(HIST_BATCHES):]
+
+
+def hist_ids() -> set[str]:
+    """signal_ids in the batches published up to 21 Nov 2026 (exact checks apply to these)."""
+    from tools.checked_signals import load_index
+    return {s["signal_id"] for b in load_index().batches[:len(HIST_BATCHES)] for s in b.signals}
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -146,12 +172,14 @@ def test_index_loads_all_pins_in_order():
         "free-state-provinces-sweep-2026-10-30.json",
         "northern-cape-provinces-sweep-2026-10-30.json",
         "western-cape-delft-palm-rank-2026-11-11.json",
-        "limpopo-polokwane-flora-park-2026-11-21.json"]
+        "limpopo-polokwane-flora-park-2026-11-21.json"] + LATER_BATCHES
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
         "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State",
-        "Gauteng", "Free State", "Northern Cape", "Western Cape", "Limpopo"]
+        "Gauteng", "Free State", "Northern Cape", "Western Cape", "Limpopo"] + [b.province for b in cs.batches[len(HIST_BATCHES):]]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
+    hist = [s for b in cs.batches[:len(HIST_BATCHES)] for s in b.signals]
+    assert len(hist) == HIST_PINS                  # the batch-by-batch count still holds exactly
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
         c = s["metadata"]["checked"]
@@ -185,7 +213,7 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"
           and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS and s["signal_id"] not in LPM_IDS
-          and s["signal_id"] not in LPF_IDS]
+          and s["signal_id"] not in LPF_IDS and s["signal_id"] in hist_ids()]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo

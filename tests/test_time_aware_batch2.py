@@ -28,6 +28,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from tests import real_inventory as ri  # noqa: E402
 from tools import approvals as ap  # noqa: E402
 from tools import checked_signals as cs  # noqa: E402
 from tools import pin_clocks as pc  # noqa: E402
@@ -172,7 +173,7 @@ UPDATED_PINS = {'c9697dcd-becf-5562-a5a0-57382f75bfa5'}  # Durban CBD charges an
 
 def test_all_current_pins_load_with_no_material_update():
     loaded = cs.load_index()
-    assert len(loaded.signals) == 86 and len(loaded.active) == 86
+    assert len(loaded.signals) == ri.active_count() == len(loaded.active)
     for s in loaded.signals:
         chk = s["metadata"]["checked"]
         if s["signal_id"] not in UPDATED_PINS:
@@ -182,7 +183,7 @@ def test_all_current_pins_load_with_no_material_update():
         assert cs.update_fields_problem(chk, s["published_at"]) is None
         assert "last_checked_at" not in chk
     report = ap.verify(check_git=False)
-    assert report.ok and report.approved_pins == 86
+    assert report.ok and report.approved_pins == ri.active_count()
     assert not any(f.code in ("unflagged-material-update", "material-update-invalid",
                               "update-changed-clock", "retracted-update") for f in report.findings)
     # The only material records are the approved updates in UPDATED_PINS, and every record stays valid.
@@ -570,7 +571,7 @@ def test_real_records_have_blank_update_columns_and_are_otherwise_unchanged():
     published = json.loads((ROOT / "dist" / "records.json").read_text())
     rows = rx.build_records(_conn_for(r["signal_id"] for r in published["records"]),
                             version=published["data_version"])
-    assert len(rows) == len(published["records"]) == 86
+    assert len(rows) == len(published["records"]) >= 86   # 86 on 21 Nov 2026; dist/records.json is rebuilt by each publish
     old = {r["signal_id"]: r for r in published["records"]}
     earlier = rx.RECORD_FIELDS[:-6]
     # dist/ may hold the columns before Batch 2, before Last reviewed, or all of them.

@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from tests import real_inventory as ri  # noqa: E402
 from tests.test_checked_signals import ALL_PINS, _publish_to  # noqa: E402
 from tests.test_open_records import _imported  # noqa: E402
 from tools import record_charts as rc  # noqa: E402
@@ -327,8 +329,14 @@ def test_build_carries_the_timeline_table(built):
 def test_build_today_is_55_occurred_23_found_5_undated_2_later_steps(built):
     t = _chart_table((built / "index.html").read_text())
     inc = rc.counts_from_table(t, len(t["steps"]) - 1)["incident"]
-    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (56, 23, 5, 2)   # + Flora Park stabbing (5 Nov, occurred), 21 Nov 2026   # + the Palm taxi rank, Delft pins (22 and 28 Oct, occurred), 11 Nov; + the Bloemfontein sweep: Bochabela and Wilgehof occurred, Phase 7 found; + the remaining-provinces sweep: Tembisa, Westonaria and Zamdela occurred, Meqheleng and Currieskamp found
-    assert len(t["steps"]) == 22   # + the Flora Park pin, 21 Nov 2026   # publication steps: ..., then the Palm taxi rank, Delft pins, 11 Nov; earlier: the Durban sweep pins, then the Bloemfontein sweep pins, then the remaining-provinces sweep pins, 30 Oct
+    # Exact for the 86 pins of 21 Nov 2026; a pin added later moves "occurred" or "found" by its
+    # own incident_event (read from its batch file), and every record is counted once.
+    from tests.test_checked_signals import hist_ids
+    later = [p for p in ri.active_pins() if p["signal_id"] not in hist_ids()]
+    ev = lambda e: sum(p["metadata"]["checked"]["incident_event"] == e for p in later)
+    assert inc["occurred"] + inc["found"] + inc["undated"] + inc["later_step"] == ALL_PINS
+    assert (inc["occurred"] - ev("occurred"), inc["found"] - ev("found"), inc["undated"], inc["later_step"]) == (56, 23, 5, 2)   # + Flora Park stabbing (5 Nov, occurred), 21 Nov 2026   # + the Palm taxi rank, Delft pins (22 and 28 Oct, occurred), 11 Nov; + the Bloemfontein sweep: Bochabela and Wilgehof occurred, Phase 7 found; + the remaining-provinces sweep: Tembisa, Westonaria and Zamdela occurred, Meqheleng and Currieskamp found
+    assert len(t["steps"]) == len({p["published_at"] for p in ri.active_pins()}) >= 22   # one step per publish time; 22 on 21 Nov 2026   # publication steps: ..., then the Palm taxi rank, Delft pins, 11 Nov; earlier: the Durban sweep pins, then the Bloemfontein sweep pins, then the remaining-provinces sweep pins, 30 Oct
 
 
 def test_build_timeline_table_holds_no_record_text(built):
@@ -422,7 +430,8 @@ def test_line_keeps_the_straight_fallback_and_the_script_draws_the_curve(built):
     sec = _section(html, "incident")
     # without the script: today's line, straight segments, as before
     assert sec.count('<polyline class="gp-line__path"') == 1
-    assert sec.count('class="gp-line__pt"') == 36   # incident days 1 Oct-5 Nov since the Flora Park pin (5 Nov), 21 Nov 2026; before that 1-28 Oct since the Durban sweep pins (22, 25, 28 Oct)
+    first, last = date(2026, 10, 1), date.fromisoformat(ri.latest_incident_start())
+    assert sec.count('class="gp-line__pt"') == (last - first).days + 1   # one point per incident day from 1 Oct; 36 on 21 Nov 2026   # incident days 1 Oct-5 Nov since the Flora Park pin (5 Nov), 21 Nov 2026; before that 1-28 Oct since the Durban sweep pins (22, 25, 28 Oct)
     js = JS.read_text()
     assert "function monotonePath" in js and "curveMonotoneX" in js
     # fixed scale: the script uses today's highest day, never the step's

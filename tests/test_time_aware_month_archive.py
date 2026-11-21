@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 
+from tests import real_inventory as ri  # noqa: E402
 from tools import map_archive as ma  # noqa: E402
 from tools import map_data  # noqa: E402
 
@@ -304,14 +305,14 @@ def test_october_build_keeps_every_pin_live(built_oct):
     idx = ma.read_index(built_oct)
     assert idx["live_months"] == ["2026-09", "2026-10"]
     assert [r["month"] for r in idx["months"]] == ["2026-10", "2026-11"] and idx["months"][0]["closed"] is False
-    assert len(map_data.read_map_list(built_oct / "index.html")) == ALL_PINS - 1
+    assert len(map_data.read_map_list(built_oct / "index.html")) == ALL_PINS - len(ri.ids_from_month("2026-11"))
     assert idx["months"][0]["coverage_note_source"] == "written"
 
 
 def test_december_build_moves_october_off_the_live_list(built_dec):
     idx = ma.read_index(built_dec)
     assert idx["live_months"] == ["2026-11", "2026-12"]
-    assert [m["signal_id"] for m in map_data.read_map_list(built_dec / "index.html")] == ["c522699e-12c5-537b-8759-d35744aa28ce"]   # Flora Park, November, still live
+    assert sorted(m["signal_id"] for m in map_data.read_map_list(built_dec / "index.html")) == sorted(ri.ids_from_month("2026-11"))   # November onwards (Flora Park, 5 Nov, first) stays live
     assert idx["months"][0]["month"] == "2026-10" and idx["months"][0]["closed"] is True
     # Archived pins keep their detail files, for Batch 5's ?signal= route.
     assert len(list((built_dec / map_data.PIN_DIR).glob("*.json"))) == ALL_PINS
@@ -374,7 +375,7 @@ def test_retraction_shows_up_in_its_month_after_a_rebuild(tmp_path, monkeypatch)
     dist = _publish_to(tmp_path, monkeypatch, db_file, index=index)
     after = ma.read_index(dist)
     row = after["months"][0]
-    assert row["month"] == "2026-10" and row["count"] == ALL_PINS - 2   # minus Epping, minus Flora Park (November)
+    assert row["month"] == "2026-10" and row["count"] == ri.count_in_month("2026-10") - 1   # October pins minus Epping
     assert row["file"] != old_file and not (dist / old_file).exists()
     assert EPPING[:8] not in after["pins"] and "search" not in after
     assert EPPING not in _month_ids(dist)

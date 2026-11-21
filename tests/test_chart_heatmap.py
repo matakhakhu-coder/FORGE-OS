@@ -39,9 +39,11 @@ def _towned(recs, towns=("Cape Town", "Musina", "Polokwane", "Giyani")):
 def live():
     if not LIVE.exists():
         pytest.skip("no published records.json in dist/")
-    recs = json.loads(LIVE.read_text(encoding="utf-8"))["records"]
-    if len(recs) != 86:
-        pytest.skip("dist/records.json is not the 86-record publish")
+    from tests.test_checked_signals import hist_ids
+    old = hist_ids()
+    recs = [r for r in json.loads(LIVE.read_text(encoding="utf-8"))["records"] if r["signal_id"] in old]
+    if len(recs) != 86:   # the town checks below are exact for the 86 records of 21 Nov 2026; later pins are counted in the build tests
+        pytest.skip("dist/records.json does not hold the 86 records of 21 Nov 2026")
     return recs
 
 

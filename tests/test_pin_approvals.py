@@ -29,6 +29,8 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from tests import real_inventory as ri  # noqa: E402
+from tests.test_checked_signals import hist_ids  # noqa: E402
 from tools import approvals as ap  # noqa: E402
 from tools import checked_signals as cs  # noqa: E402
 
@@ -266,8 +268,9 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 1 Flora Park, Polokwane version-1 explicit approval (owner's standing instruction for an approval-free test, voice call, 21 Nov 2026, about 14:45 SAST)
     # + 1 Durban CBD version-2 material supersede: charges and arrests update (owner approval, 11 Nov 2026)
     # + 2 Palm taxi rank, Delft version-1 explicit approvals (approved 30 Oct 2026; re-confirmed 11 Nov 2026, about 18:37 SAST)
-    assert report.records == len(_real_record_files()) == 97
-    assert report.pins_checked == 86
+    # 97 records and 86 pins on 21 Nov 2026; later records and pins are counted from the files.
+    assert report.records == len(_real_record_files()) == ri.ledger_record_count() >= 97
+    assert report.pins_checked == ri.active_count() >= 86
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -304,7 +307,9 @@ def test_real_legacy_records_match_the_owner_confirmation():
             assert rec["signal_id"] not in first, f"two version-1 records for {rec['signal_id']}"
             first[rec["signal_id"]] = rec
     new_pins = {sid for sid, rec in first.items() if rec["basis"] == "explicit"}
-    assert new_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5",   # Gqeberha, approved in chat 21 Oct 2026
+    later_pins = new_pins - hist_ids()          # pins first approved after 21 Nov 2026: explicit or standing
+    assert later_pins <= active
+    assert new_pins - later_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5",   # Gqeberha, approved in chat 21 Oct 2026
                         "048440e0-0be5-53d8-934a-1ba6233a0dfa",   # Steenberg, approved in chat 21 Oct 2026
                         "adf99019-941e-5dd0-9851-635da0a1e146",   # Strandfontein, approved in the live call 21 Oct 2026
                         "49773d55-5704-5fcb-ac36-1f7eda5de54b",   # Tafelsig barber, approved in the live call 22 Oct 2026
@@ -422,7 +427,7 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
     published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS - BLOEMFONTEIN_SWEEP_PINS - PROVINCES_SWEEP_PINS - DELFT_PALM_PINS - FLORA_PARK_PINS
-    assert len(published) == 45
+    assert len(published & hist_ids()) == 45   # pins published after 21 Nov 2026 are checked by the ledger test above
     assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active and BLOEMFONTEIN_SWEEP_PINS <= active and PROVINCES_SWEEP_PINS <= active and DELFT_PALM_PINS <= active and FLORA_PARK_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \

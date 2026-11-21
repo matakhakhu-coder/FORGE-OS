@@ -42,13 +42,14 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "tests" / "browser"))
 
+from tests import real_inventory as ri  # noqa: E402
 from tools import map_archive as ma  # noqa: E402
 from tools import nothing_missing as nm  # noqa: E402
 
 AREA_JS = ROOT / "publisher" / "static" / "js" / "area-check.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 86
+ALL_PINS = ri.active_count()   # 86 on 21 Nov 2026; counted from docs/signals
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 
@@ -173,7 +174,7 @@ def test_a_month_missing_from_the_index_is_an_area_gap(built_dec):
     data = copy.deepcopy(data)
     del data["archive"]["months"]["2026-10"]
     rep = nm.check(data=data)
-    assert rep["routes"]["area"] == 1   # only the November pin (Flora Park, 5 Nov) is still reachable
+    assert rep["routes"]["area"] == len(ri.ids_from_month("2026-11"))   # only November-onwards pins are still reachable
 
 
 def test_a_wrong_archived_date_is_caught_by_area(built_dec):
