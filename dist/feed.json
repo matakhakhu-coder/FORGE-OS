@@ -1,8 +1,22 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "18 Nov 2026 21:29 UTC",
+  "generated_at": "21 Nov 2026 13:53 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Flora Park, Polokwane (approx.): man stabbed to death in a park opposite a vote-counting station, 5 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-21T13:11:15Z",
+      "summary": "A 31-year-old man was stabbed to death in a park opposite Flora Park Comprehensive School in Polokwane on Thursday 5 November, IOL reported, citing police. SABC News said votes from the municipal elections were being cou...",
+      "source": "IOL",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.9155,
+        "lng": 29.4886
+      }
+    },
     {
       "kind": "signal",
       "title": "Palm taxi rank, Delft (approx.): two men wounded as shots fired at taxi rank; no arrests, 28 Oct",
@@ -687,20 +701,6 @@
       "geo": {
         "lat": -34.0601163,
         "lng": 18.4813237
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Mbulawa Location, Mqanduli (town only, approx.): wanted murder suspect shot dead by police after chase, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T02:05:00Z",
-      "summary": "Police-involved death. SAPS says Tactical Response Team members following up on a man wanted in connection with a murder case saw him driving a white Toyota bakkie in Mbulawa Location, Mqanduli, on Saturday 17 October (a...",
-      "source": "PONDOLAND TIMES",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -31.81919,
-        "lng": 28.76175
       }
     }
   ]
