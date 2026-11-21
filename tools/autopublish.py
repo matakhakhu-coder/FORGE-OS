@@ -19,9 +19,20 @@ the sweep that found them). In order, each step refusing stops the run:
  4. The ledger verifies, enforced, against origin/main (append-only).
  5. The pins load into the database copy (checked_signals import --write).
  6. The full test suite passes.
- 7. --dry-run stops here and removes the records it wrote. Otherwise the
-    batch and records are committed and pushed, then publish.py --deploy runs
-    with FORGE_ALLOW_PUBLISH=1 in its own environment; Vercel deploys main.
+ 7. The site builds: publish.py without --deploy and without
+    FORGE_ALLOW_PUBLISH, so nothing can be pushed by it.
+ 8. --dry-run stops here, removes the records it wrote and restores dist/.
+    Otherwise the batch and records are committed locally only, then
+    publish.py --deploy runs with FORGE_ALLOW_PUBLISH=1 in its own environment
+    and pushes that commit and the dist/ commit to main in one push.
+ 9. The run checks origin/main holds the records commit. If it does not, the
+    local commits are undone, the records removed and dist/ restored, so
+    nothing reached origin and the pins stay retryable.
+
+Approval records reach origin only together with a successful build, so a
+failed build can never leave a pushed record that blocks a retry. The
+one-record-per-new-pin rule in approvals.write_standing_record is unchanged:
+a pin whose record is on origin still needs the owner.
 """
 from __future__ import annotations
 
@@ -49,6 +60,24 @@ def _say(msg: str) -> None:
     print(f"[autopublish] {msg}", flush=True)
 
 
+def _restore_dist() -> None:
+    _git("checkout", "--", "dist", "vercel.json", check=False)
+    _git("clean", "-fdq", "--", "dist/pins", "dist/archive", check=False)
+
+
+def _remove(written: list[pathlib.Path]) -> None:
+    for p in written:
+        p.unlink(missing_ok=True)
+        if p.parent.is_dir() and not any(p.parent.iterdir()):
+            p.parent.rmdir()
+
+
+def _on_origin(sha: str) -> bool:
+    _git("fetch", "--quiet", "origin", "main", check=False)
+    return subprocess.run(["git", "merge-base", "--is-ancestor", sha, "origin/main"],
+                          cwd=ROOT, capture_output=True).returncode == 0
+
+
 def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: str) -> int:
     t0 = time.monotonic()
     branch = _git("rev-parse", "--abbrev-ref", "HEAD").strip()
@@ -70,7 +99,9 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
         return 3
     _say(f"authorization {auth_id} active until {auth['expires_at']} (owner {auth['owner']})")
 
+    base = _git("rev-parse", "HEAD").strip()
     written: list[pathlib.Path] = []
+    built = False
     try:
         for sid in pins:
             written.append(ap.write_standing_record(sid, auth_id))
@@ -90,33 +121,43 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
                            cwd=ROOT, env=env)
         if r.returncode:
             raise RuntimeError(f"tests failed ({r.returncode})")
+        built = True   # from here dist/ may be rewritten
+        r = subprocess.run([python, "tools/publish.py"], cwd=ROOT, env=env)   # build only, no push
+        if r.returncode:
+            raise RuntimeError(f"site build failed ({r.returncode})")
     except (ap.ApprovalError, RuntimeError, sa.StandingError) as exc:
-        for p in written:
-            p.unlink(missing_ok=True)
-            if p.parent.is_dir() and not any(p.parent.iterdir()):
-                p.parent.rmdir()
-        _say(f"REFUSED: {exc}. Records written by this run removed; nothing committed or pushed.")
+        _remove(written)
+        if built:
+            _restore_dist()
+        _say(f"REFUSED: {exc}. Records written by this run removed; nothing committed or pushed; "
+             f"the pins can be retried.")
         return 4
 
     if dry_run:
-        for p in written:
-            p.unlink(missing_ok=True)
-            if p.parent.is_dir() and not any(p.parent.iterdir()):
-                p.parent.rmdir()
-        _say(f"DRY RUN OK in {time.monotonic() - t0:.0f}s: every check passed; records removed, "
-             f"nothing committed, pushed or published")
+        _remove(written)
+        _restore_dist()
+        _say(f"DRY RUN OK in {time.monotonic() - t0:.0f}s: every check passed and the site built; "
+             f"records removed, dist/ restored, nothing committed, pushed or published")
         return 0
 
     _git("add", "--", *DATA_PATHS)
     _git("commit", "-q", "-m",
          f"Pins published under standing authorization {auth_id} (machine-checked; owner did not "
          f"review the text): " + ", ".join(p[:8] for p in pins))
-    _git("push", "--quiet", "origin", "HEAD:main")
-    _say("batch and approval records pushed")
+    records_commit = _git("rev-parse", "HEAD").strip()
+    _say("batch and approval records committed locally (not pushed yet)")
     env = dict(os.environ, FORGE_DB=str(db), FORGE_ALLOW_PUBLISH="1")   # this process only
     r = subprocess.run([python, "tools/publish.py", "--deploy"], cwd=ROOT, env=env)
     _say(f"publish.py --deploy exited {r.returncode} after {time.monotonic() - t0:.0f}s")
-    return r.returncode
+    if _on_origin(records_commit):
+        _say("batch, approval records and dist/ are on origin/main")
+        return r.returncode
+    _git("reset", "-q", "--mixed", base)
+    _remove(written)
+    _restore_dist()
+    _say("REFUSED: the deploy did not push; local commits undone, records removed, dist/ restored. "
+         "Nothing reached origin; the pins can be retried.")
+    return r.returncode or 5
 
 
 def main(argv: list[str] | None = None) -> int:

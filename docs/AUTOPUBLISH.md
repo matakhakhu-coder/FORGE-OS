@@ -14,9 +14,9 @@ How a sweep's new pins go live without the owner reviewing each one. Built 21 No
 python tools/autopublish.py --authorization standing-<id> --db <database copy> --pins <signal_id> ... [--dry-run]
 ```
 
-It checks the branch (main, up to date, nothing else staged), the authorization, writes each pin's `basis: standing` approval record after the machine checks, verifies the ledger (enforced, append-only against origin/main), loads the pins into the database copy, and runs the full test suite. `--dry-run` stops there and removes the records it wrote. Otherwise it commits and pushes the batch and records, then runs `publish.py --deploy` with `FORGE_ALLOW_PUBLISH=1` set for that one process only. Vercel deploys main; on 21 November the pin was live about 75 seconds after the push.
+It checks the branch (main, up to date, nothing else staged), the authorization, writes each pin's `basis: standing` approval record after the machine checks, verifies the ledger (enforced, append-only against origin/main), loads the pins into the database copy, runs the full test suite, and builds the site (`publish.py` without `--deploy`, so it cannot push). `--dry-run` stops there, removes the records it wrote and restores `dist/`. Otherwise it commits the batch and records locally only, then runs `publish.py --deploy` with `FORGE_ALLOW_PUBLISH=1` set for that one process only, which pushes the records commit and the `dist/` commit together. Vercel deploys main; on 21 November the pin was live about 75 seconds after the push.
 
-Any refusal removes the records the run wrote and commits nothing.
+Approval records reach origin only together with a successful build. Any refusal or failed build or deploy removes the records the run wrote, undoes its local commits and restores `dist/`, so nothing reaches origin and the pins can be retried. (Before this change, 21 November: records were pushed before the build, so the Madiba Park pin's failed build left a pushed record that made every retry refuse it as already published.) A pin whose record is on origin still needs the owner: a standing authorization approves new pins only.
 
 ## Tests no longer need editing for new pins
 
