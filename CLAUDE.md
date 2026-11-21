@@ -22,6 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Stack:** Python 3.13 · Flask · SQLite (WAL mode) · Jinja2 · Leaflet.js · D3.js · Chart.js · HTMX
 - **Constraint:** Zero Node.js at build or runtime. Ever. No npm. No webpack.
 - **Anchor document:** `FORGE_OS_MANIFEST.md` — if code conflicts with the manifest, the code is wrong.
+- **Sourcing rule for map pins:** `docs/SOURCING_POLICY.md` (owner-approved 21 Nov 2026). Reports are judged on their own sourcing, not their publisher; local-paper-only incidents need independent corroboration; copies count once. It replaces the old editorial line "Caxton papers are not sources" (still found in older docs/signals batch files, which record the rule at the time). Machine-reading limits in `data/article_reader_permissions.json` and `data/town_sources.json` are unchanged.
 - **Tech debt ledger:** `docs/tech_debt.md` — update when debt is resolved or discovered.
 - **Current stable:** `Stable 1.2.0` (Post-Monolith Extraction). app.py reduced from 10,133 to 1,297 lines. 8 Flask Blueprints in `core/web/blueprints/`. 151 routes across 10 blueprints. FLUX phases A–I complete.
 
