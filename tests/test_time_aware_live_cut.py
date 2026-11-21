@@ -47,7 +47,7 @@ from tools import nothing_missing as nm  # noqa: E402
 JS = ROOT / "publisher" / "static" / "js" / "forge-pins.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 85
+ALL_PINS = 86
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 
@@ -174,18 +174,20 @@ F.configure({ base: '' });
 def test_loader_reads_months_once_and_finds_pins(built_dec):
     entries = ma.all_entries(built_dec)
     assert len(entries) == ALL_PINS
-    first = entries[0]["signal_id"]
+    first = next(e["signal_id"] for e in entries if not e["signal_id"].startswith("c522699e"))   # an October pin (Flora Park is November)
     r = _node(LOADER_HARNESS, {"dist": str(built_dec), "short": first[:8], "full": first})
     assert r["before"] == 0 and r["knownBefore"] is None
     assert sorted(r["all"]) == sorted(e["signal_id"] for e in entries) and len(set(r["all"])) == ALL_PINS
-    assert r["again"] == ALL_PINS and r["none"] == 0 and r["list"] == ALL_PINS
+    assert r["again"] == ALL_PINS and r["none"] == 0 and r["list"] == ALL_PINS - 1   # October only; Flora Park is November
     assert r["short"] == [first, "2026-10"] and r["full"] == first
     assert r["missing"] is None and r["bad"] is None
     assert r["knownAfter"] == ["2026-10", ""]
     assert r["dedupe"] == ALL_PINS
     # One index fetch and one month fetch for everything above.
     index = json.loads((built_dec / "archive" / "index.json").read_text())
-    assert r["calls"] == ["archive/index.json", index["months"][0]["file"]]
+    # Two months since the Flora Park pin (5 Nov): October and November, each fetched once.
+    assert r["calls"][0] == "archive/index.json"
+    assert sorted(r["calls"][1:]) == sorted(m["file"] for m in index["months"])
 
 
 @needs_node
@@ -240,7 +242,8 @@ def test_december_build_reaches_every_pin_every_way(built_dec):
     # Batch 5 left Area check as the one gap; Batch 6 closes it (Area check
     # loads the months its dates touch). tests/test_time_aware_area_archive.py
     data = nm.load_dist(built_dec)
-    assert data["markers"] == [] and data["archive"]["live_months"] == ["2026-11", "2026-12"]
+    assert [m["signal_id"] for m in data["markers"]] == ["c522699e-12c5-537b-8759-d35744aa28ce"]   # Flora Park, 5 Nov: November is still live
+    assert data["archive"]["live_months"] == ["2026-11", "2026-12"]
     rep = nm.check(data=data)
     assert rep["routes"] == {r: ALL_PINS for r in nm.ROUTES}
     assert rep["problems"] == []
@@ -268,7 +271,7 @@ def test_a_pin_missing_from_a_live_month_is_still_a_gap(built_dec):
     data = nm.load_dist(built_dec)
     data["archive"]["live_months"].append("2026-10")
     rep = nm.check(data=data)
-    assert rep["routes"]["map"] == 0
+    assert rep["routes"]["map"] == 1   # only the November pin (Flora Park) stays on the map
     assert all("live list" in p["why"] for p in rep["problems"] if p["route"] == "map")
 
 

@@ -89,6 +89,9 @@ DELFT_PALM_PINS = {
     "2e14d317-105f-5b93-9f23-9db230dfe7af",   # D1 Palm taxi rank, Delft: two killed, one wounded, 22 Oct
     "6e0a60fb-20f8-545e-b9bc-dff46600c68b",   # D2 Palm taxi rank, Delft: two wounded, 28 Oct
 }
+FLORA_PARK_PINS = {
+    "c522699e-12c5-537b-8759-d35744aa28ce",   # F1 Flora Park, Polokwane: man stabbed opposite a vote-counting station, 5 Nov (published 21 Nov 2026 under the owner's approval-free test)
+}
 PROVINCES_SWEEP_PINS = {
     "97b63775-11a0-5fdf-9e98-34fda69cfd80",   # G1 Esangweni taxi rank, Tembisa shooting, area-level point
     "64649653-8eae-5e0e-8868-54fbfb2ce467",   # G2 Kloof Gold Mine hostel, Westonaria (Priority Intelligence), estimated point
@@ -260,10 +263,11 @@ def test_real_ledger_approves_every_active_pin_and_is_enforced():
     # + 3 Durban sweep version-1 explicit approvals (voice call, 30 Oct 2026, about 06:50 SAST)
     # + 3 Bloemfontein sweep version-1 explicit approvals (approved 25 Oct 2026; release reaffirmed on the voice call of 30 Oct 2026)
     # + 5 remaining-provinces sweep version-1 explicit approvals (text chat, 30 Oct 2026, about 08:45 SAST, "Publish all")
+    # + 1 Flora Park, Polokwane version-1 explicit approval (owner's standing instruction for an approval-free test, voice call, 21 Nov 2026, about 14:45 SAST)
     # + 1 Durban CBD version-2 material supersede: charges and arrests update (owner approval, 11 Nov 2026)
     # + 2 Palm taxi rank, Delft version-1 explicit approvals (approved 30 Oct 2026; re-confirmed 11 Nov 2026, about 18:37 SAST)
-    assert report.records == len(_real_record_files()) == 96
-    assert report.pins_checked == 85
+    assert report.records == len(_real_record_files()) == 97
+    assert report.pins_checked == 86
     assert report.approved_pins == report.pins_checked
     assert not report.violations and not report.gaps, [f.line() for f in report.findings]
     assert report.ok
@@ -308,7 +312,7 @@ def test_real_legacy_records_match_the_owner_confirmation():
                         "0caa5a74-cc5e-5f04-a0cb-aa13466552d4",   # Valhalla Park, approved in the live call 22 Oct 2026
                         "0c9f233c-6c38-5da4-a660-c6776f575667",   # St Montague Village, approved in the live call 22 Oct 2026
                         "e0fa3712-df77-531e-a040-437dee019c3c"   # Firethorne, approved in chat 22 Oct 2026
-                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS | DURBAN_SWEEP_PINS | BLOEMFONTEIN_SWEEP_PINS | PROVINCES_SWEEP_PINS | DELFT_PALM_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
+                        } | LIMPOPO_PINS | MPUMALANGA_PINS | LIMPOPO_INFRA_PINS | KZN_INFRA_PINS | LIMPOPO_DEATHS_PINS | POLOKWANE_SWEEP_PINS | MUSINA_SWEEP_PINS | DURBAN_SWEEP_PINS | BLOEMFONTEIN_SWEEP_PINS | PROVINCES_SWEEP_PINS | DELFT_PALM_PINS | FLORA_PARK_PINS   # Limpopo, Mpumalanga and infrastructure batches: new records, never legacy
     assert set(first) == active
     for sid in LIMPOPO_PINS:
         rec = first[sid]
@@ -417,9 +421,9 @@ def test_real_ledger_refuses_only_draft_limpopo_pins_and_the_45_published_pins_p
     report = ap.verify(check_git=False)
     loaded, _ = ap._batch_pins(REAL_SIGNALS / "index.json")
     active = {p["signal_id"] for p in loaded.active}
-    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS - BLOEMFONTEIN_SWEEP_PINS - PROVINCES_SWEEP_PINS - DELFT_PALM_PINS
+    published = active - LIMPOPO_PINS - MPUMALANGA_PINS - LIMPOPO_INFRA_PINS - KZN_INFRA_PINS - LIMPOPO_DEATHS_PINS - POLOKWANE_SWEEP_PINS - MUSINA_SWEEP_PINS - DURBAN_SWEEP_PINS - BLOEMFONTEIN_SWEEP_PINS - PROVINCES_SWEEP_PINS - DELFT_PALM_PINS - FLORA_PARK_PINS
     assert len(published) == 45
-    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active and BLOEMFONTEIN_SWEEP_PINS <= active and PROVINCES_SWEEP_PINS <= active and DELFT_PALM_PINS <= active
+    assert MPUMALANGA_PINS <= active and LIMPOPO_INFRA_PINS <= active and KZN_INFRA_PINS <= active and LIMPOPO_DEATHS_PINS <= active and POLOKWANE_SWEEP_PINS <= active and MUSINA_SWEEP_PINS <= active and DURBAN_SWEEP_PINS <= active and BLOEMFONTEIN_SWEEP_PINS <= active and PROVINCES_SWEEP_PINS <= active and DELFT_PALM_PINS <= active and FLORA_PARK_PINS <= active
     assert not report.gaps and not report.warnings, [f.line() for f in report.findings]
     assert {f.code for f in report.violations} <= {"draft-approval"}, \
         [f.line() for f in report.violations]

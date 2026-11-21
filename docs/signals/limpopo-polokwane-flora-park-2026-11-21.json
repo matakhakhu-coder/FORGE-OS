@@ -1,0 +1,88 @@
+{
+  "schema": "forge.checked_signals.batch",
+  "version": 2,
+  "province": "Limpopo",
+  "batch": "Limpopo (Polokwane, Flora Park) pin, incident 5 Nov 2026, hand-checked, published 21 Nov 2026 under the owner's approval-free publishing test",
+  "scope": "Polokwane town sweep of 21 Nov 2026, incidents 7-21 Nov (plus the 5 Nov election-day killing found in the same sweep). One pin. Other candidates are held and are not in this file.",
+  "rules": "No case or entity links on the signal. Incident date kept apart from report date. Victim not named; suspect not named. Party membership attributed to the party's own spokesperson; police did not name the party. Caxton papers are not sources. Area-level point says 'approx.' and the location note starts 'APPROXIMATE MAP POINT'.",
+  "review_status": "Published under the owner's standing instruction of 21 Nov 2026 (voice call) for an approval-free test; no per-pin owner review. One explicit version-1 approval record in docs/approvals/pins (reference polokwane-autopub-test-2026-11-21) records that instruction.",
+  "owner_decisions": [
+    {
+      "at": "2026-11-21 (voice call, about 14:45 SAST)",
+      "decision": "Owner's standing instruction on a voice call, 21 Nov 2026 about 14:45 SAST, for an approval-free publishing test: begin hunting for new pins and publish eligible ones without bringing them back for review ('Don't ask my permission first'). Recorded under that instruction after the evidence checks; the owner did not review this pin's text."
+    }
+  ],
+  "load_with": "python tools/checked_signals.py import --write",
+  "held_back": [
+    {
+      "place": "Mentz (Mshongo Section), Mankweng area: man arrested 11 Nov with 14 suspected stolen cattle (IOL, 13 Nov)",
+      "reason": "Mentz and Mshongo Section are not in OpenStreetMap, the gazetteer or the SAPS precinct file, so the place cannot be put on the map without guessing."
+    },
+    {
+      "place": "Phaudi, Capricorn District: armed robbery of school feeding-scheme groceries, 13 Nov about 00:40 (Limpopo Chronicle, 14 Nov)",
+      "reason": "School not named; the only coordinates for Phaudi are a rounded GeoNames point (-23.5, 29.15), so the village cannot be placed reliably. One source only."
+    },
+    {
+      "place": "Polokwane CBD stabbing (Polokwane Review, 12 Nov)",
+      "reason": "Caxton paper, not a source under the rules; no other report found."
+    }
+  ],
+  "retractions": [],
+  "signals": [
+    {
+      "signal_id": "c522699e-12c5-537b-8759-d35744aa28ce",
+      "external_id": "checked:lp-polokwane-floraprk-2026-11-21:F1",
+      "source": "IOL",
+      "title": "Flora Park, Polokwane (approx.): man stabbed to death in a park opposite a vote-counting station, 5 Nov",
+      "content": "A 31-year-old man was stabbed to death in a park opposite Flora Park Comprehensive School in Polokwane on Thursday 5 November, IOL reported, citing police. SABC News said votes from the municipal elections were being counted at the school. Police said an earlier altercation between two people said to belong to the same political party had been resolved, but the suspect allegedly returned, stabbed the man in the neck and fled; he was declared dead at the scene and a knife was recovered. Police arrested a 35-year-old man, who was expected to appear in the Polokwane Magistrate's Court on a charge of murder. Police did not name the party and said the motive was not yet known. The EFF's provincial chairperson told SABC News the dead man was the party's treasurer at its Flora Park branch. No one is named here. Police statements carried by news outlets; no SAPS statement found. The map point is approximate: two schools in Polokwane are called Flora Park Comprehensive (a primary and a high school) and the reports do not say which, so the pin is between them in Flora Park, not the park itself.",
+      "lat": -23.9155,
+      "lng": 29.4886,
+      "stream": "CRIME_INTEL",
+      "timestamp": "2026-11-05T06:00:00Z",
+      "published_at": "2026-11-21T13:11:15Z",
+      "metadata": {
+        "source_outlet": "IOL",
+        "link": "https://iol.co.za/lge2026/2026-11-05-breaking-man-held-after-suspected-eff-member-killed-in-polokwane-stabbing/",
+        "pubdate_raw": "2026-11-05",
+        "checked": {
+          "incident": "Thu 5 Nov 2026, morning (SABC News: 'on Thursday morning'). Exact time not reported.",
+          "reported": "5 Nov 2026 (IOL, citing police; SABC News, quoting the EFF provincial chairperson)",
+          "location": "APPROXIMATE MAP POINT. A park opposite Flora Park Comprehensive School, Polokwane (IOL, citing police), where votes were being counted (SABC News). OpenStreetMap has two schools of that name about 1.6 km apart, Flora Park Comprehensive High School (Suid Street) and Flora Park Comprehensive Primary School (Jasmyn Avenue); neither report says which. The pin is midway between them in Flora Park and is not the park. Polokwane police precinct.",
+          "sources": [
+            {
+              "name": "IOL, 5 Nov",
+              "url": "https://iol.co.za/lge2026/2026-11-05-breaking-man-held-after-suspected-eff-member-killed-in-polokwane-stabbing/"
+            },
+            {
+              "name": "SABC News, 5 Nov",
+              "url": "https://www.sabcnews.com/sabcnews/eff-member-killed-outside-voting-station/"
+            }
+          ],
+          "checked_at": "2026-11-21T13:11:15Z",
+          "method": "Found in the 21 Nov 2026 Polokwane town sweep (town mode collector run on a copy of the database, incidents 7-21 Nov, plus web searches) during the owner's approval-free publishing test. Source pages read in full on 21 Nov 2026; the school looked up in OpenStreetMap (two schools share the name); live map and checked batches searched for duplicates (none); standalone (no case, entity or thread links).",
+          "incident_start": "2026-11-05",
+          "incident_precision": "part_of_day",
+          "incident_part": "morning",
+          "incident_event": "occurred",
+          "reported_at": "2026-11-05",
+          "search_aliases": [
+            "Polokwane",
+            "Flora Park",
+            "Flora Park Comprehensive School",
+            "voting station",
+            "vote counting",
+            "municipal elections",
+            "LGE2026",
+            "EFF",
+            "stabbing",
+            "murder",
+            "Capricorn",
+            "Limpopo"
+          ]
+        },
+        "collected_title": "BREAKING | Man held after suspected EFF member killed in Polokwane stabbing"
+      },
+      "fingerprint": "sha256:ddab64539957c9ce1bb3a9fadbd72d3b5f741e9e50e54813831c70f962162d9c"
+    }
+  ]
+}

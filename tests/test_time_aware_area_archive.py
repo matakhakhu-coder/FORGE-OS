@@ -48,7 +48,7 @@ from tools import nothing_missing as nm  # noqa: E402
 AREA_JS = ROOT / "publisher" / "static" / "js" / "area-check.js"
 TEMPLATE = ROOT / "publisher" / "templates" / "map.html"
 NODE = shutil.which("node")
-ALL_PINS = 85
+ALL_PINS = 86
 needs_node = pytest.mark.skipif(NODE is None, reason="Node is not installed")
 
 
@@ -173,7 +173,7 @@ def test_a_month_missing_from_the_index_is_an_area_gap(built_dec):
     data = copy.deepcopy(data)
     del data["archive"]["months"]["2026-10"]
     rep = nm.check(data=data)
-    assert rep["routes"]["area"] == 0
+    assert rep["routes"]["area"] == 1   # only the November pin (Flora Park, 5 Nov) is still reachable
 
 
 def test_a_wrong_archived_date_is_caught_by_area(built_dec):

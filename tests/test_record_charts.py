@@ -327,8 +327,8 @@ def test_build_carries_the_timeline_table(built):
 def test_build_today_is_55_occurred_23_found_5_undated_2_later_steps(built):
     t = _chart_table((built / "index.html").read_text())
     inc = rc.counts_from_table(t, len(t["steps"]) - 1)["incident"]
-    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (55, 23, 5, 2)   # + the Palm taxi rank, Delft pins (22 and 28 Oct, occurred), 11 Nov; + the Bloemfontein sweep: Bochabela and Wilgehof occurred, Phase 7 found; + the remaining-provinces sweep: Tembisa, Westonaria and Zamdela occurred, Meqheleng and Currieskamp found
-    assert len(t["steps"]) == 21   # publication steps: ..., then the Palm taxi rank, Delft pins, 11 Nov; earlier: the Durban sweep pins, then the Bloemfontein sweep pins, then the remaining-provinces sweep pins, 30 Oct
+    assert (inc["occurred"], inc["found"], inc["undated"], inc["later_step"]) == (56, 23, 5, 2)   # + Flora Park stabbing (5 Nov, occurred), 21 Nov 2026   # + the Palm taxi rank, Delft pins (22 and 28 Oct, occurred), 11 Nov; + the Bloemfontein sweep: Bochabela and Wilgehof occurred, Phase 7 found; + the remaining-provinces sweep: Tembisa, Westonaria and Zamdela occurred, Meqheleng and Currieskamp found
+    assert len(t["steps"]) == 22   # + the Flora Park pin, 21 Nov 2026   # publication steps: ..., then the Palm taxi rank, Delft pins, 11 Nov; earlier: the Durban sweep pins, then the Bloemfontein sweep pins, then the remaining-provinces sweep pins, 30 Oct
 
 
 def test_build_timeline_table_holds_no_record_text(built):
@@ -422,7 +422,7 @@ def test_line_keeps_the_straight_fallback_and_the_script_draws_the_curve(built):
     sec = _section(html, "incident")
     # without the script: today's line, straight segments, as before
     assert sec.count('<polyline class="gp-line__path"') == 1
-    assert sec.count('class="gp-line__pt"') == 28   # incident days 1-28 Oct since the Durban sweep pins (22, 25, 28 Oct)
+    assert sec.count('class="gp-line__pt"') == 36   # incident days 1 Oct-5 Nov since the Flora Park pin (5 Nov), 21 Nov 2026; before that 1-28 Oct since the Durban sweep pins (22, 25, 28 Oct)
     js = JS.read_text()
     assert "function monotonePath" in js and "curveMonotoneX" in js
     # fixed scale: the script uses today's highest day, never the step's

@@ -1213,6 +1213,19 @@
       ],
       "independence": "same_statement",
       "note": "Injuries, charges, time and arrests come from police accounts carried by three outlets. The Cape Times and TygerBurger quote near-identical initial police statements. The panic is described from footage and a commuter. The commissioner's account of prior intelligence is his own, given at a briefing. The Cape Times says Tuesday, against Wednesday 28 Oct in the other reports. No one is named."
+    },
+    "c522699e-12c5-537b-8759-d35744aa28ce": {
+      "statement_from": "Police account carried by IOL; EFF provincial chairperson Lawrence Mapoulo to SABC News; no SAPS newsroom statement found",
+      "spokesperson": [],
+      "other_voices": [
+        "EFF Limpopo provincial chairperson Lawrence Mapoulo (SABC News)"
+      ],
+      "outlets": [
+        "IOL",
+        "SABC News"
+      ],
+      "independence": "partly_independent",
+      "note": "The arrest, ages, knife, charge and sequence of the altercation come from police via IOL only. SABC News independently confirms the death, the place outside Flora Park Comprehensive School and the morning timing through the EFF provincial chairperson, who also says the man was the party's Flora Park branch treasurer. Police did not name the party. No one is named."
     }
   }
 }

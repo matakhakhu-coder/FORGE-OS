@@ -51,7 +51,9 @@ FSP_PINS = 2          # Crime & Security (remaining-provinces sweep, Free State)
 NCP_PINS = 1          # Crime & Security (remaining-provinces sweep, Northern Cape): Currieskamp, Keimoes; approved and released 30 Oct 2026, outside the pattern test
 PROV_IDS = {"97b63775-11a0-5fdf-9e98-34fda69cfd80", "64649653-8eae-5e0e-8868-54fbfb2ce467", "1d4bd77f-c21d-5f11-8dde-5367760801e1",
             "95842808-2427-5ea9-beaa-9995d13495ed", "bceb3bc0-a276-57d1-8ff7-1c5adb933f11"}
-ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS + GPP_KILL_PINS + GPP_PI_PINS + FSP_PINS + NCP_PINS
+LPF_PINS = 1          # Crime & Security (Polokwane town sweep, 21 Nov 2026): Flora Park stabbing opposite a vote-counting station, 5 Nov; published under the owner's approval-free test, outside the pattern test
+LPF_IDS = {"c522699e-12c5-537b-8759-d35744aa28ce"}
+ALL_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PINS + LPD_PINS + PI_PINS + GLOBAL_PINS + LPM_KILL_PINS + LPM_PI_PINS + KZD_PINS + FSB_PINS + GPP_KILL_PINS + GPP_PI_PINS + FSP_PINS + NCP_PINS + LPF_PINS
 
 
 def _fresh_db(tmp_path, monkeypatch):
@@ -143,11 +145,12 @@ def test_index_loads_all_pins_in_order():
         "gauteng-provinces-sweep-2026-10-30.json",
         "free-state-provinces-sweep-2026-10-30.json",
         "northern-cape-provinces-sweep-2026-10-30.json",
-        "western-cape-delft-palm-rank-2026-11-11.json"]
+        "western-cape-delft-palm-rank-2026-11-11.json",
+        "limpopo-polokwane-flora-park-2026-11-21.json"]
     assert [b.province for b in cs.batches] == [
         "Western Cape", "Western Cape", "North West", "Eastern Cape", "Western Cape", "Eastern Cape",
         "Western Cape", "Western Cape", "Limpopo", "Mpumalanga", "Limpopo", "KwaZulu-Natal", "Limpopo", "Limpopo", "Limpopo", "KwaZulu-Natal", "Free State",
-        "Gauteng", "Free State", "Northern Cape", "Western Cape"]
+        "Gauteng", "Free State", "Northern Cape", "Western Cape", "Limpopo"]
     assert len(cs.signals) == ALL_PINS and len(cs.active) == ALL_PINS and cs.retracted == {}
     assert stamp_files(check=True) == []          # every fingerprint is current
     for s in cs.signals:
@@ -181,7 +184,8 @@ def test_limpopo_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     lp = [s for s in cs.active if prov[s["signal_id"]] == "Limpopo" and s["stream"] != "INFRASTRUCTURE"
-          and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS and s["signal_id"] not in LPM_IDS]
+          and s["signal_id"] not in LPD_IDS and s["signal_id"] not in LPS_IDS and s["signal_id"] not in LPM_IDS
+          and s["signal_id"] not in LPF_IDS]
     assert len(lp) == LP_PINS and not ({s["signal_id"] for s in lp} & wc_ids)
     for s in lp:
         assert -25.5 <= s["lat"] <= -22.1 and 26.3 <= s["lng"] <= 31.95   # really in Limpopo
