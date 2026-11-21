@@ -113,6 +113,11 @@
       "file": "limpopo-polokwane-flora-park-2026-11-21.json",
       "province": "Limpopo",
       "signals": 1
+    },
+    {
+      "file": "limpopo-polokwane-sweep-2026-11-21b.json",
+      "province": "Limpopo",
+      "signals": 1
     }
   ]
 }

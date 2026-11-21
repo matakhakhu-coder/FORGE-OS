@@ -1,0 +1,85 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261121T153222Z-e1ff7814",
+  "signal_id": "e79e7810-f8c5-5417-9823-ec3dbbf3198d",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "limpopo-polokwane-sweep-2026-11-21b.json",
+  "approved_payload": {
+    "content": "Police in Seshego opened a business robbery case after six unknown men entered a school in Madiba Park at about 03:05 on Saturday 14 November while learners and caretakers were sleeping on the premises, SAPS Limpopo said. Police said the suspects chased a security guard, questioned his colleague about tablets, made both guards take them to the classrooms where learners were sleeping, overpowered and tied up the guards, and one suspect produced a firearm and told the learners to hand over their tablets. A gunshot was heard after they fled. Police said 37 tablets worth R111,000 and two cellphones worth R7,000 were taken and six tablets were later recovered near the school. The acting provincial commissioner condemned the incident and said a provincial task team had been set up to look into incidents disrupting learning during exams. No arrest was reported. The Polokwane Review also reported the robbery. The school is not named here. The map point is estimated: neither the police nor the reports give the school's name or address, and Madiba Park is not in OpenStreetMap, so the pin is the Seshego place point, not the school.",
+    "external_id": "checked:lp-polokwane-sweep-2026-11-21b:M1",
+    "lat": -23.84664,
+    "lng": 29.38802,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-21T15:20:00Z",
+        "incident": "Sat 14 Nov 2026 at about 03:05 (SAPS Limpopo).",
+        "incident_event": "occurred",
+        "incident_precision": "approx_time",
+        "incident_start": "2026-11-14T03:05+02:00",
+        "location": "ESTIMATED MAP POINT. 'A local school in Madiba Park', Seshego police (SAPS Limpopo). The school is not named and Madiba Park is not in OpenStreetMap (Nominatim and Overpass searched), so the pin is the Seshego point from the place-name list (-23.84664, 29.38802), used as a reference only; it is not the school. Area level (a few km). Seshego police precinct.",
+        "method": "Found in the 21 Nov 2026 Polokwane town sweep (town mode collector on a copy of the database, incidents 1-21 Nov) and confirmed by web search. SAPS statement read in full on 21 Nov 2026; the Polokwane Review page was found by search and read by hand. Madiba Park looked up in Nominatim, Overpass (plain GET) and the place-name list (not found). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links).",
+        "reported": "15 Nov 2026 (SAPS Limpopo statement); 16 Nov 2026 (Polokwane Review)",
+        "reported_at": "2026-11-15",
+        "search_aliases": [
+          "Polokwane",
+          "Seshego",
+          "Madiba Park",
+          "school robbery",
+          "tablets",
+          "learners",
+          "business robbery",
+          "exams",
+          "Capricorn",
+          "Limpopo"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Limpopo statement, 15 Nov",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483"
+          },
+          {
+            "name": "Polokwane Review (citizen.co.za), 16 Nov",
+            "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/11/16/armed-robbers-target-madiba-park-school-steal-37-learner-tablets/"
+          }
+        ]
+      },
+      "collected_title": "Armed robbers target Madiba Park school, steal 37 learner tablets",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+      "pubdate_raw": "2026-11-15",
+      "source_outlet": "SAPS"
+    },
+    "published_at": "2026-11-21T15:20:00Z",
+    "signal_id": "e79e7810-f8c5-5417-9823-ec3dbbf3198d",
+    "source": "SAPS",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-14T01:05:00Z",
+    "title": "Madiba Park, Seshego (map point estimated): six armed men rob sleeping learners of 37 school tablets, 14 Nov"
+  },
+  "payload_sha256": "sha256:78c6a0595029f39d800c6c68eb6bbf8dedf14dfab7fa7cf76c2acac5ef4d2a1e",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/11/16/armed-robbers-target-madiba-park-school-steal-37-learner-tablets/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-21T15:32:22Z",
+  "recorded_at": "2026-11-21T15:32:22Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-test-2026-11-21",
+    "summary": "Standing authorization standing-autopub-test-2026-11-21 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

@@ -1,0 +1,89 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Limpopo",
+ "batch": "Limpopo (Polokwane town sweep, incidents 1-21 Nov 2026), hand-checked, published 21 Nov 2026 under standing authorization standing-autopub-test-2026-11-21 (scheduled unattended test run)",
+ "scope": "Polokwane town sweep of 21 Nov 2026 (second run), incidents 1-21 Nov 2026. One pin. The Flora Park stabbing of 5 Nov (c522699e) is already live and is not repeated. Other candidates are held and are not in this file.",
+ "rules": "docs/SOURCING_POLICY.md (21 Nov 2026): each report judged on its own sourcing, not its publisher; local-paper-only incidents need an independent account; copies count once. No case or entity links on the signals. Incident date kept apart from report date. Accused people not named; victims not named. Area-level and town-level points are labelled in the title and the location note starts 'ESTIMATED MAP POINT'. Machine-reading limits unchanged: no Caxton feeds by machine; Caxton pages were found by web search and read by hand.",
+ "review_status": "Published under standing authorization standing-autopub-test-2026-11-21 (owner-chosen end 21 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-21 (voice call)",
+   "decision": "Owner asked for a one-off scheduled test of an automated Polokwane run, incidents from 1 Nov 2026, publishing eligible pins under the standing authorization without per-pin review. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [
+  {
+   "place": "Polokwane: Master's Office estate controller, 53, arrested by the Hawks on 10 Nov in the R11m deceased-estates probe; R50,000 bail on 20 Nov (Jacaranda FM; The Citizen/LNN; African Times News)",
+   "reason": "Passes the sourcing rule (three outlets, partly independent court reporting) and was checked and drafted as signal 059dfb75, but the autopublish test gate refused it: the pin's date is an arrest following alleged 2023 payments, so it is a 'later step' pin, and tests/test_incident_dates.py hard-codes the set and count of later-step pins (expects exactly 2). Publishing it needs a test change, which the owner should decide; it was not relabelled to dodge the test."
+  },
+  {
+   "place": "Polokwane CBD, corner of Bok and Jorissen streets: woman, 44, fatally stabbed about 03:00 (Polokwane Review, 12 Nov; same article carried on citizen.co.za)",
+   "reason": "Local-paper-only. The Polokwane Review article quotes the police spokesperson, but no independent account was found: no SAPS statement, and the only other copy is the same Review article syndicated on citizen.co.za, which counts once."
+  },
+  {
+   "place": "Mentz (Mshongo Section), Mankweng area: man arrested 11 Nov with 14 suspected stolen cattle (IOL, 13 Nov)",
+   "reason": "Still unplaceable: Mentz and Mshongo Section are not in OpenStreetMap (Nominatim searched again), the gazetteer or the SAPS precinct file. No new report found."
+  },
+  {
+   "place": "Phaudi, Capricorn District: armed robbery of school feeding-scheme groceries, 13 Nov about 00:40 (Limpopo Chronicle, 14 Nov)",
+   "reason": "Still one source, school still not named, and the only coordinates for Phaudi are a rounded GeoNames point. No second report found on re-search."
+  }
+ ],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "e79e7810-f8c5-5417-9823-ec3dbbf3198d",
+   "external_id": "checked:lp-polokwane-sweep-2026-11-21b:M1",
+   "source": "SAPS",
+   "title": "Madiba Park, Seshego (map point estimated): six armed men rob sleeping learners of 37 school tablets, 14 Nov",
+   "content": "Police in Seshego opened a business robbery case after six unknown men entered a school in Madiba Park at about 03:05 on Saturday 14 November while learners and caretakers were sleeping on the premises, SAPS Limpopo said. Police said the suspects chased a security guard, questioned his colleague about tablets, made both guards take them to the classrooms where learners were sleeping, overpowered and tied up the guards, and one suspect produced a firearm and told the learners to hand over their tablets. A gunshot was heard after they fled. Police said 37 tablets worth R111,000 and two cellphones worth R7,000 were taken and six tablets were later recovered near the school. The acting provincial commissioner condemned the incident and said a provincial task team had been set up to look into incidents disrupting learning during exams. No arrest was reported. The Polokwane Review also reported the robbery. The school is not named here. The map point is estimated: neither the police nor the reports give the school's name or address, and Madiba Park is not in OpenStreetMap, so the pin is the Seshego place point, not the school.",
+   "lat": -23.84664,
+   "lng": 29.38802,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-14T01:05:00Z",
+   "published_at": "2026-11-21T15:20:00Z",
+   "metadata": {
+    "source_outlet": "SAPS",
+    "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+    "pubdate_raw": "2026-11-15",
+    "checked": {
+     "incident": "Sat 14 Nov 2026 at about 03:05 (SAPS Limpopo).",
+     "reported": "15 Nov 2026 (SAPS Limpopo statement); 16 Nov 2026 (Polokwane Review)",
+     "location": "ESTIMATED MAP POINT. 'A local school in Madiba Park', Seshego police (SAPS Limpopo). The school is not named and Madiba Park is not in OpenStreetMap (Nominatim and Overpass searched), so the pin is the Seshego point from the place-name list (-23.84664, 29.38802), used as a reference only; it is not the school. Area level (a few km). Seshego police precinct.",
+     "sources": [
+      {
+       "name": "SAPS Limpopo statement, 15 Nov",
+       "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483"
+      },
+      {
+       "name": "Polokwane Review (citizen.co.za), 16 Nov",
+       "url": "https://www.citizen.co.za/review-online/news-headlines/local-news/2026/11/16/armed-robbers-target-madiba-park-school-steal-37-learner-tablets/"
+      }
+     ],
+     "checked_at": "2026-11-21T15:20:00Z",
+     "method": "Found in the 21 Nov 2026 Polokwane town sweep (town mode collector on a copy of the database, incidents 1-21 Nov) and confirmed by web search. SAPS statement read in full on 21 Nov 2026; the Polokwane Review page was found by search and read by hand. Madiba Park looked up in Nominatim, Overpass (plain GET) and the place-name list (not found). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links).",
+     "incident_start": "2026-11-14T03:05+02:00",
+     "incident_precision": "approx_time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-15",
+     "search_aliases": [
+      "Polokwane",
+      "Seshego",
+      "Madiba Park",
+      "school robbery",
+      "tablets",
+      "learners",
+      "business robbery",
+      "exams",
+      "Capricorn",
+      "Limpopo"
+     ]
+    },
+    "collected_title": "Armed robbers target Madiba Park school, steal 37 learner tablets"
+   },
+   "fingerprint": "sha256:78c6a0595029f39d800c6c68eb6bbf8dedf14dfab7fa7cf76c2acac5ef4d2a1e"
+  }
+ ]
+}
