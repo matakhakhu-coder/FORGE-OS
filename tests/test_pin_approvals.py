@@ -306,9 +306,10 @@ def test_real_legacy_records_match_the_owner_confirmation():
         if rec["pin_version"] == 1:
             assert rec["signal_id"] not in first, f"two version-1 records for {rec['signal_id']}"
             first[rec["signal_id"]] = rec
-    new_pins = {sid for sid, rec in first.items() if rec["basis"] == "explicit"}
+    new_pins = {sid for sid, rec in first.items() if rec["basis"] in ("explicit", "standing")}
     later_pins = new_pins - hist_ids()          # pins first approved after 21 Nov 2026: explicit or standing
     assert later_pins <= active
+    assert all(first[sid]["basis"] == "explicit" for sid in new_pins - later_pins)   # no standing record before it existed
     assert new_pins - later_pins == {"b842a3b5-eda7-5b97-bfe1-0448fe0272a5",   # Gqeberha, approved in chat 21 Oct 2026
                         "048440e0-0be5-53d8-934a-1ba6233a0dfa",   # Steenberg, approved in chat 21 Oct 2026
                         "adf99019-941e-5dd0-9851-635da0a1e146",   # Strandfontein, approved in the live call 21 Oct 2026

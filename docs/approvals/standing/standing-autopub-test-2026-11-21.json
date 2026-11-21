@@ -1,0 +1,21 @@
+{
+  "schema": "forge.standing_publication_authorization.v1",
+  "authorization_id": "standing-autopub-test-2026-11-21",
+  "owner": "Riley Bishop",
+  "granted_at": "2026-11-21T16:40:00+02:00",
+  "granted_via": "Owner on a voice call, 21 Nov 2026 about 16:00 SAST: asked for the standing approval proposed after the first approval-free publishing test (\"for the others, you also suggest ... your solutions. So also for that\") and for another automated test run; chose the end date (tonight 23:59) in the Sesame app at 16:40 SAST.",
+  "owner_words": "I don't wanna test the nine am run yet ... but I do want to test another automated run. So we'll just schedule it for now.",
+  "expires_at": "2026-11-21T23:59:00+02:00",
+  "revoked_at": null,
+  "revocation_reason": null,
+  "review": "machine",
+  "scope": {
+    "streams": ["CRIME_INTEL", "INFRASTRUCTURE", "PRIORITY"],
+    "actions": ["approve"],
+    "material_updates": false,
+    "sourcing_policy": "docs/SOURCING_POLICY.md"
+  },
+  "conditions": {
+    "min_independent_source_domains": 2
+  }
+}

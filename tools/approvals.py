@@ -84,6 +84,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools import checked_signals as cs_mod  # noqa: E402
+from tools import standing_auth as standing_mod  # noqa: E402
 
 APPROVALS_DIR = ROOT / "docs" / "approvals" / "pins"
 POLICY_NAME = "policy.json"
@@ -99,7 +100,7 @@ RECORD_SCHEMA_V2 = "forge.pin_approval.v2"     # v1 plus "material" (Batch 2)
 RECORD_SCHEMAS = (RECORD_SCHEMA, RECORD_SCHEMA_V2)
 POLICY_SCHEMA = "forge.pin_approvals.policy"
 ACTIONS = ("approve", "supersede", "revoke")
-BASES = ("explicit", "legacy")
+BASES = ("explicit", "legacy", "standing")   # standing: see tools/standing_auth.py
 SCOPE = "data-only"
 
 RECORD_FIELDS = (
@@ -349,7 +350,9 @@ def validate_record(rec, *, signal_id: str | None = None,
         errs.append("owner must be a pseudonym (1-64 characters, no email address)")
     basis = rec["basis"]
     if basis not in BASES:
-        errs.append("basis must be explicit or legacy")
+        errs.append("basis must be explicit, legacy or standing")
+    if basis == "standing" and (action not in ("approve", "supersede") or rec.get("material") is True):
+        errs.append("a standing record can only approve or supersede, never a material update")
     if basis == "legacy" and (action != "approve" or v != 1):
         errs.append("a legacy record can only be the first approval (approve, version 1)")
     approved_at = rec["approved_at"]
@@ -656,6 +659,13 @@ def verify(index_path: pathlib.Path | None = None,
                                         f"{tip['approval_reference']['summary'][:80]!r}); the pin is "
                                         f"unapproved until a real approval record replaces it", sid))
                 continue
+            if tip["basis"] == "standing":
+                why = standing_mod.record_problems(tip, pin, standing_dir_for(approvals_dir))
+                if why:
+                    findings.append(Finding("violation", "standing-refused",
+                                            f"{tip['approval_id']} (standing authorization "
+                                            f"{tip['approval_reference']['id']}): " + "; ".join(why), sid))
+                    continue
             current = payload_sha256(pin)
             if tip["payload_sha256"] != current:
                 findings.append(Finding("violation", "hash-mismatch",
@@ -724,6 +734,66 @@ def refusal_reason(report: Report) -> str:
     return "; ".join(parts) or "ok"
 
 
+def standing_dir_for(approvals_dir: pathlib.Path) -> pathlib.Path:
+    """docs/approvals/standing beside the ledger; a ledger copied elsewhere (tests,
+    database copies) without its own standing folder uses the repo's."""
+    d = pathlib.Path(approvals_dir).parent / "standing"
+    return d if d.is_dir() else standing_mod.STANDING_DIR
+
+
+def write_standing_record(signal_id: str, auth_id: str, *, recorded_by: str = "Maya",
+                          index_path: pathlib.Path | None = None,
+                          approvals_dir: pathlib.Path | None = None,
+                          now: datetime | None = None) -> pathlib.Path:
+    """Write the version-1 approval record for a new pin under an active standing
+    authorization, after the machine checks pass. Refuses (ApprovalError) when the
+    pin already has a record, the authorization is not active now, or any check fails."""
+    import secrets
+    from datetime import timezone
+    index_path = pathlib.Path(index_path if index_path is not None else cs_mod.INDEX_PATH)
+    approvals_dir = pathlib.Path(approvals_dir if approvals_dir is not None else APPROVALS_DIR)
+    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(microsecond=0)
+    auth, why = standing_mod.active_now(auth_id, standing_dir_for(approvals_dir), now)
+    if why:
+        raise ApprovalError(f"standing authorization {auth_id} cannot approve now: {why}")
+    _, by_id = _batch_pins(index_path)
+    if signal_id not in by_id:
+        raise ApprovalError(f"{signal_id} is not in any batch")
+    folder = approvals_dir / signal_id
+    if folder.exists() and any(folder.glob("*.json")):
+        raise ApprovalError(f"{signal_id} already has approval records; changes to a published pin "
+                            f"need the owner (a standing authorization only approves new pins)")
+    pin, batch = by_id[signal_id]
+    stamp = now.strftime("%Y%m%dT%H%M%SZ")
+    sources = (pin.get("metadata") or {}).get("checked", {}).get("sources") or []
+    rec = {
+        "schema": RECORD_SCHEMA_V2,
+        "approval_id": f"{stamp}-{secrets.token_hex(4)}",
+        "signal_id": signal_id, "action": "approve", "pin_version": 1, "supersedes": None,
+        "batch_file": batch, "approved_payload": approved_payload(pin),
+        "payload_sha256": payload_sha256(pin),
+        "source_hashes": [{"url": x["url"], "retrieved_at": None, "content_sha256": None}
+                          for x in sources if isinstance(x, dict) and x.get("url")],
+        "diff_from_previous": None, "owner": auth["owner"],
+        "approved_at": now.isoformat().replace("+00:00", "Z"),
+        "recorded_at": now.isoformat().replace("+00:00", "Z"),
+        "recorded_by": recorded_by,
+        "approval_reference": {
+            "id": auth_id,
+            "summary": (f"Standing authorization {auth_id} (owner's advance approval): machine-checked "
+                        f"against its conditions. Owner did not review this pin's text.")[:200]},
+        "basis": "standing", "scope": SCOPE, "material": False,
+    }
+    errs = validate_record(rec, signal_id=signal_id)
+    errs += standing_mod.record_problems(rec, pin, standing_dir_for(approvals_dir))
+    if errs:
+        raise ApprovalError(f"{signal_id}: standing record refused: " + "; ".join(errs))
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"{rec['approval_id']}.json"
+    path.write_text(json.dumps(rec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return path
+
+
 # ── CLI ────────────────────────────────────────────────────────────────────────────
 
 def main(argv: list[str] | None = None) -> int:
@@ -739,8 +809,18 @@ def main(argv: list[str] | None = None) -> int:
     h = sub.add_parser("payload-hash", help="print the approved_payload hash for one pin")
     h.add_argument("signal_id")
     h.add_argument("--index", type=pathlib.Path, default=cs_mod.INDEX_PATH)
+    st = sub.add_parser("standing-record", help="approve a new pin under an active standing authorization")
+    st.add_argument("signal_id")
+    st.add_argument("--authorization", required=True)
+    st.add_argument("--index", type=pathlib.Path, default=cs_mod.INDEX_PATH)
+    st.add_argument("--approvals", type=pathlib.Path, default=APPROVALS_DIR)
     args = ap.parse_args(argv)
     try:
+        if args.cmd == "standing-record":
+            path = write_standing_record(args.signal_id, args.authorization,
+                                         index_path=args.index, approvals_dir=args.approvals)
+            print(f"[approvals] wrote {path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}")
+            return 0
         if args.cmd == "payload-hash":
             _, by_id = _batch_pins(args.index)
             if args.signal_id not in by_id:
