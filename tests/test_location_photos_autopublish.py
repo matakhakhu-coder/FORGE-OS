@@ -82,4 +82,48 @@ def test_autopublish_research_cannot_stop_a_run(tmp_path, monkeypatch):
 
 def test_autopublish_commits_the_research_with_the_batch():
     assert "docs/photos/candidates" in apub.DATA_PATHS
-    assert "7b. Location photos" in apub.__doc__
+    assert "5b. Location photos" in apub.__doc__
+
+
+# --- Run-approved place photos (owner's choice, 26 Nov 2026) -----------------
+
+def _run_approved(sid="84d9b687-ee31-5b74-8191-a647309559d0", auth="standing-test", **over):
+    reg = lp.load_registry()
+    base = next(p for p in reg["photos"] if p["id"] == "riverlea-m70-soweto-highway-2008")
+    p = json.loads(json.dumps(base))
+    p["signal_id"] = sid
+    p["approval"] = {"by": "standing", "at": "2026-11-26", "authorization": auth}
+    p["privacy"]["checked_by"] = "unattended-run"
+    p["privacy"]["note"] = "Run looked at it: open highway, no faces, no readable plates, no homes."
+    p.update(over)
+    return p
+
+
+def test_a_run_approved_place_photo_passes():
+    assert lp.validate_photo(_run_approved()) == []
+
+
+def test_a_run_cannot_approve_an_incident_photo():
+    assert any("place photos only" in e for e in lp.validate_photo(_run_approved(kind="incident")))
+
+
+def test_a_run_approval_needs_its_own_look_written_down():
+    p = _run_approved()
+    p["privacy"]["note"] = ""
+    assert any("unattended-run" in e for e in lp.validate_photo(p))
+    p = _run_approved()
+    p["approval"]["authorization"] = ""
+    assert any("authorization" in e for e in lp.validate_photo(p))
+
+
+def test_run_approved_photo_for_another_pin_is_refused():
+    reg = {"photos": [_run_approved(sid="someone-else")]}
+    assert lp.standing_photo_problems(reg, "standing-test", ["84d9b687-ee31-5b74-8191-a647309559d0"])
+    assert not lp.standing_photo_problems(reg, "standing-test", ["someone-else"])
+
+
+def test_refused_photos_go_back_to_candidate(tmp_path):
+    path = tmp_path / "reg.json"
+    path.write_text(json.dumps({"photos": [_run_approved()]}))
+    lp.demote(path, {"riverlea-m70-soweto-highway-2008"})
+    assert json.loads(path.read_text())["photos"][0]["status"] == "candidate"

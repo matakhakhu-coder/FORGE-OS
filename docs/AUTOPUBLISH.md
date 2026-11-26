@@ -20,7 +20,7 @@ Approval records reach origin only together with a successful build. Any refusal
 
 ## Location photos for every new pin
 
-After the build, the run searches Wikimedia Commons for licensed photos of each new pin's place within 2 km and reports one line per pin (`docs/signals/LOCATION_PHOTOS.md`, "In every unattended run"). It never blocks a pin and never approves a photo; the owner approves each photo before it shows.
+Before calling autopublish, the sweep looks for a licensed place photo for each new pin and approves the best one itself if it passes the visual check (no recognisable people, plates, homes, children, victims or incident). Steps: `docs/signals/LOCATION_PHOTOS.md`, "In every unattended run". autopublish re-checks every run-approved photo before the build and turns back any that fails; a photo never blocks a pin.
 
 ## Tests no longer need editing for new pins
 

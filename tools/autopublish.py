@@ -25,11 +25,14 @@ the sweep that found them). In order, each step refusing stops the run:
     Otherwise the batch and records are committed locally only, then
     publish.py --deploy runs with FORGE_ALLOW_PUBLISH=1 in its own environment
     and pushes that commit and the dist/ commit to main in one push.
- 7b. Location photos (docs/signals/LOCATION_PHOTOS.md): every new pin gets
-    a Commons search for licensed photos of its place within 2 km, written to
-    docs/photos/candidates/ and committed with the batch, and one report line
-    per pin. This never blocks or delays a pin and never approves a photo:
-    a photo reaches the page only after the owner approves it.
+ 5b. Location photos (docs/signals/LOCATION_PHOTOS.md), before the tests and
+    the build: every new pin gets a Commons search for licensed photos of its
+    place within 2 km, written to docs/photos/candidates/ and committed with
+    the batch, with one report line per pin. A place photo the sweep approved
+    itself (approval.by: standing, after its own look at the photo, owner's
+    choice 26 Nov 2026) must pass every rule and belong to one of this run's
+    pins; otherwise it goes back to candidate and never shows. None of this
+    ever blocks or delays a pin.
  9. The run checks origin/main holds the records commit. If it does not, the
     local commits are undone, the records removed and dist/ restored, so
     nothing reached origin and the pins stay retryable.
@@ -54,11 +57,57 @@ sys.path.insert(0, str(ROOT))
 from tools import approvals as ap  # noqa: E402
 from tools import standing_auth as sa  # noqa: E402
 
-DATA_PATHS = ("docs/signals", "docs/approvals/pins", "docs/photos/candidates")
+DATA_PATHS = ("docs/signals", "docs/approvals/pins", "docs/photos/candidates", "docs/photos/files")
+
+
+def _check_run_photos(auth_id: str, pins: list[str], db: pathlib.Path) -> list[str]:
+    """Run-approved photos (approval.by: standing) must pass every rule and
+    belong to this run's pins; any that do not go back to candidate, so they
+    never show. Never stops the run."""
+    try:
+        from tools import location_photos as lp
+        reg = lp.load_registry()
+        pin_data = lp._pins_from_db(str(db)) if db.exists() else {}
+        bad = {ln.split(":", 1)[0]: ln for ln in lp.standing_photo_problems(reg, auth_id, pins)}
+        ok = []
+        for p in reg["photos"]:
+            a = p.get("approval") or {}
+            if p.get("status") != "approved" or a.get("by") != "standing" or p.get("id") in bad:
+                continue
+            if p.get("signal_id") not in pins:
+                continue
+            # The pin may not be published in the db yet: check against the batch's point.
+            pin = pin_data.get(p["signal_id"]) or _pin_point(p["signal_id"], db)
+            errs = lp.validate_photo(p, {p["signal_id"]: pin} if pin else None)
+            if errs:
+                bad[p["id"]] = errs[0]
+            else:
+                ok.append(f"location photos: {p['id']} approved by this run for {p['signal_id'][:8]}")
+        if bad:
+            lp.demote(lp.REGISTRY, set(bad))
+        return ok + [f"location photos: {i} refused, back to candidate ({why}); pin publishes without it"
+                     for i, why in bad.items()]
+    except Exception as exc:   # noqa: BLE001
+        return [f"location photos: run-approved photo check failed ({type(exc).__name__})"]
+
+
+def _pin_point(sid: str, db: pathlib.Path) -> dict | None:
+    import json
+    import sqlite3
+    try:
+        con = sqlite3.connect(str(db))
+        row = con.execute("SELECT title, metadata_json, lat, lng FROM signals WHERE signal_id=?", (sid,)).fetchone()
+        con.close()
+    except sqlite3.Error:
+        return None
+    if not row or row[2] is None:
+        return None
+    chk = (json.loads(row[1] or "{}") or {}).get("checked") or {}
+    return {"title": row[0], "lat": row[2], "lng": row[3], "location_note": chk.get("location")}
 
 
 def _photo_research(pins: list[str], db: pathlib.Path) -> tuple[list[pathlib.Path], list[str]]:
-    """Step 7b. Never raises: a pin always goes out, with or without a photo."""
+    """Step 5b. Never raises: a pin always goes out, with or without a photo."""
     if os.environ.get("FORGE_SKIP_PHOTO_RESEARCH") == "1":
         return [], ["location photos: research skipped (FORGE_SKIP_PHOTO_RESEARCH=1)"]
     try:
@@ -147,6 +196,10 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
         r = subprocess.run([python, "tools/checked_signals.py", "import", "--write"], cwd=ROOT, env=env)
         if r.returncode:
             raise RuntimeError(f"checked_signals import failed ({r.returncode})")
+        photo_files, photo_lines = _photo_research(pins, db)
+        written.extend(photo_files)
+        for line in photo_lines + _check_run_photos(auth_id, pins, db):
+            _say(line)
         r = subprocess.run([python, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-W", "ignore", "tests"],
                            cwd=ROOT, env=env)
         if r.returncode:
@@ -155,10 +208,6 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
         r = subprocess.run([python, "tools/publish.py"], cwd=ROOT, env=env)   # build only, no push
         if r.returncode:
             raise RuntimeError(f"site build failed ({r.returncode})")
-        photo_files, photo_lines = _photo_research(pins, db)
-        written.extend(photo_files)
-        for line in photo_lines:
-            _say(line)
     except (ap.ApprovalError, RuntimeError, sa.StandingError) as exc:
         _remove(written)
         if built:

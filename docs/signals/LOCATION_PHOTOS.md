@@ -76,21 +76,37 @@ it. Nothing is typed in from memory.
 
 ## In every unattended run (26 November 2026)
 
-`tools/autopublish.py` step 7b runs the research step for every new pin, after
-the site builds and before the commit. Its candidate files go into the same
-commit as the batch, and the run prints one line per pin: no photo (home,
-school, grave or care site), no usable licensed photo within 2 km, or the
-nearest usable candidate with its distance, licence, creator and Commons page.
+`tools/autopublish.py` step 5b runs before the tests and the build. For every
+new pin it searches Commons for licensed photos within 2 km, commits the
+candidate file with the batch, and prints one line per pin: no photo (home,
+school, grave or care site), no usable licensed photo, or the nearest usable
+candidate.
 
-- It never blocks or delays a pin. If Commons is down or nothing fits, the
-  pin is published without a photo and the report says so.
-- It never approves a photo. The standing authorization covers new pins only;
-  each photo still needs a person's privacy check and the owner's approval
-  (steps 2 to 4), then a publish.
-- Research also refuses photos that are not of a place (`OFF_TOPIC`:
-  banknotes, birds and species, food, equipment, logos and similar), all found
-  near real pins on 26 November.
-- `FORGE_SKIP_PHOTO_RESEARCH=1` turns the step off for one run.
+**The run approves the photo itself (owner's choice, 26 Nov 2026).** The
+sweep doing the run looks at the best candidate before calling autopublish:
+
+1. Run `python -m tools.location_photos nearby <pin>`; take the nearest candidate with no auto refusals.
+2. Download the Commons thumbnail and look at it. Use it only if it shows the
+   place (a road, a square, a landmark) and shows no person who can be
+   recognised, no readable number plate or house number, no private home, no
+   child, nothing about the incident, and no victim. If in doubt, no photo.
+3. Save it to docs/photos/files/ resized to 640 px wide with metadata removed,
+   and add a record to location-photos.json with
+   `approval: {by: standing, at: <date>, authorization: <standing id>}`,
+   `privacy.checked_by: unattended-run` and a `privacy.note` saying what the
+   run saw. Caption, creator, licence and Commons page as for any photo.
+4. The page shows it labelled "Place photo, not the incident", with credit.
+
+autopublish then checks every run-approved photo: every rule above must pass,
+it must be a place photo (never an incident photo), and it must belong to a
+pin in this run. Any that fails goes back to candidate and never shows; the
+pin still publishes. If no photo fits, the pin publishes without one and the
+report says so. Photos found near homes or schools are never searched.
+`FORGE_SKIP_PHOTO_RESEARCH=1` turns the research off for one run.
+
+Research also refuses files that are not of a place (`OFF_TOPIC`: banknotes,
+birds and species, food, equipment, logos and similar), all found near real
+pins on 26 November.
 
 ## Not in this version
 

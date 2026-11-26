@@ -232,10 +232,12 @@ def test_at_most_two_per_pin_context_first(files):
 
 def test_committed_registry_is_valid_and_only_the_owner_approved_photo_is_approved():
     # 18 Nov 2026: the owner looked at the Polokwane photo and approved it
-    # ("Yes approved" to: free of faces and number plates?). Nothing else.
+    # ("Yes approved" to: free of faces and number plates?). 26 Nov 2026: the
+    # owner approved the M70 photo for the Nasrec Road, Riverlea pin. Nothing else.
     reg = lp.load_registry()
     assert lp.validate(reg) == []
-    assert lp.approved_files(reg) == ["polokwane-peter-mokaba-stadium-2010.jpg"]
+    assert lp.approved_files(reg) == ["polokwane-peter-mokaba-stadium-2010.jpg",
+                                      "riverlea-m70-soweto-highway-2008.jpg"]
     for p in reg["photos"]:
         assert p["kind"] == "location_context"
         assert p["ai_generated"] is False

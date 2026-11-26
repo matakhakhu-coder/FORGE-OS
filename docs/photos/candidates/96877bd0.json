@@ -31,7 +31,9 @@
       "taken": "2014-11-29 13:49:39",
       "description": "This is an image of food from",
       "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29|Markets in Soweto",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:The African Cousine 2.jpg",
@@ -53,7 +55,9 @@
       "taken": "2014-11-29 13:19:18",
       "description": "This is an image of food from",
       "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:African cousine 3.jpg",
@@ -75,7 +79,9 @@
       "taken": "2014-11-29 13:19:14",
       "description": "This is an image of food from",
       "categories": "Taken with ZTE Blade L2|Cuisine of South Africa|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:The African cousine..jpg",
@@ -97,7 +103,9 @@
       "taken": "2014-11-29 13:20:30",
       "description": "This is an image of food from",
       "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:Soweto Market place 1.jpg",
@@ -119,7 +127,9 @@
       "taken": "2014-11-29 13:49:33",
       "description": "This is an image of food from",
       "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29|Vegetable markets in South Africa|Markets in Soweto",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     }
   ]
 }

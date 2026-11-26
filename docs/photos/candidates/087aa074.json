@@ -75,7 +75,9 @@
       "taken": "2017-04-11 19:27:13",
       "description": "10,000 Tanzanian shillings banknote, 2011 serie, obverse",
       "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Elephants on banknotes",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:10,000 Tanzanian shillings banknote, serie 2011, obverse horizontal.jpg",
@@ -97,7 +99,9 @@
       "taken": "2017-04-11 19:27:13",
       "description": "billet de 10 000 shillings tanzaniens, serie de 2011",
       "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Elephants on banknotes",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:10,000 Tanzanian shillings banknote, serie 2011, reverse.jpg",
@@ -119,7 +123,9 @@
       "taken": "2017-04-11 19:28:12",
       "description": "billet de 10 000 shillings tanzaniens, serie de 2011, revers",
       "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:2,000 Tanzanian shillings banknote, 2011 serie, obverse.jpg",
@@ -141,7 +147,9 @@
       "taken": "2017-04-11 19:29:07",
       "description": "billet de 2 000 shillings tanzaniens, serie de 2011, avers",
       "categories": "Banknotes with a face value of 2000|Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Lions on banknotes",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:2,000 Tanzanian shillings banknote, 2011 serie, reverse.jpg",
@@ -163,7 +171,9 @@
       "taken": "2017-04-11 19:29:27",
       "description": "billet de 2 000 shillings tanzaniens, serie de 2011, revers",
       "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     },
     {
       "file_title": "File:Uraeginthus angolensis ssp. niassensis.jpg",
@@ -185,7 +195,9 @@
       "taken": "2021-09-26",
       "description": "Southern Blue Waxbill (Uraeginthus angolensis ssp. niassensis). Subspecies of bird.",
       "categories": "Uraeginthus angolensis|Media from iNaturalist|INaturalist images reviewed by iNaturalistReviewBot|Passeriformes of Gauteng|Files with coordinates missing SDC location of creation|Estrildidae of South Africa|South Africa photographs taken on 2021-09-26",
-      "auto_refusals": []
+      "auto_refusals": [
+        "off-topic"
+      ]
     }
   ]
 }

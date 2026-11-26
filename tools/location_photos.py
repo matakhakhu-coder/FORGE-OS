@@ -250,8 +250,19 @@ def validate_photo(p: dict, pins: dict | None = None, files_dir: Path | None = N
         if not (priv.get("checked_by") and isinstance(priv.get("checked_at"), str)
                 and _DATE_RE.match(priv["checked_at"])):
             say("privacy check needs checked_by and checked_at (YYYY-MM-DD)")
-        if appr.get("by") != "owner" or not (isinstance(appr.get("at"), str) and _DATE_RE.match(appr["at"])):
-            say("approval needs by: owner and at: YYYY-MM-DD")
+        if appr.get("by") not in ("owner", "standing") or not (
+                isinstance(appr.get("at"), str) and _DATE_RE.match(appr["at"])):
+            say("approval needs by: owner (or standing) and at: YYYY-MM-DD")
+        if appr.get("by") == "standing":
+            # 26 Nov 2026, owner's choice: an unattended run may approve a
+            # context photo for a pin it publishes, after its own look at it.
+            if kind != "location_context":
+                say("a standing approval covers place photos only, never an incident photo")
+            if not str(appr.get("authorization") or "").startswith("standing-"):
+                say("approval.authorization must name the standing authorization")
+            if priv.get("checked_by") != "unattended-run" or len(str(priv.get("note") or "").strip()) < 20:
+                say("a run-approved photo needs privacy.checked_by: unattended-run and a note "
+                    "saying what the run saw in the photo")
         fl = p.get("file") or {}
         name = fl.get("name")
         if not (isinstance(name, str) and re.match(r"^[a-z0-9][a-z0-9-]*\.(jpg|jpeg|webp|png)$", name)):
@@ -438,8 +449,28 @@ def summary_line(sid: str, data: dict) -> str:
     if not usable:
         return f"{sid[:8]}: no usable licensed photo within {MAX_DISTANCE_M} m; published without one"
     r = usable[0]
-    return (f"{sid[:8]}: {len(usable)} candidate(s) for the owner to look at; nearest "
+    return (f"{sid[:8]}: {len(usable)} candidate(s) to check by eye; nearest "
             f"{r['file_title']} ({r['distance_m']} m, {r['licence']}, {r['creator']}) {r['page_url']}")
+
+
+def standing_photo_problems(registry: dict, auth_id: str, pins) -> list[str]:
+    """Run-approved photos under this authorization must belong to this run's pins."""
+    out = []
+    for p in registry.get("photos", []):
+        a = p.get("approval") or {}
+        if p.get("status") == "approved" and a.get("by") == "standing" \
+                and a.get("authorization") == auth_id and p.get("signal_id") not in pins:
+            out.append(f"{p.get('id')}: run-approved photo for a pin this run does not publish")
+    return out
+
+
+def demote(registry_path: Path, ids) -> None:
+    """Turn refused run-approved photos back into candidates (never published)."""
+    reg = load_registry(registry_path)
+    for p in reg["photos"]:
+        if p.get("id") in ids:
+            p["status"] = "candidate"
+    registry_path.write_text(json.dumps(reg, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def research_new_pins(pins: dict, search=None) -> tuple[list[Path], list[str]]:

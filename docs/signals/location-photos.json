@@ -1,57 +1,108 @@
 {
-  "version": 1,
-  "policy": "docs/signals/LOCATION_PHOTOS.md",
-  "photos": [
-    {
-      "id": "polokwane-peter-mokaba-stadium-2010",
-      "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
-      "kind": "location_context",
-      "status": "approved",
-      "ai_generated": false,
-      "caption": "Peter Mokaba Stadium, Polokwane, in 2010",
-      "alt": "Photo of Peter Mokaba Stadium in Polokwane, taken in June 2010",
-      "taken": "17 June 2010",
-      "creator": "Celso FLORES",
-      "licence": "CC BY 2.0",
-      "licence_url": "https://creativecommons.org/licenses/by/2.0",
-      "source": {
-        "platform": "Wikimedia Commons",
-        "page_url": "https://commons.wikimedia.org/wiki/File:ZA_Polokwane-_France_VS_MEXICO.jpg",
-        "file_title": "File:ZA Polokwane- France VS MEXICO.jpg",
-        "description": "South Africa, city of Polokwane, Peter Mokaba Stadium - France VS MEXICO",
-        "categories": "Taken with Nikon D40x|Flickr images reviewed by FlickreviewR|Files with coordinates missing SDC location of creation|2010 FIFA World Cup Match 18, France v Mexico",
-        "thumb_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/ZA_Polokwane-_France_VS_MEXICO.jpg/960px-ZA_Polokwane-_France_VS_MEXICO.jpg",
-        "original_sha1": "b018f3784721c7af196cc6b3746472dcc28cb984",
-        "retrieved_at": "2026-11-18"
-      },
-      "geotag": {
-        "basis": "page_location",
-        "lat": -23.925012,
-        "lng": 29.46855,
-        "from": "Commons page coordinates; the file holds no camera GPS data (checked in the file's metadata, 18 Nov 2026)"
-      },
-      "file": {
-        "name": "polokwane-peter-mokaba-stadium-2010.jpg",
-        "sha1": "e6bab3b359c2cc3a9efba829330e4f1e3183fa41",
-        "width": 640,
-        "height": 427,
-        "edits": "Resized to 640 pixels wide and file metadata removed; the picture is not otherwise changed"
-      },
-      "privacy": {
-        "people_identifiable": false,
-        "vehicle_plates_readable": false,
-        "private_home": false,
-        "children": false,
-        "sensitive_site": false,
-        "house_numbers_readable": false,
-        "checked_by": "owner",
-        "checked_at": "2026-11-18",
-        "note": "Checked by the owner (Matamela Ramovha) by looking at the photo on its Commons page. Asked whether it is free of faces and number plates, the owner replied: 'Yes approved' (18 Nov 2026). Subject is a public stadium, not a home, school, grave or care site."
-      },
-      "approval": {
-        "by": "owner",
-        "at": "2026-11-18"
-      }
-    }
-  ]
+ "version": 1,
+ "policy": "docs/signals/LOCATION_PHOTOS.md",
+ "photos": [
+  {
+   "id": "polokwane-peter-mokaba-stadium-2010",
+   "signal_id": "0caff1cd-7cbe-51b2-aab4-ea3528b56f88",
+   "kind": "location_context",
+   "status": "approved",
+   "ai_generated": false,
+   "caption": "Peter Mokaba Stadium, Polokwane, in 2010",
+   "alt": "Photo of Peter Mokaba Stadium in Polokwane, taken in June 2010",
+   "taken": "17 June 2010",
+   "creator": "Celso FLORES",
+   "licence": "CC BY 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "source": {
+    "platform": "Wikimedia Commons",
+    "page_url": "https://commons.wikimedia.org/wiki/File:ZA_Polokwane-_France_VS_MEXICO.jpg",
+    "file_title": "File:ZA Polokwane- France VS MEXICO.jpg",
+    "description": "South Africa, city of Polokwane, Peter Mokaba Stadium - France VS MEXICO",
+    "categories": "Taken with Nikon D40x|Flickr images reviewed by FlickreviewR|Files with coordinates missing SDC location of creation|2010 FIFA World Cup Match 18, France v Mexico",
+    "thumb_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/ZA_Polokwane-_France_VS_MEXICO.jpg/960px-ZA_Polokwane-_France_VS_MEXICO.jpg",
+    "original_sha1": "b018f3784721c7af196cc6b3746472dcc28cb984",
+    "retrieved_at": "2026-11-18"
+   },
+   "geotag": {
+    "basis": "page_location",
+    "lat": -23.925012,
+    "lng": 29.46855,
+    "from": "Commons page coordinates; the file holds no camera GPS data (checked in the file's metadata, 18 Nov 2026)"
+   },
+   "file": {
+    "name": "polokwane-peter-mokaba-stadium-2010.jpg",
+    "sha1": "e6bab3b359c2cc3a9efba829330e4f1e3183fa41",
+    "width": 640,
+    "height": 427,
+    "edits": "Resized to 640 pixels wide and file metadata removed; the picture is not otherwise changed"
+   },
+   "privacy": {
+    "people_identifiable": false,
+    "vehicle_plates_readable": false,
+    "private_home": false,
+    "children": false,
+    "sensitive_site": false,
+    "house_numbers_readable": false,
+    "checked_by": "owner",
+    "checked_at": "2026-11-18",
+    "note": "Checked by the owner (Matamela Ramovha) by looking at the photo on its Commons page. Asked whether it is free of faces and number plates, the owner replied: 'Yes approved' (18 Nov 2026). Subject is a public stadium, not a home, school, grave or care site."
+   },
+   "approval": {
+    "by": "owner",
+    "at": "2026-11-18"
+   }
+  },
+  {
+   "id": "riverlea-m70-soweto-highway-2008",
+   "signal_id": "84d9b687-ee31-5b74-8191-a647309559d0",
+   "kind": "location_context",
+   "status": "approved",
+   "ai_generated": false,
+   "caption": "The M70 Soweto Highway beside Soccer City, Nasrec, in 2008",
+   "alt": "Photo of the M70 Soweto Highway next to Soccer City in Nasrec, Johannesburg, taken in December 2008",
+   "taken": "8 December 2008",
+   "creator": "NJR ZA",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": {
+    "platform": "Wikimedia Commons",
+    "page_url": "https://commons.wikimedia.org/wiki/File:Soweto_Highway-001.jpg",
+    "file_title": "File:Soweto Highway-001.jpg",
+    "description": "The M70 (Soweto Highway) next to Soccer City in Nasrec, Johannesburg, Gauteng, South Africa",
+    "categories": "GFDL|Taken with Canon EOS 400D|Soweto|Roads in South Africa|License migration redundant|Self-published work|Files by User:NJR ZA|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2008-12-08|Road transport in Johannesburg",
+    "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Soweto_Highway-001.jpg/960px-Soweto_Highway-001.jpg",
+    "original_sha1": "398126ad239225581c97fd92a61d6e089b3132db",
+    "retrieved_at": "2026-11-26"
+   },
+   "geotag": {
+    "basis": "page_location",
+    "lat": -26.2317,
+    "lng": 27.9809,
+    "from": "Commons page coordinates, as returned by the Commons API on 26 Nov 2026"
+   },
+   "file": {
+    "name": "riverlea-m70-soweto-highway-2008.jpg",
+    "sha1": "c1ef2a446395a72a196caa40c17a64df8b45b853",
+    "width": 640,
+    "height": 427,
+    "edits": "Resized to 640 pixels wide and file metadata removed; the picture is not otherwise changed"
+   },
+   "privacy": {
+    "people_identifiable": false,
+    "vehicle_plates_readable": false,
+    "private_home": false,
+    "children": false,
+    "sensitive_site": false,
+    "house_numbers_readable": false,
+    "checked_by": "owner",
+    "checked_at": "2026-11-26",
+    "note": "The assistant looked at the photo (open highway, distant minibuses, no faces, no readable plates, no homes) and sent the owner (Matamela Ramovha) the Commons link with that check; the owner approved it on 26 Nov 2026. Subject is a public highway."
+   },
+   "approval": {
+    "by": "owner",
+    "at": "2026-11-26"
+   }
+  }
+ ]
 }
