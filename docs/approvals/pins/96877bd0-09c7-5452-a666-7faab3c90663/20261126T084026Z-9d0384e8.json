@@ -1,0 +1,85 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261126T084026Z-9d0384e8",
+  "signal_id": "96877bd0-09c7-5452-a666-7faab3c90663",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "gauteng-flood-infrastructure-2026-11-26.json",
+  "approved_payload": {
+    "content": "An 11-year-old girl was swept away by fast-flowing floodwater on the afternoon of Tuesday 17 November in Dobsonville, Soweto, during heavy rain and thunderstorms, shortly after her school transport dropped her off, the Mail & Guardian and IOL report. IOL places the drop-off in Snake Park, near Dobsonville Extension 3. Joburg EMS, the SAPS Water Wing and K9 Unit, police divers, private security, City Parks workers and residents searched the stream; her body was recovered on Friday 20 November not far from where she was last seen, the Mail & Guardian reports, and her family identified her. Gauteng CoGTA MEC Jacob Mamabolo was at the scene. The child is not named here. The map point is estimated: the Dobsonville suburb point, not the stream.",
+    "external_id": "checked:gp-flood-infra-2026-11-26:F3",
+    "lat": -26.2238889,
+    "lng": 27.8666667,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-26T09:00:00Z",
+        "incident": "Tue 17 Nov 2026, afternoon (Mail & Guardian; IOL). Body recovered Fri 20 Nov.",
+        "incident_event": "occurred",
+        "incident_part": "afternoon",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-11-17",
+        "location": "ESTIMATED MAP POINT. Dobsonville, Soweto; drop-off in Snake Park near Dobsonville Extension 3 (IOL). Snake Park and Extension 3 are not found in Nominatim, so the pin is the Dobsonville suburb point (-26.2239, 27.8667), not the stream. Suburb level, about 2 km.",
+        "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+        "reported": "20 Nov 2026 (Mail & Guardian; IOL), both on the recovery; earlier search reports exist",
+        "reported_at": "2026-11-17",
+        "search_aliases": [
+          "Dobsonville",
+          "Snake Park",
+          "Soweto",
+          "flash flood",
+          "swept away",
+          "drowning",
+          "EMS",
+          "Johannesburg",
+          "Gauteng"
+        ],
+        "sources": [
+          {
+            "name": "Mail & Guardian, 20 Nov",
+            "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/"
+          },
+          {
+            "name": "IOL (The Star), 20 Nov",
+            "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/"
+          }
+        ]
+      },
+      "collected_title": "Body of 11-year-old girl recovered after Soweto flash floods",
+      "link": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+      "pubdate_raw": "2026-11-20",
+      "source_outlet": "Mail & Guardian"
+    },
+    "published_at": "2026-11-26T09:00:00Z",
+    "signal_id": "96877bd0-09c7-5452-a666-7faab3c90663",
+    "source": "Mail & Guardian",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-11-17T10:00:00Z",
+    "title": "Dobsonville, Soweto (map point estimated): girl, 11, swept away by flash floodwater after school transport drop-off, 17 Nov; body recovered 20 Nov"
+  },
+  "payload_sha256": "sha256:e2a1fbc56266b263a1c7312eabfba49786cd1cb7f79121d1bdbea704d29ada37",
+  "source_hashes": [
+    {
+      "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-26T08:40:26Z",
+  "recorded_at": "2026-11-26T08:40:26Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-26",
+    "summary": "Standing authorization standing-autopub-2026-11-26 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

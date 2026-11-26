@@ -1,0 +1,83 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261126T084026Z-b4fb9971",
+  "signal_id": "84d9b687-ee31-5b74-8191-a647309559d0",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "gauteng-flood-infrastructure-2026-11-26.json",
+  "approved_payload": {
+    "content": "Road infrastructure on Nasrec Road in Riverlea, Johannesburg, collapsed on Wednesday 25 November after heavy rain, leaving a large hole, The Bulrushes reports. JMPD spokesperson Superintendent Xolani Fihla said the Johannesburg Roads Agency had closed Nasrec Road between Main Reef Road and Dunlin Drive and that it will stay closed until JRA engineers have assessed and repaired the damage; northbound traffic is blocked at Dunlin Drive, and detours are Crownwood Road, New Canada Road, Colorado Drive and Avon Street. South African Daily carries the same JMPD account. No injuries were reported in either report. The pin is approximate: the Nasrec Road point near Dunlin Drive, not the collapse itself, which the reports do not place more exactly.",
+    "external_id": "checked:gp-flood-infra-2026-11-26:F2",
+    "lat": -26.2155,
+    "lng": 27.98481,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-26T09:00:00Z",
+        "incident": "Wed 25 Nov 2026 (The Bulrushes, citing the JRA closure). Time not given.",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-25",
+        "location": "APPROX. Nasrec Road, Riverlea, closed between Main Reef Road and Dunlin Drive (JMPD via both reports). Pin is the Nasrec Road, Riverlea point from Nominatim (-26.2155, 27.9848), beside the Dunlin Drive end of the closed section. The collapse point is not given. Street level, about 800 m.",
+        "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+        "reported": "26 Nov 2026 (The Bulrushes; South African Daily), both resting on the JMPD statement",
+        "reported_at": "2026-11-26",
+        "search_aliases": [
+          "Riverlea",
+          "Nasrec Road",
+          "road collapse",
+          "JRA",
+          "JMPD",
+          "flood",
+          "Johannesburg",
+          "Gauteng"
+        ],
+        "sources": [
+          {
+            "name": "The Bulrushes, 26 Nov",
+            "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/"
+          },
+          {
+            "name": "South African Daily, 26 Nov",
+            "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea"
+          }
+        ]
+      },
+      "collected_title": "Heavy Rains: Nasrec Road In Riverlea Collapses",
+      "link": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+      "pubdate_raw": "2026-11-26",
+      "source_outlet": "The Bulrushes"
+    },
+    "published_at": "2026-11-26T09:00:00Z",
+    "signal_id": "84d9b687-ee31-5b74-8191-a647309559d0",
+    "source": "The Bulrushes",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-11-24T22:00:00Z",
+    "title": "Nasrec Road, Riverlea (approx.): road collapses after heavy rain, closed between Main Reef Road and Dunlin Drive, 25 Nov"
+  },
+  "payload_sha256": "sha256:bc12988fcb6fff835563339c7436582d16b3faabc9ac469150b6c3836c0d5e01",
+  "source_hashes": [
+    {
+      "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-26T08:40:26Z",
+  "recorded_at": "2026-11-26T08:40:26Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-26",
+    "summary": "Standing authorization standing-autopub-2026-11-26 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

@@ -1,0 +1,194 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Gauteng",
+ "batch": "Gauteng flooding, Infrastructure stream (incidents 17-25 Nov 2026), hand-checked 26 Nov 2026, published under standing authorization standing-autopub-2026-11-26",
+ "scope": "Gauteng flooding sweep of 26 Nov 2026 for the Infrastructure stream. Three pins. Other candidates are held and are not in this file.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account. Standing authorization needs two different source sites. No case, entity or thread links: pins from the same storms are not linked and one is not said to cause another. Incident date kept apart from report date. Victims not named. Approximate points labelled in the title and location note. No Caxton feeds by machine.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-26 (owner-chosen end 26 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-26 (Sesame chat)",
+   "decision": "Owner asked for a sweep for Infrastructure pins from the Gauteng flooding, published under the standing authorization, and said Madiba Park can go live with this sweep. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [
+  {
+   "place": "Alexandra, 15th Avenue near the police station taxi rank: several households flooded, 25 Nov (Joburg EMS via Scrolla; The Citizen)",
+   "reason": "Area-wide flooding of homes with no single damage record or count; EMS reported no injuries. Not pinned this run to keep it lean; could be a pin if the owner wants area-flooding pins."
+  },
+  {
+   "place": "Mayfair, Johannesburg: wall collapse on the Metrorail Roodepoort line, trains stop at Langlaagte (Scrolla, 26 Nov, citing Metrorail)",
+   "reason": "One site only (Scrolla); the Metrorail notice itself was not found, and the wall is not placed. The standing approval needs two different sites."
+  },
+  {
+   "place": "Parkview Golf Club: two bridges washed away, a wall eroded (The Citizen, via search summary)",
+   "reason": "Only one report found, and only as a search summary; not read in full. Private asset."
+  },
+  {
+   "place": "Soweto: body of an adult man believed swept away during the 17 Nov storm recovered (IOL)",
+   "reason": "No place or date beyond Soweto; one report."
+  },
+  {
+   "place": "Belgrave Street bridge (Bryanston) and other low-lying bridges overtopped and closed by JRA/JMPD, 25 Nov",
+   "reason": "Precautionary closures and warnings, not damage or harm; no pin under the infrastructure rules."
+  }
+ ],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "087aa074-be9c-5b86-a824-456443391d30",
+   "external_id": "checked:gp-flood-infra-2026-11-26:F1",
+   "source": "SABC News",
+   "title": "Witkoppen Road at the Braamfontein Spruit bridge, Paulshof/Fourways (approx.): car swept away by floodwater, driver rescued from a tree, 25 Nov",
+   "content": "A motorist's vehicle was swept away by floodwater at the Braamfontein Spruit bridge on Witkoppen Road, near Achter Road, in the Paulshof/Fourways area of Johannesburg on Wednesday 25 November, during heavy rain under a SAWS yellow level 4 warning. City of Johannesburg EMS spokesperson Robert Mulaudzi said the EMS aquatic rescue unit rescued the person, who had been trapped when the vehicle was washed away (SABC News, 25 Nov). The Fourways Review quotes the Sandton Community Policing Forum: one person was in the car, he escaped, clung to a tree and was helped to safety; EMS said he was rescued unharmed. The pin is approximate: the Witkoppen and Achter roads area, not a surveyed bridge point.",
+   "lat": -26.0366,
+   "lng": 28.0578,
+   "stream": "INFRASTRUCTURE",
+   "timestamp": "2026-11-25T16:00:00Z",
+   "published_at": "2026-11-26T09:00:00Z",
+   "metadata": {
+    "source_outlet": "SABC News",
+    "link": "https://www.sabcnews.com/sabcnews/1183012-2/",
+    "pubdate_raw": "2026-11-25T20:10:00+02:00",
+    "checked": {
+     "incident": "Wed 25 Nov 2026, evening, before 20:10 (SABC News report time); heavy rain began that afternoon.",
+     "reported": "25 Nov 2026 (SABC News, 20:10); 25 Nov 2026 (Fourways Review)",
+     "location": "APPROX. Braamfontein Spruit bridge on Witkoppen Road at Achter Road (Fourways Review); Witkoppen Road, Fourways (SABC News). Point placed where Witkoppen Road meets Achter Road (Nominatim: Achter Road, Paulshof, -26.0330, 28.0579; Witkoppen Road segment -26.0374, 28.0589). Overpass was at capacity, so the bridge itself was not looked up. Street level, about 400 m.",
+     "sources": [
+      {
+       "name": "SABC News, 25 Nov",
+       "url": "https://www.sabcnews.com/sabcnews/1183012-2/"
+      },
+      {
+       "name": "Fourways Review (citizen.co.za), 25 Nov",
+       "url": "https://www.citizen.co.za/fourways-review/news-headlines/local-news/2026/11/25/motorist-clings-to-tree-after-car-is-swept-away-by-floodwaters/"
+      }
+     ],
+     "checked_at": "2026-11-26T09:00:00Z",
+     "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+     "incident_start": "2026-11-25",
+     "incident_precision": "part_of_day",
+     "incident_part": "evening",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-25",
+     "search_aliases": [
+      "Fourways",
+      "Paulshof",
+      "Witkoppen Road",
+      "Braamfontein Spruit",
+      "flood",
+      "rescue",
+      "Johannesburg",
+      "Gauteng"
+     ]
+    },
+    "collected_title": "Person rescued after vehicle washes away during floods in Gauteng"
+   },
+   "fingerprint": "sha256:be73b38da5dc212e72785a57f4c59590f1560e3c20f5139c619d40e191de1e3b"
+  },
+  {
+   "signal_id": "84d9b687-ee31-5b74-8191-a647309559d0",
+   "external_id": "checked:gp-flood-infra-2026-11-26:F2",
+   "source": "The Bulrushes",
+   "title": "Nasrec Road, Riverlea (approx.): road collapses after heavy rain, closed between Main Reef Road and Dunlin Drive, 25 Nov",
+   "content": "Road infrastructure on Nasrec Road in Riverlea, Johannesburg, collapsed on Wednesday 25 November after heavy rain, leaving a large hole, The Bulrushes reports. JMPD spokesperson Superintendent Xolani Fihla said the Johannesburg Roads Agency had closed Nasrec Road between Main Reef Road and Dunlin Drive and that it will stay closed until JRA engineers have assessed and repaired the damage; northbound traffic is blocked at Dunlin Drive, and detours are Crownwood Road, New Canada Road, Colorado Drive and Avon Street. South African Daily carries the same JMPD account. No injuries were reported in either report. The pin is approximate: the Nasrec Road point near Dunlin Drive, not the collapse itself, which the reports do not place more exactly.",
+   "lat": -26.2155,
+   "lng": 27.98481,
+   "stream": "INFRASTRUCTURE",
+   "timestamp": "2026-11-24T22:00:00Z",
+   "published_at": "2026-11-26T09:00:00Z",
+   "metadata": {
+    "source_outlet": "The Bulrushes",
+    "link": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+    "pubdate_raw": "2026-11-26",
+    "checked": {
+     "incident": "Wed 25 Nov 2026 (The Bulrushes, citing the JRA closure). Time not given.",
+     "reported": "26 Nov 2026 (The Bulrushes; South African Daily), both resting on the JMPD statement",
+     "location": "APPROX. Nasrec Road, Riverlea, closed between Main Reef Road and Dunlin Drive (JMPD via both reports). Pin is the Nasrec Road, Riverlea point from Nominatim (-26.2155, 27.9848), beside the Dunlin Drive end of the closed section. The collapse point is not given. Street level, about 800 m.",
+     "sources": [
+      {
+       "name": "The Bulrushes, 26 Nov",
+       "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/"
+      },
+      {
+       "name": "South African Daily, 26 Nov",
+       "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea"
+      }
+     ],
+     "checked_at": "2026-11-26T09:00:00Z",
+     "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+     "incident_start": "2026-11-25",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-26",
+     "search_aliases": [
+      "Riverlea",
+      "Nasrec Road",
+      "road collapse",
+      "JRA",
+      "JMPD",
+      "flood",
+      "Johannesburg",
+      "Gauteng"
+     ]
+    },
+    "collected_title": "Heavy Rains: Nasrec Road In Riverlea Collapses"
+   },
+   "fingerprint": "sha256:bc12988fcb6fff835563339c7436582d16b3faabc9ac469150b6c3836c0d5e01"
+  },
+  {
+   "signal_id": "96877bd0-09c7-5452-a666-7faab3c90663",
+   "external_id": "checked:gp-flood-infra-2026-11-26:F3",
+   "source": "Mail & Guardian",
+   "title": "Dobsonville, Soweto (map point estimated): girl, 11, swept away by flash floodwater after school transport drop-off, 17 Nov; body recovered 20 Nov",
+   "content": "An 11-year-old girl was swept away by fast-flowing floodwater on the afternoon of Tuesday 17 November in Dobsonville, Soweto, during heavy rain and thunderstorms, shortly after her school transport dropped her off, the Mail & Guardian and IOL report. IOL places the drop-off in Snake Park, near Dobsonville Extension 3. Joburg EMS, the SAPS Water Wing and K9 Unit, police divers, private security, City Parks workers and residents searched the stream; her body was recovered on Friday 20 November not far from where she was last seen, the Mail & Guardian reports, and her family identified her. Gauteng CoGTA MEC Jacob Mamabolo was at the scene. The child is not named here. The map point is estimated: the Dobsonville suburb point, not the stream.",
+   "lat": -26.2238889,
+   "lng": 27.8666667,
+   "stream": "INFRASTRUCTURE",
+   "timestamp": "2026-11-17T10:00:00Z",
+   "published_at": "2026-11-26T09:00:00Z",
+   "metadata": {
+    "source_outlet": "Mail & Guardian",
+    "link": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+    "pubdate_raw": "2026-11-20",
+    "checked": {
+     "incident": "Tue 17 Nov 2026, afternoon (Mail & Guardian; IOL). Body recovered Fri 20 Nov.",
+     "reported": "20 Nov 2026 (Mail & Guardian; IOL), both on the recovery; earlier search reports exist",
+     "location": "ESTIMATED MAP POINT. Dobsonville, Soweto; drop-off in Snake Park near Dobsonville Extension 3 (IOL). Snake Park and Extension 3 are not found in Nominatim, so the pin is the Dobsonville suburb point (-26.2239, 27.8667), not the stream. Suburb level, about 2 km.",
+     "sources": [
+      {
+       "name": "Mail & Guardian, 20 Nov",
+       "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/"
+      },
+      {
+       "name": "IOL (The Star), 20 Nov",
+       "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/"
+      }
+     ],
+     "checked_at": "2026-11-26T09:00:00Z",
+     "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+     "incident_start": "2026-11-17",
+     "incident_precision": "part_of_day",
+     "incident_part": "afternoon",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-17",
+     "search_aliases": [
+      "Dobsonville",
+      "Snake Park",
+      "Soweto",
+      "flash flood",
+      "swept away",
+      "drowning",
+      "EMS",
+      "Johannesburg",
+      "Gauteng"
+     ]
+    },
+    "collected_title": "Body of 11-year-old girl recovered after Soweto flash floods"
+   },
+   "fingerprint": "sha256:e2a1fbc56266b263a1c7312eabfba49786cd1cb7f79121d1bdbea704d29ada37"
+  }
+ ]
+}

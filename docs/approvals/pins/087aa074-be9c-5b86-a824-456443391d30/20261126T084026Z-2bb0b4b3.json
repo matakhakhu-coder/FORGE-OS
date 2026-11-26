@@ -1,0 +1,84 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261126T084026Z-2bb0b4b3",
+  "signal_id": "087aa074-be9c-5b86-a824-456443391d30",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "gauteng-flood-infrastructure-2026-11-26.json",
+  "approved_payload": {
+    "content": "A motorist's vehicle was swept away by floodwater at the Braamfontein Spruit bridge on Witkoppen Road, near Achter Road, in the Paulshof/Fourways area of Johannesburg on Wednesday 25 November, during heavy rain under a SAWS yellow level 4 warning. City of Johannesburg EMS spokesperson Robert Mulaudzi said the EMS aquatic rescue unit rescued the person, who had been trapped when the vehicle was washed away (SABC News, 25 Nov). The Fourways Review quotes the Sandton Community Policing Forum: one person was in the car, he escaped, clung to a tree and was helped to safety; EMS said he was rescued unharmed. The pin is approximate: the Witkoppen and Achter roads area, not a surveyed bridge point.",
+    "external_id": "checked:gp-flood-infra-2026-11-26:F1",
+    "lat": -26.0366,
+    "lng": 28.0578,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-26T09:00:00Z",
+        "incident": "Wed 25 Nov 2026, evening, before 20:10 (SABC News report time); heavy rain began that afternoon.",
+        "incident_event": "occurred",
+        "incident_part": "evening",
+        "incident_precision": "part_of_day",
+        "incident_start": "2026-11-25",
+        "location": "APPROX. Braamfontein Spruit bridge on Witkoppen Road at Achter Road (Fourways Review); Witkoppen Road, Fourways (SABC News). Point placed where Witkoppen Road meets Achter Road (Nominatim: Achter Road, Paulshof, -26.0330, 28.0579; Witkoppen Road segment -26.0374, 28.0589). Overpass was at capacity, so the bridge itself was not looked up. Street level, about 400 m.",
+        "method": "Found in the 26 Nov 2026 Gauteng flooding infrastructure sweep by web search; source pages read by hand (Caxton page found by search, not by machine). Places looked up in Nominatim (Overpass at capacity). Live map and checked batches searched for duplicates (none). Standalone (no case, entity or thread links); no link to any other flood pin is implied.",
+        "reported": "25 Nov 2026 (SABC News, 20:10); 25 Nov 2026 (Fourways Review)",
+        "reported_at": "2026-11-25",
+        "search_aliases": [
+          "Fourways",
+          "Paulshof",
+          "Witkoppen Road",
+          "Braamfontein Spruit",
+          "flood",
+          "rescue",
+          "Johannesburg",
+          "Gauteng"
+        ],
+        "sources": [
+          {
+            "name": "SABC News, 25 Nov",
+            "url": "https://www.sabcnews.com/sabcnews/1183012-2/"
+          },
+          {
+            "name": "Fourways Review (citizen.co.za), 25 Nov",
+            "url": "https://www.citizen.co.za/fourways-review/news-headlines/local-news/2026/11/25/motorist-clings-to-tree-after-car-is-swept-away-by-floodwaters/"
+          }
+        ]
+      },
+      "collected_title": "Person rescued after vehicle washes away during floods in Gauteng",
+      "link": "https://www.sabcnews.com/sabcnews/1183012-2/",
+      "pubdate_raw": "2026-11-25T20:10:00+02:00",
+      "source_outlet": "SABC News"
+    },
+    "published_at": "2026-11-26T09:00:00Z",
+    "signal_id": "087aa074-be9c-5b86-a824-456443391d30",
+    "source": "SABC News",
+    "stream": "INFRASTRUCTURE",
+    "timestamp": "2026-11-25T16:00:00Z",
+    "title": "Witkoppen Road at the Braamfontein Spruit bridge, Paulshof/Fourways (approx.): car swept away by floodwater, driver rescued from a tree, 25 Nov"
+  },
+  "payload_sha256": "sha256:be73b38da5dc212e72785a57f4c59590f1560e3c20f5139c619d40e191de1e3b",
+  "source_hashes": [
+    {
+      "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.citizen.co.za/fourways-review/news-headlines/local-news/2026/11/25/motorist-clings-to-tree-after-car-is-swept-away-by-floodwaters/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-26T08:40:26Z",
+  "recorded_at": "2026-11-26T08:40:26Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-26",
+    "summary": "Standing authorization standing-autopub-2026-11-26 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

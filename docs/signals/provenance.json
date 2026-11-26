@@ -1239,6 +1239,51 @@
       ],
       "independence": "same_statement",
       "note": "Every fact (time, six suspects, firearm, guards tied up, 37 tablets worth R111,000, two cellphones, six tablets recovered) comes from the SAPS statement; the Polokwane Review report rests on the same police account. The school is not named."
+    },
+    "087aa074-be9c-5b86-a824-456443391d30": {
+      "statement_from": "City of Johannesburg EMS (spokesperson Robert Mulaudzi), via SABC News and the Fourways Review",
+      "spokesperson": [
+        "Robert Mulaudzi (Joburg EMS)"
+      ],
+      "other_voices": [
+        "Roshan Byjnal, Sandton CPF (Fourways Review)"
+      ],
+      "outlets": [
+        "SABC News",
+        "Fourways Review"
+      ],
+      "independence": "partly_independent",
+      "note": "Both reports quote Joburg EMS for the rescue; the Fourways Review adds the Sandton CPF account (one occupant, escaped, clung to a tree). Two different sites. No one is named."
+    },
+    "84d9b687-ee31-5b74-8191-a647309559d0": {
+      "statement_from": "JMPD statement (Supt Xolani Fihla) on the JRA closure, 26 Nov 2026",
+      "spokesperson": [
+        "Supt Xolani Fihla (JMPD)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "The Bulrushes",
+        "South African Daily"
+      ],
+      "independence": "same_statement",
+      "note": "Both reports rest on the same JMPD statement about the JRA closure; a traceable city statement. The Bulrushes gives the date (Wed 25 Nov) and the heavy-rain cause. Two different sites."
+    },
+    "96877bd0-09c7-5452-a666-7faab3c90663": {
+      "statement_from": "Joburg EMS and Gauteng CoGTA, via the Mail & Guardian and IOL",
+      "spokesperson": [
+        "Robert Mulaudzi (Joburg EMS)",
+        "Xolile Khumalo (Joburg EMS)"
+      ],
+      "other_voices": [
+        "Gauteng CoGTA MEC Jacob Mamabolo",
+        "A relative (Mail & Guardian)"
+      ],
+      "outlets": [
+        "Mail & Guardian",
+        "IOL"
+      ],
+      "independence": "partly_independent",
+      "note": "Two outlets with their own reporting, quoting different EMS spokespeople. Two different sites. The child is not named."
     }
   }
 }
