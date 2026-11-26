@@ -13,6 +13,12 @@ the sweep that found them). In order, each step refusing stops the run:
  1. On main, not behind origin/main, nothing else staged.
  2. The standing authorization is active now (has an end date, not expired,
     not revoked). See tools/standing_auth.py.
+ 2b. Every pin has a valid "What each fact rests on" entry in
+    docs/signals/fact-bases.json (tools/fact_bases.py, docs/signals/FACT_BASES.md):
+    audited, six facts, each tied to one of the pin's own published sources
+    with a word-for-word quote, honest bases, and an approximate map point
+    said so in the Place fact. Any pin without one refuses the whole run, so
+    no pin can go live with that section empty.
  3. Each pin gets its basis=standing approval record, written only if the
     machine checks pass (stream in scope, at least N different source sites,
     a check method, a new pin rather than a change to a published one).
@@ -56,6 +62,7 @@ sys.path.insert(0, str(ROOT))
 
 from tools import approvals as ap  # noqa: E402
 from tools import standing_auth as sa  # noqa: E402
+from tools import fact_bases as fb  # noqa: E402
 
 DATA_PATHS = ("docs/signals", "docs/approvals/pins", "docs/photos/candidates", "docs/photos/files")
 
@@ -177,6 +184,15 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
         _say(f"REFUSED: standing authorization {auth_id}: {why}")
         return 3
     _say(f"authorization {auth_id} active until {auth['expires_at']} (owner {auth['owner']})")
+
+    fact_errs = fb.gate_problems(pins)
+    if fact_errs:
+        for e in fact_errs:
+            _say(f"fact bases: {e}")
+        _say("REFUSED: 'What each fact rests on' is missing or invalid for a pin; nothing written. "
+             "Write its entry (docs/signals/FACT_BASES.md) and run again.")
+        return 3
+    _say(f"fact bases: {len(pins)} pin(s) have a valid 'What each fact rests on' entry")
 
     base = _git("rev-parse", "HEAD").strip()
     written: list[pathlib.Path] = []

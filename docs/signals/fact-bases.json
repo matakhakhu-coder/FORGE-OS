@@ -8678,6 +8678,451 @@
           "conflicts": []
         }
       ]
+    },
+    "087aa074-be9c-5b86-a824-456443391d30": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "26 November 2026",
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "A vehicle was washed away on Witkoppen Road; one person was rescued.",
+          "basis": "EMS account only",
+          "detail": "Joburg EMS spokesperson Robert Mulaudzi, quoted by SABC News. The Fourways Review (a Caxton paper, not read by the automated run) is the pin's second source.",
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026, quoting Joburg EMS",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "Emergency management services aquatic rescue, unit just rescued one person who was trapped along a Witkoppen Road when the vehicle they were travelling in, was washed away."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 25 November 2026, during the afternoon or evening downpours.",
+          "basis": "One report",
+          "detail": "SABC News says the heavy downpours started that afternoon; no exact time of the rescue is given.",
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "The heavy downpours which started this afternoon are affecting different provinces including parts of Gauteng"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Witkoppen Road, Fourways. The map point is approximate: the Witkoppen Road and Achter Road junction, to within about 400 m, not the bridge itself.",
+          "basis": "EMS account only",
+          "detail": "The Braamfontein Spruit bridge at Achter Road comes from the Fourways Review; the bridge was not looked up on the map.",
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "One person has been rescued on Witkoppen Road in Fourways, north of Johannesburg after the vehicle they were travelling in was washed away."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Cause",
+          "claim": "Road flooding during heavy rain.",
+          "basis": "EMS account only",
+          "detail": "EMS described many flooding incidents across the city that day; nothing here says what caused this one beyond the rain.",
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026, quoting Joburg EMS",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "Joburg EMS Spokesperson, Robert Mulaudzi says they are inundated with multiple incidents related to road flooding and fallen trees."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Impact",
+          "claim": "One person rescued. No injuries are reported in the saved source.",
+          "basis": "EMS account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026, quoting Joburg EMS",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "unit just rescued one person who was trapped along a Witkoppen Road"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Status",
+          "claim": "EMS aquatic rescue units stayed on high alert across the city.",
+          "basis": "EMS account only",
+          "detail": "No report of the road's condition afterwards was found.",
+          "sources": [
+            {
+              "name": "SABC News, 25 November 2026, quoting Joburg EMS",
+              "url": "https://www.sabcnews.com/sabcnews/1183012-2/",
+              "archive": null,
+              "quote": "our emergency services aquatic risk units remain on high alert monitoring all 7 regions of the city for any water related emergencies."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-26",
+        "checked_by": "unattended-run"
+      }
+    },
+    "84d9b687-ee31-5b74-8191-a647309559d0": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "26 November 2026",
+      "facts": [
+        {
+          "label": "What failed",
+          "claim": "Part of Nasrec Road in Riverlea collapsed.",
+          "basis": "Municipal account only",
+          "detail": "Both reports rest on the same statement from JMPD (Superintendent Xolani Fihla) about the Johannesburg Roads Agency closure. Two sites, one origin.",
+          "sources": [
+            {
+              "name": "The Bulrushes, 26 November 2026",
+              "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+              "archive": null,
+              "quote": "Following the collapse of road infrastructure on Wednesday, 25 November 2026"
+            },
+            {
+              "name": "South African Daily, 26 November 2026",
+              "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea",
+              "archive": null,
+              "quote": "Motorists have been urged to avoid a section of Nasrec Road in Riverlea following the collapse of road infrastructure that has forced an emergency closure."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 25 November 2026. No time is given.",
+          "basis": "One report",
+          "detail": "Only The Bulrushes gives the date.",
+          "sources": [
+            {
+              "name": "The Bulrushes, 26 November 2026",
+              "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+              "archive": null,
+              "quote": "Following the collapse of road infrastructure on Wednesday, 25 November 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Nasrec Road, Riverlea, closed between Main Reef Road and Dunlin Drive. The map point is approximate, to within about 800 m: the collapse point itself is not given.",
+          "basis": "Municipal account only",
+          "detail": "Same statement in both reports.",
+          "sources": [
+            {
+              "name": "South African Daily, 26 November 2026, citing JMPD",
+              "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea",
+              "archive": null,
+              "quote": "Nasrec Road has been closed between Main Reef Road and Dunlin Drive"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Cause",
+          "claim": "Heavy rain, according to one report.",
+          "basis": "One report",
+          "detail": "South African Daily gives no cause; it says only that the JRA found damage.",
+          "sources": [
+            {
+              "name": "The Bulrushes, 26 November 2026",
+              "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+              "archive": null,
+              "quote": "where heavy rains caused a massive pothole to appear."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Impact",
+          "claim": "The road is completely closed to traffic; detours via Colorado Drive and Avon Street. No injuries are reported.",
+          "basis": "Municipal account only",
+          "detail": "JMPD spokesperson Superintendent Xolani Fihla.",
+          "sources": [
+            {
+              "name": "The Bulrushes, 26 November 2026, quoting JMPD",
+              "url": "https://thebulrushes.com/2026/11/26/heavy-rains-nasrec-road-in-riverlea-collapses/",
+              "archive": null,
+              "quote": "The roadway will remain completely closed to traffic until JRA engineers have fully assessed and repaired the damaged infrastructure,"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Status",
+          "claim": "Closed until JRA engineers assess and repair it.",
+          "basis": "Municipal account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "South African Daily, 26 November 2026, citing JMPD",
+              "url": "https://www.southafricandaily.co.za/news/nasrec-road-closed-after-infrastructure-collapse-in-riverlea",
+              "archive": null,
+              "quote": "The road will remain closed until JRA engineers have assessed the damage and completed the necessary repairs."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-26",
+        "checked_by": "unattended-run"
+      }
+    },
+    "96877bd0-09c7-5452-a666-7faab3c90663": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "26 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One girl, 11, died. FORGE Map does not name her.",
+          "basis": "Two reports",
+          "detail": "The Mail & Guardian and IOL each did their own reporting and quote different Joburg EMS spokespeople.",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 20 November 2026",
+              "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+              "archive": null,
+              "quote": "who was swept away by flash floodwaters in Dobsonville, Soweto, has been found after three days of search and recovery operations."
+            },
+            {
+              "name": "IOL (The Star), 20 November 2026",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "quote": "Johannesburg Emergency Management Service (EMS) has confirmed that the body found of a young girl this afternoon is that of"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Swept away on Tuesday 17 November 2026 in the afternoon; her body was found on Friday 20 November.",
+          "basis": "Reports differ in wording",
+          "detail": "The reports differ on when on Friday the body was found: morning (Mail & Guardian) or afternoon (IOL).",
+          "sources": [
+            {
+              "name": "IOL (The Star), 20 November 2026",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "quote": "The girl was swept away in floodwaters on Tuesday afternoon shortly after her scholar transport dropped her off."
+            },
+            {
+              "name": "Mail & Guardian, 20 November 2026",
+              "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+              "archive": null,
+              "quote": "The discovery was made on Friday morning, 20 November, by members of the South African Police Service (SAPS) Water Wing and K9 Unit"
+            }
+          ],
+          "conflicts": [
+            {
+              "quote": "has confirmed that the body found of a young girl this afternoon",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "version": "IOL"
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Snake Park, near Dobsonville Extension 3, Soweto. The map point is estimated: the middle of Dobsonville, to within about 2 km, not the stream.",
+          "basis": "Two reports",
+          "detail": "Snake Park and Extension 3 could not be found on the map.",
+          "sources": [
+            {
+              "name": "IOL (The Star), 20 November 2026",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "quote": "in Snake Park, near Dobsonville Extension 3."
+            },
+            {
+              "name": "Mail & Guardian, 20 November 2026",
+              "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+              "archive": null,
+              "quote": "body was recovered not far from where she was last seen in Snake Park, near Dobsonville."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Cause",
+          "claim": "Swept away by fast-flowing water during heavy rain and thunderstorms, just after her school transport dropped her off.",
+          "basis": "Two reports",
+          "detail": "The Mail & Guardian says 'reportedly' for the drop-off.",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 20 November 2026",
+              "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+              "archive": null,
+              "quote": "the child was swept away by fast-flowing water during heavy rainfall and thunderstorms that affected parts of Johannesburg."
+            },
+            {
+              "name": "IOL (The Star), 20 November 2026",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "quote": "swept away during severe thunderstorms shortly after her school transport dropped her off on Tuesday, November 17"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Impact",
+          "claim": "A search of several days by EMS, SAPS Water Wing, K9, police divers, private security and residents; about 4 km of stream searched by Thursday.",
+          "basis": "One report",
+          "detail": "Joburg EMS spokesperson Robert Mulaudzi, quoted by the Mail & Guardian.",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 20 November 2026, quoting Joburg EMS",
+              "url": "https://mg.co.za/news/south-africa/2026-11-20-soweto-flood-search-ends-in-tragedy/",
+              "archive": null,
+              "quote": "Johannesburg EMS spokesperson Robert Mulaudzi said the teams had covered about 4km of the stream"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Status",
+          "claim": "The search ended when the body was found; the family identified her.",
+          "basis": "One report",
+          "detail": "Gauteng CoGTA MEC Jacob Mamabolo was at the scene and briefed the family (Mail & Guardian).",
+          "sources": [
+            {
+              "name": "IOL (The Star), 20 November 2026",
+              "url": "https://iol.co.za/the-star/news/2026-11-20-body-of-missing-11-year-old-girl-found-in-soweto-after-four-day-search/",
+              "archive": null,
+              "quote": "after the family positively identified her."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-26",
+        "checked_by": "unattended-run"
+      }
+    },
+    "e79e7810-f8c5-5417-9823-ec3dbbf3198d": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "26 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "No deaths or injuries are reported. A gunshot was heard after the robbers left.",
+          "basis": "Police account only",
+          "detail": "Every fact comes from the SAPS Limpopo statement; the Polokwane Review rests on the same statement and was not read by the automated run (Caxton).",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "Shortly afterwards, a gunshot was heard by the security guard who later managed to untie himself and his colleague."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 14 November 2026, about 03:05.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "on Saturday 14 November 2026 at about 03:05."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A school in Madiba Park, Seshego. The map point is estimated: the Seshego reference point, a few km out, not the school.",
+          "basis": "Police account only",
+          "detail": "The school is not named, and Madiba Park is not in OpenStreetMap.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "Police in Seshego have opened a case of business robbery following an incident that occurred at a local school in Madiba Park"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "Six men overpowered and tied up two security guards; one produced a firearm and made sleeping learners hand over tablets.",
+          "basis": "Police account only",
+          "detail": "Learners and caretakers were sleeping at the school.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "One of the suspects produced a firearm and instructed all the learners to hand over tablets."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What was taken",
+          "claim": "37 tablets worth R111,000 and two cellphones worth R7,000; six tablets later recovered near the school.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "37 tablets valued at R111 000 and two cellphones valued at R7 000 were taken during the robbery."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Business robbery case opened; no arrests reported. A provincial task team was set up.",
+          "basis": "Police account only",
+          "detail": null,
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 November 2026",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72483",
+              "archive": null,
+              "quote": "A business robbery case was opened at the local police"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-26",
+        "checked_by": "unattended-run"
+      }
     }
   }
 }

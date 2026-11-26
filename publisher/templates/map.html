@@ -4205,7 +4205,7 @@
     // Fact-level audit is distinct from the overall report-independence label.
     var fb = m.fact_basis || {status: 'not yet audited', facts: []};
     document.getElementById('sd-audit-status').textContent = fb.status === 'audited' ?
-      'Saved-source audit, 19 October 2026. Not independent verification.' +
+      'Saved-source audit, ' + (fb.audited_on || '19 October 2026') + '. Not independent verification.' +
       (fb.police_party ? ' Police are a party to the incident; their account is not an independent finding.' : '') : 'not yet audited';
     var facts = document.getElementById('sd-fact-bases');
     facts.textContent = '';

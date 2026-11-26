@@ -63,6 +63,7 @@ def repo(tmp_path, monkeypatch):
 
     monkeypatch.setattr(apub, "ROOT", work)
     monkeypatch.setattr(apub.sa, "active_now", lambda *a, **k: ({"expires_at": "x", "owner": "o"}, None))
+    monkeypatch.setattr(apub.fb, "gate_problems", lambda pins: [])   # tested in test_fact_bases_auto.py
 
     def write(sid, auth_id):   # the real duplicate rule: one record per new pin
         folder = work / "docs/approvals/pins" / sid
@@ -112,6 +113,15 @@ def test_published_pin_still_refused(repo):
 def test_dry_run_restores_everything(repo):
     base = _g(repo.work, "rev-parse", "HEAD")
     assert _run(repo, dry=True) == 0
+    assert _g(repo.work, "rev-parse", "HEAD") == base
+    assert not (repo.work / "docs/approvals/pins/pin1").exists()
+    assert (repo.work / "dist/index.html").read_text() == "old\n"
+
+
+def test_missing_fact_basis_refuses_before_anything_is_written(repo, monkeypatch):
+    base = _g(repo.work, "rev-parse", "HEAD")
+    monkeypatch.setattr(apub.fb, "gate_problems", lambda pins: ["pin1: no fact-basis entry"])
+    assert _run(repo) == 3
     assert _g(repo.work, "rev-parse", "HEAD") == base
     assert not (repo.work / "docs/approvals/pins/pin1").exists()
     assert (repo.work / "dist/index.html").read_text() == "old\n"
