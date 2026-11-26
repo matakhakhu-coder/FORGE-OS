@@ -1,0 +1,27 @@
+{
+  "schema": "forge.standing_publication_authorization.v1",
+  "authorization_id": "standing-autopub-2026-11-26",
+  "owner": "Riley Bishop",
+  "granted_at": "2026-11-26T10:08:00+02:00",
+  "granted_via": "Owner in the Sesame chat, 26 Nov 2026 about 10:08 SAST: said yes to renewing the standing approval for new pins only, ending tonight 23:59 (same pattern as 21 Nov), and to one fresh unattended run as the end-to-end test of the publish-order fix (427ac9c). Owner name kept as before.",
+  "owner_words": "Not verbatim: the owner's yes was relayed to this run by the Sesame assistant (renew the standing approval for new pins only, ending tonight 23:59, and start one fresh unattended run).",
+  "expires_at": "2026-11-26T23:59:00+02:00",
+  "revoked_at": null,
+  "revocation_reason": null,
+  "review": "machine",
+  "scope": {
+    "streams": [
+      "CRIME_INTEL",
+      "INFRASTRUCTURE",
+      "PRIORITY"
+    ],
+    "actions": [
+      "approve"
+    ],
+    "material_updates": false,
+    "sourcing_policy": "docs/SOURCING_POLICY.md"
+  },
+  "conditions": {
+    "min_independent_source_domains": 2
+  }
+}
