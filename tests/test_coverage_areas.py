@@ -288,7 +288,8 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     index = _copy_signals(tmp_path)
     out = tmp_path / "coverage"
     first = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-19")
-    assert len(first["areas"]) == 39 and len(first["new_since_last_run"]) == 39   # first run: all new
+    n = len(first["areas"])   # 39 on 21 Nov 2026; grows as pins in new areas are published
+    assert n > 0 and len(first["new_since_last_run"]) == n   # first run: all new
 
     path, data = _nw_batch(index)
     new = copy.deepcopy(data["signals"][0])
@@ -303,7 +304,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
     # Computing again the same day (compute, then sweep) keeps the flag.
     again = ca.write_areas(ca.compute_areas(ca.published_pins(index)), out, index, today="2026-10-22")
     assert again["new_since_last_run"] == second["new_since_last_run"]
-    assert len(second["areas"]) == 40
+    assert len(second["areas"]) == n + 1
     added = [a for a in second["areas"] if a["key"] in second["new_since_last_run"]]
     assert len(added) == 1 and added[0]["pins"][0]["signal_id"] == new["signal_id"]
     assert added[0]["province"] == "North West" and not added[0]["pattern_test"]
@@ -313,6 +314,7 @@ def test_a_newly_published_pin_adds_its_area_on_the_next_run(tmp_path):
 
 def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     index = _copy_signals(tmp_path)
+    before = len(ca.compute_areas(ca.published_pins(index))["areas"])   # 39 on 21 Nov 2026
     path, data = _nw_batch(index)
     ip = next(s for s in data["signals"] if "Ipelegeng" in s["title"])
     data["retractions"].append({"signal_id": ip["signal_id"], "reason": "test",
@@ -325,7 +327,7 @@ def test_held_back_and_retracted_pins_make_no_coverage(tmp_path):
     assert ip["signal_id"] not in {p["signal_id"] for p in pins}
     keys = {a["key"] for a in ca.compute_areas(pins)["areas"]}
     assert "north-west--schweizer-reneke" not in keys
-    assert not any("brits" in k for k in keys) and len(keys) == 38   # 39 areas less Schweizer-Reneke
+    assert not any("brits" in k for k in keys) and len(keys) == before - 1   # all areas less Schweizer-Reneke
 
 
 # ── Western Cape scoring stays apart ───────────────────────────────────────────

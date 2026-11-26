@@ -42,7 +42,7 @@ LPM_PI_PINS = 2       # Priority Intelligence (Musina sweep): Musina cigarette s
 LPM_IDS = {"b66b55ca-30bf-5b11-b40d-bcfd6627ffa6", "42598400-2dc8-522f-b664-66d912756b03", "f57ecd7b-1268-5ced-a789-b9d01a5a064d", "931b443f-6722-507f-be64-a47bb4ef899f"}
 KZD_PINS = 3          # Crime & Security (Durban targeted sweep): Durban CBD, Amaoti and Brookdale killings; approved 30 Oct 2026, outside the pattern test
 KZD_IDS = {"c9697dcd-becf-5562-a5a0-57382f75bfa5", "8c2de9ee-aa2b-5713-839f-32c1d06ea3c9", "55bc58e1-085f-577b-8a5c-4a91ca0a9fef"}
-INFRA_PINS = LPI_PINS + KZI_PINS
+INFRA_PINS = LPI_PINS + KZI_PINS   # 5 on 21 Nov 2026; the live count is checked with ri.stream_count below
 FSB_PINS = 3          # Crime & Security (Bloemfontein town sweep): Bochabela and Phase 7 killings, Wilgehof shooting; approved 25 Oct 2026, released 30 Oct 2026, outside the pattern test
 FSB_IDS = {"ef642f04-1b73-51e6-9411-54ca401c8fc2", "15c9b98d-4c33-5120-8abb-fd15686d142f", "6515ee45-b2da-5c29-8884-534be08dc621"}
 GPP_KILL_PINS = 1     # Crime & Security (remaining-provinces sweep, Gauteng): Esangweni taxi rank shooting, Tembisa; approved and released 30 Oct 2026, outside the pattern test
@@ -57,6 +57,7 @@ HIST_PINS = WC_PINS + NW_PINS + EC_PINS + LP_PINS + MP_PINS + LPI_PINS + KZI_PIN
 # Pins published after 21 Nov 2026 are counted from docs/signals itself, so a valid new
 # pin needs no test edit (tests/real_inventory.py). HIST_* keeps the exact per-batch checks.
 from tests import real_inventory as ri  # noqa: E402
+INFRA_PINS = ri.stream_count("INFRASTRUCTURE")   # counted from docs/signals (5 on 21 Nov 2026)
 ALL_PINS = ri.active_count()
 
 

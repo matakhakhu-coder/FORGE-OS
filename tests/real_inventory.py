@@ -83,6 +83,11 @@ def latest_incident_start() -> str:
     return max(s["metadata"]["checked"]["incident_start"][:10] for s in active_pins())
 
 
+def stream_count(stream: str) -> int:
+    """Active pins filed under this map stream (CRIME_INTEL, INFRASTRUCTURE, ...)."""
+    return sum(s.get("stream") == stream for s in active_pins())
+
+
 def batch_files() -> list[str]:
     return [f for f, _, _ in _batches()]
 

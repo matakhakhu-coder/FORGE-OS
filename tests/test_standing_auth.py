@@ -111,7 +111,8 @@ def test_ledger_accepts_and_refuses_standing_records(tmp_path, sdir):
     shutil.copytree(ROOT / "docs" / "approvals" / "pins", pins)
     standing = tmp_path / "approvals" / "standing"
     standing.mkdir()
-    shutil.copy(REAL, standing / REAL.name)
+    for auth_file in REAL.parent.glob("standing-*.json"):   # every authorization, so records under later ones verify too
+        shutil.copy(auth_file, standing / auth_file.name)
     flora = "c522699e-12c5-537b-8759-d35744aa28ce"
     shutil.rmtree(pins / flora)                                        # treat Flora Park as new
     when = datetime(2026, 11, 21, 15, 30, tzinfo=timezone.utc)

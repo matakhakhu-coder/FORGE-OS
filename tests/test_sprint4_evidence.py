@@ -38,10 +38,12 @@ def _fresh_db(tmp_path, monkeypatch):
 # ── Incident dates ───────────────────────────────────────────────────────────────────────
 
 def test_every_checked_pin_has_a_machine_readable_incident_time():
+    from datetime import datetime, timedelta, timezone
+    _tomorrow = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     for s in cs.load_index().active:
         key = cs.incident_sort_key(s["metadata"]["checked"])
         # Day-precision keys start at local midnight: 1 Oct SAST is 2026-09-30T22:00Z.
-        assert key.endswith("Z") and "2026-09-30T22:00:00Z" <= key < "2026-11-22", s["signal_id"]   # through 21 Nov 2026 (Flora Park pin, 5 Nov)
+        assert key.endswith("Z") and "2026-09-30T22:00:00Z" <= key <= _tomorrow, s["signal_id"]   # from 1 Oct 2026, never in the future (was a fixed 22 Nov bound)
 
 
 def test_incident_window_by_precision():
