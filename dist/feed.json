@@ -1,8 +1,64 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "21 Nov 2026 13:53 UTC",
+  "generated_at": "26 Nov 2026 08:44 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Witkoppen Road at the Braamfontein Spruit bridge, Paulshof/Fourways (approx.): car swept away by floodwater, driver rescued from a tree, 25 Nov",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-11-26T09:00:00Z",
+      "summary": "A motorist's vehicle was swept away by floodwater at the Braamfontein Spruit bridge on Witkoppen Road, near Achter Road, in the Paulshof/Fourways area of Johannesburg on Wednesday 25 November, during heavy rain under a S...",
+      "source": "SABC NEWS",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -26.0366,
+        "lng": 28.0578
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Nasrec Road, Riverlea (approx.): road collapses after heavy rain, closed between Main Reef Road and Dunlin Drive, 25 Nov",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-11-26T09:00:00Z",
+      "summary": "Road infrastructure on Nasrec Road in Riverlea, Johannesburg, collapsed on Wednesday 25 November after heavy rain, leaving a large hole, The Bulrushes reports. JMPD spokesperson Superintendent Xolani Fihla said the Johan...",
+      "source": "THE BULRUSHES",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -26.2155,
+        "lng": 27.98481
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Dobsonville, Soweto (map point estimated): girl, 11, swept away by flash floodwater after school transport drop-off, 17 Nov; body recovered 20 Nov",
+      "stream": "INFRASTRUCTURE",
+      "stream_label": "Infrastructure",
+      "published_at": "2026-11-26T09:00:00Z",
+      "summary": "An 11-year-old girl was swept away by fast-flowing floodwater on the afternoon of Tuesday 17 November in Dobsonville, Soweto, during heavy rain and thunderstorms, shortly after her school transport dropped her off, the M...",
+      "source": "MAIL & GUARDIAN",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -26.2238889,
+        "lng": 27.8666667
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Madiba Park, Seshego (map point estimated): six armed men rob sleeping learners of 37 school tablets, 14 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-21T15:20:00Z",
+      "summary": "Police in Seshego opened a business robbery case after six unknown men entered a school in Madiba Park at about 03:05 on Saturday 14 November while learners and caretakers were sleeping on the premises, SAPS Limpopo said...",
+      "source": "SAPS",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.84664,
+        "lng": 29.38802
+      }
+    },
     {
       "kind": "signal",
       "title": "Flora Park, Polokwane (approx.): man stabbed to death in a park opposite a vote-counting station, 5 Nov",
@@ -645,62 +701,6 @@
       "geo": {
         "lat": -34.0684541,
         "lng": 18.4896295
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Strandfontein (Korvette Rd, approx.): man, 26, found shot dead, 19 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-21T15:48:00Z",
-      "summary": "Police say a man of 26 was found with multiple gunshot wounds in front of a property in Korvette Road, Strandfontein, when officers responded at about 20:45 on Monday 19 October (Lieutenant-Colonel Frederick van Wyk, via...",
-      "source": "TYGERBURGER (NOVA NEWS)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.0766913,
-        "lng": 18.5491929
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Steenberg (Military Rd, approx.): two men, 23 and 37, shot dead; five arrested after chase, 20 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-21T12:41:00Z",
-      "summary": "Police say two men, aged 23 and 37, were fatally wounded in a shooting in Military Road, Steenberg, at about 12:30 on Tuesday 20 October. The suspects fled in a red VW Polo, abandoned it in Kirstenhof after a high-speed ...",
-      "source": "CAPE TIMES (IOL)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.0751134,
-        "lng": 18.4789251
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Central, Gqeberha (Russell Rd, approx.): man, 52, shot dead in his car, 19 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-21T11:16:00Z",
-      "summary": "Police say a man of 52 was shot by two male suspects while sitting in his car, a white VW Polo, outside a corner shop in Russell Road, Central, Gqeberha, at about 12:50 on Monday 19 October. He tried to get out, collapse...",
-      "source": "THE HERALD",
-      "region": "Eastern Cape",
-      "geo": {
-        "lat": -33.9590722,
-        "lng": 25.6177624
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Cafda Village, Retreat (Bernstein Rd, approx.): man, 41, shot dead, three young men wounded, 18 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-19T07:45:00Z",
-      "summary": "Police say four people were shot on Bernstein Road near the Retreat Community Health Centre, in Cafda Village, on Sunday 18 October; police responded at about 15:30. A man of 41 died, and three young men aged 16 to 21 we...",
-      "source": "SMILE 90.4FM",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.0601163,
-        "lng": 18.4813237
       }
     }
   ]
