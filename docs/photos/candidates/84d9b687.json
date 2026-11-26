@@ -1,0 +1,59 @@
+{
+  "signal_id": "84d9b687-ee31-5b74-8191-a647309559d0",
+  "pin": {
+    "title": "Nasrec Road, Riverlea (approx.): road collapses after heavy rain, closed between Main Reef Road and Dunlin Drive, 25 Nov",
+    "lat": -26.2155,
+    "lng": 27.98481,
+    "location_note": "APPROX. Nasrec Road, Riverlea, closed between Main Reef Road and Dunlin Drive (JMPD via both reports). Pin is the Nasrec Road, Riverlea point from Nominatim (-26.2155, 27.9848), beside the Dunlin Drive end of the closed section. The collapse point is not given. Street level, about 800 m."
+  },
+  "searched_at": "2026-11-26",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Pallet Jack, East Elite Lifting Equipment.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Pallet_Jack,_East_Elite_Lifting_Equipment.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Pallet_Jack%2C_East_Elite_Lifting_Equipment.jpg/960px-Pallet_Jack%2C_East_Elite_Lifting_Equipment.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1850,
+      "height": 2137,
+      "original_sha1": "59e8e1436280b38c46cfc7c77f63abbf3f0077e9",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.22027778,
+        "lng": 27.99833333
+      },
+      "distance_m": 1450,
+      "creator": "EastEliteLiftingEquipment",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2016-06-22",
+      "description": "Pallet jacks (Pallet Truck) supplied by East Elite Lifting Equipment",
+      "categories": "Material handling|Pallet jacks|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Soweto Highway-001.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Soweto_Highway-001.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Soweto_Highway-001.jpg/960px-Soweto_Highway-001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3888,
+      "height": 2592,
+      "original_sha1": "398126ad239225581c97fd92a61d6e089b3132db",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -26.2317,
+        "lng": 27.9809
+      },
+      "distance_m": 1843,
+      "creator": "NJR ZA",
+      "licence": "CC BY-SA 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "taken": "2008-12-08",
+      "description": "The M70 (Soweto Highway) next to Soccer City in Nasrec, Johannesburg, Gauteng, South Africa",
+      "categories": "GFDL|Taken with Canon EOS 400D|Soweto|Roads in South Africa|License migration redundant|Self-published work|Files by User:NJR ZA|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2008-12-08|Road transport in Johannesburg",
+      "auto_refusals": []
+    }
+  ]
+}

@@ -25,6 +25,11 @@ the sweep that found them). In order, each step refusing stops the run:
     Otherwise the batch and records are committed locally only, then
     publish.py --deploy runs with FORGE_ALLOW_PUBLISH=1 in its own environment
     and pushes that commit and the dist/ commit to main in one push.
+ 7b. Location photos (docs/signals/LOCATION_PHOTOS.md): every new pin gets
+    a Commons search for licensed photos of its place within 2 km, written to
+    docs/photos/candidates/ and committed with the batch, and one report line
+    per pin. This never blocks or delays a pin and never approves a photo:
+    a photo reaches the page only after the owner approves it.
  9. The run checks origin/main holds the records commit. If it does not, the
     local commits are undone, the records removed and dist/ restored, so
     nothing reached origin and the pins stay retryable.
@@ -49,7 +54,32 @@ sys.path.insert(0, str(ROOT))
 from tools import approvals as ap  # noqa: E402
 from tools import standing_auth as sa  # noqa: E402
 
-DATA_PATHS = ("docs/signals", "docs/approvals/pins")
+DATA_PATHS = ("docs/signals", "docs/approvals/pins", "docs/photos/candidates")
+
+
+def _photo_research(pins: list[str], db: pathlib.Path) -> tuple[list[pathlib.Path], list[str]]:
+    """Step 7b. Never raises: a pin always goes out, with or without a photo."""
+    if os.environ.get("FORGE_SKIP_PHOTO_RESEARCH") == "1":
+        return [], ["location photos: research skipped (FORGE_SKIP_PHOTO_RESEARCH=1)"]
+    try:
+        import json
+        import sqlite3
+        from tools import location_photos as lp
+        con = sqlite3.connect(str(db))
+        found = {}
+        for sid, title, meta, lat, lng in con.execute(
+                "SELECT signal_id, title, metadata_json, lat, lng FROM signals WHERE signal_id IN (%s)"
+                % ",".join("?" * len(pins)), pins):
+            if lat is None or lng is None:
+                continue
+            chk = (json.loads(meta or "{}") or {}).get("checked") or {}
+            found[sid] = {"title": title, "lat": lat, "lng": lng, "location_note": chk.get("location")}
+        con.close()
+        written, lines = lp.research_new_pins(found)
+        lines += [f"{s[:8]}: no map point in the database; no photo research" for s in pins if s not in found]
+        return written, ["location photos: " + ln for ln in lines]
+    except Exception as exc:   # noqa: BLE001
+        return [], [f"location photos: research did not run ({type(exc).__name__}); pins publish without photos"]
 
 
 def _git(*args: str, check: bool = True) -> str:
@@ -125,6 +155,10 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
         r = subprocess.run([python, "tools/publish.py"], cwd=ROOT, env=env)   # build only, no push
         if r.returncode:
             raise RuntimeError(f"site build failed ({r.returncode})")
+        photo_files, photo_lines = _photo_research(pins, db)
+        written.extend(photo_files)
+        for line in photo_lines:
+            _say(line)
     except (ap.ApprovalError, RuntimeError, sa.StandingError) as exc:
         _remove(written)
         if built:
@@ -140,7 +174,7 @@ def run(auth_id: str, pins: list[str], db: pathlib.Path, dry_run: bool, python: 
              f"records removed, dist/ restored, nothing committed, pushed or published")
         return 0
 
-    _git("add", "--", *DATA_PATHS)
+    _git("add", "--", *[d for d in DATA_PATHS if (ROOT / d).exists()])
     _git("commit", "-q", "-m",
          f"Pins published under standing authorization {auth_id} (machine-checked; owner did not "
          f"review the text): " + ", ".join(p[:8] for p in pins))

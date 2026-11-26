@@ -18,6 +18,10 @@ It checks the branch (main, up to date, nothing else staged), the authorization,
 
 Approval records reach origin only together with a successful build. Any refusal or failed build or deploy removes the records the run wrote, undoes its local commits and restores `dist/`, so nothing reaches origin and the pins can be retried. (Before this change, 21 November: records were pushed before the build, so the Madiba Park pin's failed build left a pushed record that made every retry refuse it as already published.) A pin whose record is on origin still needs the owner: a standing authorization approves new pins only.
 
+## Location photos for every new pin
+
+After the build, the run searches Wikimedia Commons for licensed photos of each new pin's place within 2 km and reports one line per pin (`docs/signals/LOCATION_PHOTOS.md`, "In every unattended run"). It never blocks a pin and never approves a photo; the owner approves each photo before it shows.
+
 ## Tests no longer need editing for new pins
 
 Counts of pins, months and ledger records in the tests are read from `docs/signals` and `docs/approvals/pins` (`tests/real_inventory.py`). Exact checks stay for the 86 pins published up to 21 November 2026. Checked on 21 November with a throwaway 87th pin dated 12 November: the full suite passed with no test edits.

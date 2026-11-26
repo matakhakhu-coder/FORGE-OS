@@ -1,0 +1,191 @@
+{
+  "signal_id": "087aa074-be9c-5b86-a824-456443391d30",
+  "pin": {
+    "title": "Witkoppen Road at the Braamfontein Spruit bridge, Paulshof/Fourways (approx.): car swept away by floodwater, driver rescued from a tree, 25 Nov",
+    "lat": -26.0366,
+    "lng": 28.0578,
+    "location_note": "APPROX. Braamfontein Spruit bridge on Witkoppen Road at Achter Road (Fourways Review); Witkoppen Road, Fourways (SABC News). Point placed where Witkoppen Road meets Achter Road (Nominatim: Achter Road, Paulshof, -26.0330, 28.0579; Witkoppen Road segment -26.0374, 28.0589). Overpass was at capacity, so the bridge itself was not looked up. Street level, about 400 m."
+  },
+  "searched_at": "2026-11-26",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Liliesleaf main house.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Liliesleaf_main_house.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Liliesleaf_main_house.jpg/960px-Liliesleaf_main_house.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 4791,
+      "height": 3456,
+      "original_sha1": "556442c286ec530c3e4bc5fca3520bec5176bf0e",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -26.0434,
+        "lng": 28.0544
+      },
+      "distance_m": 829,
+      "creator": "Martinvl",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2016-10-25 09:58:44",
+      "description": "The main house at Liliesleaf, Rivonia, South Africa, a \"safe house\" purchased  on behalf the then-banned anti-apartheid organisation, the African National Congress in 1961. At the time the property was a 11 hectare smallholding, though now it is part of suburbia. The house was raided by the South African Police on 11 July 1963, a day when most of the ANC hierarchy were present. Those arrested incl",
+      "categories": "Liliesleaf|Self-published work|South Africa Heritage Resources with known IDs|Files with coordinates missing SDC location of creation|South Africa Heritage Resources missing SDC location of creation|South Africa Heritage Resources missing SDC depicts",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Liliesleaf outbuildings.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Liliesleaf_outbuildings.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Liliesleaf_outbuildings.jpg/960px-Liliesleaf_outbuildings.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 5184,
+      "height": 3456,
+      "original_sha1": "0767f08c0aaf0212ac0be15995dc0d72bac09e41",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -26.0434,
+        "lng": 28.0544
+      },
+      "distance_m": 829,
+      "creator": "Martinvl",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2016-10-25 09:58:27",
+      "description": "The outbuildings at Liliesleaf, Rivonia, South Africa, a \"safe house\" purchased  on behalf the then-banned anti-apartheid organisation, the African National Congress in 1961. At the time the property was a 11 hectare smallholding, though now it is part of suburbia (The grey building in the background is not part of the estate). These buildings appeared to be servant's quarters and storerooms, but ",
+      "categories": "Liliesleaf|Self-published work|South Africa Heritage Resources with known IDs|Files with coordinates missing SDC location of creation|South Africa Heritage Resources missing SDC location of creation|South Africa Heritage Resources missing SDC depicts",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:10,000 Tanzanian shillings banknote, 2011 serie, obverse.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:10,000_Tanzanian_shillings_banknote,_2011_serie,_obverse.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/10%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_obverse.jpg/960px-10%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_obverse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3769,
+      "height": 1853,
+      "original_sha1": "cacc5adde0d15f622079e043d2e63f7d5c58aa13",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.028333,
+        "lng": 28.068889
+      },
+      "distance_m": 1440,
+      "creator": "Plouf250",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-04-11 19:27:13",
+      "description": "10,000 Tanzanian shillings banknote, 2011 serie, obverse",
+      "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Elephants on banknotes",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:10,000 Tanzanian shillings banknote, serie 2011, obverse horizontal.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:10,000_Tanzanian_shillings_banknote,_serie_2011,_obverse_horizontal.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/10%2C000_Tanzanian_shillings_banknote%2C_serie_2011%2C_obverse_horizontal.jpg/960px-10%2C000_Tanzanian_shillings_banknote%2C_serie_2011%2C_obverse_horizontal.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3769,
+      "height": 1853,
+      "original_sha1": "34c682c13534a2370bf7801b075014b20bcb46bc",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.028333,
+        "lng": 28.068889
+      },
+      "distance_m": 1440,
+      "creator": "Plouf250",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-04-11 19:27:13",
+      "description": "billet de 10 000 shillings tanzaniens, serie de 2011",
+      "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Elephants on banknotes",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:10,000 Tanzanian shillings banknote, serie 2011, reverse.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:10,000_Tanzanian_shillings_banknote,_serie_2011,_reverse.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/10%2C000_Tanzanian_shillings_banknote%2C_serie_2011%2C_reverse.jpg/960px-10%2C000_Tanzanian_shillings_banknote%2C_serie_2011%2C_reverse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3741,
+      "height": 1797,
+      "original_sha1": "25622765d9d27316ca5e96805114284f1a086284",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.028333,
+        "lng": 28.068889
+      },
+      "distance_m": 1440,
+      "creator": "Plouf250",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-04-11 19:28:12",
+      "description": "billet de 10 000 shillings tanzaniens, serie de 2011, revers",
+      "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:2,000 Tanzanian shillings banknote, 2011 serie, obverse.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:2,000_Tanzanian_shillings_banknote,_2011_serie,_obverse.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/2%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_obverse.jpg/960px-2%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_obverse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3953,
+      "height": 2041,
+      "original_sha1": "9051ae61f89cf746104e16cee3fd25dfa3c42c20",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.028333,
+        "lng": 28.068889
+      },
+      "distance_m": 1440,
+      "creator": "Plouf250",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-04-11 19:29:07",
+      "description": "billet de 2 000 shillings tanzaniens, serie de 2011, avers",
+      "categories": "Banknotes with a face value of 2000|Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation|Lions on banknotes",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:2,000 Tanzanian shillings banknote, 2011 serie, reverse.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:2,000_Tanzanian_shillings_banknote,_2011_serie,_reverse.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/2%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_reverse.jpg/960px-2%2C000_Tanzanian_shillings_banknote%2C_2011_serie%2C_reverse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3897,
+      "height": 2005,
+      "original_sha1": "95afc7296f6a52099d04e8536d8fedbe6f71075d",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.028333,
+        "lng": 28.068889
+      },
+      "distance_m": 1440,
+      "creator": "Plouf250",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-04-11 19:29:27",
+      "description": "billet de 2 000 shillings tanzaniens, serie de 2011, revers",
+      "categories": "Banknotes of Tanzania|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Uraeginthus angolensis ssp. niassensis.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Uraeginthus_angolensis_ssp._niassensis.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Uraeginthus_angolensis_ssp._niassensis.jpg/960px-Uraeginthus_angolensis_ssp._niassensis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2048,
+      "height": 1707,
+      "original_sha1": "107e210a3ab32f6463322cd58dacb6bfdabaa6ae",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -26.030697,
+        "lng": 28.040422
+      },
+      "distance_m": 1856,
+      "creator": "Matthew Fainman",
+      "licence": "CC BY 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0",
+      "taken": "2021-09-26",
+      "description": "Southern Blue Waxbill (Uraeginthus angolensis ssp. niassensis). Subspecies of bird.",
+      "categories": "Uraeginthus angolensis|Media from iNaturalist|INaturalist images reviewed by iNaturalistReviewBot|Passeriformes of Gauteng|Files with coordinates missing SDC location of creation|Estrildidae of South Africa|South Africa photographs taken on 2021-09-26",
+      "auto_refusals": []
+    }
+  ]
+}

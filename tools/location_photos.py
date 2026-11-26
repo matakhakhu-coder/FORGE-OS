@@ -98,6 +98,14 @@ BLOCKED_SUBJECT = re.compile(
     r"specimen|victims? of violence|gang tag|graffiti|childhood development|"
     r"\bschool\b|creche|view of earth|\bISS\d)", re.I)
 
+# Not a picture of a place: found near real pins in the 26 Nov research run
+# (banknotes, a bird subspecies, plates of food, a pallet jack). Refused as
+# off-topic in research so the owner is only shown photos of places.
+OFF_TOPIC = re.compile(
+    r"(banknote|\bcoins?\b|postage stamp|subspecies|\bssp\.|\bspecies\b|\bbirds?\b|"
+    r"insect|butterfl|\bflowers?\b|\bfood\b|cuisine|cousine|\bdish\b|recipe|portrait|"
+    r"selfie|\blogo\b|pallet|equipment|product photo|diagram|\bmap of\b|screenshot)", re.I)
+
 _PRIVACY_FALSE = ("people_identifiable", "vehicle_plates_readable", "private_home",
                   "children", "sensitive_site", "house_numbers_readable")
 
@@ -391,14 +399,61 @@ def commons_nearby(lat: float, lng: float, radius_m: int = MAX_DISTANCE_M, limit
             refuse = []
             if not _LICENCE_RE.match(row["licence"] or ""):
                 refuse.append("licence")
-            if BLOCKED_SUBJECT.search(" ".join([row["file_title"], row["description"], row["categories"]])):
+            subj_text = " ".join([row["file_title"], row["description"], row["categories"]])
+            if BLOCKED_SUBJECT.search(subj_text):
                 refuse.append("subject")
+            if OFF_TOPIC.search(subj_text):
+                refuse.append("off-topic")
             if row["mime"] not in ("image/jpeg", "image/png", "image/webp"):
                 refuse.append("not a photo file")
             row["auto_refusals"] = refuse
             rows.append(row)
     rows.sort(key=lambda r: r["distance_m"])
     return rows
+
+
+def write_candidates(sid: str, pin: dict, search=None) -> tuple[Path, dict]:
+    """Research one pin: write docs/photos/candidates/<id8>.json. Never
+    approves or publishes anything."""
+    search = search or commons_nearby
+    blocked = bool(BLOCKED_PLACE.search(place_text(pin)))
+    rows = [] if blocked else search(pin["lat"], pin["lng"])
+    CANDIDATES_DIR.mkdir(parents=True, exist_ok=True)
+    outp = CANDIDATES_DIR / f"{sid[:8]}.json"
+    data = {
+        "signal_id": sid, "pin": pin, "searched_at": _dt.date.today().isoformat(),
+        "radius_m": MAX_DISTANCE_M, "place_blocked": blocked,
+        "note": "Research only. Nothing here is published until a record in "
+                "docs/signals/location-photos.json is approved by the owner.",
+        "candidates": rows}
+    outp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return outp, data
+
+
+def summary_line(sid: str, data: dict) -> str:
+    """One line for a run report: what the owner can approve for this pin."""
+    if data.get("place_blocked"):
+        return f"{sid[:8]}: no photo (the place is a home, school, grave or care site)"
+    usable = [r for r in data.get("candidates", []) if not r.get("auto_refusals")]
+    if not usable:
+        return f"{sid[:8]}: no usable licensed photo within {MAX_DISTANCE_M} m; published without one"
+    r = usable[0]
+    return (f"{sid[:8]}: {len(usable)} candidate(s) for the owner to look at; nearest "
+            f"{r['file_title']} ({r['distance_m']} m, {r['licence']}, {r['creator']}) {r['page_url']}")
+
+
+def research_new_pins(pins: dict, search=None) -> tuple[list[Path], list[str]]:
+    """For an unattended run: research every new pin. Never raises and never
+    blocks a pin; a failed lookup is reported and the pin goes out without a photo."""
+    written, lines = [], []
+    for sid, pin in pins.items():
+        try:
+            p, data = write_candidates(sid, pin, search)
+            written.append(p)
+            lines.append(summary_line(sid, data))
+        except Exception as exc:   # noqa: BLE001 - research must never stop a publish
+            lines.append(f"{sid[:8]}: photo research failed ({type(exc).__name__}); published without one")
+    return written, lines
 
 
 def _pins_from_db(db_path: str) -> dict:
@@ -442,18 +497,10 @@ def _cli(argv: list[str]) -> int:
             print("no published pin with that id")
             return 2
         sid = a.arg if a.arg in pins else next(k for k in pins if k.startswith(a.arg))
-        blocked = bool(BLOCKED_PLACE.search(place_text(pin)))
-        rows = [] if blocked else commons_nearby(pin["lat"], pin["lng"])
-        CANDIDATES_DIR.mkdir(parents=True, exist_ok=True)
-        outp = CANDIDATES_DIR / f"{sid[:8]}.json"
-        outp.write_text(json.dumps({
-            "signal_id": sid, "pin": pin, "searched_at": _dt.date.today().isoformat(),
-            "radius_m": MAX_DISTANCE_M, "place_blocked": blocked,
-            "note": "Research only. Nothing here is published until a record in "
-                    "docs/signals/location-photos.json is approved by the owner.",
-            "candidates": rows}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        print(f"[location-photos] {len(rows)} candidates within {MAX_DISTANCE_M} m -> {outp.relative_to(ROOT)}"
-              + (" (place blocked: home/school/grave/care site)" if blocked else ""))
+        outp, data = write_candidates(sid, pin)
+        print(f"[location-photos] {len(data['candidates'])} candidates within {MAX_DISTANCE_M} m -> "
+              f"{outp.relative_to(ROOT)}")
+        print("[location-photos] " + summary_line(sid, data))
         return 0
     if a.cmd == "fetch":
         reg = load_registry()

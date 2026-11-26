@@ -74,6 +74,24 @@ it. Nothing is typed in from memory.
 3. A person looks at it and fills in the privacy check.
 4. The owner approves; publish.
 
+## In every unattended run (26 November 2026)
+
+`tools/autopublish.py` step 7b runs the research step for every new pin, after
+the site builds and before the commit. Its candidate files go into the same
+commit as the batch, and the run prints one line per pin: no photo (home,
+school, grave or care site), no usable licensed photo within 2 km, or the
+nearest usable candidate with its distance, licence, creator and Commons page.
+
+- It never blocks or delays a pin. If Commons is down or nothing fits, the
+  pin is published without a photo and the report says so.
+- It never approves a photo. The standing authorization covers new pins only;
+  each photo still needs a person's privacy check and the owner's approval
+  (steps 2 to 4), then a publish.
+- Research also refuses photos that are not of a place (`OFF_TOPIC`:
+  banknotes, birds and species, food, equipment, logos and similar), all found
+  near real pins on 26 November.
+- `FORGE_SKIP_PHOTO_RESEARCH=1` turns the step off for one run.
+
 ## Not in this version
 
 Other photo sources (Mapillary, Flickr direct), street-level imagery, and any

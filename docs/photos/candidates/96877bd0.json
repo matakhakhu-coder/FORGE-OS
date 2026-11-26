@@ -1,0 +1,125 @@
+{
+  "signal_id": "96877bd0-09c7-5452-a666-7faab3c90663",
+  "pin": {
+    "title": "Dobsonville, Soweto (map point estimated): girl, 11, swept away by flash floodwater after school transport drop-off, 17 Nov; body recovered 20 Nov",
+    "lat": -26.2238889,
+    "lng": 27.8666667,
+    "location_note": "ESTIMATED MAP POINT. Dobsonville, Soweto; drop-off in Snake Park near Dobsonville Extension 3 (IOL). Snake Park and Extension 3 are not found in Nominatim, so the pin is the Dobsonville suburb point (-26.2239, 27.8667), not the stream. Suburb level, about 2 km."
+  },
+  "searched_at": "2026-11-26",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Soweto Market Place.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Soweto_Market_Place.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/Soweto_Market_Place.jpg/960px-Soweto_Market_Place.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2448,
+      "height": 3264,
+      "original_sha1": "d12485516cac5f11bfbbc760bcc079c2484c22c9",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.23003386,
+        "lng": 27.87649725
+      },
+      "distance_m": 1195,
+      "creator": "Bobbyshabangu",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2014-11-29 13:49:39",
+      "description": "This is an image of food from",
+      "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29|Markets in Soweto",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:The African Cousine 2.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:The_African_Cousine_2.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/The_African_Cousine_2.jpg/960px-The_African_Cousine_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2448,
+      "height": 3264,
+      "original_sha1": "f62a453578ee30a885085aaae4cf07909387b858",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.22328183,
+        "lng": 27.88104247
+      },
+      "distance_m": 1436,
+      "creator": "Bobbyshabangu",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2014-11-29 13:19:18",
+      "description": "This is an image of food from",
+      "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:African cousine 3.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:African_cousine_3.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/African_cousine_3.jpg/960px-African_cousine_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2448,
+      "height": 3264,
+      "original_sha1": "e8290fcb635f27e17adcdb5bdeb25bd86907323c",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.22327039,
+        "lng": 27.88107869
+      },
+      "distance_m": 1439,
+      "creator": "Bobbyshabangu",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2014-11-29 13:19:14",
+      "description": "This is an image of food from",
+      "categories": "Taken with ZTE Blade L2|Cuisine of South Africa|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:The African cousine..jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:The_African_cousine..jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/The_African_cousine..jpg/960px-The_African_cousine..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3264,
+      "height": 2448,
+      "original_sha1": "dfad8917ddcbe4df4072475f7f1f4e2c66ceef7f",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.22358511,
+        "lng": 27.88113783
+      },
+      "distance_m": 1444,
+      "creator": "Bobbyshabangu",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2014-11-29 13:20:30",
+      "description": "This is an image of food from",
+      "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Soweto Market place 1.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Soweto_Market_place_1.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Soweto_Market_place_1.jpg/960px-Soweto_Market_place_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2448,
+      "height": 3264,
+      "original_sha1": "c2785480a11fd3e00259c062e32bb06bd4a279d1",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -26.23216819,
+        "lng": 27.87896536
+      },
+      "distance_m": 1534,
+      "creator": "Bobbyshabangu",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2014-11-29 13:49:33",
+      "description": "This is an image of food from",
+      "categories": "Taken with ZTE Blade L2|Self-published work|Images from Wiki Loves Africa 2014|Uploaded via Campaign:wlafrica|Images from Wiki Loves Africa 2014 in South Africa|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2014-11-29|Vegetable markets in South Africa|Markets in Soweto",
+      "auto_refusals": []
+    }
+  ]
+}

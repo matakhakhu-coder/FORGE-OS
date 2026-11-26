@@ -1,0 +1,14 @@
+{
+  "signal_id": "e79e7810-f8c5-5417-9823-ec3dbbf3198d",
+  "pin": {
+    "title": "Madiba Park, Seshego (map point estimated): six armed men rob sleeping learners of 37 school tablets, 14 Nov",
+    "lat": -23.84664,
+    "lng": 29.38802,
+    "location_note": "ESTIMATED MAP POINT. 'A local school in Madiba Park', Seshego police (SAPS Limpopo). The school is not named and Madiba Park is not in OpenStreetMap (Nominatim and Overpass searched), so the pin is the Seshego point from the place-name list (-23.84664, 29.38802), used as a reference only; it is not the school. Area level (a few km). Seshego police precinct."
+  },
+  "searched_at": "2026-11-26",
+  "radius_m": 2000,
+  "place_blocked": true,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}
