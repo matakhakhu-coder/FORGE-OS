@@ -1,0 +1,14 @@
+{
+  "signal_id": "ba6ad9f2-920b-562a-b3f0-6d830acbaca1",
+  "pin": {
+    "title": "K-Section, Botshabelo (map point approximate): five women and a two-year-old boy shot dead at a home, 18 Nov",
+    "lat": -29.2324,
+    "lng": 26.7333,
+    "location_note": "APPROXIMATE MAP POINT. A home in K-Section, Botshabelo (Mangaung). K-Section is not in Nominatim, so the pin is the Botshabelo city point (-29.2324, 26.7333), never the home. Area level, about 4 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": true,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}

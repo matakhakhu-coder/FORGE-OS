@@ -1,0 +1,64 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Free State",
+ "batch": "Free State, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Free State, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "ba6ad9f2-920b-562a-b3f0-6d830acbaca1",
+   "external_id": "checked:fs-sweep-2026-11-27:F1",
+   "source": "Sunday World",
+   "title": "K-Section, Botshabelo (map point approximate): five women and a two-year-old boy shot dead at a home, 18 Nov",
+   "content": "Five women and a two-year-old boy were shot dead and a 48-year-old woman was shot in the stomach when three men forced their way into a home in K-Section, Botshabelo, outside Bloemfontein, on the night of Wednesday 18 November, Free State police said. Police say the men, two in balaclavas, first tried to get into a backyard hut housing female initiates, then demanded to see the male homeowner, who was not home, before forcing their way into the house and shooting. They fled on foot. Six murder cases and one of attempted murder were opened; no arrests were reported. The map point is approximate: the Botshabelo town point, not the home.",
+   "lat": -29.2324,
+   "lng": 26.7333,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-18T18:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "Sunday World",
+    "link": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/",
+    "pubdate_raw": "2026-11-19",
+    "checked": {
+     "incident": "Wed 18 Nov 2026, night, about 20:00 (police, via Sunday World and Insider Chronicle)",
+     "reported": "19 Nov 2026 (Sunday World); 20 Nov 2026 (Insider Chronicle)",
+     "location": "APPROXIMATE MAP POINT. A home in K-Section, Botshabelo (Mangaung). K-Section is not in Nominatim, so the pin is the Botshabelo city point (-29.2324, 26.7333), never the home. Area level, about 4 km.",
+     "sources": [
+      {
+       "name": "Sunday World, 19 Nov",
+       "url": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/"
+      },
+      {
+       "name": "Insider Chronicle, 20 Nov",
+       "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Free State, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-18",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-19",
+     "search_aliases": [
+      "Botshabelo mass shooting",
+      "K-Section shooting"
+     ]
+    },
+    "collected_title": "K-Section, Botshabelo (map point approximate): five women and a two-year-old boy shot dead at a home, 18 Nov"
+   },
+   "fingerprint": "sha256:4247411e7994751d8df9924e6d5540086ad80cd4224c61bf96ff21da01801de7"
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T054013Z-dd05bd2c",
+  "signal_id": "62783dd6-122f-57b0-9dc1-73d999873c2c",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "mp-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "A 57-year-old man was shot dead outside the gate of a voting station at Boikhutso, Bushbuckridge, at about 00:15 on Thursday 5 November, while a group waited for vote counting to finish after the local government elections, Mpumalanga police spokesperson Brig Donald Mdhluli said. Police say two unknown men opened fire on the group and fled. A family member took him to hospital, where he was declared dead on arrival. The motive was unknown and no arrests were reported; police had not established any link to the election results. The map point is approximate: the Bushbuckridge town point, not the voting station.",
+    "external_id": "checked:mp-sweep-2026-11-27:M1",
+    "lat": -24.8336,
+    "lng": 31.0677,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Thu 5 Nov 2026, about 00:15 (police, via IOL and Sunday World)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-05",
+        "location": "APPROXIMATE MAP POINT. Outside a voting station at Boikhutso, Bushbuckridge. Boikhutso is not in Nominatim or OpenStreetMap near Bushbuckridge, so the pin is the Bushbuckridge town point (-24.8336, 31.0677). Area level, about 15 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Mpumalanga, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "5 Nov 2026 (IOL; Sunday World)",
+        "reported_at": "2026-11-05",
+        "search_aliases": [
+          "Bushbuckridge voting station shooting",
+          "Boikhutso shooting"
+        ],
+        "sources": [
+          {
+            "name": "IOL, 5 Nov",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/"
+          },
+          {
+            "name": "Sunday World, 5 Nov",
+            "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/"
+          }
+        ]
+      },
+      "collected_title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov",
+      "link": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+      "pubdate_raw": "2026-11-05",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "62783dd6-122f-57b0-9dc1-73d999873c2c",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-04T22:15:00Z",
+    "title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov"
+  },
+  "payload_sha256": "sha256:77b41c8653c32b9f9b32c26428ecb16a4ec305a474c061adf94296e7ab2d54d1",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:40:13Z",
+  "recorded_at": "2026-11-27T05:40:13Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

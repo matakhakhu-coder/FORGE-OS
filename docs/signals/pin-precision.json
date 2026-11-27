@@ -111,6 +111,10 @@
     "942df37d-66a9-5f89-8cf1-0112bcec66fc": {"precision": "suburb", "uncertainty_m": 2000, "note": "APPROXIMATE: Belhar suburb point (Nominatim), not the corner of Graduate Street and Degree Close."},
     "134d8758-7ae0-50e1-b823-1148393262dd": {"precision": "area", "uncertainty_m": 3000, "note": "APPROXIMATE: Khayelitsha point (Nominatim). Lingelethu West police station is not in Nominatim."},
     "667a57a3-2028-5db5-bcbb-a7ca833e6190": {"precision": "area", "uncertainty_m": 3000, "note": "APPROXIMATE: Khayelitsha point (Nominatim). The tavern and Hlobe Street are not in Nominatim."},
-    "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a": {"precision": "suburb", "uncertainty_m": 1500, "note": "APPROXIMATE: Lavender Hill point (Nominatim), not Bartholomew Street."}
+    "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a": {"precision": "suburb", "uncertainty_m": 1500, "note": "APPROXIMATE: Lavender Hill point (Nominatim), not Bartholomew Street."},
+    "57915f36-752b-5629-a855-4427b1d3e142": {"precision": "area", "uncertainty_m": 10000, "note": "APPROXIMATE: Mthatha city point (Nominatim); Lwandlana and the Tabase area outside Mthatha are not in Nominatim."},
+    "e2fd6df1-8057-5560-ae28-28fe3fffd9ff": {"precision": "area", "uncertainty_m": 10000, "note": "APPROXIMATE: Ngqeleni town point (Nominatim); Nothintsila is not in Nominatim."},
+    "ba6ad9f2-920b-562a-b3f0-6d830acbaca1": {"precision": "area", "uncertainty_m": 4000, "note": "APPROXIMATE: Botshabelo city point (Nominatim); K-Section is not in Nominatim. Never the home."},
+    "62783dd6-122f-57b0-9dc1-73d999873c2c": {"precision": "area", "uncertainty_m": 15000, "note": "APPROXIMATE: Bushbuckridge town point (Nominatim); Boikhutso is not in Nominatim or OpenStreetMap."}
   }
 }

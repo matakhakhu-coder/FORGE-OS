@@ -1,0 +1,109 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Eastern Cape",
+ "batch": "Eastern Cape, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Eastern Cape, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "57915f36-752b-5629-a855-4427b1d3e142",
+   "external_id": "checked:ec-sweep-2026-11-27:E1",
+   "source": "Daily Dispatch",
+   "title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov",
+   "content": "A police sergeant stationed at Mthatha Central police station was shot dead during an early-morning police operation at Lwandlana village outside Mthatha on Tuesday 17 November. According to the Hawks, as relayed by the office of Transport and Community Safety MEC Xolile Nqatha, officers had gone to a home to arrest a person of interest and an occupant opened fire when they knocked. The reports differ on his age (43 or 45) and on whether he died at the scene or in hospital. The suspect was still being sought. The map point is approximate: the Mthatha town point, not the village.",
+   "lat": -31.5896,
+   "lng": 28.7878,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-17T01:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "Daily Dispatch",
+    "link": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+    "pubdate_raw": "2026-11-17",
+    "checked": {
+     "incident": "Tue 17 Nov 2026, early hours (Daily Dispatch; Mthatha Express)",
+     "reported": "17 Nov 2026 (Daily Dispatch; Mthatha Express)",
+     "location": "APPROXIMATE MAP POINT. Lwandlana village (the Daily Dispatch says in the Tabase administrative area) outside Mthatha. Neither is in Nominatim near Mthatha (its only \"Tabase\" is a village in Elundini), so the pin is the Mthatha city point (-31.5896, 28.7878). Area level, about 10 km.",
+     "sources": [
+      {
+       "name": "Daily Dispatch, 17 Nov",
+       "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/"
+      },
+      {
+       "name": "Mthatha Express, 17 Nov",
+       "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Eastern Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-17",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-17",
+     "search_aliases": [
+      "Mthatha police sergeant shot",
+      "Lwandlana shooting"
+     ]
+    },
+    "collected_title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov"
+   },
+   "fingerprint": "sha256:818bdfef177c4c1e5c4dd745e16140b13b4cae4aa976f14edfd2e2a8bcbe3b4f"
+  },
+  {
+   "signal_id": "e2fd6df1-8057-5560-ae28-28fe3fffd9ff",
+   "external_id": "checked:ec-sweep-2026-11-27:E2",
+   "source": "IOL",
+   "title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov",
+   "content": "Three men police described as suspected extortionists were shot dead in a confrontation with Mthatha Tactical Response Team members on the Nothintsila gravel road, Ngqeleni, at about 10:15 on Monday 2 November, Eastern Cape police spokesperson Brig Nobuntu Gantana said. Police say the officers approached the three men after a tip-off that they were collecting money from local shops, and that the men opened fire; no officers were injured. Three pistols with filed-off serial numbers were recovered. The men had not been identified. IPID was called to investigate the deaths. The map point is approximate: the Ngqeleni town point, not the scene.",
+   "lat": -31.6731,
+   "lng": 29.0351,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-02T08:15:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+    "pubdate_raw": "2026-11-03",
+    "checked": {
+     "incident": "Mon 2 Nov 2026, about 10:15 (police, via IOL and Daily Dispatch)",
+     "reported": "3 Nov 2026 (IOL; Daily Dispatch)",
+     "location": "APPROXIMATE MAP POINT. Nothintsila gravel road, Ngqeleni (Nyandeni). Nothintsila is not in Nominatim, so the pin is the Ngqeleni town point (-31.6731, 29.0351). Area level, about 10 km.",
+     "sources": [
+      {
+       "name": "IOL, 3 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/"
+      },
+      {
+       "name": "Daily Dispatch, 3 Nov",
+       "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Eastern Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-02",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-03",
+     "search_aliases": [
+      "Ngqeleni shootout",
+      "Nothintsila police shooting",
+      "suspected extortionists shot Ngqeleni"
+     ]
+    },
+    "collected_title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov"
+   },
+   "fingerprint": "sha256:14341173ee5a3fed0d9006f01715bb34686b0a225586513d10af5fbba4f11599"
+  }
+ ]
+}

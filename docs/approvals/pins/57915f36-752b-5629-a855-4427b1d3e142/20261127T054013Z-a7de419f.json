@@ -1,0 +1,77 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T054013Z-a7de419f",
+  "signal_id": "57915f36-752b-5629-a855-4427b1d3e142",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "ec-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "A police sergeant stationed at Mthatha Central police station was shot dead during an early-morning police operation at Lwandlana village outside Mthatha on Tuesday 17 November. According to the Hawks, as relayed by the office of Transport and Community Safety MEC Xolile Nqatha, officers had gone to a home to arrest a person of interest and an occupant opened fire when they knocked. The reports differ on his age (43 or 45) and on whether he died at the scene or in hospital. The suspect was still being sought. The map point is approximate: the Mthatha town point, not the village.",
+    "external_id": "checked:ec-sweep-2026-11-27:E1",
+    "lat": -31.5896,
+    "lng": 28.7878,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Tue 17 Nov 2026, early hours (Daily Dispatch; Mthatha Express)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-17",
+        "location": "APPROXIMATE MAP POINT. Lwandlana village (the Daily Dispatch says in the Tabase administrative area) outside Mthatha. Neither is in Nominatim near Mthatha (its only \"Tabase\" is a village in Elundini), so the pin is the Mthatha city point (-31.5896, 28.7878). Area level, about 10 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Eastern Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "17 Nov 2026 (Daily Dispatch; Mthatha Express)",
+        "reported_at": "2026-11-17",
+        "search_aliases": [
+          "Mthatha police sergeant shot",
+          "Lwandlana shooting"
+        ],
+        "sources": [
+          {
+            "name": "Daily Dispatch, 17 Nov",
+            "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/"
+          },
+          {
+            "name": "Mthatha Express, 17 Nov",
+            "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/"
+          }
+        ]
+      },
+      "collected_title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov",
+      "link": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+      "pubdate_raw": "2026-11-17",
+      "source_outlet": "Daily Dispatch"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "57915f36-752b-5629-a855-4427b1d3e142",
+    "source": "Daily Dispatch",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-17T01:00:00Z",
+    "title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov"
+  },
+  "payload_sha256": "sha256:818bdfef177c4c1e5c4dd745e16140b13b4cae4aa976f14edfd2e2a8bcbe3b4f",
+  "source_hashes": [
+    {
+      "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:40:13Z",
+  "recorded_at": "2026-11-27T05:40:13Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

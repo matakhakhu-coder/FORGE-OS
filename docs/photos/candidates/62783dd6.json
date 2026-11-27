@@ -1,0 +1,14 @@
+{
+  "signal_id": "62783dd6-122f-57b0-9dc1-73d999873c2c",
+  "pin": {
+    "title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov",
+    "lat": -24.8336,
+    "lng": 31.0677,
+    "location_note": "APPROXIMATE MAP POINT. Outside a voting station at Boikhutso, Bushbuckridge. Boikhutso is not in Nominatim or OpenStreetMap near Bushbuckridge, so the pin is the Bushbuckridge town point (-24.8336, 31.0677). Area level, about 15 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}

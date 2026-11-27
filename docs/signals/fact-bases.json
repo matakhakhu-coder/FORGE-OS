@@ -10086,6 +10086,481 @@
         "authorization": "standing-autopub-2026-11-27",
         "checked_by": "unattended-run"
       }
+    },
+    "57915f36-752b-5629-a855-4427b1d3e142": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A police sergeant shot dead",
+          "basis": "Two reports",
+          "detail": "Two different sites; the Mthatha Express account comes from the MEC office citing the Hawks.",
+          "sources": [
+            {
+              "name": "Daily Dispatch, 17 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+              "archive": null,
+              "quote": "A 43-year-old police sergeant stationed at Mthatha Central police station was shot and killed during an operation at Lwandlana village, Mthatha"
+            },
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "a police sergeant sustained fatal gunshot wounds and succumbed to his injuries"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Early hours of Tuesday 17 November",
+          "basis": "Two reports",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Daily Dispatch, 17 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+              "archive": null,
+              "quote": "in the early hours of Tuesday"
+            },
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "in the early hours of Tuesday, 17 November"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Lwandlana village outside Mthatha (map point approximate: area point)",
+          "basis": "Two reports",
+          "detail": "The map point is approximate, about 10 km.",
+          "sources": [
+            {
+              "name": "Daily Dispatch, 17 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+              "archive": null,
+              "quote": "Lwandlana village in the Tabase administrative area outside Mthatha"
+            },
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "during an operation at Lwandlana Location in Mthatha"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What happened",
+          "claim": "Police went to arrest a person of interest; an occupant opened fire",
+          "basis": "Reports disagree",
+          "detail": "Both give the shooting; they differ on whether he died at the scene or in hospital, and on his age (43 or 45).",
+          "sources": [
+            {
+              "name": "Daily Dispatch, 17 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-17-police-sergeant-shot-dead-during-mthatha-operation/",
+              "archive": null,
+              "quote": "The officer died at the scene after an occupant opened fire as police attempted to apprehend a person of interest."
+            }
+          ],
+          "conflicts": [
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "He added that the officer died in hospital."
+            }
+          ]
+        },
+        {
+          "label": "Who says",
+          "claim": "The Hawks, via the MEC office; the Daily Dispatch does not name its source in the part that can be read",
+          "basis": "One report",
+          "detail": "The Daily Dispatch page is mostly behind a sign-in.",
+          "sources": [
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "MEC spokesperson Makhaya Komisa said that, according to the Hawks"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrest reported; the suspect is being sought",
+          "basis": "One report",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Mthatha Express, 17 Nov",
+              "url": "https://novanews.co.za/mthathaexpress/gunman-kills-police-sergeant-during-mthatha-operation/",
+              "archive": null,
+              "quote": "warned not to attempt to apprehend him, as he is regarded as dangerous"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "e2fd6df1-8057-5560-ae28-28fe3fffd9ff": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Three men shot dead by police; no officers injured",
+          "basis": "Police account only",
+          "detail": "Same statement: both quote Brig Gantana.",
+          "sources": [
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "All three suspects were fatally wounded. No police members were injured"
+            },
+            {
+              "name": "Daily Dispatch, 3 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/",
+              "archive": null,
+              "quote": "All three suspects were fatally wounded. No police members were injured"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 2 November, about 10:15",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "on Monday, November 2, 2026, at approximately 10.15am in Nothintsila Locality"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Nothintsila gravel road, Ngqeleni (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 10 km.",
+          "sources": [
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "officers were travelling along the Nothintsila gravel road"
+            },
+            {
+              "name": "Daily Dispatch, 3 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/",
+              "archive": null,
+              "quote": "The latest shooting took place in Nothintsila village, in the OR Tambo district"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What police say happened",
+          "claim": "The men opened fire when officers approached them after a tip-off about extortion",
+          "basis": "Police account only",
+          "detail": "Only the police account is reported; IPID is investigating.",
+          "sources": [
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "The suspects opened fire on the members, and the members retaliated."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Weapons",
+          "claim": "Three pistols with filed-off serial numbers recovered",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "Three pistols belonging to the suspects, with serial numbers filed off, were recovered at the scene."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "IPID investigating; men not identified; attempted murder and firearm cases opened",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Daily Dispatch, 3 Nov",
+              "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/",
+              "archive": null,
+              "quote": "The Independent Police Investigative Directorate (Ipid) was called to the scene to investigate the circumstances surrounding the deaths."
+            },
+            {
+              "name": "IOL, 3 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+              "archive": null,
+              "quote": "Cases of attempted murder and possession of unlicensed firearms and ammunition have been opened."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "ba6ad9f2-920b-562a-b3f0-6d830acbaca1": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths and injuries",
+          "claim": "Five women and a two-year-old boy shot dead; a 48-year-old woman wounded",
+          "basis": "Police account only",
+          "detail": "Both rest on the Free State police statement.",
+          "sources": [
+            {
+              "name": "Sunday World, 19 Nov",
+              "url": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/",
+              "archive": null,
+              "quote": "Five women and a two-year-old boy were shot dead on Wednesday night in K-Section, Botshabelo, in the Free State."
+            },
+            {
+              "name": "Insider Chronicle, 20 Nov",
+              "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/",
+              "archive": null,
+              "quote": "Five women and a two-year-old boy were shot dead, while the 48-year-old wife was shot in the stomach"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday night, 18 November, about 20:00",
+          "basis": "Police account only",
+          "detail": "Both say \"Wednesday night\"; Sunday World published on 19 November. Only Insider Chronicle gives about 8pm.",
+          "sources": [
+            {
+              "name": "Sunday World, 19 Nov",
+              "url": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/",
+              "archive": null,
+              "quote": "shot dead on Wednesday night"
+            },
+            {
+              "name": "Insider Chronicle, 20 Nov",
+              "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/",
+              "archive": null,
+              "quote": "The suspects are believed to have fled on foot at about 8pm."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "A home in K-Section, Botshabelo (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 4 km, and is not the home.",
+          "sources": [
+            {
+              "name": "Sunday World, 19 Nov",
+              "url": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/",
+              "archive": null,
+              "quote": "in K-Section, Botshabelo, in the Free State"
+            },
+            {
+              "name": "Insider Chronicle, 20 Nov",
+              "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/",
+              "archive": null,
+              "quote": "The attack unfolded at a property in Botshabelo’s K-Section that was housing female initiates."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What police say happened",
+          "claim": "Three men tried to enter an initiates’ hut, asked for the homeowner, then forced their way in and shot the people inside",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Insider Chronicle, 20 Nov",
+              "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/",
+              "archive": null,
+              "quote": "It is alleged that the suspects demanded to see the 48-year-old male who is the owner of the house, who was not home, before they forced their way into the house and started shooting at the people inside."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Motive",
+          "claim": "Not reported in the saved sources",
+          "basis": "Police account only",
+          "detail": "Neither report gives a motive.",
+          "sources": [
+            {
+              "name": "Sunday World, 19 Nov",
+              "url": "https://sundayworld.co.za/news/five-women-and-toddler-gunned-down-inside-free-state-home/",
+              "archive": null,
+              "quote": "Police have launched a manhunt for the three suspects"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Six murder cases and one attempted murder case opened; no arrests reported",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Insider Chronicle, 20 Nov",
+              "url": "https://www.insiderchronicle.co.za/toddler-and-five-women-killed-in-botshabelo-shooting/",
+              "archive": null,
+              "quote": "Police have opened six murder cases and one case of attempted murder."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "62783dd6-122f-57b0-9dc1-73d999873c2c": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A 57-year-old man shot dead",
+          "basis": "Police account only",
+          "detail": "Both rest on the Mpumalanga police statement.",
+          "sources": [
+            {
+              "name": "IOL, 5 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+              "archive": null,
+              "quote": "a 57-year-old man was shot dead outside a voting station in Bushbuckridge, Mpumalanga"
+            },
+            {
+              "name": "Sunday World, 5 Nov",
+              "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/",
+              "archive": null,
+              "quote": "A 57-year-old man was shot dead outside a voting station in Boikhutso, Bushbuckridge"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Thursday 5 November, about 00:15",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 5 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+              "archive": null,
+              "quote": "The shooting happened at Boikhutso at about 12.15am on Thursday, November 5."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Outside a voting station at Boikhutso, Bushbuckridge (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 15 km.",
+          "sources": [
+            {
+              "name": "Sunday World, 5 Nov",
+              "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/",
+              "archive": null,
+              "quote": "celebrating outside the gate of the voting station while waiting for the counting to be concluded and the results announced"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "What police say happened",
+          "claim": "Two unknown men opened fire on the group and fled",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 5 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+              "archive": null,
+              "quote": "It is alleged that two unknown male suspects emerged and started firing shots at the group before fleeing the scene"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Motive",
+          "claim": "Unknown; no link to the election established",
+          "basis": "Police account only",
+          "detail": "Sunday World says police have not established any connection to the results.",
+          "sources": [
+            {
+              "name": "Sunday World, 5 Nov",
+              "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/",
+              "archive": null,
+              "quote": "police have not established any connection between the killing and the election results"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened; no arrests reported",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 5 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+              "archive": null,
+              "quote": "Police have opened a murder investigation. The motive for the shooting remains unknown."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
     }
   }
 }

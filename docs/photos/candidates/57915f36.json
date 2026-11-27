@@ -1,0 +1,61 @@
+{
+  "signal_id": "57915f36-752b-5629-a855-4427b1d3e142",
+  "pin": {
+    "title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov",
+    "lat": -31.5896,
+    "lng": 28.7878,
+    "location_note": "APPROXIMATE MAP POINT. Lwandlana village (the Daily Dispatch says in the Tabase administrative area) outside Mthatha. Neither is in Nominatim near Mthatha (its only \"Tabase\" is a village in Elundini), so the pin is the Mthatha city point (-31.5896, 28.7878). Area level, about 10 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Umtata - panoramio.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umtata_-_panoramio.jpg",
+      "thumb_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Umtata_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "mime": "image/jpeg",
+      "width": 900,
+      "height": 600,
+      "original_sha1": "0bcb5848880c188826ebf492e4128e906c2ad921",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -31.588626,
+        "lng": 28.788643
+      },
+      "distance_m": 135,
+      "creator": "Frans-Banja Mulder",
+      "licence": "CC BY 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0",
+      "taken": "Taken on 6 December 2005",
+      "description": "Umtata (Mthatha)",
+      "categories": "Mthatha|Panoramio files uploaded by Panoramio upload bot|Panoramio images reviewed by trusted users|Photos from Panoramio|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2005-12-06|Photographs by Frans-Banja Mulder|Photos from Panoramio ID 854118",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Following a police car in South Africa.webm",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Following_a_police_car_in_South_Africa.webm",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Following_a_police_car_in_South_Africa.webm/960px-Following_a_police_car_in_South_Africa.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "mime": "video/webm",
+      "width": 1920,
+      "height": 1080,
+      "original_sha1": "f0cbeab3560dc1040f1a55960c7d0d1d5d3487a2",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -31.59285556,
+        "lng": 28.78728889
+      },
+      "distance_m": 365,
+      "creator": "Amada44",
+      "licence": "CC BY-SA 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "taken": "2014-07-12 12:20",
+      "description": "Following a police car in South Africa",
+      "categories": "WebM videos|Police of South Africa|Self-published work|Video display resolution 1920 x 1080|Files with coordinates missing SDC location of creation|Videos by Amada44|Videos of police vehicles",
+      "auto_refusals": [
+        "not a photo file"
+      ]
+    }
+  ]
+}

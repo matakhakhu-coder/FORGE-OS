@@ -1,0 +1,14 @@
+{
+  "signal_id": "e2fd6df1-8057-5560-ae28-28fe3fffd9ff",
+  "pin": {
+    "title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov",
+    "lat": -31.6731,
+    "lng": 29.0351,
+    "location_note": "APPROXIMATE MAP POINT. Nothintsila gravel road, Ngqeleni (Nyandeni). Nothintsila is not in Nominatim, so the pin is the Ngqeleni town point (-31.6731, 29.0351). Area level, about 10 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}

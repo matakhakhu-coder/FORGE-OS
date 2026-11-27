@@ -138,6 +138,21 @@
       "file": "wc-province-sweep-2026-11-27.json",
       "province": "Western Cape",
       "signals": 4
+    },
+    {
+      "file": "ec-province-sweep-2026-11-27.json",
+      "province": "Eastern Cape",
+      "signals": 2
+    },
+    {
+      "file": "fs-province-sweep-2026-11-27.json",
+      "province": "Free State",
+      "signals": 1
+    },
+    {
+      "file": "mp-province-sweep-2026-11-27.json",
+      "province": "Mpumalanga",
+      "signals": 1
     }
   ]
 }

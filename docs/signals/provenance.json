@@ -1397,6 +1397,58 @@
       ],
       "independence": "same_statement",
       "note": "Both rest on the police account. Two different sites. The children are not named."
+    },
+    "57915f36-752b-5629-a855-4427b1d3e142": {
+      "statement_from": "Hawks via MEC spokesperson Makhaya Komisa (Mthatha Express); Daily Dispatch report",
+      "spokesperson": [
+        "Makhaya Komisa (MEC spokesperson)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Daily Dispatch",
+        "Mthatha Express"
+      ],
+      "independence": "partly_independent",
+      "note": "Two different sites; the Daily Dispatch (regional daily) is readable only in part. They disagree on age and on where he died. Officer not named."
+    },
+    "e2fd6df1-8057-5560-ae28-28fe3fffd9ff": {
+      "statement_from": "EC SAPS (Brig Nobuntu Gantana), via IOL and Daily Dispatch",
+      "spokesperson": [
+        "Brig Nobuntu Gantana (EC SAPS)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "IOL",
+        "Daily Dispatch"
+      ],
+      "independence": "same_statement",
+      "note": "Both retell the same police statement. Two different sites. The dead men are not named."
+    },
+    "ba6ad9f2-920b-562a-b3f0-6d830acbaca1": {
+      "statement_from": "Free State SAPS, via Sunday World and Insider Chronicle",
+      "spokesperson": [
+        "Free State SAPS (Covane)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "Sunday World",
+        "Insider Chronicle"
+      ],
+      "independence": "same_statement",
+      "note": "Both retell the police statement; Sunday World is national. Two different sites. Victims not named; a child is among them."
+    },
+    "62783dd6-122f-57b0-9dc1-73d999873c2c": {
+      "statement_from": "Mpumalanga SAPS (Brig Donald Mdhluli), via IOL and Sunday World",
+      "spokesperson": [
+        "Brig Donald Mdhluli (Mpumalanga SAPS)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "IOL",
+        "Sunday World"
+      ],
+      "independence": "same_statement",
+      "note": "Both retell the same police statement. Two different national sites. Victim not named."
     }
   }
 }

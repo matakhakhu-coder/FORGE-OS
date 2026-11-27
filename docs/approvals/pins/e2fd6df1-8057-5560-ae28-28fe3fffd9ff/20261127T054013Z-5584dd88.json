@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T054013Z-5584dd88",
+  "signal_id": "e2fd6df1-8057-5560-ae28-28fe3fffd9ff",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "ec-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "Three men police described as suspected extortionists were shot dead in a confrontation with Mthatha Tactical Response Team members on the Nothintsila gravel road, Ngqeleni, at about 10:15 on Monday 2 November, Eastern Cape police spokesperson Brig Nobuntu Gantana said. Police say the officers approached the three men after a tip-off that they were collecting money from local shops, and that the men opened fire; no officers were injured. Three pistols with filed-off serial numbers were recovered. The men had not been identified. IPID was called to investigate the deaths. The map point is approximate: the Ngqeleni town point, not the scene.",
+    "external_id": "checked:ec-sweep-2026-11-27:E2",
+    "lat": -31.6731,
+    "lng": 29.0351,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Mon 2 Nov 2026, about 10:15 (police, via IOL and Daily Dispatch)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-02",
+        "location": "APPROXIMATE MAP POINT. Nothintsila gravel road, Ngqeleni (Nyandeni). Nothintsila is not in Nominatim, so the pin is the Ngqeleni town point (-31.6731, 29.0351). Area level, about 10 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Eastern Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "3 Nov 2026 (IOL; Daily Dispatch)",
+        "reported_at": "2026-11-03",
+        "search_aliases": [
+          "Ngqeleni shootout",
+          "Nothintsila police shooting",
+          "suspected extortionists shot Ngqeleni"
+        ],
+        "sources": [
+          {
+            "name": "IOL, 3 Nov",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/"
+          },
+          {
+            "name": "Daily Dispatch, 3 Nov",
+            "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/"
+          }
+        ]
+      },
+      "collected_title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov",
+      "link": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+      "pubdate_raw": "2026-11-03",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "e2fd6df1-8057-5560-ae28-28fe3fffd9ff",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-02T08:15:00Z",
+    "title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov"
+  },
+  "payload_sha256": "sha256:14341173ee5a3fed0d9006f01715bb34686b0a225586513d10af5fbba4f11599",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-11-03-three-suspected-extortionists-killed-in-shootout-with-eastern-cape-police/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://dailydispatch.co.za/news/2026-11-03-three-suspected-extortionists-killed-in-ngqeleni-police-shootout/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:40:13Z",
+  "recorded_at": "2026-11-27T05:40:13Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

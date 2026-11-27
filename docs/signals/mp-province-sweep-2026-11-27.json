@@ -1,0 +1,64 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Mpumalanga",
+ "batch": "Mpumalanga, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Mpumalanga, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "62783dd6-122f-57b0-9dc1-73d999873c2c",
+   "external_id": "checked:mp-sweep-2026-11-27:M1",
+   "source": "IOL",
+   "title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov",
+   "content": "A 57-year-old man was shot dead outside the gate of a voting station at Boikhutso, Bushbuckridge, at about 00:15 on Thursday 5 November, while a group waited for vote counting to finish after the local government elections, Mpumalanga police spokesperson Brig Donald Mdhluli said. Police say two unknown men opened fire on the group and fled. A family member took him to hospital, where he was declared dead on arrival. The motive was unknown and no arrests were reported; police had not established any link to the election results. The map point is approximate: the Bushbuckridge town point, not the voting station.",
+   "lat": -24.8336,
+   "lng": 31.0677,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-04T22:15:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/",
+    "pubdate_raw": "2026-11-05",
+    "checked": {
+     "incident": "Thu 5 Nov 2026, about 00:15 (police, via IOL and Sunday World)",
+     "reported": "5 Nov 2026 (IOL; Sunday World)",
+     "location": "APPROXIMATE MAP POINT. Outside a voting station at Boikhutso, Bushbuckridge. Boikhutso is not in Nominatim or OpenStreetMap near Bushbuckridge, so the pin is the Bushbuckridge town point (-24.8336, 31.0677). Area level, about 15 km.",
+     "sources": [
+      {
+       "name": "IOL, 5 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-05-man-57-gunned-down-during-election-celebrations-in-mpumalanga/"
+      },
+      {
+       "name": "Sunday World, 5 Nov",
+       "url": "https://sundayworld.co.za/news/man-shot-dead-outside-bushbuckridge-voting-station-during-election-celebrations/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Mpumalanga, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-05",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-05",
+     "search_aliases": [
+      "Bushbuckridge voting station shooting",
+      "Boikhutso shooting"
+     ]
+    },
+    "collected_title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov"
+   },
+   "fingerprint": "sha256:77b41c8653c32b9f9b32c26428ecb16a4ec305a474c061adf94296e7ab2d54d1"
+  }
+ ]
+}
