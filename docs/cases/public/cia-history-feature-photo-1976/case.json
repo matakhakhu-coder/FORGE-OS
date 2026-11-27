@@ -1,0 +1,48 @@
+{
+  "public": false,
+  "slug": "cia-history-feature-photo-1976",
+  "title": "Provenance: the photograph on the CIA History of CIA page",
+  "summary": "Held, not published. A 1976 White House photograph that cia.gov uses on its Legacy page beside the History of CIA introduction. Traced by reverse image search to National Archives record 7141664 (Gerald R. Ford Presidential Library). The archive caption names two people and does not say who stands where. This case file has no connection to any FORGE Map pin or incident. Kept separate from the CIA South Africa transportation map that a search card showed beside forgemap.co.za.",
+  "case_type": "other",
+  "published_at": "2026-11-27",
+  "publication": {
+    "approved_by": "pending",
+    "approved_on": "2026-11-27",
+    "basis": "The owner asked on 27 Nov 2026 to trace this photograph and put it in the cases structure. Staged with public set to false; it needs the owner's approval before public is set to true."
+  },
+  "artifacts": [
+    {
+      "kind": "photo",
+      "file": "cabinet-room-beirut-evacuation-meeting-1976-06-17.jpg",
+      "title": "Cabinet Room meeting on the Beirut evacuation, 17 June 1976",
+      "alt": "Black-and-white photograph of men in suits leaning over a conference table and pointing at a large map spread on it, with flags, a mantel clock and a map on an easel behind them.",
+      "caption": "National Archives title: Photograph of Central Intelligence Agency (CIA) Director George Bush Discussing the Evacuation of Americans from Beirut with President Gerald R. Ford during a Meeting in the Cabinet Room. 17 June 1976. The record names George Bush and Gerald R. Ford and does not say which person is which. This copy is the 890 by 668 pixel crop served on cia.gov/legacy with the alt text 'Men discussing around a table pointing to a piece of paper on the table between them.'",
+      "captured_at": "1976-06-17",
+      "credit": "White House Photographic Office (Ford Administration); Gerald R. Ford Presidential Library, National Archives NAID 7141664, local ID B0252-05A. Public domain (NARA: use unrestricted). As used on cia.gov."
+    },
+    {
+      "kind": "link",
+      "url": "https://catalog.archives.gov/id/7141664",
+      "title": "National Archives catalog record 7141664",
+      "caption": "Primary archival record: title, date, creator, local ID B0252-05A, access and use unrestricted."
+    },
+    {
+      "kind": "link",
+      "url": "https://www.fordlibrarymuseum.gov/galleries/media-photo-kit-white-house-years",
+      "title": "Ford Library media photo kit: The White House Years",
+      "caption": "Lists B0252-05A with the same caption and date."
+    },
+    {
+      "kind": "link",
+      "url": "https://www.cia.gov/legacy/",
+      "title": "cia.gov Legacy page, where the photograph appears",
+      "caption": "The page in the screenshot: Established in 1947 banner, the photograph, then the History of CIA introduction."
+    },
+    {
+      "kind": "link",
+      "url": "https://www.cia.gov/site-policies/",
+      "title": "cia.gov site policies (copyright notice)",
+      "caption": "Unless a copyright is indicated, site content is public domain; cite the Agency and credit the photographer where appropriate."
+    }
+  ]
+}
