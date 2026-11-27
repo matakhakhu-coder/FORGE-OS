@@ -1,7 +1,7 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "27 Nov 2026 05:33 UTC",
+  "generated_at": "27 Nov 2026 05:44 UTC",
   "items": [
     {
       "kind": "signal",
@@ -61,6 +61,34 @@
     },
     {
       "kind": "signal",
+      "title": "K-Section, Botshabelo (map point approximate): five women and a two-year-old boy shot dead at a home, 18 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Five women and a two-year-old boy were shot dead and a 48-year-old woman was shot in the stomach when three men forced their way into a home in K-Section, Botshabelo, outside Bloemfontein, on the night of Wednesday 18 No...",
+      "source": "SUNDAY WORLD",
+      "region": "Free State",
+      "geo": {
+        "lat": -29.2324,
+        "lng": 26.7333
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Lwandlana village, outside Mthatha (map point approximate): police sergeant shot dead during an operation, 17 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "A police sergeant stationed at Mthatha Central police station was shot dead during an early-morning police operation at Lwandlana village outside Mthatha on Tuesday 17 November. According to the Hawks, as relayed by the ...",
+      "source": "DAILY DISPATCH",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -31.5896,
+        "lng": 28.7878
+      }
+    },
+    {
+      "kind": "signal",
       "title": "Jeffsville informal settlement, Atteridgeville (map point approximate): nine people shot dead inside a shack, night of 15 Nov",
       "stream": "CRIME_INTEL",
       "stream_label": "Crime & Security",
@@ -113,6 +141,34 @@
       "geo": {
         "lat": -33.9447,
         "lng": 18.6258
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Boikhutso, Bushbuckridge (map point approximate): man, 57, shot dead outside a voting station, 5 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "A 57-year-old man was shot dead outside the gate of a voting station at Boikhutso, Bushbuckridge, at about 00:15 on Thursday 5 November, while a group waited for vote counting to finish after the local government electio...",
+      "source": "IOL",
+      "region": "Mpumalanga",
+      "geo": {
+        "lat": -24.8336,
+        "lng": 31.0677
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Nothintsila, Ngqeleni (map point approximate): police shoot dead three suspected extortionists, 2 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Three men police described as suspected extortionists were shot dead in a confrontation with Mthatha Tactical Response Team members on the Nothintsila gravel road, Ngqeleni, at about 10:15 on Monday 2 November, Eastern C...",
+      "source": "IOL",
+      "region": "Eastern Cape",
+      "geo": {
+        "lat": -31.6731,
+        "lng": 29.0351
       }
     },
     {
@@ -645,62 +701,6 @@
       "geo": {
         "lat": -23.42472,
         "lng": 28.06389
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Madonsi Boltman B, Malamulele (approx.): comedian Skeem Mafenya, 20, stabbed to death; three arrested, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say 20-year-old comedian and content creator Skeem Mafenya was found lying motionless inside a yard at Madonsi Boltman B, in the Malamulele policing area, with multiple stab wounds to his upper body after a report...",
-      "source": "EWN",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -22.945,
-        "lng": 30.75583
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Nkuri-Tomu village, near Giyani (approx.): woman, 35, shot dead at home; husband, 73, arrested, 13 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say a 35-year-old woman was shot dead at about 11 pm on Tuesday 13 October at a house in Nkuri-Tomu village near Giyani. Officers on patrol received a complaint about a shooting and were directed to the house by t...",
-      "source": "JACARANDA FM",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -23.25278,
-        "lng": 30.53972
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Sekurung village, Lebowakgomo police area (map point estimated): girl, 2, taken from home and killed; woman, 20, arrested, 13 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say a two-year-old girl was taken from her home at Sekurung village and fatally stabbed; she also had burn wounds, as the suspect allegedly set fire to the child's home before leaving with her. Police responding t...",
-      "source": "REVIEW ONLINE (THE CITIZEN)",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -24.32098,
-        "lng": 29.48187
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Malope Section, Masemola police area (approx.): man dies after being held as a burglary suspect; two charged with murder, 13 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say they responded to a complaint of a residential burglary in progress at about 04:00 on Tuesday 13 October at Malope Section in the Masemola policing area, Sekhukhune District. They found an adult man lying on t...",
-      "source": "SAPS (@SAPOLICESERVICE ON X)",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -24.56876,
-        "lng": 29.65187
       }
     }
   ]
