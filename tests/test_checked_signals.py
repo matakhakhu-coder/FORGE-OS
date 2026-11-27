@@ -77,6 +77,17 @@ HIST_BATCHES = (
 LATER_BATCHES = ri.batch_files()[len(HIST_BATCHES):]
 
 
+def later(province: str) -> int:
+    """Pins in batches published after 21 Nov 2026 for one province (27 Nov 2026:
+    province sweeps add Western Cape and Eastern Cape pins after the frozen counts)."""
+    import json
+    from pathlib import Path
+    d = Path(__file__).resolve().parent.parent / "docs" / "signals"
+    return sum(len(json.loads((d / f).read_text(encoding="utf-8"))["signals"])
+               for f in LATER_BATCHES
+               if json.loads((d / f).read_text(encoding="utf-8")).get("province") == province)
+
+
 def hist_ids() -> set[str]:
     """signal_ids in the batches published up to 21 Nov 2026 (exact checks apply to these)."""
     from tools.checked_signals import load_index
@@ -197,9 +208,9 @@ def test_north_west_pins_stay_out_of_the_pattern_test():
     prov = provinces(cs)
     wc = pattern_test_pins(cs)
     assert PATTERN_TEST_PROVINCE == "Western Cape"
-    assert len(wc) == WC_PINS and all(prov[s["signal_id"]] == "Western Cape" for s in wc)
+    assert len(wc) == WC_PINS + later("Western Cape") and all(prov[s["signal_id"]] == "Western Cape" for s in wc)
     nw = [s for s in cs.active if prov[s["signal_id"]] == "North West"]
-    assert len(nw) == NW_PINS and not ({s["signal_id"] for s in nw} & {s["signal_id"] for s in wc})
+    assert len(nw) == NW_PINS + later("North West") and not ({s["signal_id"] for s in nw} & {s["signal_id"] for s in wc})
     for s in nw:
         assert -28.1 <= s["lat"] <= -24.5 and 22.5 <= s["lng"] <= 28.4   # really in North West
         assert "approx." in s["title"]
@@ -314,7 +325,7 @@ def test_eastern_cape_pins_stay_out_of_the_pattern_test_and_attribute_police_sho
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     ec = [s for s in cs.active if prov[s["signal_id"]] == "Eastern Cape"]
-    assert len(ec) == EC_PINS and not ({s["signal_id"] for s in ec} & wc_ids)
+    assert len(ec) == EC_PINS + later("Eastern Cape") and not ({s["signal_id"] for s in ec} & wc_ids)
     for s in ec:
         assert -34.3 <= s["lat"] <= -30.0 and 22.5 <= s["lng"] <= 30.3   # really in the Eastern Cape
         assert "approx." in s["title"]
@@ -349,8 +360,8 @@ def test_empty_db_one_import_builds_all_markers(tmp_path, monkeypatch):
     markers = _markers(dist)
     assert len(markers) == ALL_PINS
     regions = [m["region"] for m in markers]
-    assert regions.count("Western Cape") == WC_PINS and regions.count("North West") == NW_PINS
-    assert regions.count("Eastern Cape") == EC_PINS
+    assert regions.count("Western Cape") == WC_PINS + later("Western Cape") and regions.count("North West") == NW_PINS + later("North West")
+    assert regions.count("Eastern Cape") == EC_PINS + later("Eastern Cape")
     conn = sqlite3.connect(str(db_file))
     assert conn.execute("SELECT COUNT(*) FROM signals WHERE source_type = 'checked' "
                         "AND status = 'reviewed' AND gravity_score IS NULL "

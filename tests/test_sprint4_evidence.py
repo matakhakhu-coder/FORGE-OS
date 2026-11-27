@@ -58,7 +58,8 @@ def test_incident_window_by_precision():
 
 
 def test_incident_order_is_not_report_order():
-    pins = cs.pattern_test_pins(cs.load_index())          # the Western Cape pins
+    pins = [s for s in cs.pattern_test_pins(cs.load_index())   # the October Western Cape pins
+            if s["metadata"]["checked"]["incident_start"] < "2026-11"]
     by_incident = sorted(pins, key=lambda s: cs.incident_sort_key(s["metadata"]["checked"]))
     by_report = sorted(pins, key=lambda s: s["timestamp"])
     assert [s["signal_id"] for s in by_incident] != [s["signal_id"] for s in by_report]
