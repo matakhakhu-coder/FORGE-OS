@@ -1,0 +1,65 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Limpopo",
+ "batch": "Limpopo, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Limpopo, incidents 1-27 Nov 2026, all categories; national and provincial outlets and SAPS statements. Zoutpansberger (Caxton) not read automatically.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "ebe68606-1c0b-5f94-bcd4-105e9dc8c672",
+   "external_id": "checked:lp-sweep-2026-11-27:L1",
+   "source": "IOL",
+   "title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov",
+   "content": "The body of an unidentified man, believed to be about 35, was found in the bushes along the Old Musina Road outside Makhado (Louis Trichardt) on Saturday 14 November, Limpopo police said. Police on patrol were told about the body at about 18:00. His hands had been tied behind his back and he had bruises on his neck and shoulders; police said he appeared to be homeless. A murder case was opened at Makhado police station and the suspects were unknown. The map point is approximate: the Louis Trichardt town point, not the scene.",
+   "lat": -23.0383,
+   "lng": 29.9067,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-14T16:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+    "pubdate_raw": "2026-11-15",
+    "checked": {
+     "incident": "Sat 14 Nov 2026, found about 18:00 (SAPS Limpopo; IOL)",
+     "reported": "15 Nov 2026 (SAPS statement); 16 Nov 2026 (IOL)",
+     "location": "APPROXIMATE MAP POINT. Bushes along the Old Musina Road outside Makhado (Louis Trichardt). The road is not in Nominatim by that name, so the pin is the Louis Trichardt city point (-23.0383, 29.9067). Area level, about 5 km.",
+     "sources": [
+      {
+       "name": "SAPS Limpopo statement, 15 Nov",
+       "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482"
+      },
+      {
+       "name": "IOL, 16 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-man-found-dead-in-limpopo-bushes-with-hands-tied-behind-his-back/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Limpopo, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-14",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-15",
+     "search_aliases": [
+      "Old Musina Road body",
+      "Makhado body hands tied",
+      "Louis Trichardt murder"
+     ]
+    },
+    "collected_title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov"
+   },
+   "fingerprint": "sha256:fa962f0059d7571387cf296209933cd9c42f91cbd25e95d76a46e9386eaa9635"
+  }
+ ]
+}

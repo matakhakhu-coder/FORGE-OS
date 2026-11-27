@@ -1449,6 +1449,19 @@
       ],
       "independence": "same_statement",
       "note": "Both retell the same police statement. Two different national sites. Victim not named."
+    },
+    "ebe68606-1c0b-5f94-bcd4-105e9dc8c672": {
+      "statement_from": "SAPS Limpopo (Col Malesela Ledwaba), statement and via IOL",
+      "spokesperson": [
+        "Col Malesela Ledwaba (Limpopo SAPS)"
+      ],
+      "other_voices": [],
+      "outlets": [
+        "SAPS",
+        "IOL"
+      ],
+      "independence": "same_statement",
+      "note": "IOL retells the SAPS statement; two different sites. The Zoutpansberger (Caxton) report was not read automatically and is not quoted. Victim not named."
     }
   }
 }

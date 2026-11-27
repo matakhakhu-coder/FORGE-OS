@@ -10561,6 +10561,120 @@
         "authorization": "standing-autopub-2026-11-27",
         "checked_by": "unattended-run"
       }
+    },
+    "ebe68606-1c0b-5f94-bcd4-105e9dc8c672": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "An unidentified man, about 35, found dead",
+          "basis": "Police account only",
+          "detail": "IOL retells the SAPS statement.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "police found an unknown male victim estimated to be about 35 years old, lying on the ground"
+            },
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-man-found-dead-in-limpopo-bushes-with-hands-tied-behind-his-back/",
+              "archive": null,
+              "quote": "A man believed to be about 35 years old was found dead in the bushes along the Old Musina Road outside Makhado"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 14 November, found about 18:00",
+          "basis": "Police account only",
+          "detail": "The time is when police were told, not when he died.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "It is reported that at about 18:00, police were on patrol duties when they received information about a male victim found lifeless in the bushes."
+            },
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-man-found-dead-in-limpopo-bushes-with-hands-tied-behind-his-back/",
+              "archive": null,
+              "quote": "The discovery was made on Saturday, November 14, 2026."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Bushes along the Old Musina Road outside Makhado (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 5 km.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "discovery of an unknown male victim in the bushes at Old Musina road outside Makhado"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Injuries",
+          "claim": "Hands tied behind his back; bruises on his neck and shoulders",
+          "basis": "Police account only",
+          "detail": "No cause of death is reported.",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "the victim's hands were tied behind his back and he had bruises on his neck and shoulders"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Who he was",
+          "claim": "Not identified; police said he appeared to be homeless",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "He was wearing very dirty and torn clothes and appeared to be homeless."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened; suspects unknown; no arrests reported",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "SAPS Limpopo statement, 15 Nov",
+              "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+              "archive": null,
+              "quote": "A case of murder has been opened and the suspects are unknown at this stage."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
     }
   }
 }

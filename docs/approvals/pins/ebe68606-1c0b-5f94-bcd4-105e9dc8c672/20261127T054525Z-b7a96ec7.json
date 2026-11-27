@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T054525Z-b7a96ec7",
+  "signal_id": "ebe68606-1c0b-5f94-bcd4-105e9dc8c672",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "lp-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "The body of an unidentified man, believed to be about 35, was found in the bushes along the Old Musina Road outside Makhado (Louis Trichardt) on Saturday 14 November, Limpopo police said. Police on patrol were told about the body at about 18:00. His hands had been tied behind his back and he had bruises on his neck and shoulders; police said he appeared to be homeless. A murder case was opened at Makhado police station and the suspects were unknown. The map point is approximate: the Louis Trichardt town point, not the scene.",
+    "external_id": "checked:lp-sweep-2026-11-27:L1",
+    "lat": -23.0383,
+    "lng": 29.9067,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Sat 14 Nov 2026, found about 18:00 (SAPS Limpopo; IOL)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-14",
+        "location": "APPROXIMATE MAP POINT. Bushes along the Old Musina Road outside Makhado (Louis Trichardt). The road is not in Nominatim by that name, so the pin is the Louis Trichardt city point (-23.0383, 29.9067). Area level, about 5 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Limpopo, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "15 Nov 2026 (SAPS statement); 16 Nov 2026 (IOL)",
+        "reported_at": "2026-11-15",
+        "search_aliases": [
+          "Old Musina Road body",
+          "Makhado body hands tied",
+          "Louis Trichardt murder"
+        ],
+        "sources": [
+          {
+            "name": "SAPS Limpopo statement, 15 Nov",
+            "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482"
+          },
+          {
+            "name": "IOL, 16 Nov",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-man-found-dead-in-limpopo-bushes-with-hands-tied-behind-his-back/"
+          }
+        ]
+      },
+      "collected_title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov",
+      "link": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+      "pubdate_raw": "2026-11-15",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "ebe68606-1c0b-5f94-bcd4-105e9dc8c672",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-14T16:00:00Z",
+    "title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov"
+  },
+  "payload_sha256": "sha256:fa962f0059d7571387cf296209933cd9c42f91cbd25e95d76a46e9386eaa9635",
+  "source_hashes": [
+    {
+      "url": "https://www.saps.gov.za/newsroom/msspeechdetail.php?nid=72482",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-man-found-dead-in-limpopo-bushes-with-hands-tied-behind-his-back/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:45:25Z",
+  "recorded_at": "2026-11-27T05:45:25Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

@@ -115,6 +115,7 @@
     "57915f36-752b-5629-a855-4427b1d3e142": {"precision": "area", "uncertainty_m": 10000, "note": "APPROXIMATE: Mthatha city point (Nominatim); Lwandlana and the Tabase area outside Mthatha are not in Nominatim."},
     "e2fd6df1-8057-5560-ae28-28fe3fffd9ff": {"precision": "area", "uncertainty_m": 10000, "note": "APPROXIMATE: Ngqeleni town point (Nominatim); Nothintsila is not in Nominatim."},
     "ba6ad9f2-920b-562a-b3f0-6d830acbaca1": {"precision": "area", "uncertainty_m": 4000, "note": "APPROXIMATE: Botshabelo city point (Nominatim); K-Section is not in Nominatim. Never the home."},
-    "62783dd6-122f-57b0-9dc1-73d999873c2c": {"precision": "area", "uncertainty_m": 15000, "note": "APPROXIMATE: Bushbuckridge town point (Nominatim); Boikhutso is not in Nominatim or OpenStreetMap."}
+    "62783dd6-122f-57b0-9dc1-73d999873c2c": {"precision": "area", "uncertainty_m": 15000, "note": "APPROXIMATE: Bushbuckridge town point (Nominatim); Boikhutso is not in Nominatim or OpenStreetMap."},
+    "ebe68606-1c0b-5f94-bcd4-105e9dc8c672": {"precision": "area", "uncertainty_m": 5000, "note": "APPROXIMATE: Louis Trichardt city point (Nominatim); Old Musina Road is not in Nominatim by name."}
   }
 }

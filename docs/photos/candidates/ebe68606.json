@@ -1,0 +1,14 @@
+{
+  "signal_id": "ebe68606-1c0b-5f94-bcd4-105e9dc8c672",
+  "pin": {
+    "title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov",
+    "lat": -23.0383,
+    "lng": 29.9067,
+    "location_note": "APPROXIMATE MAP POINT. Bushes along the Old Musina Road outside Makhado (Louis Trichardt). The road is not in Nominatim by that name, so the pin is the Louis Trichardt city point (-23.0383, 29.9067). Area level, about 5 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}

@@ -153,6 +153,11 @@
       "file": "mp-province-sweep-2026-11-27.json",
       "province": "Mpumalanga",
       "signals": 1
+    },
+    {
+      "file": "lp-province-sweep-2026-11-27.json",
+      "province": "Limpopo",
+      "signals": 1
     }
   ]
 }
