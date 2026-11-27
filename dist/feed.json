@@ -1,7 +1,7 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "27 Nov 2026 05:44 UTC",
+  "generated_at": "27 Nov 2026 05:49 UTC",
   "items": [
     {
       "kind": "signal",
@@ -113,6 +113,20 @@
       "geo": {
         "lat": -29.6003,
         "lng": 30.3061
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Old Musina Road outside Louis Trichardt (Makhado) (map point approximate): man found dead with his hands tied, 14 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "The body of an unidentified man, believed to be about 35, was found in the bushes along the Old Musina Road outside Makhado (Louis Trichardt) on Saturday 14 November, Limpopo police said. Police on patrol were told about...",
+      "source": "IOL",
+      "region": "Limpopo",
+      "geo": {
+        "lat": -23.0383,
+        "lng": 29.9067
       }
     },
     {
@@ -687,20 +701,6 @@
       "geo": {
         "lat": -26.52267,
         "lng": 29.98454
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Martinique village, Villa Nora police area (approx.): woman, 35, shot dead; police sergeant suspect later found dead, 21 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say a 39-year-old police sergeant stationed at Witpoort police station allegedly shot his 35-year-old wife dead on Wednesday 21 October in Martinique village, in the Villa Nora policing area; she was declared dead...",
-      "source": "TIMESLIVE",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -23.42472,
-        "lng": 28.06389
       }
     }
   ]
