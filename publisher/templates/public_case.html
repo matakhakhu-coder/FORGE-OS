@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ case.title }}{% endblock %}
+{% block description %}{{ case.summary[:300] }}{% endblock %}
+{% block css_path %}../static/css/site.css{% endblock %}
+{% block favicon_svg %}../static/favicon.svg{% endblock %}
+{% block favicon_ico %}../static/favicon.ico{% endblock %}
+{% block apple_icon %}../static/apple-touch-icon.png{% endblock %}
+{% block home_href %}../index.html{% endblock %}
+{% block search_index %}../search-index.json{% endblock %}
+{% block wl_js_path %}../static/js/watchlist.js{% endblock %}
+{% block nav_about %}../about.html{% endblock %}
+{% block nav_records %}../records.html{% endblock %}
+{% block nav_journal %}../journal.html{% endblock %}
+{% block footer_records %}../records.html{% endblock %}
+{% block footer_journal %}../journal.html{% endblock %}
+{% block footer_cases %}../case-files.html{% endblock %}
+{% block footer_about %}../about.html{% endblock %}
+{% block footer_contact %}../contact.html{% endblock %}
+{% block footer_privacy %}../privacy.html{% endblock %}
+
+{% block head_extra %}
+{% if case.photos %}
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ case.title }}">
+<meta property="og:description" content="{{ case.summary[:300] }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:image" content="{{ site_url }}/{{ case.photos[0].src }}">
+<meta property="og:image:alt" content="{{ case.photos[0].alt }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endif %}
+{% include "_public_case_styles.html" %}
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">{{ structured_data|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<div class="pc-shell">
+  <div class="pc-back"><a href="../case-files.html">&larr; All case files</a></div>
+  <div class="pc-eyebrow">Public case file &middot; FORGE Map</div>
+  <h1 class="pc-title">{{ case.title }}</h1>
+  <p class="pc-summary">{{ case.summary }}</p>
+  <div class="pc-meta">Published {{ case.published_fmt }} &middot; {{ case.artifacts|length }} item{{ '' if case.artifacts|length == 1 else 's' }}</div>
+
+  {% if case.photos %}
+  <h2 class="pc-section">Photos and screenshots</h2>
+  <div class="pc-grid">
+    {% for a in case.photos %}
+    <figure class="pc-figure{% if a.height > a.width %} pc-figure--tall{% endif %}" id="{{ a.file.rsplit('.', 1)[0] }}">
+      <a href="../{{ a.src }}"><img src="../{{ a.src }}" alt="{{ a.alt }}" width="{{ a.width }}" height="{{ a.height }}" loading="{{ 'eager' if loop.first else 'lazy' }}" decoding="async"></a>
+      <figcaption><b>{{ a.title }}</b>{{ a.caption }}<span class="pc-credit">{{ a.credit }}{% if a.captured_at %}, {{ a.captured_fmt }}{% endif %}</span></figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% set others = case.artifacts|rejectattr('kind', 'equalto', 'photo')|list %}
+  {% if others %}
+  <h2 class="pc-section">Documents, videos and links</h2>
+  <ul class="pc-list">
+    {% for a in others %}
+    <li><span class="pc-kind">{{ {'pdf': 'PDF', 'video': 'Video', 'link': 'Link'}[a.kind] }}</span>
+      {% if a.kind == 'pdf' %}<a href="../{{ a.src }}" type="application/pdf">{{ a.title }}</a> <span class="pc-kind">{{ (a.bytes / 1024)|round|int }} KB</span>
+      {% else %}<a href="{{ a.url }}" rel="noopener">{{ a.title }}</a>{% endif %}
+      {% if a.caption %}<br>{{ a.caption }}{% endif %}
+      {% if a.credit %}<br><span class="pc-kind">{{ a.credit }}</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <p class="pc-note">Public case files hold only what the owner chose to publish. Material a case holds in FORGE OS on the operator's own machine is not published here.</p>
+</div>
+{% endblock %}

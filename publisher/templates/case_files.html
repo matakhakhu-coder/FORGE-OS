@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Case files{% endblock %}
+{% block description %}Public case files from FORGE Map: photos, screenshots, documents and video links the owner chose to publish about the South Africa incident map.{% endblock %}
+{% block footer_cases %}case-files.html{% endblock %}
+
+{% block head_extra %}
+{% include "_public_case_styles.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="pc-shell">
+  <div class="pc-eyebrow">Public case files &middot; FORGE Map</div>
+  <h1 class="pc-title">Case files</h1>
+  <p class="pc-summary">Photos, screenshots, documents and video links about FORGE Map, published by its owner. Each case file holds only what was chosen for publication.</p>
+  {% for c in public_cases %}
+  <a class="pc-card" href="cases/{{ c.slug }}.html">
+    {% if c.photos %}<img src="{{ c.photos[0].src }}" alt="{{ c.photos[0].alt }}" width="{{ c.photos[0].width }}" height="{{ c.photos[0].height }}" loading="lazy">{% else %}<span></span>{% endif %}
+    <div><h2>{{ c.title }}</h2><p>{{ c.summary[:220] }}{% if c.summary|length > 220 %}&hellip;{% endif %}</p>
+    <p class="pc-kind" style="margin-top:6px">Published {{ c.published_fmt }} &middot; {{ c.artifacts|length }} items</p></div>
+  </a>
+  {% else %}
+  <p class="pc-summary">No case files are published yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

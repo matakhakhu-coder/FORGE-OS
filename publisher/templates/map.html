@@ -1753,6 +1753,10 @@
       <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
     </div>
     <div class="md-panel__body">
+      <a class="case-entry" href="case-files.html" style="display:block;text-decoration:none;">
+        <div class="case-entry__name">Public case files</div>
+        <div class="case-entry__meta"><span>Screenshots, documents and video links, published by the owner</span></div>
+      </a>
       {% for c in cases %}
       {% set coe_pct = (c.coe * 100)|int %}
       {% set coe_label = 'Corroborated' if coe_pct >= 75 else ('Strong' if coe_pct >= 55 else ('Established' if coe_pct >= 35 else ('Developing' if coe_pct >= 20 else 'Preliminary'))) %}
@@ -5297,7 +5301,7 @@
   }
 
   /* ── Cases panel — fly to centroid ──────────────────────────────────────── */
-  document.querySelectorAll('.case-entry').forEach(function (entry) {
+  document.querySelectorAll('.case-entry[data-slug]').forEach(function (entry) {
     entry.addEventListener('click', function () {
       // Compute centroid from case signals that have geo
       var caseId = entry.dataset.caseId;

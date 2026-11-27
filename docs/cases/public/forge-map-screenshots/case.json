@@ -1,0 +1,84 @@
+{
+  "public": true,
+  "slug": "forge-map-screenshots",
+  "title": "Screenshots of the South Africa incident map",
+  "summary": "Screenshots of FORGE Map (forgemap.co.za), the free public map of incidents reported in South African news. Each pin is checked by hand and links back to its sources. These pictures show the map on desktop and phone, an open pin with its sources, the reported routes view and the open Records download.",
+  "case_type": "general",
+  "published_at": "2026-11-27",
+  "publication": {
+    "approved_by": "owner",
+    "approved_on": "2026-11-27",
+    "basis": "The owner asked on 27 Nov 2026 for FORGE Map screenshots to be published as a public case so that search engines can find them."
+  },
+  "artifacts": [
+    {
+      "kind": "photo",
+      "file": "forge-map-south-africa-incident-map-desktop.webp",
+      "title": "FORGE Map on desktop: South Africa incident map",
+      "alt": "FORGE Map home screen on desktop: a dark map of South Africa with green numbered clusters and red pins for hand-checked incident reports, tool buttons on both sides and a news ticker along the bottom.",
+      "caption": "The FORGE Map home screen on a desktop browser. Green circles group nearby pins; each pin is one incident reported in South African news and checked by hand.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-pin-nasrec-road-riverlea-road-collapse.webp",
+      "title": "FORGE Map pin: Nasrec Road, Riverlea road collapse",
+      "alt": "FORGE Map with an incident panel open on the right for a road collapse on Nasrec Road, Riverlea, Johannesburg, after heavy rain on 25 November, showing the report text, dates and where the pin is.",
+      "caption": "An open Infrastructure pin: the road collapse on Nasrec Road, Riverlea, on 25 November 2026. The panel says what was reported, when, and how exact the map point is.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-pin-epping-cape-town-sources-panel.webp",
+      "title": "FORGE Map pin: Epping, Cape Town, with its sources",
+      "alt": "FORGE Map incident panel for a taxi-related shooting on Fisher Avenue, Epping, Cape Town, on 16 October, showing where accounts differ, a last reviewed date and the list of source reports.",
+      "caption": "An open pin from the October archive in Epping, Cape Town. It notes where accounts differ, shows when the pin was last reviewed and lists its three source reports.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-reported-routes-sao-paulo-or-tambo.webp",
+      "title": "FORGE Map reported routes: São Paulo to OR Tambo",
+      "alt": "FORGE Map reported routes view: a world map with a line from São Paulo, Brazil, to OR Tambo International Airport, Gauteng, beside a panel describing a cocaine seizure reported by SARS.",
+      "caption": "The reported routes view (Africa and the world). A line joins two places only when a source names both for the same South African case; it is a reported route, not a checked path.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-records-open-data-download.webp",
+      "title": "FORGE Map Records: open data download",
+      "alt": "FORGE Map Records page listing 103 hand-checked incidents, with a warning box about how to use the data, buttons to download CSV or JSON, stream filters and search fields.",
+      "caption": "The Records page: every approved pin as open data, free to download as CSV or JSON with no sign-in. It showed 103 incidents when this was taken.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-mobile-map-view.webp",
+      "title": "FORGE Map on a phone",
+      "alt": "FORGE Map on a phone screen: a dark map of southern Africa with green numbered clusters over Pretoria, Durban and Cape Town and map controls down the right side.",
+      "caption": "FORGE Map on a phone. The same map and pins, with the controls stacked down the side.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "photo",
+      "file": "forge-map-mobile-pin-flora-park-polokwane.webp",
+      "title": "FORGE Map pin on a phone: Flora Park, Polokwane",
+      "alt": "FORGE Map incident panel on a phone for a fatal stabbing in Flora Park, Polokwane, on 5 November, with the report text and the dates it happened and was added.",
+      "caption": "An open pin on a phone: Flora Park, Polokwane, 5 November 2026. The pin is marked approximate and explains why.",
+      "captured_at": "2026-11-27",
+      "credit": "Screenshot of forgemap.co.za"
+    },
+    {
+      "kind": "link",
+      "url": "https://forgemap.co.za/",
+      "title": "Open FORGE Map",
+      "caption": "The live map these screenshots were taken from."
+    }
+  ]
+}

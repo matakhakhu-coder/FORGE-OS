@@ -1698,8 +1698,11 @@ def _build_dist(
     )
     print(f"[publish] places-za.json - {len(places['rows'])} places")
 
+    # Public case files: the deliberate cloud copy of chosen case material
+    sitemap_images = build_public_cases(env)
+
     # robots.txt and sitemap.xml — written last, from the pages now in dist/
-    write_crawl_files(DIST)
+    write_crawl_files(DIST, sitemap_images)
 
     _check_case_triangulation(conn, cases, signals, graph_data)
 
@@ -1764,23 +1767,110 @@ def robots_txt() -> str:
     )
 
 
-def sitemap_xml(urls: list[str]) -> str:
+def sitemap_xml(urls: list[str], images: dict[str, list[str]] | None = None) -> str:
     from xml.sax.saxutils import escape
-    body = "".join(f"  <url><loc>{escape(u)}</loc></url>\n" for u in urls)
+    images = images or {}
+
+    def entry(u: str) -> str:
+        imgs = images.get(u) or []
+        if not imgs:
+            return f"  <url><loc>{escape(u)}</loc></url>\n"
+        inner = "".join(f"<image:image><image:loc>{escape(i)}</image:loc></image:image>" for i in imgs)
+        return f"  <url><loc>{escape(u)}</loc>{inner}</url>\n"
+
+    body = "".join(entry(u) for u in urls)
+    ns_img = ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"' if any(images.values()) else ""
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"{ns_img}>\n'
         f"{body}"
         "</urlset>\n"
     )
 
 
-def write_crawl_files(dist: pathlib.Path) -> list[str]:
+def write_crawl_files(dist: pathlib.Path, images: dict[str, list[str]] | None = None) -> list[str]:
     urls = sitemap_urls(dist)
+    images = {u: v for u, v in (images or {}).items() if u in urls}
     (dist / "robots.txt").write_text(robots_txt(), encoding="utf-8")
-    (dist / "sitemap.xml").write_text(sitemap_xml(urls), encoding="utf-8")
-    print(f"[publish] sitemap.xml - {len(urls)} pages; robots.txt points to it")
+    (dist / "sitemap.xml").write_text(sitemap_xml(urls, images), encoding="utf-8")
+    n_img = sum(len(v) for v in images.values())
+    print(f"[publish] sitemap.xml - {len(urls)} pages, {n_img} images; robots.txt points to it")
     return urls
+
+
+# ── Public case files (27 Nov 2026) ───────────────────────────────────────────
+
+def _fmt_day(iso: str) -> str:
+    d = datetime.strptime(iso, "%Y-%m-%d")
+    return f"{d.day} {d.strftime('%b %Y')}"
+
+
+def build_public_cases(env, dist: pathlib.Path | None = None,
+                       base: pathlib.Path | None = None) -> dict[str, list[str]]:
+    """Render docs/cases/public/ into dist/cases/<slug>.html and
+    dist/case-files.html, copying only the files each case.json lists.
+    Returns {page url: [image urls]} for the image sitemap. A bad case file
+    stops the build (exit 6); database cases are never touched here."""
+    from tools import public_cases as pc
+    dist = dist or DIST
+    try:
+        cases = pc.load_cases(base or pc.PUBLIC_CASES_DIR)
+    except pc.PublicCaseError as exc:
+        print(f"[publish] REFUSED public case file: {exc}")
+        raise SystemExit(6)
+    static_root = dist / "static" / "cases"
+    if static_root.exists():
+        shutil.rmtree(static_root)
+    images: dict[str, list[str]] = {}
+    for c in cases:
+        c["published_fmt"] = _fmt_day(c["published_at"])
+        out_dir = static_root / c["slug"]
+        out_dir.mkdir(parents=True, exist_ok=True)
+        for a in c["artifacts"]:
+            if "captured_at" in a:
+                a["captured_fmt"] = _fmt_day(a["captured_at"])
+            if a.get("path"):
+                shutil.copy2(a["path"], out_dir / a["file"])
+        rel = f"cases/{c['slug']}.html"
+        page_url = canonical_url(rel)
+        img_urls = [f"{SITE_URL}/{a['src']}" for a in c["photos"]]
+        structured = {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": c["title"],
+            "description": c["summary"],
+            "url": page_url,
+            "datePublished": c["published_at"],
+            "isPartOf": {"@type": "WebSite", "name": "FORGE Map", "url": f"{SITE_URL}/"},
+            "hasPart": [
+                {"@type": "ImageObject", "contentUrl": f"{SITE_URL}/{a['src']}",
+                 "name": a["title"], "caption": a["caption"], "description": a["alt"],
+                 "width": a["width"], "height": a["height"],
+                 "creditText": a["credit"], "copyrightNotice": "FORGE Map"}
+                for a in c["photos"]
+            ] + [
+                {"@type": "DigitalDocument", "name": a["title"], "encodingFormat": "application/pdf",
+                 "url": f"{SITE_URL}/{a['src']}"}
+                for a in c["artifacts"] if a["kind"] == "pdf"
+            ] + [
+                {"@type": "VideoObject", "name": a["title"], "description": a["caption"], "url": a["url"]}
+                for a in c["artifacts"] if a["kind"] == "video"
+            ],
+        }
+        page = dist / rel
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text(env.get_template("public_case.html").render(
+            case=c, site_url=SITE_URL, canonical_url=page_url, structured_data=structured,
+        ), encoding="utf-8")
+        images[page_url] = img_urls
+    listing_url = canonical_url("case-files.html")
+    (dist / "case-files.html").write_text(env.get_template("case_files.html").render(
+        public_cases=cases, canonical_url=listing_url,
+    ), encoding="utf-8")
+    images[listing_url] = [f"{SITE_URL}/{c['photos'][0]['src']}" for c in cases if c["photos"]]
+    print(f"[publish] case-files.html - {len(cases)} public case file(s), "
+          f"{sum(len(v) for k, v in images.items() if k != listing_url)} photos")
+    return images
 
 
 # ── Git deploy ────────────────────────────────────────────────────────────────
