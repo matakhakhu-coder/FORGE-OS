@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-99c3e4a8",
+  "signal_id": "942df37d-66a9-5f89-8cf1-0112bcec66fc",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "wc-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "An off-duty 28-year-old constable from the Belhar Crime Prevention Unit was shot dead by unknown suspects at the corner of Graduate Street and Degree Close, Belhar, at about 00:50 on Wednesday 11 November, Western Cape police spokesperson Constable Ndakhe Gwala confirmed to IOL and Smile 90.4FM. Smile 90.4FM reports the shooting happened during a suspected hijacking; police did not state a motive. A murder case was opened and handed to the Hawks, who said no arrests had been made. The map point is the Belhar suburb point, not the street corner.",
+    "external_id": "checked:wc-sweep-2026-11-27:W1",
+    "lat": -33.9447,
+    "lng": 18.6258,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Wed 11 Nov 2026, about 00:50 (SAPS, via IOL and Smile 90.4FM)",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-11-11T00:50:00+02:00",
+        "location": "APPROXIMATE MAP POINT. Corner of Graduate Street and Degree Close, Belhar, Cape Town. The pin is the Belhar suburb point (Nominatim, -33.9447, 18.6258), not the corner. Suburb level, about 2 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "12 Nov 2026 (IOL; Smile 90.4FM)",
+        "reported_at": "2026-11-12",
+        "search_aliases": [
+          "Belhar constable shot",
+          "Belhar police officer killed",
+          "Graduate Degree Close Belhar shooting"
+        ],
+        "sources": [
+          {
+            "name": "IOL (Cape Argus), 12 Nov",
+            "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/"
+          },
+          {
+            "name": "Smile 90.4FM, 12 Nov",
+            "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/"
+          }
+        ]
+      },
+      "collected_title": "Belhar mourning 28-year-old police constable killed in suspected hijacking",
+      "link": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+      "pubdate_raw": "2026-11-12",
+      "source_outlet": "Smile 90.4FM"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "942df37d-66a9-5f89-8cf1-0112bcec66fc",
+    "source": "Smile 90.4FM",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-10T22:50:00Z",
+    "title": "Graduate Street and Degree Close, Belhar: off-duty police constable shot dead, 11 Nov"
+  },
+  "payload_sha256": "sha256:736ab285502d66cde76c4d13385210a6d160cfee0436626b6532978ad8c1ab0f",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

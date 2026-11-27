@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-2d676264",
+  "signal_id": "6288fe1d-d254-5886-a048-00fdd3071858",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kzn-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "Three suspects wanted for serious and violent crimes in Phoenix and Inanda were shot dead in a shootout with police at a residence in the Ezimangweni area of Amaoti, Inanda, on Wednesday 25 November, KZN police spokesperson Col Robert Netshiunda said, via IOL and The Witness. Police say the suspects had earlier opened fire on a police patrol vehicle in Inanda; the officers were unhurt. Two firearms were recovered for ballistic testing. The two reports differ on the time: IOL says morning, The Witness says afternoon. The map point is approximate: the Inanda area point, not the house.",
+    "external_id": "checked:kzn-sweep-2026-11-27:K3",
+    "lat": -29.715,
+    "lng": 30.95,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Wed 25 Nov 2026 (police, via IOL and The Witness; morning per IOL, afternoon per The Witness)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-25",
+        "location": "APPROXIMATE MAP POINT. A residence in the Ezimangweni area of Amaoti, Inanda. Amaoti is not in Nominatim; the pin is the Inanda (eThekwini) point (-29.715, 30.95). Area level, about 4 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "25 Nov 2026 (IOL; The Witness)",
+        "reported_at": "2026-11-25",
+        "search_aliases": [
+          "Amaoti shootout",
+          "Inanda police shootout",
+          "three suspects shot dead Inanda"
+        ],
+        "sources": [
+          {
+            "name": "IOL (Daily News), 25 Nov",
+            "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/"
+          },
+          {
+            "name": "The Witness, 25 Nov",
+            "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/"
+          }
+        ]
+      },
+      "collected_title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov",
+      "link": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+      "pubdate_raw": "2026-11-25",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "6288fe1d-d254-5886-a048-00fdd3071858",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-25T08:00:00Z",
+    "title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov"
+  },
+  "payload_sha256": "sha256:6cbe727d6d3377dfe0be50467c9e5bb0922351f8ab5b57cc664b5a5cb271cc81",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-ce68c374",
+  "signal_id": "60c95743-699a-5bb3-adc1-9d2c2d8d8ec1",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kzn-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "Eight men were found shot dead inside a white seven-seater vehicle riddled with bullet holes at the Mabane section of Sweetwaters, outside Pietermaritzburg, on the night of Sunday 15 November, KwaZulu-Natal police spokesperson Col Robert Netshiunda told IOL. MDNtv reports that police later said the vehicle was used for e-hailing, that two firearms, 14 rounds and a blank gun were found in it, and that six of the men, aged 20 to 30, had been identified. Police had not established how it happened or the motive, and no arrests were reported. The map point is approximate: a point on the road towards Sweetwaters, not the scene.",
+    "external_id": "checked:kzn-sweep-2026-11-27:K1",
+    "lat": -29.6003,
+    "lng": 30.3061,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Sun 15 Nov 2026, night (police, via IOL and MDNtv)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-15",
+        "location": "APPROXIMATE MAP POINT. Mabane section, Sweetwaters, outside Pietermaritzburg. Mabane is not in Nominatim, and Nominatim has no place point for Sweetwaters; it matches \"Sweetwaters\" to Mbubu Road on the western side of Pietermaritzburg, and the pin is a point on that road (-29.6003, 30.3061). Area level, about 5 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "16 Nov 2026 (IOL; MDNtv)",
+        "reported_at": "2026-11-16",
+        "search_aliases": [
+          "Sweetwaters mass shooting",
+          "Mabane shooting",
+          "eight men shot dead Pietermaritzburg"
+        ],
+        "sources": [
+          {
+            "name": "IOL, 16 Nov",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/"
+          },
+          {
+            "name": "MDNtv, 16 Nov",
+            "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/"
+          }
+        ]
+      },
+      "collected_title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov",
+      "link": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+      "pubdate_raw": "2026-11-16",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "60c95743-699a-5bb3-adc1-9d2c2d8d8ec1",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-15T19:00:00Z",
+    "title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov"
+  },
+  "payload_sha256": "sha256:a9609be7f10b35e8cbf207e1951a529807c7797bc9b60aeff893b8bf0a1fae5d",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

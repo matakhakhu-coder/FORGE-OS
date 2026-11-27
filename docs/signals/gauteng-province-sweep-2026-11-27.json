@@ -1,0 +1,65 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Gauteng",
+ "batch": "Gauteng, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Gauteng, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "c6ac1645-9d62-5999-8844-9c6737e80a57",
+   "external_id": "checked:gp-sweep-2026-11-27:G1",
+   "source": "Mail & Guardian",
+   "title": "Jeffsville informal settlement, Atteridgeville (map point approximate): nine people shot dead inside a shack, night of 15 Nov",
+   "content": "Nine people, six men and three women, were found shot dead inside a four-roomed shack at the Jeffsville informal settlement in Atteridgeville, west of Pretoria, on the morning of Monday 16 November, Gauteng police told the Mail & Guardian and IOL. Police believe they were shot between 10pm and 11pm on Sunday 15 November. A child who came to ask for money for school found the bodies, Gauteng Police Commissioner Lt-Gen Tommy Mthombeni said. The motive is not known and no arrests had been reported; the Serious and Violent Crimes, Murder and Robbery Unit is investigating. The map point is approximate: the Atteridgeville area point, not the shack.",
+   "lat": -25.7714,
+   "lng": 28.0736,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-15T20:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "Mail & Guardian",
+    "link": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+    "pubdate_raw": "2026-11-16",
+    "checked": {
+     "incident": "Sun 15 Nov 2026, between 10pm and 11pm (police, via Mail & Guardian and IOL); found Mon 16 Nov about 6.45am",
+     "reported": "16 Nov 2026 (IOL; Mail & Guardian)",
+     "location": "APPROXIMATE MAP POINT. Jeffsville informal settlement, Atteridgeville, west of Pretoria. Jeffsville is not in Nominatim, so the pin is the Atteridgeville area point (-25.7714, 28.0736). Area level, about 3 km.",
+     "sources": [
+      {
+       "name": "IOL, 16 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/"
+      },
+      {
+       "name": "Mail & Guardian, 16 Nov",
+       "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Gauteng, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-15T22:00:00+02:00",
+     "incident_precision": "approx_time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-16",
+     "search_aliases": [
+      "Atteridgeville mass shooting",
+      "Jeffsville shooting",
+      "nine shot dead Atteridgeville"
+     ]
+    },
+    "collected_title": "Jeffsville informal settlement, Atteridgeville (map point approximate): nine people shot dead inside a shack, night of 15 Nov"
+   },
+   "fingerprint": "sha256:9b1a5412968dd72d03cb2eeef85356e3d920e560af654f42742a938b1b8b4bb1"
+  }
+ ]
+}

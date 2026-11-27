@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-9f0398d4",
+  "signal_id": "667a57a3-2028-5db5-bcbb-a7ca833e6190",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "wc-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "Four men were killed and eight people wounded when gunmen opened fire inside MaDlamini's Place tavern on Hlobe Street in the Greenpoint informal settlement, Khayelitsha, at about 11.30pm on Saturday 21 November, IOL and Cape Town ETC report from police. Police first said five were wounded; Western Cape Police Commissioner Lt-Gen Sizakhele Dyantyi later said the number rose to eight. Police say the gunmen fled in a vehicle hijacked at the scene, later found abandoned. Murder and attempted murder cases are being investigated; no motive or arrests were reported. The map point is approximate: the Khayelitsha point, not the tavern.",
+    "external_id": "checked:wc-sweep-2026-11-27:W3",
+    "lat": -34.0416,
+    "lng": 18.7082,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Sat 21 Nov 2026, about 11.30pm (SAPS, via IOL and Cape Town ETC)",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-11-21T23:30:00+02:00",
+        "location": "APPROXIMATE MAP POINT. MaDlamini's Place tavern, Hlobe Street, Greenpoint informal settlement, Khayelitsha. Not in Nominatim; the pin is the Khayelitsha point (-34.0416, 18.7082). Area level, about 3 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "22-23 Nov 2026 (IOL; Cape Town ETC)",
+        "reported_at": "2026-11-22",
+        "search_aliases": [
+          "Khayelitsha tavern shooting",
+          "Greenpoint Khayelitsha shooting",
+          "MaDlamini tavern"
+        ],
+        "sources": [
+          {
+            "name": "IOL (Cape Times), 22 Nov",
+            "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/"
+          },
+          {
+            "name": "Cape Town ETC, 23 Nov",
+            "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/"
+          }
+        ]
+      },
+      "collected_title": "Four killed, five wounded in Khayelitsha tavern shooting as police hunt gunmen",
+      "link": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+      "pubdate_raw": "2026-11-22",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "667a57a3-2028-5db5-bcbb-a7ca833e6190",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-21T21:30:00Z",
+    "title": "Hlobe Street, Greenpoint, Khayelitsha (map point approximate): four men shot dead and eight wounded in tavern shooting, 21 Nov"
+  },
+  "payload_sha256": "sha256:a8752b9060c037d14ee429861ab26b457c642c4a9a0f2a915f68833ed0a856e7",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

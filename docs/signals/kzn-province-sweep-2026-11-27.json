@@ -1,0 +1,155 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "KwaZulu-Natal",
+ "batch": "KwaZulu-Natal, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "KwaZulu-Natal, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "60c95743-699a-5bb3-adc1-9d2c2d8d8ec1",
+   "external_id": "checked:kzn-sweep-2026-11-27:K1",
+   "source": "IOL",
+   "title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov",
+   "content": "Eight men were found shot dead inside a white seven-seater vehicle riddled with bullet holes at the Mabane section of Sweetwaters, outside Pietermaritzburg, on the night of Sunday 15 November, KwaZulu-Natal police spokesperson Col Robert Netshiunda told IOL. MDNtv reports that police later said the vehicle was used for e-hailing, that two firearms, 14 rounds and a blank gun were found in it, and that six of the men, aged 20 to 30, had been identified. Police had not established how it happened or the motive, and no arrests were reported. The map point is approximate: a point on the road towards Sweetwaters, not the scene.",
+   "lat": -29.6003,
+   "lng": 30.3061,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-15T19:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+    "pubdate_raw": "2026-11-16",
+    "checked": {
+     "incident": "Sun 15 Nov 2026, night (police, via IOL and MDNtv)",
+     "reported": "16 Nov 2026 (IOL; MDNtv)",
+     "location": "APPROXIMATE MAP POINT. Mabane section, Sweetwaters, outside Pietermaritzburg. Mabane is not in Nominatim, and Nominatim has no place point for Sweetwaters; it matches \"Sweetwaters\" to Mbubu Road on the western side of Pietermaritzburg, and the pin is a point on that road (-29.6003, 30.3061). Area level, about 5 km.",
+     "sources": [
+      {
+       "name": "IOL, 16 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/"
+      },
+      {
+       "name": "MDNtv, 16 Nov",
+       "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-15",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-16",
+     "search_aliases": [
+      "Sweetwaters mass shooting",
+      "Mabane shooting",
+      "eight men shot dead Pietermaritzburg"
+     ]
+    },
+    "collected_title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov"
+   },
+   "fingerprint": "sha256:a9609be7f10b35e8cbf207e1951a529807c7797bc9b60aeff893b8bf0a1fae5d"
+  },
+  {
+   "signal_id": "1d1c6c14-fe70-5a30-bfca-459da4d81494",
+   "external_id": "checked:kzn-sweep-2026-11-27:K2",
+   "source": "IOL",
+   "title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov",
+   "content": "Greytown station commander Lt-Col TG Sithole was shot dead and Sergeant Gumede was shot in the arm in a gun battle on the R33 towards Msinga on the afternoon of Thursday 12 November, IOL and BNK News report from a SAPS statement. Police had responded to a business robbery at Lucky Supermarket in the Greytown CBD, where the shop owner was shot and injured and staff were assaulted; at least 10 suspects fled in a Toyota Quantum and were intercepted on the R33. Police shot two suspects dead, a third was wounded and arrested, and the rest fled on foot into the mountains. The map point is approximate: the Greytown town point, not the place on the R33.",
+   "lat": -29.0606,
+   "lng": 30.5889,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-12T12:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+    "pubdate_raw": "2026-11-13",
+    "checked": {
+     "incident": "Thu 12 Nov 2026, afternoon (SAPS, via IOL and BNK News, both published Fri 13 Nov)",
+     "reported": "13 Nov 2026 (IOL; BNK News)",
+     "location": "APPROXIMATE MAP POINT. R33 towards Msinga, after a robbery at Lucky Supermarket, Greytown CBD. The exact place on the R33 is not given; the pin is the Greytown town point (-29.0606, 30.5889). About 5 km.",
+     "sources": [
+      {
+       "name": "IOL, 13 Nov",
+       "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/"
+      },
+      {
+       "name": "BNK News, 13 Nov",
+       "url": "https://bnknews.co.za/story/manhunt-launched-in-kwazulu-natal-after-station-commander-killed-in-greytown-shootout"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-12",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-13",
+     "search_aliases": [
+      "Greytown station commander killed",
+      "Colonel Sithole Greytown",
+      "Lucky Supermarket robbery Greytown"
+     ]
+    },
+    "collected_title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov"
+   },
+   "fingerprint": "sha256:8ab74d98792c38ef52ea9959a283d2309d04ec8feb5fadab80460eecfa414c0a"
+  },
+  {
+   "signal_id": "6288fe1d-d254-5886-a048-00fdd3071858",
+   "external_id": "checked:kzn-sweep-2026-11-27:K3",
+   "source": "IOL",
+   "title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov",
+   "content": "Three suspects wanted for serious and violent crimes in Phoenix and Inanda were shot dead in a shootout with police at a residence in the Ezimangweni area of Amaoti, Inanda, on Wednesday 25 November, KZN police spokesperson Col Robert Netshiunda said, via IOL and The Witness. Police say the suspects had earlier opened fire on a police patrol vehicle in Inanda; the officers were unhurt. Two firearms were recovered for ballistic testing. The two reports differ on the time: IOL says morning, The Witness says afternoon. The map point is approximate: the Inanda area point, not the house.",
+   "lat": -29.715,
+   "lng": 30.95,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-25T08:00:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+    "pubdate_raw": "2026-11-25",
+    "checked": {
+     "incident": "Wed 25 Nov 2026 (police, via IOL and The Witness; morning per IOL, afternoon per The Witness)",
+     "reported": "25 Nov 2026 (IOL; The Witness)",
+     "location": "APPROXIMATE MAP POINT. A residence in the Ezimangweni area of Amaoti, Inanda. Amaoti is not in Nominatim; the pin is the Inanda (eThekwini) point (-29.715, 30.95). Area level, about 4 km.",
+     "sources": [
+      {
+       "name": "IOL (Daily News), 25 Nov",
+       "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/"
+      },
+      {
+       "name": "The Witness, 25 Nov",
+       "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-25",
+     "incident_precision": "day",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-25",
+     "search_aliases": [
+      "Amaoti shootout",
+      "Inanda police shootout",
+      "three suspects shot dead Inanda"
+     ]
+    },
+    "collected_title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov"
+   },
+   "fingerprint": "sha256:6cbe727d6d3377dfe0be50467c9e5bb0922351f8ab5b57cc664b5a5cb271cc81"
+  }
+ ]
+}

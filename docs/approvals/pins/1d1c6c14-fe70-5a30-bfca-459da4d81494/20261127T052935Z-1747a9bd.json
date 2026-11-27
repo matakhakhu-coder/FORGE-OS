@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-1747a9bd",
+  "signal_id": "1d1c6c14-fe70-5a30-bfca-459da4d81494",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "kzn-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "Greytown station commander Lt-Col TG Sithole was shot dead and Sergeant Gumede was shot in the arm in a gun battle on the R33 towards Msinga on the afternoon of Thursday 12 November, IOL and BNK News report from a SAPS statement. Police had responded to a business robbery at Lucky Supermarket in the Greytown CBD, where the shop owner was shot and injured and staff were assaulted; at least 10 suspects fled in a Toyota Quantum and were intercepted on the R33. Police shot two suspects dead, a third was wounded and arrested, and the rest fled on foot into the mountains. The map point is approximate: the Greytown town point, not the place on the R33.",
+    "external_id": "checked:kzn-sweep-2026-11-27:K2",
+    "lat": -29.0606,
+    "lng": 30.5889,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Thu 12 Nov 2026, afternoon (SAPS, via IOL and BNK News, both published Fri 13 Nov)",
+        "incident_event": "occurred",
+        "incident_precision": "day",
+        "incident_start": "2026-11-12",
+        "location": "APPROXIMATE MAP POINT. R33 towards Msinga, after a robbery at Lucky Supermarket, Greytown CBD. The exact place on the R33 is not given; the pin is the Greytown town point (-29.0606, 30.5889). About 5 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (KwaZulu-Natal, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "13 Nov 2026 (IOL; BNK News)",
+        "reported_at": "2026-11-13",
+        "search_aliases": [
+          "Greytown station commander killed",
+          "Colonel Sithole Greytown",
+          "Lucky Supermarket robbery Greytown"
+        ],
+        "sources": [
+          {
+            "name": "IOL, 13 Nov",
+            "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/"
+          },
+          {
+            "name": "BNK News, 13 Nov",
+            "url": "https://bnknews.co.za/story/manhunt-launched-in-kwazulu-natal-after-station-commander-killed-in-greytown-shootout"
+          }
+        ]
+      },
+      "collected_title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov",
+      "link": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+      "pubdate_raw": "2026-11-13",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "1d1c6c14-fe70-5a30-bfca-459da4d81494",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-12T12:00:00Z",
+    "title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov"
+  },
+  "payload_sha256": "sha256:8ab74d98792c38ef52ea9959a283d2309d04ec8feb5fadab80460eecfa414c0a",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://bnknews.co.za/story/manhunt-launched-in-kwazulu-natal-after-station-commander-killed-in-greytown-shootout",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

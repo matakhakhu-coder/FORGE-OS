@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-2742f1b3",
+  "signal_id": "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "wc-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "A 16-year-old boy was shot dead and a 13-year-old wounded when two unidentified men walked into Bartholomew Street, St Montague Village, Lavender Hill, and opened fire at about 6.15pm on Monday 23 November, Western Cape police spokesperson Lt-Col FC van Wyk told IOL. Voice of the Cape reports the same from police. IOL reports children were playing soccer in the street. Police believe the motive is gang-related; murder and attempted murder cases were opened and no arrests were reported. The children are not named. The map point is approximate: the Lavender Hill point, not the street.",
+    "external_id": "checked:wc-sweep-2026-11-27:W4",
+    "lat": -34.0736,
+    "lng": 18.4833,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Mon 23 Nov 2026, about 6.15pm (SAPS, via IOL and Voice of the Cape)",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-11-23T18:15:00+02:00",
+        "location": "APPROXIMATE MAP POINT. Bartholomew Street, St Montague Village, Lavender Hill, Cape Town. The pin is the Lavender Hill point (Nominatim, -34.0736, 18.4833). Suburb level, about 1.5 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "24-25 Nov 2026 (Voice of the Cape; IOL)",
+        "reported_at": "2026-11-24",
+        "search_aliases": [
+          "Lavender Hill shooting",
+          "St Montague Village shooting",
+          "teenager shot Lavender Hill"
+        ],
+        "sources": [
+          {
+            "name": "IOL (Cape Argus), 25 Nov",
+            "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/"
+          },
+          {
+            "name": "Voice of the Cape, 24 Nov",
+            "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/"
+          }
+        ]
+      },
+      "collected_title": "Lavender Hill parents live in fear after sixth child is shot in three days",
+      "link": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+      "pubdate_raw": "2026-11-24",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-23T16:15:00Z",
+    "title": "Bartholomew Street, St Montague Village, Lavender Hill (map point approximate): 16-year-old shot dead and 13-year-old wounded, 23 Nov"
+  },
+  "payload_sha256": "sha256:cdc0144612d9448e6c08b068c6b5e42eed2a3d100bbf8bdf163e5298a8f2fd73",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

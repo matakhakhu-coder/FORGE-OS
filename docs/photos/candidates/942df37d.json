@@ -1,0 +1,37 @@
+{
+  "signal_id": "942df37d-66a9-5f89-8cf1-0112bcec66fc",
+  "pin": {
+    "title": "Graduate Street and Degree Close, Belhar: off-duty police constable shot dead, 11 Nov",
+    "lat": -33.9447,
+    "lng": 18.6258,
+    "location_note": "APPROXIMATE MAP POINT. Corner of Graduate Street and Degree Close, Belhar, Cape Town. The pin is the Belhar suburb point (Nominatim, -33.9447, 18.6258), not the corner. Suburb level, about 2 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Martin Hellström.JPG",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Martin_Hellstr%C3%B6m.JPG",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Martin_Hellstr%C3%B6m.JPG/960px-Martin_Hellstr%C3%B6m.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1204,
+      "height": 1346,
+      "original_sha1": "85ddcee1d14e913f448436612433a66710f860ce",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -33.93326667,
+        "lng": 18.62696944
+      },
+      "distance_m": 1276,
+      "creator": "Stefankud",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2020-02-20",
+      "description": "Martin Hellström under ett studiebesök på University of the Western Cape i Sydafrika.",
+      "categories": "CC-Zero|Martin Hellström 1962|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    }
+  ]
+}

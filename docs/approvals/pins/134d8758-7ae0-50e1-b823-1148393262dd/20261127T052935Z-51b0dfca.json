@@ -1,0 +1,78 @@
+{
+  "schema": "forge.pin_approval.v2",
+  "approval_id": "20261127T052935Z-51b0dfca",
+  "signal_id": "134d8758-7ae0-50e1-b823-1148393262dd",
+  "action": "approve",
+  "pin_version": 1,
+  "supersedes": null,
+  "batch_file": "wc-province-sweep-2026-11-27.json",
+  "approved_payload": {
+    "content": "A man was shot dead outside the Lingelethu West police station in Khayelitsha at about 3.10am, after a quarrel at Ace's Park tavern with an off-duty constable from Public Order Policing in Faure, IPID spokesperson Phaladi Shuping told IOL and City Vision. IPID says the man followed the constable's car to the police station, where they quarrelled again and the constable allegedly shot him. Officers at the station then shot the constable, who was taken to hospital. IPID is investigating. The reports disagree on the date: IOL says the early hours of Friday 20 November, City Vision says Thursday 19 November. The map point is approximate: the Khayelitsha point, not the police station.",
+    "external_id": "checked:wc-sweep-2026-11-27:W2",
+    "lat": -34.0416,
+    "lng": 18.7082,
+    "metadata": {
+      "checked": {
+        "checked_at": "2026-11-27T10:00:00Z",
+        "incident": "Early hours of Fri 20 Nov 2026, about 3.10am (IPID, via IOL); City Vision gives Thu 19 Nov",
+        "incident_event": "occurred",
+        "incident_precision": "time",
+        "incident_start": "2026-11-20T03:10:00+02:00",
+        "location": "APPROXIMATE MAP POINT. Outside Lingelethu West police station, Khayelitsha, Cape Town. Not found in Nominatim; the pin is the Khayelitsha point (-34.0416, 18.7082). Area level, about 3 km.",
+        "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+        "reported": "22-23 Nov 2026 (IOL; City Vision)",
+        "reported_at": "2026-11-22",
+        "search_aliases": [
+          "Lingelethu police station shooting",
+          "off-duty constable Khayelitsha",
+          "Ace's Park tavern"
+        ],
+        "sources": [
+          {
+            "name": "IOL (Cape Argus), 22 Nov",
+            "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/"
+          },
+          {
+            "name": "City Vision, 23 Nov",
+            "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/"
+          }
+        ]
+      },
+      "collected_title": "Khayelitsha community slam off-duty constable who allegedly shot man dead outside cop shop",
+      "link": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+      "pubdate_raw": "2026-11-22",
+      "source_outlet": "IOL"
+    },
+    "published_at": "2026-11-27T10:00:00Z",
+    "signal_id": "134d8758-7ae0-50e1-b823-1148393262dd",
+    "source": "IOL",
+    "stream": "CRIME_INTEL",
+    "timestamp": "2026-11-20T01:10:00Z",
+    "title": "Outside Lingelethu West police station, Khayelitsha (map point approximate): man shot dead by off-duty constable after tavern quarrel, 20 Nov"
+  },
+  "payload_sha256": "sha256:cb0c6223a864e7f4e16930342204c9b4bdb335f647385adfe82b4022bf23644f",
+  "source_hashes": [
+    {
+      "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+      "retrieved_at": null,
+      "content_sha256": null
+    },
+    {
+      "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/",
+      "retrieved_at": null,
+      "content_sha256": null
+    }
+  ],
+  "diff_from_previous": null,
+  "owner": "Riley Bishop",
+  "approved_at": "2026-11-27T05:29:35Z",
+  "recorded_at": "2026-11-27T05:29:35Z",
+  "recorded_by": "Maya",
+  "approval_reference": {
+    "id": "standing-autopub-2026-11-27",
+    "summary": "Standing authorization standing-autopub-2026-11-27 (owner's advance approval): machine-checked against its conditions. Owner did not review this pin's text."
+  },
+  "basis": "standing",
+  "scope": "data-only",
+  "material": false
+}

@@ -1,0 +1,147 @@
+{
+  "signal_id": "1d1c6c14-fe70-5a30-bfca-459da4d81494",
+  "pin": {
+    "title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov",
+    "lat": -29.0606,
+    "lng": 30.5889,
+    "location_note": "APPROXIMATE MAP POINT. R33 towards Msinga, after a robbery at Lucky Supermarket, Greytown CBD. The exact place on the R33 is not given; the pin is the Greytown town point (-29.0606, 30.5889). About 5 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Umvoti Aids Centre - Where joy lives.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_joy_lives.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Umvoti_Aids_Centre_-_Where_joy_lives.jpg/960px-Umvoti_Aids_Centre_-_Where_joy_lives.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1280,
+      "height": 960,
+      "original_sha1": "ab86523b9898463ec020d6305df5476636a9c6f8",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2019-10-11",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Self-published work|Images from Wiki Loves Africa 2022|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2019-10-11|Images from Wiki Loves Africa 2022 in South Africa|HIV/AIDS in South Africa|Home and habitat",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Umvoti Aids Centre - Where nourishment resides.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_nourishment_resides.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Umvoti_Aids_Centre_-_Where_nourishment_resides.jpg/960px-Umvoti_Aids_Centre_-_Where_nourishment_resides.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 4000,
+      "height": 1844,
+      "original_sha1": "583b4c467b2ffca8b02e6a99181a798c51fe6422",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2021-10-04 10:50:16",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Self-published work|Images from Wiki Loves Africa 2022|South Africa photographs taken on 2021-10-04|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|Images from Wiki Loves Africa 2022 in South Africa|Home and habitat",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Umvoti Aids Centre - Where nourishment nourishment resides 03.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_nourishment_nourishment_resides_03.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Umvoti_Aids_Centre_-_Where_nourishment_nourishment_resides_03.jpg/960px-Umvoti_Aids_Centre_-_Where_nourishment_nourishment_resides_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3264,
+      "height": 2448,
+      "original_sha1": "70e12f73537017b4611afe70f8a6a95090f8a4de",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2019-12-06 12:13:15",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Self-published work|Images from Wiki Loves Africa 2022|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2019-12-06|Images from Wiki Loves Africa 2022 in South Africa|Home and habitat",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Umvoti Aids Centre - Where solidarity lives.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_solidarity_lives.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Umvoti_Aids_Centre_-_Where_solidarity_lives.jpg/960px-Umvoti_Aids_Centre_-_Where_solidarity_lives.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1092,
+      "height": 736,
+      "original_sha1": "b54c6a623eeea2d5124dcbc91aa84525582d5907",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2021-12-01",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Personality rights warning|Self-published work|Images from Wiki Loves Africa 2022|South Africa photographs taken on 2021-12-01|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|Images from Wiki Loves Africa 2022 in South Africa|Home and habitat",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Umvoti Aids Centre - Where fun lives.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_fun_lives.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Umvoti_Aids_Centre_-_Where_fun_lives.jpg/960px-Umvoti_Aids_Centre_-_Where_fun_lives.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2560,
+      "height": 1104,
+      "original_sha1": "090d48b0f1788b703b37ef8198d3ecbfe88da654",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2018-12-07 12:23:25",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Taken with Samsung Z2|Self-published work|Images from Wiki Loves Africa 2022|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2018-12-07|Images from Wiki Loves Africa 2022 in South Africa|Home and habitat",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Umvoti Aids Centre - Where family resides.webp",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Umvoti_Aids_Centre_-_Where_family_resides.webp",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Umvoti_Aids_Centre_-_Where_family_resides.webp/960px-Umvoti_Aids_Centre_-_Where_family_resides.webp?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/webp",
+      "width": 980,
+      "height": 556,
+      "original_sha1": "ba88acac3804eb482eff8ba45c7a8dd4ec700abe",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -29.0661,
+        "lng": 30.60375
+      },
+      "distance_m": 1568,
+      "creator": "C22kile",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-09-24",
+      "description": "This is an image with the theme \"Home + Habitat in Africa\" from:",
+      "categories": "Personality rights warning|Self-published work|Images from Wiki Loves Africa 2022|Images from Wiki Loves Africa 2022 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|Images from Wiki Loves Africa 2022 in South Africa|Home and habitat",
+      "auto_refusals": []
+    }
+  ]
+}

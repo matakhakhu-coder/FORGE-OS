@@ -123,6 +123,21 @@
       "file": "gauteng-flood-infrastructure-2026-11-26.json",
       "province": "Gauteng",
       "signals": 3
+    },
+    {
+      "file": "gauteng-province-sweep-2026-11-27.json",
+      "province": "Gauteng",
+      "signals": 1
+    },
+    {
+      "file": "kzn-province-sweep-2026-11-27.json",
+      "province": "KwaZulu-Natal",
+      "signals": 3
+    },
+    {
+      "file": "wc-province-sweep-2026-11-27.json",
+      "province": "Western Cape",
+      "signals": 4
     }
   ]
 }

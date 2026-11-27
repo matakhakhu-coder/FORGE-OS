@@ -9123,6 +9123,969 @@
         "authorization": "standing-autopub-2026-11-26",
         "checked_by": "unattended-run"
       }
+    },
+    "c6ac1645-9d62-5999-8844-9c6737e80a57": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Nine people shot dead: six men and three women",
+          "basis": "Two reports",
+          "detail": "Both reports quote police; the split by sex is from the Mail & Guardian.",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "The victims, comprising six men and three women, were found inside a four-roomed shack with gunshot wounds on Monday morning, 16 November."
+            },
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "which gives us a total of nine people who are fatally wounded"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Shot on Sunday 15 November between 10pm and 11pm; found on Monday 16 November",
+          "basis": "Reports differ in wording",
+          "detail": "IOL gives the discovery at 6.45am; the Mail & Guardian says police were alerted at about 7.30am.",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "the shooting is believed to have occurred between 10 pm and 11 pm on Sunday, 15 November"
+            },
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "We got this revelation at 6.45am this morning."
+            }
+          ],
+          "conflicts": [
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "Police were alerted to the incident at approximately 7.30 am on Monday."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Jeffsville informal settlement, Atteridgeville, west of Pretoria (map point approximate: area point, not the shack)",
+          "basis": "Two reports",
+          "detail": "The map point is approximate, about 3 km.",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "inside a four-roomed shack at the Jeffsville informal settlement in Atteridgeville, west of Pretoria"
+            },
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "Nine people have been shot and killed at the Jeffsville informal settlement in Atteridgeville, west of Pretoria"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How found",
+          "claim": "A schoolchild who came to ask for money for school found the bodies",
+          "basis": "Police account only",
+          "detail": "Gauteng Police Commissioner Lt-Gen Tommy Mthombeni, via IOL.",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "the child reportedly made the gruesome discovery at about 6.45am while asking for money to go to school"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Motive",
+          "claim": "Not known",
+          "basis": "Two reports",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "The motive for the mass shooting and the identities of the suspects are not yet known."
+            },
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "The motive for the shooting has not yet been established and no arrests have been made."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrests reported; Gauteng Serious and Violent Crimes, Murder and Robbery Unit investigating",
+          "basis": "Two reports",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Mail & Guardian, 16 Nov",
+              "url": "https://mg.co.za/news/south-africa/2026-11-16-nine-people-shot-dead-in-atteridgeville-mass-shooting/",
+              "archive": null,
+              "quote": "The case is being investigated by the Gauteng Serious and Violent Crimes, Murder and Robbery Unit."
+            },
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-atteridgeville-mass-shooting-how-a-childs-request-for-school-money-led-to-discovery-of-nine-bodies/",
+              "archive": null,
+              "quote": "The case is being investigated by the Gauteng Serious and Violent Crimes, Murder and Robbery Unit."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "60c95743-699a-5bb3-adc1-9d2c2d8d8ec1": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Eight men shot dead inside a vehicle",
+          "basis": "Police account only",
+          "detail": "Both reports rest on KZN police statements.",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+              "archive": null,
+              "quote": "Inside the vehicle, police found eight men who had multiple gunshot wounds and were certified dead at the scene"
+            },
+            {
+              "name": "MDNtv, 16 Nov",
+              "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/",
+              "archive": null,
+              "quote": "Inside, police discovered the bodies of eight men who had sustained multiple gunshot wounds."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Sunday night, 15 November",
+          "basis": "Police account only",
+          "detail": "IOL gives only \"Sunday night\"; MDNtv gives the date.",
+          "sources": [
+            {
+              "name": "MDNtv, 16 Nov",
+              "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/",
+              "archive": null,
+              "quote": "on Sunday night, 15 November 2026"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 5 km.",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+              "archive": null,
+              "quote": "Police have launched a manhunt following the mass shooting, which took place in Mabane."
+            },
+            {
+              "name": "MDNtv, 16 Nov",
+              "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/",
+              "archive": null,
+              "quote": "Officers responding to reports of gunfire at the Mabane Section arrived at the scene"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Vehicle and weapons",
+          "claim": "A white seven-seater used for e-hailing; two firearms, 14 rounds and a blank gun found in it",
+          "basis": "One report",
+          "detail": "From MDNtv only.",
+          "sources": [
+            {
+              "name": "MDNtv, 16 Nov",
+              "url": "https://mdntvlive.com/firearms-found-inside-e-hailing-vehicle-after-eight-men-gunned-down-in-sweetwaters/",
+              "archive": null,
+              "quote": "investigators recovered two firearms, 14 rounds of ammunition, and a blank gun"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Motive",
+          "claim": "Not established",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+              "archive": null,
+              "quote": "police were collecting evidence to determine the possible motive for the killings and identify those responsible"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "No arrests reported; manhunt launched",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 16 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-16-eight-men-shot-dead-inside-a-vehicle-in-sweetwaters-kzn/",
+              "archive": null,
+              "quote": "Police have launched a manhunt following the mass shooting"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "1d1c6c14-fe70-5a30-bfca-459da4d81494": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "The Greytown station commander and two suspects were killed",
+          "basis": "Police account only",
+          "detail": "Both reports rest on the same SAPS statement.",
+          "sources": [
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "During the exchange of gunfire, the suspects shot Sithole, who was declared dead at the scene."
+            },
+            {
+              "name": "BNK News, 13 Nov",
+              "url": "https://bnknews.co.za/story/manhunt-launched-in-kwazulu-natal-after-station-commander-killed-in-greytown-shootout",
+              "archive": null,
+              "quote": "Officers returned fire during the ambush, fatally wounding two suspects and injuring a third."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Thursday 12 November, afternoon",
+          "basis": "Police account only",
+          "detail": "Both reports were published on Friday 13 November and say \"Thursday afternoon\".",
+          "sources": [
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "during a shootout between police and suspected robbers on Thursday afternoon"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "R33 towards Msinga, after a robbery in the Greytown CBD (map point approximate: town point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 5 km.",
+          "sources": [
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "intercepted the suspects on the R33 road heading towards Msinga"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Injuries",
+          "claim": "A sergeant shot in the arm; the shop owner shot and injured in the robbery; staff assaulted",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "An officer identified as Sergeant Gumede was also shot in the arm"
+            },
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "During the robbery, a shop owner was shot and injured, while employees were assaulted."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "How",
+          "claim": "At least 10 suspects fled in a Toyota Quantum, were intercepted and a gun battle followed",
+          "basis": "Police account only",
+          "detail": "The same statement, in both reports.",
+          "sources": [
+            {
+              "name": "BNK News, 13 Nov",
+              "url": "https://bnknews.co.za/story/manhunt-launched-in-kwazulu-natal-after-station-commander-killed-in-greytown-shootout",
+              "archive": null,
+              "quote": "a group of at least ten suspects fled the scene in a Toyota Quantum minibus"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "One wounded suspect arrested; others fled on foot; manhunt",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "A third suspect sustained gunshot wounds, was placed under arrest"
+            },
+            {
+              "name": "IOL, 13 Nov",
+              "url": "https://iol.co.za/news/crime-and-courts/2026-11-13-senior-kzn-police-officer-gunned-down-in-greytown-shootout-as-manhunt-launches/",
+              "archive": null,
+              "quote": "The remaining suspects abandoned the area and fled on foot into the nearby mountains to evade arrest."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "6288fe1d-d254-5886-a048-00fdd3071858": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Three suspects shot dead by police",
+          "basis": "Police account only",
+          "detail": "Both reports rest on the same police statement.",
+          "sources": [
+            {
+              "name": "IOL (Daily News), 25 Nov",
+              "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+              "archive": null,
+              "quote": "A shootout ensued, resulting in all three suspects being shot and fatally wounded."
+            },
+            {
+              "name": "The Witness, 25 Nov",
+              "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/",
+              "archive": null,
+              "quote": "A shootout ensued in which three suspects were shot and fatally wounded."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 25 November",
+          "basis": "Reports disagree",
+          "detail": "IOL says morning; The Witness says afternoon, after a morning attack on a patrol vehicle.",
+          "sources": [
+            {
+              "name": "IOL (Daily News), 25 Nov",
+              "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+              "archive": null,
+              "quote": "in the Ezimangweni area of Amaoti on Wednesday morning, November 25"
+            }
+          ],
+          "conflicts": [
+            {
+              "name": "The Witness, 25 Nov",
+              "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/",
+              "archive": null,
+              "quote": "were shot dead during a shootout with police in Amaoti, Inanda, on Wednesday afternoon"
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "A residence in the Ezimangweni area of Amaoti, Inanda (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 4 km.",
+          "sources": [
+            {
+              "name": "The Witness, 25 Nov",
+              "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/",
+              "archive": null,
+              "quote": "the suspects were killed at a residence in the Ezimangweni area"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Before",
+          "claim": "Police say the suspects had opened fire on a police patrol vehicle in Inanda; officers unhurt",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Daily News), 25 Nov",
+              "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+              "archive": null,
+              "quote": "The police vehicle was damaged in the shooting, but the officers escaped unharmed."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Weapons",
+          "claim": "Two firearms recovered, to be ballistically tested",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Daily News), 25 Nov",
+              "url": "https://iol.co.za/dailynews/news/2026-11-25-three-wanted-suspects-shot-dead-in-police-shootout-in-inanda/",
+              "archive": null,
+              "quote": "Police recovered two firearms from the suspects."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Who",
+          "claim": "Suspects wanted for serious and violent crimes in Phoenix and Inanda; not identified",
+          "basis": "Police account only",
+          "detail": "Same statement, in both reports.",
+          "sources": [
+            {
+              "name": "The Witness, 25 Nov",
+              "url": "https://witness.co.za/news/2026/11/25/three-killed-in-shootout-with-the-police/",
+              "archive": null,
+              "quote": "The identities of the deceased suspects have not yet been released."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "942df37d-66a9-5f89-8cf1-0112bcec66fc": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One off-duty police constable, aged 28, shot dead",
+          "basis": "Police account only",
+          "detail": "Both reports quote the same SAPS confirmation.",
+          "sources": [
+            {
+              "name": "Smile 90.4FM, 12 Nov",
+              "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/",
+              "archive": null,
+              "quote": "was shot by unknown suspects at the corners of Graduate and Degree close, Belhar on Wednesday 11 November 2026 at about 00:50"
+            },
+            {
+              "name": "IOL (Cape Argus), 12 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+              "archive": null,
+              "quote": "At the time of the incident, he was off duty."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Wednesday 11 November, about 00:50",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 12 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+              "archive": null,
+              "quote": "Belhar on Wednesday 11 November 2026 at about 00:50"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Corner of Graduate Street and Degree Close, Belhar (map point approximate: suburb point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 2 km.",
+          "sources": [
+            {
+              "name": "Smile 90.4FM, 12 Nov",
+              "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/",
+              "archive": null,
+              "quote": "at the corners of Graduate and Degree close, Belhar"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Circumstances",
+          "claim": "Reported as a suspected hijacking",
+          "basis": "One report",
+          "detail": "From Smile 90.4FM only; police did not state a motive.",
+          "sources": [
+            {
+              "name": "Smile 90.4FM, 12 Nov",
+              "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/",
+              "archive": null,
+              "quote": "was gunned down reportedly during a suspected hijacking at South Point, behind Erica Spar in Belhar"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Who",
+          "claim": "A constable from the Belhar Crime Prevention Unit",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 12 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+              "archive": null,
+              "quote": "a 28-year-old male Constable from Belhar Crime Prevention Unit"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder case opened and handed to the Hawks; no arrests",
+          "basis": "Police account only",
+          "detail": "The Hawks comment is from Smile 90.4FM.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 12 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+              "archive": null,
+              "quote": "Gwala said Belhar police had opened a murder case, with the docket subsequently transferred to the Hawks for investigation."
+            },
+            {
+              "name": "Smile 90.4FM, 12 Nov",
+              "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/",
+              "archive": null,
+              "quote": "confirmed on Thursday morning that they are investigating, adding that no arrests had been made yet"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "134d8758-7ae0-50e1-b823-1148393262dd": {
+      "status": "audited",
+      "police_party": true,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "One man shot dead",
+          "basis": "IPID account only",
+          "detail": "Same statement: both quote IPID.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "The constable allegedly shot at the person and he died from gunshot wounds."
+            },
+            {
+              "name": "City Vision, 23 Nov",
+              "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/",
+              "archive": null,
+              "quote": "He was declared dead at the scene"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "About 3.10am, early on Friday 20 November",
+          "basis": "Reports disagree",
+          "detail": "City Vision gives Thursday 19 November.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "which happened in the early hours of Friday, November 20, 2026"
+            }
+          ],
+          "conflicts": [
+            {
+              "name": "City Vision, 23 Nov",
+              "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/",
+              "archive": null,
+              "quote": "The alleged incident occurred on Thursday 19 November in Lingelethu West, Khayelitsha in Cape Town."
+            }
+          ]
+        },
+        {
+          "label": "Place",
+          "claim": "Outside Lingelethu West police station, Khayelitsha (map point approximate: area point)",
+          "basis": "IPID account only",
+          "detail": "Same statement, via both. The map point is approximate, about 3 km.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "They stopped outside Lingelethu Police Station and they quarreled again."
+            },
+            {
+              "name": "City Vision, 23 Nov",
+              "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/",
+              "archive": null,
+              "quote": "The officer stopped outside Lingelthu West Police Station"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Who",
+          "claim": "An off-duty constable from Public Order Policing in Faure, IPID says",
+          "basis": "IPID account only",
+          "detail": "Same statement (IPID).",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "an off-duty constable stationed at POPS Faure quarreled with a civilian at Ace's Park at around 3.10am"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Constable shot",
+          "claim": "Officers at the station shot the constable, who was taken to hospital",
+          "basis": "Reports differ in detail",
+          "detail": "City Vision adds that IPID says he pointed his firearm at the officers.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "The police officers from Lingelethu got out and they allegedly shot at the constable who was taken to hospital."
+            },
+            {
+              "name": "City Vision, 23 Nov",
+              "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/",
+              "archive": null,
+              "quote": "The off-duty police officer allegedly pointed his firearm at the officers, and they allegedly shot at him"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "IPID investigating",
+          "basis": "IPID account only",
+          "detail": "Same statement. No charge or arrest reported in the saved sources.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 22 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+              "archive": null,
+              "quote": "The Independent Police Investigative Directorate (IPID) is investigating the shooting"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "667a57a3-2028-5db5-bcbb-a7ca833e6190": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "Four men shot dead",
+          "basis": "Police account only",
+          "detail": "Both reports rest on police statements.",
+          "sources": [
+            {
+              "name": "IOL (Cape Times), 22 Nov",
+              "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+              "archive": null,
+              "quote": "Four men were killed and eight people wounded when gunmen opened fire inside a tavern"
+            },
+            {
+              "name": "Cape Town ETC, 23 Nov",
+              "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/",
+              "archive": null,
+              "quote": "Four men have been killed and several others wounded after gunmen opened fire inside a tavern in Greenpoint, Khayelitsha"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Injuries",
+          "claim": "Eight wounded; first reported as five",
+          "basis": "Police account only",
+          "detail": "The commissioner revised the number upward.",
+          "sources": [
+            {
+              "name": "IOL (Cape Times), 22 Nov",
+              "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+              "archive": null,
+              "quote": "The number of wounded was initially reported as five by police spokesperson Brigadier Novela Potelwa."
+            },
+            {
+              "name": "Cape Town ETC, 23 Nov",
+              "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/",
+              "archive": null,
+              "quote": "the number had increased to eight after additional victims were located at hospitals during the investigation"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Saturday 21 November, about 11.30pm",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "Cape Town ETC, 23 Nov",
+              "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/",
+              "archive": null,
+              "quote": "the shooting took place at approximately 23:30 on Saturday, 21 November, at a tavern on Hlobe Street"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "MaDlamini's Place tavern, Hlobe Street, Greenpoint, Khayelitsha (map point approximate: area point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 3 km.",
+          "sources": [
+            {
+              "name": "IOL (Cape Times), 22 Nov",
+              "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+              "archive": null,
+              "quote": "The shooting happened at MaDlamini's Place tavern on Hlobe Street at about 11.30pm on Saturday, November 21"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Getaway",
+          "claim": "Gunmen fled in a vehicle hijacked nearby, later found abandoned",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Cape Times), 22 Nov",
+              "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+              "archive": null,
+              "quote": "Dyantyi said the gunmen hijacked a vehicle nearby to make their getaway."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder and attempted murder cases; no arrests reported",
+          "basis": "Police account only",
+          "detail": "No arrest is reported in the saved sources.",
+          "sources": [
+            {
+              "name": "Cape Town ETC, 23 Nov",
+              "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/",
+              "archive": null,
+              "quote": "The incident is being investigated as murder and attempted murder"
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
+    },
+    "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a": {
+      "status": "audited",
+      "police_party": false,
+      "audited_on": "27 November 2026",
+      "facts": [
+        {
+          "label": "Deaths",
+          "claim": "A 16-year-old boy shot dead",
+          "basis": "Police account only",
+          "detail": "Both reports rest on police.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 25 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+              "archive": null,
+              "quote": "Medical personnel declared the 16-year-old boy dead on the scene from gunshot wounds to his head and body"
+            },
+            {
+              "name": "Voice of the Cape, 24 Nov",
+              "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/",
+              "archive": null,
+              "quote": "where the teenager was found with fatal gunshot wounds"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Injuries",
+          "claim": "A 13-year-old wounded in the leg",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 25 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+              "archive": null,
+              "quote": "while the 13-year-old was rushed to a medical facility with a gunshot wound to his left leg"
+            },
+            {
+              "name": "Voice of the Cape, 24 Nov",
+              "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/",
+              "archive": null,
+              "quote": "A 13-year-old was also wounded in the incident."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Date and time",
+          "claim": "Monday 23 November, about 6.15pm",
+          "basis": "Police account only",
+          "detail": "",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 25 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+              "archive": null,
+              "quote": "The latest attack on Monday, November 23, 2026, occurred while children were playing soccer in Bartholomew Street, St Montague Village"
+            },
+            {
+              "name": "Voice of the Cape, 24 Nov",
+              "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/",
+              "archive": null,
+              "quote": "Police say officers were called to St Bartholomew in St Montague Village at around 18:15"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Place",
+          "claim": "Bartholomew Street, St Montague Village, Lavender Hill (map point approximate: suburb point)",
+          "basis": "Police account only",
+          "detail": "The map point is approximate, about 1.5 km.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 25 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+              "archive": null,
+              "quote": "occurred while children were playing soccer in Bartholomew Street, St Montague Village"
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Motive",
+          "claim": "Believed gang-related, police say",
+          "basis": "Police account only",
+          "detail": "No group is named.",
+          "sources": [
+            {
+              "name": "IOL (Cape Argus), 25 Nov",
+              "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+              "archive": null,
+              "quote": "“The motive is believed to be gang-related. Steenberg police registered a murder and attempted murder case for investigation,” Van Wyk said."
+            }
+          ],
+          "conflicts": []
+        },
+        {
+          "label": "Legal status",
+          "claim": "Murder and attempted murder cases; no arrests reported",
+          "basis": "Police account only",
+          "detail": "No arrest is reported in the saved sources.",
+          "sources": [
+            {
+              "name": "Voice of the Cape, 24 Nov",
+              "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/",
+              "archive": null,
+              "quote": "Police have since registered cases of murder and attempted murder, with investigations ongoing."
+            }
+          ],
+          "conflicts": []
+        }
+      ],
+      "approval": {
+        "by": "standing",
+        "authorization": "standing-autopub-2026-11-27",
+        "checked_by": "unattended-run"
+      }
     }
   }
 }

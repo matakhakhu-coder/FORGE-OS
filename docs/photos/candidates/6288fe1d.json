@@ -1,0 +1,14 @@
+{
+  "signal_id": "6288fe1d-d254-5886-a048-00fdd3071858",
+  "pin": {
+    "title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov",
+    "lat": -29.715,
+    "lng": 30.95,
+    "location_note": "APPROXIMATE MAP POINT. A residence in the Ezimangweni area of Amaoti, Inanda. Amaoti is not in Nominatim; the pin is the Inanda (eThekwini) point (-29.715, 30.95). Area level, about 4 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": true,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": []
+}

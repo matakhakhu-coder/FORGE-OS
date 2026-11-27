@@ -1,0 +1,235 @@
+{
+  "signal_id": "c6ac1645-9d62-5999-8844-9c6737e80a57",
+  "pin": {
+    "title": "Jeffsville informal settlement, Atteridgeville (map point approximate): nine people shot dead inside a shack, night of 15 Nov",
+    "lat": -25.7714,
+    "lng": 28.0736,
+    "location_note": "APPROXIMATE MAP POINT. Jeffsville informal settlement, Atteridgeville, west of Pretoria. Jeffsville is not in Nominatim, so the pin is the Atteridgeville area point (-25.7714, 28.0736). Area level, about 3 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:Zanele Nhlapho.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Zanele_Nhlapho.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Zanele_Nhlapho.jpg/960px-Zanele_Nhlapho.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2541,
+      "height": 2115,
+      "original_sha1": "d0a82bf252f47d878279bc961be843bdea93d821",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775794,
+        "lng": 28.072153
+      },
+      "distance_m": 510,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-06-22 15:32:17",
+      "description": "Zanele Nhlapho",
+      "categories": "CC-Zero|Women's association football defenders|Self-published work|Files with coordinates missing SDC location of creation|Zanele Nhlapo",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Sedilame Boseja.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Sedilame_Boseja.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Sedilame_Boseja.jpg/960px-Sedilame_Boseja.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2120,
+      "height": 2499,
+      "original_sha1": "3c9718855c2c098e4831dbf8fa02814b6d07c83a",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775836,
+        "lng": 28.072097
+      },
+      "distance_m": 516,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-06-22 15:34:19",
+      "description": "Sedilame Boseja",
+      "categories": "CC-Zero|Players of Mamelodi Sundowns LFC|Self-published work|Files with coordinates missing SDC location of creation|Sedilame Boseja",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Boitumelo Rabale.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Boitumelo_Rabale.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Boitumelo_Rabale.jpg/960px-Boitumelo_Rabale.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2161,
+      "height": 2762,
+      "original_sha1": "fcdb51911dcceff41ae752f51179142185a1f129",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775836,
+        "lng": 28.072089
+      },
+      "distance_m": 516,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-06-22 15:34:16",
+      "description": "Boitumelo Rabale",
+      "categories": "CC-Zero|Self-published work|Files with coordinates missing SDC location of creation|Boitumelo Rabele",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Coach Khumalo.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Coach_Khumalo.jpg",
+      "thumb_url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Coach_Khumalo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "mime": "image/jpeg",
+      "width": 868,
+      "height": 1329,
+      "original_sha1": "0ad6d1a57515fcf63f4d198fb180ad37cc153e13",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775872,
+        "lng": 28.072169
+      },
+      "distance_m": 517,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-12-08 17:31:01",
+      "description": "Coach Khumalo",
+      "categories": "CC-Zero|Self-published work|Unidentified men|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Jerry Tshabalala.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Jerry_Tshabalala.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Jerry_Tshabalala.jpg/960px-Jerry_Tshabalala.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2746,
+      "height": 2392,
+      "original_sha1": "90755fb62cb3d86d13ce68ac318b7f1974b51a1a",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775883,
+        "lng": 28.072194
+      },
+      "distance_m": 518,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-06-22 15:30:14",
+      "description": "Jerry Tshabalala",
+      "categories": "CC-Zero|Self-published work|Files with coordinates missing SDC location of creation|Women's association football coaches",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Karabo Makhurubetsi.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Karabo_Makhurubetsi.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Karabo_Makhurubetsi.jpg/960px-Karabo_Makhurubetsi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1109,
+      "height": 1716,
+      "original_sha1": "8fb19beb48e03b61c5fa20a7acb10ce264aa2ded",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.775914,
+        "lng": 28.072081
+      },
+      "distance_m": 524,
+      "creator": "Mcwamcwa",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "taken": "2024-12-08 18:08:04",
+      "description": "Karabo Makhurubetsi",
+      "categories": "CC-Zero|Players of Mamelodi Sundowns LFC|Self-published work|Files with coordinates missing SDC location of creation|Karabo Makhurubetshi",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Reading time at the Nkomo home.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Reading_time_at_the_Nkomo_home.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/Reading_time_at_the_Nkomo_home.jpg/960px-Reading_time_at_the_Nkomo_home.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2016,
+      "height": 1512,
+      "original_sha1": "f76bdc02f649fc0067da77005d808f9a4404eea9",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.76678333,
+        "lng": 28.07751389
+      },
+      "distance_m": 646,
+      "creator": "Sbunkomoh",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2020-11-29",
+      "description": "Dr Nkomo and his wife Susan reading with their children",
+      "categories": "Unidentified people|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Newspaper clipping on the death of Dr Nkomo.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Newspaper_clipping_on_the_death_of_Dr_Nkomo.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Newspaper_clipping_on_the_death_of_Dr_Nkomo.jpg/960px-Newspaper_clipping_on_the_death_of_Dr_Nkomo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2016,
+      "height": 1512,
+      "original_sha1": "95c82d75d97985a3fef61153a8f442e67be93bc7",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.76666944,
+        "lng": 28.07743333
+      },
+      "distance_m": 651,
+      "creator": "Sbunkomoh",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2020-11-29",
+      "description": "Newspaper clipping on the death of Dr Nkomo in the family archive",
+      "categories": "Newspaper clippings|Self-published work|Files with coordinates missing SDC location of creation",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Orphanage upliftment project.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Orphanage_upliftment_project.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Orphanage_upliftment_project.jpg/960px-Orphanage_upliftment_project.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 3024,
+      "height": 4032,
+      "original_sha1": "e70ca60ba777eabca70165d45596d100815cdd4f",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -25.772889,
+        "lng": 28.064894
+      },
+      "distance_m": 887,
+      "creator": "MinkhensoTiyani",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "taken": "2017-07-28 10:47:07",
+      "description": "This is an image of \"African people at work\" from",
+      "categories": "Self-published work|Images from Wiki Loves Africa 2017|Men at work in South Africa|Images from Wiki Loves Africa 2017 to check|Uploaded via Campaign:wlafrica|Files with coordinates missing SDC location of creation|Construction workers in South Africa|South Africa photographs taken on 2017-07-28|Images from Wiki Loves Africa 2017 in South Africa|Men with bricks",
+      "auto_refusals": []
+    },
+    {
+      "file_title": "File:Leamogetswe Safety Home - New hut donated by Lions Club of Pretoria South - panoramio.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:Leamogetswe_Safety_Home_-_New_hut_donated_by_Lions_Club_of_Pretoria_South_-_panoramio.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Leamogetswe_Safety_Home_-_New_hut_donated_by_Lions_Club_of_Pretoria_South_-_panoramio.jpg/960px-Leamogetswe_Safety_Home_-_New_hut_donated_by_Lions_Club_of_Pretoria_South_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 1200,
+      "height": 900,
+      "original_sha1": "891a81dd3ed0cbf9323fbf3f7c0e45436d8ec093",
+      "geotag": {
+        "basis": "page_location",
+        "lat": -25.773243,
+        "lng": 28.06457
+      },
+      "distance_m": 927,
+      "creator": "Hendrik van den Berg",
+      "licence": "CC BY 3.0",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0",
+      "taken": "Taken on 2 March 2008",
+      "description": "Leamogetswe Safety Home - New hut donated by Lions Club of Pretoria South",
+      "categories": "Pretoria|Community|Panoramio files uploaded by Panoramio upload bot|Panoramio images reviewed by trusted users|Photos from Panoramio|Media needing category review as of 1 March 2016|Files with coordinates missing SDC location of creation|South Africa photographs taken on 2008-03-02|Photos from Panoramio ID 1321709",
+      "auto_refusals": []
+    }
+  ]
+}

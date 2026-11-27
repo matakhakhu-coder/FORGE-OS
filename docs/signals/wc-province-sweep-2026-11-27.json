@@ -1,0 +1,200 @@
+{
+ "schema": "forge.checked_signals.batch",
+ "version": 2,
+ "province": "Western Cape",
+ "batch": "Western Cape, province sweep (incidents 1-27 Nov 2026), hand-checked 27 Nov 2026, published under standing authorization standing-autopub-2026-11-27",
+ "scope": "Western Cape, incidents 1-27 Nov 2026, all categories; searched national, provincial and city outlets and police statements.",
+ "rules": "docs/SOURCING_POLICY.md: each report judged on its own sourcing; copies count once; local-paper-only incidents need an independent account; a traceable national, provincial or city report can stand alone. Standing authorization needs two different source sites. No case, entity or thread links; no pin is said to cause another. Incident date kept apart from report date. Minors and victims not named. Approximate points labelled in the title and location note. No Caxton pages read by machine. Court appearances, sentencings, council stories and ordinary road crashes are not pins.",
+ "review_status": "Published under standing authorization standing-autopub-2026-11-27 (owner-chosen end 27 Nov 2026 23:59 SAST) by tools/autopublish.py; no per-pin owner review. The owner did not read these pins' text.",
+ "owner_decisions": [
+  {
+   "at": "2026-11-27 (Sesame chat)",
+   "decision": "Owner asked for multiple runs covering every province, incidents 1 Nov to 27 Nov 2026, published under a renewed standing authorization for new pins. The owner did not review these pins' text."
+  }
+ ],
+ "load_with": "python tools/checked_signals.py import --write",
+ "held_back": [],
+ "retractions": [],
+ "signals": [
+  {
+   "signal_id": "942df37d-66a9-5f89-8cf1-0112bcec66fc",
+   "external_id": "checked:wc-sweep-2026-11-27:W1",
+   "source": "Smile 90.4FM",
+   "title": "Graduate Street and Degree Close, Belhar: off-duty police constable shot dead, 11 Nov",
+   "content": "An off-duty 28-year-old constable from the Belhar Crime Prevention Unit was shot dead by unknown suspects at the corner of Graduate Street and Degree Close, Belhar, at about 00:50 on Wednesday 11 November, Western Cape police spokesperson Constable Ndakhe Gwala confirmed to IOL and Smile 90.4FM. Smile 90.4FM reports the shooting happened during a suspected hijacking; police did not state a motive. A murder case was opened and handed to the Hawks, who said no arrests had been made. The map point is the Belhar suburb point, not the street corner.",
+   "lat": -33.9447,
+   "lng": 18.6258,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-10T22:50:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "Smile 90.4FM",
+    "link": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/",
+    "pubdate_raw": "2026-11-12",
+    "checked": {
+     "incident": "Wed 11 Nov 2026, about 00:50 (SAPS, via IOL and Smile 90.4FM)",
+     "reported": "12 Nov 2026 (IOL; Smile 90.4FM)",
+     "location": "APPROXIMATE MAP POINT. Corner of Graduate Street and Degree Close, Belhar, Cape Town. The pin is the Belhar suburb point (Nominatim, -33.9447, 18.6258), not the corner. Suburb level, about 2 km.",
+     "sources": [
+      {
+       "name": "IOL (Cape Argus), 12 Nov",
+       "url": "https://iol.co.za/capeargus/news/2026-11-12-he-lived-for-his-uniform-belhar-cop-remembered-after-fatal-shooting/"
+      },
+      {
+       "name": "Smile 90.4FM, 12 Nov",
+       "url": "https://smilefm.co.za/belhar-mourning-28-year-old-police-constable-killed-in-suspected-hijacking/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-11T00:50:00+02:00",
+     "incident_precision": "time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-12",
+     "search_aliases": [
+      "Belhar constable shot",
+      "Belhar police officer killed",
+      "Graduate Degree Close Belhar shooting"
+     ]
+    },
+    "collected_title": "Belhar mourning 28-year-old police constable killed in suspected hijacking"
+   },
+   "fingerprint": "sha256:736ab285502d66cde76c4d13385210a6d160cfee0436626b6532978ad8c1ab0f"
+  },
+  {
+   "signal_id": "134d8758-7ae0-50e1-b823-1148393262dd",
+   "external_id": "checked:wc-sweep-2026-11-27:W2",
+   "source": "IOL",
+   "title": "Outside Lingelethu West police station, Khayelitsha (map point approximate): man shot dead by off-duty constable after tavern quarrel, 20 Nov",
+   "content": "A man was shot dead outside the Lingelethu West police station in Khayelitsha at about 3.10am, after a quarrel at Ace's Park tavern with an off-duty constable from Public Order Policing in Faure, IPID spokesperson Phaladi Shuping told IOL and City Vision. IPID says the man followed the constable's car to the police station, where they quarrelled again and the constable allegedly shot him. Officers at the station then shot the constable, who was taken to hospital. IPID is investigating. The reports disagree on the date: IOL says the early hours of Friday 20 November, City Vision says Thursday 19 November. The map point is approximate: the Khayelitsha point, not the police station.",
+   "lat": -34.0416,
+   "lng": 18.7082,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-20T01:10:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/",
+    "pubdate_raw": "2026-11-22",
+    "checked": {
+     "incident": "Early hours of Fri 20 Nov 2026, about 3.10am (IPID, via IOL); City Vision gives Thu 19 Nov",
+     "reported": "22-23 Nov 2026 (IOL; City Vision)",
+     "location": "APPROXIMATE MAP POINT. Outside Lingelethu West police station, Khayelitsha, Cape Town. Not found in Nominatim; the pin is the Khayelitsha point (-34.0416, 18.7082). Area level, about 3 km.",
+     "sources": [
+      {
+       "name": "IOL (Cape Argus), 22 Nov",
+       "url": "https://iol.co.za/capeargus/news/2026-11-22-khayelitsha-community-slam-off-duty-constable-who-allegedly-shot-man-dead-outside-cop-shop/"
+      },
+      {
+       "name": "City Vision, 23 Nov",
+       "url": "https://novanews.co.za/cityvision/ipid-investigating-murder-case-involving-police-officer/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-20T03:10:00+02:00",
+     "incident_precision": "time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-22",
+     "search_aliases": [
+      "Lingelethu police station shooting",
+      "off-duty constable Khayelitsha",
+      "Ace's Park tavern"
+     ]
+    },
+    "collected_title": "Khayelitsha community slam off-duty constable who allegedly shot man dead outside cop shop"
+   },
+   "fingerprint": "sha256:cb0c6223a864e7f4e16930342204c9b4bdb335f647385adfe82b4022bf23644f"
+  },
+  {
+   "signal_id": "667a57a3-2028-5db5-bcbb-a7ca833e6190",
+   "external_id": "checked:wc-sweep-2026-11-27:W3",
+   "source": "IOL",
+   "title": "Hlobe Street, Greenpoint, Khayelitsha (map point approximate): four men shot dead and eight wounded in tavern shooting, 21 Nov",
+   "content": "Four men were killed and eight people wounded when gunmen opened fire inside MaDlamini's Place tavern on Hlobe Street in the Greenpoint informal settlement, Khayelitsha, at about 11.30pm on Saturday 21 November, IOL and Cape Town ETC report from police. Police first said five were wounded; Western Cape Police Commissioner Lt-Gen Sizakhele Dyantyi later said the number rose to eight. Police say the gunmen fled in a vehicle hijacked at the scene, later found abandoned. Murder and attempted murder cases are being investigated; no motive or arrests were reported. The map point is approximate: the Khayelitsha point, not the tavern.",
+   "lat": -34.0416,
+   "lng": 18.7082,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-21T21:30:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/",
+    "pubdate_raw": "2026-11-22",
+    "checked": {
+     "incident": "Sat 21 Nov 2026, about 11.30pm (SAPS, via IOL and Cape Town ETC)",
+     "reported": "22-23 Nov 2026 (IOL; Cape Town ETC)",
+     "location": "APPROXIMATE MAP POINT. MaDlamini's Place tavern, Hlobe Street, Greenpoint informal settlement, Khayelitsha. Not in Nominatim; the pin is the Khayelitsha point (-34.0416, 18.7082). Area level, about 3 km.",
+     "sources": [
+      {
+       "name": "IOL (Cape Times), 22 Nov",
+       "url": "https://iol.co.za/capetimes/2026-11-22-four-killed-five-wounded-in-khayelitsha-tavern-shooting-as-police-hunt-gunmen/"
+      },
+      {
+       "name": "Cape Town ETC, 23 Nov",
+       "url": "https://www.capetownetc.com/news/four-killed-as-khayelitsha-tavern-shooting-sparks-police-manhunt/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-21T23:30:00+02:00",
+     "incident_precision": "time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-22",
+     "search_aliases": [
+      "Khayelitsha tavern shooting",
+      "Greenpoint Khayelitsha shooting",
+      "MaDlamini tavern"
+     ]
+    },
+    "collected_title": "Four killed, five wounded in Khayelitsha tavern shooting as police hunt gunmen"
+   },
+   "fingerprint": "sha256:a8752b9060c037d14ee429861ab26b457c642c4a9a0f2a915f68833ed0a856e7"
+  },
+  {
+   "signal_id": "3a5ae1c5-4470-5ea0-a812-71f6bb835b0a",
+   "external_id": "checked:wc-sweep-2026-11-27:W4",
+   "source": "IOL",
+   "title": "Bartholomew Street, St Montague Village, Lavender Hill (map point approximate): 16-year-old shot dead and 13-year-old wounded, 23 Nov",
+   "content": "A 16-year-old boy was shot dead and a 13-year-old wounded when two unidentified men walked into Bartholomew Street, St Montague Village, Lavender Hill, and opened fire at about 6.15pm on Monday 23 November, Western Cape police spokesperson Lt-Col FC van Wyk told IOL. Voice of the Cape reports the same from police. IOL reports children were playing soccer in the street. Police believe the motive is gang-related; murder and attempted murder cases were opened and no arrests were reported. The children are not named. The map point is approximate: the Lavender Hill point, not the street.",
+   "lat": -34.0736,
+   "lng": 18.4833,
+   "stream": "CRIME_INTEL",
+   "timestamp": "2026-11-23T16:15:00Z",
+   "published_at": "2026-11-27T10:00:00Z",
+   "metadata": {
+    "source_outlet": "IOL",
+    "link": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/",
+    "pubdate_raw": "2026-11-24",
+    "checked": {
+     "incident": "Mon 23 Nov 2026, about 6.15pm (SAPS, via IOL and Voice of the Cape)",
+     "reported": "24-25 Nov 2026 (Voice of the Cape; IOL)",
+     "location": "APPROXIMATE MAP POINT. Bartholomew Street, St Montague Village, Lavender Hill, Cape Town. The pin is the Lavender Hill point (Nominatim, -34.0736, 18.4833). Suburb level, about 1.5 km.",
+     "sources": [
+      {
+       "name": "IOL (Cape Argus), 25 Nov",
+       "url": "https://iol.co.za/capeargus/news/2026-11-25-lavender-hill-parents-live-in-fear-after-sixth-child-is-shot-in-three-days/"
+      },
+      {
+       "name": "Voice of the Cape, 24 Nov",
+       "url": "https://vocfm.co.za/another-teenager-killed-in-lavender-hill-shooting/"
+      }
+     ],
+     "checked_at": "2026-11-27T10:00:00Z",
+     "method": "Found in the 27 Nov 2026 province-by-province sweep (Western Cape, incidents 1-27 Nov 2026) by web and news search; source pages saved and read by hand. Place looked up in OpenStreetMap Nominatim. Live map and checked batches searched for duplicates (none). Standalone: no case, entity or thread links, and no link to any other pin is implied.",
+     "incident_start": "2026-11-23T18:15:00+02:00",
+     "incident_precision": "time",
+     "incident_event": "occurred",
+     "reported_at": "2026-11-24",
+     "search_aliases": [
+      "Lavender Hill shooting",
+      "St Montague Village shooting",
+      "teenager shot Lavender Hill"
+     ]
+    },
+    "collected_title": "Lavender Hill parents live in fear after sixth child is shot in three days"
+   },
+   "fingerprint": "sha256:cdc0144612d9448e6c08b068c6b5e42eed2a3d100bbf8bdf163e5298a8f2fd73"
+  }
+ ]
+}

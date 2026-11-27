@@ -1,0 +1,37 @@
+{
+  "signal_id": "60c95743-699a-5bb3-adc1-9d2c2d8d8ec1",
+  "pin": {
+    "title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov",
+    "lat": -29.6003,
+    "lng": 30.3061,
+    "location_note": "APPROXIMATE MAP POINT. Mabane section, Sweetwaters, outside Pietermaritzburg. Mabane is not in Nominatim, and Nominatim has no place point for Sweetwaters; it matches \"Sweetwaters\" to Mbubu Road on the western side of Pietermaritzburg, and the pin is a point on that road (-29.6003, 30.3061). Area level, about 5 km."
+  },
+  "searched_at": "2026-11-27",
+  "radius_m": 2000,
+  "place_blocked": false,
+  "note": "Research only. Nothing here is published until a record in docs/signals/location-photos.json is approved by the owner.",
+  "candidates": [
+    {
+      "file_title": "File:CannabisPlant.jpg",
+      "page_url": "https://commons.wikimedia.org/wiki/File:CannabisPlant.jpg",
+      "thumb_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/CannabisPlant.jpg/960px-CannabisPlant.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/jpeg",
+      "width": 2448,
+      "height": 3264,
+      "original_sha1": "040299edecb55df62e09d373146678355983c30d",
+      "geotag": {
+        "basis": "camera_gps",
+        "lat": -29.605556,
+        "lng": 30.3175
+      },
+      "distance_m": 1248,
+      "creator": "Cal Harding",
+      "licence": "CC BY 2.0",
+      "licence_url": "https://creativecommons.org/licenses/by/2.0",
+      "taken": "2012-03-14 17:14:41",
+      "description": "Cannabis plant",
+      "categories": "Cannabis|Files with coordinates missing SDC location of creation|Flickr images reviewed by FlickreviewR 2",
+      "auto_refusals": []
+    }
+  ]
+}
