@@ -77,6 +77,15 @@ HIST_BATCHES = (
 LATER_BATCHES = ri.batch_files()[len(HIST_BATCHES):]
 
 
+def later_ids() -> set:
+    """Signal ids in batches published after 21 Nov 2026 (their own titles say "map point approximate")."""
+    import json
+    from pathlib import Path
+    d = Path(__file__).resolve().parent.parent / "docs" / "signals"
+    return {s["signal_id"] for f in LATER_BATCHES
+            for s in json.loads((d / f).read_text(encoding="utf-8"))["signals"]}
+
+
 def later(province: str) -> int:
     """Pins in batches published after 21 Nov 2026 for one province (27 Nov 2026:
     province sweeps add Western Cape and Eastern Cape pins after the frozen counts)."""
@@ -292,10 +301,12 @@ def test_mpumalanga_pins_stay_out_of_the_pattern_test_and_mark_estimates():
     prov = provinces(cs)
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     mp = [s for s in cs.active if prov[s["signal_id"]] == "Mpumalanga"]
-    assert len(mp) == MP_PINS and not ({s["signal_id"] for s in mp} & wc_ids)
+    assert len(mp) == MP_PINS + later("Mpumalanga") and not ({s["signal_id"] for s in mp} & wc_ids)
+    new = later_ids()
     for s in mp:
         assert -27.85 <= s["lat"] <= -24.4 and 28.15 <= s["lng"] <= 32.1   # really in Mpumalanga
-        assert "approx." in s["title"] or "map point estimated" in s["title"]
+        assert "approx." in s["title"] or "map point estimated" in s["title"] or (
+            s["signal_id"] in new and "map point approximate" in s["title"])
         assert not s["metadata"].get("links")
     # Thusi Village and the Amersfoort farm sit on their police station points, so their titles say so.
     estimated = sorted(s["title"].split(",")[0].split(" (")[0] for s in mp if "map point estimated" in s["title"])
@@ -326,11 +337,12 @@ def test_eastern_cape_pins_stay_out_of_the_pattern_test_and_attribute_police_sho
     wc_ids = {s["signal_id"] for s in pattern_test_pins(cs)}
     ec = [s for s in cs.active if prov[s["signal_id"]] == "Eastern Cape"]
     assert len(ec) == EC_PINS + later("Eastern Cape") and not ({s["signal_id"] for s in ec} & wc_ids)
+    new = later_ids()
     for s in ec:
         assert -34.3 <= s["lat"] <= -30.0 and 22.5 <= s["lng"] <= 30.3   # really in the Eastern Cape
-        assert "approx." in s["title"]
+        assert "approx." in s["title"] or (s["signal_id"] in new and "map point approximate" in s["title"])
         assert not s["metadata"].get("links")
-    police = [s for s in ec if "by police" in s["title"]]
+    police = [s for s in ec if "by police" in s["title"] and s["signal_id"] not in new]
     assert len(police) == 2
     for s in police:
         assert "IPID" in s["content"] and "No ballistic result has been reported" in s["content"]
