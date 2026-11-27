@@ -12,3 +12,4 @@ A file here is the owner's advance approval for new pins that pass fixed machine
 |---|---|---|---|
 | standing-autopub-test-2026-11-21.json | 21 Nov 2026 16:40 SAST | 21 Nov 2026 23:59 SAST | owner's test of an automated run |
 | standing-autopub-2026-11-26.json | 26 Nov 2026 10:08 SAST | 26 Nov 2026 23:59 SAST | owner's renewal for the end-to-end test of the publish-order fix |
+| standing-autopub-2026-11-27.json | 27 Nov 2026 06:26 SAST | 27 Nov 2026 23:59 SAST | owner's renewal for the province-by-province sweeps of 1 to 27 Nov |
