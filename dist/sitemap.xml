@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url><loc>https://forgemap.co.za/</loc></url>
   <url><loc>https://forgemap.co.za/about</loc></url>
+  <url><loc>https://forgemap.co.za/case-files</loc><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-south-africa-incident-map-desktop.webp</image:loc></image:image></url>
+  <url><loc>https://forgemap.co.za/cases/forge-map-screenshots</loc><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-south-africa-incident-map-desktop.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-pin-nasrec-road-riverlea-road-collapse.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-pin-epping-cape-town-sources-panel.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-reported-routes-sao-paulo-or-tambo.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-records-open-data-download.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-mobile-map-view.webp</image:loc></image:image><image:image><image:loc>https://forgemap.co.za/static/cases/forge-map-screenshots/forge-map-mobile-pin-flora-park-polokwane.webp</image:loc></image:image></url>
   <url><loc>https://forgemap.co.za/contact</loc></url>
   <url><loc>https://forgemap.co.za/privacy</loc></url>
   <url><loc>https://forgemap.co.za/records</loc></url>

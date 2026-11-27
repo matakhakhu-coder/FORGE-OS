@@ -1677,7 +1677,7 @@
           <div id="search-results" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--bg-surface);border:1px solid var(--border-dim);border-radius:var(--r-md);width:280px;max-height:240px;overflow-y:auto;z-index:200;"></div>
         </div>
         <span class="live-badge"><span class="live-dot"></span>OPEN SOURCE</span>
-        <span class="site-ts mono" id="data-age" data-generated="27 Nov 2026 05:49 UTC" title="27 Nov 2026 05:49 UTC">27 Nov 2026 05:49 UTC</span>
+        <span class="site-ts mono" id="data-age" data-generated="27 Nov 2026 09:32 UTC" title="27 Nov 2026 09:32 UTC">27 Nov 2026 09:32 UTC</span>
         <button class="site-settings-btn" id="settings-toggle" title="Settings">&#9881;</button>
       </div>
     </div>
@@ -1851,6 +1851,10 @@
       <button class="md-panel__close" onclick="closePanel()">&#10005;</button>
     </div>
     <div class="md-panel__body">
+      <a class="case-entry" href="case-files.html" style="display:block;text-decoration:none;">
+        <div class="case-entry__name">Public case files</div>
+        <div class="case-entry__meta"><span>Screenshots, documents and video links, published by the owner</span></div>
+      </a>
       
     </div>
   </div>
@@ -1861,7 +1865,7 @@
       <div class="md-panel__dot" style="background:var(--infra);"></div>
       <span class="md-panel__title">Graph</span>
       <span class="md-panel__count gp-tool" data-gp-tool="network" id="ig-stats">0 actors &middot; 0 relationships</span>
-      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>103 approved records &middot; as of 27 Nov 2026 05:49 UTC</span>
+      <span class="md-panel__count gp-tool" data-gp-tool="charts" hidden>103 approved records &middot; as of 27 Nov 2026 09:32 UTC</span>
       
       <button class="md-panel__close" onclick="closePanel()" aria-label="Close graph panel">&#10005;</button>
     </div>
@@ -5973,6 +5977,7 @@
         <a href="about.html" style="color:var(--text-dim);">How It Works</a> ·
         <a href="records.html" style="color:var(--text-dim);">Records</a> ·
         <a href="journal.html" style="color:var(--text-dim);">Journal</a> ·
+        <a href="case-files.html" style="color:var(--text-dim);">Case files</a> ·
         <a href="contact.html" style="color:var(--text-dim);">Contact</a> ·
         <a href="privacy.html" style="color:var(--text-dim);">Privacy</a>
       </div>
@@ -5984,7 +5989,7 @@
       </a>
       
       <div class="site-footer__right mono">
-        Generated 27 Nov 2026 05:49 UTC
+        Generated 27 Nov 2026 09:32 UTC
       </div>
     </div>
   </footer>
@@ -5992,7 +5997,7 @@
   
   <div class="print-footer" style="display:none;">
     <span class="print-footer__class">OPEN SOURCE INTELLIGENCE — PUBLIC BULLETIN</span>
-    <span>FORGE MAP · FORGE OSINT ENGINE · 27 Nov 2026 05:49 UTC</span>
+    <span>FORGE MAP · FORGE OSINT ENGINE · 27 Nov 2026 09:32 UTC</span>
   </div>
 
   <script src="static/js/watchlist.js"></script>
@@ -9150,7 +9155,7 @@
   }
 
   /* ── Cases panel — fly to centroid ──────────────────────────────────────── */
-  document.querySelectorAll('.case-entry').forEach(function (entry) {
+  document.querySelectorAll('.case-entry[data-slug]').forEach(function (entry) {
     entry.addEventListener('click', function () {
       // Compute centroid from case signals that have geo
       var caseId = entry.dataset.caseId;
