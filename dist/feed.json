@@ -1,8 +1,120 @@
 {
   "title": "FORGE Map Intelligence Feed",
   "description": "South African open-source intelligence bulletin",
-  "generated_at": "26 Nov 2026 10:20 UTC",
+  "generated_at": "27 Nov 2026 05:33 UTC",
   "items": [
+    {
+      "kind": "signal",
+      "title": "Ezimangweni, Amaoti, Inanda (map point approximate): three suspects shot dead in shootout with police, 25 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Three suspects wanted for serious and violent crimes in Phoenix and Inanda were shot dead in a shootout with police at a residence in the Ezimangweni area of Amaoti, Inanda, on Wednesday 25 November, KZN police spokesper...",
+      "source": "IOL",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.715,
+        "lng": 30.95
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Bartholomew Street, St Montague Village, Lavender Hill (map point approximate): 16-year-old shot dead and 13-year-old wounded, 23 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "A 16-year-old boy was shot dead and a 13-year-old wounded when two unidentified men walked into Bartholomew Street, St Montague Village, Lavender Hill, and opened fire at about 6.15pm on Monday 23 November, Western Cape ...",
+      "source": "IOL",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0736,
+        "lng": 18.4833
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Hlobe Street, Greenpoint, Khayelitsha (map point approximate): four men shot dead and eight wounded in tavern shooting, 21 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Four men were killed and eight people wounded when gunmen opened fire inside MaDlamini's Place tavern on Hlobe Street in the Greenpoint informal settlement, Khayelitsha, at about 11.30pm on Saturday 21 November, IOL and ...",
+      "source": "IOL",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0416,
+        "lng": 18.7082
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Outside Lingelethu West police station, Khayelitsha (map point approximate): man shot dead by off-duty constable after tavern quarrel, 20 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "A man was shot dead outside the Lingelethu West police station in Khayelitsha at about 3.10am, after a quarrel at Ace's Park tavern with an off-duty constable from Public Order Policing in Faure, IPID spokesperson Phalad...",
+      "source": "IOL",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -34.0416,
+        "lng": 18.7082
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Jeffsville informal settlement, Atteridgeville (map point approximate): nine people shot dead inside a shack, night of 15 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Nine people, six men and three women, were found shot dead inside a four-roomed shack at the Jeffsville informal settlement in Atteridgeville, west of Pretoria, on the morning of Monday 16 November, Gauteng police told t...",
+      "source": "MAIL & GUARDIAN",
+      "region": "Gauteng",
+      "geo": {
+        "lat": -25.7714,
+        "lng": 28.0736
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Mabane section, Sweetwaters, outside Pietermaritzburg (map point approximate): eight men shot dead inside a vehicle, night of 15 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Eight men were found shot dead inside a white seven-seater vehicle riddled with bullet holes at the Mabane section of Sweetwaters, outside Pietermaritzburg, on the night of Sunday 15 November, KwaZulu-Natal police spokes...",
+      "source": "IOL",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.6003,
+        "lng": 30.3061
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "R33 towards Msinga, Greytown (map point approximate): station commander shot dead and two suspects killed in shootout after supermarket robbery, 12 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "Greytown station commander Lt-Col TG Sithole was shot dead and Sergeant Gumede was shot in the arm in a gun battle on the R33 towards Msinga on the afternoon of Thursday 12 November, IOL and BNK News report from a SAPS s...",
+      "source": "IOL",
+      "region": "KwaZulu-Natal",
+      "geo": {
+        "lat": -29.0606,
+        "lng": 30.5889
+      }
+    },
+    {
+      "kind": "signal",
+      "title": "Graduate Street and Degree Close, Belhar: off-duty police constable shot dead, 11 Nov",
+      "stream": "CRIME_INTEL",
+      "stream_label": "Crime & Security",
+      "published_at": "2026-11-27T10:00:00Z",
+      "summary": "An off-duty 28-year-old constable from the Belhar Crime Prevention Unit was shot dead by unknown suspects at the corner of Graduate Street and Degree Close, Belhar, at about 00:50 on Wednesday 11 November, Western Cape p...",
+      "source": "SMILE 90.4FM",
+      "region": "Western Cape",
+      "geo": {
+        "lat": -33.9447,
+        "lng": 18.6258
+      }
+    },
     {
       "kind": "signal",
       "title": "Witkoppen Road at the Braamfontein Spruit bridge, Paulshof/Fourways (approx.): car swept away by floodwater, driver rescued from a tree, 25 Nov",
@@ -589,118 +701,6 @@
       "geo": {
         "lat": -24.56876,
         "lng": 29.65187
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Rostock village, Mecklenburg police area (map point estimated): man, 18, dies after mob attack, 11 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say an 18-year-old man died after community members, who accused him of trying to rob a foreign-owned shop in Rostock village, attacked him with sticks, stones and cables at about 18:00 on Sunday 11 October. His f...",
-      "source": "TIMESLIVE",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -24.38627,
-        "lng": 30.07359
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Near Peter Mokaba Stadium, Polokwane (approx.): man, 29, assaulted by a group, dies in hospital, 4 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say a 29-year-old man was seriously injured in a confrontation with a group of people near the stadium in the early hours of 4 October, after the Shandesh One Woman Show at the Peter Mokaba rugby field, and was la...",
-      "source": "REVIEW ONLINE (THE CITIZEN)",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -23.92481,
-        "lng": 29.46796
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Mamaolo village, Ga-Mphahlele (Maribeng Section, approx.): tavern owner, 53, found murdered and robbed, 2 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T20:16:00Z",
-      "summary": "Police say a 53-year-old tavern owner was found by his sister at his business premises at Ga-Mphahlele, Maribeng Section, in Mamaolo village outside Lebowakgomo. The garage doors were open and he was lying face down in a...",
-      "source": "SABC NEWS",
-      "region": "Limpopo",
-      "geo": {
-        "lat": -24.30606,
-        "lng": 29.5672
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Firethorne, near Geelhout St (map point inferred): man, 33, shot dead, 17 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T11:45:00Z",
-      "summary": "Police say a man of 33 was shot dead in Firethorne, near Geelhout Street, at about 23:05 on Saturday 17 October (Lieutenant Colonel FC van Wyk, provincial police spokesperson, via Athlone News). He was walking near a pre...",
-      "source": "ATHLONE NEWS",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9494589,
-        "lng": 18.5486674
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Tafelsig, Mitchells Plain (Paulsberg St, approx.): barber shot dead inside his shop, 20 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T10:25:00Z",
-      "summary": "Police say a man was shot inside a barbershop in Paulsberg Street, Tafelsig, at about 20:07 on Tuesday 20 October; according to reports, unknown suspects came out of a minibus taxi and shot at him (police, via Cape Times...",
-      "source": "CAPE TIMES (IOL)",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.0626078,
-        "lng": 18.631183
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Valhalla Park (Angela St, approx.): man, 21, found stabbed in water, 20 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T10:25:00Z",
-      "summary": "Police say the body of a man of 21 was found in Angela Street, Valhalla Park, at about 07:04 on Tuesday 20 October, with stab wounds to his throat (Sergeant Wesley Twigg, via Daily Voice and TygerBurger). He was declared...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.953542,
-        "lng": 18.5746216
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "Athlone (Bokmakierie St and 7th Ave): man, 35, shot dead in a car, 19 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T10:25:00Z",
-      "summary": "Police say a man of 35 was found with multiple gunshot wounds inside a vehicle at the corner of Bokmakierie Street and 7th Avenue after a shooting at about 13:25 on Monday 19 October (Constable Ndakhe Gwala, via Daily Vo...",
-      "source": "DAILY VOICE",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -33.9537161,
-        "lng": 18.5069615
-      }
-    },
-    {
-      "kind": "signal",
-      "title": "St Montague Village (St Alexander Circle and St Christopher Ave): two men shot dead, 18 Oct",
-      "stream": "CRIME_INTEL",
-      "stream_label": "Crime & Security",
-      "published_at": "2026-10-22T10:25:00Z",
-      "summary": "Police say two men, aged 37 and 46, were shot dead at the corner of St Alexander Circle and St Christopher Avenue in St Montague Village on Sunday evening, 18 October; Steenberg police responded at about 18:30 (Sergeant ...",
-      "source": "SOUTHERN MAIL",
-      "region": "Western Cape",
-      "geo": {
-        "lat": -34.0684541,
-        "lng": 18.4896295
       }
     }
   ]
